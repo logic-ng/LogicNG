@@ -1,0 +1,151 @@
+///////////////////////////////////////////////////////////////////////////
+//                   __                _      _   ________               //
+//                  / /   ____  ____ _(_)____/ | / / ____/               //
+//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
+//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
+//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
+//                           /____/                                      //
+//                                                                       //
+//               The Next Generation Logic Library                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//  Copyright 2015 Christoph Zengler                                     //
+//                                                                       //
+//  Licensed under the Apache License, Version 2.0 (the "License");      //
+//  you may not use this file except in compliance with the License.     //
+//  You may obtain a copy of the License at                              //
+//                                                                       //
+//  http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                       //
+//  Unless required by applicable law or agreed to in writing, software  //
+//  distributed under the License is distributed on an "AS IS" BASIS,    //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
+//  implied.  See the License for the specific language governing        //
+//  permissions and limitations under the License.                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+package org.logicng.transformations.dnf;
+
+import org.logicng.formulas.FType;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaTransformation;
+import org.logicng.handlers.FactorizationHandler;
+
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+import static org.logicng.formulas.FType.LITERAL;
+import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_DNF;
+
+/**
+ * Transformation of a formula in DNF by factorization.
+ * @author Christoph Zengler
+ * @version 1.0
+ * @since 1.0
+ */
+public final class DNFFactorization implements FormulaTransformation {
+
+  private final FactorizationHandler handler;
+  private boolean proceed;
+
+  /**
+   * Constructor for a DNF Factorization without a factorization handler.
+   */
+  public DNFFactorization() {
+    this.proceed = true;
+    this.handler = null;
+  }
+
+  /**
+   * Constructor for a DNF Factorization with a given factorization handler.
+   * @param handler the handler
+   */
+  public DNFFactorization(final FactorizationHandler handler) {
+    this.proceed = true;
+    this.handler = handler;
+  }
+
+  @Override
+  public Formula apply(final Formula formula, boolean cache) {
+    if (!this.proceed)
+      return null;
+    if (formula.type().precedence() >= LITERAL.precedence())
+      return formula;
+    Formula cached = formula.getTransformationCacheEntry(FACTORIZED_DNF);
+    if (cached != null)
+      return cached;
+    switch (formula.type()) {
+      case NOT:
+      case IMPL:
+      case EQUIV:
+      case PBC:
+        cached = apply(formula.nnf(), cache);
+        break;
+      case OR:
+        LinkedHashSet<Formula> nops = new LinkedHashSet<>();
+        for (final Formula op : formula) {
+          if (!this.proceed)
+            return null;
+          nops.add(this.apply(op, cache));
+        }
+        cached = formula.factory().or(nops);
+        break;
+      case AND:
+        nops = new LinkedHashSet<>();
+        for (final Formula op : formula) {
+          if (!this.proceed)
+            return null;
+          nops.add(this.apply(op, cache));
+        }
+        final Iterator<Formula> it = nops.iterator();
+        cached = it.next();
+        while (it.hasNext()) {
+          if (!this.proceed)
+            return null;
+          cached = this.distribute(cached, it.next());
+        }
+        break;
+      default:
+        throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+    }
+    if (this.proceed) {
+      if (cache)
+        formula.setTransformationCacheEntry(FACTORIZED_DNF, cached);
+      return cached;
+    }
+    return null;
+  }
+
+  /**
+   * Computes the distribution (factorization) of two formulas.
+   * @param f1 the first formula
+   * @param f2 the second formula
+   * @return the distribution of the two formulas
+   */
+  private Formula distribute(final Formula f1, final Formula f2) {
+    if (this.handler != null)
+      this.proceed = this.handler.performedDistribution();
+    if (this.proceed) {
+      final FormulaFactory f = f1.factory();
+      if (f1.type() == FType.OR || f2.type() == FType.OR) {
+        final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
+        for (final Formula op : f1.type() == FType.OR ? f1 : f2)
+          nops.add(this.distribute(op, f1.type() == FType.OR ? f2 : f1));
+        return f.or(nops);
+      }
+      final Formula clause = f.and(f1, f2);
+      if (this.handler != null)
+        proceed = this.handler.createdClause(clause);
+      return clause;
+    }
+    return null;
+  }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
+  }
+}

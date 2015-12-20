@@ -1,0 +1,131 @@
+<!--                   __                _      _   ________               -->
+<!--                  / /   ____  ____ _(_)____/ | / / ____/               -->
+<!--                 / /   / __ \/ __ `/ / ___/  |/ / / __                 -->
+<!--                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 -->
+<!--               /_____/\____/\__, /_/\___/_/ |_/\____/                  -->
+<!--                           /____/                                      -->
+<!--                                                                       -->
+<!--               The Next Generation Logic Library                       -->
+<!--                                                                       -->
+<!--  Copyright 2015 Christoph Zengler                                     -->
+<!--                                                                       -->
+<!--  Licensed under the Apache License, Version 2.0 (the "License");      -->
+<!--  you may not use this file except in compliance with the License.     -->
+<!--  You may obtain a copy of the License at                              -->
+<!--                                                                       -->
+<!--  http://www.apache.org/licenses/LICENSE-2.0                           -->
+<!--                                                                       -->
+<!--  Unless required by applicable law or agreed to in writing, software  -->
+<!--  distributed under the License is distributed on an "AS IS" BASIS,    -->
+<!--  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      -->
+<!--  implied.  See the License for the specific language governing        -->
+<!--  permissions and limitations under the License.                       -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.logicng</groupId>
+  <artifactId>logicng</artifactId>
+  <version>1.0-RC1</version>
+  <name>LogicNG</name>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sonar.language>java</sonar.language>
+    <sonar.exclusions>**/LogicNGPropositional*.java,**/LogicNGPseudoBoolean*.java</sonar.exclusions>
+    <sonar.coverage.exclusions>**/io/writers/*.java,**/io/writers/aig/*.java</sonar.coverage.exclusions>
+  </properties>
+
+  <build>
+    <plugins>
+      <!-- Java Compiler  -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+
+      <!-- ANTLR4 (Parser Generation)  -->
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <version>4.5.1-1</version>
+        <configuration>
+          <sourceDirectory>src/main/resources/parser</sourceDirectory>
+          <outputDirectory>target/generated-sources/antlr/org/logicng/io/parser</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- JaCoCo (Test Coverage)  -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.5.201505241946</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-report</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>COMPLEXITY</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.5</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- Parser -->
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>4.5.1-1</version>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

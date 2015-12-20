@@ -1,0 +1,249 @@
+///////////////////////////////////////////////////////////////////////////
+//                   __                _      _   ________               //
+//                  / /   ____  ____ _(_)____/ | / / ____/               //
+//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
+//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
+//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
+//                           /____/                                      //
+//                                                                       //
+//               The Next Generation Logic Library                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//  Copyright 2015 Christoph Zengler                                     //
+//                                                                       //
+//  Licensed under the Apache License, Version 2.0 (the "License");      //
+//  you may not use this file except in compliance with the License.     //
+//  You may obtain a copy of the License at                              //
+//                                                                       //
+//  http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                       //
+//  Unless required by applicable law or agreed to in writing, software  //
+//  distributed under the License is distributed on an "AS IS" BASIS,    //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
+//  implied.  See the License for the specific language governing        //
+//  permissions and limitations under the License.                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+package org.logicng.formulas;
+
+import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Substitution;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+/**
+ * Boolean literals.
+ * <p>
+ * A literal is a positive or negative variable.
+ * @author Christoph Zengler
+ * @version 1.0
+ * @since 1.0
+ */
+public final class Literal extends Formula implements Comparable<Literal> {
+
+  private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
+    @Override
+    public boolean hasNext() {
+      return false;
+    }
+
+    @Override
+    public Formula next() {
+      throw new NoSuchElementException();
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  };
+
+  private final String name;
+  private final boolean phase;
+  private volatile Literal negated;
+  private volatile int hashCode;
+  private final SortedSet<Literal> literals;
+  private final LinkedHashSet<Formula> subformulas;
+
+  /**
+   * Constructor.
+   * @param name  the literal name
+   * @param phase the phase of the literal
+   * @param f     the factory which created this literal
+   */
+  Literal(final String name, boolean phase, final FormulaFactory f) {
+    super(FType.LITERAL, f);
+    this.name = name;
+    this.phase = phase;
+    this.variables = new TreeSet<>(Collections.singletonList(this.positive()));
+    this.literals = new TreeSet<>(Collections.singletonList(this));
+    this.subformulas = new LinkedHashSet<>(Collections.singletonList((Formula) this));
+  }
+
+  @Override
+  public FormulaFactory factory() {
+    return this.f;
+  }
+
+  @Override
+  public int numberOfAtoms() {
+    return 1;
+  }
+
+  @Override
+  public int numberOfNodes() {
+    return 1;
+  }
+
+  @Override
+  public int numberOfOperands() {
+    return 0;
+  }
+
+  @Override
+  protected void varProfileRec(SortedMap<Literal, Integer> map) {
+    final Integer currentCount = map.get(this.positive());
+    if (currentCount == null)
+      map.put(this.positive(), 1);
+    else
+      map.put(this.positive(), currentCount + 1);
+  }
+
+  @Override
+  protected void litProfileRec(SortedMap<Literal, Integer> map) {
+    final Integer currentCount = map.get(this);
+    if (currentCount == null)
+      map.put(this, 1);
+    else
+      map.put(this, currentCount + 1);
+  }
+
+  @Override
+  public LinkedHashSet<Formula> subformulas() {
+    return this.subformulas;
+  }
+
+  @Override
+  public SortedSet<Literal> variables() {
+    return this.variables;
+  }
+
+  @Override
+  public SortedSet<Literal> literals() {
+    return this.literals;
+  }
+
+  @Override
+  public boolean contains(final Literal literal) {
+    return this.equals(literal);
+  }
+
+  @Override
+  public boolean evaluate(final Assignment assignment) {
+    return assignment.evaluateLit(this);
+  }
+
+  @Override
+  public Formula restrict(final Assignment assignment) {
+    final Formula res = assignment.restrictLit(this);
+    return res != null ? res : this;
+  }
+
+  @Override
+  public boolean containsSubformula(final Formula formula) {
+    return this == formula || formula instanceof Literal && this.name.equals(((Literal) formula).name) && (!this.phase || ((Literal) formula).phase);
+  }
+
+  @Override
+  public Formula substitute(final Substitution substitution) {
+    final Formula subst = substitution.getSubstitution(this, this.f);
+    return subst == null ? this : subst;
+  }
+
+  @Override
+  public Literal negate() {
+    if (this.negated != null)
+      return negated;
+    this.negated = f.literal(this.name, !this.phase);
+    return this.negated;
+  }
+
+  @Override
+  public Formula nnf() {
+    return this;
+  }
+
+  @Override
+  public void generateDotString(StringBuilder sb, Map<Formula, Integer> ids) {
+    // intentionally do nothing
+  }
+
+  /**
+   * Returns the name of the literal.
+   * @return the name of the literal
+   */
+  public String name() {
+    return this.name;
+  }
+
+  /**
+   * Returns the phase of the literal.
+   * @return the phase of the literal.
+   */
+  public boolean phase() {
+    return this.phase;
+  }
+
+  /**
+   * Returns a positive version of this literal.
+   * @return a positive version of this literal
+   */
+  public Literal positive() {
+    return this.phase ? this : this.negate();
+  }
+
+  @Override
+  public int hashCode() {
+    final int result = this.hashCode;
+    if (result == 0)
+      this.hashCode = this.name.hashCode() ^ (this.phase ? 1 : 0);
+    return this.hashCode;
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    if (other == this)
+      return true;
+    if (other instanceof Formula && this.f == ((Formula) other).f)
+      return false; // the same formula factory would have produced a == object
+    if (other instanceof Literal) {
+      Literal otherLit = (Literal) other;
+      return this.phase == otherLit.phase && this.name.equals(otherLit.name);
+    }
+    return false;
+  }
+
+  @Override
+  public int compareTo(final Literal lit) {
+    if (this == lit)
+      return 0;
+    int res = this.name.compareTo(lit.name);
+    if (res == 0 && this.phase != lit.phase)
+      return this.phase ? -1 : 1;
+    return res;
+  }
+
+  @Override
+  public Iterator<Formula> iterator() {
+    return ITERATOR;
+  }
+}

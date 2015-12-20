@@ -1,0 +1,244 @@
+///////////////////////////////////////////////////////////////////////////
+//                   __                _      _   ________               //
+//                  / /   ____  ____ _(_)____/ | / / ____/               //
+//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
+//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
+//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
+//                           /____/                                      //
+//                                                                       //
+//               The Next Generation Logic Library                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//  Copyright 2015 Christoph Zengler                                     //
+//                                                                       //
+//  Licensed under the Apache License, Version 2.0 (the "License");      //
+//  you may not use this file except in compliance with the License.     //
+//  You may obtain a copy of the License at                              //
+//                                                                       //
+//  http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                       //
+//  Unless required by applicable law or agreed to in writing, software  //
+//  distributed under the License is distributed on an "AS IS" BASIS,    //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
+//  implied.  See the License for the specific language governing        //
+//  permissions and limitations under the License.                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+package org.logicng.io.parser;
+
+import org.logicng.formulas.CType;
+import org.logicng.formulas.F;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Unit Tests for the class {@link PseudoBooleanParser}.
+ * @author Christoph Zengler
+ * @version 1.0
+ * @since 1.0
+ */
+public class PseudoBooleanParserTest {
+
+  @Test
+  public void testParseConstants() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse("$true"));
+    Assert.assertEquals(F.f.falsum(), parser.parse("$false"));
+  }
+
+  @Test
+  public void testParseLiterals() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.literal("A"), parser.parse("A"));
+    Assert.assertEquals(F.f.literal("a"), parser.parse("a"));
+    Assert.assertEquals(F.f.literal("a1"), parser.parse("a1"));
+    Assert.assertEquals(F.f.literal("aA_Bb_Cc_12_3"), parser.parse("aA_Bb_Cc_12_3"));
+    Assert.assertEquals(F.f.literal("A", false), parser.parse("~A"));
+    Assert.assertEquals(F.f.literal("a", false), parser.parse("~a"));
+    Assert.assertEquals(F.f.literal("aA_Bb_Cc_12_3", false), parser.parse("~aA_Bb_Cc_12_3"));
+  }
+
+  @Test
+  public void testParseOperators() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.not(F.f.literal("a")), parser.parse("~a"));
+    Assert.assertEquals(F.f.not(F.f.literal("Var")), parser.parse("~Var"));
+    Assert.assertEquals(F.f.and(F.f.literal("a"), F.f.literal("b")), parser.parse("a & b"));
+    Assert.assertEquals(F.f.and(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a & ~b"));
+    Assert.assertEquals(F.f.and(F.f.literal("a", false), F.f.literal("b"), F.f.literal("c", false), F.f.literal("d")), parser.parse("~a & b & ~c & d"));
+    Assert.assertEquals(F.f.or(F.f.literal("a"), F.f.literal("b")), parser.parse("a | b"));
+    Assert.assertEquals(F.f.or(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a | ~b"));
+    Assert.assertEquals(F.f.or(F.f.literal("a", false), F.f.literal("b"), F.f.literal("c", false), F.f.literal("d")), parser.parse("~a | b | ~c | d"));
+    Assert.assertEquals(F.f.implication(F.f.literal("a"), F.f.literal("b")), parser.parse("a => b"));
+    Assert.assertEquals(F.f.implication(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a => ~b"));
+    Assert.assertEquals(F.f.equivalence(F.f.literal("a"), F.f.literal("b")), parser.parse("a <=> b"));
+    Assert.assertEquals(F.f.equivalence(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a <=> ~b"));
+  }
+
+  @Test
+  public void testParseMultiplication() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.pbc(CType.EQ, 4, new Literal[]{F.f.literal("abc")}, new int[]{13}), parser.parse("13 * abc = 4"));
+    Assert.assertEquals(F.f.pbc(CType.EQ, 4, new Literal[]{F.f.literal("a")}, new int[]{-13}), parser.parse("-13 * a = 4"));
+    Assert.assertEquals(F.f.pbc(CType.EQ, -442, new Literal[]{F.f.literal("abc", false)}, new int[]{13}), parser.parse("13 * ~abc = -442"));
+    Assert.assertEquals(F.f.pbc(CType.EQ, -442, new Literal[]{F.f.literal("a", false)}, new int[]{-13}), parser.parse("-13 * ~a = -442"));
+    Assert.assertEquals(F.f.pbc(CType.EQ, 4, new Literal[]{F.f.literal("abc")}, new int[]{13}), parser.parse("13 * abc = 4"));
+    Assert.assertEquals(F.f.pbc(CType.GT, 4, new Literal[]{F.f.literal("abc")}, new int[]{13}), parser.parse("13 * abc > 4"));
+    Assert.assertEquals(F.f.pbc(CType.GE, 4, new Literal[]{F.f.literal("abc")}, new int[]{13}), parser.parse("13 * abc >= 4"));
+    Assert.assertEquals(F.f.pbc(CType.LT, 4, new Literal[]{F.f.literal("abc")}, new int[]{13}), parser.parse("13 * abc < 4"));
+    Assert.assertEquals(F.f.pbc(CType.LE, 4, new Literal[]{F.f.literal("abc")}, new int[]{13}), parser.parse("13 * abc <= 4"));
+  }
+
+  @Test
+  public void testParseAddition() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.pbc(CType.LT, -4, new Literal[]{F.f.literal("c"), F.f.literal("d", false)}, new int[]{4, -4}), parser.parse("4 * c + -4 * ~d < -4"));
+    Assert.assertEquals(F.f.pbc(CType.GE, -5, new Literal[]{F.f.literal("c"), F.f.literal("c", false)}, new int[]{5, -5}), parser.parse("5 * c + -5 * ~c >= -5"));
+    Assert.assertEquals(F.f.pbc(CType.GT, -6, new Literal[]{F.f.literal("a"), F.f.literal("b", false), F.f.literal("c", false)}, new int[]{6, -6, 12}), parser.parse("6 * a + -6 * ~b + 12 * ~c > -6"));
+  }
+
+  @Test
+  public void testCombination() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Formula pbc = F.f.pbc(CType.GT, -6, new Literal[]{F.f.literal("a"), F.f.literal("b", false), F.f.literal("c", false)}, new int[]{6, -6, 12});
+    Assert.assertEquals(F.f.and(F.f.implication(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), pbc), parser.parse("(x => y & z) & (6 * a + -6 * ~b + 12 * ~c > -6)"));
+    Assert.assertEquals(F.f.not(pbc), parser.parse("~(6 * a - 6 * ~b - -12 * ~c > -6)"));
+  }
+
+  @Test
+  public void testParsePrecedences() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | y & z"));
+    Assert.assertEquals(F.f.or(F.f.and(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x & y | z"));
+    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => y & z"));
+    Assert.assertEquals(F.f.implication(F.f.and(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x & y => z"));
+    Assert.assertEquals(F.f.equivalence(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), parser.parse("x <=> y & z"));
+    Assert.assertEquals(F.f.equivalence(F.f.and(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x & y <=> z"));
+    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.or(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => y | z"));
+    Assert.assertEquals(F.f.implication(F.f.or(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x | y => z"));
+    Assert.assertEquals(F.f.equivalence(F.f.literal("x"), F.f.or(F.f.literal("y"), F.f.literal("z"))), parser.parse("x <=> y | z"));
+    Assert.assertEquals(F.f.equivalence(F.f.or(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x | y <=> z"));
+    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.implication(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => y => z"));
+    Assert.assertEquals(F.f.equivalence(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x <=> y <=> z"));
+    Assert.assertEquals(F.f.and(F.f.or(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x | y) & z"));
+    Assert.assertEquals(F.f.and(F.f.literal("x"), F.f.or(F.f.literal("y"), F.f.literal("z"))), parser.parse("x & (y | z)"));
+    Assert.assertEquals(F.f.and(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x => y) & z"));
+    Assert.assertEquals(F.f.and(F.f.literal("x"), F.f.implication(F.f.literal("y"), F.f.literal("z"))), parser.parse("x & (y => z)"));
+    Assert.assertEquals(F.f.or(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x => y) | z"));
+    Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.implication(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | (y => z)"));
+    Assert.assertEquals(F.f.and(F.f.equivalence(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x <=> y) & z"));
+    Assert.assertEquals(F.f.and(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x & (y <=> z)"));
+    Assert.assertEquals(F.f.or(F.f.equivalence(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x <=> y) | z"));
+    Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | (y <=> z)"));
+    Assert.assertEquals(F.f.equivalence(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x => y <=> z"));
+    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => (y <=> z)"));
+  }
+
+//  @Test
+//  public void testParsePbcPrecedences() throws ParserException {
+//    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+//    Formula pbcEq = F.f.pbc(CType.EQ, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
+//    Formula pbcLt = F.f.pbc(CType.LT, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
+//    Formula pbcLe = F.f.pbc(CType.LE, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
+//    Formula pbcGt = F.f.pbc(CType.GT, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
+//    Formula pbcGe = F.f.pbc(CType.GE, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
+//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcEq), parser.parse("x | 2 * a + 3 * ~b = 4"));
+//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcLt), parser.parse("x | 2 * a + 3 * ~b < 4"));
+//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcLe), parser.parse("x | 2 * a + 3 * ~b <= 4"));
+//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcGt), parser.parse("x | 2 * a + 3 * ~b > 4"));
+//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcGe), parser.parse("x | 2 * a + 3 * ~b >= 4"));
+//    Assert.assertEquals(F.f.or(pbcLe, F.f.literal("x")), parser.parse("2 * a + 3 * ~b <= 4 | x"));
+//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcLe), parser.parse("x & 2 * a + 3 * ~b <= 4"));
+//    Assert.assertEquals(F.f.or(pbcLe, F.f.literal("x")), parser.parse("2 * a + 3 * ~b <= 4 & x"));
+//  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalVariable1() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("$$%");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalVariable2() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("-1");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalVariable3() throws ParserException {
+    new PseudoBooleanParser(F.f).parse(";;23");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalVariable4() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("{0}");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalOperator1() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A + B");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalOperator2() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A &");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalOperator3() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A /");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalOperator4() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("-A");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalOperator5() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A * B");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalBrackets1() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("(A & B");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula1() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("((A & B)");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula2() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("(A & (C & D) B)");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula3() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A | A + (C | B + C)");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula4() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A | A & (C | B & C");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula5() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("A & ~B)");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula6() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("12a");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula7() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("abc@");
+  }
+}

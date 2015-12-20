@@ -1,0 +1,271 @@
+///////////////////////////////////////////////////////////////////////////
+//                   __                _      _   ________               //
+//                  / /   ____  ____ _(_)____/ | / / ____/               //
+//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
+//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
+//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
+//                           /____/                                      //
+//                                                                       //
+//               The Next Generation Logic Library                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//  Copyright 2015 Christoph Zengler                                     //
+//                                                                       //
+//  Licensed under the Apache License, Version 2.0 (the "License");      //
+//  you may not use this file except in compliance with the License.     //
+//  You may obtain a copy of the License at                              //
+//                                                                       //
+//  http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                       //
+//  Unless required by applicable law or agreed to in writing, software  //
+//  distributed under the License is distributed on an "AS IS" BASIS,    //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
+//  implied.  See the License for the specific language governing        //
+//  permissions and limitations under the License.                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+package org.logicng.solvers;
+
+import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
+import org.logicng.handlers.ModelEnumerationHandler;
+import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
+import org.logicng.pseudobooleans.PBEncoder;
+import org.logicng.pseudobooleans.PBSWC;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * A generic interface for LogicNG's SAT solvers.
+ * @author Christoph Zengler
+ * @version 1.0
+ * @since 1.0
+ */
+public abstract class SATSolver {
+
+  protected final FormulaFactory f;
+  protected final PBEncoder pbEncoder;
+  protected Tristate result;
+
+  /**
+   * Constructor.
+   * @param f the formula factory
+   */
+  protected SATSolver(final FormulaFactory f) {
+    this.f = f;
+    this.pbEncoder = new PBSWC(f);
+  }
+
+  /**
+   * Adds a formula to the solver.  The formula is first converted to CNF.
+   * @param formula the formula
+   */
+  public void add(final Formula formula) {
+    this.addClauseSet(formula.cnf());
+  }
+
+  /**
+   * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.
+   * @param proposition the proposition
+   */
+  public void add(final Proposition proposition) {
+    for (final Formula formula : proposition.formulas())
+      this.add(formula);
+  }
+
+  /**
+   * Adds a formula list to the solver.
+   * @param formulas the formula list
+   */
+  public void add(final ImmutableFormulaList formulas) {
+    for (final Formula formula : formulas)
+      this.add(formula);
+  }
+
+  /**
+   * Adds a collection of formulas to the solver.
+   * @param formulas the collection of formulas
+   */
+  public void add(final Collection<? extends Formula> formulas) {
+    for (final Formula formula : formulas)
+      this.add(formula);
+  }
+
+  /**
+   * Adds a formula which is already in CNF to the solver.
+   * @param formula the formula in CNF
+   */
+  protected void addClauseSet(final Formula formula) {
+    switch (formula.type()) {
+      case TRUE:
+        break;
+      case FALSE:
+      case LITERAL:
+      case OR:
+        this.addClause(formula);
+        break;
+      case AND:
+        for (Formula op : formula)
+          this.addClause(op);
+        break;
+      default:
+        throw new IllegalArgumentException("Input formula ist not a valid CNF: " + formula);
+    }
+  }
+
+  /**
+   * Adds a formula which must be a clause to the solver.
+   * @param formula the clause
+   */
+  protected abstract void addClause(final Formula formula);
+
+  /**
+   * Returns {@code Tristate.TRUE} if the current formula in the solver is satisfiable, @{code Tristate.FALSE} if it is
+   * unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+   * @return the satisfiability of the formula in the solver
+   */
+  public Tristate sat() {
+    return this.sat((SATHandler) null);
+  }
+
+  /**
+   * Returns {@code Tristate.TRUE} if the current formula in the solver is satisfiable, @{code Tristate.FALSE} if it is
+   * unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+   * @param handler the SAT handler
+   * @return the satisfiability of the formula in the solver
+   */
+  public abstract Tristate sat(final SATHandler handler);
+
+  /**
+   * Returns {@code Tristate.TRUE} if the current formula in the solver and a given literal are satisfiable,
+   * {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+   * @param literal the assumed literal
+   * @return the satisfiability of the formula in the solver
+   */
+  public Tristate sat(final Literal literal) {
+    return this.sat(null, literal);
+  }
+
+  /**
+   * Returns {@code Tristate.TRUE} if the current formula in the solver and a given literal are satisfiable,
+   * {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+   * @param handler the SAT handler
+   * @param literal the assumed literal
+   * @return the satisfiability of the formula in the solver
+   */
+  public abstract Tristate sat(final SATHandler handler, final Literal literal);
+
+  /**
+   * Resets the SAT solver.
+   */
+  public abstract void reset();
+
+  /**
+   * Returns a model of the current formula on the solver.  If the formula is UNSAT, {@code null} will be returned.
+   * @return a model of the current formula
+   */
+  public Assignment model() {
+    return this.model((Collection<Literal>) null);
+  }
+
+  /**
+   * Returns a model of the current formula on the solver wrt. a given set of positive literals. If the set
+   * is {@code null}, all literals are considered relevant. If the formula is UNSAT, {@code null} will be returned.
+   * The formula in the solver has to be solved first, before a model can be obtained.
+   * @param literals the set of literals
+   * @return a model of the current formula
+   * @throws IllegalStateException if the formula is not yet solved
+   */
+  public Assignment model(final Literal[] literals) {
+    return this.model(Arrays.asList(literals));
+  }
+
+  /**
+   * Returns a model of the current formula on the solver wrt. a given set of positive literals. If the set
+   * is {@code null}, all literals are considered relevant.
+   * If the formula is UNSAT, {@code null} will be returned.
+   * @param literals the set of literals
+   * @return a model of the current formula
+   */
+  public abstract Assignment model(final Collection<Literal> literals);
+
+  /**
+   * Enumerates all models of the current formula.
+   * @return the list of models
+   */
+  public List<Assignment> enumerateAllModels() {
+    return this.enumerateAllModels((Collection<Literal>) null);
+  }
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of positive literals.  If the set is {@code null},
+   * all literals are considered relevant.
+   * @param literals the set of literals
+   * @return the list of models
+   */
+  public List<Assignment> enumerateAllModels(final Literal[] literals) {
+    return this.enumerateAllModels(Arrays.asList(literals));
+  }
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of positive literals.  If the set is {@code null},
+   * all literals are considered relevant.
+   * @param literals the set of literals
+   * @return the list of models
+   */
+  public abstract List<Assignment> enumerateAllModels(final Collection<Literal> literals);
+
+  /**
+   * Enumerates all models of the current formula and passes it to a model enumeration handler.
+   * @param handler the model enumeration handler
+   * @return the list of models
+   */
+  public List<Assignment> enumerateAllModels(final ModelEnumerationHandler handler) {
+    return this.enumerateAllModels((Collection<Literal>) null, handler);
+  }
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of positive literals  and passes it to a model
+   * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
+   * @param literals the set of literals
+   * @param handler  the model enumeration handler
+   * @return the list of models
+   */
+  public List<Assignment> enumerateAllModels(final Literal[] literals, final ModelEnumerationHandler handler) {
+    return this.enumerateAllModels(Arrays.asList(literals), handler);
+  }
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of positive literals  and passes it to a model
+   * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
+   * @param literals the set of literals
+   * @param handler  the model enumeration handler
+   * @return the list of models
+   */
+  public abstract List<Assignment> enumerateAllModels(final Collection<Literal> literals, final ModelEnumerationHandler handler);
+
+  /**
+   * Saves the current solver state.
+   * @return the current solver state
+   * @throws UnsupportedOperationException if the solver does not support state saving/loading
+   * @throws IllegalStateException         if the solver is not in incremental mode
+   */
+  public abstract SolverState saveState();
+
+  /**
+   * Loads a given solver state.
+   * @param state the solver state
+   * @throws UnsupportedOperationException if the solver does not support state saving/loading
+   * @throws IllegalStateException         if the solver is not in incremental mode
+   */
+  public abstract void loadState(final SolverState state);
+}
