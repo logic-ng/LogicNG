@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG)
+
 ![LogicNG](https://raw.githubusercontent.com/logic-ng/LogicNG/master/doc/logo_big.png)
 
 ## Introduction
