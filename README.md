@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG)
+[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg)
 
-![LogicNG](https://raw.githubusercontent.com/logic-ng/LogicNG/master/doc/logo_big.png)
+![LogicNG](https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png)
 
 ## Introduction
 LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like MiniSAT, CleaneLing, Glucose, or OpenWBO.
