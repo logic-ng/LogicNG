@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg)
+[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Java Version](https://img.shields.io/badge/java-1.7-yellow.svg)
 
 ![LogicNG](https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png)
 
 ## Introduction
-LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like MiniSAT, CleaneLing, Glucose, or OpenWBO.
+LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like [MiniSAT](http://minisat.se), [CleaneLing](http://fmv.jku.at/cleaneling/), [Glucose](http://www.labri.fr/perso/lsimon/glucose/), or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
 
 Its main focus lies on memory-efficient data-structures for Boolean formulas and efficient algorithms for manipulating and solving them.
 The library is designed to be used in industrial systems which have to manipulate and solve millions of formulas per day.
@@ -14,7 +14,7 @@ The most important philosophy of the library is to avoid unnecessary object crea
 Compared to other implementation of logic libraries on the JVM this is a huge memory and performance improvement.
 
 ## Release Plan
-The current release is declared as 1.0 Release Candidate 1.  The API is considered stable but some testing and documentation has to be finished for a 1.0 version in January 2016.
+The current release is declared as 1.0 Release Candidate 1.  The API is considered stable but some testing and documentation has to be finished for a final version 1.0 in January 2016.
 
 ## Getting Started
 The following code creates the Boolean Formula *A and not (B or not C)* programatically:
