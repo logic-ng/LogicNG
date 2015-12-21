@@ -39,14 +39,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.Set;
 
 import static org.logicng.formulas.FType.AND;
 import static org.logicng.formulas.FType.FALSE;
@@ -77,7 +75,7 @@ public final class FormulaFactory {
   private final CTrue cTrue;
   private Map<String, Literal> posLiterals;
   private Map<String, Literal> negLiterals;
-  private SortedSet<Literal> generatedLiterals;
+  private Set<Literal> generatedLiterals;
   private Map<Formula, Not> nots;
   private Map<Pair<Formula, Formula>, Implication> implications;
   private Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;
@@ -92,7 +90,7 @@ public final class FormulaFactory {
   private Map<PBOperands, PBConstraint> pbConstraints;
 
   private final FormulaStringRepresentation stringRepresentation;
-  private final SortedMap<ConfigurationType, Configuration> configurations;
+  private final Map<ConfigurationType, Configuration> configurations;
 
   private boolean cnfCheck;
   private boolean[] formulaAdditionResult;
@@ -113,7 +111,7 @@ public final class FormulaFactory {
     this.clear();
     this.formulaAdditionResult = new boolean[2];
     this.stringRepresentation = stringRepresentation;
-    this.configurations = new TreeMap<>();
+    this.configurations = new HashMap<>();
     this.defaultCNFTransformation = new CNFFactorization();
   }
 
@@ -130,7 +128,7 @@ public final class FormulaFactory {
   private void clear() {
     this.posLiterals = new HashMap<>();
     this.negLiterals = new HashMap<>();
-    this.generatedLiterals = new TreeSet<>();
+    this.generatedLiterals = new HashSet<>();
     this.nots = new HashMap<>();
     this.implications = new HashMap<>();
     this.equivalences = new HashMap<>();
