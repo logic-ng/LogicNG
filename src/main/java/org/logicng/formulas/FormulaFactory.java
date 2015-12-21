@@ -316,7 +316,7 @@ public final class FormulaFactory {
   public Formula and(final Formula... operands) {
     final LinkedHashSet<Formula> ops = new LinkedHashSet<>(operands.length);
     Collections.addAll(ops, operands);
-    return this.and(ops);
+    return this.constructAnd(ops);
   }
 
   /**
@@ -327,11 +327,20 @@ public final class FormulaFactory {
    * @return a new conjunction
    */
   public Formula and(final Collection<? extends Formula> operands) {
-    final LinkedHashSet<? extends Formula> ops = new LinkedHashSet<>(operands);
+    final LinkedHashSet<Formula> ops = new LinkedHashSet<>(operands);
+    return this.constructAnd(ops);
+  }
+
+  /**
+   * Creates a new conjunction.
+   * @param operands the formulas
+   * @return a new conjunction
+   */
+  private Formula constructAnd(final LinkedHashSet<? extends Formula> operands) {
     And tempAnd = null;
     Map<LinkedHashSet<? extends Formula>, And> opAndMap = this.andsN;
-    if (ops.size() > 1) {
-      switch (ops.size()) {
+    if (operands.size() > 1) {
+      switch (operands.size()) {
         case 2:
           opAndMap = this.ands2;
           break;
@@ -344,13 +353,13 @@ public final class FormulaFactory {
         default:
           break;
       }
-      tempAnd = opAndMap.get(ops);
+      tempAnd = opAndMap.get(operands);
     }
     if (tempAnd != null)
       return tempAnd;
-    LinkedHashSet<? extends Formula> condensedOperands = ops.size() < 2
-            ? ops
-            : this.condenseOperandsAnd(ops);
+    LinkedHashSet<? extends Formula> condensedOperands = operands.size() < 2
+            ? operands
+            : this.condenseOperandsAnd(operands);
     if (condensedOperands == null)
       return this.falsum();
     if (condensedOperands.isEmpty())
@@ -375,11 +384,11 @@ public final class FormulaFactory {
     and = condAndMap.get(condensedOperands);
     if (and == null) {
       tempAnd = new And(condensedOperands, this, this.cnfCheck);
-      opAndMap.put(ops, tempAnd);
+      opAndMap.put(operands, tempAnd);
       condAndMap.put(condensedOperands, tempAnd);
       return tempAnd;
     }
-    opAndMap.put(ops, and);
+    opAndMap.put(operands, and);
     return and;
   }
 
@@ -390,12 +399,12 @@ public final class FormulaFactory {
    * Also no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
    * of redundant clauses.
    * @param clauses the array of clauses
-   * @return a new conjunction
+   * @return a new CNF
    */
   public Formula cnf(final Formula... clauses) {
     final LinkedHashSet<Formula> ops = new LinkedHashSet<>(clauses.length);
     Collections.addAll(ops, clauses);
-    return this.cnf(ops);
+    return this.constructCNF(ops);
   }
 
   /**
@@ -405,16 +414,25 @@ public final class FormulaFactory {
    * Also no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
    * of redundant clauses.
    * @param clauses the collection of clauses
-   * @return a new conjunction
+   * @return a new CNF
    */
   public Formula cnf(final Collection<? extends Formula> clauses) {
-    final LinkedHashSet<Formula> cls = new LinkedHashSet<>(clauses);
-    if (cls.isEmpty())
+    final LinkedHashSet<? extends Formula> ops = new LinkedHashSet<>(clauses);
+    return this.constructCNF(ops);
+  }
+
+  /**
+   * Creates a new CNF.
+   * @param clauses the clauses
+   * @return a new CNF
+   */
+  private Formula constructCNF(final LinkedHashSet<? extends Formula> clauses) {
+    if (clauses.isEmpty())
       return this.verum();
-    if (cls.size() == 1)
-      return cls.iterator().next();
+    if (clauses.size() == 1)
+      return clauses.iterator().next();
     Map<LinkedHashSet<? extends Formula>, And> opAndMap = this.andsN;
-    switch (cls.size()) {
+    switch (clauses.size()) {
       case 2:
         opAndMap = this.ands2;
         break;
@@ -427,11 +445,11 @@ public final class FormulaFactory {
       default:
         break;
     }
-    And tempAnd = opAndMap.get(cls);
+    And tempAnd = opAndMap.get(clauses);
     if (tempAnd != null)
       return tempAnd;
-    tempAnd = new And(cls, this, true);
-    opAndMap.put(cls, tempAnd);
+    tempAnd = new And(clauses, this, true);
+    opAndMap.put(clauses, tempAnd);
     return tempAnd;
   }
 
@@ -443,7 +461,7 @@ public final class FormulaFactory {
   public Formula or(final Formula... operands) {
     final LinkedHashSet<Formula> ops = new LinkedHashSet<>(operands.length);
     Collections.addAll(ops, operands);
-    return this.or(ops);
+    return this.constructOr(ops);
   }
 
   /**
@@ -454,11 +472,20 @@ public final class FormulaFactory {
    * @return a new disjunction
    */
   public Formula or(final Collection<? extends Formula> operands) {
-    final LinkedHashSet<? extends Formula> ops = new LinkedHashSet<>(operands);
+    final LinkedHashSet<Formula> ops = new LinkedHashSet<>(operands);
+    return this.constructOr(ops);
+  }
+
+  /**
+   * Creates a new disjunction.
+   * @param operands the formulas
+   * @return a new disjunction
+   */
+  private Formula constructOr(final LinkedHashSet<? extends Formula> operands) {
     Or tempOr = null;
     Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
-    if (ops.size() > 1) {
-      switch (ops.size()) {
+    if (operands.size() > 1) {
+      switch (operands.size()) {
         case 2:
           opOrMap = this.ors2;
           break;
@@ -471,13 +498,13 @@ public final class FormulaFactory {
         default:
           break;
       }
-      tempOr = opOrMap.get(ops);
+      tempOr = opOrMap.get(operands);
     }
     if (tempOr != null)
       return tempOr;
-    LinkedHashSet<? extends Formula> condensedOperands = ops.size() < 2
-            ? ops
-            : this.condenseOperandsOr(ops);
+    LinkedHashSet<? extends Formula> condensedOperands = operands.size() < 2
+            ? operands
+            : this.condenseOperandsOr(operands);
     if (condensedOperands == null)
       return this.verum();
     if (condensedOperands.isEmpty())
@@ -502,11 +529,11 @@ public final class FormulaFactory {
     or = condOrMap.get(condensedOperands);
     if (or == null) {
       tempOr = new Or(condensedOperands, this, this.cnfCheck);
-      opOrMap.put(ops, tempOr);
+      opOrMap.put(operands, tempOr);
       condOrMap.put(condensedOperands, tempOr);
       return tempOr;
     }
-    opOrMap.put(ops, or);
+    opOrMap.put(operands, or);
     return or;
   }
 
@@ -516,12 +543,12 @@ public final class FormulaFactory {
    * ATTENTION:  No reduction of operands is performed - this method should only be used if you are sure that the clause
    * is free of redundant or contradicting literals.
    * @param literals the collection of literals
-   * @return a new conjunction
+   * @return a new clause
    */
   public Formula clause(final Literal... literals) {
     final LinkedHashSet<Literal> ops = new LinkedHashSet<>(literals.length);
     Collections.addAll(ops, literals);
-    return this.clause(ops);
+    return this.constructClause(ops);
   }
 
   /**
@@ -530,18 +557,27 @@ public final class FormulaFactory {
    * ATTENTION:  No reduction of operands is performed - this method should only be used if you are sure that the clause
    * is free of contradicting literals.
    * @param literals the collection of literals
-   * @return a new conjunction
+   * @return a new clause
    */
   public Formula clause(final Collection<Literal> literals) {
-    final LinkedHashSet<Literal> lits = new LinkedHashSet<>(literals);
-    if (lits.isEmpty())
+    final LinkedHashSet<Literal> ops = new LinkedHashSet<>(literals);
+    return this.constructClause(ops);
+  }
+
+  /**
+   * Creates a new clause.
+   * @param literals the literals
+   * @return a new clause
+   */
+  private Formula constructClause(final LinkedHashSet<Literal> literals) {
+    if (literals.isEmpty())
       return this.falsum();
-    if (lits.size() == 1)
-      return lits.iterator().next();
+    if (literals.size() == 1)
+      return literals.iterator().next();
     Or tempOr = null;
     Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
-    if (lits.size() > 1) {
-      switch (lits.size()) {
+    if (literals.size() > 1) {
+      switch (literals.size()) {
         case 2:
           opOrMap = this.ors2;
           break;
@@ -554,12 +590,12 @@ public final class FormulaFactory {
         default:
           break;
       }
-      tempOr = opOrMap.get(lits);
+      tempOr = opOrMap.get(literals);
     }
     if (tempOr != null)
       return tempOr;
-    tempOr = new Or(lits, this, true);
-    opOrMap.put(lits, tempOr);
+    tempOr = new Or(literals, this, true);
+    opOrMap.put(literals, tempOr);
     return tempOr;
   }
 
