@@ -906,19 +906,19 @@ public final class FormulaFactory {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    sb.append("Positive Literals: ").append(this.posLiterals).append("\n");
-    sb.append("Negative Literals: ").append(this.negLiterals).append("\n");
-    sb.append("Negations:         ").append(this.nots).append("\n");
-    sb.append("Implications:      ").append(this.implications).append("\n");
-    sb.append("Equivalences:      ").append(this.equivalences).append("\n");
-    sb.append("Conjunctions (2):  ").append(this.ands2).append("\n");
-    sb.append("Conjunctions (3):  ").append(this.ands3).append("\n");
-    sb.append("Conjunctions (4):  ").append(this.ands4).append("\n");
-    sb.append("Conjunctions (>4): ").append(this.andsN).append("\n");
-    sb.append("Disjunctions (2):  ").append(this.ors2).append("\n");
-    sb.append("Disjunctions (3):  ").append(this.ors3).append("\n");
-    sb.append("Disjunctions (4):  ").append(this.ors4).append("\n");
-    sb.append("Disjunctions (>4): ").append(this.orsN).append("\n");
+    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
+    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
+    sb.append("Negations:         ").append(this.nots.size()).append("\n");
+    sb.append("Implications:      ").append(this.implications.size()).append("\n");
+    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
+    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
+    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
+    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
+    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
+    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
+    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
+    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
+    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
     return sb.toString();
   }
 
