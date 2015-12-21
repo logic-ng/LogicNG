@@ -74,7 +74,7 @@ public final class CNFFactorization implements FormulaTransformation {
       return null;
     if (formula.type().precedence() >= LITERAL.precedence())
       return formula;
-    Formula cached = formula.getTransformationCacheEntry(FACTORIZED_CNF);
+    Formula cached = formula.transformationCacheEntry(FACTORIZED_CNF);
     if (cached != null)
       return cached;
     switch (formula.type()) {

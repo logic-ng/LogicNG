@@ -69,7 +69,7 @@ public final class SATPredicate implements FormulaPredicate {
 
   @Override
   public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.getPredicateCacheEntry(IS_SAT);
+    final Tristate cached = formula.predicateCacheEntry(IS_SAT);
     if (cached != Tristate.UNDEF)
       return cached == Tristate.TRUE;
     final FormulaFactory factory = formula.factory();

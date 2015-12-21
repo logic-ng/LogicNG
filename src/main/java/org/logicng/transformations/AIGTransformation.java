@@ -80,7 +80,7 @@ public final class AIGTransformation implements FormulaTransformation {
   }
 
   private Formula transformNot(final Not not) {
-    Formula aig = not.getTransformationCacheEntry(AIG);
+    Formula aig = not.transformationCacheEntry(AIG);
     if (aig == null) {
       aig = f.not(apply(not.operand(), cache));
       if (cache) {
@@ -92,7 +92,7 @@ public final class AIGTransformation implements FormulaTransformation {
   }
 
   private Formula transformImplication(final Implication impl) {
-    Formula aig = impl.getTransformationCacheEntry(AIG);
+    Formula aig = impl.transformationCacheEntry(AIG);
     if (aig == null) {
       aig = f.not(f.and(apply(impl.left(), cache), f.not(apply(impl.right(), cache))));
       if (cache) {
@@ -104,7 +104,7 @@ public final class AIGTransformation implements FormulaTransformation {
   }
 
   private Formula transformEquivalence(final Equivalence equiv) {
-    Formula aig = equiv.getTransformationCacheEntry(AIG);
+    Formula aig = equiv.transformationCacheEntry(AIG);
     if (aig == null) {
       aig = f.and(f.not(f.and(apply(equiv.left(), cache), f.not(apply(equiv.right(), cache)))),
               f.not(f.and(f.not(equiv.left()), equiv.right())));
@@ -117,7 +117,7 @@ public final class AIGTransformation implements FormulaTransformation {
   }
 
   private Formula transformAnd(final And and) {
-    Formula aig = and.getTransformationCacheEntry(AIG);
+    Formula aig = and.transformationCacheEntry(AIG);
     if (aig == null) {
       final LinkedHashSet<Formula> nops = new LinkedHashSet<>(and.numberOfOperands());
       for (final Formula op : and)
@@ -132,7 +132,7 @@ public final class AIGTransformation implements FormulaTransformation {
   }
 
   private Formula transformOr(final Or or) {
-    Formula aig = or.getTransformationCacheEntry(AIG);
+    Formula aig = or.transformationCacheEntry(AIG);
     if (aig == null) {
       final LinkedHashSet<Formula> nops = new LinkedHashSet<>(or.numberOfOperands());
       for (final Formula op : or)

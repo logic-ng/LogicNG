@@ -98,12 +98,12 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       pg = f.cnf();
     else {
       pg = this.computeTransformation(true, f, null);
-      final Assignment topLevel = new Assignment((Literal) f.getTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+      final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
       pg = pg.restrict(topLevel);
     }
     if (this.nnf)
       formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
-              f.getTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+              f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
     return pg;
   }
 
@@ -131,10 +131,10 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       case EQUIV:
       case PBC:
         final Formula nnfFormula = formula.nnf();
-        final Formula fixedVar = formula.getTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
+        final Formula fixedVar = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
         final Formula nnfPG = this.computeTransformation(polarity, nnfFormula, fixedVar == null ? null : (Literal) fixedVar);
         formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
-                nnfFormula.getTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+                nnfFormula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
         return nnfPG;
       default:
         throw new IllegalArgumentException("Could not process the formula type " + formula.type());
@@ -142,7 +142,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   }
 
   private Formula computePosPolarity(final Formula formula, final Literal fixedPGVar) {
-    Formula result = formula.getTransformationCacheEntry(PLAISTED_GREENBAUM_POS);
+    Formula result = formula.transformationCacheEntry(PLAISTED_GREENBAUM_POS);
     if (result != null)
       return result;
     final FormulaFactory f = formula.factory();
@@ -173,7 +173,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   }
 
   private Formula computeNegPolarity(final Formula formula, final Literal fixedPGVar) {
-    Formula result = formula.getTransformationCacheEntry(PLAISTED_GREENBAUM_NEG);
+    Formula result = formula.transformationCacheEntry(PLAISTED_GREENBAUM_NEG);
     if (result != null)
       return result;
     final FormulaFactory f = formula.factory();
@@ -213,7 +213,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   private static Formula pgVariable(final Formula formula) {
     if (formula.type() == FType.LITERAL)
       return formula;
-    Formula var = formula.getTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
+    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
     if (var == null) {
       var = formula.factory().newCNFLiteral();
       formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);

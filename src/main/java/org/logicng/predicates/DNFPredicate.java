@@ -44,7 +44,7 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
 public final class DNFPredicate implements FormulaPredicate {
   @Override
   public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.getPredicateCacheEntry(IS_DNF);
+    final Tristate cached = formula.predicateCacheEntry(IS_DNF);
     if (cached != Tristate.UNDEF)
       return cached == Tristate.TRUE;
     boolean result;

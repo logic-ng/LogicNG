@@ -74,7 +74,7 @@ public final class DNFFactorization implements FormulaTransformation {
       return null;
     if (formula.type().precedence() >= LITERAL.precedence())
       return formula;
-    Formula cached = formula.getTransformationCacheEntry(FACTORIZED_DNF);
+    Formula cached = formula.transformationCacheEntry(FACTORIZED_DNF);
     if (cached != null)
       return cached;
     switch (formula.type()) {

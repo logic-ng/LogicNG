@@ -74,18 +74,18 @@ public final class TseitinTransformation implements FormulaTransformation {
   public Formula apply(final Formula formula, boolean cache) {
     if (formula.holds(cnfPredicate))
       return formula;
-    Formula tseitin = formula.getTransformationCacheEntry(TSEITIN);
+    Formula tseitin = formula.transformationCacheEntry(TSEITIN);
     if (tseitin != null) {
-      final Assignment topLevel = new Assignment((Literal) formula.getTransformationCacheEntry(TSEITIN_VARIABLE));
-      return formula.getTransformationCacheEntry(TSEITIN).restrict(topLevel);
+      final Assignment topLevel = new Assignment((Literal) formula.transformationCacheEntry(TSEITIN_VARIABLE));
+      return formula.transformationCacheEntry(TSEITIN).restrict(topLevel);
     }
     if (formula.numberOfAtoms() < this.boundaryForFactorization)
       tseitin = formula.cnf();
     else {
       for (final Formula subformula : formula.subformulas())
         computeTseitin(subformula);
-      final Assignment topLevel = new Assignment((Literal) formula.getTransformationCacheEntry(TSEITIN_VARIABLE));
-      tseitin = formula.getTransformationCacheEntry(TSEITIN).restrict(topLevel);
+      final Assignment topLevel = new Assignment((Literal) formula.transformationCacheEntry(TSEITIN_VARIABLE));
+      tseitin = formula.transformationCacheEntry(TSEITIN).restrict(topLevel);
     }
     return tseitin;
   }
@@ -95,7 +95,7 @@ public final class TseitinTransformation implements FormulaTransformation {
    * @param formula the formula
    */
   private void computeTseitin(final Formula formula) {
-    if (formula.getTransformationCacheEntry(TSEITIN) != null)
+    if (formula.transformationCacheEntry(TSEITIN) != null)
       return;
     final FormulaFactory f = formula.factory();
     switch (formula.type()) {
@@ -110,8 +110,8 @@ public final class TseitinTransformation implements FormulaTransformation {
         final Formula nnf = formula.nnf();
         for (final Formula subformula : nnf.subformulas())
           computeTseitin(subformula);
-        formula.setTransformationCacheEntry(TSEITIN, nnf.getTransformationCacheEntry(TSEITIN));
-        formula.setTransformationCacheEntry(TSEITIN_VARIABLE, nnf.getTransformationCacheEntry(TSEITIN_VARIABLE));
+        formula.setTransformationCacheEntry(TSEITIN, nnf.transformationCacheEntry(TSEITIN));
+        formula.setTransformationCacheEntry(TSEITIN_VARIABLE, nnf.transformationCacheEntry(TSEITIN_VARIABLE));
         break;
       case AND:
         Literal tsLiteral = f.newCNFLiteral();
@@ -122,10 +122,10 @@ public final class TseitinTransformation implements FormulaTransformation {
         for (final Formula op : formula) {
           if (op.type() != FType.LITERAL) {
             computeTseitin(op);
-            nops.add(op.getTransformationCacheEntry(TSEITIN));
+            nops.add(op.transformationCacheEntry(TSEITIN));
           }
-          operands.add(op.getTransformationCacheEntry(TSEITIN_VARIABLE));
-          negOperands.add(op.getTransformationCacheEntry(TSEITIN_VARIABLE).negate());
+          operands.add(op.transformationCacheEntry(TSEITIN_VARIABLE));
+          negOperands.add(op.transformationCacheEntry(TSEITIN_VARIABLE).negate());
         }
         for (final Formula op : operands)
           nops.add(f.or(tsLiteral.negate(), op));
@@ -142,10 +142,10 @@ public final class TseitinTransformation implements FormulaTransformation {
         for (final Formula op : formula) {
           if (op.type() != FType.LITERAL) {
             computeTseitin(op);
-            nops.add(op.getTransformationCacheEntry(TSEITIN));
+            nops.add(op.transformationCacheEntry(TSEITIN));
           }
-          operands.add(op.getTransformationCacheEntry(TSEITIN_VARIABLE));
-          negOperands.add(op.getTransformationCacheEntry(TSEITIN_VARIABLE).negate());
+          operands.add(op.transformationCacheEntry(TSEITIN_VARIABLE));
+          negOperands.add(op.transformationCacheEntry(TSEITIN_VARIABLE).negate());
         }
         for (final Formula op : negOperands)
           nops.add(f.or(tsLiteral, op));

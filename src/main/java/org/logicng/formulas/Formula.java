@@ -289,11 +289,22 @@ public abstract class Formula implements Iterable<Formula> {
   /**
    * Applies a given function on this formula and returns the result.
    * @param function the function
+   * @param cache    indicates whether the result should be cached in this formula's cache
+   * @param <T>      the result type of the function
+   * @return the result of the function application
+   */
+  public <T> T apply(final FormulaFunction<T> function, boolean cache) {
+    return function.apply(this, cache);
+  }
+
+  /**
+   * Applies a given function on this formula, caches and returns the result.
+   * @param function the function
    * @param <T>      the result type of the function
    * @return the result of the function application
    */
   public <T> T apply(final FormulaFunction<T> function) {
-    return function.apply(this);
+    return function.apply(this, true);
   }
 
   /**
@@ -308,7 +319,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param key the cache key
    * @return the cache value or {@code null} if the key is not found
    */
-  public Formula getTransformationCacheEntry(final CacheEntry key) {
+  public Formula transformationCacheEntry(final CacheEntry key) {
     return this.transformationCache.get(key);
   }
 
@@ -326,7 +337,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param key the cache key
    * @return the cache value (which is {@code UNDEF} if nothing is present)
    */
-  public Tristate getPredicateCacheEntry(final CacheEntry key) {
+  public Tristate predicateCacheEntry(final CacheEntry key) {
     final Tristate tristate = this.predicateCache.get(key);
     if (tristate == null)
       return Tristate.UNDEF;
@@ -356,7 +367,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param key the cache key
    * @return the cache value or {@code null} if the key is not found
    */
-  public Object getFunctionCacheEntry(final CacheEntry key) {
+  public Object functionCacheEntry(final CacheEntry key) {
     return this.functionCache.get(key);
   }
 

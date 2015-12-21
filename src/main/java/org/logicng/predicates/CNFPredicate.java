@@ -43,7 +43,7 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 public final class CNFPredicate implements FormulaPredicate {
   @Override
   public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.getPredicateCacheEntry(IS_CNF);
+    final Tristate cached = formula.predicateCacheEntry(IS_CNF);
     if (cached != Tristate.UNDEF)
       return cached == Tristate.TRUE;
     switch (formula.type()) {

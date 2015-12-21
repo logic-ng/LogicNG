@@ -44,7 +44,7 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
 public final class AIGPredicate implements FormulaPredicate {
   @Override
   public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.getPredicateCacheEntry(IS_AIG);
+    final Tristate cached = formula.predicateCacheEntry(IS_AIG);
     if (cached != Tristate.UNDEF)
       return cached == Tristate.TRUE;
     boolean result;
