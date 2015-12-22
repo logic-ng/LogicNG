@@ -30,8 +30,6 @@ package org.logicng.formulas;
 
 import org.logicng.datastructures.Assignment;
 
-import java.util.Map;
-
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
@@ -70,11 +68,6 @@ public final class Equivalence extends BinaryOperator {
       this.transformationCache.put(NNF, nnf);
     }
     return nnf;
-  }
-
-  @Override
-  public void generateDotString(StringBuilder sb, Map<Formula, Integer> ids) {
-    this.generateDotString(sb, ids, "⇔", false);
   }
 
   @Override

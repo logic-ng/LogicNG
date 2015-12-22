@@ -26,11 +26,11 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas;
+package org.logicng.functions;
 
-import org.logicng.formulas.F;
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.io.parser.ParserException;
 import org.logicng.io.parser.PropositionalParser;
@@ -38,7 +38,7 @@ import org.logicng.io.parser.PropositionalParser;
 import java.util.LinkedHashSet;
 
 /**
- * Unit tests for sub-formula containment.
+ * Unit tests for {@link SubformulaFunction}.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
@@ -190,6 +190,6 @@ public class SubformulaTest {
     expected.add(p.parse("(~x | y) & (x | ~z)"));
     expected.add(p.parse("a => (~x | y) & (x | ~z)"));
     expected.add(p.parse("((a & ~b & c) | (d & (~e | c))) & (a => (~x | y) & (x | ~z))"));
-    Assert.assertEquals(expected, f1.subformulas());
+    Assert.assertEquals(expected, f1.apply(new SubformulaFunction()));
   }
 }

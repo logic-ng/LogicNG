@@ -33,9 +33,7 @@ import org.logicng.datastructures.Substitution;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
 import java.util.SortedSet;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
@@ -87,26 +85,13 @@ public final class Not extends Formula {
   }
 
   @Override
+  public boolean isAtomicFormula() {
+    return false;
+  }
+
+  @Override
   public int numberOfOperands() {
     return 1;
-  }
-
-  @Override
-  protected void varProfileRec(SortedMap<Literal, Integer> map) {
-    this.operand.varProfileRec(map);
-  }
-
-  @Override
-  protected void litProfileRec(SortedMap<Literal, Integer> map) {
-    this.operand.litProfileRec(map);
-  }
-
-  @Override
-  public LinkedHashSet<Formula> subformulas() {
-    final LinkedHashSet<Formula> set = new LinkedHashSet<>();
-    set.addAll(this.operand.subformulas());
-    set.add(this);
-    return set;
   }
 
   @Override
@@ -176,16 +161,6 @@ public final class Not extends Formula {
       this.transformationCache.put(NNF, nnf);
     }
     return nnf;
-  }
-
-  @Override
-  public void generateDotString(StringBuilder sb, Map<Formula, Integer> ids) {
-    if (!ids.containsKey(this.operand))
-      this.operand.generateDotString(sb, ids);
-    final int id = ids.size();
-    ids.put(this, id);
-    sb.append("  id").append(id).append(" [label=\"¬\"];\n");
-    sb.append("  id").append(id).append(" -> id").append(ids.get(this.operand)).append(";\n");
   }
 
   @Override

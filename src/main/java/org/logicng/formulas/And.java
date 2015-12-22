@@ -33,7 +33,6 @@ import org.logicng.datastructures.Assignment;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
@@ -73,11 +72,6 @@ public final class And extends NAryOperator {
       if (!op.evaluate(assignment))
         return false;
     return true;
-  }
-
-  @Override
-  public void generateDotString(StringBuilder sb, Map<Formula, Integer> ids) {
-    this.generateDotString(sb, ids, "∧");
   }
 
   @Override

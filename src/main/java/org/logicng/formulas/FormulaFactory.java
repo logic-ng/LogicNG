@@ -32,6 +32,7 @@ import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.printer.DefaultStringRepresentation;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
+import org.logicng.functions.SubformulaFunction;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.util.Pair;
 
@@ -100,6 +101,7 @@ public final class FormulaFactory {
   private int cnfCounter;
 
   private FormulaTransformation defaultCNFTransformation;
+  private final SubformulaFunction subformulaFunction;
 
   /**
    * Constructor for a new formula factory.
@@ -113,6 +115,7 @@ public final class FormulaFactory {
     this.stringRepresentation = stringRepresentation;
     this.configurations = new HashMap<>();
     this.defaultCNFTransformation = new CNFFactorization();
+    this.subformulaFunction = new SubformulaFunction();
   }
 
   /**
@@ -171,6 +174,14 @@ public final class FormulaFactory {
    */
   public FormulaTransformation cnfTransformation() {
     return this.defaultCNFTransformation;
+  }
+
+  /**
+   * Returns a function to compute the sub-formulas.
+   * @return a function to compute the sub-formulas
+   */
+  public SubformulaFunction subformulaFunction() {
+    return this.subformulaFunction;
   }
 
   /**
@@ -845,6 +856,16 @@ public final class FormulaFactory {
   public boolean isGeneratedLiteral(final Literal lit) {
     return this.generatedLiterals.contains(lit.positive());
   }
+
+  /**
+   * Returns the number of internal nodes of a given formula.
+   * @param formula the formula
+   * @return the number of internal nodes
+   */
+  public long numberOfNodes(final Formula formula) {
+    return formula.apply(this.subformulaFunction).size();
+  }
+
 
   /**
    * Adds a given formula to a list of operands.  If the formula is the neutral element for the respective n-ary

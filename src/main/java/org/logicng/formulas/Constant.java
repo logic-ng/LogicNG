@@ -32,9 +32,7 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -90,20 +88,8 @@ public abstract class Constant extends Formula {
   }
 
   @Override
-  public LinkedHashSet<Formula> subformulas() {
-    final LinkedHashSet<Formula> formulas = new LinkedHashSet<>();
-    formulas.add(this);
-    return formulas;
-  }
-
-  @Override
-  protected void varProfileRec(SortedMap<Literal, Integer> map) {
-    // do nothing
-  }
-
-  @Override
-  protected void litProfileRec(SortedMap<Literal, Integer> map) {
-    // do nothing
+  public boolean isAtomicFormula() {
+    return true;
   }
 
   @Override

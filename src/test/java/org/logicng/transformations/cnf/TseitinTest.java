@@ -30,12 +30,12 @@ package org.logicng.transformations.cnf;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parser.ParserException;
 import org.logicng.io.parser.PropositionalParser;
-import org.logicng.datastructures.Assignment;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;

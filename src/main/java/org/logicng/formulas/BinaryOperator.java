@@ -31,10 +31,7 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Substitution;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -89,29 +86,13 @@ public abstract class BinaryOperator extends Formula {
   }
 
   @Override
+  public boolean isAtomicFormula() {
+    return false;
+  }
+
+  @Override
   public int numberOfOperands() {
     return 2;
-  }
-
-  @Override
-  protected void varProfileRec(SortedMap<Literal, Integer> map) {
-    this.left.varProfileRec(map);
-    this.right.varProfileRec(map);
-  }
-
-  @Override
-  protected void litProfileRec(SortedMap<Literal, Integer> map) {
-    this.left.litProfileRec(map);
-    this.right.litProfileRec(map);
-  }
-
-  @Override
-  public LinkedHashSet<Formula> subformulas() {
-    final LinkedHashSet<Formula> set = new LinkedHashSet<>();
-    set.addAll(this.left.subformulas());
-    set.addAll(this.right.subformulas());
-    set.add(this);
-    return set;
   }
 
   @Override
@@ -151,27 +132,6 @@ public abstract class BinaryOperator extends Formula {
   @Override
   public Formula negate() {
     return f.not(this);
-  }
-
-  /**
-   * Generates a dot file string for a binary operator.
-   * @param sb         the string builder for the dot file
-   * @param ids        the mapping from formulas to node ids
-   * @param op         the string representation of the binary operator
-   * @param directions indicates whether left/right should be annotated to the edge
-   */
-  protected void generateDotString(StringBuilder sb, Map<Formula, Integer> ids, final String op, boolean directions) {
-    if (!ids.containsKey(this.left))
-      this.left.generateDotString(sb, ids);
-    if (!ids.containsKey(this.right))
-      this.right.generateDotString(sb, ids);
-    final int id = ids.size();
-    ids.put(this, id);
-    sb.append("  id").append(id).append(" [label=\"").append(op).append("\"];\n");
-    sb.append("  id").append(id).append(" -> id").append(ids.get(this.left));
-    sb.append(directions ? " [label=\"l\"];\n" : ";\n");
-    sb.append("  id").append(id).append(" -> id").append(ids.get(this.right));
-    sb.append(directions ? " [label=\"r\"];\n" : ";\n");
   }
 
   /**

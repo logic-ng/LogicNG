@@ -33,6 +33,8 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.functions.LiteralProfileFunction;
+import org.logicng.functions.VariableProfileFunction;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -232,9 +234,10 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
    * @return the variable profile of this formula list
    */
   public SortedMap<Literal, Integer> varProfile() {
+    final VariableProfileFunction variableProfileFunction = new VariableProfileFunction();
     final SortedMap<Literal, Integer> profile = new TreeMap<>();
     for (final Formula f : this.formulas)
-      for (final Map.Entry<Literal, Integer> entry : f.varProfile().entrySet()) {
+      for (final Map.Entry<Literal, Integer> entry : f.apply(variableProfileFunction).entrySet()) {
         final Integer currentCount = profile.get(entry.getKey());
         if (currentCount == null)
           profile.put(entry.getKey(), entry.getValue());
@@ -249,9 +252,10 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
    * @return the literal profile of this formula list
    */
   public SortedMap<Literal, Integer> litProfile() {
+    final LiteralProfileFunction literalProfileFunction = new LiteralProfileFunction();
     final SortedMap<Literal, Integer> profile = new TreeMap<>();
     for (final Formula f : this.formulas)
-      for (final Map.Entry<Literal, Integer> entry : f.litProfile().entrySet()) {
+      for (final Map.Entry<Literal, Integer> entry : f.apply(literalProfileFunction).entrySet()) {
         final Integer currentCount = profile.get(entry.getKey());
         if (currentCount == null)
           profile.put(entry.getKey(), entry.getValue());

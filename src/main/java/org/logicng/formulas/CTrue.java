@@ -30,8 +30,6 @@ package org.logicng.formulas;
 
 import org.logicng.datastructures.Assignment;
 
-import java.util.Map;
-
 /**
  * Boolean constant "True".
  * @author Christoph Zengler
@@ -56,11 +54,6 @@ public final class CTrue extends Constant {
   @Override
   public Constant negate() {
     return f.falsum();
-  }
-
-  @Override
-  public void generateDotString(StringBuilder sb, Map<Formula, Integer> ids) {
-    sb.append("  true;\n");
   }
 
   @Override

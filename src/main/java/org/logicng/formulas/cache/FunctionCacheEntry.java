@@ -26,71 +26,31 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas;
-
-import org.logicng.datastructures.Assignment;
-
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
+package org.logicng.formulas.cache;
 
 /**
- * Boolean implication.
+ * The pre-defined function cache entries.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public final class Implication extends BinaryOperator {
+public enum FunctionCacheEntry implements CacheEntry {
+  SUBFORMULAS("sub-formulas"),
+  VARPROFILE("variable profile"),
+  LITPROFILE("literal profile");
+
+  private String description;
 
   /**
-   * Constructor.
-   * @param left  the left-hand side operand
-   * @param right the right-hand side operand
-   * @param f     the factory which created this instance
+   * Constructs a new entry.
+   * @param description the description of this entry
    */
-  Implication(final Formula left, final Formula right, final FormulaFactory f) {
-    super(FType.IMPL, left, right, f);
+  FunctionCacheEntry(final String description) {
+    this.description = description;
   }
 
   @Override
-  public boolean evaluate(final Assignment assignment) {
-    return !left.evaluate(assignment) || right.evaluate(assignment);
-  }
-
-  @Override
-  public Formula restrict(final Assignment assignment) {
-    Formula leftRestricted = left.restrict(assignment);
-    if (leftRestricted.type == FType.FALSE)
-      return f.verum();
-    return f.implication(leftRestricted, right.restrict(assignment));
-  }
-
-  @Override
-  public Formula nnf() {
-    Formula nnf = this.transformationCache.get(NNF);
-    if (nnf == null) {
-      nnf = f.or(f.not(left).nnf(), right.nnf());
-      this.transformationCache.put(NNF, nnf);
-    }
-    return nnf;
-  }
-
-  @Override
-  public int hashCode() {
-    final int result = this.hashCode;
-    if (result == 0)
-      this.hashCode = left.hashCode() - right.hashCode();
-    return this.hashCode;
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (other == this)
-      return true;
-    if (other instanceof Formula && this.f == ((Formula) other).f)
-      return false; // the same formula factory would have produced a == object
-    if (other instanceof Implication) {
-      Implication otherImp = (Implication) other;
-      return this.left.equals(otherImp.left) && this.right.equals(otherImp.right);
-    }
-    return false;
+  public String description() {
+    return "FunctionCacheEntry{description=" + description + "}";
   }
 }

@@ -33,10 +33,7 @@ import org.logicng.datastructures.Substitution;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -72,7 +69,6 @@ public final class Literal extends Formula implements Comparable<Literal> {
   private volatile Literal negated;
   private volatile int hashCode;
   private final SortedSet<Literal> literals;
-  private final LinkedHashSet<Formula> subformulas;
 
   /**
    * Constructor.
@@ -86,7 +82,6 @@ public final class Literal extends Formula implements Comparable<Literal> {
     this.phase = phase;
     this.variables = new TreeSet<>(Collections.singletonList(this.positive()));
     this.literals = new TreeSet<>(Collections.singletonList(this));
-    this.subformulas = new LinkedHashSet<>(Collections.singletonList((Formula) this));
   }
 
   @Override
@@ -105,31 +100,13 @@ public final class Literal extends Formula implements Comparable<Literal> {
   }
 
   @Override
+  public boolean isAtomicFormula() {
+    return true;
+  }
+
+  @Override
   public int numberOfOperands() {
     return 0;
-  }
-
-  @Override
-  protected void varProfileRec(SortedMap<Literal, Integer> map) {
-    final Integer currentCount = map.get(this.positive());
-    if (currentCount == null)
-      map.put(this.positive(), 1);
-    else
-      map.put(this.positive(), currentCount + 1);
-  }
-
-  @Override
-  protected void litProfileRec(SortedMap<Literal, Integer> map) {
-    final Integer currentCount = map.get(this);
-    if (currentCount == null)
-      map.put(this, 1);
-    else
-      map.put(this, currentCount + 1);
-  }
-
-  @Override
-  public LinkedHashSet<Formula> subformulas() {
-    return this.subformulas;
   }
 
   @Override
@@ -180,11 +157,6 @@ public final class Literal extends Formula implements Comparable<Literal> {
   @Override
   public Formula nnf() {
     return this;
-  }
-
-  @Override
-  public void generateDotString(StringBuilder sb, Map<Formula, Integer> ids) {
-    // intentionally do nothing
   }
 
   /**

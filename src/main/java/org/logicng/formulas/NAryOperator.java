@@ -36,9 +36,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -88,24 +86,8 @@ public abstract class NAryOperator extends Formula {
   }
 
   @Override
-  protected void varProfileRec(SortedMap<Literal, Integer> map) {
-    for (final Formula f : this.operands)
-      f.varProfileRec(map);
-  }
-
-  @Override
-  protected void litProfileRec(SortedMap<Literal, Integer> map) {
-    for (final Formula f : this.operands)
-      f.litProfileRec(map);
-  }
-
-  @Override
-  public LinkedHashSet<Formula> subformulas() {
-    final LinkedHashSet<Formula> set = new LinkedHashSet<>();
-    for (final Formula op : this.operands)
-      set.addAll(op.subformulas());
-    set.add(this);
-    return set;
+  public boolean isAtomicFormula() {
+    return false;
   }
 
   @Override
@@ -193,23 +175,6 @@ public abstract class NAryOperator extends Formula {
   @Override
   public int numberOfOperands() {
     return operands.length;
-  }
-
-  /**
-   * Generates a dot file string for an n-ary operator.
-   * @param sb  the string builder for the dot file
-   * @param ids the mapping from formulas to node ids
-   * @param op  the string representation of the n-ary operator
-   */
-  protected void generateDotString(StringBuilder sb, Map<Formula, Integer> ids, final String op) {
-    for (final Formula operand : this.operands)
-      if (!ids.containsKey(operand))
-        operand.generateDotString(sb, ids);
-    final int id = ids.size();
-    ids.put(this, id);
-    sb.append("  id").append(id).append(" [label=\"").append(op).append("\"];\n");
-    for (final Formula operand : this.operands)
-      sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(";\n");
   }
 
   /**

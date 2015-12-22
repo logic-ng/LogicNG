@@ -33,8 +33,6 @@ import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.CacheEntry;
 
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -111,48 +109,15 @@ public abstract class Formula implements Iterable<Formula> {
    * Returns the number of internal nodes of this formula.
    * @return the number of internal nodes of this formula.
    */
-  public int numberOfInternalNodes() {
-    return subformulas().size();
+  public long numberOfInternalNodes() {
+    return f.numberOfNodes(this);
   }
 
   /**
-   * Returns the variable profile of this formula.  For each variable the number of occurrences is counted.
-   * @return the variable profile of this formula
+   * Returns whether this formula is an atomic formula (constant, literal, pseudo Boolean constraint), or not.
+   * @return {@code true} if this formula is an atomic formula, {@code false} otherwise
    */
-  public SortedMap<Literal, Integer> varProfile() {
-    final SortedMap<Literal, Integer> varprofile = new TreeMap<>();
-    varProfileRec(varprofile);
-    return varprofile;
-  }
-
-  /**
-   * Recursive helper for the variable profile.
-   * @param map the variable profile
-   */
-  protected abstract void varProfileRec(final SortedMap<Literal, Integer> map);
-
-  /**
-   * Returns the literal profile of this formula.  For each literal the number of occurrences is counted.
-   * @return the literal profile of this formula
-   */
-  public SortedMap<Literal, Integer> litProfile() {
-    final SortedMap<Literal, Integer> litprofile = new TreeMap<>();
-    litProfileRec(litprofile);
-    return litprofile;
-  }
-
-  /**
-   * Recursive helper for the literal profile.
-   * @param map the literal profile
-   */
-  protected abstract void litProfileRec(final SortedMap<Literal, Integer> map);
-
-  /**
-   * Returns the sub-formulas of this formula.  The order of the sub-formulas is bottom-up, i.e. a sub-formula only
-   * appears in the list when all of its sub-formulas are already listed.
-   * @return the sub-formulas of this formula
-   */
-  public abstract LinkedHashSet<Formula> subformulas();
+  public abstract boolean isAtomicFormula();
 
   /**
    * Returns all variables occurring in this formula as positive literals.
@@ -243,13 +208,6 @@ public abstract class Formula implements Iterable<Formula> {
   public Formula cnf() {
     return this.transform(f.cnfTransformation());
   }
-
-  /**
-   * Adds a dot file string representation of this formula to the given dot file string builder.
-   * @param sb  the dot file string builder
-   * @param ids the mapping from formulas to node ids
-   */
-  public abstract void generateDotString(final StringBuilder sb, final Map<Formula, Integer> ids);
 
   /**
    * Transforms this formula with a given formula transformator and caches the result.

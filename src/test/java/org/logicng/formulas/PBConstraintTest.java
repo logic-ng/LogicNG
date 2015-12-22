@@ -201,53 +201,6 @@ public class PBConstraintTest {
   }
 
   @Test
-  public void testVarProfile() {
-    final SortedMap<Literal, Integer> exp1 = new TreeMap<>();
-    exp1.put(f.literal("a"), 1);
-    final SortedMap<Literal, Integer> exp2 = new TreeMap<>();
-    exp2.put(f.literal("a"), 1);
-    exp2.put(f2.literal("b"), 1);
-    exp2.put(f.literal("c"), 1);
-    Assert.assertEquals(exp1, pb1.varProfile());
-    Assert.assertEquals(exp2, pb2.varProfile());
-    Assert.assertEquals(exp1, cc1.varProfile());
-    Assert.assertEquals(exp2, cc2.varProfile());
-    Assert.assertEquals(exp1, amo1.varProfile());
-    Assert.assertEquals(exp2, amo2.varProfile());
-    Assert.assertEquals(exp1, exo1.varProfile());
-    Assert.assertEquals(exp2, exo2.varProfile());
-  }
-
-  @Test
-  public void testLitProfile() {
-    final SortedMap<Literal, Integer> exp1 = new TreeMap<>();
-    exp1.put(f.literal("a"), 1);
-    final SortedMap<Literal, Integer> exp2 = new TreeMap<>();
-    exp2.put(f.literal("a"), 1);
-    exp2.put(f.literal("b", false), 1);
-    exp2.put(f.literal("c"), 1);
-    final SortedMap<Literal, Integer> expCC2 = new TreeMap<>();
-    expCC2.put(f.literal("a"), 1);
-    expCC2.put(f.literal("b"), 1);
-    expCC2.put(f2.literal("c"), 1);
-    Assert.assertEquals(exp1, pb1.litProfile());
-    Assert.assertEquals(exp2, pb2.litProfile());
-    Assert.assertEquals(exp1, cc1.litProfile());
-    Assert.assertEquals(expCC2, cc2.litProfile());
-    Assert.assertEquals(exp1, amo1.litProfile());
-    Assert.assertEquals(expCC2, amo2.litProfile());
-    Assert.assertEquals(exp1, exo1.litProfile());
-    Assert.assertEquals(expCC2, exo2.litProfile());
-  }
-
-  @Test
-  public void testSubformulas() {
-    final SortedSet<Literal> lits1 = new TreeSet<>(Collections.singletonList(f2.literal("a", false)));
-    Assert.assertEquals(1, pb1.subformulas().size());
-    Assert.assertEquals(lits1, pb1.subformulas());
-  }
-
-  @Test
   public void testVariables() {
     final SortedSet<Literal> lits1 = new TreeSet<>(Collections.singletonList(f.literal("a")));
     final SortedSet<Literal> lits2 = new TreeSet<>(Arrays.asList(f.literal("a"), f.literal("b"), f.literal("c")));

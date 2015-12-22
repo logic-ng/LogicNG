@@ -28,8 +28,12 @@
 
 package org.logicng.io.writers;
 
+import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.NAryOperator;
+import org.logicng.formulas.Not;
+import org.logicng.formulas.PBConstraint;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -85,14 +89,93 @@ public final class FormulaDotFileWriter {
     }
     if (alignLiterals && !formula.literals().isEmpty())
       sb.append("}\n");
-    formula.generateDotString(sb, ids);
+    generateDotString(formula, sb, ids);
     sb.append("}\n");
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
       writer.append(sb);
       writer.flush();
-    } catch (IOException exception) {
-      throw exception;
     }
+  }
+
+  /**
+   * Generates the dot string for a formula
+   * @param formula the formula
+   * @param sb      the current string builder
+   * @param ids     the current ID mapping
+   */
+  private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids) {
+    switch (formula.type()) {
+      case FALSE:
+        sb.append("  false;\n");
+        break;
+      case TRUE:
+        sb.append("  true;\n");
+        break;
+      case LITERAL:
+        break;
+      case PBC:
+        final int id = ids.size();
+        ids.put(formula, id);
+        sb.append("  id").append(id).append(" [label=\"").append(formula.toString()).append("\"];\n");
+        for (final Formula operand : ((PBConstraint) formula).operands())
+          sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(";\n");
+        break;
+      case NOT:
+        generateNotDotString((Not) formula, sb, ids);
+        break;
+      case IMPL:
+        generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇒", true);
+        break;
+      case EQUIV:
+        generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇔", true);
+        break;
+      case AND:
+        generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
+        break;
+      case OR:
+        generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
+        break;
+      default:
+        throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
+    }
+
+  }
+
+  private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids) {
+    int id;
+    if (!ids.containsKey(not.operand()))
+      generateDotString(not.operand(), sb, ids);
+    id = ids.size();
+    ids.put(not, id);
+    sb.append("  id").append(id).append(" [label=\"¬\"];\n");
+    sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(";\n");
+  }
+
+  private static void generateBinaryDotString(final BinaryOperator formula, final StringBuilder sb,
+                                              final Map<Formula, Integer> ids, String op, boolean directions) {
+    if (!ids.containsKey(formula.left()))
+      generateDotString(formula.left(), sb, ids);
+    if (!ids.containsKey(formula.right()))
+      generateDotString(formula.right(), sb, ids);
+    final int id = ids.size();
+    ids.put(formula, id);
+    sb.append("  id").append(id).append(" [label=\"").append(op).append("\"];\n");
+    sb.append("  id").append(id).append(" -> id").append(ids.get(formula.left()));
+    sb.append(directions ? " [label=\"l\"];\n" : ";\n");
+    sb.append("  id").append(id).append(" -> id").append(ids.get(formula.right()));
+    sb.append(directions ? " [label=\"r\"];\n" : ";\n");
+  }
+
+  private static void generateNaryDotString(final NAryOperator formula, final StringBuilder sb,
+                                            final Map<Formula, Integer> ids, final String op) {
+    for (final Formula operand : formula)
+      if (!ids.containsKey(operand))
+        generateDotString(operand, sb, ids);
+    final int id = ids.size();
+    ids.put(formula, id);
+    sb.append("  id").append(id).append(" [label=\"").append(op).append("\"];\n");
+    for (final Formula operand : formula)
+      sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(";\n");
   }
 
   @Override

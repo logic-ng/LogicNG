@@ -39,7 +39,6 @@ import org.logicng.util.Pair;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -310,25 +309,13 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
+  public boolean isAtomicFormula() {
+    return true;
+  }
+
+  @Override
   public int numberOfOperands() {
     return 0;
-  }
-
-  @Override
-  protected void varProfileRec(SortedMap<Literal, Integer> map) {
-    for (final Literal l : this.literals)
-      l.varProfileRec(map);
-  }
-
-  @Override
-  protected void litProfileRec(SortedMap<Literal, Integer> map) {
-    for (final Literal l : this.literals)
-      l.litProfileRec(map);
-  }
-
-  @Override
-  public LinkedHashSet<Formula> subformulas() {
-    return this.nnf().subformulas();
   }
 
   @Override
@@ -486,15 +473,6 @@ public final class PBConstraint extends Formula {
    */
   private void encode() {
     this.encoding = new PBSWC(f).build(this);
-  }
-
-  @Override
-  public void generateDotString(final StringBuilder sb, final Map<Formula, Integer> ids) {
-    final int id = ids.size();
-    ids.put(this, id);
-    sb.append("  id").append(id).append(" [label=\"").append(this.toString()).append("\"];\n");
-    for (final Formula operand : this.literals)
-      sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(";\n");
   }
 
   @Override

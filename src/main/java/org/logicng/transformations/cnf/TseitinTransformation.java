@@ -82,7 +82,7 @@ public final class TseitinTransformation implements FormulaTransformation {
     if (formula.numberOfAtoms() < this.boundaryForFactorization)
       tseitin = formula.cnf();
     else {
-      for (final Formula subformula : formula.subformulas())
+      for (final Formula subformula : formula.apply(formula.factory().subformulaFunction()))
         computeTseitin(subformula);
       final Assignment topLevel = new Assignment((Literal) formula.transformationCacheEntry(TSEITIN_VARIABLE));
       tseitin = formula.transformationCacheEntry(TSEITIN).restrict(topLevel);
@@ -108,7 +108,7 @@ public final class TseitinTransformation implements FormulaTransformation {
       case EQUIV:
       case PBC:
         final Formula nnf = formula.nnf();
-        for (final Formula subformula : nnf.subformulas())
+        for (final Formula subformula : nnf.apply(formula.factory().subformulaFunction()))
           computeTseitin(subformula);
         formula.setTransformationCacheEntry(TSEITIN, nnf.transformationCacheEntry(TSEITIN));
         formula.setTransformationCacheEntry(TSEITIN_VARIABLE, nnf.transformationCacheEntry(TSEITIN_VARIABLE));
