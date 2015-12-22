@@ -71,13 +71,19 @@ public final class Not extends Formula {
   }
 
   @Override
-  public int numberOfAtoms() {
-    return this.operand.numberOfAtoms();
+  public long numberOfAtoms() {
+    if (this.numberOfAtoms != -1)
+      return this.numberOfAtoms;
+    this.numberOfAtoms = this.operand.numberOfAtoms();
+    return this.numberOfAtoms;
   }
 
   @Override
-  public int numberOfNodes() {
-    return 1 + this.operand.numberOfNodes();
+  public long numberOfNodes() {
+    if (this.numberOfNodes != -1)
+      return this.numberOfNodes;
+    this.numberOfNodes = this.operand.numberOfNodes() + 1;
+    return this.numberOfNodes;
   }
 
   @Override

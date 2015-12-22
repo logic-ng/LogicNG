@@ -53,9 +53,11 @@ public abstract class Formula implements Iterable<Formula> {
   protected final SortedMap<CacheEntry, Tristate> predicateCache;
   protected final SortedMap<CacheEntry, Object> functionCache;
   protected SortedSet<Literal> variables;
+  protected long numberOfAtoms;
+  protected long numberOfNodes;
 
   /**
-   * Constructor.
+   * Constructs a new formula.
    * @param type the type of the formula
    * @param f    the factory which created this formula
    */
@@ -66,6 +68,8 @@ public abstract class Formula implements Iterable<Formula> {
     this.predicateCache = new TreeMap<>();
     this.functionCache = new TreeMap<>();
     this.variables = null;
+    this.numberOfAtoms = -1;
+    this.numberOfNodes = -1;
   }
 
   /**
@@ -89,13 +93,13 @@ public abstract class Formula implements Iterable<Formula> {
    * or a pseudo-Boolean constraint.
    * @return the number of atomic formulas of this formula.
    */
-  public abstract int numberOfAtoms();
+  public abstract long numberOfAtoms();
 
   /**
    * Returns the number of nodes of this formula.
    * @return the number of nodes of this formula.
    */
-  public abstract int numberOfNodes();
+  public abstract long numberOfNodes();
 
   /**
    * Returns the number of operands of this formula.

@@ -68,19 +68,23 @@ public abstract class NAryOperator extends Formula {
   }
 
   @Override
-  public int numberOfAtoms() {
-    int sum = 0;
+  public long numberOfAtoms() {
+    if (this.numberOfAtoms != -1)
+      return this.numberOfAtoms;
+    this.numberOfAtoms = 0;
     for (final Formula f : this.operands)
-      sum += f.numberOfAtoms();
-    return sum;
+      this.numberOfAtoms += f.numberOfAtoms();
+    return this.numberOfAtoms;
   }
 
   @Override
-  public int numberOfNodes() {
-    int sum = 1;
+  public long numberOfNodes() {
+    if (this.numberOfNodes != -1)
+      return this.numberOfNodes;
+    this.numberOfNodes = 1;
     for (final Formula f : this.operands)
-      sum += f.numberOfNodes();
-    return sum;
+      this.numberOfNodes += f.numberOfNodes();
+    return this.numberOfNodes;
   }
 
   @Override

@@ -73,13 +73,19 @@ public abstract class BinaryOperator extends Formula {
   }
 
   @Override
-  public int numberOfAtoms() {
-    return this.left.numberOfAtoms() + this.right.numberOfAtoms();
+  public long numberOfAtoms() {
+    if (this.numberOfAtoms != -1)
+      return this.numberOfAtoms;
+    this.numberOfAtoms = this.left.numberOfAtoms() + this.right.numberOfAtoms();
+    return this.numberOfAtoms;
   }
 
   @Override
-  public int numberOfNodes() {
-    return 1 + this.left.numberOfNodes() + this.right.numberOfNodes();
+  public long numberOfNodes() {
+    if (this.numberOfNodes != -1)
+      return this.numberOfNodes;
+    this.numberOfNodes = this.left.numberOfNodes() + this.right.numberOfNodes() + 1;
+    return this.numberOfNodes;
   }
 
   @Override

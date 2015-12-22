@@ -95,13 +95,13 @@ public final class Literal extends Formula implements Comparable<Literal> {
   }
 
   @Override
-  public int numberOfAtoms() {
-    return 1;
+  public long numberOfAtoms() {
+    return 1L;
   }
 
   @Override
-  public int numberOfNodes() {
-    return 1;
+  public long numberOfNodes() {
+    return 1L;
   }
 
   @Override

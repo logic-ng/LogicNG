@@ -297,13 +297,16 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
-  public int numberOfAtoms() {
-    return 1;
+  public long numberOfAtoms() {
+    return 1L;
   }
 
   @Override
-  public int numberOfNodes() {
-    return 1 + this.literals.length;
+  public long numberOfNodes() {
+    if (this.numberOfNodes != -1)
+      return this.numberOfNodes;
+    this.numberOfNodes = 1L + this.literals.length;
+    return this.numberOfNodes;
   }
 
   @Override
@@ -471,7 +474,7 @@ public final class PBConstraint extends Formula {
     Formula nnf = this.transformationCache.get(NNF);
     if (nnf == null) {
       if (this.encoding == null)
-        encode();
+        this.encode();
       nnf = f.and(this.encoding.formula(this.f));
       this.setTransformationCacheEntry(NNF, nnf);
     }

@@ -75,13 +75,13 @@ public abstract class Constant extends Formula {
   }
 
   @Override
-  public int numberOfAtoms() {
-    return 1;
+  public long numberOfAtoms() {
+    return 1L;
   }
 
   @Override
-  public int numberOfNodes() {
-    return 1;
+  public long numberOfNodes() {
+    return 1L;
   }
 
   @Override

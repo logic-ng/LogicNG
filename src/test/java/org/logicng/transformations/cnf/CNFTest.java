@@ -122,7 +122,7 @@ public class CNFTest {
 
     private int distCount = 0;
     private int clauseCount = 0;
-    private int longestClause = 0;
+    private long longestClause = 0;
 
     @Override
     public boolean performedDistribution() {
@@ -145,7 +145,7 @@ public class CNFTest {
       return this.clauseCount;
     }
 
-    private int longestClause() {
+    private long longestClause() {
       return this.longestClause;
     }
   }
