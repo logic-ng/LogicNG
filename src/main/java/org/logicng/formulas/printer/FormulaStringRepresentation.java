@@ -76,7 +76,7 @@ public abstract class FormulaStringRepresentation {
         return concatOperands(nary, String.format(" %s ", op));
       case PBC:
         final PBConstraint pbc = (PBConstraint) formula;
-        return String.format("%s %s %d", pbLhs(pbc.operands(), pbc.coefficients()), pbComperator(pbc.comparator()), pbc.rhs());
+        return String.format("%s %s %d", pbLhs(pbc.operands(), pbc.coefficients()), pbComparator(pbc.comparator()), pbc.rhs());
       default:
         throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
     }
@@ -92,7 +92,7 @@ public abstract class FormulaStringRepresentation {
   }
 
   /**
-   * Returns the string representation of a binary operator
+   * Returns the string representation of a binary operator.
    * @param type     the type of the binary operator
    * @param left     the left-hand formula
    * @param right    the right-hand formula
@@ -200,7 +200,7 @@ public abstract class FormulaStringRepresentation {
    * @param comparator the pseudo-Boolean comparator
    * @return the string representation of a pseudo-Boolean comparator
    */
-  protected abstract String pbComperator(final CType comparator);
+  protected abstract String pbComparator(final CType comparator);
 
   /**
    * Returns the string representation of a pseudo-Boolean multiplication.

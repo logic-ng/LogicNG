@@ -100,7 +100,7 @@ public final class FormulaFactory {
   private int pbCounter;
   private int cnfCounter;
 
-  private FormulaTransformation defaultCNFTransformation;
+  private final FormulaTransformation defaultCNFTransformation;
   private final SubformulaFunction subformulaFunction;
 
   /**

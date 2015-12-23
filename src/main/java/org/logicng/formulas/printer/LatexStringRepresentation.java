@@ -106,7 +106,7 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
   }
 
   @Override
-  protected String pbComperator(CType comparator) {
+  protected String pbComparator(CType comparator) {
     switch (comparator) {
       case EQ:
         return "=";

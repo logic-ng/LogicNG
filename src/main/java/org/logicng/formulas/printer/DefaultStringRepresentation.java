@@ -74,7 +74,7 @@ public final class DefaultStringRepresentation extends FormulaStringRepresentati
   }
 
   @Override
-  protected String pbComperator(final CType comparator) {
+  protected String pbComparator(final CType comparator) {
     switch (comparator) {
       case EQ:
         return "=";
