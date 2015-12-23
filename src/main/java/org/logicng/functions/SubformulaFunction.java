@@ -52,7 +52,8 @@ public final class SubformulaFunction implements FormulaFunction<LinkedHashSet<F
       return (LinkedHashSet<Formula>) cached;
     LinkedHashSet<Formula> result = new LinkedHashSet<>();
     for (final Formula op : formula)
-      result.addAll(apply(op, cache));
+      if (!result.contains(op))
+        result.addAll(apply(op, cache));
     result.add(formula);
     if (cache)
       formula.setFunctionCacheEntry(SUBFORMULAS, result);
