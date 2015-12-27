@@ -32,13 +32,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
+import org.logicng.io.parser.ParserException;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -234,7 +233,7 @@ public class PBConstraintTest {
     Assert.assertTrue(pb1.contains(f.literal("a")));
     Assert.assertFalse(pb1.contains(f.literal("a", false)));
     Assert.assertTrue(pb2.contains(f.literal("b", false)));
-    Assert.assertFalse(pb2.contains(f.literal("b")));
+    Assert.assertTrue(pb2.contains(f.literal("b")));
     Assert.assertFalse(pb2.contains(f.literal("d")));
   }
 
@@ -300,7 +299,7 @@ public class PBConstraintTest {
     Assert.assertTrue(pb1.containsSubformula(f.literal("a")));
     Assert.assertFalse(pb1.containsSubformula(f.literal("a", false)));
     Assert.assertTrue(pb2.containsSubformula(f.literal("b", false)));
-    Assert.assertFalse(pb2.containsSubformula(f.literal("b")));
+    Assert.assertTrue(pb2.containsSubformula(f.literal("b")));
     Assert.assertFalse(pb2.containsSubformula(f.literal("d")));
     Assert.assertTrue(pb1.containsSubformula(pb1));
     Assert.assertTrue(pb2.containsSubformula(pb2));
@@ -461,5 +460,24 @@ public class PBConstraintTest {
     Assert.assertEquals(pb1.hashCode(), pb1.hashCode());
     Assert.assertEquals(pb2.hashCode(), pb2.hashCode());
     Assert.assertEquals(pb2.hashCode(), pb22.hashCode());
+  }
+
+  @Test
+  public void testNumberOfInternalNodes() throws ParserException {
+    Assert.assertEquals(1, pb2.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testAtomicFormula() {
+    Assert.assertTrue(pb2.isAtomicFormula());
+  }
+
+  @Test
+  public void testContains() {
+    Assert.assertTrue(pb2.contains(F.f.literal("a")));
+    Assert.assertTrue(pb2.contains(F.f.literal("b")));
+    Assert.assertTrue(pb2.contains(F.f.literal("c")));
+    Assert.assertFalse(pb2.contains(F.f.literal("x")));
+    Assert.assertFalse(pb2.contains(F.f.literal("a", false)));
   }
 }

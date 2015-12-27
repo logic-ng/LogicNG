@@ -30,6 +30,7 @@ package org.logicng.formulas;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.io.parser.ParserException;
 
 /**
  * Unit Tests for the class {@link CFalse}.
@@ -78,5 +79,25 @@ public class CFalseTest {
   @Test
   public void testHash() {
     Assert.assertEquals(F.f.falsum().hashCode(), F.FALSE.hashCode());
+  }
+
+  @Test
+  public void testNumberOfNodes() {
+    Assert.assertEquals(1, F.FALSE.numberOfNodes());
+  }
+
+  @Test
+  public void testNumberOfInternalNodes() throws ParserException {
+    Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testAtomicFormula() {
+    Assert.assertTrue(F.FALSE.isAtomicFormula());
+  }
+
+  @Test
+  public void testContains() {
+    Assert.assertFalse(F.FALSE.contains(F.f.literal("a")));
   }
 }

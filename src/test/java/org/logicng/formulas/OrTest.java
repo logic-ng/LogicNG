@@ -30,6 +30,8 @@ package org.logicng.formulas;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.io.parser.ParserException;
+import org.logicng.io.parser.PropositionalParser;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -141,5 +143,30 @@ public class OrTest {
     Assert.assertEquals(2, F.OR1.numberOfAtoms());
     Assert.assertEquals(2, F.OR2.numberOfAtoms());
     Assert.assertEquals(4, F.OR3.numberOfAtoms());
+  }
+
+  @Test
+  public void testNumberOfNodes() {
+    Assert.assertEquals(3, F.OR1.numberOfNodes());
+    Assert.assertEquals(3, F.OR2.numberOfNodes());
+    Assert.assertEquals(7, F.OR3.numberOfNodes());
+  }
+
+  @Test
+  public void testNumberOfInternalNodes() throws ParserException {
+    final Formula or = new PropositionalParser(F.f).parse("a & (b | c) => (d <=> (b | c))");
+    Assert.assertEquals(7, F.OR3.numberOfInternalNodes());
+    Assert.assertEquals(8, or.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testAtomicFormula() {
+    Assert.assertFalse(F.OR1.isAtomicFormula());
+  }
+
+  @Test
+  public void testContains() {
+    Assert.assertTrue(F.OR1.contains(F.f.literal("x")));
+    Assert.assertFalse(F.OR1.contains(F.f.literal("a")));
   }
 }

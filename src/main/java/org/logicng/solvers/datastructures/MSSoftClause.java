@@ -128,7 +128,7 @@ public final class MSSoftClause {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder(String.format("MSSoftClause{weight=%d, lits=[", this.weight));
+    final StringBuilder sb = new StringBuilder(String.format("MSSoftClause{weight=%d, assumption=%d lits=[", this.weight, this.assumptionVar));
     for (int i = 0; i < this.clause.size(); i++) {
       int lit = this.clause.get(i);
       sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);

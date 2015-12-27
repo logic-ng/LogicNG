@@ -46,6 +46,8 @@ package org.logicng.solvers.datastructures;
 
 import org.logicng.datastructures.Tristate;
 
+import java.util.Locale;
+
 /**
  * A variable of the SAT solver for MiniSAT-style solvers.
  * @author Christoph Zengler
@@ -179,7 +181,7 @@ public class MSVariable {
 
   @Override
   public String toString() {
-    return String.format("MSVariable{assignment=%s, level=%d, reason=%s, activity=%f, polarity=%s, decision=%s}",
+    return String.format(Locale.ENGLISH, "MSVariable{assignment=%s, level=%d, reason=%s, activity=%f, polarity=%s, decision=%s}",
             this.assignment, this.level, this.reason, this.activity, this.polarity, this.decision);
   }
 }

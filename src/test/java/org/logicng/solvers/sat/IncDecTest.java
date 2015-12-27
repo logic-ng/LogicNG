@@ -26,79 +26,61 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas;
+package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.io.parser.ParserException;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.SolverState;
+
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
- * Unit Tests for the class {@link CTrue}.
- *
+ * Tests for the incremental/decremental interface of the SAT solvers.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public class CTrueTest {
+public class IncDecTest {
 
-  @Test
-  public void testType() {
-    Assert.assertEquals(FType.TRUE, F.TRUE.type());
+  private final FormulaFactory f;
+  private final SATSolver[] solvers;
+  private final PigeonHoleGenerator pg;
+
+  public IncDecTest() {
+    this.f = new FormulaFactory();
+    this.pg = new PigeonHoleGenerator(f);
+    this.solvers = new SATSolver[2];
+    this.solvers[0] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(true).build());
+    this.solvers[1] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(true).build());
   }
 
   @Test
-  public void testNumberOfAtoms() {
-    Assert.assertEquals(1, F.TRUE.numberOfAtoms());
+  public void testIncDec() {
+    for (final SATSolver s : this.solvers) {
+      s.add(f.literal("a"));
+      SolverState state1 = s.saveState();
+      Assert.assertEquals(TRUE, s.sat());
+      s.add(pg.generate(5));
+      Assert.assertEquals(FALSE, s.sat());
+      s.loadState(state1);
+      Assert.assertEquals(TRUE, s.sat());
+      s.add(f.literal("a", false));
+      Assert.assertEquals(FALSE, s.sat());
+      s.loadState(state1);
+      Assert.assertEquals(TRUE, s.sat());
+      s.add(pg.generate(5));
+      SolverState state2 = s.saveState();
+      s.add(pg.generate(4));
+      Assert.assertEquals(FALSE, s.sat());
+      s.loadState(state2);
+      Assert.assertEquals(FALSE, s.sat());
+      s.loadState(state1);
+      Assert.assertEquals(TRUE, s.sat());
+    }
   }
 
-  @Test
-  public void testNegation() {
-    Assert.assertEquals(F.FALSE, F.TRUE.negate());
-  }
-
-  @Test
-  public void testVariables() {
-    Assert.assertEquals(0, F.TRUE.variables().size());
-  }
-
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(0, F.TRUE.literals().size());
-  }
-
-  @Test
-  public void testToString() {
-    Assert.assertEquals("$true", F.TRUE.toString());
-  }
-
-  @Test
-  public void testEquals() {
-    Assert.assertEquals(F.TRUE, F.TRUE);
-    Assert.assertNotEquals(F.TRUE, F.FALSE);
-  }
-
-  @Test
-  public void testHash() {
-    Assert.assertEquals(F.f.verum().hashCode(), F.TRUE.hashCode());
-  }
-
-  @Test
-  public void testNumberOfNodes() {
-    Assert.assertEquals(1, F.TRUE.numberOfNodes());
-  }
-
-  @Test
-  public void testNumberOfInternalNodes() throws ParserException {
-    Assert.assertEquals(1, F.TRUE.numberOfInternalNodes());
-  }
-
-  @Test
-  public void testAtomicFormula() {
-    Assert.assertTrue(F.TRUE.isAtomicFormula());
-  }
-
-  @Test
-  public void testContains() {
-    Assert.assertFalse(F.TRUE.contains(F.f.literal("a")));
-  }
 }

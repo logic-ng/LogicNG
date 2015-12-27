@@ -338,7 +338,7 @@ public final class PBConstraint extends Formula {
   @Override
   public boolean contains(final Literal literal) {
     for (final Literal lit : this.literals)
-      if (lit.equals(literal))
+      if (lit.contains(literal))
         return true;
     return false;
   }

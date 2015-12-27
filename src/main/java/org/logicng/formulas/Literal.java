@@ -121,7 +121,7 @@ public final class Literal extends Formula implements Comparable<Literal> {
 
   @Override
   public boolean contains(final Literal literal) {
-    return this.equals(literal);
+    return literal.phase ? this.name.equals(literal.name) : this.equals(literal);
   }
 
   @Override

@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Substitution;
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.io.parser.ParserException;
 
 /**
  * Unit Tests for the class {@link Literal}.
@@ -128,5 +129,31 @@ public class LiteralTest {
   public void testNumberOfAtoms() {
     Assert.assertEquals(1, F.A.numberOfAtoms());
     Assert.assertEquals(1, F.NA.numberOfAtoms());
+  }
+
+  @Test
+  public void testNumberOfNodes() {
+    Assert.assertEquals(1, F.A.numberOfNodes());
+    Assert.assertEquals(1, F.NA.numberOfNodes());
+  }
+
+  @Test
+  public void testNumberOfInternalNodes() throws ParserException {
+    Assert.assertEquals(1, F.A.numberOfInternalNodes());
+    Assert.assertEquals(1, F.NA.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testAtomicFormula() {
+    Assert.assertTrue(F.A.isAtomicFormula());
+    Assert.assertTrue(F.NA.isAtomicFormula());
+  }
+
+  @Test
+  public void testContains() {
+    Assert.assertFalse(F.A.contains(F.f.literal("b")));
+    Assert.assertTrue(F.A.contains(F.f.literal("a")));
+    Assert.assertFalse(F.NA.contains(F.f.literal("b")));
+    Assert.assertTrue(F.NA.contains(F.f.literal("a")));
   }
 }
