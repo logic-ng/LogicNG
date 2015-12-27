@@ -109,6 +109,18 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- Coveralls.io test coverage -->
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>4.1.0</version>
+        <configuration>
+          <sourceDirectories>
+            <sourceDirectory>target/generated-sources/antlr</sourceDirectory>
+          </sourceDirectories>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
