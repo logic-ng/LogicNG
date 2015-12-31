@@ -26,80 +26,61 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas;
+package org.logicng.transformations.qe;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.logicng.io.parser.ParserException;
+import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaTransformation;
+import org.logicng.formulas.Literal;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Unit Tests for the class {@link CFalse}.
+ * This transformation eliminates a number of existentially quantified variables by replacing them with the Shannon
+ * expansion.  If {@code x} is eliminated from a formula {@code f}, the resulting formula is
+ * {@code f[true/x] | f[false/x]}.
+ * <p>
+ * This transformation cannot be cached since it is dependent on the set of literals to eliminate.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public class CFalseTest {
+public final class ExistentialQuantifierElimination implements FormulaTransformation {
 
-  @Test
-  public void testType() {
-    Assert.assertEquals(FType.FALSE, F.FALSE.type());
+  private final Literal[] elimination;
+
+  /**
+   * Constructs a new existential quantifier elimination for a given literal.
+   * @param lit the literal
+   */
+  public ExistentialQuantifierElimination(final Literal lit) {
+    this.elimination = new Literal[]{lit};
   }
 
-  @Test
-  public void testNumberOfAtoms() {
-    Assert.assertEquals(1, F.FALSE.numberOfAtoms());
+  /**
+   * Constructs a new existential quantifier elimination for a given collection of literals.
+   * @param literals the collection of literals
+   */
+  public ExistentialQuantifierElimination(final Collection<Literal> literals) {
+    this.elimination = literals.toArray(new Literal[literals.size()]);
   }
 
-  @Test
-  public void testNegation() {
-    Assert.assertEquals(F.TRUE, F.FALSE.negate());
+  /**
+   * Constructs a new existential quantifier elimination for the given literals.
+   * @param literals the literals
+   */
+  public ExistentialQuantifierElimination(final Literal... literals) {
+    this.elimination = Arrays.copyOf(literals, literals.length);
   }
 
-  @Test
-  public void testVariables() {
-    Assert.assertEquals(0, F.FALSE.variables().size());
-  }
-
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(0, F.FALSE.literals().size());
-  }
-
-  @Test
-  public void testToString() {
-    Assert.assertEquals("$false", F.FALSE.toString());
-  }
-
-  @Test
-  public void testEquals() {
-    Assert.assertEquals(F.FALSE, F.FALSE);
-    Assert.assertNotEquals(F.FALSE, F.TRUE);
-  }
-
-  @Test
-  public void testHash() {
-    Assert.assertEquals(F.f.falsum().hashCode(), F.FALSE.hashCode());
-  }
-
-  @Test
-  public void testNumberOfNodes() {
-    Assert.assertEquals(1, F.FALSE.numberOfNodes());
-    Assert.assertEquals(1, F.FALSE.numberOfNodes());
-  }
-
-  @Test
-  public void testNumberOfInternalNodes() throws ParserException {
-    Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
-    Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
-  }
-
-  @Test
-  public void testAtomicFormula() {
-    Assert.assertTrue(F.FALSE.isAtomicFormula());
-  }
-
-  @Test
-  public void testContains() {
-    Assert.assertFalse(F.FALSE.contains(F.f.literal("a")));
+  @Override
+  public Formula apply(final Formula formula, boolean cache) {
+    Formula result = formula;
+    final FormulaFactory f = formula.factory();
+    for (final Literal lit : elimination)
+      result = f.or(result.restrict(new Assignment(lit)), result.restrict(new Assignment(lit.negate())));
+    return result;
   }
 }

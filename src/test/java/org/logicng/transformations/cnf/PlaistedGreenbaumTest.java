@@ -170,6 +170,8 @@ public class PlaistedGreenbaumTest {
     Assert.assertTrue(equivalentModels(f2, f2.transform(pg), f2.variables()));
     Assert.assertTrue(f3.transform(pg).holds(cnfPredicate));
     Assert.assertTrue(equivalentModels(f3, f3.transform(pg), f3.variables()));
+    Assert.assertTrue(f4.transform(pg, false).holds(cnfPredicate));
+    Assert.assertTrue(equivalentModels(f4, f4.transform(pg, false), f4.variables()));
     Assert.assertTrue(f4.transform(pg).holds(cnfPredicate));
     Assert.assertTrue(equivalentModels(f4, f4.transform(pg), f4.variables()));
   }

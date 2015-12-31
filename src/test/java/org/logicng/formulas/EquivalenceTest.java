@@ -138,11 +138,13 @@ public class EquivalenceTest {
   public void testNumberOfAtoms() {
     Assert.assertEquals(2, F.EQ1.numberOfAtoms());
     Assert.assertEquals(4, F.EQ4.numberOfAtoms());
+    Assert.assertEquals(4, F.EQ4.numberOfAtoms());
   }
 
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(3, F.EQ1.numberOfNodes());
+    Assert.assertEquals(7, F.EQ4.numberOfNodes());
     Assert.assertEquals(7, F.EQ4.numberOfNodes());
   }
 

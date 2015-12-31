@@ -270,13 +270,6 @@ public abstract class Formula implements Iterable<Formula> {
   }
 
   /**
-   * Clears the cache of this formula.
-   */
-  public void clearCache() {
-    this.transformationCache.clear();
-  }
-
-  /**
    * Returns an entry of the transformation cache of this formula.
    * @param key the cache key
    * @return the cache value or {@code null} if the key is not found

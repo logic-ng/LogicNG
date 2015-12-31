@@ -185,6 +185,7 @@ public class PBConstraintTest {
     Assert.assertEquals(1, amo2.numberOfAtoms());
     Assert.assertEquals(1, exo1.numberOfAtoms());
     Assert.assertEquals(1, exo2.numberOfAtoms());
+    Assert.assertEquals(1, exo2.numberOfAtoms());
   }
 
   @Test
@@ -196,6 +197,7 @@ public class PBConstraintTest {
     Assert.assertEquals(2, amo1.numberOfNodes());
     Assert.assertEquals(4, amo2.numberOfNodes());
     Assert.assertEquals(2, exo1.numberOfNodes());
+    Assert.assertEquals(4, exo2.numberOfNodes());
     Assert.assertEquals(4, exo2.numberOfNodes());
   }
 

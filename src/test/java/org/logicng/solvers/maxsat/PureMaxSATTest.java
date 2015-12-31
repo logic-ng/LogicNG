@@ -178,6 +178,13 @@ public class PureMaxSATTest {
     readCNF(solver, "tests/maxsat/c-fat200-2.clq.cnf");
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
     Assert.assertEquals(26, solver.result());
+    final MaxSAT.Stats stats = solver.stats();
+    Assert.assertEquals(26, stats.bestSolution());
+    Assert.assertEquals(26, stats.unsatCalls());
+    Assert.assertEquals(2, stats.satCalls());
+    Assert.assertEquals(22.73, stats.averageCoreSize(), 0.1);
+    Assert.assertEquals(9032, stats.symmetryClauses());
+    Assert.assertEquals("MaxSAT.Stats{best solution=26, #sat calls=2, #unsat calls=26, average core size=22.73, #symmetry clauses=9032}", stats.toString());
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {

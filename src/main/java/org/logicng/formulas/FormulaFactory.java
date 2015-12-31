@@ -159,13 +159,12 @@ public final class FormulaFactory {
   }
 
   /**
-   * Puts a new configuration for a given configuration type.  If there is already a configuration present for this
+   * Puts a new configuration into the configuration database.  If there is already a configuration present for this
    * type, it will be overwritten.
-   * @param cType         the configuration type
    * @param configuration the configuration
    */
-  public void putConfiguration(final ConfigurationType cType, final Configuration configuration) {
-    this.configurations.put(cType, configuration);
+  public void putConfiguration(final Configuration configuration) {
+    this.configurations.put(configuration.type(), configuration);
   }
 
   /**

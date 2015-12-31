@@ -252,14 +252,6 @@ public abstract class MaxSAT {
   }
 
   /**
-   * Returns the problem type.
-   * @return the problem type
-   */
-  public ProblemType problemType() {
-    return this.problemType;
-  }
-
-  /**
    * Initializes 'ubCost' to the sum of weights of the soft clauses
    * @param weight the weight
    */
@@ -283,37 +275,6 @@ public abstract class MaxSAT {
    */
   public int currentWeight() {
     return this.currentWeight;
-  }
-
-  /**
-   * Sets the weight of hard clauses.
-   * @param weight the weight of hard clauses
-   */
-  public void setHardWeight(int weight) {
-    this.hardWeight = weight;
-  }
-
-  /**
-   * Copies this solver into another instance.
-   * @param solver the instance to copy this solver to
-   */
-  public void copy(final MaxSAT solver) {
-    while (this.nVars() >= solver.nVars())
-      solver.newVar();
-    for (final MSSoftClause softClause : this.softClauses)
-      solver.addSoftClause(softClause.weight(), softClause.clause(), softClause.relaxationVars());
-    for (final MSHardClause hardClause : this.hardClauses)
-      solver.addHardClause(hardClause.clause());
-    solver.setProblemType(this.problemType());
-    solver.setCurrentWeight(this.currentWeight());
-    solver.setHardWeight(this.hardWeight);
-    solver.ubCost = this.ubCost;
-    solver.lbCost = this.lbCost;
-    solver.nbSatisfiable = this.nbSatisfiable;
-    solver.nbCores = this.nbCores;
-    solver.nbInitialVariables = this.nbInitialVariables;
-    if (this.nbInitialVariables != 0)
-      solver.saveModel(this.model);
   }
 
   /**

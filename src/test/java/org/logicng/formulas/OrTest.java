@@ -143,12 +143,14 @@ public class OrTest {
     Assert.assertEquals(2, F.OR1.numberOfAtoms());
     Assert.assertEquals(2, F.OR2.numberOfAtoms());
     Assert.assertEquals(4, F.OR3.numberOfAtoms());
+    Assert.assertEquals(4, F.OR3.numberOfAtoms());
   }
 
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(3, F.OR1.numberOfNodes());
     Assert.assertEquals(3, F.OR2.numberOfNodes());
+    Assert.assertEquals(7, F.OR3.numberOfNodes());
     Assert.assertEquals(7, F.OR3.numberOfNodes());
   }
 

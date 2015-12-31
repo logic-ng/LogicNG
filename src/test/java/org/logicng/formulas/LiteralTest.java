@@ -129,11 +129,13 @@ public class LiteralTest {
   public void testNumberOfAtoms() {
     Assert.assertEquals(1, F.A.numberOfAtoms());
     Assert.assertEquals(1, F.NA.numberOfAtoms());
+    Assert.assertEquals(1, F.NA.numberOfAtoms());
   }
 
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(1, F.A.numberOfNodes());
+    Assert.assertEquals(1, F.NA.numberOfNodes());
     Assert.assertEquals(1, F.NA.numberOfNodes());
   }
 

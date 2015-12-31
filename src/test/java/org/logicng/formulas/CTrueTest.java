@@ -49,6 +49,7 @@ public class CTrueTest {
   @Test
   public void testNumberOfAtoms() {
     Assert.assertEquals(1, F.TRUE.numberOfAtoms());
+    Assert.assertEquals(1, F.TRUE.numberOfAtoms());
   }
 
   @Test
@@ -84,6 +85,7 @@ public class CTrueTest {
 
   @Test
   public void testNumberOfNodes() {
+    Assert.assertEquals(1, F.TRUE.numberOfNodes());
     Assert.assertEquals(1, F.TRUE.numberOfNodes());
   }
 

@@ -138,11 +138,13 @@ public class ImplicationTest {
   public void testNumberOfAtoms() {
     Assert.assertEquals(2, F.IMP1.numberOfAtoms());
     Assert.assertEquals(4, F.IMP3.numberOfAtoms());
+    Assert.assertEquals(4, F.IMP3.numberOfAtoms());
   }
 
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(3, F.IMP1.numberOfNodes());
+    Assert.assertEquals(7, F.IMP4.numberOfNodes());
     Assert.assertEquals(7, F.IMP4.numberOfNodes());
   }
 

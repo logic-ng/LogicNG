@@ -150,12 +150,14 @@ public class AndTest {
     Assert.assertEquals(2, F.AND1.numberOfAtoms());
     Assert.assertEquals(2, F.AND2.numberOfAtoms());
     Assert.assertEquals(4, F.AND3.numberOfAtoms());
+    Assert.assertEquals(4, F.AND3.numberOfAtoms());
   }
 
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(3, F.AND1.numberOfNodes());
     Assert.assertEquals(3, F.AND2.numberOfNodes());
+    Assert.assertEquals(7, F.AND3.numberOfNodes());
     Assert.assertEquals(7, F.AND3.numberOfNodes());
   }
 
