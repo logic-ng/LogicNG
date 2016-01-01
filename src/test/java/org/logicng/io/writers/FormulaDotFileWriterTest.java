@@ -26,62 +26,66 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.writers.aig;
+package org.logicng.io.writers;
 
+import junitx.framework.FileAssert;
+import org.junit.Test;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.io.parsers.PseudoBooleanParser;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * A dot file writer for a formula's AIG.  Writes the AIG data structure of a formula to a dot file.
+ * Unit tests for the {@link FormulaDotFileWriter}.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public final class AIGDotFileWriter {
+public class FormulaDotFileWriterTest {
 
-  private final AIGDotPrinter printer;
+  private final FormulaFactory f = new FormulaFactory();
+  private final PropositionalParser p = new PropositionalParser(f);
+  private final PseudoBooleanParser pp = new PseudoBooleanParser(f);
 
-  /**
-   * Constructor.
-   */
-  public AIGDotFileWriter() {
-    printer = new AIGDotPrinter();
+  @Test
+  public void testConstants() throws IOException {
+    testFiles("false", f.falsum());
+    testFiles("true", f.verum());
   }
 
-  /**
-   * Writes a given formula's AIG data structure as a dot file.
-   * @param fileName      the file name of the dot file to write
-   * @param formula       the formula
-   * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
-   * @throws IOException if there was a problem writing the file
-   */
-  public void write(final String fileName, final Formula formula, boolean alignLiterals) throws IOException {
-    write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
+  @Test
+  public void testLiterals() throws IOException {
+    testFiles("x", f.literal("x"));
+    testFiles("not_x", f.literal("x", false));
   }
 
-  /**
-   * Writes a given formula's AIG data structure as a dot file.
-   * @param file          the file of the dot file to write
-   * @param formula       the formula
-   * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
-   * @throws IOException if there was a problem writing the file
-   */
-  public void write(final File file, final Formula formula, boolean alignLiterals) throws IOException {
-    final String dotString = printer.createDotString(formula, alignLiterals);
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-      writer.append(dotString);
-      writer.flush();
-    } catch (IOException exception) {
-      throw exception;
-    }
+  @Test
+  public void testFormulas() throws IOException, ParserException {
+    final Formula f1 = p.parse("(a & b) <=> (~c => (x | z))");
+    final Formula f2 = p.parse("a & b | b & ~c");
+    final Formula f3 = p.parse("(a & b) <=> (~c => (a | b))");
+    final Formula f4 = p.parse("~(a & b) | b & ~c");
+    final Formula f5 = pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 23)");
+    testFiles("f1", f1);
+    testFiles("f2", f2);
+    testFiles("f3", f3);
+    testFiles("f4", f4);
+    testFiles("f5", f5);
   }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
+  private void testFiles(final String fileName, final Formula formula) throws IOException {
+    FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_t.dot", formula, true);
+    FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_f.dot", formula, false);
+    final File expectedT = new File("tests/writers/formulas-dot/" + fileName + "_t.dot");
+    final File expectedF = new File("tests/writers/formulas-dot/" + fileName + "_f.dot");
+    final File tempT = new File("tests/writers/temp/" + fileName + "_t.dot");
+    final File tempF = new File("tests/writers/temp/" + fileName + "_f.dot");
+    FileAssert.assertEquals(expectedT, tempT);
+    FileAssert.assertEquals(expectedF, tempF);
   }
+
 }

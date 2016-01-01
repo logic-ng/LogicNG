@@ -133,7 +133,7 @@ public final class FormulaDotFileWriter {
         generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
         break;
       case OR:
-        generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
+        generateNaryDotString((NAryOperator) formula, sb, ids, "∨");
         break;
       default:
         throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
