@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.0--RC1-ff69b4.svg)
+[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg)](https://travis-ci.org/logic-ng/LogicNG) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.0--RC2-ff69b4.svg)
 
 ![LogicNG](https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png)
 
@@ -14,7 +14,7 @@ The most important philosophy of the library is to avoid unnecessary object crea
 Compared to other implementation of logic libraries on the JVM this is a huge memory and performance improvement.
 
 ## Release Plan
-The current release is declared as 1.0 Release Candidate 1.  The API is considered stable but some testing and documentation has to be finished for a final version 1.0 in January 2016.
+The current release is declared as 1.0 Release Candidate 2.  The API is considered stable but some testing and documentation has to be finished for a final version 1.0 in January 2016.
 
 ## Getting Started
 The following code creates the Boolean Formula *A and not (B or not C)* programatically:
