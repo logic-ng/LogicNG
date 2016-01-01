@@ -52,11 +52,11 @@ public final class ExistentialQuantifierElimination implements FormulaTransforma
   private final Literal[] elimination;
 
   /**
-   * Constructs a new existential quantifier elimination for a given literal.
-   * @param lit the literal
+   * Constructs a new existential quantifier elimination for the given literals.
+   * @param literals the literals
    */
-  public ExistentialQuantifierElimination(final Literal lit) {
-    this.elimination = new Literal[]{lit};
+  public ExistentialQuantifierElimination(final Literal... literals) {
+    this.elimination = Arrays.copyOf(literals, literals.length);
   }
 
   /**
@@ -65,14 +65,6 @@ public final class ExistentialQuantifierElimination implements FormulaTransforma
    */
   public ExistentialQuantifierElimination(final Collection<Literal> literals) {
     this.elimination = literals.toArray(new Literal[literals.size()]);
-  }
-
-  /**
-   * Constructs a new existential quantifier elimination for the given literals.
-   * @param literals the literals
-   */
-  public ExistentialQuantifierElimination(final Literal... literals) {
-    this.elimination = Arrays.copyOf(literals, literals.length);
   }
 
   @Override

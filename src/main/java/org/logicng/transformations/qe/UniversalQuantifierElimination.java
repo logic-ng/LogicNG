@@ -52,11 +52,11 @@ public final class UniversalQuantifierElimination implements FormulaTransformati
   private final Literal[] elimination;
 
   /**
-   * Constructs a new universal quantifier elimination for a given literal.
-   * @param lit the literal
+   * Constructs a new universal quantifier elimination for the given literals.
+   * @param literals the literals
    */
-  public UniversalQuantifierElimination(final Literal lit) {
-    this.elimination = new Literal[]{lit};
+  public UniversalQuantifierElimination(final Literal... literals) {
+    this.elimination = Arrays.copyOf(literals, literals.length);
   }
 
   /**
@@ -65,14 +65,6 @@ public final class UniversalQuantifierElimination implements FormulaTransformati
    */
   public UniversalQuantifierElimination(final Collection<Literal> literals) {
     this.elimination = literals.toArray(new Literal[literals.size()]);
-  }
-
-  /**
-   * Constructs a new universal quantifier elimination for the given literals.
-   * @param literals the literals
-   */
-  public UniversalQuantifierElimination(final Literal... literals) {
-    this.elimination = Arrays.copyOf(literals, literals.length);
   }
 
   @Override
