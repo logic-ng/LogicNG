@@ -30,10 +30,9 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parser.ParserException;
-import org.logicng.io.parser.PropositionalParser;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 

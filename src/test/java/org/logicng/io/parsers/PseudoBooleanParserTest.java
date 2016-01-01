@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.parser;
+package org.logicng.io.parsers;
 
 import org.logicng.formulas.CType;
 import org.logicng.formulas.F;

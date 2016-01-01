@@ -32,7 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
-import org.logicng.io.parser.ParserException;
+import org.logicng.io.parsers.ParserException;
 
 import java.util.Arrays;
 import java.util.Collections;

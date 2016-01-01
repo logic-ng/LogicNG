@@ -30,8 +30,8 @@ package org.logicng.formulas;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.io.parser.ParserException;
-import org.logicng.io.parser.PropositionalParser;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -115,12 +115,13 @@ public class AndTest {
 
   @Test
   public void testToString() {
+    final FormulaFactory f = new FormulaFactory();
     Assert.assertEquals("a & b", F.AND1.toString());
     Assert.assertEquals("~a & ~b", F.AND2.toString());
     Assert.assertEquals("(x | y) & (~x | ~y)", F.AND3.toString());
-    Assert.assertEquals("a & b & ~x & ~y", F.f.and(F.A, F.B, F.NX, F.NY).toString());
-    Assert.assertEquals("(a => b) & (~a => ~b)", F.f.and(F.IMP1, F.IMP2).toString());
-    Assert.assertEquals("(a <=> b) & (~a <=> ~b)", F.f.and(F.EQ1, F.EQ2).toString());
+    Assert.assertEquals("a & b & ~x & ~y", f.and(F.A, F.B, F.NX, F.NY).toString());
+    Assert.assertEquals("(a => b) & (~a => ~b)", f.and(F.IMP1, F.IMP2).toString());
+    Assert.assertEquals("(a <=> b) & (~a <=> ~b)", f.and(F.EQ1, F.EQ2).toString());
   }
 
   @Test

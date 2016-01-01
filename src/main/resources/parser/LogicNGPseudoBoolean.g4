@@ -29,7 +29,7 @@
 grammar LogicNGPseudoBoolean;
 
 @parser::header {
-package org.logicng.io.parser;
+package org.logicng.io.parsers;
 
 import java.util.LinkedHashSet;
 import org.logicng.formulas.*;
@@ -44,7 +44,7 @@ public void setFormulaFactory(final FormulaFactory f) {
 }
 
 @lexer::header {
-package org.logicng.io.parser;
+package org.logicng.io.parsers;
 
 import org.logicng.formulas.FormulaFactory;
 }

@@ -26,30 +26,34 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.parser;
+package org.logicng.io.parsers;
+
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.LexerNoViableAltException;
 
 /**
- * A parser exception for the LogicNG parsers.
+ * A lexer for propositional formulas.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public final class ParserException extends Exception {
+public final class PropositionalLexer extends LogicNGPropositionalLexer {
 
   /**
-   * Constructs a new parser exception with a given message.
-   * @param message the message
+   * Constructs a new LogicNG lexer.
+   * @param inputStream the input stream
    */
-  public ParserException(final String message) {
-    super(message);
+  public PropositionalLexer(final CharStream inputStream) {
+    super(inputStream);
   }
 
-  /**
-   * Constructs a new parser exception with a given message and inner exception.
-   * @param message   the message
-   * @param exception the inner exception
-   */
-  public ParserException(final String message, final Exception exception) {
-    super(message, exception);
+  @Override
+  public void recover(final LexerNoViableAltException exception) {
+    throw new LexerException(exception.getMessage());
+  }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
   }
 }

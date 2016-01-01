@@ -26,21 +26,30 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.parser;
+package org.logicng.io.parsers;
 
 /**
- * A lexer exception for the lexers.
+ * A parser exception for the LogicNG parsers.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public final class LexerException extends RuntimeException {
+public final class ParserException extends Exception {
 
   /**
-   * Constructs a new lexer exception with a given message.
+   * Constructs a new parser exception with a given message.
    * @param message the message
    */
-  public LexerException(final String message) {
+  public ParserException(final String message) {
     super(message);
+  }
+
+  /**
+   * Constructs a new parser exception with a given message and inner exception.
+   * @param message   the message
+   * @param exception the inner exception
+   */
+  public ParserException(final String message, final Exception exception) {
+    super(message, exception);
   }
 }

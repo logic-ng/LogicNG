@@ -31,8 +31,8 @@ package org.logicng.formulas;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
-import org.logicng.io.parser.ParserException;
-import org.logicng.io.parser.PropositionalParser;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 
 import java.util.Arrays;
 

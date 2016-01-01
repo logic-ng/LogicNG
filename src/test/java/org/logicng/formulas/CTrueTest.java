@@ -30,7 +30,7 @@ package org.logicng.formulas;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.io.parser.ParserException;
+import org.logicng.io.parsers.ParserException;
 
 /**
  * Unit Tests for the class {@link CTrue}.

@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.parser;
+package org.logicng.io.parsers;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -33,8 +33,8 @@ import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parser.ParserException;
-import org.logicng.io.parser.PropositionalParser;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 
 import java.util.Arrays;
 import java.util.Objects;

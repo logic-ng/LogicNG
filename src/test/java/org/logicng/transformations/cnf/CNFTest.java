@@ -33,8 +33,8 @@ import org.junit.Test;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.handlers.FactorizationHandler;
-import org.logicng.io.parser.ParserException;
-import org.logicng.io.parser.PropositionalParser;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 

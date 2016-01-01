@@ -26,29 +26,21 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.parser;
-
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.LexerNoViableAltException;
+package org.logicng.io.parsers;
 
 /**
- * A lexer for pseudo boolean formulas.
- * @author Steffen Hildebrandt
+ * A lexer exception for the lexers.
+ * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
-public final class PseudoBooleanLexer extends LogicNGPseudoBooleanLexer {
+public final class LexerException extends RuntimeException {
 
   /**
-   * Constructs a new pseudo boolean lexer.
-   * @param inputStream the input stream
+   * Constructs a new lexer exception with a given message.
+   * @param message the message
    */
-  public PseudoBooleanLexer(final CharStream inputStream) {
-    super(inputStream);
-  }
-
-  @Override
-  public void recover(final LexerNoViableAltException exception) {
-    throw new LexerException(exception.getMessage());
+  public LexerException(final String message) {
+    super(message);
   }
 }

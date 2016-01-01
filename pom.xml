@@ -57,7 +57,7 @@
         <version>4.5.1-1</version>
         <configuration>
           <sourceDirectory>src/main/resources/parser</sourceDirectory>
-          <outputDirectory>target/generated-sources/antlr/org/logicng/io/parser</outputDirectory>
+          <outputDirectory>target/generated-sources/antlr/org/logicng/io/parsers</outputDirectory>
         </configuration>
         <executions>
           <execution>
