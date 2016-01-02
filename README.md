@@ -49,15 +49,15 @@ The current release is declared as 1.0 Release Candidate 2.  The API is consider
 The following code creates the Boolean Formula *A and not (B or not C)* programatically:
 ```java
 final FormulaFactory f = new FormulaFactory();
-final Literal a = f.literal("a");
-final Literal b = f.literal("b");
-final Literal notC = f.literal("c", false);
+final Literal a = f.literal("A");
+final Literal b = f.literal("B");
+final Literal notC = f.literal("C", false);
 final Formula formula = f.and(a, f.not(f.or(b, notC)));
 ```
 Alternatively you can just parse the formula from a string:
 ```java
 final FormulaFactory f = new FormulaFactory();
-final PropositionalParser p = new PropositionalParser(p);
+final PropositionalParser p = new PropositionalParser(f);
 final Formula formula = p.parse("A & ~(B | ~C)");
 ```
 Once you created the formula you can for example convert it to NNF or CNF or solve it with an instance of MiniSAT:
