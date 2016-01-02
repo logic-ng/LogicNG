@@ -642,12 +642,13 @@ public final class FormulaFactory {
    * @param literals     the literals of the constraint
    * @param coefficients the coefficients of the constraint
    * @return the pseudo-Boolean constraint
+   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
    */
   public PBConstraint pbc(final CType comparator, int rhs, final List<Literal> literals, final List<Integer> coefficients) {
     int[] cfs = new int[coefficients.size()];
     for (int i = 0; i < coefficients.size(); i++)
       cfs[i] = coefficients.get(i);
-    return this.pbc(comparator, rhs, literals.toArray(new Literal[literals.size()]), cfs);
+    return this.constructPBC(comparator, rhs, literals.toArray(new Literal[literals.size()]), cfs);
   }
 
   /**
@@ -660,11 +661,14 @@ public final class FormulaFactory {
    * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
    */
   public PBConstraint pbc(final CType comparator, int rhs, final Literal[] literals, final int[] coefficients) {
+    return constructPBC(comparator, rhs, Arrays.copyOf(literals, literals.length), Arrays.copyOf(coefficients, coefficients.length));
+  }
+
+  private PBConstraint constructPBC(final CType comparator, int rhs, final Literal[] literals, final int[] coefficients) {
     final PBOperands operands = new PBOperands(literals, coefficients, comparator, rhs);
     PBConstraint constraint = this.pbConstraints.get(operands);
     if (constraint == null) {
-      constraint = new PBConstraint(Arrays.copyOf(literals, literals.length),
-              Arrays.copyOf(coefficients, coefficients.length), comparator, rhs, this);
+      constraint = new PBConstraint(literals, coefficients, comparator, rhs, this);
       this.pbConstraints.put(operands, constraint);
     }
     return constraint;
@@ -676,7 +680,7 @@ public final class FormulaFactory {
    * @param comparator the comparator of the constraint
    * @param rhs        the right-hand side of the constraint
    * @return the cardinality constraint
-   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
+   * @throws IllegalArgumentException if there are negative literals
    */
   public PBConstraint cc(final CType comparator, int rhs, final Collection<Literal> literals) {
     final int[] coefficients = new int[literals.size()];
@@ -688,7 +692,7 @@ public final class FormulaFactory {
         throw new IllegalArgumentException("A cardinality constraint can only consist of positive literals");
       else
         lits[count++] = lit;
-    return this.pbc(comparator, rhs, lits, coefficients);
+    return this.constructPBC(comparator, rhs, lits, coefficients);
   }
 
   /**
@@ -697,8 +701,7 @@ public final class FormulaFactory {
    * @param comparator the comparator of the constraint
    * @param rhs        the right-hand side of the constraint
    * @return the cardinality constraint
-   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond or if there are
-   *                                  negative literals
+   * @throws IllegalArgumentException if there are negative literals
    */
   public PBConstraint cc(final CType comparator, int rhs, final Literal... literals) {
     final int[] coefficients = new int[literals.length];
@@ -710,26 +713,24 @@ public final class FormulaFactory {
         throw new IllegalArgumentException("A cardinality constraint can only consist of positive literals");
       else
         lits[count++] = lit;
-    return this.pbc(comparator, rhs, lits, coefficients);
+    return this.constructPBC(comparator, rhs, lits, coefficients);
   }
 
   /**
    * Creates a new at-most-one cardinality constraint.
    * @param literals the literals of the constraint
    * @return the at-most-one constraint
-   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond or if there are
-   *                                  negative literals
+   * @throws IllegalArgumentException if there are negative literals
    */
   public PBConstraint amo(final Collection<Literal> literals) {
-    return this.cc(CType.LE, 1, literals.toArray(new Literal[literals.size()]));
+    return this.cc(CType.LE, 1, literals);
   }
 
   /**
    * Creates a new at-most-one cardinality constraint.
    * @param literals the literals of the constraint
    * @return the at-most-one constraint
-   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond or if there are
-   *                                  negative literals
+   * @throws IllegalArgumentException if there are negative literals
    */
   public PBConstraint amo(final Literal... literals) {
     return this.cc(CType.LE, 1, literals);
@@ -739,19 +740,17 @@ public final class FormulaFactory {
    * Creates a new exactly-one cardinality constraint.
    * @param literals the literals of the constraint
    * @return the exactly-one constraint
-   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond or if there are
-   *                                  negative literals
+   * @throws IllegalArgumentException if there are negative literals
    */
   public PBConstraint exo(final Collection<Literal> literals) {
-    return this.cc(CType.EQ, 1, literals.toArray(new Literal[literals.size()]));
+    return this.cc(CType.EQ, 1, literals);
   }
 
   /**
    * Creates a new exactly-one cardinality constraint.
    * @param literals the literals of the constraint
    * @return the exactly-one constraint
-   * @throws IllegalArgumentException if the number of literals and coefficients do not correspond or if there are
-   *                                  negative literals
+   * @throws IllegalArgumentException if there are negative literals
    */
   public PBConstraint exo(final Literal... literals) {
     return this.cc(CType.EQ, 1, literals);
