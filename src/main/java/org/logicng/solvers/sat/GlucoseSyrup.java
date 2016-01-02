@@ -113,10 +113,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
 
   // internal solver state
   private LNGVector<LNGVector<MSWatcher>> watchesBin;
-  private LNGVector<LNGVector<MSWatcher>> unaryWatches;
   private LNGIntVector permDiff;
   private LNGIntVector lastDecisionLevel;
-  private LNGVector<MSClause> unaryWatchedClauses;
   private LNGBoundedLongQueue lbdQueue;
   private LNGBoundedIntQueue trailQueue;
   private LNGBooleanVector assump;
@@ -143,8 +141,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   private int sizeTrailQueue;
   private boolean reduceOnSize;
   private int reduceOnSizeSize;
-  private boolean useUnaryWatched;
-  private boolean promoteOneWatchedClause;
   private double maxVarDecay;
 
   private PrintStream proofOutput;
@@ -175,10 +171,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   private void initializeGlucose() {
     this.initializeGlucoseConfig();
     this.watchesBin = new LNGVector<>();
-    this.unaryWatches = new LNGVector<>();
     this.permDiff = new LNGIntVector();
     this.lastDecisionLevel = new LNGIntVector();
-    this.unaryWatchedClauses = new LNGVector<>();
     this.lbdQueue = new LNGBoundedLongQueue();
     this.trailQueue = new LNGBoundedIntQueue();
     this.assump = new LNGBooleanVector();
@@ -212,8 +206,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     this.sizeTrailQueue = glucoseConfig.sizeTrailQueue;
     this.reduceOnSize = glucoseConfig.reduceOnSize;
     this.reduceOnSizeSize = glucoseConfig.reduceOnSizeSize;
-    this.useUnaryWatched = glucoseConfig.useUnaryWatched;
-    this.promoteOneWatchedClause = glucoseConfig.promoteOneWatchedClause;
     this.maxVarDecay = glucoseConfig.maxVarDecay;
   }
 
@@ -225,8 +217,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     watches.push(new LNGVector<MSWatcher>());
     watchesBin.push(new LNGVector<MSWatcher>());
     watchesBin.push(new LNGVector<MSWatcher>());
-    unaryWatches.push(new LNGVector<MSWatcher>());
-    unaryWatches.push(new LNGVector<MSWatcher>());
     vars.push(newVar);
     seen.push(false);
     permDiff.push(0);
@@ -328,36 +318,15 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
       clausesLiterals -= c.size();
   }
 
-  /**
-   * Detaches a clause in the purgatory.
-   * @param c the clause
-   */
-  private void detachClausePurgatory(final MSClause c) {
-    assert c.size() > 1;
-    unaryWatches.get(not(c.get(0))).remove(new MSWatcher(c, c.get(1)));
-  }
-
   @Override
   protected void removeClause(final MSClause c) {
-    removeClause(c, false);
-  }
-
-  /**
-   * Removes a given clause.
-   * @param c           the clause
-   * @param inPurgatory {@code true} if the clause is in the purgatory, {@code false} otherwise
-   */
-  private void removeClause(final MSClause c, boolean inPurgatory) {
     if (certifiedUnsat) {
       this.proofOutput.print("d ");
       for (int i = 0; i < c.size(); i++)
         this.proofOutput.print(((var(c.get(i)) + 1) * (-2 * (sign(c.get(i)) ? 1 : 0) + 1)) + " ");
       this.proofOutput.println("0");
     }
-    if (inPurgatory)
-      detachClausePurgatory(c);
-    else
-      detachClause(c);
+    detachClause(c);
     if (locked(c))
       v(c.get(0)).setReason(null);
   }
@@ -665,74 +634,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
         }
       }
       ws.removeElements(iInd - jInd);
-      if (useUnaryWatched && confl == null)
-        confl = propagateUnaryWatches(p);
     }
     simpDBProps -= numProps;
-    return confl;
-  }
-
-  /**
-   * Performs unit propagation on unary watched literals.
-   * @param p the currently propagated literal
-   * @return the conflicting clause if a conflict arose during unit propagation or {@code null} if there was none
-   */
-  private MSClause propagateUnaryWatches(int p) {
-    MSClause confl = null;
-    LNGVector<MSWatcher> ws = unaryWatches.get(p);
-    int iInd = 0;
-    int jInd = 0;
-    while (iInd < ws.size()) {
-      MSWatcher i = ws.get(iInd);
-      int blocker = i.blocker();
-      if (value(blocker) == Tristate.TRUE) {
-        ws.set(jInd++, i);
-        iInd++;
-        continue;
-      }
-      MSClause c = i.clause();
-      assert c.oneWatched();
-      int falseLit = not(p);
-      assert c.get(0) == falseLit;
-      iInd++;
-      MSWatcher w = new MSWatcher(c, c.get(0));
-      boolean foundWatch = false;
-      for (int k = 1; k < c.size() && !foundWatch; k++) {
-        if (value(c.get(k)) != Tristate.FALSE) {
-          c.set(0, c.get(k));
-          c.set(k, falseLit);
-          unaryWatches.get(not(c.get(0))).push(w);
-          foundWatch = true;
-        }
-      }
-      if (!foundWatch) {
-        ws.set(jInd++, w);
-        confl = c;
-        qhead = trail.size();
-        while (iInd < ws.size())
-          ws.set(jInd++, ws.get(iInd++));
-        if (promoteOneWatchedClause) {
-          int maxlevel = -1;
-          int index = -1;
-          for (int k = 1; k < c.size(); k++) {
-            assert value(c.get(k)) == Tristate.FALSE;
-            assert v(c.get(k)).level() <= v(c.get(0)).level();
-            if (v(c.get(k)).level() > maxlevel) {
-              index = k;
-              maxlevel = v(c.get(k)).level();
-            }
-          }
-          detachClausePurgatory(c);
-          assert index != -1;
-          int tmp = c.get(1);
-          c.set(1, c.get(index));
-          c.set(index, tmp);
-          attachClause(c);
-          c.setOneWatched(false);
-        }
-      }
-    }
-    ws.removeElements(iInd - jInd);
     return confl;
   }
 
@@ -983,10 +886,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     for (i = j = 0; i < cs.size(); i++) {
       final MSClause c = cs.get(i);
       if (satisfied(c))
-        if (c.oneWatched())
-          removeClause(cs.get(i), true);
-        else
-          removeClause(cs.get(i));
+        removeClause(cs.get(i));
       else
         cs.set(j++, cs.get(i));
     }
@@ -1017,7 +917,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     if (nAssigns() == simpDBAssigns || (simpDBProps > 0))
       return true;
     removeSatisfied(learnts);
-    removeSatisfied(unaryWatchedClauses);
     if (removeSatisfied)
       removeSatisfied(clauses);
     rebuildOrderHeap();

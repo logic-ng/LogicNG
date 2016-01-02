@@ -52,8 +52,6 @@ public final class GlucoseConfig extends Configuration {
   final int sizeTrailQueue;
   final boolean reduceOnSize;
   final int reduceOnSizeSize;
-  final boolean useUnaryWatched;
-  final boolean promoteOneWatchedClause;
   final double maxVarDecay;
 
   /**
@@ -73,8 +71,6 @@ public final class GlucoseConfig extends Configuration {
     private int sizeTrailQueue = 5000;
     private boolean reduceOnSize = false;
     private int reduceOnSizeSize = 12;
-    private boolean useUnaryWatched = false;
-    private boolean promoteOneWatchedClause = true;
     private double maxVarDecay = 0.95;
 
     /**
@@ -212,28 +208,6 @@ public final class GlucoseConfig extends Configuration {
     }
 
     /**
-     * Turns on the usage of unary watched literals.  The default value is {@code true}.
-     * @param useUnaryWatched {@code true} to enable unary watched literals, {@code false} otherwise
-     * @return the builder
-     */
-    public Builder useUnaryWatched(boolean useUnaryWatched) {
-      this.useUnaryWatched = useUnaryWatched;
-      return this;
-    }
-
-    /**
-     * Turns on that one watched clauses are promoted to two watched clauses if found empty.  The default value is
-     * {@code true}.
-     * @param promoteOneWatchedClause {@code true} if the promotion of one watched clauses is turned on, {@code false}
-     *                                otherwise
-     * @return the builder
-     */
-    public Builder promoteOneWatchedClause(boolean promoteOneWatchedClause) {
-      this.promoteOneWatchedClause = promoteOneWatchedClause;
-      return this;
-    }
-
-    /**
      * Sets the maximal variable activity decay factor to a given value.  The default value is 0.95.
      * @param maxVarDecay the value (should be in the range 0..1)
      * @return the builder
@@ -271,8 +245,6 @@ public final class GlucoseConfig extends Configuration {
     this.sizeTrailQueue = builder.sizeTrailQueue;
     this.reduceOnSize = builder.reduceOnSize;
     this.reduceOnSizeSize = builder.reduceOnSizeSize;
-    this.useUnaryWatched = builder.useUnaryWatched;
-    this.promoteOneWatchedClause = builder.promoteOneWatchedClause;
     this.maxVarDecay = builder.maxVarDecay;
   }
 }

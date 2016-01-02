@@ -80,18 +80,16 @@ public class SATTest {
     this.f = new FormulaFactory();
     this.pg = new PigeonHoleGenerator(f);
     this.parser = new PropositionalParser(f);
-    this.solvers = new SATSolver[9];
+    this.solvers = new SATSolver[8];
     this.solvers[0] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(true).build());
     this.solvers[1] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(false).build());
     this.solvers[2] = MiniSat.glucose(f, new MiniSatConfig.Builder().incremental(false).build(),
             new GlucoseConfig.Builder().build());
-    this.solvers[3] = MiniSat.glucose(f, new MiniSatConfig.Builder().incremental(false).build(),
-            new GlucoseConfig.Builder().useUnaryWatched(true).build());
-    this.solvers[4] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(true).build());
-    this.solvers[5] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(false).build());
-    this.solvers[6] = CleaneLing.minimalistic(f);
-    this.solvers[7] = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(true).build());
-    this.solvers[8] = CleaneLing.full(f);
+    this.solvers[3] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(true).build());
+    this.solvers[4] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(false).build());
+    this.solvers[5] = CleaneLing.minimalistic(f);
+    this.solvers[6] = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(true).build());
+    this.solvers[7] = CleaneLing.full(f);
   }
 
   @Test
@@ -228,7 +226,7 @@ public class SATTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testIllegalEnumeration() {
-    final SATSolver s = this.solvers[8];
+    final SATSolver s = this.solvers[7];
     final Literal[] lits = new Literal[100];
     final CCExactlyOne c = new CCEXOProduct(f);
     for (int j = 0; j < lits.length; j++)
