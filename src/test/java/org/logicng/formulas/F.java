@@ -37,6 +37,7 @@ package org.logicng.formulas;
 public class F {
 
   public static final FormulaFactory f = new FormulaFactory();
+  public static final FormulaFactory g = new FormulaFactory();
 
   // Constants
   public static final Constant TRUE = f.verum();

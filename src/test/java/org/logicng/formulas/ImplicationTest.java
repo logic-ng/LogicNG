@@ -127,6 +127,16 @@ public class ImplicationTest {
   }
 
   @Test
+  public void testEqualsDifferentFormulaFactory() {
+    Assert.assertEquals(F.IMP1, F.g.implication(F.g.literal("a"), F.g.literal("b")));
+    Assert.assertEquals(F.IMP3, F.g.implication(F.AND1, F.OR1));
+    Assert.assertNotEquals(F.IMP1, F.g.literal("a"));
+    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("b"), F.g.literal("a")));
+    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("a", false), F.g.literal("b")));
+    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("a"), F.g.literal("b", false)));
+  }
+
+  @Test
   public void testHash() {
     Formula imp = F.f.implication(F.NA, F.NB);
     Assert.assertEquals(F.IMP2.hashCode(), imp.hashCode());

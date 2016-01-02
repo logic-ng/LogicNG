@@ -165,9 +165,8 @@ public final class Not extends Formula {
 
   @Override
   public int hashCode() {
-    final int result = this.hashCode;
-    if (result == 0)
-      this.hashCode = this.operand.hashCode() << 1;
+    if (this.hashCode == 0)
+      this.hashCode = 29 * this.operand.hashCode();
     return this.hashCode;
   }
 

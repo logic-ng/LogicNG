@@ -127,6 +127,16 @@ public class EquivalenceTest {
   }
 
   @Test
+  public void testEqualsDifferentFormulaFactory() {
+    Assert.assertEquals(F.EQ1, F.g.equivalence(F.g.literal("a"), F.g.literal("b")));
+    Assert.assertEquals(F.EQ1, F.g.equivalence(F.B, F.A));
+    Assert.assertEquals(F.EQ3, F.g.equivalence(F.AND1, F.OR1));
+    Assert.assertNotEquals(F.EQ1, F.g.literal("a"));
+    Assert.assertNotEquals(F.EQ1, F.g.equivalence(F.g.literal("a", false), F.g.literal("b")));
+    Assert.assertNotEquals(F.EQ1, F.g.equivalence(F.g.literal("a"), F.g.literal("b", false)));
+  }
+
+  @Test
   public void testHash() {
     Formula eq = F.f.equivalence(F.IMP1, F.IMP2);
     Assert.assertEquals(F.EQ4.hashCode(), eq.hashCode());

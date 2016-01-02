@@ -75,9 +75,8 @@ public final class Implication extends BinaryOperator {
 
   @Override
   public int hashCode() {
-    final int result = this.hashCode;
-    if (result == 0)
-      this.hashCode = left.hashCode() - right.hashCode();
+    if (this.hashCode == 0)
+      this.hashCode = 37 * left.hashCode() + 39 * right.hashCode();
     return this.hashCode;
   }
 

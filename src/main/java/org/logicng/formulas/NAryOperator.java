@@ -183,11 +183,11 @@ public abstract class NAryOperator extends Formula {
    * @return hashcode
    */
   protected int hashCode(int shift) {
-    final int result = this.hashCode;
-    if (result == 0) {
+    if (this.hashCode == 0) {
       int temp = 1;
       for (Formula formula : this.operands)
-        temp = shift * temp + formula.hashCode();
+        temp += formula.hashCode();
+      temp *= shift;
       this.hashCode = temp;
     }
     return this.hashCode;

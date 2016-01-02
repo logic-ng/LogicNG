@@ -454,7 +454,6 @@ public class PBConstraintTest {
     Assert.assertNotEquals(pb2, f.pbc(CType.LE, 8, lits2, coeffs2alt2));
     Assert.assertNotEquals(pb2, f.pbc(CType.LT, 8, lits2, coeffs2));
     Assert.assertNotEquals(pb2, f.pbc(CType.LE, 7, lits2, coeffs2));
-
   }
 
   @Test

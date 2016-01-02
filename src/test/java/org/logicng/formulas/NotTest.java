@@ -106,6 +106,14 @@ public class NotTest {
   }
 
   @Test
+  public void testEqualsDifferentFormulaFactory() {
+    Assert.assertEquals(F.NOT1, F.g.not(F.AND1));
+    Assert.assertEquals(F.NOT2, F.g.not(F.g.or(F.g.literal("x"), F.g.literal("y"))));
+    Assert.assertNotEquals(F.NOT1, F.g.literal("x"));
+    Assert.assertNotEquals(F.NOT2, F.g.not(F.g.or(F.g.literal("a"), F.g.literal("b"))));
+  }
+
+  @Test
   public void testHash() {
     Formula not = F.f.not(F.AND1);
     Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());

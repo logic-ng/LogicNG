@@ -109,6 +109,15 @@ public class LiteralTest {
   }
 
   @Test
+  public void testEqualsDifferentFormulaFactory() {
+    Assert.assertEquals(F.A, F.g.literal("a", true));
+    Assert.assertEquals(F.NA, F.g.literal("a", false));
+    Assert.assertNotEquals(F.A, F.g.literal("a", false));
+    Assert.assertNotEquals(F.A, F.g.literal("b", true));
+    Assert.assertNotEquals(F.A, F.g.falsum());
+  }
+
+  @Test
   public void testCompareTo() {
     Assert.assertTrue(F.A.compareTo(F.A) == 0);
     Assert.assertTrue(F.NA.compareTo(F.NA) == 0);

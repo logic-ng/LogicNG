@@ -72,8 +72,15 @@ public class CFalseTest {
 
   @Test
   public void testEquals() {
-    Assert.assertEquals(F.FALSE, F.FALSE);
-    Assert.assertNotEquals(F.FALSE, F.TRUE);
+    Assert.assertEquals(F.FALSE, F.f.falsum());
+    Assert.assertNotEquals(F.FALSE, null);
+    Assert.assertNotEquals(F.FALSE, F.f.verum());
+  }
+
+  @Test
+  public void testEqualsDifferentFormulaFactory() {
+    Assert.assertEquals(F.FALSE, F.g.falsum());
+    Assert.assertNotEquals(F.FALSE, F.g.verum());
   }
 
   @Test

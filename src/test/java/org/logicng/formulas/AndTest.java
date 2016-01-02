@@ -139,6 +139,19 @@ public class AndTest {
   }
 
   @Test
+  public void testEqualsDifferentFormulaFactory() {
+    Assert.assertEquals(F.AND1, F.g.and(F.g.literal("a"), F.g.literal("b")));
+    Assert.assertEquals(F.AND3, F.g.and(F.OR1, F.OR2));
+    Assert.assertEquals(F.f.and(F.f.or(F.f.literal("a"), F.f.literal("b")), F.f.or(F.f.literal("x"), F.f.literal("y", false))),
+            F.g.and(F.g.or(F.g.literal("y", false), F.g.literal("x")), F.f.or(F.g.literal("b"), F.g.literal("a"))));
+    Assert.assertEquals(F.f.and(F.A, F.NB, F.OR1, F.NX), F.g.and(F.g.literal("x", false), F.g.literal("a"), F.g.literal("b", false), F.g.or(F.g.literal("x"), F.g.literal("y"))));
+    Assert.assertNotEquals(F.AND1, F.g.literal("a"));
+    Assert.assertNotEquals(F.AND1, F.g.and(F.g.literal("a", false), F.g.literal("b")));
+    Assert.assertNotEquals(F.AND1, F.g.and(F.g.literal("a"), F.g.literal("b", false)));
+    Assert.assertNotEquals(F.AND1, F.f.and(F.A, F.B, F.g.literal("c")));
+  }
+
+  @Test
   public void testHash() {
     Formula and = F.f.and(F.OR1, F.OR2);
     Assert.assertEquals(F.AND3.hashCode(), and.hashCode());

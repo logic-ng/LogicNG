@@ -83,6 +83,7 @@ public final class PBConstraint extends Formula {
   private final int rhs;
   private final boolean isCC;
   private ImmutableFormulaList encoding;
+  private int hashCode;
 
   /**
    * Constructs a new pseudo-Boolean constraint.
@@ -114,6 +115,7 @@ public final class PBConstraint extends Formula {
     this.comparator = comparator;
     this.rhs = rhs;
     this.encoding = null;
+    this.hashCode = 0;
   }
 
   /**
@@ -477,13 +479,23 @@ public final class PBConstraint extends Formula {
 
   @Override
   public int hashCode() {
-    return Objects.hash(Arrays.hashCode(this.literals), Arrays.hashCode(this.coefficients), this.comparator, this.rhs);
+    if (this.hashCode == 0) {
+      int temp = this.comparator.hashCode() + this.rhs;
+      for (int i = 0; i < literals.length; i++) {
+        temp += 11 * literals[i].hashCode();
+        temp += 13 * coefficients[i];
+      }
+      this.hashCode = temp;
+    }
+    return this.hashCode;
   }
 
   @Override
   public boolean equals(final Object other) {
     if (this == other)
       return true;
+    if (other instanceof Formula && this.f == ((Formula) other).f)
+      return false;
     if (other instanceof PBConstraint) {
       final PBConstraint o = (PBConstraint) other;
       return this.rhs == o.rhs && this.comparator == o.comparator

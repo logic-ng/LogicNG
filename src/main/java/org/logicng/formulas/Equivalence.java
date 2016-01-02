@@ -72,9 +72,8 @@ public final class Equivalence extends BinaryOperator {
 
   @Override
   public int hashCode() {
-    final int result = this.hashCode;
-    if (result == 0)
-      this.hashCode = left.hashCode() + right.hashCode();
+    if (this.hashCode == 0)
+      this.hashCode = 41 * (left.hashCode() + right.hashCode());
     return this.hashCode;
   }
 

@@ -89,7 +89,7 @@ public final class Or extends NAryOperator {
 
   @Override
   public int hashCode() {
-    return hashCode(15);
+    return hashCode(17);
   }
 
   @Override
