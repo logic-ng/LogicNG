@@ -33,6 +33,8 @@ import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.printer.DefaultStringRepresentation;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubformulaFunction;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.util.Pair;
 
@@ -103,6 +105,8 @@ public final class FormulaFactory {
   private final FormulaTransformation defaultCNFTransformation;
   private final SubformulaFunction subformulaFunction;
 
+  private final PseudoBooleanParser parser;
+
   /**
    * Constructor for a new formula factory.
    * @param stringRepresentation the string representation of the formulas
@@ -116,6 +120,7 @@ public final class FormulaFactory {
     this.configurations = new HashMap<>();
     this.defaultCNFTransformation = new CNFFactorization();
     this.subformulaFunction = new SubformulaFunction();
+    this.parser = new PseudoBooleanParser(this);
   }
 
   /**
@@ -864,6 +869,15 @@ public final class FormulaFactory {
     return formula.apply(this.subformulaFunction).size();
   }
 
+  /**
+   * Parses a given string to a formula using a pseudo boolean parser.
+   * @param string a string representing the formula
+   * @return the formula
+   * @throws ParserException if the parser throws an exception
+   */
+  public Formula parse(final String string) throws ParserException {
+    return parser.parse(string);
+  }
 
   /**
    * Adds a given formula to a list of operands.  If the formula is the neutral element for the respective n-ary

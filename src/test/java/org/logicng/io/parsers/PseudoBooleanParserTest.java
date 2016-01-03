@@ -148,6 +148,12 @@ public class PseudoBooleanParserTest {
     Assert.assertEquals(F.f.verum(), parser.parse(""));
   }
 
+  @Test
+  public void testFormulaFactoryParser() throws ParserException {
+    Assert.assertEquals(F.f.and(F.f.literal("a"), F.f.literal("b")), F.f.parse("a & b"));
+    Assert.assertEquals(F.PBC1, F.f.parse("2*a + -4*b + 3*x = 2"));
+  }
+
   @Test(expected = ParserException.class)
   public void testIllegalVariable1() throws ParserException {
     new PseudoBooleanParser(F.f).parse("$$%");
