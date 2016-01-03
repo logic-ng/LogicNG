@@ -32,6 +32,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * Unit Tests for the class {@link PropositionalParser}.
  * @author Christoph Zengler
@@ -105,6 +109,12 @@ public class PropositionalParserTest {
     Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | (y <=> z)"));
     Assert.assertEquals(F.f.equivalence(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x => y <=> z"));
     Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => (y <=> z)"));
+  }
+
+  @Test
+  public void parseEmptyString() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
   }
 
   @Test(expected = ParserException.class)
@@ -185,5 +195,12 @@ public class PropositionalParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula7() throws ParserException {
     new PropositionalParser(F.f).parse("ab@cd)");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIOException() throws ParserException, IOException {
+    final InputStream invalidStream = new FileInputStream("README.md");
+    invalidStream.close();
+    new PropositionalParser(F.f).parse(invalidStream);
   }
 }

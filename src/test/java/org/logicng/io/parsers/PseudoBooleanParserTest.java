@@ -28,13 +28,16 @@
 
 package org.logicng.io.parsers;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
@@ -139,23 +142,11 @@ public class PseudoBooleanParserTest {
     Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => (y <=> z)"));
   }
 
-//  @Test
-//  public void testParsePbcPrecedences() throws ParserException {
-//    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
-//    Formula pbcEq = F.f.pbc(CType.EQ, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
-//    Formula pbcLt = F.f.pbc(CType.LT, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
-//    Formula pbcLe = F.f.pbc(CType.LE, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
-//    Formula pbcGt = F.f.pbc(CType.GT, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
-//    Formula pbcGe = F.f.pbc(CType.GE, 4, new Literal[]{F.f.literal("a"), F.f.literal("b", false)}, new int[]{2, 3});
-//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcEq), parser.parse("x | 2 * a + 3 * ~b = 4"));
-//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcLt), parser.parse("x | 2 * a + 3 * ~b < 4"));
-//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcLe), parser.parse("x | 2 * a + 3 * ~b <= 4"));
-//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcGt), parser.parse("x | 2 * a + 3 * ~b > 4"));
-//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcGe), parser.parse("x | 2 * a + 3 * ~b >= 4"));
-//    Assert.assertEquals(F.f.or(pbcLe, F.f.literal("x")), parser.parse("2 * a + 3 * ~b <= 4 | x"));
-//    Assert.assertEquals(F.f.or(F.f.literal("x"), pbcLe), parser.parse("x & 2 * a + 3 * ~b <= 4"));
-//    Assert.assertEquals(F.f.or(pbcLe, F.f.literal("x")), parser.parse("2 * a + 3 * ~b <= 4 & x"));
-//  }
+  @Test
+  public void parseEmptyString() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
+  }
 
   @Test(expected = ParserException.class)
   public void testIllegalVariable1() throws ParserException {
@@ -240,5 +231,12 @@ public class PseudoBooleanParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula7() throws ParserException {
     new PseudoBooleanParser(F.f).parse("abc@");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIOException() throws ParserException, IOException {
+    final InputStream invalidStream = new FileInputStream("README.md");
+    invalidStream.close();
+    new PseudoBooleanParser(F.f).parse(invalidStream);
   }
 }

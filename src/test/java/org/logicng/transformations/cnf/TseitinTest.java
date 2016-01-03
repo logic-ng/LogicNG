@@ -125,6 +125,24 @@ public class TseitinTest {
     Assert.assertTrue(equivalentModels(f5, f5.transform(ts), f5.variables()));
   }
 
+  @Test
+  public void testFactorization() throws ParserException {
+    PropositionalParser p = new PropositionalParser(F.f);
+    final TseitinTransformation pgf = new TseitinTransformation();
+    final Formula f1 = p.parse("(a | b) => c");
+    final Formula f2 = p.parse("~x & ~y");
+    final Formula f3 = p.parse("d & ((a | b) => c)");
+    final Formula f4 = p.parse("d & ((a | b) => c) | ~x & ~y");
+    Assert.assertTrue(f1.transform(pgf).holds(cnfPredicate));
+    Assert.assertEquals(f1.variables().size(), f1.transform(pgf).variables().size());
+    Assert.assertTrue(f2.transform(pgf).holds(cnfPredicate));
+    Assert.assertEquals(f2.variables().size(), f2.transform(pgf).variables().size());
+    Assert.assertTrue(f3.transform(pgf).holds(cnfPredicate));
+    Assert.assertEquals(f3.variables().size(), f3.transform(pgf).variables().size());
+    Assert.assertTrue(f4.transform(pgf).holds(cnfPredicate));
+    Assert.assertEquals(f4.variables().size(), f4.transform(pgf).variables().size());
+  }
+
   private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Literal> vars) {
     final SATSolver s = MiniSat.miniSat(f1.factory());
     s.add(f1);

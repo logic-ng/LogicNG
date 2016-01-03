@@ -45,7 +45,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
 import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
 
 /**
- * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum.  Results in this implementation will be always
+ * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum.  Results in this implementation will always be
  * cached.
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
@@ -60,7 +60,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   private final CNFPredicate cnfPredicate = new CNFPredicate();
 
   /**
-   * Constructor.
+   * Constructor for a Plaisted &amp; Greenbaum transformation.
    * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
    * @param nnf                      indicates whether the formula should be transformed to NNF before converting it
    *                                 to CNF or not (transforming the formula to NNF usually reduces the number of
@@ -72,7 +72,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   }
 
   /**
-   * Constructor.
+   * Constructor for a Plaisted &amp; Greenbaum transformation with a factorization bound of 20.
    * @param nnf indicates whether the formula should be transformed to NNF before converting it to CNF or not
    *            (transforming the formula to NNF usually reduces the number of introduced variables and transforming
    *            time)
@@ -82,7 +82,8 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   }
 
   /**
-   * Constructor.
+   * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
+   * bound of 20.
    */
   public PlaistedGreenbaumTransformation() {
     this(20, true);

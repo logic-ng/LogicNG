@@ -43,7 +43,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.TSEITIN;
 import static org.logicng.formulas.cache.TransformationCacheEntry.TSEITIN_VARIABLE;
 
 /**
- * Transformation of a formula into CNF due to Tseitin.  Results in this implementation will be always cached.
+ * Transformation of a formula into CNF due to Tseitin.  Results in this implementation will always be cached.
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
  * @author Christoph Zengler
@@ -56,7 +56,7 @@ public final class TseitinTransformation implements FormulaTransformation {
   private final CNFPredicate cnfPredicate = new CNFPredicate();
 
   /**
-   * Constructor.
+   * Constructor for a Tseitin transformation.
    * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
    */
   public TseitinTransformation(int boundaryForFactorization) {
@@ -64,7 +64,7 @@ public final class TseitinTransformation implements FormulaTransformation {
   }
 
   /**
-   * Constructor.
+   * Constructor for a Tseitin transformation with a factorization bound of 20.
    */
   public TseitinTransformation() {
     this.boundaryForFactorization = 20;
