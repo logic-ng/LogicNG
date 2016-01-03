@@ -168,9 +168,9 @@ public class Assignment {
    */
   public List<Literal> positiveLiterals() {
     if (this.fastEvaluable)
-      return Collections.unmodifiableList((List<Literal>) this.pos);
-    else
       return Collections.unmodifiableList(new ArrayList<>(this.pos));
+    else
+      return Collections.unmodifiableList((List<Literal>) this.pos);
   }
 
   /**
@@ -179,9 +179,9 @@ public class Assignment {
    */
   public List<Literal> negativeLiterals() {
     if (this.fastEvaluable)
-      return Collections.unmodifiableList((List<Literal>) this.neg);
-    else
       return Collections.unmodifiableList(new ArrayList<>(this.neg));
+    else
+      return Collections.unmodifiableList((List<Literal>) this.neg);
   }
 
   /**

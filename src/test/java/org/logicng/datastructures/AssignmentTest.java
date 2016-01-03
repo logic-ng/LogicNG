@@ -81,6 +81,18 @@ public class AssignmentTest {
   }
 
   @Test
+  public void testNegativeVariables() {
+    Literal[] a = {F.A, F.B, F.X, F.Y};
+    Literal[] na = {F.NA, F.NB, F.NX, F.NY};
+    Assignment ass = new Assignment(Arrays.asList(na));
+    Assert.assertEquals(Arrays.asList(a), ass.negativeVariables());
+    ass = new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY));
+    Assert.assertEquals(Arrays.asList(F.X, F.Y), ass.negativeVariables());
+    ass = new Assignment(Arrays.asList(F.A, F.B, F.X, F.Y));
+    Assert.assertEquals(0, ass.negativeVariables().size());
+  }
+
+  @Test
   public void testAddLiteral() {
     Assignment ass = new Assignment();
     ass.addLiteral(F.A);
@@ -120,6 +132,30 @@ public class AssignmentTest {
     Assert.assertEquals(p.parse("~a"), new Assignment(Collections.singletonList(F.NA)).formula(F.f));
     Assert.assertEquals(p.parse("a & b"), new Assignment(Arrays.asList(F.A, F.B)).formula(F.f));
     Assert.assertEquals(p.parse("a & b & ~x & ~y"), new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY)).formula(F.f));
+  }
+
+  @Test
+  public void testFastEvaluable() {
+    Assignment ass = new Assignment(Arrays.asList(F.A, F.NX), false);
+    Assert.assertFalse(ass.fastEvaluable());
+    ass.convertToFastEvaluable();
+    Assert.assertTrue(ass.fastEvaluable());
+    Assert.assertEquals(Arrays.asList(F.A), ass.positiveLiterals());
+    Assert.assertEquals(Arrays.asList(F.NX), ass.negativeLiterals());
+    Assert.assertEquals(Arrays.asList(F.X), ass.negativeVariables());
+    ass.addLiteral(F.NB);
+    ass.addLiteral(F.Y);
+    Assert.assertEquals(Arrays.asList(F.A, F.Y), ass.positiveLiterals());
+    Assert.assertEquals(Arrays.asList(F.NB, F.NX), ass.negativeLiterals());
+    Assert.assertEquals(Arrays.asList(F.X, F.B), ass.negativeVariables());
+    Assert.assertTrue(ass.evaluateLit(F.Y));
+    Assert.assertFalse(ass.evaluateLit(F.B));
+    Assert.assertEquals(F.TRUE, ass.restrictLit(F.NB));
+    Assert.assertEquals(F.FALSE, ass.restrictLit(F.X));
+    Assert.assertEquals(null, ass.restrictLit(F.C));
+    Assert.assertEquals(F.f.and(F.A, F.NX, F.NB, F.Y), ass.formula(F.f));
+    ass = new Assignment(Arrays.asList(F.A, F.NX), true);
+    Assert.assertTrue(ass.fastEvaluable());
   }
 
   @Test
