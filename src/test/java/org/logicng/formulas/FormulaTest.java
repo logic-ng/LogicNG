@@ -45,15 +45,15 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
  */
 public class FormulaTest {
 
-    @Test
-    public void testStringContains() {
-      final FormulaFactory f = new FormulaFactory();
-      final Formula formula = f.not(f.and(f.literal("a"), f.literal("b")));
-      Assert.assertTrue(formula.contains("a"));
-      Assert.assertTrue(formula.contains("b"));
-      Assert.assertFalse(formula.contains("x"));
-      Assert.assertFalse(formula.contains("y"));
-    }
+  @Test
+  public void testStringContains() {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula formula = f.not(f.and(f.literal("a"), f.literal("b")));
+    Assert.assertTrue(formula.contains("a"));
+    Assert.assertTrue(formula.contains("b"));
+    Assert.assertFalse(formula.contains("x"));
+    Assert.assertFalse(formula.contains("y"));
+  }
 
   @Test
   public void testTransformationCache() {
@@ -99,5 +99,4 @@ public class FormulaTest {
       return "MyOwnCacheKey{description=" + description + "}";
     }
   }
-
 }

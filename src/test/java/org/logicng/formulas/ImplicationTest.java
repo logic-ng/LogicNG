@@ -166,6 +166,13 @@ public class ImplicationTest {
   }
 
   @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(2, F.IMP1.numberOfOperands());
+    Assert.assertEquals(2, F.IMP3.numberOfOperands());
+    Assert.assertEquals(2, F.IMP4.numberOfOperands());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertFalse(F.IMP1.isAtomicFormula());
     Assert.assertFalse(F.IMP4.isAtomicFormula());

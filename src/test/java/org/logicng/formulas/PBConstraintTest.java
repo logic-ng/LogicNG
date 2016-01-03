@@ -469,6 +469,12 @@ public class PBConstraintTest {
   }
 
   @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(0, pb1.numberOfOperands());
+    Assert.assertEquals(0, pb2.numberOfOperands());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertTrue(pb2.isAtomicFormula());
   }

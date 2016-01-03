@@ -176,6 +176,13 @@ public class OrTest {
   }
 
   @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(2, F.OR1.numberOfOperands());
+    Assert.assertEquals(2, F.OR3.numberOfOperands());
+    Assert.assertEquals(3, F.f.or(F.A, F.NX, F.EQ1).numberOfOperands());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertFalse(F.OR1.isAtomicFormula());
   }

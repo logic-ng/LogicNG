@@ -143,6 +143,12 @@ public class NotTest {
   }
 
   @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(1, F.NOT1.numberOfOperands());
+    Assert.assertEquals(1, F.f.not(F.EQ1).numberOfOperands());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertFalse(F.NOT1.isAtomicFormula());
     Assert.assertFalse(F.NOT2.isAtomicFormula());

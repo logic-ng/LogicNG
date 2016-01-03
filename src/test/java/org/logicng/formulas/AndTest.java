@@ -183,6 +183,13 @@ public class AndTest {
   }
 
   @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(2, F.AND1.numberOfOperands());
+    Assert.assertEquals(2, F.AND3.numberOfOperands());
+    Assert.assertEquals(3, F.f.and(F.A, F.NX, F.EQ1).numberOfOperands());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertFalse(F.AND1.isAtomicFormula());
   }

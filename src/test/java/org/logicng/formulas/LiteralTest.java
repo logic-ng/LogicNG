@@ -28,10 +28,9 @@
 
 package org.logicng.formulas;
 
-import org.logicng.datastructures.Substitution;
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.io.parsers.ParserException;
+import org.logicng.datastructures.Substitution;
 
 /**
  * Unit Tests for the class {@link Literal}.
@@ -149,9 +148,15 @@ public class LiteralTest {
   }
 
   @Test
-  public void testNumberOfInternalNodes() throws ParserException {
+  public void testNumberOfInternalNodes() {
     Assert.assertEquals(1, F.A.numberOfInternalNodes());
     Assert.assertEquals(1, F.NA.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(0, F.A.numberOfOperands());
+    Assert.assertEquals(0, F.NA.numberOfOperands());
   }
 
   @Test

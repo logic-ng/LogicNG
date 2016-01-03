@@ -34,7 +34,6 @@ import org.logicng.io.parsers.ParserException;
 
 /**
  * Unit Tests for the class {@link CTrue}.
- *
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
@@ -93,12 +92,16 @@ public class CTrueTest {
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(1, F.TRUE.numberOfNodes());
-    Assert.assertEquals(1, F.TRUE.numberOfNodes());
   }
 
   @Test
   public void testNumberOfInternalNodes() throws ParserException {
     Assert.assertEquals(1, F.TRUE.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(0, F.TRUE.numberOfOperands());
   }
 
   @Test

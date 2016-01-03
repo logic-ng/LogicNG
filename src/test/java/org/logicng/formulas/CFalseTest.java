@@ -91,13 +91,16 @@ public class CFalseTest {
   @Test
   public void testNumberOfNodes() {
     Assert.assertEquals(1, F.FALSE.numberOfNodes());
-    Assert.assertEquals(1, F.FALSE.numberOfNodes());
   }
 
   @Test
   public void testNumberOfInternalNodes() throws ParserException {
     Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
-    Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
+  }
+
+  @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(0, F.FALSE.numberOfOperands());
   }
 
   @Test

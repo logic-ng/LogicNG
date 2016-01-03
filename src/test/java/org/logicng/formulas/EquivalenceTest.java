@@ -166,6 +166,13 @@ public class EquivalenceTest {
   }
 
   @Test
+  public void testNumberOfOperands() {
+    Assert.assertEquals(2, F.EQ1.numberOfOperands());
+    Assert.assertEquals(2, F.EQ3.numberOfOperands());
+    Assert.assertEquals(2, F.EQ4.numberOfOperands());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertFalse(F.EQ1.isAtomicFormula());
     Assert.assertFalse(F.EQ4.isAtomicFormula());
