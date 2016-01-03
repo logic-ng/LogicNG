@@ -58,5 +58,10 @@ public class LatexStringRepresentationTest {
     Assert.assertEquals("\\left(x \\lor y\\right) \\land \\left(\\lnot x \\lor \\lnot y\\right)", F.f.string(F.AND3, sr));
     Assert.assertEquals("a \\land b \\land c \\land x", F.f.string(F.f.and(F.A, F.B, F.C, F.X), sr));
     Assert.assertEquals("a \\lor b \\lor c \\lor x", F.f.string(F.f.or(F.A, F.B, F.C, F.X), sr));
+    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x = 2", F.f.string(F.PBC1, sr));
+    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x > 2", F.f.string(F.PBC2, sr));
+    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\geq 2", F.f.string(F.PBC3, sr));
+    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x < 2", F.f.string(F.PBC4, sr));
+    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\leq 2", F.f.string(F.PBC5, sr));
   }
 }

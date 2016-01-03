@@ -79,4 +79,13 @@ public class F {
   public static final Formula EQ2 = f.equivalence(NA, NB);
   public static final Formula EQ3 = f.equivalence(AND1, OR1);
   public static final Formula EQ4 = f.equivalence(IMP1, IMP2);
+
+  // PBCs
+  private static final Literal[] literals = new Literal[]{A, B, X};
+  private static final int[] coefficients = new int[]{2, -4, 3};
+  public static final Formula PBC1 = f.pbc(CType.EQ, 2, literals, coefficients);
+  public static final Formula PBC2 = f.pbc(CType.GT, 2, literals, coefficients);
+  public static final Formula PBC3 = f.pbc(CType.GE, 2, literals, coefficients);
+  public static final Formula PBC4 = f.pbc(CType.LT, 2, literals, coefficients);
+  public static final Formula PBC5 = f.pbc(CType.LE, 2, literals, coefficients);
 }

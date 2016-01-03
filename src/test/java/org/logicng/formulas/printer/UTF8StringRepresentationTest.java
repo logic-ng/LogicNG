@@ -58,5 +58,10 @@ public class UTF8StringRepresentationTest {
     Assert.assertEquals("(x ∨ y) ∧ (¬x ∨ ¬y)", F.f.string(F.AND3, sr));
     Assert.assertEquals("a ∧ b ∧ c ∧ x", F.f.string(F.f.and(F.A, F.B, F.C, F.X), sr));
     Assert.assertEquals("a ∨ b ∨ c ∨ x", F.f.string(F.f.or(F.A, F.B, F.C, F.X), sr));
+    Assert.assertEquals("2a + -4b + 3x = 2", F.f.string(F.PBC1, sr));
+    Assert.assertEquals("2a + -4b + 3x > 2", F.f.string(F.PBC2, sr));
+    Assert.assertEquals("2a + -4b + 3x ≥ 2", F.f.string(F.PBC3, sr));
+    Assert.assertEquals("2a + -4b + 3x < 2", F.f.string(F.PBC4, sr));
+    Assert.assertEquals("2a + -4b + 3x ≤ 2", F.f.string(F.PBC5, sr));
   }
 }

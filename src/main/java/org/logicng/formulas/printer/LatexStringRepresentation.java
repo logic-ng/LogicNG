@@ -125,7 +125,7 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
 
   @Override
   protected String pbMul() {
-    return "\\cdot";
+    return "\\cdot ";
   }
 
   @Override
