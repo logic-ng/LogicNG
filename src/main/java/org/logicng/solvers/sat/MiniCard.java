@@ -848,7 +848,12 @@ public final class MiniCard extends MiniSatStyleSolver {
    * @param c the clause to remove
    */
   private void simpleRemoveClause(final MSClause c) {
-    watches.get(not(c.get(0))).remove(new MSWatcher(c, c.get(1)));
-    watches.get(not(c.get(1))).remove(new MSWatcher(c, c.get(0)));
+    if (c.isAtMost())
+      for (int i = 0; i < c.atMostWatchers(); i++)
+        watches.get(c.get(i)).remove(new MSWatcher(c, c.get(i)));
+    else {
+      watches.get(not(c.get(0))).remove(new MSWatcher(c, c.get(1)));
+      watches.get(not(c.get(1))).remove(new MSWatcher(c, c.get(0)));
+    }
   }
 }
