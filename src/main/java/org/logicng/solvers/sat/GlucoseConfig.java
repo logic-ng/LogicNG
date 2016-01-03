@@ -39,7 +39,6 @@ import org.logicng.configurations.ConfigurationType;
  */
 public final class GlucoseConfig extends Configuration {
 
-  final boolean certifiedUnsat;
   final int lbLBDMinimizingClause;
   final int lbLBDFrozenClause;
   final int lbSizeMinimizingClause;
@@ -58,7 +57,6 @@ public final class GlucoseConfig extends Configuration {
    * The builder for a Glucose configuration.
    */
   public static class Builder {
-    private boolean certifiedUnsat = false;
     private int lbLBDMinimizingClause = 6;
     private int lbLBDFrozenClause = 30;
     private int lbSizeMinimizingClause = 30;
@@ -72,17 +70,6 @@ public final class GlucoseConfig extends Configuration {
     private boolean reduceOnSize = false;
     private int reduceOnSizeSize = 12;
     private double maxVarDecay = 0.95;
-
-    /**
-     * Turns the certified UNSAT mode on and off.  This can only be turned on when not in incremental mode.  The default
-     * value is {@code false}.
-     * @param certifiedUnsat {@code true} if the certified UNSAT should be activated, {@code false} otherwise
-     * @return the builder
-     */
-    public Builder certifiedUnsat(boolean certifiedUnsat) {
-      this.certifiedUnsat = certifiedUnsat;
-      return this;
-    }
 
     /**
      * Sets the minimal LBD required to minimize a clause to a given value.  The default value is 6.
@@ -232,7 +219,6 @@ public final class GlucoseConfig extends Configuration {
    */
   private GlucoseConfig(final Builder builder) {
     super(ConfigurationType.GLUCOSE);
-    this.certifiedUnsat = builder.certifiedUnsat;
     this.lbLBDMinimizingClause = builder.lbLBDMinimizingClause;
     this.lbLBDFrozenClause = builder.lbLBDFrozenClause;
     this.lbSizeMinimizingClause = builder.lbSizeMinimizingClause;
@@ -246,5 +232,25 @@ public final class GlucoseConfig extends Configuration {
     this.reduceOnSize = builder.reduceOnSize;
     this.reduceOnSizeSize = builder.reduceOnSizeSize;
     this.maxVarDecay = builder.maxVarDecay;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("GlucoseConfig{\n");
+    sb.append("lbLBDMinimizingClause=").append(this.lbLBDMinimizingClause).append("\n");
+    sb.append("lbLBDFrozenClause=").append(this.lbLBDFrozenClause).append("\n");
+    sb.append("lbSizeMinimizingClause=").append(this.lbSizeMinimizingClause).append("\n");
+    sb.append("firstReduceDB=").append(this.firstReduceDB).append("\n");
+    sb.append("specialIncReduceDB=").append(this.specialIncReduceDB).append("\n");
+    sb.append("incReduceDB=").append(this.incReduceDB).append("\n");
+    sb.append("factorK=").append(this.factorK).append("\n");
+    sb.append("factorR=").append(this.factorR).append("\n");
+    sb.append("sizeLBDQueue=").append(this.sizeLBDQueue).append("\n");
+    sb.append("sizeTrailQueue=").append(this.sizeTrailQueue).append("\n");
+    sb.append("reduceOnSize=").append(this.reduceOnSize).append("\n");
+    sb.append("reduceOnSizeSize=").append(this.reduceOnSizeSize).append("\n");
+    sb.append("maxVarDecay=").append(this.maxVarDecay).append("\n");
+    sb.append("}\n");
+    return sb.toString();
   }
 }

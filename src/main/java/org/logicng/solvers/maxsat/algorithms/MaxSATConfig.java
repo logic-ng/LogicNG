@@ -247,17 +247,18 @@ public final class MaxSATConfig extends Configuration {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Incremental Strategy: ").append(this.incrementalStrategy).append("\n");
-    sb.append("AMO Encoding:         ").append(this.amoEncoding).append("\n");
-    sb.append("PB Encoding:          ").append(this.pbEncoding).append("\n");
-    sb.append("Cardinality Encoding: ").append(this.cardinalityEncoding).append("\n");
-    sb.append("Weight Strategy:      ").append(this.weightStrategy).append("\n");
-    sb.append("Solver Type:          ").append(this.solverType).append("\n");
-    sb.append("Verbosity:            ").append(this.verbosity).append("\n");
-    sb.append("Symmetry Breaking:    ").append(this.symmetry).append("\n");
-    sb.append("Symmetry Limit:       ").append(this.limit).append("\n");
-    sb.append("BMO Search:           ").append(this.bmo).append("\n");
+    final StringBuilder sb = new StringBuilder("MaxSATConfig{");
+    sb.append("incrementalStrategy=").append(this.incrementalStrategy).append("\n");
+    sb.append("amoEncoding=").append(this.amoEncoding).append("\n");
+    sb.append("pbEncoding=").append(this.pbEncoding).append("\n");
+    sb.append("cardinalityEncoding=").append(this.cardinalityEncoding).append("\n");
+    sb.append("weightStrategy=").append(this.weightStrategy).append("\n");
+    sb.append("solverType=").append(this.solverType).append("\n");
+    sb.append("verbosity=").append(this.verbosity).append("\n");
+    sb.append("symmetry=").append(this.symmetry).append("\n");
+    sb.append("limit=").append(this.limit).append("\n");
+    sb.append("bmo=").append(this.bmo).append("\n");
+    sb.append("}\n");
     return sb.toString();
   }
 }

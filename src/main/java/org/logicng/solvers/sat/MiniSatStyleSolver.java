@@ -54,6 +54,7 @@ import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
 
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -107,6 +108,8 @@ public abstract class MiniSatStyleSolver {
   protected double learntsizeFactor;
   protected double learntsizeInc;
   protected boolean incremental;
+  protected boolean certifiedUnsat;
+  protected PrintStream proofOutput;
 
   // mapping of variable names to variable indices
   protected Map<String, Integer> name2idx;
@@ -170,6 +173,8 @@ public abstract class MiniSatStyleSolver {
     this.learntsizeFactor = this.config.learntsizeFactor;
     this.learntsizeInc = this.config.learntsizeInc;
     this.incremental = this.config.incremental;
+    this.certifiedUnsat = this.config.certifiedUnsat;
+    this.proofOutput = this.config.proofOutput;
   }
 
   /**

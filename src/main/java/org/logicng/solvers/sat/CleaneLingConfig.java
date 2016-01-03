@@ -413,7 +413,7 @@ public final class CleaneLingConfig extends Configuration {
 
     /**
      * If turned on, search is first performed instead of simplifying first.  The default value is {@code true}.
-     * @param searchfirst {@code true} if search sould be first performed instead of simplifying, {@code false} otherwise
+     * @param searchfirst {@code true} if search should be first performed instead of simplifying, {@code false} otherwise
      * @return the builder
      */
     public Builder searchfirst(boolean searchfirst) {
@@ -497,5 +497,44 @@ public final class CleaneLingConfig extends Configuration {
    */
   public boolean plain() {
     return this.plain;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("CleaneLingConfig{\n");
+    sb.append("block=").append(this.block).append("\n");
+    sb.append("blkwait=").append(this.blkwait).append("\n");
+    sb.append("blkrtc=").append(this.blkrtc).append("\n");
+    sb.append("boost=").append(this.boost).append("\n");
+    sb.append("bwclslim=").append(this.bwclslim).append("\n");
+    sb.append("bwocclim=").append(this.bwocclim).append("\n");
+    sb.append("cbump=").append(this.cbump).append("\n");
+    sb.append("distill=").append(this.distill).append("\n");
+    sb.append("elim=").append(this.elim).append("\n");
+    sb.append("elmrtc=").append(this.elmrtc).append("\n");
+    sb.append("elmocclim=").append(this.elmocclim).append("\n");
+    sb.append("elmpocclim1=").append(this.elmpocclim1).append("\n");
+    sb.append("elmpocclim2=").append(this.elmpocclim2).append("\n");
+    sb.append("elmclslim=").append(this.elmclslim).append("\n");
+    sb.append("gluered=").append(this.gluered).append("\n");
+    sb.append("gluekeep=").append(this.gluekeep).append("\n");
+    sb.append("glueupdate=").append(this.glueupdate).append("\n");
+    sb.append("itsimpdel=").append(this.itsimpdel).append("\n");
+    sb.append("plain=").append(this.plain).append("\n");
+    sb.append("restart=").append(this.restart).append("\n");
+    sb.append("restartint=").append(this.restartint).append("\n");
+    sb.append("redinit=").append(this.redinit).append("\n");
+    sb.append("redinc=").append(this.redinc).append("\n");
+    sb.append("reusetrail=").append(this.reusetrail).append("\n");
+    sb.append("simpint=").append(this.simpint).append("\n");
+    sb.append("simpgeom=").append(this.simpgeom).append("\n");
+    sb.append("sizepen=").append(this.sizepen).append("\n");
+    sb.append("sizemaxpen=").append(this.sizemaxpen).append("\n");
+    sb.append("searchint=").append(this.searchint).append("\n");
+    sb.append("searchfirst=").append(this.searchfirst).append("\n");
+    sb.append("scincfact=").append(this.scincfact).append("\n");
+    sb.append("stepslim=").append(this.stepslim).append("\n");
+    sb.append("}\n");
+    return sb.toString();
   }
 }

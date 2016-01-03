@@ -63,6 +63,7 @@ public final class MiniSatConfig extends Configuration {
   final double learntsizeFactor;
   final double learntsizeInc;
   final boolean incremental;
+  final boolean certifiedUnsat;
   final PrintStream proofOutput;
 
   /**
@@ -79,6 +80,7 @@ public final class MiniSatConfig extends Configuration {
     private double learntsizeFactor = 1.0 / 3.0;
     private double learntsizeInc = 1.1;
     private boolean incremental = true;
+    private boolean certifiedUnsat = false;
     private PrintStream output = System.out;
 
     /**
@@ -186,6 +188,17 @@ public final class MiniSatConfig extends Configuration {
     }
 
     /**
+     * Turns the certified UNSAT mode on and off.  This can only be turned on when not in incremental mode.  The default
+     * value is {@code false}.
+     * @param certifiedUnsat {@code true} if the certified UNSAT should be activated, {@code false} otherwise
+     * @return the builder
+     */
+    public Builder certifiedUnsat(boolean certifiedUnsat) {
+      this.certifiedUnsat = certifiedUnsat;
+      return this;
+    }
+
+    /**
      * Sets the output stream for the refutation proof.  The default ist {@code System.out}.
      * @param proofOutput the output stream for the refutation proof
      * @return the builder
@@ -220,6 +233,7 @@ public final class MiniSatConfig extends Configuration {
     this.learntsizeFactor = builder.learntsizeFactor;
     this.learntsizeInc = builder.learntsizeInc;
     this.incremental = builder.incremental;
+    this.certifiedUnsat = builder.certifiedUnsat;
     this.proofOutput = builder.output;
   }
 
@@ -229,5 +243,23 @@ public final class MiniSatConfig extends Configuration {
    */
   public boolean incremental() {
     return this.incremental;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("MiniSatConfig{\n");
+    sb.append("varDecay=").append(this.varDecay).append("\n");
+    sb.append("varInc=").append(this.varInc).append("\n");
+    sb.append("clauseMin=").append(this.clauseMin).append("\n");
+    sb.append("restartFirst=").append(this.restartFirst).append("\n");
+    sb.append("restartInc=").append(this.restartInc).append("\n");
+    sb.append("clauseDecay=").append(this.clauseDecay).append("\n");
+    sb.append("removeSatisfied=").append(this.removeSatisfied).append("\n");
+    sb.append("learntsizeFactor=").append(this.learntsizeFactor).append("\n");
+    sb.append("learntsizeInc=").append(this.learntsizeInc).append("\n");
+    sb.append("incremental=").append(this.incremental).append("\n");
+    sb.append("certifiedUnsat=").append(this.certifiedUnsat).append("\n");
+    sb.append("}\n");
+    return sb.toString();
   }
 }

@@ -88,8 +88,6 @@ import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
 
-import java.io.PrintStream;
-
 /**
  * Glucose 4.0 solver.
  * @author Christoph Zengler
@@ -128,7 +126,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   private int curRestart;
 
   // solver configuration
-  private boolean certifiedUnsat;
   private int lbLBDMinimizingClause;
   private int lbLBDFrozenClause;
   private int lbSizeMinimizingClause;
@@ -142,8 +139,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   private boolean reduceOnSize;
   private int reduceOnSizeSize;
   private double maxVarDecay;
-
-  private PrintStream proofOutput;
 
   /**
    * Constructs a new Glucose 2 solver with the default values for solver configuration.  By default, incremental mode
@@ -161,7 +156,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   public GlucoseSyrup(final MiniSatConfig config, final GlucoseConfig glucoseConfig) {
     super(config);
     this.glucoseConfig = glucoseConfig;
-    this.proofOutput = config.proofOutput;
     this.initializeGlucose();
   }
 
@@ -193,7 +187,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
    * Initializes the glucose configuration.
    */
   private void initializeGlucoseConfig() {
-    this.certifiedUnsat = glucoseConfig.certifiedUnsat;
     this.lbLBDMinimizingClause = glucoseConfig.lbLBDMinimizingClause;
     this.lbLBDFrozenClause = glucoseConfig.lbLBDFrozenClause;
     this.lbSizeMinimizingClause = glucoseConfig.lbSizeMinimizingClause;
