@@ -128,4 +128,9 @@ public final class PseudoBooleanParser {
       return f.verum();
     return this.parse(new ByteArrayInputStream(in.getBytes()));
   }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
+  }
 }

@@ -51,4 +51,9 @@ public final class PseudoBooleanLexer extends LogicNGPseudoBooleanLexer {
   public void recover(final LexerNoViableAltException exception) {
     throw new LexerException(exception.getMessage());
   }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
+  }
 }

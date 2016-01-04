@@ -88,7 +88,7 @@ public class SATTest {
     this.solvers[3] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(true).build());
     this.solvers[4] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(false).build());
     this.solvers[5] = CleaneLing.minimalistic(f);
-    this.solvers[6] = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(true).build());
+    this.solvers[6] = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(true).glueupdate(true).gluered(true).build());
     this.solvers[7] = CleaneLing.full(f);
   }
 

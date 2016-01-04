@@ -203,4 +203,10 @@ public class PropositionalParserTest {
     invalidStream.close();
     new PropositionalParser(F.f).parse(invalidStream);
   }
+
+  @Test
+  public void testToStrings() {
+    Assert.assertEquals("PropositionalLexer", new PropositionalLexer(null).toString());
+    Assert.assertEquals("PropositionalParser", new PropositionalParser(F.f).toString());
+  }
 }

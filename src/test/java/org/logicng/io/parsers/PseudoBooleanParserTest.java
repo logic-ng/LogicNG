@@ -245,4 +245,10 @@ public class PseudoBooleanParserTest {
     invalidStream.close();
     new PseudoBooleanParser(F.f).parse(invalidStream);
   }
+
+  @Test
+  public void testToStrings() {
+    Assert.assertEquals("PseudoBooleanLexer", new PseudoBooleanLexer(null).toString());
+    Assert.assertEquals("PseudoBooleanParser", new PseudoBooleanParser(F.f).toString());
+  }
 }

@@ -34,6 +34,8 @@ import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.sat.PigeonHoleGenerator;
 
 /**
@@ -123,5 +125,14 @@ public class PredicatesTest {
     Assert.assertFalse(new PigeonHoleGenerator(F.f).generate(1).holds(sat));
     Assert.assertFalse(new PigeonHoleGenerator(F.f).generate(2).holds(sat));
     Assert.assertFalse(new PigeonHoleGenerator(F.f).generate(3).holds(sat));
+  }
+
+  @Test
+  public void testToString() {
+    final SATSolver s = MiniSat.miniSat(f);
+    Assert.assertEquals("SATPredicate", new SATPredicate(s).toString());
+    Assert.assertEquals("TautologyPredicate", new TautologyPredicate(s).toString());
+    Assert.assertEquals("ContradictionPredicate", new ContradictionPredicate(s).toString());
+    Assert.assertEquals("ContingencyPredicate", new ContingencyPredicate(s).toString());
   }
 }

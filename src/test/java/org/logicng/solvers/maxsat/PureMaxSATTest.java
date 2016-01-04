@@ -30,8 +30,11 @@ package org.logicng.solvers.maxsat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
@@ -185,6 +188,49 @@ public class PureMaxSATTest {
     Assert.assertEquals(22.73, stats.averageCoreSize(), 0.1);
     Assert.assertEquals(9032, stats.symmetryClauses());
     Assert.assertEquals("MaxSAT.Stats{best solution=26, #sat calls=2, #unsat calls=26, average core size=22.73, #symmetry clauses=9032}", stats.toString());
+  }
+
+  @Test
+  public void testAssignment() throws ParserException {
+    final MaxSATSolver solver = MaxSATSolver.incWBO(new MaxSATConfig.Builder().cardinality(CardinalityEncoding.MTOTALIZER)
+            .solver(MaxSATConfig.SolverType.GLUCOSE).verbosity(SOME).output(logStream).build());
+    final PropositionalParser p = new PropositionalParser(f);
+    solver.addSoftFormula(p.parse("a => b"), 1);
+    solver.addSoftFormula(p.parse("b => c"), 1);
+    solver.addSoftFormula(p.parse("c => d"), 1);
+    solver.addSoftFormula(p.parse("d => e"), 1);
+    solver.addSoftFormula(p.parse("a => x"), 1);
+    solver.addSoftFormula(p.parse("~e"), 1);
+    solver.addSoftFormula(p.parse("~x"), 1);
+    solver.addSoftFormula(p.parse("a"), 1);
+    Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
+    Assert.assertEquals(1, solver.result());
+    final Assignment model = solver.model();
+    Assert.assertNotNull(model);
+    Assert.assertEquals(6, model.size());
+    Assert.assertEquals(0, model.positiveLiterals().size());
+    Assert.assertEquals(6, model.negativeLiterals().size());
+    Assert.assertTrue(model.negativeLiterals().contains(f.literal("a", false)));
+    Assert.assertTrue(model.negativeLiterals().contains(f.literal("b", false)));
+    Assert.assertTrue(model.negativeLiterals().contains(f.literal("c", false)));
+    Assert.assertTrue(model.negativeLiterals().contains(f.literal("d", false)));
+    Assert.assertTrue(model.negativeLiterals().contains(f.literal("e", false)));
+    Assert.assertTrue(model.negativeLiterals().contains(f.literal("x", false)));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testIllegalModel() throws ParserException {
+    final MaxSATSolver solver = MaxSATSolver.incWBO(new MaxSATConfig.Builder().cardinality(CardinalityEncoding.MTOTALIZER)
+            .solver(MaxSATConfig.SolverType.GLUCOSE).verbosity(SOME).output(logStream).build());
+    final PropositionalParser p = new PropositionalParser(f);
+    solver.addSoftFormula(p.parse("a => b"), 1);
+    solver.addSoftFormula(p.parse("b => c"), 1);
+    solver.addSoftFormula(p.parse("c => d"), 1);
+    solver.addSoftFormula(p.parse("d => e"), 1);
+    solver.addSoftFormula(p.parse("a => x"), 1);
+    solver.addSoftFormula(p.parse("~e"), 1);
+    solver.addSoftFormula(p.parse("~x"), 1);
+    solver.model();
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {

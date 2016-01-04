@@ -62,7 +62,8 @@ public class IncDecTest {
   public void testIncDec() {
     for (final SATSolver s : this.solvers) {
       s.add(f.literal("a"));
-      SolverState state1 = s.saveState();
+      final SolverState state1 = s.saveState();
+      Assert.assertEquals("SolverState{state=[1, 1, 0, 0, 1]}", state1.toString());
       Assert.assertEquals(TRUE, s.sat());
       s.add(pg.generate(5));
       Assert.assertEquals(FALSE, s.sat());
@@ -73,7 +74,8 @@ public class IncDecTest {
       s.loadState(state1);
       Assert.assertEquals(TRUE, s.sat());
       s.add(pg.generate(5));
-      SolverState state2 = s.saveState();
+      final SolverState state2 = s.saveState();
+      Assert.assertEquals("SolverState{state=[1, 31, 81, 0, 1]}", state2.toString());
       s.add(pg.generate(4));
       Assert.assertEquals(FALSE, s.sat());
       s.loadState(state2);
