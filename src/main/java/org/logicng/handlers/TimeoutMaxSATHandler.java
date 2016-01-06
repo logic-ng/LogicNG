@@ -43,8 +43,6 @@ public final class TimeoutMaxSATHandler implements MaxSATHandler {
   private long designatedEnd;
   private int currentLb;
   private int currentUb;
-  private Assignment currentLbModel;
-  private Assignment currentUbModel;
 
   /**
    * Constructs a new instance with a given timeout in milliseconds.
@@ -58,8 +56,6 @@ public final class TimeoutMaxSATHandler implements MaxSATHandler {
     this.satHandler = new TimeoutSATHandler(timeout);
     this.currentLb = -1;
     this.currentUb = -1;
-    this.currentLbModel = null;
-    this.currentUbModel = null;
   }
 
   @Override
@@ -70,14 +66,12 @@ public final class TimeoutMaxSATHandler implements MaxSATHandler {
   @Override
   public boolean foundLowerBound(final int lowerBound, final Assignment model) {
     this.currentLb = lowerBound;
-    this.currentLbModel = model;
     return System.currentTimeMillis() < designatedEnd;
   }
 
   @Override
   public boolean foundUpperBound(final int upperBound, final Assignment model) {
     this.currentUb = upperBound;
-    this.currentUbModel = model;
     return System.currentTimeMillis() < designatedEnd;
   }
 

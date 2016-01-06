@@ -104,7 +104,7 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
       return (Map<Literal, Integer>) cached;
     Map<Literal, Integer> result = new HashMap<>();
     if (formula instanceof Literal)
-      result.put(((Literal) formula), 1);
+      result.put((Literal) formula, 1);
     else if (formula instanceof PBConstraint)
       for (final Literal l : formula.literals())
         result.put(l, 1);

@@ -85,7 +85,6 @@ public final class WMSU3 extends MaxSAT {
   private LNGBooleanVector activeSoft;
   boolean bmoStrategy;
   boolean isBmo;
-  private LNGIntVector unitBmo;
   private PrintStream output;
 
   /**
@@ -113,7 +112,6 @@ public final class WMSU3 extends MaxSAT {
     this.coeffs = new LNGIntVector();
     this.coreMapping = new TreeMap<>();
     this.activeSoft = new LNGBooleanVector();
-    this.unitBmo = new LNGIntVector();
     this.output = config.output;
   }
 

@@ -41,6 +41,7 @@ import org.logicng.util.Pair;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -117,7 +118,7 @@ public final class FormulaFactory {
     this.clear();
     this.formulaAdditionResult = new boolean[2];
     this.stringRepresentation = stringRepresentation;
-    this.configurations = new HashMap<>();
+    this.configurations = new EnumMap<>(ConfigurationType.class);
     this.defaultCNFTransformation = new CNFFactorization();
     this.subformulaFunction = new SubformulaFunction();
     this.parser = new PseudoBooleanParser(this);
