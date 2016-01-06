@@ -225,18 +225,9 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     if (!ok)
       return false;
     ps.sort();
-    LNGIntVector oc = new LNGIntVector();
     int p;
     int i;
     int j;
-    boolean flag = false;
-    if (certifiedUnsat) {
-      for (i = 0; i < ps.size(); i++) {
-        oc.push(ps.get(i));
-        if (value(ps.get(i)) == Tristate.TRUE || value(ps.get(i)) == Tristate.FALSE)
-          flag = true;
-      }
-    }
     for (i = 0, j = 0, p = LIT_UNDEF; i < ps.size(); i++)
       if (value(ps.get(i)) == Tristate.TRUE || ps.get(i) == not(p))
         return true;
@@ -245,15 +236,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
         ps.set(j++, p);
       }
     ps.removeElements(i - j);
-    if (flag && certifiedUnsat) {
-      for (i = 0; i < ps.size(); i++)
-        this.proofOutput.print((var(ps.get(i) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1)) + " ");
-      this.proofOutput.println("0");
-      this.proofOutput.print("d ");
-      for (i = 0; i < oc.size(); i++)
-        this.proofOutput.print(((var(oc.get(i)) + 1) * (-2 * (sign(oc.get(i)) ? 1 : 0) + 1)) + " ");
-      this.proofOutput.println("0");
-    }
     if (ps.size() == 0) {
       ok = false;
       return false;
@@ -313,12 +295,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
 
   @Override
   protected void removeClause(final MSClause c) {
-    if (certifiedUnsat) {
-      this.proofOutput.print("d ");
-      for (int i = 0; i < c.size(); i++)
-        this.proofOutput.print(((var(c.get(i)) + 1) * (-2 * (sign(c.get(i)) ? 1 : 0) + 1)) + " ");
-      this.proofOutput.println("0");
-    }
     detachClause(c);
     if (locked(c))
       v(c.get(0)).setReason(null);
@@ -483,11 +459,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
         lbdQueue.push(analyzeLBD);
         sumLBD += analyzeLBD;
         cancelUntil(analyzeBtLevel);
-        if (certifiedUnsat) {
-          for (int i = 0; i < learntClause.size(); i++)
-            this.proofOutput.print(((var(learntClause.get(i)) + 1) * (-2 * (sign(learntClause.get(i)) ? 1 : 0) + 1)) + " ");
-          this.proofOutput.println("0");
-        }
         if (learntClause.size() == 1) {
           uncheckedEnqueue(learntClause.get(0), null);
         } else {
@@ -920,8 +891,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
 
   @Override
   public Tristate solve(final SATHandler handler) {
-    if (incremental && certifiedUnsat)
-      throw new IllegalStateException("Cannot use incremental and certified UNSAT at the same time");
     this.handler = handler;
     if (this.handler != null)
       this.handler.startedSolving();
@@ -935,8 +904,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     Tristate status = Tristate.UNDEF;
     while (status == Tristate.UNDEF && !canceledByHandler)
       status = search();
-    if (certifiedUnsat && status == Tristate.FALSE)
-      this.proofOutput.println("0");
     if (status == Tristate.TRUE) {
       model = new LNGBooleanVector(vars.size());
       for (final MSVariable v : this.vars)
