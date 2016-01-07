@@ -155,6 +155,9 @@ public final class Not extends Formula {
           nnf = f.and(f.or(((BinaryOperator) this.operand).left.negate().nnf(), ((BinaryOperator) this.operand).right.negate().nnf()),
                   f.or(((BinaryOperator) this.operand).left.nnf(), ((BinaryOperator) this.operand).right.nnf()));
           break;
+        case PBC:
+          nnf = this.operand.negate().nnf();
+          break;
         default:
           nnf = this;
       }

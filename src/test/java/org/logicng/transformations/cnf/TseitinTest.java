@@ -36,6 +36,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
@@ -141,6 +142,15 @@ public class TseitinTest {
     Assert.assertEquals(f3.variables().size(), f3.transform(pgf).variables().size());
     Assert.assertTrue(f4.transform(pgf).holds(cnfPredicate));
     Assert.assertEquals(f4.variables().size(), f4.transform(pgf).variables().size());
+  }
+
+  @Test
+  public void testCC() throws ParserException {
+    PseudoBooleanParser p = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(p.parse("a"), p.parse("a <=> (1 * b <= 1)").transform(ts));
+    Assert.assertEquals(p.parse("$false"), p.parse("~(1 * b <= 1)").transform(ts));
+    Assert.assertEquals(p.parse("(~@RESERVED_CC_0 | ~@RESERVED_CC_1) & (~@RESERVED_CC_2 | ~@RESERVED_CC_3) & (~b | @RESERVED_CC_0) & (~b | @RESERVED_CC_2) & (~c | @RESERVED_CC_0) & (~c | @RESERVED_CC_3) & (~d | @RESERVED_CC_1) & (~d | @RESERVED_CC_2)"), p.parse("(1 * b + 1 * c + 1 * d <= 1)").transform(ts));
+    Assert.assertEquals(p.parse("(@RESERVED_CC_7 | ~@RESERVED_CC_5) & (@RESERVED_CC_8 | ~@RESERVED_CC_6) & (d | ~@RESERVED_CC_6) & (d | @RESERVED_CC_7 | ~@RESERVED_CC_4) & (d | @RESERVED_CC_8 | ~@RESERVED_CC_5) & (b | ~@RESERVED_CC_8) & (c | ~@RESERVED_CC_8) & (c | b | ~@RESERVED_CC_7) & @RESERVED_CC_4 & @RESERVED_CC_5"), p.parse("~(1 * b + 1 * c + 1 * d <= 1)").transform(ts));
   }
 
   private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Literal> vars) {

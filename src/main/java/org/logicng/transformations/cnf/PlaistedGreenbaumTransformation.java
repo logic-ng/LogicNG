@@ -56,29 +56,14 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
 public final class PlaistedGreenbaumTransformation implements FormulaTransformation {
 
   private final int boundaryForFactorization;
-  private final boolean nnf;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
 
   /**
    * Constructor for a Plaisted &amp; Greenbaum transformation.
    * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
-   * @param nnf                      indicates whether the formula should be transformed to NNF before converting it
-   *                                 to CNF or not (transforming the formula to NNF usually reduces the number of
-   *                                 introduced variables and transforming time)
    */
-  public PlaistedGreenbaumTransformation(int boundaryForFactorization, boolean nnf) {
+  public PlaistedGreenbaumTransformation(int boundaryForFactorization) {
     this.boundaryForFactorization = boundaryForFactorization;
-    this.nnf = nnf;
-  }
-
-  /**
-   * Constructor for a Plaisted &amp; Greenbaum transformation with a factorization bound of 20.
-   * @param nnf indicates whether the formula should be transformed to NNF before converting it to CNF or not
-   *            (transforming the formula to NNF usually reduces the number of introduced variables and transforming
-   *            time)
-   */
-  public PlaistedGreenbaumTransformation(boolean nnf) {
-    this(20, nnf);
   }
 
   /**
@@ -86,12 +71,12 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
    * bound of 20.
    */
   public PlaistedGreenbaumTransformation() {
-    this(20, true);
+    this(20);
   }
 
   @Override
   public Formula apply(final Formula formula, boolean cache) {
-    final Formula f = this.nnf ? formula.nnf() : formula;
+    final Formula f = formula.nnf();
     if (f.holds(this.cnfPredicate))
       return f;
     Formula pg;
@@ -102,7 +87,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
       pg = pg.restrict(topLevel);
     }
-    if (this.nnf)
+    if (cache)
       formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
               f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
     return pg;
@@ -128,15 +113,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
         for (final Formula op : formula)
           nops.add(this.computeTransformation(polarity, op, null));
         return f.and(nops);
-      case IMPL:
-      case EQUIV:
-      case PBC:
-        final Formula nnfFormula = formula.nnf();
-        final Formula fixedVar = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
-        final Formula nnfPG = this.computeTransformation(polarity, nnfFormula, fixedVar == null ? null : (Literal) fixedVar);
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
-                nnfFormula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
-        return nnfPG;
       default:
         throw new IllegalArgumentException("Could not process the formula type " + formula.type());
     }
@@ -224,6 +200,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
 
   @Override
   public String toString() {
-    return String.format("PlaistedGreenbaumTransformation{boundary=%d, nnf=%s}", this.boundaryForFactorization, this.nnf);
+    return String.format("PlaistedGreenbaumTransformation{boundary=%d}", this.boundaryForFactorization);
   }
 }

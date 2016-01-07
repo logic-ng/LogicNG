@@ -72,21 +72,25 @@ public final class TseitinTransformation implements FormulaTransformation {
 
   @Override
   public Formula apply(final Formula formula, boolean cache) {
-    if (formula.holds(cnfPredicate))
-      return formula;
-    Formula tseitin = formula.transformationCacheEntry(TSEITIN);
+    final Formula f = formula.nnf();
+    if (f.holds(cnfPredicate))
+      return f;
+    Formula tseitin = f.transformationCacheEntry(TSEITIN);
     if (tseitin != null) {
-      final Assignment topLevel = new Assignment((Literal) formula.transformationCacheEntry(TSEITIN_VARIABLE));
-      return formula.transformationCacheEntry(TSEITIN).restrict(topLevel);
+      final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(TSEITIN_VARIABLE));
+      return f.transformationCacheEntry(TSEITIN).restrict(topLevel);
     }
-    if (formula.numberOfAtoms() < this.boundaryForFactorization)
-      tseitin = formula.cnf();
+    if (f.numberOfAtoms() < this.boundaryForFactorization)
+      tseitin = f.cnf();
     else {
-      for (final Formula subformula : formula.apply(formula.factory().subformulaFunction()))
+      for (final Formula subformula : f.apply(f.factory().subformulaFunction()))
         computeTseitin(subformula);
-      final Assignment topLevel = new Assignment((Literal) formula.transformationCacheEntry(TSEITIN_VARIABLE));
-      tseitin = formula.transformationCacheEntry(TSEITIN).restrict(topLevel);
+      final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(TSEITIN_VARIABLE));
+      tseitin = f.transformationCacheEntry(TSEITIN).restrict(topLevel);
     }
+    if (cache)
+      formula.setTransformationCacheEntry(TSEITIN_VARIABLE,
+              f.transformationCacheEntry(TSEITIN_VARIABLE));
     return tseitin;
   }
 
@@ -102,16 +106,6 @@ public final class TseitinTransformation implements FormulaTransformation {
       case LITERAL:
         formula.setTransformationCacheEntry(TSEITIN, formula);
         formula.setTransformationCacheEntry(TSEITIN_VARIABLE, formula);
-        break;
-      case NOT:
-      case IMPL:
-      case EQUIV:
-      case PBC:
-        final Formula nnf = formula.nnf();
-        for (final Formula subformula : nnf.apply(formula.factory().subformulaFunction()))
-          computeTseitin(subformula);
-        formula.setTransformationCacheEntry(TSEITIN, nnf.transformationCacheEntry(TSEITIN));
-        formula.setTransformationCacheEntry(TSEITIN_VARIABLE, nnf.transformationCacheEntry(TSEITIN_VARIABLE));
         break;
       case AND:
         Literal tsLiteral = f.newCNFLiteral();
