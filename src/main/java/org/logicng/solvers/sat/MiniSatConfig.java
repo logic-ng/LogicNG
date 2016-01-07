@@ -61,6 +61,7 @@ public final class MiniSatConfig extends Configuration {
   final double learntsizeFactor;
   final double learntsizeInc;
   final boolean incremental;
+  final boolean initialPhase;
 
   /**
    * The builder for a MiniSAT configuration.
@@ -76,6 +77,7 @@ public final class MiniSatConfig extends Configuration {
     private double learntsizeFactor = 1.0 / 3.0;
     private double learntsizeInc = 1.1;
     private boolean incremental = true;
+    private boolean initialPhase = false;
 
     /**
      * Sets the variable activity decay factor to a given value. The default value is 0.95.
@@ -182,6 +184,16 @@ public final class MiniSatConfig extends Configuration {
     }
 
     /**
+     * Sets the initial phase of the solver.  The default value is {@code true}.
+     * @param initialPhase the initial phase
+     * @return the builder
+     */
+    public Builder initialPhase(boolean initialPhase) {
+      this.initialPhase = initialPhase;
+      return this;
+    }
+
+    /**
      * Builds the MiniSAT configuration.
      * @return the configuration
      */
@@ -206,6 +218,7 @@ public final class MiniSatConfig extends Configuration {
     this.learntsizeFactor = builder.learntsizeFactor;
     this.learntsizeInc = builder.learntsizeInc;
     this.incremental = builder.incremental;
+    this.initialPhase = builder.initialPhase;
   }
 
   /**
@@ -214,6 +227,14 @@ public final class MiniSatConfig extends Configuration {
    */
   public boolean incremental() {
     return this.incremental;
+  }
+
+  /**
+   * Returns the initial phase of the solver.
+   * @return the initial phase of the solver
+   */
+  public boolean initialPhase() {
+    return this.initialPhase;
   }
 
   @Override
@@ -229,6 +250,7 @@ public final class MiniSatConfig extends Configuration {
     sb.append("learntsizeFactor=").append(this.learntsizeFactor).append("\n");
     sb.append("learntsizeInc=").append(this.learntsizeInc).append("\n");
     sb.append("incremental=").append(this.incremental).append("\n");
+    sb.append("initialPhase=").append(this.initialPhase).append("\n");
     sb.append("}\n");
     return sb.toString();
   }

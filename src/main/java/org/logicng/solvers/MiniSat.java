@@ -68,6 +68,7 @@ public final class MiniSat extends SATSolver {
   private final MiniSatStyleSolver solver;
   private final SolverStyle style;
   private boolean incremental;
+  private boolean initialPhase;
 
   /**
    * Constructs a new SAT solver instance.
@@ -79,6 +80,7 @@ public final class MiniSat extends SATSolver {
                   final GlucoseConfig glucoseConfig) {
     super(f);
     this.style = solverStyle;
+    this.initialPhase = miniSatConfig.initialPhase();
     switch (solverStyle) {
       case MINISAT:
         this.solver = new MiniSat2Solver(miniSatConfig);
@@ -192,7 +194,7 @@ public final class MiniSat extends SATSolver {
     for (Literal lit : literals) {
       int index = this.solver.idxForName(lit.name());
       if (index == -1) {
-        index = this.solver.newVar(true, true);
+        index = this.solver.newVar(!initialPhase, true);
         this.solver.addName(lit.name(), index);
       }
       int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;

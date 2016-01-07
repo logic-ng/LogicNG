@@ -53,6 +53,7 @@ public class ConfigurationsTest {
             .lsFactor(1.4)
             .lsInc(1.5)
             .incremental(false)
+            .initialPhase(true)
             .build();
     final String expected = "MiniSatConfig{\n" +
             "varDecay=1.2\n" +
@@ -65,6 +66,7 @@ public class ConfigurationsTest {
             "learntsizeFactor=1.4\n" +
             "learntsizeInc=1.5\n" +
             "incremental=false\n" +
+            "initialPhase=true\n" +
             "}\n";
     Assert.assertEquals(expected, config.toString());
   }
