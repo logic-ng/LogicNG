@@ -40,13 +40,13 @@ import org.logicng.predicates.CNFPredicate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_NEG;
 import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_POS;
 import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
 
 /**
  * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum.  Results in this implementation will always be
  * cached.
+ * <p>
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
  * @author Christoph Zengler
@@ -83,7 +83,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     if (f.numberOfAtoms() < this.boundaryForFactorization)
       pg = f.cnf();
     else {
-      pg = this.computeTransformation(true, f, null);
+      pg = this.computeTransformation(f, null);
       final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
       pg = pg.restrict(topLevel);
     }
@@ -93,25 +93,17 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     return pg;
   }
 
-  private Formula computeTransformation(boolean polarity, final Formula formula, final Literal fixedPGVar) {
+  private Formula computeTransformation(final Formula formula, final Literal fixedPGVar) {
     final FormulaFactory f = formula.factory();
     switch (formula.type()) {
       case LITERAL:
         return f.verum();
-      case NOT:
-        final Formula first = polarity
-                ? this.computePosPolarity(formula, fixedPGVar)
-                : this.computeNegPolarity(formula, fixedPGVar);
-        final Formula second = this.computeTransformation(!polarity, ((Not) formula).operand(), null);
-        return f.and(first, second);
       case OR:
       case AND:
         final List<Formula> nops = new ArrayList<>();
-        nops.add(polarity
-                ? this.computePosPolarity(formula, fixedPGVar)
-                : this.computeNegPolarity(formula, fixedPGVar));
+        nops.add(this.computePosPolarity(formula, fixedPGVar));
         for (final Formula op : formula)
-          nops.add(this.computeTransformation(polarity, op, null));
+          nops.add(this.computeTransformation(op, null));
         return f.and(nops);
       default:
         throw new IllegalArgumentException("Could not process the formula type " + formula.type());
@@ -143,37 +135,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
           nops.add(pgVariable(op));
         result = f.or(nops);
         formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
-        return result;
-      default:
-        throw new IllegalArgumentException("not yet implemented");
-    }
-  }
-
-  private Formula computeNegPolarity(final Formula formula, final Literal fixedPGVar) {
-    Formula result = formula.transformationCacheEntry(PLAISTED_GREENBAUM_NEG);
-    if (result != null)
-      return result;
-    final FormulaFactory f = formula.factory();
-    final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
-    switch (formula.type()) {
-      case NOT:
-        result = f.or(pgVar, pgVariable(((Not) formula).operand()));
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_NEG, result);
-        return result;
-      case AND:
-        List<Formula> nops = new ArrayList<>();
-        nops.add(pgVar);
-        for (final Formula op : formula)
-          nops.add(pgVariable(op).negate());
-        result = f.or(nops);
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_NEG, result);
-        return result;
-      case OR:
-        nops = new ArrayList<>();
-        for (final Formula op : formula)
-          nops.add(f.or(pgVar, pgVariable(op).negate()));
-        result = f.and(nops);
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_NEG, result);
         return result;
       default:
         throw new IllegalArgumentException("not yet implemented");
