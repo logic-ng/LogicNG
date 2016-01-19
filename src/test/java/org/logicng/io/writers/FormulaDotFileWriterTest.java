@@ -28,7 +28,7 @@
 
 package org.logicng.io.writers;
 
-import junitx.framework.FileAssert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -36,7 +36,9 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 /**
@@ -84,8 +86,18 @@ public class FormulaDotFileWriterTest {
     final File expectedF = new File("tests/writers/formulas-dot/" + fileName + "_f.dot");
     final File tempT = new File("tests/writers/temp/" + fileName + "_t.dot");
     final File tempF = new File("tests/writers/temp/" + fileName + "_f.dot");
-    FileAssert.assertEquals(expectedT, tempT);
-    FileAssert.assertEquals(expectedF, tempF);
+    assertFilesEqual(expectedT, tempT);
+    assertFilesEqual(expectedF, tempF);
   }
 
+  private void assertFilesEqual(final File expected, final File actual) throws IOException {
+    final BufferedReader expReader = new BufferedReader(new FileReader(expected));
+    final BufferedReader actReader = new BufferedReader(new FileReader(actual));
+    for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++)
+      Assert.assertEquals("Line " + lineNumber + " not equal", expReader.readLine(), actReader.readLine());
+    if (expReader.ready())
+      Assert.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
+    if (actReader.ready())
+      Assert.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
+  }
 }

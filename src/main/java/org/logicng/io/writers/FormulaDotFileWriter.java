@@ -37,8 +37,10 @@ import org.logicng.formulas.PBConstraint;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,7 +93,7 @@ public final class FormulaDotFileWriter {
       sb.append("}\n");
     generateDotString(formula, sb, ids);
     sb.append("}\n");
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
       writer.append(sb);
       writer.flush();
     }
