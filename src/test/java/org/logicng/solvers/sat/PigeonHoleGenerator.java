@@ -55,12 +55,12 @@ public class PigeonHoleGenerator {
 
   private Formula placeInSomeHole(int n) {
     if (n == 1)
-      return f.and(f.literal("v1"), f.literal("v2"));
+      return f.and(f.variable("v1"), f.variable("v2"));
     List<Formula> ors = new LinkedList<>();
     for (int i = 1; i <= n + 1; i++) {
       List<Literal> orOps = new LinkedList<>();
       for (int j = 1; j <= n; j++)
-        orOps.add(f.literal("v" + (n * (i - 1) + j)));
+        orOps.add(f.variable("v" + (n * (i - 1) + j)));
       ors.add(f.or(orOps));
     }
     return f.and(ors);

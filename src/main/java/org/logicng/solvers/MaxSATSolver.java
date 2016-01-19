@@ -33,6 +33,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.MaxSATHandler;
 import org.logicng.solvers.maxsat.algorithms.IncWBO;
 import org.logicng.solvers.maxsat.algorithms.LinearSU;
@@ -62,8 +63,8 @@ public final class MaxSATSolver {
 
   private MaxSAT.MaxSATResult result;
   private MaxSAT solver;
-  private SortedMap<Literal, Integer> lit2index;
-  private SortedMap<Integer, Literal> index2lit;
+  private SortedMap<Variable, Integer> var2index;
+  private SortedMap<Integer, Variable> index2var;
   private MaxSATConfig configuration;
   private Algorithm algorithm;
 
@@ -85,8 +86,8 @@ public final class MaxSATSolver {
    */
   public void reset() {
     this.result = UNDEF;
-    this.lit2index = new TreeMap<>();
-    this.index2lit = new TreeMap<>();
+    this.var2index = new TreeMap<>();
+    this.index2var = new TreeMap<>();
     switch (this.algorithm) {
       case WBO:
         this.solver = new WBO(this.configuration);
@@ -271,11 +272,11 @@ public final class MaxSATSolver {
     this.result = UNDEF;
     final LNGIntVector clauseVec = new LNGIntVector((int) formula.numberOfAtoms());
     for (Literal lit : formula.literals()) {
-      Integer index = this.lit2index.get(lit.positive());
+      Integer index = this.var2index.get(lit.variable());
       if (index == null) {
         index = this.solver.newLiteral(false) >> 1;
-        this.lit2index.put(lit.positive(), index);
-        this.index2lit.put(index, lit.positive());
+        this.var2index.put(lit.variable(), index);
+        this.index2var.put(index, lit.variable());
       }
       int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
       clauseVec.push(litNum);
@@ -344,7 +345,7 @@ public final class MaxSATSolver {
   private Assignment createAssignment(final LNGBooleanVector vec) {
     final Assignment model = new Assignment();
     for (int i = 0; i < vec.size(); i++) {
-      final Literal lit = this.index2lit.get(i);
+      final Literal lit = this.index2var.get(i);
       if (lit != null) {
         if (vec.get(i))
           model.addLiteral(lit);
@@ -365,6 +366,6 @@ public final class MaxSATSolver {
 
   @Override
   public String toString() {
-    return String.format("MaxSATSolver{result=%s, lit2index=%s}", this.result, this.lit2index);
+    return String.format("MaxSATSolver{result=%s, var2index=%s}", this.result, this.var2index);
   }
 }

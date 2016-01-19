@@ -29,11 +29,12 @@ package org.logicng.pseudobooleans;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.Literal;
-import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -56,11 +57,11 @@ public class PBSWCTest {
     final int numLits = 100;
     final List<Literal> lits = new LinkedList<>();
     final List<Integer> coeffs = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
-      lits.add(lit);
-      problemLits[i] = lit;
+      final Variable var = f.variable("v" + i);
+      lits.add(var);
+      problemLits[i] = var;
       coeffs.add(1);
     }
     final ImmutableFormulaList clauses = encoder.build(lits, coeffs, 0);
@@ -79,11 +80,11 @@ public class PBSWCTest {
     final int rhs = 1;
     final List<Literal> lits = new LinkedList<>();
     final List<Integer> coeffs = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
-      lits.add(lit);
-      problemLits[i] = lit;
+      final Variable var = f.variable("v" + i);
+      lits.add(var);
+      problemLits[i] = var;
       coeffs.add(1);
     }
     final ImmutableFormulaList clauses = encoder.build(lits, coeffs, rhs);
@@ -112,10 +113,10 @@ public class PBSWCTest {
   }
 
   private void testCC(int numLits, int rhs, int expected, final PBEncoder encoder) {
-    final Literal[] problemLits = new Literal[numLits];
+    final Variable[] problemLits = new Variable[numLits];
     final int[] coeffs = new int[numLits];
     for (int i = 0; i < numLits; i++) {
-      problemLits[i] = f.literal("v" + i);
+      problemLits[i] = f.variable("v" + i);
       coeffs[i] = 1;
     }
     final ImmutableFormulaList clauses = encoder.build(problemLits, coeffs, rhs);

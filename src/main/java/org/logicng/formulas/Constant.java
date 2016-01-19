@@ -44,7 +44,8 @@ import java.util.TreeSet;
  */
 public abstract class Constant extends Formula {
 
-  private static final SortedSet<Literal> EMPTY_SET = new TreeSet<>();
+  private static final SortedSet<Variable> EMPTY_VARIABLE_SET = new TreeSet<>();
+  private static final SortedSet<Literal> EMPTY_LITERAL_SET = new TreeSet<>();
 
   private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
     @Override
@@ -93,17 +94,17 @@ public abstract class Constant extends Formula {
   }
 
   @Override
-  public SortedSet<Literal> variables() {
-    return EMPTY_SET;
+  public SortedSet<Variable> variables() {
+    return EMPTY_VARIABLE_SET;
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    return EMPTY_SET;
+    return EMPTY_LITERAL_SET;
   }
 
   @Override
-  public boolean contains(final Literal literal) {
+  public boolean containsVariable(final Variable variable) {
     return false;
   }
 
@@ -113,7 +114,7 @@ public abstract class Constant extends Formula {
   }
 
   @Override
-  public boolean containsSubformula(final Formula formula) {
+  public boolean containsNode(final Formula formula) {
     return this == formula;
   }
 

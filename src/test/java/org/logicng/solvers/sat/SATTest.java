@@ -39,6 +39,7 @@ import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
@@ -152,10 +153,10 @@ public class SATTest {
       s.add(prop);
       Assert.assertEquals(TRUE, s.sat());
       Assert.assertEquals(4, s.model().size());
-      Assert.assertTrue(s.model().evaluateLit(f.literal("a")));
-      Assert.assertFalse(s.model().evaluateLit(f.literal("b")));
-      Assert.assertTrue(s.model().evaluateLit(f.literal("c")));
-      Assert.assertFalse(s.model().evaluateLit(f.literal("d")));
+      Assert.assertTrue(s.model().evaluateLit(f.variable("a")));
+      Assert.assertFalse(s.model().evaluateLit(f.variable("b")));
+      Assert.assertTrue(s.model().evaluateLit(f.variable("c")));
+      Assert.assertFalse(s.model().evaluateLit(f.variable("d")));
       s.reset();
     }
   }
@@ -180,10 +181,10 @@ public class SATTest {
       s.add(parser.parse("(x => y) & (~x => y) & (y => z) & (z => ~x)"));
       Assert.assertEquals(TRUE, s.sat());
       Assert.assertEquals(3, s.model().size());
-      Assert.assertFalse(s.model().evaluateLit(f.literal("x")));
-      Assert.assertTrue(s.model().evaluateLit(f.literal("y")));
-      Assert.assertTrue(s.model().evaluateLit(f.literal("z")));
-      s.add(f.literal("x"));
+      Assert.assertFalse(s.model().evaluateLit(f.variable("x")));
+      Assert.assertTrue(s.model().evaluateLit(f.variable("y")));
+      Assert.assertTrue(s.model().evaluateLit(f.variable("z")));
+      s.add(f.variable("x"));
       Assert.assertEquals(FALSE, s.sat());
       s.reset();
     }
@@ -197,10 +198,10 @@ public class SATTest {
       final List<Assignment> models = s.enumerateAllModels();
       Assert.assertEquals(1, models.size());
       Assert.assertEquals(3, models.get(0).size());
-      Assert.assertFalse(models.get(0).evaluateLit(f.literal("x")));
-      Assert.assertTrue(models.get(0).evaluateLit(f.literal("y")));
-      Assert.assertTrue(models.get(0).evaluateLit(f.literal("z")));
-      s.add(f.literal("x"));
+      Assert.assertFalse(models.get(0).evaluateLit(f.variable("x")));
+      Assert.assertTrue(models.get(0).evaluateLit(f.variable("y")));
+      Assert.assertTrue(models.get(0).evaluateLit(f.variable("z")));
+      s.add(f.variable("x"));
       Assert.assertEquals(FALSE, s.sat());
       s.reset();
     }
@@ -211,9 +212,9 @@ public class SATTest {
     final CCExactlyOne c = new CCEXOProduct(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
-      final Literal[] lits = new Literal[100];
+      final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
-        lits[j] = f.literal("x" + j);
+        lits[j] = f.variable("x" + j);
       final ImmutableFormulaList cc = c.build(lits);
       s.add(cc);
       final List<Assignment> models = s.enumerateAllModels(lits);
@@ -227,10 +228,10 @@ public class SATTest {
   @Test(expected = UnsupportedOperationException.class)
   public void testIllegalEnumeration() {
     final SATSolver s = this.solvers[7];
-    final Literal[] lits = new Literal[100];
+    final Variable[] lits = new Variable[100];
     final CCExactlyOne c = new CCEXOProduct(f);
     for (int j = 0; j < lits.length; j++)
-      lits[j] = f.literal("x" + j);
+      lits[j] = f.variable("x" + j);
     final ImmutableFormulaList cc = c.build(lits);
     s.add(cc);
     s.enumerateAllModels(lits);
@@ -408,9 +409,9 @@ public class SATTest {
     final CCExactlyOne c = new CCEXOProduct(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
-      final Literal[] lits = new Literal[100];
+      final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
-        lits[j] = f.literal("x" + j);
+        lits[j] = f.variable("x" + j);
       final ImmutableFormulaList cc = c.build(lits);
 
       s.add(cc);

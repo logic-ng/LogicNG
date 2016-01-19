@@ -33,6 +33,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,19 +53,19 @@ public final class ExistentialQuantifierElimination implements FormulaTransforma
   private final Literal[] elimination;
 
   /**
-   * Constructs a new existential quantifier elimination for the given literals.
-   * @param literals the literals
+   * Constructs a new existential quantifier elimination for the given variables.
+   * @param variables the variables
    */
-  public ExistentialQuantifierElimination(final Literal... literals) {
-    this.elimination = Arrays.copyOf(literals, literals.length);
+  public ExistentialQuantifierElimination(final Variable... variables) {
+    this.elimination = Arrays.copyOf(variables, variables.length);
   }
 
   /**
-   * Constructs a new existential quantifier elimination for a given collection of literals.
-   * @param literals the collection of literals
+   * Constructs a new existential quantifier elimination for a given collection of variables.
+   * @param variables the collection of variables
    */
-  public ExistentialQuantifierElimination(final Collection<Literal> literals) {
-    this.elimination = literals.toArray(new Literal[literals.size()]);
+  public ExistentialQuantifierElimination(final Collection<Variable> variables) {
+    this.elimination = variables.toArray(new Literal[variables.size()]);
   }
 
   @Override

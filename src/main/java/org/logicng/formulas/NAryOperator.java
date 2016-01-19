@@ -91,9 +91,9 @@ public abstract class NAryOperator extends Formula {
   }
 
   @Override
-  public SortedSet<Literal> variables() {
+  public SortedSet<Variable> variables() {
     if (this.variables == null) {
-      final SortedSet<Literal> set = new TreeSet<>();
+      final SortedSet<Variable> set = new TreeSet<>();
       for (final Formula op : this.operands)
         set.addAll(op.variables());
       this.variables = set;
@@ -110,9 +110,9 @@ public abstract class NAryOperator extends Formula {
   }
 
   @Override
-  public boolean contains(Literal literal) {
+  public boolean containsVariable(final Variable variable) {
     for (final Formula op : this.operands)
-      if (op.contains(literal))
+      if (op.containsVariable(variable))
         return true;
     return false;
   }
@@ -126,12 +126,12 @@ public abstract class NAryOperator extends Formula {
   }
 
   @Override
-  public boolean containsSubformula(final Formula formula) {
+  public boolean containsNode(final Formula formula) {
     if (this.equals(formula))
       return true;
     if (this.type != formula.type) {
       for (final Formula op : this.operands)
-        if (op.containsSubformula(formula))
+        if (op.containsNode(formula))
           return true;
       return false;
     }
@@ -140,7 +140,7 @@ public abstract class NAryOperator extends Formula {
       fOps.add(op);
     for (Formula op : this.operands) {
       fOps.remove(op);
-      if (op.containsSubformula(formula))
+      if (op.containsNode(formula))
         return true;
     }
     return fOps.isEmpty();

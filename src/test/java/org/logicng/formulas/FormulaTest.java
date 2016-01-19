@@ -48,17 +48,17 @@ public class FormulaTest {
   @Test
   public void testStringContains() {
     final FormulaFactory f = new FormulaFactory();
-    final Formula formula = f.not(f.and(f.literal("a"), f.literal("b")));
-    Assert.assertTrue(formula.contains("a"));
-    Assert.assertTrue(formula.contains("b"));
-    Assert.assertFalse(formula.contains("x"));
-    Assert.assertFalse(formula.contains("y"));
+    final Formula formula = f.not(f.and(f.variable("a"), f.variable("b")));
+    Assert.assertTrue(formula.containsVariable("a"));
+    Assert.assertTrue(formula.containsVariable("b"));
+    Assert.assertFalse(formula.containsVariable("x"));
+    Assert.assertFalse(formula.containsVariable("y"));
   }
 
   @Test
   public void testTransformationCache() {
     final FormulaFactory f = new FormulaFactory();
-    final Formula formula = f.not(f.and(f.literal("a"), f.literal("b")));
+    final Formula formula = f.not(f.and(f.variable("a"), f.variable("b")));
     formula.setTransformationCacheEntry(FACTORIZED_CNF, f.or(f.literal("a", false), f.literal("b", false)));
     Assert.assertEquals(f.or(f.literal("a", false), f.literal("b", false)), formula.transformationCacheEntry(FACTORIZED_CNF));
   }
@@ -66,7 +66,7 @@ public class FormulaTest {
   @Test
   public void testPredicateCache() {
     final FormulaFactory f = new FormulaFactory();
-    final Formula formula = f.not(f.and(f.literal("a"), f.literal("b")));
+    final Formula formula = f.not(f.and(f.variable("a"), f.variable("b")));
     formula.setPredicateCacheEntry(IS_CNF, false);
     formula.setPredicateCacheEntry(IS_DNF, Tristate.UNDEF);
     Assert.assertEquals(Tristate.FALSE, formula.predicateCacheEntry(IS_CNF));
@@ -76,7 +76,7 @@ public class FormulaTest {
   @Test
   public void testFunctionCache() {
     final FormulaFactory f = new FormulaFactory();
-    final Formula formula = f.not(f.and(f.literal("a"), f.literal("b")));
+    final Formula formula = f.not(f.and(f.variable("a"), f.variable("b")));
     formula.setFunctionCacheEntry(MyOwnCacheKey.MYKEY1, "key1");
     formula.setFunctionCacheEntry(MyOwnCacheKey.MYKEY2, "key2");
     Assert.assertEquals("My Key 1", MyOwnCacheKey.MYKEY1.description);

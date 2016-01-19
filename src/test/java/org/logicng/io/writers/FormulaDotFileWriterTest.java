@@ -59,7 +59,7 @@ public class FormulaDotFileWriterTest {
 
   @Test
   public void testLiterals() throws IOException {
-    testFiles("x", f.literal("x"));
+    testFiles("x", f.variable("x"));
     testFiles("not_x", f.literal("x", false));
   }
 

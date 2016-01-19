@@ -51,12 +51,12 @@ package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.Collection;
 
 /**
- * Encodes that at least 'rhs' literals are assigned value true.  Uses the totalizer encoding for
+ * Encodes that at least 'rhs' variables are assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
  * @author Christoph Zengler
  * @version 1.0
@@ -75,8 +75,8 @@ public final class CCALKTotalizer extends CCAtLeastK {
   }
 
   @Override
-  public ImmutableFormulaList build(final Collection<Literal> lits, int rhs) {
-    return this.totalizer.buildALK(lits, rhs);
+  public ImmutableFormulaList build(final Collection<Variable> vars, int rhs) {
+    return this.totalizer.buildALK(vars, rhs);
   }
 
   @Override

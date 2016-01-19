@@ -36,7 +36,7 @@ import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
-import static org.logicng.datastructures.Tristate.*;
+import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
@@ -75,12 +75,12 @@ public class AssumeTest {
       s.add(parser.parse("d => e"));
       s.add(parser.parse("e => f"));
       Assert.assertEquals(TRUE, s.sat(f.literal("a", false)));
-      Assert.assertEquals(TRUE, s.sat(f.literal("b")));
-      Assert.assertEquals(TRUE, s.sat(f.literal("c")));
-      Assert.assertEquals(TRUE, s.sat(f.literal("d")));
-      Assert.assertEquals(TRUE, s.sat(f.literal("e")));
-      Assert.assertEquals(TRUE, s.sat(f.literal("f")));
-      Assert.assertEquals(FALSE, s.sat(f.literal("a")));
+      Assert.assertEquals(TRUE, s.sat(f.variable("b")));
+      Assert.assertEquals(TRUE, s.sat(f.variable("c")));
+      Assert.assertEquals(TRUE, s.sat(f.variable("d")));
+      Assert.assertEquals(TRUE, s.sat(f.variable("e")));
+      Assert.assertEquals(TRUE, s.sat(f.variable("f")));
+      Assert.assertEquals(FALSE, s.sat(f.variable("a")));
       Assert.assertEquals(FALSE, s.sat(f.literal("b", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("c", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("d", false)));

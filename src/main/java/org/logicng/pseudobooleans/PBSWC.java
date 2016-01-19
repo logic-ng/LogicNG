@@ -132,7 +132,7 @@ public final class PBSWC extends PBEncoder {
     }
     for (int i = 1; i <= n; ++i)
       for (int j = 1; j <= rhs; ++j)
-        seqAuxiliary.get(i).set(j, f.newPBLiteral());
+        seqAuxiliary.get(i).set(j, f.newPBVariable());
 
     for (int i = 1; i <= rhs; ++i)
       this.pbOutlits.push(seqAuxiliary.get(n).get(i));

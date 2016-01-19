@@ -26,72 +26,37 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-grammar LogicNGPropositional;
+package org.logicng.functions;
 
-@parser::header {
-package org.logicng.io.parsers;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFunction;
 
 import java.util.LinkedHashSet;
-import org.logicng.formulas.*;
+
+import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
+
+/**
+ * A function that computes the all sub-nodes of a given formula.  The order of the sub-nodes is bottom-up, i.e. a
+ * sub-node only appears in the result when all of its sub-nodes are already listed.
+ * @author Christoph Zengler
+ * @version 1.0
+ * @since 1.0
+ */
+public final class SubNodeFunction implements FormulaFunction<LinkedHashSet<Formula>> {
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public LinkedHashSet<Formula> apply(final Formula formula, boolean cache) {
+    final Object cached = formula.functionCacheEntry(SUBFORMULAS);
+    if (cached != null)
+      return (LinkedHashSet<Formula>) cached;
+    LinkedHashSet<Formula> result = new LinkedHashSet<>();
+    for (final Formula op : formula)
+      if (!result.contains(op))
+        result.addAll(apply(op, cache));
+    result.add(formula);
+    if (cache)
+      formula.setFunctionCacheEntry(SUBFORMULAS, result);
+    return result;
+  }
 }
-
-@members {
-private FormulaFactory f;
-
-public void setFormulaFactory(final FormulaFactory f) {
-  this.f = f;
-}
-}
-
-@lexer::header {
-package org.logicng.io.parsers;
-
-import org.logicng.formulas.FormulaFactory;
-}
-
-formula returns [Formula f]
-  : equiv EOF {$f = $equiv.f;}
-  ;
-
-constant returns [Formula f]
-  : TRUE  {$f = f.verum();}
-  | FALSE {$f = f.falsum();}
-  ;
-
-simp returns [Formula f]
-  :	VARIABLE      {$f = f.literal($VARIABLE.text, true);}
-  |	constant      {$f = $constant.f;}
-  | LBR equiv RBR {$f = $equiv.f;};
-
-lit returns [Formula f]
-  :	NOT a = lit {$f = f.not($a.f);}
-  |	simp        {$f = $simp.f;};
-
-conj returns [Formula f]
-@init{LinkedHashSet<Formula> literals = new LinkedHashSet<>(); }
-	:	a = lit {literals.add($a.f);} (AND b = lit {literals.add($b.f);})* {$f = f.and(literals);};
-
-disj returns [Formula f]
-@init{LinkedHashSet<Formula> conjunctions = new LinkedHashSet<>();}
-  :	a = conj {conjunctions.add($a.f);} (OR b = conj {conjunctions.add($b.f);})* {$f = f.or(conjunctions);};
-
-impl returns [Formula f]
-@init{Formula[] operands = new Formula[2];}
-  :	a = disj {operands[0] =$a.f;} (IMPL b = impl {operands[1] = $b.f;})? {$f = operands[1] == null ? operands[0] : f.implication(operands[0], operands[1]);};
-
-equiv returns [Formula f]
-@init{Formula[] operands = new Formula[2];}
-  :	a = impl {operands[0] =$a.f;} (EQUIV b = equiv {operands[1] = $b.f;})? {$f = operands[1] == null ? operands[0] : f.equivalence(operands[0], operands[1]);};
-
-VARIABLE : [A-Za-z_@][A-Za-z0-9_]*;
-TRUE     : '$true';
-FALSE    : '$false';
-LBR      : '(';
-RBR      : ')';
-NOT      : '~';
-AND      : '&';
-OR       : '|';
-IMPL     : '=>';
-EQUIV    : '<=>';
-WS       : [ \t\r\n]+ -> skip ;
-

@@ -69,7 +69,7 @@ public class NotTest {
   @Test
   public void testVariables() {
     Assert.assertEquals(2, F.NOT1.variables().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+    SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, F.NOT1.variables());
 
     Assert.assertEquals(2, F.NOT2.variables().size());
@@ -80,7 +80,7 @@ public class NotTest {
   @Test
   public void testLiterals() {
     Assert.assertEquals(2, F.NOT1.literals().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+    SortedSet<? extends Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, F.NOT1.literals());
 
     Formula not = F.f.not(F.f.and(F.A, F.NB, F.f.implication(F.B, F.NA)));
@@ -108,9 +108,9 @@ public class NotTest {
   @Test
   public void testEqualsDifferentFormulaFactory() {
     Assert.assertEquals(F.NOT1, F.g.not(F.AND1));
-    Assert.assertEquals(F.NOT2, F.g.not(F.g.or(F.g.literal("x"), F.g.literal("y"))));
-    Assert.assertNotEquals(F.NOT1, F.g.literal("x"));
-    Assert.assertNotEquals(F.NOT2, F.g.not(F.g.or(F.g.literal("a"), F.g.literal("b"))));
+    Assert.assertEquals(F.NOT2, F.g.not(F.g.or(F.g.variable("x"), F.g.variable("y"))));
+    Assert.assertNotEquals(F.NOT1, F.g.variable("x"));
+    Assert.assertNotEquals(F.NOT2, F.g.not(F.g.or(F.g.variable("a"), F.g.variable("b"))));
   }
 
   @Test
@@ -156,7 +156,7 @@ public class NotTest {
 
   @Test
   public void testContains() {
-    Assert.assertTrue(F.NOT1.contains(F.f.literal("a")));
-    Assert.assertFalse(F.NOT1.contains(F.f.literal("x")));
+    Assert.assertTrue(F.NOT1.containsVariable(F.f.variable("a")));
+    Assert.assertFalse(F.NOT1.containsVariable(F.f.variable("x")));
   }
 }

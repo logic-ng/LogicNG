@@ -67,7 +67,7 @@ comparison returns [Formula f]
   ;
 
 simp returns [Formula f]
-  :	VARIABLE      {$f = f.literal($VARIABLE.text);}
+  :	VARIABLE      {$f = f.literal($VARIABLE.text, true);}
   |	constant      {$f = $constant.f;}
   | comparison    {$f = $comparison.f;}
   | LBR equiv RBR {$f = $equiv.f;}

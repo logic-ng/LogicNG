@@ -31,6 +31,7 @@ package org.logicng.datastructures;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,10 +55,10 @@ import java.util.TreeSet;
  */
 public class Assignment {
 
-  private Collection<Literal> pos;
-  private Collection<Literal> neg;
-  private final List<Literal> negVars;
-  private boolean fastEvaluable;
+  protected Collection<Variable> pos;
+  protected Collection<Literal> neg;
+  protected final List<Variable> negVars;
+  protected boolean fastEvaluable;
 
   /**
    * Constructs a new empty assignment (without fast evaluation).
@@ -88,7 +89,7 @@ public class Assignment {
    * Constructs a new assignment for a given collection of literals (without fast evaluation).
    * @param lits a new assignment for a given collection of literals
    */
-  public Assignment(final Collection<Literal> lits) {
+  public Assignment(final Collection<? extends Literal> lits) {
     this(lits, false);
   }
 
@@ -99,14 +100,14 @@ public class Assignment {
    *                      {@code true} the internal data structures will be optimized for fast evaluation but
    *                      creation of the object or adding literals can take longer.
    */
-  public Assignment(final Collection<Literal> lits, final boolean fastEvaluable) {
+  public Assignment(final Collection<? extends Literal> lits, final boolean fastEvaluable) {
     this(fastEvaluable);
     for (Literal lit : lits)
       if (lit.phase())
-        this.pos.add(lit);
+        this.pos.add((Variable) lit);
       else {
         this.neg.add(lit);
-        this.negVars.add(lit.negate());
+        this.negVars.add((Variable) lit.negate());
       }
   }
 
@@ -128,10 +129,10 @@ public class Assignment {
   public Assignment(final Literal lit, final boolean fastEvaluable) {
     this(fastEvaluable);
     if (lit.phase())
-      this.pos.add(lit);
+      this.pos.add((Variable) lit);
     else {
       this.neg.add(lit);
-      this.negVars.add(lit.negate());
+      this.negVars.add((Variable) lit.negate());
     }
   }
 
@@ -166,11 +167,11 @@ public class Assignment {
    * Returns the positive literals of this assignment.
    * @return the positive literals of this assignment
    */
-  public List<Literal> positiveLiterals() {
+  public List<Variable> positiveLiterals() {
     if (this.fastEvaluable)
       return Collections.unmodifiableList(new ArrayList<>(this.pos));
     else
-      return Collections.unmodifiableList((List<Literal>) this.pos);
+      return Collections.unmodifiableList((List<Variable>) this.pos);
   }
 
   /**
@@ -188,7 +189,7 @@ public class Assignment {
    * Returns the negative literals of this assignment as positive literals.
    * @return the negative literals of this assignment
    */
-  public List<Literal> negativeVariables() {
+  public List<Variable> negativeVariables() {
     return Collections.unmodifiableList(this.negVars);
   }
 
@@ -197,7 +198,8 @@ public class Assignment {
    * @return all literals of this assignment
    */
   public SortedSet<Literal> literals() {
-    final SortedSet<Literal> set = new TreeSet<>(this.pos);
+    final SortedSet<Literal> set = new TreeSet<>();
+    set.addAll(this.pos);
     set.addAll(this.neg);
     return set;
   }
@@ -208,10 +210,10 @@ public class Assignment {
    */
   public void addLiteral(final Literal lit) {
     if (lit.phase())
-      this.pos.add(lit);
+      this.pos.add((Variable) lit);
     else {
       this.neg.add(lit);
-      this.negVars.add(lit.negate());
+      this.negVars.add((Variable) lit.negate());
     }
   }
 
@@ -224,7 +226,7 @@ public class Assignment {
     if (lit.phase())
       return this.pos.contains(lit);
     else
-      return this.neg.contains(lit) || !this.pos.contains(lit.positive());
+      return this.neg.contains(lit) || !this.pos.contains(lit.variable());
   }
 
   /**
@@ -234,10 +236,10 @@ public class Assignment {
    */
   public Formula restrictLit(final Literal lit) {
     final FormulaFactory f = lit.factory();
-    Literal searchLit = lit.positive();
+    Literal searchLit = lit.variable();
     if (this.pos.contains(searchLit))
       return lit.phase() ? f.verum() : f.falsum();
-    searchLit = lit.positive().negate();
+    searchLit = lit.negative();
     if (this.neg.contains(searchLit))
       return !lit.phase() ? f.verum() : f.falsum();
     return null;
@@ -259,13 +261,13 @@ public class Assignment {
    * @param literals the set of literals
    * @return the blocking clause for this assignment
    */
-  public Formula blockingClause(final FormulaFactory f, final Collection<Literal> literals) {
+  public Formula blockingClause(final FormulaFactory f, final Collection<? extends Literal> literals) {
     final List<Literal> ops = new LinkedList<>();
     for (final Literal l : this.pos)
       if (literals == null || literals.contains(l))
         ops.add(l.negate());
     for (final Literal l : this.neg)
-      if (literals == null || literals.contains(l.positive()))
+      if (literals == null || literals.contains(l.variable()))
         ops.add(l.negate());
     return f.or(ops);
   }

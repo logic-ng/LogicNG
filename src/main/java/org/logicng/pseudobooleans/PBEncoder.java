@@ -43,6 +43,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -121,27 +122,28 @@ public abstract class PBEncoder {
    */
   private ImmutableFormulaList buildCC(final PBConstraint constraint) {
     assert constraint.isCC();
+    final Variable[] ops = litsAsVars(constraint.operands());
     switch (constraint.comparator()) {
       case LE:
         if (constraint.rhs() == 1)
-          return this.amo.build(constraint.operands());
+          return this.amo.build(ops);
         else
-          return this.amk.build(constraint.operands(), constraint.rhs());
+          return this.amk.build(ops, constraint.rhs());
       case LT:
         if (constraint.rhs() == 2)
-          return this.amo.build(constraint.operands());
+          return this.amo.build(ops);
         else
-          return this.amk.build(constraint.operands(), constraint.rhs() - 1);
+          return this.amk.build(ops, constraint.rhs() - 1);
       case GE:
-        return this.alk.build(constraint.operands(), constraint.rhs());
+        return this.alk.build(ops, constraint.rhs());
       case GT:
-        return this.alk.build(constraint.operands(), constraint.rhs() + 1);
+        return this.alk.build(ops, constraint.rhs() + 1);
       case EQ:
         if (constraint.rhs() == 1)
-          return this.exo.build(constraint.operands());
+          return this.exo.build(ops);
         else {
-          Formula le = this.f.cc(CType.LE, constraint.rhs(), constraint.operands()).normalize();
-          Formula ge = this.f.cc(CType.GE, constraint.rhs(), constraint.operands()).normalize();
+          Formula le = this.f.cc(CType.LE, constraint.rhs(), ops).normalize();
+          Formula ge = this.f.cc(CType.GE, constraint.rhs(), ops).normalize();
           if (le.type() == FType.FALSE || ge.type() == FType.FALSE)
             return new ImmutableFormulaList(FType.AND, this.f.falsum());
           List<Formula> list = new LinkedList<>();
@@ -157,6 +159,20 @@ public abstract class PBEncoder {
   }
 
   /**
+   * Converts a literal array to a variable array
+   * <p>
+   * ATTENTION: this only works if because the {@code isCC} method checks, that there are only positive literals.
+   * @param lits the literals
+   * @return the variables
+   */
+  private static Variable[] litsAsVars(final Literal[] lits) {
+    final Variable[] vars = new Variable[lits.length];
+    for (int i = 0; i < vars.length; i++)
+      vars[i] = lits[i].variable();
+    return vars;
+  }
+
+  /**
    * Builds a pseudo Boolean constraint of the form {@code c_1 * lit_1 + c_2 * lit_2 + ... + c_n * lit_n >= k}.
    * @param lits   the literals {@code lit_1 ... lit_n}
    * @param coeffs the coefficients {@code c_1 ... c_n}
@@ -165,7 +181,7 @@ public abstract class PBEncoder {
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative or
    *                                  larger than the number of literals
    */
-  public ImmutableFormulaList build(List<Literal> lits, List<Integer> coeffs, int rhs) {
+  public ImmutableFormulaList build(List<? extends Literal> lits, List<Integer> coeffs, int rhs) {
     int[] cfs = new int[coeffs.size()];
     for (int i = 0; i < coeffs.size(); i++)
       cfs[i] = coeffs.get(i);

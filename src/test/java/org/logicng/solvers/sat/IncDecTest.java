@@ -61,7 +61,7 @@ public class IncDecTest {
   @Test
   public void testIncDec() {
     for (final SATSolver s : this.solvers) {
-      s.add(f.literal("a"));
+      s.add(f.variable("a"));
       final SolverState state1 = s.saveState();
       Assert.assertEquals("SolverState{state=[1, 1, 0, 0, 1]}", state1.toString());
       Assert.assertEquals(TRUE, s.sat());

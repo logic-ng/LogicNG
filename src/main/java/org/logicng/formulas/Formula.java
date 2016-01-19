@@ -50,7 +50,7 @@ public abstract class Formula implements Iterable<Formula> {
   protected final SortedMap<CacheEntry, Formula> transformationCache;
   protected final SortedMap<CacheEntry, Tristate> predicateCache;
   protected final SortedMap<CacheEntry, Object> functionCache;
-  protected SortedSet<Literal> variables;
+  protected SortedSet<Variable> variables;
   protected long numberOfAtoms;
   protected long numberOfNodes;
 
@@ -123,7 +123,7 @@ public abstract class Formula implements Iterable<Formula> {
    * Returns all variables occurring in this formula as positive literals.
    * @return all variables occurring in this formula as positive literals
    */
-  public abstract SortedSet<Literal> variables();
+  public abstract SortedSet<Variable> variables();
 
   /**
    * Returns all literals occurring in this formula.
@@ -132,20 +132,20 @@ public abstract class Formula implements Iterable<Formula> {
   public abstract SortedSet<Literal> literals();
 
   /**
-   * Returns {@code true} if a given literal name is found in this formula, {@code false} otherwise.
-   * @param literal the literal to search for
-   * @return {@code true} if a given literal is found in this formula
+   * Returns {@code true} if a given variable name is found in this formula, {@code false} otherwise.
+   * @param variable the variable to search for
+   * @return {@code true} if a given variable is found in this formula
    */
-  public boolean contains(final String literal) {
-    return this.contains(this.f.literal(literal));
+  public boolean containsVariable(final String variable) {
+    return this.containsVariable(this.f.variable(variable));
   }
 
   /**
-   * Returns {@code true} if a given positive literal is found in this formula, {@code false} otherwise.
-   * @param literal the literal to search for
-   * @return {@code true} if a given literal is found in this formula
+   * Returns {@code true} if a given variable name is found in this formula, {@code false} otherwise.
+   * @param variable the variable to search for
+   * @return {@code true} if a given variable is found in this formula
    */
-  public abstract boolean contains(final Literal literal);
+  public abstract boolean containsVariable(final Variable variable);
 
   /**
    * Evaluates this formula with a given assignment.  A literal not covered by the assignment evaluates
@@ -163,21 +163,23 @@ public abstract class Formula implements Iterable<Formula> {
   public abstract Formula restrict(final Assignment assignment);
 
   /**
-   * Returns {@code true} if this formula contains a given sub-formula, {@code false} otherwise.
-   * @param formula the sub-formula
-   * @return {@code true} if this formula contains a given sub-formula
+   * Returns {@code true} if this formula contains a given node, {@code false} otherwise.
+   * <p>
+   * In particular, a {@code Literal} node {@code ~a} does NOT contain the node {@code a}.
+   * @param formula the node
+   * @return {@code true} if this formula contains a given node
    */
-  public abstract boolean containsSubformula(final Formula formula);
+  public abstract boolean containsNode(final Formula formula);
 
   /**
    * Performs a substitution on this formula given a single mapping from variable to formula.
-   * @param literal the literal
-   * @param formula the formula
+   * @param variable the variable
+   * @param formula  the formula
    * @return a new substituted formula
    */
-  public Formula substitute(final Literal literal, final Formula formula) {
+  public Formula substitute(final Variable variable, final Formula formula) {
     Substitution subst = new Substitution();
-    subst.addMapping(literal, formula);
+    subst.addMapping(variable, formula);
     return this.substitute(subst);
   }
 
@@ -203,6 +205,9 @@ public abstract class Formula implements Iterable<Formula> {
   /**
    * Returns a copy of this formula which is in CNF.  The algorithm which is used for the default CNF transformation
    * can be configured in the {@link FormulaFactory}.
+   * <p>
+   * Since CNF is the input for the SAT or MaxSAT solvers, it has a special treatment here.  For other conversions, use
+   * the according formula functions.
    * @return a copy of this formula which is in CNF
    */
   public Formula cnf() {

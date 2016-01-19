@@ -153,7 +153,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       return formula;
     Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
     if (var == null) {
-      var = formula.factory().newCNFLiteral();
+      var = formula.factory().newCNFVariable();
       formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
     }
     return var;

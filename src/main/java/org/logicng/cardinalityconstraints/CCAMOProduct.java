@@ -28,17 +28,17 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Encodes that at most one literal from 'lits' is assigned value true.  Uses the 2-product method due to Chen.
+ * Encodes that at most one variable is assigned value true.  Uses the 2-product method due to Chen.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
@@ -57,24 +57,24 @@ public final class CCAMOProduct extends CCAtMostOne {
   }
 
   @Override
-  public ImmutableFormulaList build(final Literal... lits) {
-    if (lits.length < 2)
+  public ImmutableFormulaList build(final Variable... vars) {
+    if (vars.length < 2)
       return new ImmutableFormulaList(FType.AND);
-    return new ImmutableFormulaList(FType.AND, this.productRec(lits));
+    return new ImmutableFormulaList(FType.AND, this.productRec(vars));
   }
 
-  private List<Formula> productRec(final Literal... lits) {
+  private List<Formula> productRec(final Variable... vars) {
     final List<Formula> result = new LinkedList<>();
     int recBound = 20;
-    int n = lits.length;
+    int n = vars.length;
     int p = (int) Math.ceil(Math.sqrt(n));
     int q = (int) Math.ceil((double) n / (double) p);
-    final Literal[] us = new Literal[p];
+    final Variable[] us = new Variable[p];
     for (int i = 0; i < us.length; i++)
-      us[i] = this.f.newCCLiteral();
-    final Literal[] vs = new Literal[q];
+      us[i] = this.f.newCCVariable();
+    final Variable[] vs = new Variable[q];
     for (int i = 0; i < vs.length; i++)
-      vs[i] = this.f.newCCLiteral();
+      vs[i] = this.f.newCCVariable();
     if (us.length <= recBound)
       result.addAll(this.amo.build(us).toList());
     else
@@ -87,8 +87,8 @@ public final class CCAMOProduct extends CCAtMostOne {
       for (int j = 0; j < q; j++) {
         final int k = i * q + j;
         if (k >= 0 && k < n) {
-          result.add(this.f.clause(this.f.literal(lits[k].name(), false), us[i]));
-          result.add(this.f.clause(this.f.literal(lits[k].name(), false), vs[j]));
+          result.add(this.f.clause(this.f.literal(vars[k].name(), false), us[i]));
+          result.add(this.f.clause(this.f.literal(vars[k].name(), false), vs[j]));
         }
       }
     }

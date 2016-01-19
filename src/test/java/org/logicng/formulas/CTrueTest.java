@@ -111,6 +111,6 @@ public class CTrueTest {
 
   @Test
   public void testContains() {
-    Assert.assertFalse(F.TRUE.contains(F.f.literal("a")));
+    Assert.assertFalse(F.TRUE.containsVariable(F.f.variable("a")));
   }
 }

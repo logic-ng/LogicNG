@@ -54,10 +54,10 @@ public class PropositionalParserTest {
   @Test
   public void testParseLiterals() throws ParserException {
     PropositionalParser parser = new PropositionalParser(F.f);
-    Assert.assertEquals(F.f.literal("A"), parser.parse("A"));
-    Assert.assertEquals(F.f.literal("a"), parser.parse("a"));
-    Assert.assertEquals(F.f.literal("a1"), parser.parse("a1"));
-    Assert.assertEquals(F.f.literal("aA_Bb_Cc_12_3"), parser.parse("aA_Bb_Cc_12_3"));
+    Assert.assertEquals(F.f.variable("A"), parser.parse("A"));
+    Assert.assertEquals(F.f.variable("a"), parser.parse("a"));
+    Assert.assertEquals(F.f.variable("a1"), parser.parse("a1"));
+    Assert.assertEquals(F.f.variable("aA_Bb_Cc_12_3"), parser.parse("aA_Bb_Cc_12_3"));
     Assert.assertEquals(F.f.literal("A", false), parser.parse("~A"));
     Assert.assertEquals(F.f.literal("a", false), parser.parse("~a"));
     Assert.assertEquals(F.f.literal("a1", false), parser.parse("~a1"));
@@ -68,47 +68,47 @@ public class PropositionalParserTest {
   @Test
   public void testParseOperators() throws ParserException {
     PropositionalParser parser = new PropositionalParser(F.f);
-    Assert.assertEquals(F.f.not(F.f.literal("a")), parser.parse("~a"));
-    Assert.assertEquals(F.f.not(F.f.literal("Var")), parser.parse("~Var"));
-    Assert.assertEquals(F.f.and(F.f.literal("a"), F.f.literal("b")), parser.parse("a & b"));
+    Assert.assertEquals(F.f.not(F.f.variable("a")), parser.parse("~a"));
+    Assert.assertEquals(F.f.not(F.f.variable("Var")), parser.parse("~Var"));
+    Assert.assertEquals(F.f.and(F.f.variable("a"), F.f.variable("b")), parser.parse("a & b"));
     Assert.assertEquals(F.f.and(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a & ~b"));
-    Assert.assertEquals(F.f.and(F.f.literal("a", false), F.f.literal("b"), F.f.literal("c", false), F.f.literal("d")), parser.parse("~a & b & ~c & d"));
-    Assert.assertEquals(F.f.or(F.f.literal("a"), F.f.literal("b")), parser.parse("a | b"));
+    Assert.assertEquals(F.f.and(F.f.literal("a", false), F.f.variable("b"), F.f.literal("c", false), F.f.variable("d")), parser.parse("~a & b & ~c & d"));
+    Assert.assertEquals(F.f.or(F.f.variable("a"), F.f.variable("b")), parser.parse("a | b"));
     Assert.assertEquals(F.f.or(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a | ~b"));
-    Assert.assertEquals(F.f.or(F.f.literal("a", false), F.f.literal("b"), F.f.literal("c", false), F.f.literal("d")), parser.parse("~a | b | ~c | d"));
-    Assert.assertEquals(F.f.implication(F.f.literal("a"), F.f.literal("b")), parser.parse("a => b"));
+    Assert.assertEquals(F.f.or(F.f.literal("a", false), F.f.variable("b"), F.f.literal("c", false), F.f.variable("d")), parser.parse("~a | b | ~c | d"));
+    Assert.assertEquals(F.f.implication(F.f.variable("a"), F.f.variable("b")), parser.parse("a => b"));
     Assert.assertEquals(F.f.implication(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a => ~b"));
-    Assert.assertEquals(F.f.equivalence(F.f.literal("a"), F.f.literal("b")), parser.parse("a <=> b"));
+    Assert.assertEquals(F.f.equivalence(F.f.variable("a"), F.f.variable("b")), parser.parse("a <=> b"));
     Assert.assertEquals(F.f.equivalence(F.f.literal("a", false), F.f.literal("b", false)), parser.parse("~a <=> ~b"));
   }
 
   @Test
   public void testParsePrecedences() throws ParserException {
     PropositionalParser parser = new PropositionalParser(F.f);
-    Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | y & z"));
-    Assert.assertEquals(F.f.or(F.f.and(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x & y | z"));
-    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => y & z"));
-    Assert.assertEquals(F.f.implication(F.f.and(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x & y => z"));
-    Assert.assertEquals(F.f.equivalence(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z"))), parser.parse("x <=> y & z"));
-    Assert.assertEquals(F.f.equivalence(F.f.and(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x & y <=> z"));
-    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.or(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => y | z"));
-    Assert.assertEquals(F.f.implication(F.f.or(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x | y => z"));
-    Assert.assertEquals(F.f.equivalence(F.f.literal("x"), F.f.or(F.f.literal("y"), F.f.literal("z"))), parser.parse("x <=> y | z"));
-    Assert.assertEquals(F.f.equivalence(F.f.or(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x | y <=> z"));
-    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.implication(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => y => z"));
-    Assert.assertEquals(F.f.equivalence(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x <=> y <=> z"));
-    Assert.assertEquals(F.f.and(F.f.or(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x | y) & z"));
-    Assert.assertEquals(F.f.and(F.f.literal("x"), F.f.or(F.f.literal("y"), F.f.literal("z"))), parser.parse("x & (y | z)"));
-    Assert.assertEquals(F.f.and(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x => y) & z"));
-    Assert.assertEquals(F.f.and(F.f.literal("x"), F.f.implication(F.f.literal("y"), F.f.literal("z"))), parser.parse("x & (y => z)"));
-    Assert.assertEquals(F.f.or(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x => y) | z"));
-    Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.implication(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | (y => z)"));
-    Assert.assertEquals(F.f.and(F.f.equivalence(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x <=> y) & z"));
-    Assert.assertEquals(F.f.and(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x & (y <=> z)"));
-    Assert.assertEquals(F.f.or(F.f.equivalence(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("(x <=> y) | z"));
-    Assert.assertEquals(F.f.or(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x | (y <=> z)"));
-    Assert.assertEquals(F.f.equivalence(F.f.implication(F.f.literal("x"), F.f.literal("y")), F.f.literal("z")), parser.parse("x => y <=> z"));
-    Assert.assertEquals(F.f.implication(F.f.literal("x"), F.f.equivalence(F.f.literal("y"), F.f.literal("z"))), parser.parse("x => (y <=> z)"));
+    Assert.assertEquals(F.f.or(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x | y & z"));
+    Assert.assertEquals(F.f.or(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y | z"));
+    Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => y & z"));
+    Assert.assertEquals(F.f.implication(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y => z"));
+    Assert.assertEquals(F.f.equivalence(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x <=> y & z"));
+    Assert.assertEquals(F.f.equivalence(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y <=> z"));
+    Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.or(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => y | z"));
+    Assert.assertEquals(F.f.implication(F.f.or(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x | y => z"));
+    Assert.assertEquals(F.f.equivalence(F.f.variable("x"), F.f.or(F.f.variable("y"), F.f.variable("z"))), parser.parse("x <=> y | z"));
+    Assert.assertEquals(F.f.equivalence(F.f.or(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x | y <=> z"));
+    Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.implication(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => y => z"));
+    Assert.assertEquals(F.f.equivalence(F.f.variable("x"), F.f.equivalence(F.f.variable("y"), F.f.variable("z"))), parser.parse("x <=> y <=> z"));
+    Assert.assertEquals(F.f.and(F.f.or(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("(x | y) & z"));
+    Assert.assertEquals(F.f.and(F.f.variable("x"), F.f.or(F.f.variable("y"), F.f.variable("z"))), parser.parse("x & (y | z)"));
+    Assert.assertEquals(F.f.and(F.f.implication(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("(x => y) & z"));
+    Assert.assertEquals(F.f.and(F.f.variable("x"), F.f.implication(F.f.variable("y"), F.f.variable("z"))), parser.parse("x & (y => z)"));
+    Assert.assertEquals(F.f.or(F.f.implication(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("(x => y) | z"));
+    Assert.assertEquals(F.f.or(F.f.variable("x"), F.f.implication(F.f.variable("y"), F.f.variable("z"))), parser.parse("x | (y => z)"));
+    Assert.assertEquals(F.f.and(F.f.equivalence(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("(x <=> y) & z"));
+    Assert.assertEquals(F.f.and(F.f.variable("x"), F.f.equivalence(F.f.variable("y"), F.f.variable("z"))), parser.parse("x & (y <=> z)"));
+    Assert.assertEquals(F.f.or(F.f.equivalence(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("(x <=> y) | z"));
+    Assert.assertEquals(F.f.or(F.f.variable("x"), F.f.equivalence(F.f.variable("y"), F.f.variable("z"))), parser.parse("x | (y <=> z)"));
+    Assert.assertEquals(F.f.equivalence(F.f.implication(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x => y <=> z"));
+    Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.equivalence(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => (y <=> z)"));
   }
 
   @Test

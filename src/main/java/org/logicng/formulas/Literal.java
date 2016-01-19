@@ -45,7 +45,7 @@ import java.util.TreeSet;
  * @version 1.0
  * @since 1.0
  */
-public final class Literal extends Formula implements Comparable<Literal> {
+public class Literal extends Formula implements Comparable<Literal> {
 
   private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
     @Override
@@ -69,6 +69,7 @@ public final class Literal extends Formula implements Comparable<Literal> {
   private volatile Literal negated;
   private volatile int hashCode;
   private final SortedSet<Literal> literals;
+  private final Variable var;
 
   /**
    * Constructor.
@@ -80,7 +81,8 @@ public final class Literal extends Formula implements Comparable<Literal> {
     super(FType.LITERAL, f);
     this.name = name;
     this.phase = phase;
-    this.variables = new TreeSet<>(Collections.singletonList(this.positive()));
+    this.var = phase ? (Variable) this : (Variable) this.negate();
+    this.variables = new TreeSet<>(Collections.singletonList(var));
     this.literals = new TreeSet<>(Collections.singletonList(this));
   }
 
@@ -110,7 +112,7 @@ public final class Literal extends Formula implements Comparable<Literal> {
   }
 
   @Override
-  public SortedSet<Literal> variables() {
+  public SortedSet<Variable> variables() {
     return this.variables;
   }
 
@@ -120,8 +122,8 @@ public final class Literal extends Formula implements Comparable<Literal> {
   }
 
   @Override
-  public boolean contains(final Literal literal) {
-    return literal.phase ? this.name.equals(literal.name) : this.equals(literal);
+  public boolean containsVariable(final Variable variable) {
+    return variable.name().equals(this.name);
   }
 
   @Override
@@ -136,14 +138,14 @@ public final class Literal extends Formula implements Comparable<Literal> {
   }
 
   @Override
-  public boolean containsSubformula(final Formula formula) {
-    return this == formula || formula instanceof Literal && this.name.equals(((Literal) formula).name) && (!this.phase || ((Literal) formula).phase);
+  public boolean containsNode(final Formula formula) {
+    return this.equals(formula);
   }
 
   @Override
   public Formula substitute(final Substitution substitution) {
-    final Formula subst = substitution.getSubstitution(this, this.f);
-    return subst == null ? this : subst;
+    final Formula subst = substitution.getSubstitution(this.variable());
+    return subst == null ? this : (phase ? subst : subst.negate());
   }
 
   @Override
@@ -176,11 +178,19 @@ public final class Literal extends Formula implements Comparable<Literal> {
   }
 
   /**
-   * Returns a positive version of this literal.
+   * Returns a positive version of this literal (aka a variable).
    * @return a positive version of this literal
    */
-  public Literal positive() {
-    return this.phase ? this : this.negate();
+  public Variable variable() {
+    return this.var;
+  }
+
+  /**
+   * Returns a negative version of this literal.
+   * @return a negative version of this literal
+   */
+  public Literal negative() {
+    return this.phase ? this.negate() : this;
   }
 
   @Override

@@ -95,7 +95,7 @@ public final class Not extends Formula {
   }
 
   @Override
-  public SortedSet<Literal> variables() {
+  public SortedSet<Variable> variables() {
     if (this.variables == null)
       this.variables = this.operand.variables();
     return this.variables;
@@ -107,8 +107,8 @@ public final class Not extends Formula {
   }
 
   @Override
-  public boolean contains(Literal literal) {
-    return this.operand.contains(literal);
+  public boolean containsVariable(final Variable variable) {
+    return this.operand.containsVariable(variable);
   }
 
   @Override
@@ -122,8 +122,8 @@ public final class Not extends Formula {
   }
 
   @Override
-  public boolean containsSubformula(final Formula formula) {
-    return this == formula || this.equals(formula) || this.operand.containsSubformula(formula);
+  public boolean containsNode(final Formula formula) {
+    return this == formula || this.equals(formula) || this.operand.containsNode(formula);
   }
 
   @Override

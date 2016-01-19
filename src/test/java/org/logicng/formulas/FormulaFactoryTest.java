@@ -47,10 +47,10 @@ public class FormulaFactoryTest {
   @Test
   public void testToString() {
     final FormulaFactory f = new FormulaFactory();
-    f.literal("a");
+    f.variable("a");
     f.literal("b", false);
-    f.and(f.literal("a"), f.literal("b", false));
-    f.or(f.literal("a"), f.literal("b", false), f.literal("x"), f.implication(f.literal("a"), f.literal("x")));
+    f.and(f.variable("a"), f.literal("b", false));
+    f.or(f.variable("a"), f.literal("b", false), f.variable("x"), f.implication(f.variable("a"), f.variable("x")));
     final String expected = "Positive Literals: 3\n" +
             "Negative Literals: 3\n" +
             "Negations:         1\n" +
@@ -85,14 +85,14 @@ public class FormulaFactoryTest {
   @Test
   public void testGeneratedLiterals() {
     final FormulaFactory f = new FormulaFactory();
-    final Literal ccVar = f.newCCLiteral();
-    final Literal cnfVar = f.newCNFLiteral();
-    final Literal pbVar = f.newPBLiteral();
-    final Literal var = f.literal("x");
-    Assert.assertTrue(f.isGeneratedLiteral(ccVar));
-    Assert.assertTrue(f.isGeneratedLiteral(cnfVar));
-    Assert.assertTrue(f.isGeneratedLiteral(pbVar));
-    Assert.assertFalse(f.isGeneratedLiteral(var));
+    final Variable ccVar = f.newCCVariable();
+    final Variable cnfVar = f.newCNFVariable();
+    final Variable pbVar = f.newPBVariable();
+    final Variable var = f.variable("x");
+    Assert.assertTrue(f.isGeneratedVariable(ccVar));
+    Assert.assertTrue(f.isGeneratedVariable(cnfVar));
+    Assert.assertTrue(f.isGeneratedVariable(pbVar));
+    Assert.assertFalse(f.isGeneratedVariable(var));
 
 
   }

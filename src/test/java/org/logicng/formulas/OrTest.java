@@ -87,7 +87,7 @@ public class OrTest {
   @Test
   public void testVariables() {
     Assert.assertEquals(2, F.OR2.variables().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.X, F.Y));
+    SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.X, F.Y));
     Assert.assertEquals(lits, F.OR2.variables());
 
     Formula or = F.f.or(F.A, F.A, F.B, F.IMP3);
@@ -133,15 +133,15 @@ public class OrTest {
 
   @Test
   public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.OR1, F.g.or(F.g.literal("x"), F.g.literal("y")));
+    Assert.assertEquals(F.OR1, F.g.or(F.g.variable("x"), F.g.variable("y")));
     Assert.assertEquals(F.OR3, F.g.or(F.AND1, F.AND2));
-    Assert.assertEquals(F.f.or(F.f.and(F.f.literal("a"), F.f.literal("b")), F.f.and(F.f.literal("x"), F.f.literal("y", false))),
-            F.g.or(F.g.and(F.g.literal("y", false), F.g.literal("x")), F.f.and(F.g.literal("b"), F.g.literal("a"))));
-    Assert.assertEquals(F.f.or(F.A, F.NB, F.AND1, F.NX), F.g.or(F.g.literal("x", false), F.g.literal("a"), F.g.literal("b", false), F.g.and(F.g.literal("a"), F.g.literal("b"))));
-    Assert.assertNotEquals(F.OR1, F.g.literal("a"));
-    Assert.assertNotEquals(F.OR1, F.g.or(F.g.literal("a", false), F.g.literal("b")));
-    Assert.assertNotEquals(F.OR1, F.g.or(F.g.literal("a"), F.g.literal("b", false)));
-    Assert.assertNotEquals(F.OR1, F.f.or(F.A, F.B, F.g.literal("c")));
+    Assert.assertEquals(F.f.or(F.f.and(F.f.variable("a"), F.f.variable("b")), F.f.and(F.f.variable("x"), F.f.literal("y", false))),
+            F.g.or(F.g.and(F.g.literal("y", false), F.g.variable("x")), F.f.and(F.g.variable("b"), F.g.variable("a"))));
+    Assert.assertEquals(F.f.or(F.A, F.NB, F.AND1, F.NX), F.g.or(F.g.literal("x", false), F.g.variable("a"), F.g.literal("b", false), F.g.and(F.g.variable("a"), F.g.variable("b"))));
+    Assert.assertNotEquals(F.OR1, F.g.variable("a"));
+    Assert.assertNotEquals(F.OR1, F.g.or(F.g.literal("a", false), F.g.variable("b")));
+    Assert.assertNotEquals(F.OR1, F.g.or(F.g.variable("a"), F.g.literal("b", false)));
+    Assert.assertNotEquals(F.OR1, F.f.or(F.A, F.B, F.g.variable("c")));
   }
 
   @Test
@@ -189,7 +189,7 @@ public class OrTest {
 
   @Test
   public void testContains() {
-    Assert.assertTrue(F.OR1.contains(F.f.literal("x")));
-    Assert.assertFalse(F.OR1.contains(F.f.literal("a")));
+    Assert.assertTrue(F.OR1.containsVariable(F.f.variable("x")));
+    Assert.assertFalse(F.OR1.containsVariable(F.f.variable("a")));
   }
 }

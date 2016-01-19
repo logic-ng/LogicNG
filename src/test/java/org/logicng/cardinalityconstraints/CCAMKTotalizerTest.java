@@ -30,11 +30,11 @@ package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
-import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -55,10 +55,10 @@ public class CCAMKTotalizerTest {
   public void testCC0() {
     final CCAtMostK totalizer = new CCAMKTotalizer(f);
     final int numLits = 100;
-    final List<Literal> lits = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final List<Variable> lits = new LinkedList<>();
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
+      final Variable lit = f.variable("v" + i);
       lits.add(lit);
       problemLits[i] = lit;
     }
@@ -76,12 +76,12 @@ public class CCAMKTotalizerTest {
     final CCAtMostK totalizer = new CCAMKTotalizer(f);
     final int numLits = 100;
     final int rhs = 1;
-    final List<Literal> lits = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final List<Variable> lits = new LinkedList<>();
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
-      lits.add(lit);
-      problemLits[i] = lit;
+      final Variable var = f.variable("v" + i);
+      lits.add(var);
+      problemLits[i] = var;
     }
     final ImmutableFormulaList clauses = totalizer.build(lits, rhs);
     final SATSolver solver = MiniSat.miniSat(f);
@@ -111,9 +111,9 @@ public class CCAMKTotalizerTest {
   }
 
   private void testCC(int numLits, int rhs, int expected, final CCAtMostK totalizer) {
-    final Literal[] problemLits = new Literal[numLits];
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.literal("v" + i);
+      problemLits[i] = f.variable("v" + i);
     final ImmutableFormulaList clauses = totalizer.build(problemLits, rhs);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
@@ -128,9 +128,9 @@ public class CCAMKTotalizerTest {
   public void testIllegalCC1() {
     final CCAtMostK totalizer = new CCAMKTotalizer(f);
     final int numLits = 100;
-    final Literal[] problemLits = new Literal[numLits];
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.literal("v" + i);
+      problemLits[i] = f.variable("v" + i);
     totalizer.build(problemLits, -1);
   }
 }

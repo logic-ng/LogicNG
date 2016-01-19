@@ -33,6 +33,7 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.functions.LiteralProfileFunction;
 import org.logicng.functions.VariableProfileFunction;
 
@@ -233,11 +234,11 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
    * Returns the variable profile of this formula list.  For each variable the number of occurrences is counted.
    * @return the variable profile of this formula list
    */
-  public SortedMap<Literal, Integer> varProfile() {
+  public SortedMap<Variable, Integer> varProfile() {
     final VariableProfileFunction variableProfileFunction = new VariableProfileFunction();
-    final SortedMap<Literal, Integer> profile = new TreeMap<>();
+    final SortedMap<Variable, Integer> profile = new TreeMap<>();
     for (final Formula f : this.formulas)
-      for (final Map.Entry<Literal, Integer> entry : f.apply(variableProfileFunction).entrySet()) {
+      for (final Map.Entry<Variable, Integer> entry : f.apply(variableProfileFunction).entrySet()) {
         final Integer currentCount = profile.get(entry.getKey());
         if (currentCount == null)
           profile.put(entry.getKey(), entry.getValue());

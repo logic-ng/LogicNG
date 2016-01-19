@@ -49,12 +49,12 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -71,7 +71,7 @@ public final class CCTotalizer {
   private enum Bound {LOWER, UPPER}
 
   private final FormulaFactory f;
-  private LNGVector<Literal> cardinalityInlits;
+  private LNGVector<Variable> cardinalityInvars;
   private List<Formula> result;
 
   /**
@@ -85,30 +85,30 @@ public final class CCTotalizer {
 
   /**
    * Builds an at-most-k constraint.
-   * @param lits the literals
+   * @param vars the variables
    * @param rhs  the right-hand side
    * @return the constraint
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  ImmutableFormulaList buildAMK(final Collection<Literal> lits, int rhs) {
+  ImmutableFormulaList buildAMK(final Collection<Variable> vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     this.result.clear();
-    if (rhs >= lits.size()) // there is no constraint
+    if (rhs >= vars.size()) // there is no constraint
       return new ImmutableFormulaList(FType.AND);
-    if (rhs == 0) { // no literal can be true
-      for (final Literal lit : lits)
-        this.result.add(lit.negate());
+    if (rhs == 0) { // no variable can be true
+      for (final Variable var : vars)
+        this.result.add(var.negate());
       return new ImmutableFormulaList(FType.AND, this.result);
     }
-    this.cardinalityInlits = new LNGVector<>(lits.size());
-    final LNGVector<Literal> cardinalityOutlits = new LNGVector<>(lits.size());
-    for (final Literal lit : lits) {
-      this.cardinalityInlits.push(lit);
-      cardinalityOutlits.push(this.f.newCCLiteral());
+    this.cardinalityInvars = new LNGVector<>(vars.size());
+    final LNGVector<Variable> cardinalityOutlits = new LNGVector<>(vars.size());
+    for (final Variable var : vars) {
+      this.cardinalityInvars.push(var);
+      cardinalityOutlits.push(this.f.newCCVariable());
     }
     this.toCNF(cardinalityOutlits, rhs, Bound.UPPER);
-    assert this.cardinalityInlits.size() == 0;
+    assert this.cardinalityInvars.size() == 0;
     for (int i = rhs; i < cardinalityOutlits.size(); i++)
       this.result.add(cardinalityOutlits.get(i).negate());
     return new ImmutableFormulaList(FType.AND, this.result);
@@ -116,74 +116,75 @@ public final class CCTotalizer {
 
   /**
    * Builds an at-least-k constraint.
-   * @param lits the literals
+   * @param vars the variables
    * @param rhs  the right-hand side
    * @return the constraint
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  ImmutableFormulaList buildALK(final Collection<Literal> lits, int rhs) {
+  ImmutableFormulaList buildALK(final Collection<Variable> vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     this.result.clear();
-    if (rhs > lits.size())
+    if (rhs > vars.size())
       return new ImmutableFormulaList(FType.AND, this.f.falsum());
     if (rhs == 0)
       return new ImmutableFormulaList(FType.AND);
     if (rhs == 1) {
-      this.result.add(this.f.or(lits));
+      this.result.add(this.f.or(vars));
       return new ImmutableFormulaList(FType.AND, this.result);
     }
-    if (rhs == lits.size()) {
-      for (final Literal lit : lits)
-        this.result.add(lit);
+    if (rhs == vars.size()) {
+      for (final Variable var : vars)
+        this.result.add(var);
       return new ImmutableFormulaList(FType.AND, this.result);
     }
-    this.cardinalityInlits = new LNGVector<>(lits.size());
-    final LNGVector<Literal> cardinalityOutlits = new LNGVector<>(lits.size());
-    for (final Literal lit : lits) {
-      this.cardinalityInlits.push(lit);
-      cardinalityOutlits.push(this.f.newCCLiteral());
+    this.cardinalityInvars = new LNGVector<>(vars.size());
+    final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.size());
+    for (final Variable var : vars) {
+      this.cardinalityInvars.push(var);
+      cardinalityOutvars.push(this.f.newCCVariable());
     }
-    this.toCNF(cardinalityOutlits, rhs, Bound.LOWER);
-    assert this.cardinalityInlits.size() == 0;
+    this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
+    assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)
-      this.result.add(cardinalityOutlits.get(i));
+      this.result.add(cardinalityOutvars.get(i));
     return new ImmutableFormulaList(FType.AND, this.result);
   }
 
-  private void toCNF(final LNGVector<Literal> lits, int rhs, final Bound bound) {
-    final LNGVector<Literal> left = new LNGVector<>();
-    final LNGVector<Literal> right = new LNGVector<>();
-    assert lits.size() > 1;
-    int split = lits.size() / 2;
-    for (int i = 0; i < lits.size(); i++) {
+  private void toCNF(final LNGVector<Variable> vars, int rhs, final Bound bound) {
+    final LNGVector<Variable> left = new LNGVector<>();
+    final LNGVector<Variable> right = new LNGVector<>();
+    assert vars.size() > 1;
+    int split = vars.size() / 2;
+    for (int i = 0; i < vars.size(); i++) {
       if (i < split) {
         if (split == 1) {
-          assert this.cardinalityInlits.size() > 0;
-          left.push(this.cardinalityInlits.back());
-          this.cardinalityInlits.pop();
+          assert this.cardinalityInvars.size() > 0;
+          left.push(this.cardinalityInvars.back());
+          this.cardinalityInvars.pop();
         } else
-          left.push(this.f.newCCLiteral());
+          left.push(this.f.newCCVariable());
       } else {
-        if (lits.size() - split == 1) {
-          assert this.cardinalityInlits.size() > 0;
-          right.push(this.cardinalityInlits.back());
-          this.cardinalityInlits.pop();
+        if (vars.size() - split == 1) {
+          assert this.cardinalityInvars.size() > 0;
+          right.push(this.cardinalityInvars.back());
+          this.cardinalityInvars.pop();
         } else
-          right.push(this.f.newCCLiteral());
+          right.push(this.f.newCCVariable());
       }
     }
     if (bound == Bound.UPPER)
-      this.adderAMK(left, right, lits, rhs);
+      this.adderAMK(left, right, vars, rhs);
     else
-      this.adderALK(left, right, lits, rhs);
+      this.adderALK(left, right, vars, rhs);
     if (left.size() > 1)
       this.toCNF(left, rhs, bound);
     if (right.size() > 1)
       this.toCNF(right, rhs, bound);
   }
 
-  private void adderAMK(final LNGVector<Literal> left, final LNGVector<Literal> right, final LNGVector<Literal> output, int rhs) {
+  private void adderAMK(final LNGVector<Variable> left, final LNGVector<Variable> right,
+                        final LNGVector<Variable> output, int rhs) {
     assert output.size() == left.size() + right.size();
     for (int i = 0; i <= left.size(); i++) {
       for (int j = 0; j <= right.size(); j++) {
@@ -201,7 +202,8 @@ public final class CCTotalizer {
     }
   }
 
-  private void adderALK(final LNGVector<Literal> left, final LNGVector<Literal> right, final LNGVector<Literal> output, int rhs) {
+  private void adderALK(final LNGVector<Variable> left, final LNGVector<Variable> right,
+                        final LNGVector<Variable> output, int rhs) {
     assert output.size() == left.size() + right.size();
     for (int i = 0; i <= left.size(); i++) {
       for (int j = 0; j <= right.size(); j++) {

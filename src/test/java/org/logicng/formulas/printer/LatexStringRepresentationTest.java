@@ -28,9 +28,9 @@
 
 package org.logicng.formulas.printer;
 
-import org.logicng.formulas.F;
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.formulas.F;
 
 /**
  * Unit tests for {@link LatexStringRepresentation}
@@ -47,11 +47,11 @@ public class LatexStringRepresentationTest {
     Assert.assertEquals("\\top", F.f.string(F.TRUE, sr));
     Assert.assertEquals("x", F.f.string(F.X, sr));
     Assert.assertEquals("\\lnot a", F.f.string(F.NA, sr));
-    Assert.assertEquals("x_{1}", F.f.string(F.f.literal("x1"), sr));
-    Assert.assertEquals("x_{190}", F.f.string(F.f.literal("x190"), sr));
-    Assert.assertEquals("x_{234}", F.f.string(F.f.literal("x234"), sr));
-    Assert.assertEquals("x_{567}", F.f.string(F.f.literal("x567"), sr));
-    Assert.assertEquals("abc_{8}", F.f.string(F.f.literal("abc8"), sr));
+    Assert.assertEquals("x_{1}", F.f.string(F.f.variable("x1"), sr));
+    Assert.assertEquals("x_{190}", F.f.string(F.f.variable("x190"), sr));
+    Assert.assertEquals("x_{234}", F.f.string(F.f.variable("x234"), sr));
+    Assert.assertEquals("x_{567}", F.f.string(F.f.variable("x567"), sr));
+    Assert.assertEquals("abc_{8}", F.f.string(F.f.variable("abc8"), sr));
     Assert.assertEquals("\\lnot a \\rightarrow \\lnot b", F.f.string(F.IMP2, sr));
     Assert.assertEquals("a \\land b \\rightarrow x \\lor y", F.f.string(F.IMP3, sr));
     Assert.assertEquals("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b", F.f.string(F.EQ4, sr));

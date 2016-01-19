@@ -33,8 +33,8 @@ import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
 import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
@@ -54,18 +54,18 @@ import static org.logicng.datastructures.Tristate.TRUE;
 public class PBSolvingTest {
 
   private final FormulaFactory f;
-  private final Literal[] literals100;
-  private final Literal[] literals10;
+  private final Variable[] literals100;
+  private final Variable[] literals10;
   final SATSolver[] solvers;
 
   public PBSolvingTest() {
     this.f = new FormulaFactory();
-    this.literals100 = new Literal[100];
-    this.literals10 = new Literal[10];
+    this.literals100 = new Variable[100];
+    this.literals10 = new Variable[10];
     for (int i = 0; i < 100; i++)
-      this.literals100[i] = f.literal("v" + i);
+      this.literals100[i] = f.variable("v" + i);
     for (int i = 0; i < 10; i++)
-      this.literals10[i] = f.literal("v" + i);
+      this.literals10[i] = f.variable("v" + i);
     this.solvers = new SATSolver[5];
     solvers[0] = MiniSat.miniSat(f);
     solvers[1] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(false).build());
@@ -240,7 +240,7 @@ public class PBSolvingTest {
       Assert.assertEquals(9, models.size());
       for (final Assignment model : models) {
         Assert.assertEquals(2, model.positiveLiterals().size());
-        Assert.assertTrue(model.positiveLiterals().contains(f.literal("v" + 0)));
+        Assert.assertTrue(model.positiveLiterals().contains(f.variable("v" + 0)));
       }
       solver.reset();
       solver.add(f.pbc(CType.EQ, 7, literals10, coeffs10));
@@ -249,7 +249,7 @@ public class PBSolvingTest {
       Assert.assertEquals(36, models.size());
       for (final Assignment model : models) {
         Assert.assertEquals(3, model.positiveLiterals().size());
-        Assert.assertTrue(model.positiveLiterals().contains(f.literal("v" + 0)));
+        Assert.assertTrue(model.positiveLiterals().contains(f.variable("v" + 0)));
       }
       solver.reset();
       solver.add(f.pbc(CType.EQ, 0, literals10, coeffs10));

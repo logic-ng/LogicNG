@@ -30,11 +30,11 @@ package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
-import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -55,10 +55,10 @@ public class CCModularTotalizerTest {
   public void testCC0() {
     final CCAMKModularTotalizer totalizer = new CCAMKModularTotalizer(f);
     final int numLits = 100;
-    final List<Literal> lits = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final List<Variable> lits = new LinkedList<>();
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
+      final Variable lit = f.variable("v" + i);
       lits.add(lit);
       problemLits[i] = lit;
     }
@@ -68,7 +68,7 @@ public class CCModularTotalizerTest {
     Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
     Assert.assertEquals(1, models.size());
-    Assert.assertEquals(100, models.get(0).negativeLiterals().size());
+    Assert.assertEquals(100, models.get(0).negativeVariables().size());
   }
 
   @Test
@@ -76,10 +76,10 @@ public class CCModularTotalizerTest {
     final CCAMKModularTotalizer totalizer = new CCAMKModularTotalizer(f);
     final int numLits = 100;
     final int rhs = 1;
-    final List<Literal> lits = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final List<Variable> lits = new LinkedList<>();
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
+      final Variable lit = f.variable("v" + i);
       lits.add(lit);
       problemLits[i] = lit;
     }
@@ -111,10 +111,10 @@ public class CCModularTotalizerTest {
 
   private void testCC(int numLits, int rhs, int expected) {
     final CCAMKModularTotalizer totalizer = new CCAMKModularTotalizer(f);
-    final List<Literal> lits = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final List<Variable> lits = new LinkedList<>();
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
+      final Variable lit = f.variable("v" + i);
       lits.add(lit);
       problemLits[i] = lit;
     }
@@ -132,9 +132,9 @@ public class CCModularTotalizerTest {
   public void testIllegalCC2() {
     final CCAtMostK totalizer = new CCAMKModularTotalizer(f);
     final int numLits = 100;
-    final Literal[] problemLits = new Literal[numLits];
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.literal("v" + i);
+      problemLits[i] = f.variable("v" + i);
     totalizer.build(problemLits, -1);
   }
 }

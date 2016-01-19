@@ -28,12 +28,12 @@
 
 package org.logicng.formulas;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.logicng.datastructures.Assignment;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * Unit tests for the class {@link Substitution}.
@@ -57,14 +57,6 @@ public class SubstitutionTest {
     Assert.assertNotNull(new Substitution());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testIllegalAdd() {
-    final Substitution subst = new Substitution();
-    subst.addMapping(F.A, F.NA);
-    subst.addMapping(F.B, F.OR1);
-    subst.addMapping(F.NX, F.AND1);
-  }
-
   @Test
   public void testSize() {
     final Substitution subst = new Substitution();
@@ -80,15 +72,12 @@ public class SubstitutionTest {
     subst.addMapping(F.A, F.NA);
     subst.addMapping(F.B, F.OR1);
     subst.addMapping(F.C, F.AND1);
-    Assert.assertEquals(F.NA, subst.getSubstitution(F.A, F.f));
-    Assert.assertEquals(F.OR1, subst.getSubstitution(F.B, F.f));
-    Assert.assertEquals(F.AND1, subst.getSubstitution(F.C, F.f));
-    Assert.assertEquals(F.A, subst.getSubstitution(F.NA, F.f));
-    Assert.assertEquals(F.NOT2, subst.getSubstitution(F.NB, F.f));
-    Assert.assertNull(subst.getSubstitution(F.X, F.f));
-    Assert.assertNull(subst.getSubstitution(F.NX, F.f));
+    Assert.assertEquals(F.NA, subst.getSubstitution(F.A));
+    Assert.assertEquals(F.OR1, subst.getSubstitution(F.B));
+    Assert.assertEquals(F.AND1, subst.getSubstitution(F.C));
+    Assert.assertNull(subst.getSubstitution(F.X));
     subst.addMapping(F.B, F.AND1);
-    Assert.assertEquals(F.AND1, subst.getSubstitution(F.B, F.f));
+    Assert.assertEquals(F.AND1, subst.getSubstitution(F.B));
   }
 
   @Test

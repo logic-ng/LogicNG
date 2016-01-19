@@ -48,11 +48,11 @@ public class QETest {
   private final FormulaFactory f = new FormulaFactory();
   private final PropositionalParser p = new PropositionalParser(f);
   private final ExistentialQuantifierElimination ex1 = new ExistentialQuantifierElimination();
-  private final ExistentialQuantifierElimination ex2 = new ExistentialQuantifierElimination(f.literal("x"));
-  private final ExistentialQuantifierElimination ex3 = new ExistentialQuantifierElimination(Arrays.asList(f.literal("x"), f.literal("y")));
+  private final ExistentialQuantifierElimination ex2 = new ExistentialQuantifierElimination(f.variable("x"));
+  private final ExistentialQuantifierElimination ex3 = new ExistentialQuantifierElimination(Arrays.asList(f.variable("x"), f.variable("y")));
   private final UniversalQuantifierElimination uni1 = new UniversalQuantifierElimination();
-  private final UniversalQuantifierElimination uni2 = new UniversalQuantifierElimination(f.literal("x"));
-  private final UniversalQuantifierElimination uni3 = new UniversalQuantifierElimination(Arrays.asList(f.literal("x"), f.literal("y")));
+  private final UniversalQuantifierElimination uni2 = new UniversalQuantifierElimination(f.variable("x"));
+  private final UniversalQuantifierElimination uni3 = new UniversalQuantifierElimination(Arrays.asList(f.variable("x"), f.variable("y")));
 
   @Test
   public void testConstants() {
@@ -72,9 +72,9 @@ public class QETest {
 
   @Test
   public void testLiterals() {
-    final Formula x = f.literal("x");
+    final Formula x = f.variable("x");
     final Formula y = f.literal("y", false);
-    final Formula z = f.literal("z");
+    final Formula z = f.variable("z");
     Assert.assertEquals(x, x.transform(ex1));
     Assert.assertEquals(f.verum(), x.transform(ex2));
     Assert.assertEquals(f.verum(), x.transform(ex3));

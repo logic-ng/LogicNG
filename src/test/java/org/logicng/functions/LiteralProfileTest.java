@@ -35,6 +35,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
@@ -68,9 +69,9 @@ public class LiteralProfileTest {
   private PBConstraint exo2;
 
   public LiteralProfileTest() {
-    final Literal[] lits1 = new Literal[]{f.literal("a")};
-    final List<Literal> lits2 = Arrays.asList(f2.literal("a"), f.literal("b", false), f.literal("c"));
-    final List<Literal> litsCC2 = Arrays.asList(f.literal("a"), f2.literal("b"), f.literal("c"));
+    final Variable[] lits1 = new Variable[]{f.variable("a")};
+    final List<Literal> lits2 = Arrays.asList(f2.variable("a"), f.literal("b", false), f.variable("c"));
+    final List<Variable> litsCC2 = Arrays.asList(f.variable("a"), f2.variable("b"), f.variable("c"));
     final int[] coeffs1 = new int[]{3};
     final List<Integer> coeffs2 = Arrays.asList(3, -2, 7);
     this.pb1 = f.pbc(CType.LE, 2, lits1, coeffs1);
@@ -94,7 +95,7 @@ public class LiteralProfileTest {
   @Test
   public void testLiterals() {
     final Map<Literal, Integer> expectedPos = new HashMap<>();
-    expectedPos.put(f2.literal("a"), 1);
+    expectedPos.put(f2.variable("a"), 1);
     final Map<Literal, Integer> expectedNeg = new HashMap<>();
     expectedNeg.put(f2.literal("a", false), 1);
     Assert.assertEquals(expectedPos, f.literal("a", true).apply(litProfile, true));
@@ -106,15 +107,15 @@ public class LiteralProfileTest {
   @Test
   public void testPBC() {
     final SortedMap<Literal, Integer> exp1 = new TreeMap<>();
-    exp1.put(f.literal("a"), 1);
+    exp1.put(f.variable("a"), 1);
     final SortedMap<Literal, Integer> exp2 = new TreeMap<>();
-    exp2.put(f.literal("a"), 1);
+    exp2.put(f.variable("a"), 1);
     exp2.put(f.literal("b", false), 1);
-    exp2.put(f.literal("c"), 1);
+    exp2.put(f.variable("c"), 1);
     final SortedMap<Literal, Integer> exp2CC = new TreeMap<>();
-    exp2CC.put(f.literal("a"), 1);
-    exp2CC.put(f.literal("b"), 1);
-    exp2CC.put(f.literal("c"), 1);
+    exp2CC.put(f.variable("a"), 1);
+    exp2CC.put(f.variable("b"), 1);
+    exp2CC.put(f.variable("c"), 1);
 
     Assert.assertEquals(exp1, pb1.apply(litProfile, true));
     Assert.assertEquals(exp2, pb2.apply(litProfile, true));
@@ -138,9 +139,9 @@ public class LiteralProfileTest {
   @Test
   public void testNot() throws ParserException {
     final Map<Literal, Integer> expected = new HashMap<>();
-    expected.put(f2.literal("a"), 2);
-    expected.put(f2.literal("b"), 1);
-    expected.put(f2.literal("c"), 1);
+    expected.put(f2.variable("a"), 2);
+    expected.put(f2.variable("b"), 1);
+    expected.put(f2.variable("c"), 1);
     expected.put(f2.literal("b", false), 1);
     expected.put(f2.literal("c", false), 2);
     final PropositionalParser p = new PropositionalParser(f);
@@ -152,9 +153,9 @@ public class LiteralProfileTest {
   @Test
   public void testBinaryOperator() throws ParserException {
     final Map<Literal, Integer> expected = new HashMap<>();
-    expected.put(f2.literal("a"), 2);
-    expected.put(f2.literal("b"), 1);
-    expected.put(f2.literal("c"), 1);
+    expected.put(f2.variable("a"), 2);
+    expected.put(f2.variable("b"), 1);
+    expected.put(f2.variable("c"), 1);
     expected.put(f2.literal("b", false), 1);
     expected.put(f2.literal("c", false), 2);
     final PropositionalParser p = new PropositionalParser(f);
@@ -169,9 +170,9 @@ public class LiteralProfileTest {
   @Test
   public void testNAryOperator() throws ParserException {
     final Map<Literal, Integer> expected = new HashMap<>();
-    expected.put(f2.literal("a"), 2);
-    expected.put(f2.literal("b"), 1);
-    expected.put(f2.literal("c"), 1);
+    expected.put(f2.variable("a"), 2);
+    expected.put(f2.variable("b"), 1);
+    expected.put(f2.variable("c"), 1);
     expected.put(f2.literal("b", false), 1);
     expected.put(f2.literal("c", false), 2);
     final PropositionalParser p = new PropositionalParser(f);

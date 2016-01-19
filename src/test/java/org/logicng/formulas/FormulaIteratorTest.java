@@ -84,19 +84,19 @@ public class FormulaIteratorTest {
 
   @Test
   public void testLiteral() throws ParserException {
-    Iterator<Formula> it = f.literal("a").iterator();
+    Iterator<Formula> it = f.variable("a").iterator();
     Assert.assertFalse(it.hasNext());
     Assert.assertFalse(it.hasNext());
   }
 
   @Test(expected = NoSuchElementException.class)
   public void testLiteralNSE() throws ParserException {
-    f.literal("a").iterator().next();
+    f.variable("a").iterator().next();
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testLiteralUSO() throws ParserException {
-    f.literal("a").iterator().remove();
+    f.variable("a").iterator().remove();
   }
 
   @Test

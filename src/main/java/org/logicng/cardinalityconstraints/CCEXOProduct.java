@@ -28,17 +28,17 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Encodes that exactly one literal from 'lits' is assigned value true.  Uses the 2-product method due to Chen.
+ * Encodes that exactly one variable is assigned value true.  Uses the 2-product method due to Chen.
  * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
@@ -57,16 +57,16 @@ public final class CCEXOProduct extends CCExactlyOne {
   }
 
   @Override
-  public ImmutableFormulaList build(final Literal... lits) {
+  public ImmutableFormulaList build(final Variable... vars) {
     final List<Formula> result = new LinkedList<>();
-    if (lits.length == 0)
+    if (vars.length == 0)
       return new ImmutableFormulaList(FType.AND);
-    if (lits.length == 1) {
-      result.add(lits[0]);
+    if (vars.length == 1) {
+      result.add(vars[0]);
       return new ImmutableFormulaList(FType.AND, result);
     }
-    result.add(this.f.or(lits));
-    result.addAll(this.amo.build(lits).toList());
+    result.add(this.f.or(vars));
+    result.addAll(this.amo.build(vars).toList());
     return new ImmutableFormulaList(FType.AND, result);
   }
 

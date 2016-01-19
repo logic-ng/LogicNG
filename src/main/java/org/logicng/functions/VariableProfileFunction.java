@@ -32,6 +32,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFunction;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,10 +52,10 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.VARPROFILE;
  * @version 1.0
  * @since 1.0
  */
-public final class VariableProfileFunction implements FormulaFunction<Map<Literal, Integer>> {
+public final class VariableProfileFunction implements FormulaFunction<Map<Variable, Integer>> {
 
   @Override
-  public Map<Literal, Integer> apply(final Formula formula, boolean cache) {
+  public Map<Variable, Integer> apply(final Formula formula, boolean cache) {
     return cache ? cachingVariableProfile(formula) : nonCachingVariableProfile(formula);
   }
 
@@ -64,8 +65,8 @@ public final class VariableProfileFunction implements FormulaFunction<Map<Litera
    * @param formula the formula
    * @return the variable profile
    */
-  private static Map<Literal, Integer> nonCachingVariableProfile(final Formula formula) {
-    final SortedMap<Literal, Integer> map = new TreeMap<>();
+  private static Map<Variable, Integer> nonCachingVariableProfile(final Formula formula) {
+    final SortedMap<Variable, Integer> map = new TreeMap<>();
     nonCachingRecursion(formula, map);
     return map;
   }
@@ -75,17 +76,17 @@ public final class VariableProfileFunction implements FormulaFunction<Map<Litera
    * @param formula the formula
    * @param map     the variable profile
    */
-  private static void nonCachingRecursion(final Formula formula, final Map<Literal, Integer> map) {
+  private static void nonCachingRecursion(final Formula formula, final Map<Variable, Integer> map) {
     if (formula instanceof Literal) {
       final Literal lit = (Literal) formula;
-      final Integer currentCount = map.get(lit.positive());
+      final Integer currentCount = map.get(lit.variable());
       if (currentCount == null)
-        map.put(lit.positive(), 1);
+        map.put(lit.variable(), 1);
       else
-        map.put(lit.positive(), currentCount + 1);
+        map.put(lit.variable(), currentCount + 1);
     } else if (formula instanceof PBConstraint)
       for (final Literal l : formula.literals())
-        nonCachingRecursion(l.positive(), map);
+        nonCachingRecursion(l.variable(), map);
     else
       for (final Formula op : formula)
         nonCachingRecursion(op, map);
@@ -98,20 +99,20 @@ public final class VariableProfileFunction implements FormulaFunction<Map<Litera
    * @return the variable profile
    */
   @SuppressWarnings("unchecked")
-  private static Map<Literal, Integer> cachingVariableProfile(final Formula formula) {
+  private static Map<Variable, Integer> cachingVariableProfile(final Formula formula) {
     final Object cached = formula.functionCacheEntry(VARPROFILE);
     if (cached != null)
-      return (Map<Literal, Integer>) cached;
-    Map<Literal, Integer> result = new HashMap<>();
+      return (Map<Variable, Integer>) cached;
+    Map<Variable, Integer> result = new HashMap<>();
     if (formula instanceof Literal)
-      result.put(((Literal) formula).positive(), 1);
+      result.put(((Literal) formula).variable(), 1);
     else if (formula instanceof PBConstraint)
       for (final Literal l : formula.literals())
-        result.put(l.positive(), 1);
+        result.put(l.variable(), 1);
     else
       for (final Formula op : formula) {
-        final Map<Literal, Integer> temp = cachingVariableProfile(op);
-        for (Map.Entry<Literal, Integer> entry : temp.entrySet()) {
+        final Map<Variable, Integer> temp = cachingVariableProfile(op);
+        for (Map.Entry<Variable, Integer> entry : temp.entrySet()) {
           final Integer currentCount = result.get(entry.getKey());
           if (currentCount == null)
             result.put(entry.getKey(), entry.getValue());

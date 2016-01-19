@@ -29,7 +29,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,22 +43,22 @@ import java.util.Collection;
 public abstract class CCAtMostK {
 
   /**
-   * Builds a cardinality constraint of the form {@code lit_1 + lit_2 + ... + lit_n <= k}.
-   * @param lits the literals {@code lit_1 ... lit_n}
+   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= k}.
+   * @param vars the variables {@code var_1 ... var_n}
    * @param rhs  the right hand side {@code k} of the constraint
    * @return the CNF encoding of the cardinality constraint
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
-  public abstract ImmutableFormulaList build(Collection<Literal> lits, int rhs);
+  public abstract ImmutableFormulaList build(Collection<Variable> vars, int rhs);
 
   /**
-   * Builds a cardinality constraint of the form {@code lit_1 + lit_2 + ... + lit_n <= k}.
-   * @param lits the literals {@code lit_1 ... lit_n}
+   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= k}.
+   * @param vars the variables {@code var_1 ... var_n}
    * @param rhs  the right hand side {@code k} of the constraint
    * @return the CNF encoding of the cardinality constraint
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
-  public ImmutableFormulaList build(final Literal[] lits, int rhs) {
-    return this.build(Arrays.asList(lits), rhs);
+  public ImmutableFormulaList build(final Variable[] vars, int rhs) {
+    return this.build(Arrays.asList(vars), rhs);
   }
 }

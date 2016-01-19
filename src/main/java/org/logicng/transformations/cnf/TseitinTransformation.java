@@ -109,7 +109,7 @@ public final class TseitinTransformation implements FormulaTransformation {
         formula.setTransformationCacheEntry(TSEITIN_VARIABLE, formula);
         break;
       case AND:
-        Literal tsLiteral = f.newCNFLiteral();
+        Literal tsLiteral = f.newCNFVariable();
         List<Formula> nops = new ArrayList<>();
         List<Formula> operands = new ArrayList<>(formula.numberOfOperands());
         List<Formula> negOperands = new ArrayList<>(formula.numberOfOperands());
@@ -129,7 +129,7 @@ public final class TseitinTransformation implements FormulaTransformation {
         formula.setTransformationCacheEntry(TSEITIN, f.and(nops));
         break;
       case OR:
-        tsLiteral = f.newCNFLiteral();
+        tsLiteral = f.newCNFVariable();
         nops = new ArrayList<>();
         operands = new ArrayList<>(formula.numberOfOperands());
         negOperands = new ArrayList<>(formula.numberOfOperands());

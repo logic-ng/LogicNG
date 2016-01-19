@@ -74,7 +74,7 @@ public class ImplicationTest {
   @Test
   public void testVariables() {
     Assert.assertEquals(4, F.IMP3.variables().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
+    SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, F.IMP3.variables());
 
     Formula imp = F.f.implication(F.AND1, F.AND2);
@@ -86,7 +86,7 @@ public class ImplicationTest {
   @Test
   public void testLiterals() {
     Assert.assertEquals(4, F.IMP3.literals().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
+    SortedSet<Literal> lits = new TreeSet<Literal>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, F.IMP3.literals());
 
     Formula imp = F.f.implication(F.AND1, F.AND2);
@@ -96,7 +96,7 @@ public class ImplicationTest {
 
     imp = F.f.implication(F.AND1, F.A);
     Assert.assertEquals(2, imp.literals().size());
-    lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+    lits = new TreeSet<Literal>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, imp.literals());
   }
 
@@ -128,12 +128,12 @@ public class ImplicationTest {
 
   @Test
   public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.IMP1, F.g.implication(F.g.literal("a"), F.g.literal("b")));
+    Assert.assertEquals(F.IMP1, F.g.implication(F.g.variable("a"), F.g.variable("b")));
     Assert.assertEquals(F.IMP3, F.g.implication(F.AND1, F.OR1));
-    Assert.assertNotEquals(F.IMP1, F.g.literal("a"));
-    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("b"), F.g.literal("a")));
-    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("a", false), F.g.literal("b")));
-    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("a"), F.g.literal("b", false)));
+    Assert.assertNotEquals(F.IMP1, F.g.variable("a"));
+    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.variable("b"), F.g.variable("a")));
+    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.literal("a", false), F.g.variable("b")));
+    Assert.assertNotEquals(F.IMP1, F.g.implication(F.g.variable("a"), F.g.literal("b", false)));
   }
 
   @Test
@@ -180,7 +180,7 @@ public class ImplicationTest {
 
   @Test
   public void testContains() {
-    Assert.assertTrue(F.IMP4.contains(F.f.literal("a")));
-    Assert.assertFalse(F.IMP4.contains(F.f.literal("c")));
+    Assert.assertTrue(F.IMP4.containsVariable(F.f.variable("a")));
+    Assert.assertFalse(F.IMP4.containsVariable(F.f.variable("c")));
   }
 }

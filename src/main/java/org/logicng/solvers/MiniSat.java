@@ -38,6 +38,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.sat.GlucoseConfig;
@@ -232,22 +233,22 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public Assignment model(final Collection<Literal> literals) {
+  public Assignment model(final Collection<Variable> variables) {
     if (this.result == UNDEF)
       throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
-    return this.result == TRUE ? this.createAssignment(this.solver.model(), literals) : null;
+    return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(final Collection<Literal> literals) {
+  public List<Assignment> enumerateAllModels(final Collection<Variable> variables) {
     List<Assignment> models = new LinkedList<>();
     SolverState stateBeforeEnumeration = null;
     if (this.style == SolverStyle.MINISAT && incremental)
       stateBeforeEnumeration = this.saveState();
     while (this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(literals);
+      final Assignment model = this.model(variables);
       models.add(model);
-      this.add(model.blockingClause(this.f, literals));
+      this.add(model.blockingClause(this.f, variables));
     }
     if (this.style == SolverStyle.MINISAT && incremental)
       this.loadState(stateBeforeEnumeration);
@@ -255,7 +256,7 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(final Collection<Literal> literals, final ModelEnumerationHandler handler) {
+  public List<Assignment> enumerateAllModels(final Collection<Variable> literals, final ModelEnumerationHandler handler) {
     List<Assignment> models = new LinkedList<>();
     SolverState stateBeforeEnumeration = null;
     if (this.style == SolverStyle.MINISAT && incremental)
@@ -279,15 +280,15 @@ public final class MiniSat extends SATSolver {
    *                  appear
    * @return the assignment
    */
-  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Literal> variables) {
+  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
     final Assignment model = new Assignment();
     for (int i = 0; i < vec.size(); i++) {
-      final Literal lit = this.f.literal(this.solver.nameForIdx(i));
+      final Variable var = this.f.variable(this.solver.nameForIdx(i));
       if (vec.get(i)) {
-        if (variables == null || variables.contains(lit))
-          model.addLiteral(lit);
-      } else if (variables == null || variables.contains(lit))
-        model.addLiteral(lit.negate());
+        if (variables == null || variables.contains(var))
+          model.addLiteral(var);
+      } else if (variables == null || variables.contains(var))
+        model.addLiteral(var.negate());
     }
     return model;
   }

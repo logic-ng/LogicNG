@@ -48,8 +48,8 @@ public class LiteralTest {
 
   @Test
   public void testShortcutCreators() {
-    Assert.assertEquals(F.f.literal("a"), F.f.literal("a", true));
-    Assert.assertEquals(F.f.literal("name"), F.f.literal("name", true));
+    Assert.assertEquals(F.f.variable("a"), F.f.literal("a", true));
+    Assert.assertEquals(F.f.variable("name"), F.f.literal("name", true));
   }
 
   @Test
@@ -85,9 +85,9 @@ public class LiteralTest {
   @Test
   public void testExpSubstitution() {
     final Substitution substitution = new Substitution();
-    substitution.addMapping(F.f.literal("a"), F.f.literal("b", false));
-    substitution.addMapping(F.f.literal("c"), F.f.literal("d"));
-    substitution.addMapping(F.f.literal("x"), F.f.and(F.f.literal("y"), F.f.literal("z")));
+    substitution.addMapping(F.f.variable("a"), F.f.literal("b", false));
+    substitution.addMapping(F.f.variable("c"), F.f.variable("d"));
+    substitution.addMapping(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z")));
   }
 
   @Test
@@ -167,9 +167,17 @@ public class LiteralTest {
 
   @Test
   public void testContains() {
-    Assert.assertFalse(F.A.contains(F.f.literal("b")));
-    Assert.assertTrue(F.A.contains(F.f.literal("a")));
-    Assert.assertFalse(F.NA.contains(F.f.literal("b")));
-    Assert.assertTrue(F.NA.contains(F.f.literal("a")));
+    Assert.assertFalse(F.A.containsVariable(F.f.variable("b")));
+    Assert.assertTrue(F.A.containsVariable(F.f.variable("a")));
+    Assert.assertFalse(F.NA.containsVariable(F.f.variable("b")));
+    Assert.assertTrue(F.NA.containsVariable(F.f.variable("a")));
+  }
+
+  @Test
+  public void testPosNeg() {
+    Assert.assertEquals(F.A, F.A.variable());
+    Assert.assertEquals(F.NA, F.A.negative());
+    Assert.assertEquals(F.A, F.NA.variable());
+    Assert.assertEquals(F.NA, F.NA.negative());
   }
 }

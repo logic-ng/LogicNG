@@ -32,7 +32,7 @@ import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.printer.DefaultStringRepresentation;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
-import org.logicng.functions.SubformulaFunction;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.transformations.cnf.CNFFactorization;
@@ -77,9 +77,9 @@ public final class FormulaFactory {
 
   private final CFalse cFalse;
   private final CTrue cTrue;
-  private Map<String, Literal> posLiterals;
+  private Map<String, Variable> posLiterals;
   private Map<String, Literal> negLiterals;
-  private Set<Literal> generatedLiterals;
+  private Set<Literal> generatedVariables;
   private Map<Formula, Not> nots;
   private Map<Pair<Formula, Formula>, Implication> implications;
   private Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;
@@ -104,7 +104,7 @@ public final class FormulaFactory {
   private int cnfCounter;
 
   private final FormulaTransformation defaultCNFTransformation;
-  private final SubformulaFunction subformulaFunction;
+  private final SubNodeFunction subformulaFunction;
 
   private final PseudoBooleanParser parser;
 
@@ -120,7 +120,7 @@ public final class FormulaFactory {
     this.stringRepresentation = stringRepresentation;
     this.configurations = new EnumMap<>(ConfigurationType.class);
     this.defaultCNFTransformation = new CNFFactorization();
-    this.subformulaFunction = new SubformulaFunction();
+    this.subformulaFunction = new SubNodeFunction();
     this.parser = new PseudoBooleanParser(this);
   }
 
@@ -137,7 +137,7 @@ public final class FormulaFactory {
   private void clear() {
     this.posLiterals = new HashMap<>();
     this.negLiterals = new HashMap<>();
-    this.generatedLiterals = new HashSet<>();
+    this.generatedVariables = new HashSet<>();
     this.nots = new HashMap<>();
     this.implications = new HashMap<>();
     this.equivalences = new HashMap<>();
@@ -185,7 +185,7 @@ public final class FormulaFactory {
    * Returns a function to compute the sub-formulas.
    * @return a function to compute the sub-formulas
    */
-  public SubformulaFunction subformulaFunction() {
+  public SubNodeFunction subformulaFunction() {
     return this.subformulaFunction;
   }
 
@@ -575,7 +575,7 @@ public final class FormulaFactory {
    * @param literals the collection of literals
    * @return a new clause
    */
-  public Formula clause(final Collection<Literal> literals) {
+  public Formula clause(final Collection<? extends Literal> literals) {
     final LinkedHashSet<Literal> ops = new LinkedHashSet<>(literals);
     return this.constructClause(ops);
   }
@@ -624,12 +624,16 @@ public final class FormulaFactory {
    * @return a new literal with the given name and phase
    */
   public Literal literal(final String name, boolean phase) {
-    Literal lit = phase ? this.posLiterals.get(name) : this.negLiterals.get(name);
-    if (lit == null) {
-      lit = new Literal(name, phase, this);
-      (phase ? this.posLiterals : this.negLiterals).put(name, lit);
+    if (phase)
+      return this.variable(name);
+    else {
+      Literal lit = this.negLiterals.get(name);
+      if (lit == null) {
+        lit = new Literal(name, false, this);
+        this.negLiterals.put(name, lit);
+      }
+      return lit;
     }
-    return lit;
   }
 
   /**
@@ -637,8 +641,13 @@ public final class FormulaFactory {
    * @param name the variable name
    * @return a new literal with the given name and positive phase
    */
-  public Literal literal(final String name) {
-    return this.literal(name, true);
+  public Variable variable(final String name) {
+    Variable var = this.posLiterals.get(name);
+    if (var == null) {
+      var = new Variable(name, this);
+      this.posLiterals.put(name, var);
+    }
+    return var;
   }
 
   /**
@@ -650,7 +659,7 @@ public final class FormulaFactory {
    * @return the pseudo-Boolean constraint
    * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
    */
-  public PBConstraint pbc(final CType comparator, int rhs, final List<Literal> literals, final List<Integer> coefficients) {
+  public PBConstraint pbc(final CType comparator, int rhs, final List<? extends Literal> literals, final List<Integer> coefficients) {
     int[] cfs = new int[coefficients.size()];
     for (int i = 0; i < coefficients.size(); i++)
       cfs[i] = coefficients.get(i);
@@ -682,84 +691,78 @@ public final class FormulaFactory {
 
   /**
    * Creates a new cardinality constraint.
-   * @param literals   the literals of the constraint
+   * @param variables  the variables of the constraint
    * @param comparator the comparator of the constraint
    * @param rhs        the right-hand side of the constraint
    * @return the cardinality constraint
-   * @throws IllegalArgumentException if there are negative literals
+   * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint cc(final CType comparator, int rhs, final Collection<Literal> literals) {
-    final int[] coefficients = new int[literals.size()];
+  public PBConstraint cc(final CType comparator, int rhs, final Collection<Variable> variables) {
+    final int[] coefficients = new int[variables.size()];
     Arrays.fill(coefficients, 1);
-    final Literal[] lits = new Literal[literals.size()];
+    final Variable[] vars = new Variable[variables.size()];
     int count = 0;
-    for (final Literal lit : literals)
-      if (!lit.phase())
-        throw new IllegalArgumentException("A cardinality constraint can only consist of positive literals");
-      else
-        lits[count++] = lit;
-    return this.constructPBC(comparator, rhs, lits, coefficients);
+    for (final Variable var : variables)
+      vars[count++] = var;
+    return this.constructPBC(comparator, rhs, vars, coefficients);
   }
 
   /**
    * Creates a new cardinality constraint.
-   * @param literals   the literals of the constraint
+   * @param variables  the variables of the constraint
    * @param comparator the comparator of the constraint
    * @param rhs        the right-hand side of the constraint
    * @return the cardinality constraint
-   * @throws IllegalArgumentException if there are negative literals
+   * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint cc(final CType comparator, int rhs, final Literal... literals) {
-    final int[] coefficients = new int[literals.length];
+  public PBConstraint cc(final CType comparator, int rhs, final Variable... variables) {
+    final int[] coefficients = new int[variables.length];
     Arrays.fill(coefficients, 1);
-    final Literal[] lits = new Literal[literals.length];
+    final Variable[] vars = new Variable[variables.length];
     int count = 0;
-    for (final Literal lit : literals)
-      if (!lit.phase())
-        throw new IllegalArgumentException("A cardinality constraint can only consist of positive literals");
-      else
-        lits[count++] = lit;
-    return this.constructPBC(comparator, rhs, lits, coefficients);
+    for (final Variable var : variables)
+      vars[count++] = var;
+    return this.constructPBC(comparator, rhs, vars, coefficients);
   }
 
   /**
    * Creates a new at-most-one cardinality constraint.
-   * @param literals the literals of the constraint
+   * @param variables the variables of the constraint
    * @return the at-most-one constraint
-   * @throws IllegalArgumentException if there are negative literals
+   * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint amo(final Collection<Literal> literals) {
-    return this.cc(CType.LE, 1, literals);
+  public PBConstraint amo(final Collection<Variable> variables) {
+    return this.cc(CType.LE, 1, variables);
   }
 
   /**
    * Creates a new at-most-one cardinality constraint.
-   * @param literals the literals of the constraint
+   * @param variables the variables of the constraint
    * @return the at-most-one constraint
-   * @throws IllegalArgumentException if there are negative literals
+   * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint amo(final Literal... literals) {
-    return this.cc(CType.LE, 1, literals);
+  public PBConstraint amo(final Variable... variables) {
+    return this.cc(CType.LE, 1, variables);
   }
 
   /**
    * Creates a new exactly-one cardinality constraint.
-   * @param literals the literals of the constraint
+   * @param variables the variables of the constraint
    * @return the exactly-one constraint
-   * @throws IllegalArgumentException if there are negative literals
+   * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint exo(final Collection<Literal> literals) {
-    return this.cc(CType.EQ, 1, literals);
+  public PBConstraint exo(final Collection<Variable> variables) {
+    return this.cc(CType.EQ, 1, variables);
   }
 
   /**
    * Creates a new exactly-one cardinality constraint.
-   * @param literals the literals of the constraint
+   * @param variables the variables of the constraint
    * @return the exactly-one constraint
-   * @throws IllegalArgumentException if there are negative literals
+   * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint exo(final Literal... literals) {
-    return this.cc(CType.EQ, 1, literals);
+  public PBConstraint exo(final Variable... variables) {
+    return this.cc(CType.EQ, 1, variables);
   }
 
   /**
@@ -768,10 +771,10 @@ public final class FormulaFactory {
    * Remark: currently only the counter is increased - there is no check if the literal is already present.
    * @return the new cardinality constraint auxiliary literal
    */
-  public Literal newCCLiteral() {
-    final Literal literal = this.literal(CC_PREFIX + this.ccCounter++);
-    this.generatedLiterals.add(literal);
-    return literal;
+  public Variable newCCVariable() {
+    final Variable var = this.variable(CC_PREFIX + this.ccCounter++);
+    this.generatedVariables.add(var);
+    return var;
   }
 
   /**
@@ -780,10 +783,10 @@ public final class FormulaFactory {
    * Remark: currently only the counter is increased - there is no check if the literal is already present.
    * @return the new pseudo Boolean auxiliary literal
    */
-  public Literal newPBLiteral() {
-    final Literal literal = this.literal(PB_PREFIX + this.pbCounter++);
-    this.generatedLiterals.add(literal);
-    return literal;
+  public Variable newPBVariable() {
+    final Variable var = this.variable(PB_PREFIX + this.pbCounter++);
+    this.generatedVariables.add(var);
+    return var;
   }
 
   /**
@@ -792,10 +795,10 @@ public final class FormulaFactory {
    * Remark: currently only the counter is increased - there is no check if the literal is already present.
    * @return the new CNF auxiliary literal
    */
-  public Literal newCNFLiteral() {
-    final Literal literal = this.literal(CNF_PREFIX + this.cnfCounter++);
-    this.generatedLiterals.add(literal);
-    return literal;
+  public Variable newCNFVariable() {
+    final Variable var = this.variable(CNF_PREFIX + this.cnfCounter++);
+    this.generatedVariables.add(var);
+    return var;
   }
 
   /**
@@ -853,12 +856,12 @@ public final class FormulaFactory {
   }
 
   /**
-   * Returns {@code true} if the given literal was generated, {@code false} otherwise.
-   * @param lit the literal to check
-   * @return {@code true} if the given literal was generated
+   * Returns {@code true} if the given variable was generated, {@code false} otherwise.
+   * @param var the variable to check
+   * @return {@code true} if the given variable was generated
    */
-  public boolean isGeneratedLiteral(final Literal lit) {
-    return this.generatedLiterals.contains(lit.positive());
+  public boolean isGeneratedVariable(final Variable var) {
+    return this.generatedVariables.contains(var);
   }
 
   /**

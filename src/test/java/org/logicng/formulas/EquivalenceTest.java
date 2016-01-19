@@ -73,7 +73,7 @@ public class EquivalenceTest {
   @Test
   public void testVariables() {
     Assert.assertEquals(4, F.IMP3.variables().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
+    SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, F.IMP3.variables());
 
     Formula equiv = F.f.equivalence(F.AND1, F.AND2);
@@ -85,7 +85,7 @@ public class EquivalenceTest {
   @Test
   public void testLiterals() {
     Assert.assertEquals(4, F.IMP3.literals().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
+    SortedSet<Literal> lits = new TreeSet<Literal>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, F.IMP3.literals());
 
     Formula equiv = F.f.equivalence(F.AND1, F.AND2);
@@ -95,7 +95,7 @@ public class EquivalenceTest {
 
     equiv = F.f.equivalence(F.AND1, F.A);
     Assert.assertEquals(2, equiv.literals().size());
-    lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+    lits = new TreeSet<Literal>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, equiv.literals());
   }
 
@@ -128,12 +128,12 @@ public class EquivalenceTest {
 
   @Test
   public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.EQ1, F.g.equivalence(F.g.literal("a"), F.g.literal("b")));
+    Assert.assertEquals(F.EQ1, F.g.equivalence(F.g.variable("a"), F.g.variable("b")));
     Assert.assertEquals(F.EQ1, F.g.equivalence(F.B, F.A));
     Assert.assertEquals(F.EQ3, F.g.equivalence(F.AND1, F.OR1));
-    Assert.assertNotEquals(F.EQ1, F.g.literal("a"));
-    Assert.assertNotEquals(F.EQ1, F.g.equivalence(F.g.literal("a", false), F.g.literal("b")));
-    Assert.assertNotEquals(F.EQ1, F.g.equivalence(F.g.literal("a"), F.g.literal("b", false)));
+    Assert.assertNotEquals(F.EQ1, F.g.variable("a"));
+    Assert.assertNotEquals(F.EQ1, F.g.equivalence(F.g.literal("a", false), F.g.variable("b")));
+    Assert.assertNotEquals(F.EQ1, F.g.equivalence(F.g.variable("a"), F.g.literal("b", false)));
   }
 
   @Test
@@ -180,7 +180,7 @@ public class EquivalenceTest {
 
   @Test
   public void testContains() {
-    Assert.assertTrue(F.EQ4.contains(F.f.literal("a")));
-    Assert.assertFalse(F.EQ4.contains(F.f.literal("x")));
+    Assert.assertTrue(F.EQ4.containsVariable(F.f.variable("a")));
+    Assert.assertFalse(F.EQ4.containsVariable(F.f.variable("x")));
   }
 }

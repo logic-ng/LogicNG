@@ -34,6 +34,7 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
@@ -174,55 +175,55 @@ public abstract class SATSolver {
    * @return a model of the current formula
    */
   public Assignment model() {
-    return this.model((Collection<Literal>) null);
+    return this.model((Collection<Variable>) null);
   }
 
   /**
-   * Returns a model of the current formula on the solver wrt. a given set of positive literals. If the set
-   * is {@code null}, all literals are considered relevant. If the formula is UNSAT, {@code null} will be returned.
+   * Returns a model of the current formula on the solver wrt. a given set of variables. If the set
+   * is {@code null}, all variables are considered relevant. If the formula is UNSAT, {@code null} will be returned.
    * The formula in the solver has to be solved first, before a model can be obtained.
-   * @param literals the set of literals
+   * @param variables the set of variables
    * @return a model of the current formula
    * @throws IllegalStateException if the formula is not yet solved
    */
-  public Assignment model(final Literal[] literals) {
-    return this.model(Arrays.asList(literals));
+  public Assignment model(final Variable[] variables) {
+    return this.model(Arrays.asList(variables));
   }
 
   /**
-   * Returns a model of the current formula on the solver wrt. a given set of positive literals. If the set
-   * is {@code null}, all literals are considered relevant.
+   * Returns a model of the current formula on the solver wrt. a given set of variables. If the set
+   * is {@code null}, all variables are considered relevant.
    * If the formula is UNSAT, {@code null} will be returned.
-   * @param literals the set of literals
+   * @param variables the set of variables
    * @return a model of the current formula
    */
-  public abstract Assignment model(final Collection<Literal> literals);
+  public abstract Assignment model(final Collection<Variable> variables);
 
   /**
    * Enumerates all models of the current formula.
    * @return the list of models
    */
   public List<Assignment> enumerateAllModels() {
-    return this.enumerateAllModels((Collection<Literal>) null);
+    return this.enumerateAllModels((Collection<Variable>) null);
   }
 
   /**
-   * Enumerates all models of the current formula wrt. a given set of positive literals.  If the set is {@code null},
-   * all literals are considered relevant.
-   * @param literals the set of literals
+   * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
+   * all variables are considered relevant.
+   * @param variables the set of variables
    * @return the list of models
    */
-  public List<Assignment> enumerateAllModels(final Literal[] literals) {
-    return this.enumerateAllModels(Arrays.asList(literals));
+  public List<Assignment> enumerateAllModels(final Variable[] variables) {
+    return this.enumerateAllModels(Arrays.asList(variables));
   }
 
   /**
-   * Enumerates all models of the current formula wrt. a given set of positive literals.  If the set is {@code null},
-   * all literals are considered relevant.
-   * @param literals the set of literals
+   * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
+   * all variables are considered relevant.
+   * @param variables the set of variables
    * @return the list of models
    */
-  public abstract List<Assignment> enumerateAllModels(final Collection<Literal> literals);
+  public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables);
 
   /**
    * Enumerates all models of the current formula and passes it to a model enumeration handler.
@@ -230,28 +231,28 @@ public abstract class SATSolver {
    * @return the list of models
    */
   public List<Assignment> enumerateAllModels(final ModelEnumerationHandler handler) {
-    return this.enumerateAllModels((Collection<Literal>) null, handler);
+    return this.enumerateAllModels((Collection<Variable>) null, handler);
   }
 
   /**
-   * Enumerates all models of the current formula wrt. a given set of positive literals  and passes it to a model
+   * Enumerates all models of the current formula wrt. a given set of variables and passes it to a model
    * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
-   * @param literals the set of literals
-   * @param handler  the model enumeration handler
+   * @param variables the set of variables
+   * @param handler   the model enumeration handler
    * @return the list of models
    */
-  public List<Assignment> enumerateAllModels(final Literal[] literals, final ModelEnumerationHandler handler) {
-    return this.enumerateAllModels(Arrays.asList(literals), handler);
+  public List<Assignment> enumerateAllModels(final Variable[] variables, final ModelEnumerationHandler handler) {
+    return this.enumerateAllModels(Arrays.asList(variables), handler);
   }
 
   /**
-   * Enumerates all models of the current formula wrt. a given set of positive literals  and passes it to a model
+   * Enumerates all models of the current formula wrt. a given set of variables  and passes it to a model
    * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
-   * @param literals the set of literals
-   * @param handler  the model enumeration handler
+   * @param variables the set of variables
+   * @param handler   the model enumeration handler
    * @return the list of models
    */
-  public abstract List<Assignment> enumerateAllModels(final Collection<Literal> literals, final ModelEnumerationHandler handler);
+  public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final ModelEnumerationHandler handler);
 
   /**
    * Saves the current solver state.

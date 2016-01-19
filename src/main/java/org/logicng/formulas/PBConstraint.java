@@ -224,7 +224,7 @@ public final class PBConstraint extends Formula {
     cs.removeElements(cs.size() - newSize);
     final SortedMap<Literal, Pair<Integer, Integer>> var2consts = new TreeMap<>();
     for (int i = 0; i < ps.size(); i++) {
-      final Literal x = ps.get(i).positive();
+      final Variable x = ps.get(i).variable();
       Pair<Integer, Integer> consts = var2consts.get(x);
       if (consts == null)
         consts = new Pair<>(0, 0);
@@ -320,11 +320,11 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
-  public SortedSet<Literal> variables() {
+  public SortedSet<Variable> variables() {
     if (this.variables == null) {
       this.variables = new TreeSet<>();
       for (final Literal lit : this.literals)
-        this.variables.add(lit.positive());
+        this.variables.add(lit.variable());
     }
     return this.variables;
   }
@@ -337,9 +337,9 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
-  public boolean contains(final Literal literal) {
+  public boolean containsVariable(final Variable variable) {
     for (final Literal lit : this.literals)
-      if (lit.contains(literal))
+      if (lit.containsVariable(variable))
         return true;
     return false;
   }
@@ -404,8 +404,16 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
-  public boolean containsSubformula(final Formula formula) {
-    return this == formula || this.equals(formula) || formula.type == FType.LITERAL && this.contains((Literal) formula);
+  public boolean containsNode(final Formula formula) {
+    if (this == formula || this.equals(formula))
+      return true;
+    if (formula.type == FType.LITERAL) {
+      for (final Literal lit : this.literals)
+        if (lit.equals(formula) || lit.variable().equals(formula))
+          return true;
+      return false;
+    }
+    return false;
   }
 
   @Override
@@ -414,19 +422,22 @@ public final class PBConstraint extends Formula {
     final List<Integer> newCoeffs = new LinkedList<>();
     int lhsFixed = 0;
     for (int i = 0; i < this.literals.length; i++) {
-      Formula subst = substitution.getSubstitution(this.literals[i], f);
+      Formula subst = substitution.getSubstitution(this.literals[i].variable());
       if (subst == null) {
         newLits.add(this.literals[i]);
         newCoeffs.add(this.coefficients[i]);
       } else {
         switch (subst.type) {
           case TRUE:
-            lhsFixed += this.coefficients[i];
+            if (this.literals[i].phase())
+              lhsFixed += this.coefficients[i];
             break;
           case FALSE:
+            if (!this.literals[i].phase())
+              lhsFixed += this.coefficients[i];
             break;
           case LITERAL:
-            newLits.add((Literal) subst);
+            newLits.add(this.literals[i].phase() ? (Literal) subst : ((Literal) subst).negate());
             newCoeffs.add(this.coefficients[i]);
             break;
           default:

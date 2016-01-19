@@ -92,7 +92,7 @@ public class AndTest {
   @Test
   public void testVariables() {
     Assert.assertEquals(2, F.AND2.variables().size());
-    SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+    SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, F.AND2.variables());
 
     Formula and = F.f.and(F.A, F.A, F.B, F.IMP3);
@@ -129,8 +129,8 @@ public class AndTest {
     Assert.assertEquals(F.AND1, F.f.and(F.A, F.B));
     Assert.assertEquals(F.AND3, F.f.and(F.OR1, F.OR2));
     Assert.assertEquals(F.AND2, F.AND2);
-    Assert.assertEquals(F.f.and(F.f.or(F.f.literal("a"), F.f.literal("b")), F.f.or(F.f.literal("x"), F.f.literal("y", false))),
-            F.f.and(F.f.or(F.f.literal("y", false), F.f.literal("x")), F.f.or(F.f.literal("b"), F.f.literal("a"))));
+    Assert.assertEquals(F.f.and(F.f.or(F.f.variable("a"), F.f.variable("b")), F.f.or(F.f.variable("x"), F.f.literal("y", false))),
+            F.f.and(F.f.or(F.f.literal("y", false), F.f.variable("x")), F.f.or(F.f.variable("b"), F.f.variable("a"))));
     Assert.assertEquals(F.f.and(F.A, F.NB, F.OR1, F.NX), F.f.and(F.NX, F.A, F.NB, F.OR1));
     Assert.assertNotEquals(F.AND1, null);
     Assert.assertNotEquals(F.AND1, F.A);
@@ -140,15 +140,15 @@ public class AndTest {
 
   @Test
   public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.AND1, F.g.and(F.g.literal("a"), F.g.literal("b")));
+    Assert.assertEquals(F.AND1, F.g.and(F.g.variable("a"), F.g.variable("b")));
     Assert.assertEquals(F.AND3, F.g.and(F.OR1, F.OR2));
-    Assert.assertEquals(F.f.and(F.f.or(F.f.literal("a"), F.f.literal("b")), F.f.or(F.f.literal("x"), F.f.literal("y", false))),
-            F.g.and(F.g.or(F.g.literal("y", false), F.g.literal("x")), F.f.or(F.g.literal("b"), F.g.literal("a"))));
-    Assert.assertEquals(F.f.and(F.A, F.NB, F.OR1, F.NX), F.g.and(F.g.literal("x", false), F.g.literal("a"), F.g.literal("b", false), F.g.or(F.g.literal("x"), F.g.literal("y"))));
-    Assert.assertNotEquals(F.AND1, F.g.literal("a"));
-    Assert.assertNotEquals(F.AND1, F.g.and(F.g.literal("a", false), F.g.literal("b")));
-    Assert.assertNotEquals(F.AND1, F.g.and(F.g.literal("a"), F.g.literal("b", false)));
-    Assert.assertNotEquals(F.AND1, F.f.and(F.A, F.B, F.g.literal("c")));
+    Assert.assertEquals(F.f.and(F.f.or(F.f.variable("a"), F.f.variable("b")), F.f.or(F.f.variable("x"), F.f.literal("y", false))),
+            F.g.and(F.g.or(F.g.literal("y", false), F.g.variable("x")), F.f.or(F.g.variable("b"), F.g.variable("a"))));
+    Assert.assertEquals(F.f.and(F.A, F.NB, F.OR1, F.NX), F.g.and(F.g.literal("x", false), F.g.variable("a"), F.g.literal("b", false), F.g.or(F.g.variable("x"), F.g.variable("y"))));
+    Assert.assertNotEquals(F.AND1, F.g.variable("a"));
+    Assert.assertNotEquals(F.AND1, F.g.and(F.g.literal("a", false), F.g.variable("b")));
+    Assert.assertNotEquals(F.AND1, F.g.and(F.g.variable("a"), F.g.literal("b", false)));
+    Assert.assertNotEquals(F.AND1, F.f.and(F.A, F.B, F.g.variable("c")));
   }
 
   @Test
@@ -196,7 +196,7 @@ public class AndTest {
 
   @Test
   public void testContains() {
-    Assert.assertTrue(F.AND3.contains(F.f.literal("x")));
-    Assert.assertFalse(F.AND3.contains(F.f.literal("a")));
+    Assert.assertTrue(F.AND3.containsVariable(F.f.variable("x")));
+    Assert.assertFalse(F.AND3.containsVariable(F.f.variable("a")));
   }
 }

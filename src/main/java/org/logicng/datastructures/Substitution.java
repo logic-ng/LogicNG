@@ -29,8 +29,7 @@
 package org.logicng.datastructures;
 
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,7 @@ import java.util.Map;
  */
 public class Substitution {
 
-  private final Map<Literal, Formula> subst;
+  protected final Map<Variable, Formula> subst;
 
   /**
    * Constructs a new empty substitution.
@@ -61,30 +60,29 @@ public class Substitution {
   }
 
   /**
-   * Adds a mapping from literal to formula to this substitution.
+   * Adds a mapping from variable to formula to this substitution.
    * <p>
-   * If there is already a mapping for this literal, it will be overwritten.
-   * @param literal the literal
-   * @param formula the formula
-   * @throws IllegalArgumentException if a literal with a negative phase is added
+   * If there is already a mapping for this variable, it will be overwritten.
+   * @param variable the variable
+   * @param formula  the formula
+   * @throws IllegalArgumentException if a variable with a negative phase is added
    */
-  public void addMapping(final Literal literal, final Formula formula) {
-    if (!literal.phase())
-      throw new IllegalArgumentException("A substitution can only contain mappings from positive literals: " + literal);
-    subst.put(literal, formula);
+  public void addMapping(final Variable variable, final Formula formula) {
+    if (!variable.phase())
+      throw new IllegalArgumentException("A substitution can only contain mappings from positive literals: " + variable);
+    subst.put(variable, formula);
   }
 
   /**
-   * Returns a formula for a given literal.  If there is no mapping for this literal, {@code null} is returned.
-   * @param literal the literal
-   * @param f       the formula factory
-   * @return an optional formula
+   * Returns a formula for a given variable.  If there is no mapping for this variable, {@code null} is returned.
+   * @param variable the variable
+   * @return an formula of {@code null}
    */
-  public Formula getSubstitution(final Literal literal, final FormulaFactory f) {
-    Formula res = literal.phase() ? subst.get(literal) : subst.get(literal.negate());
+  public Formula getSubstitution(final Variable variable) {
+    Formula res = subst.get(variable);
     if (res == null)
       return null;
-    return literal.phase() ? res : f.not(res);
+    return res;
   }
 
   @Override

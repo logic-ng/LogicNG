@@ -29,7 +29,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.Collection;
 
@@ -42,18 +42,18 @@ import java.util.Collection;
 public abstract class CCExactlyOne {
 
   /**
-   * Builds a cardinality constraint of the form {@code lit_1 + lit_2 + ... + lit_n = 1}.
-   * @param lits the literals {@code lit_1 ... lit_n}
+   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = 1}.
+   * @param vars the variables {@code var_1 ... var_n}
    * @return the CNF encoding of the cardinality constraint
    */
-  public ImmutableFormulaList build(Collection<Literal> lits) {
-    return this.build(lits.toArray(new Literal[lits.size()]));
+  public ImmutableFormulaList build(Collection<Variable> vars) {
+    return this.build(vars.toArray(new Variable[vars.size()]));
   }
 
   /**
-   * Builds a cardinality constraint of the form {@code lit_1 + lit_2 + ... + lit_n = 1}.
-   * @param lits the literals {@code lit_1 ... lit_n}
+   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = 1}.
+   * @param vars the variables {@code var_1 ... var_n}
    * @return the CNF encoding of the cardinality constraint
    */
-  public abstract ImmutableFormulaList build(final Literal... lits);
+  public abstract ImmutableFormulaList build(final Variable... vars);
 }

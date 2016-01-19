@@ -28,9 +28,9 @@
 
 package org.logicng.formulas.printer;
 
-import org.logicng.formulas.F;
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.formulas.F;
 
 /**
  * Unit tests for {@link UTF8StringRepresentation}
@@ -47,11 +47,11 @@ public class UTF8StringRepresentationTest {
     Assert.assertEquals("⊤", F.f.string(F.TRUE, sr));
     Assert.assertEquals("x", F.f.string(F.X, sr));
     Assert.assertEquals("¬a", F.f.string(F.NA, sr));
-    Assert.assertEquals("x₁", F.f.string(F.f.literal("x1"), sr));
-    Assert.assertEquals("x₁₉₀", F.f.string(F.f.literal("x190"), sr));
-    Assert.assertEquals("x₂₃₄", F.f.string(F.f.literal("x234"), sr));
-    Assert.assertEquals("x₅₆₇", F.f.string(F.f.literal("x567"), sr));
-    Assert.assertEquals("abc₈", F.f.string(F.f.literal("abc8"), sr));
+    Assert.assertEquals("x₁", F.f.string(F.f.variable("x1"), sr));
+    Assert.assertEquals("x₁₉₀", F.f.string(F.f.variable("x190"), sr));
+    Assert.assertEquals("x₂₃₄", F.f.string(F.f.variable("x234"), sr));
+    Assert.assertEquals("x₅₆₇", F.f.string(F.f.variable("x567"), sr));
+    Assert.assertEquals("abc₈", F.f.string(F.f.variable("abc8"), sr));
     Assert.assertEquals("¬a ⇒ ¬b", F.f.string(F.IMP2, sr));
     Assert.assertEquals("a ∧ b ⇒ x ∨ y", F.f.string(F.IMP3, sr));
     Assert.assertEquals("a ⇒ b ⇔ ¬a ⇒ ¬b", F.f.string(F.EQ4, sr));

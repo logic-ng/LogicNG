@@ -44,11 +44,11 @@ public class F {
   public static final Constant FALSE = f.falsum();
 
   // Literals
-  public static final Literal A = f.literal("a");
-  public static final Literal B = f.literal("b");
-  public static final Literal C = f.literal("c");
-  public static final Literal X = f.literal("x");
-  public static final Literal Y = f.literal("y");
+  public static final Variable A = f.variable("a");
+  public static final Variable B = f.variable("b");
+  public static final Variable C = f.variable("c");
+  public static final Variable X = f.variable("x");
+  public static final Variable Y = f.variable("y");
   public static final Literal NA = f.literal("a", false);
   public static final Literal NB = f.literal("b", false);
   public static final Literal NX = f.literal("x", false);

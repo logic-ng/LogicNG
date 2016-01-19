@@ -34,7 +34,7 @@ import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -58,17 +58,17 @@ public class CCAMOTest {
 
   @Test
   public void testCC0() {
-    Assert.assertTrue(pure.build(new LinkedList<Literal>()).empty());
-    Assert.assertTrue(ladder.build(new LinkedList<Literal>()).empty());
-    Assert.assertTrue(product.build(new LinkedList<Literal>()).empty());
+    Assert.assertTrue(pure.build(new LinkedList<Variable>()).empty());
+    Assert.assertTrue(ladder.build(new LinkedList<Variable>()).empty());
+    Assert.assertTrue(product.build(new LinkedList<Variable>()).empty());
   }
 
   @Test
   public void testCC1() {
-    final List<Literal> lits = new LinkedList<>(Collections.singletonList(f.literal("v0")));
-    Assert.assertTrue(pure.build(lits).empty());
-    Assert.assertTrue(ladder.build(lits).empty());
-    Assert.assertTrue(product.build(lits).empty());
+    final List<Variable> vars = new LinkedList<>(Collections.singletonList(f.variable("v0")));
+    Assert.assertTrue(pure.build(vars).empty());
+    Assert.assertTrue(ladder.build(vars).empty());
+    Assert.assertTrue(product.build(vars).empty());
   }
 
   @Test
@@ -99,10 +99,10 @@ public class CCAMOTest {
   }
 
   private void testCC(int numLits, final CCAtMostOne encoder) {
-    final List<Literal> lits = new LinkedList<>();
-    final Literal[] problemLits = new Literal[numLits];
+    final List<Variable> lits = new LinkedList<>();
+    final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
-      final Literal lit = f.literal("v" + i);
+      final Variable lit = f.variable("v" + i);
       lits.add(lit);
       problemLits[i] = lit;
     }

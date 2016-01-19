@@ -28,17 +28,17 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Encodes that exactly one literal from 'lits' is assigned value true.  Uses the 'naive' encoding with no introduction
+ * Encodes that exactly one variable is assigned value true.  Uses the 'naive' encoding with no introduction
  * of new variables but quadratic size.
  * @author Christoph Zengler
  * @version 1.0
@@ -57,18 +57,18 @@ public final class CCEXOPure extends CCExactlyOne {
   }
 
   @Override
-  public ImmutableFormulaList build(final Literal... lits) {
+  public ImmutableFormulaList build(final Variable... vars) {
     final List<Formula> result = new LinkedList<>();
-    if (lits.length == 0)
+    if (vars.length == 0)
       return new ImmutableFormulaList(FType.AND);
-    if (lits.length == 1) {
-      result.add(lits[0]);
+    if (vars.length == 1) {
+      result.add(vars[0]);
       return new ImmutableFormulaList(FType.AND, result);
     }
-    result.add(this.f.clause(lits));
-    for (int i = 0; i < lits.length; i++)
-      for (int j = i + 1; j < lits.length; j++)
-        result.add(this.f.clause(lits[i].negate(), lits[j].negate()));
+    result.add(this.f.clause(vars));
+    for (int i = 0; i < vars.length; i++)
+      for (int j = i + 1; j < vars.length; j++)
+        result.add(this.f.clause(vars[i].negate(), vars[j].negate()));
     return new ImmutableFormulaList(FType.AND, result);
   }
 

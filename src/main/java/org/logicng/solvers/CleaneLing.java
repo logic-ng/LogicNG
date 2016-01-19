@@ -34,6 +34,7 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.sat.CleaneLingConfig;
@@ -65,8 +66,8 @@ public final class CleaneLing extends SATSolver {
   private SolverStyle solverStyle;
   private boolean plain;
   private final CleaneLingStyleSolver solver;
-  private SortedMap<Literal, Integer> lit2index;
-  private SortedMap<Integer, Literal> index2lit;
+  private SortedMap<Variable, Integer> var2index;
+  private SortedMap<Integer, Variable> index2var;
 
   /**
    * Constructs a new SAT solver instance.
@@ -91,8 +92,8 @@ public final class CleaneLing extends SATSolver {
     this.result = UNDEF;
     this.solverStyle = solverStyle;
     this.plain = config.plain();
-    this.lit2index = new TreeMap<>();
-    this.index2lit = new TreeMap<>();
+    this.var2index = new TreeMap<>();
+    this.index2var = new TreeMap<>();
   }
 
   /**
@@ -137,11 +138,11 @@ public final class CleaneLing extends SATSolver {
   protected void addClause(final Formula formula) {
     this.result = UNDEF;
     for (Literal lit : formula.literals()) {
-      Integer index = this.lit2index.get(lit.positive());
+      Integer index = this.var2index.get(lit.variable());
       if (index == null) {
-        index = this.lit2index.size() + 1;
-        this.lit2index.put(lit.positive(), index);
-        this.index2lit.put(index, lit.positive());
+        index = this.var2index.size() + 1;
+        this.var2index.put(lit.variable(), index);
+        this.index2var.put(index, lit.variable());
       }
       this.solver.addlit(lit.phase() ? index : -index);
     }
@@ -168,10 +169,10 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  public Assignment model(final Collection<Literal> literals) {
+  public Assignment model(final Collection<Variable> variables) {
     if (this.result == UNDEF)
       throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
-    return this.result == TRUE ? this.createAssignment(this.solver.model(), literals) : null;
+    return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
   }
 
   /**
@@ -181,37 +182,37 @@ public final class CleaneLing extends SATSolver {
    *                  appear
    * @return the assignment
    */
-  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Literal> variables) {
+  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
     final Assignment model = new Assignment();
     if (!vec.empty()) {
       for (int i = 1; i < vec.size(); i++) {
-        final Literal lit = this.index2lit.get(i);
+        final Variable var = this.index2var.get(i);
         if (vec.get(i)) {
-          if (variables == null || variables.contains(lit))
-            model.addLiteral(lit);
-        } else if (variables == null || variables.contains(lit))
-          model.addLiteral(lit.negate());
+          if (variables == null || variables.contains(var))
+            model.addLiteral(var);
+        } else if (variables == null || variables.contains(var))
+          model.addLiteral(var.negate());
       }
     }
     return model;
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(final Collection<Literal> literals) {
+  public List<Assignment> enumerateAllModels(final Collection<Variable> variables) {
     if (this.solverStyle == SolverStyle.FULL && !this.plain)
       throw new UnsupportedOperationException("Model enumeration is not available if simplifications are turned on");
     List<Assignment> models = new LinkedList<>();
     while (this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(literals);
+      final Assignment model = this.model(variables);
       models.add(model);
       assert model != null;
-      this.add(model.blockingClause(this.f, literals));
+      this.add(model.blockingClause(this.f, variables));
     }
     return models;
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(final Collection<Literal> literals, final ModelEnumerationHandler handler) {
+  public List<Assignment> enumerateAllModels(final Collection<Variable> literals, final ModelEnumerationHandler handler) {
     if (this.solverStyle == SolverStyle.FULL && !this.plain)
       throw new UnsupportedOperationException("Model enumeration is not available if simplifications are turned on");
     List<Assignment> models = new LinkedList<>();
@@ -238,6 +239,6 @@ public final class CleaneLing extends SATSolver {
 
   @Override
   public String toString() {
-    return String.format("CleaneLing{result=%s, index2lit=%s}", this.result, this.index2lit);
+    return String.format("CleaneLing{result=%s, index2var=%s}", this.result, this.index2var);
   }
 }

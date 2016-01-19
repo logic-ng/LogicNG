@@ -34,7 +34,7 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
@@ -204,7 +204,7 @@ public class PlaistedGreenbaumTest {
     Assert.assertEquals(f4.variables().size(), f4.transform(pgf).variables().size());
   }
 
-  private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Literal> vars) {
+  private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {
     final SATSolver s = MiniSat.miniSat(f1.factory());
     s.add(f1);
     final List<Assignment> models1 = s.enumerateAllModels(vars);

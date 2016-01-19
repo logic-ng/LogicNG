@@ -300,9 +300,9 @@ public abstract class CleaneLingStyleSolver {
   }
 
   /**
-   * Returns {@code true} if a given literal is marked, {@code false} otherwise.
+   * Returns whether a given literal is marked or not.
    * @param lit the literal
-   * @return {@code true} if a given literal is marked
+   * @return whether a given literal is marked or not
    */
   protected int marked(int lit) {
     final int res = var(lit).mark();

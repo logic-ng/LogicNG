@@ -96,9 +96,9 @@ public abstract class BinaryOperator extends Formula {
   }
 
   @Override
-  public SortedSet<Literal> variables() {
+  public SortedSet<Variable> variables() {
     if (this.variables == null) {
-      final SortedSet<Literal> set = new TreeSet<>();
+      final SortedSet<Variable> set = new TreeSet<>();
       set.addAll(this.left.variables());
       set.addAll(this.right.variables());
       this.variables = set;
@@ -115,13 +115,13 @@ public abstract class BinaryOperator extends Formula {
   }
 
   @Override
-  public boolean contains(final Literal literal) {
-    return this.left.contains(literal) || this.right.contains(literal);
+  public boolean containsVariable(final Variable variable) {
+    return this.left.containsVariable(variable) || this.right.containsVariable(variable);
   }
 
   @Override
-  public boolean containsSubformula(final Formula formula) {
-    return this == formula || this.equals(formula) || this.left.containsSubformula(formula) || this.right.containsSubformula(formula);
+  public boolean containsNode(final Formula formula) {
+    return this == formula || this.equals(formula) || this.left.containsNode(formula) || this.right.containsNode(formula);
   }
 
   @Override
