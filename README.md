@@ -30,6 +30,14 @@ The current release is declared as 1.0 Release Candidate 3.  The API is consider
 * Improved overall test quality and coverage
 * Some minor performance and code style improvements
 
+### RC3 → RC4 (Feature Freeze)
+* Introduced a `Variable` class which is a shortcut for positive literals.  It is now possible to enforce positive literals on a type level
+* Introduced a name for formula factories to avoid name clashing for generated variables of different factories
+* Extended MiniSAT configuration with an initial phase
+* Improved CleaneLing configuration
+* Improved overall test quality and coverage
+* Some minor performance and code style improvements
+
 ## Getting Started
 The following code creates the Boolean Formula *A and not (B or not C)* programatically:
 ```java
