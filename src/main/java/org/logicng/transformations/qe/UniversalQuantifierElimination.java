@@ -32,7 +32,6 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.util.Arrays;
@@ -50,7 +49,7 @@ import java.util.Collection;
  */
 public final class UniversalQuantifierElimination implements FormulaTransformation {
 
-  private final Literal[] elimination;
+  private final Variable[] elimination;
 
   /**
    * Constructs a new universal quantifier elimination for the given variables.
@@ -65,15 +64,15 @@ public final class UniversalQuantifierElimination implements FormulaTransformati
    * @param variables the collection of variables
    */
   public UniversalQuantifierElimination(final Collection<Variable> variables) {
-    this.elimination = variables.toArray(new Literal[variables.size()]);
+    this.elimination = variables.toArray(new Variable[variables.size()]);
   }
 
   @Override
   public Formula apply(final Formula formula, boolean cache) {
     Formula result = formula;
     final FormulaFactory f = formula.factory();
-    for (final Literal lit : elimination)
-      result = f.and(result.restrict(new Assignment(lit)), result.restrict(new Assignment(lit.negate())));
+    for (final Variable var : elimination)
+      result = f.and(result.restrict(new Assignment(var)), result.restrict(new Assignment(var.negate())));
     return result;
   }
 }

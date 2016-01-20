@@ -59,7 +59,7 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
 
   private final FType operator;
   private final Formula[] formulas;
-  private SortedSet<Literal> variables;
+  private SortedSet<Variable> variables;
   private Formula formula;
 
   /**
@@ -199,7 +199,7 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
    * @param formula the formula
    * @return {@code true} if this formula list contains a given formula
    */
-  public boolean contains(final Formula formula) {
+  public boolean containsFormula(final Formula formula) {
     for (final Formula f : this.formulas)
       if (formula.equals(f))
         return true;
@@ -207,10 +207,10 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
   }
 
   /**
-   * Returns all variables occurring in this formula list as positive literals.
-   * @return all variables occurring in this formula list as positive literals
+   * Returns all variables occurring in this formula list.
+   * @return all variables occurring in this formula list
    */
-  public SortedSet<Literal> variables() {
+  public SortedSet<Variable> variables() {
     if (this.variables == null) {
       this.variables = new TreeSet<>();
       for (final Formula f : this.formulas)

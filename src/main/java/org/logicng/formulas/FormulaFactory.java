@@ -79,7 +79,7 @@ public final class FormulaFactory {
   private final CTrue cTrue;
   private Map<String, Variable> posLiterals;
   private Map<String, Literal> negLiterals;
-  private Set<Literal> generatedVariables;
+  private Set<Variable> generatedVariables;
   private Map<Formula, Not> nots;
   private Map<Pair<Formula, Formula>, Implication> implications;
   private Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;

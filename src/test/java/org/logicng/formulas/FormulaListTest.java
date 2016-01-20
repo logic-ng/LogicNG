@@ -140,15 +140,15 @@ public class FormulaListTest {
   public void testContains() {
     ImmutableFormulaList l1 = new ImmutableFormulaList(f.variable("a"), f.variable("b"), f.literal("c", false));
     ImmutableFormulaList l2 = new ImmutableFormulaList(f.or(f.variable("a"), f.variable("b")), f.literal("c", false));
-    Assert.assertTrue(l1.contains(f.variable("a")));
-    Assert.assertTrue(l1.contains(f.variable("b")));
-    Assert.assertTrue(l1.contains(f.literal("c", false)));
-    Assert.assertFalse(l1.contains(f.variable("c")));
-    Assert.assertFalse(l1.contains(f.variable("d")));
-    Assert.assertFalse(l2.contains(f.variable("a")));
-    Assert.assertFalse(l2.contains(f.variable("b")));
-    Assert.assertTrue(l2.contains(f.literal("c", false)));
-    Assert.assertTrue(l2.contains(f.or(f.variable("a"), f.variable("b"))));
+    Assert.assertTrue(l1.containsFormula(f.variable("a")));
+    Assert.assertTrue(l1.containsFormula(f.variable("b")));
+    Assert.assertTrue(l1.containsFormula(f.literal("c", false)));
+    Assert.assertFalse(l1.containsFormula(f.variable("c")));
+    Assert.assertFalse(l1.containsFormula(f.variable("d")));
+    Assert.assertFalse(l2.containsFormula(f.variable("a")));
+    Assert.assertFalse(l2.containsFormula(f.variable("b")));
+    Assert.assertTrue(l2.containsFormula(f.literal("c", false)));
+    Assert.assertTrue(l2.containsFormula(f.or(f.variable("a"), f.variable("b"))));
   }
 
   @Test
@@ -204,11 +204,11 @@ public class FormulaListTest {
     subst.addMapping(f.variable("c"), f.and(f.variable("e"), f.variable("f")));
     ImmutableFormulaList substL = l.substitute(subst);
     Assert.assertEquals(5, substL.size());
-    Assert.assertTrue(substL.contains(f.variable("d")));
-    Assert.assertTrue(substL.contains(f.variable("b")));
-    Assert.assertTrue(substL.contains(f.and(f.variable("e"), f.variable("f"))));
-    Assert.assertTrue(substL.contains(f.or(f.variable("d"), f.variable("b"))));
-    Assert.assertTrue(substL.contains(f.not(f.and(f.variable("e"), f.variable("f")))));
+    Assert.assertTrue(substL.containsFormula(f.variable("d")));
+    Assert.assertTrue(substL.containsFormula(f.variable("b")));
+    Assert.assertTrue(substL.containsFormula(f.and(f.variable("e"), f.variable("f"))));
+    Assert.assertTrue(substL.containsFormula(f.or(f.variable("d"), f.variable("b"))));
+    Assert.assertTrue(substL.containsFormula(f.not(f.and(f.variable("e"), f.variable("f")))));
   }
 
   @Test
