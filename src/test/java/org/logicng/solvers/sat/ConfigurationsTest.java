@@ -109,72 +109,72 @@ public class ConfigurationsTest {
   @Test
   public void testCleaneLingConfigToString() {
     final CleaneLingConfig config = new CleaneLingConfig.Builder()
-            .bce(false)
-            .blkwait(2)
-            .blkrtc(1)
+            .blockedClauseElimination(false)
+            .blockedClauseEliminationWait(2)
+            .blockedClauseEliminationRTC(1)
             .boost(11)
-            .bwclslim(9999)
-            .bwocclim(9998)
-            .cbump(CleaneLingConfig.ClauseBumping.AVG)
-            .distill(false)
-            .elim(false)
-            .elmrtc(3)
-            .elmocclim(9997)
-            .elmpocclim1(99)
-            .elmpocclim2(7)
-            .elmclslim(999)
+            .bwClauseLim(9999)
+            .bwOccurrenceLim(9998)
+            .clauseBumping(CleaneLingConfig.ClauseBumping.AVG)
+            .distillation(false)
+            .bvElim(false)
+            .bvElimRTC(3)
+            .bvElimOccurrenceLim(9997)
+            .bvElimPivotOccurrenceLimOneSided(99)
+            .bvElimPivotOccurrenceLimTwoSided(7)
+            .bvElimClauseLim(999)
             .gluered(false)
-            .gluekeep(4)
-            .glueupdate(true)
-            .itsimpdel(9)
+            .glueKeep(4)
+            .glueUpdate(true)
+            .iterationSimplificationDelay(9)
             .plain(true)
             .restart(false)
-            .restartint(98)
-            .redinit(998)
-            .redinc(1999)
-            .reusetrail(false)
-            .simpint(99999)
-            .simpgeom(false)
-            .sizepen(-1)
-            .sizemaxpen(6)
-            .searchint(4999)
-            .searchfirst(true)
-            .scincfact(1049)
-            .stepslim(999999)
+            .restartInterval(98)
+            .reductionInterval(998)
+            .reductionIntervalInc(1999)
+            .reuseTrail(false)
+            .simpSteps(99999)
+            .simpGeomIncrease(false)
+            .sizePenalty(-1)
+            .sizeMaxPenalty(6)
+            .searchInterval(4999)
+            .searchFirst(true)
+            .scoreIncrementFactor(1049)
+            .stepsLim(999999)
             .build();
     final String expected = "CleaneLingConfig{\n" +
-            "block=false\n" +
-            "blkwait=2\n" +
-            "blkrtc=1\n" +
+            "blockedClauseElimination=false\n" +
+            "blockedClauseEliminationWait=2\n" +
+            "blockedClauseEliminationRTC=1\n" +
             "boost=11\n" +
-            "bwclslim=9999\n" +
-            "bwocclim=9998\n" +
-            "cbump=AVG\n" +
-            "distill=false\n" +
-            "elim=false\n" +
-            "elmrtc=3\n" +
-            "elmocclim=9997\n" +
-            "elmpocclim1=99\n" +
-            "elmpocclim2=7\n" +
-            "elmclslim=999\n" +
+            "bwClauseLim=9999\n" +
+            "bwOccurrenceLim=9998\n" +
+            "clauseBumping=AVG\n" +
+            "distillation=false\n" +
+            "bvElim=false\n" +
+            "bvElimRTC=3\n" +
+            "bvElimOccurrenceLim=9997\n" +
+            "bvElimPivotOccurrenceLimOneSided=99\n" +
+            "bvElimPivotOccurrenceLimTwoSided=7\n" +
+            "bvElimClauseLim=999\n" +
             "gluered=false\n" +
-            "gluekeep=4\n" +
-            "glueupdate=true\n" +
-            "itsimpdel=9\n" +
+            "glueKeep=4\n" +
+            "glueUpdate=true\n" +
+            "iterationSimplificationDelay=9\n" +
             "plain=true\n" +
             "restart=false\n" +
-            "restartint=98\n" +
-            "redinit=998\n" +
-            "redinc=1999\n" +
-            "reusetrail=false\n" +
-            "simpint=99999\n" +
-            "simpgeom=false\n" +
-            "sizepen=-1\n" +
-            "sizemaxpen=6\n" +
-            "searchint=4999\n" +
-            "searchfirst=true\n" +
-            "scincfact=1049\n" +
-            "stepslim=999999\n" +
+            "restartInterval=98\n" +
+            "reductionInterval=998\n" +
+            "reductionIntervalInc=1999\n" +
+            "reuseTrail=false\n" +
+            "simpSteps=99999\n" +
+            "simpGeomIncrease=false\n" +
+            "sizePenalty=-1\n" +
+            "sizeMaxPenalty=6\n" +
+            "searchInterval=4999\n" +
+            "searchFirst=true\n" +
+            "scoreIncrementFactor=1049\n" +
+            "stepsLim=999999\n" +
             "}\n";
     Assert.assertEquals(expected, config.toString());
   }

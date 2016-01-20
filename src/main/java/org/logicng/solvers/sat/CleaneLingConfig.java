@@ -87,66 +87,66 @@ public final class CleaneLingConfig extends Configuration {
    * The builder for a MiniSAT configuration.
    */
   public static class Builder {
-    private boolean block = true;
-    private int blkwait = 1;
-    private int blkrtc = 0;
+    private boolean blockedClauseElimination = true;
+    private int blockedClauseEliminationWait = 1;
+    private int blockedClauseEliminationRTC = 0;
     private int boost = 10;
-    private int bwclslim = 10000;
-    private int bwocclim = 10000;
-    private ClauseBumping cbump = ClauseBumping.INC;
-    private boolean distill = true;
-    private boolean elim = true;
-    private int elmrtc = 0;
-    private int elmocclim = 10000;
-    private int elmpocclim1 = 100;
-    private int elmpocclim2 = 8;
-    private int elmclslim = 1000;
+    private int bwClauseLim = 10000;
+    private int bwOccurrenceLim = 10000;
+    private ClauseBumping clauseBumping = ClauseBumping.INC;
+    private boolean distillation = true;
+    private boolean bvElim = true;
+    private int bvElimRTC = 0;
+    private int bvElimOccurrenceLim = 10000;
+    private int bvElimPivotOccurrenceLimOneSided = 100;
+    private int bvElimPivotOccurrenceLimTwoSided = 8;
+    private int bvElimClauseLim = 1000;
     private boolean gluered = true;
-    private int gluekeep = 1;
-    private boolean glueupdate = false;
-    private int itsimpdel = 10;
+    private int glueKeep = 1;
+    private boolean glueUpdate = false;
+    private int iterationSimplificationDelay = 10;
     private boolean plain = false;
     private boolean restart = true;
-    private int restartint = 100;
-    private int redinit = 1000;
-    private int redinc = 2000;
-    private boolean reusetrail = true;
-    private int simpint = 2000000;
-    private boolean simpgeom = true;
-    private int sizepen = 1 << 17;
-    private int sizemaxpen = 5;
-    private int searchint = 5000;
-    private boolean searchfirst = false;
-    private int scincfact = 1050;
-    private int stepslim = 100000000;
+    private int restartInterval = 100;
+    private int reductionInterval = 1000;
+    private int reductionIntervalInc = 2000;
+    private boolean reuseTrail = true;
+    private int simpSteps = 2000000;
+    private boolean simpGeomIncrease = true;
+    private int sizePenalty = 1 << 17;
+    private int sizeMaxPenalty = 5;
+    private int searchInterval = 5000;
+    private boolean searchFirst = false;
+    private int scoreIncrementFactor = 1050;
+    private int stepsLim = 100000000;
 
     /**
      * If turned on, blocked clause elimination (BCE) will be performed.  The default value is {@code true}.
-     * @param bce {@code true} if BCE should be performed, {@code false} otherwise
+     * @param blockedClauseElimination {@code true} if BCE should be performed, {@code false} otherwise
      * @return the builder
      */
-    public Builder bce(boolean bce) {
-      this.block = bce;
+    public Builder blockedClauseElimination(boolean blockedClauseElimination) {
+      this.blockedClauseElimination = blockedClauseElimination;
       return this;
     }
 
     /**
      * Sets the number of simplification steps before BCE is performed.  The default value is 1.
-     * @param blkwait the number of simplification steps before BCE is performed
+     * @param blockedClauseEliminationWait the number of simplification steps before BCE is performed
      * @return the builder
      */
-    public Builder blkwait(int blkwait) {
-      this.blkwait = blkwait;
+    public Builder blockedClauseEliminationWait(int blockedClauseEliminationWait) {
+      this.blockedClauseEliminationWait = blockedClauseEliminationWait;
       return this;
     }
 
     /**
      * Sets the number of simplification steps before BCE is run to completion.  The default value is 0.
-     * @param blkrtc the number of simplification steps before BCE is run to completion
+     * @param blockedClauseEliminationRTC the number of simplification steps before BCE is run to completion
      * @return the builder
      */
-    public Builder blkrtc(int blkrtc) {
-      this.blkrtc = blkrtc;
+    public Builder blockedClauseEliminationRTC(int blockedClauseEliminationRTC) {
+      this.blockedClauseEliminationRTC = blockedClauseEliminationRTC;
       return this;
     }
 
@@ -162,101 +162,101 @@ public final class CleaneLingConfig extends Configuration {
 
     /**
      * Sets the backward-subsumption clause size limit.  The default value is 10,000.
-     * @param bwclslim the backward-subsumption clause size limit
+     * @param bwClauseLim the backward-subsumption clause size limit
      * @return the builder
      */
-    public Builder bwclslim(int bwclslim) {
-      this.bwclslim = bwclslim;
+    public Builder bwClauseLim(int bwClauseLim) {
+      this.bwClauseLim = bwClauseLim;
       return this;
     }
 
     /**
      * Sets the backward-subsumption occurrence limit.  The default value is 10,000.
-     * @param bwocclim the backward-subsumption occurrence limit
+     * @param bwOccurrenceLim the backward-subsumption occurrence limit
      * @return the builder
      */
-    public Builder bwocclim(int bwocclim) {
-      this.bwocclim = bwocclim;
+    public Builder bwOccurrenceLim(int bwOccurrenceLim) {
+      this.bwOccurrenceLim = bwOccurrenceLim;
       return this;
     }
 
     /**
-     * Sets the method for clause bumping.  The default value ist {@code INT}.
-     * @param cbump the method for clause bumping
+     * Sets the method for clause bumping.  The default value ist {@code INC}.
+     * @param clauseBumping the method for clause bumping
      * @return the builder
      */
-    public Builder cbump(final ClauseBumping cbump) {
-      this.cbump = cbump;
+    public Builder clauseBumping(final ClauseBumping clauseBumping) {
+      this.clauseBumping = clauseBumping;
       return this;
     }
 
     /**
      * If turned on, distillation will be performed.  The default value is {@code true}.
-     * @param distill {@code true} if distillation should be performed, {@code false} otherwise
+     * @param distillation {@code true} if distillation should be performed, {@code false} otherwise
      * @return the builder
      */
-    public Builder distill(boolean distill) {
-      this.distill = distill;
+    public Builder distillation(boolean distillation) {
+      this.distillation = distillation;
       return this;
     }
 
     /**
      * If turned on, bounded variable elimination (BVE) will be performed.  The default value is {@code true}.
-     * @param elim {@code true} if bounded variable elimination (BVE) should be performed, {@code false} otherwise
+     * @param bvElim {@code true} if bounded variable elimination (BVE) should be performed, {@code false} otherwise
      * @return the builder
      */
-    public Builder elim(boolean elim) {
-      this.elim = elim;
+    public Builder bvElim(boolean bvElim) {
+      this.bvElim = bvElim;
       return this;
     }
 
     /**
      * Sets the number of simplification steps before BVE is run to completion.  The default value is 0.
-     * @param elmrtc the number of simplification steps before BVE is run to completion
+     * @param bvElimRTC the number of simplification steps before BVE is run to completion
      * @return the builder
      */
-    public Builder elmrtc(int elmrtc) {
-      this.elmrtc = elmrtc;
+    public Builder bvElimRTC(int bvElimRTC) {
+      this.bvElimRTC = bvElimRTC;
       return this;
     }
 
     /**
      * Sets the number of maximum occurrences in BVE.  The default value is 10,000.
-     * @param elmocclim the number of maximum occurrences in BVE
+     * @param bvElimOccurrenceLim the number of maximum occurrences in BVE
      * @return the builder
      */
-    public Builder elmocclim(int elmocclim) {
-      this.elmocclim = elmocclim;
+    public Builder bvElimOccurrenceLim(int bvElimOccurrenceLim) {
+      this.bvElimOccurrenceLim = bvElimOccurrenceLim;
       return this;
     }
 
     /**
      * Sets the number of maximum one-sided occurrences of BVE pivot.  The default value is 100.
-     * @param elmpocclim1 the number of maximum one-sided occurrences of BVE pivot
+     * @param bvElimPivotOccurrenceLimOneSided the number of maximum one-sided occurrences of BVE pivot
      * @return the builder
      */
-    public Builder elmpocclim1(int elmpocclim1) {
-      this.elmpocclim1 = elmpocclim1;
+    public Builder bvElimPivotOccurrenceLimOneSided(int bvElimPivotOccurrenceLimOneSided) {
+      this.bvElimPivotOccurrenceLimOneSided = bvElimPivotOccurrenceLimOneSided;
       return this;
     }
 
     /**
      * Sets the number of maximum two-sided occurrences of BVE pivot.  The default value is 8.
-     * @param elmpocclim2 the number of maximum two-sided occurrences of BVE pivot
+     * @param bvElimPivotOccurrenceLimTwoSided the number of maximum two-sided occurrences of BVE pivot
      * @return the builder
      */
-    public Builder elmpocclim2(int elmpocclim2) {
-      this.elmpocclim2 = elmpocclim2;
+    public Builder bvElimPivotOccurrenceLimTwoSided(int bvElimPivotOccurrenceLimTwoSided) {
+      this.bvElimPivotOccurrenceLimTwoSided = bvElimPivotOccurrenceLimTwoSided;
       return this;
     }
 
     /**
      * Sets the maximum antecedent size in BVE.  The default value is 1000.
-     * @param elmclslim the maximum antecedent size in BVE
+     * @param bvElimClauseLim the maximum antecedent size in BVE
      * @return the builder
      */
-    public Builder elmclslim(int elmclslim) {
-      this.elmclslim = elmclslim;
+    public Builder bvElimClauseLim(int bvElimClauseLim) {
+      this.bvElimClauseLim = bvElimClauseLim;
       return this;
     }
 
@@ -272,31 +272,31 @@ public final class CleaneLingConfig extends Configuration {
 
     /**
      * Sets the glue of which size clauses are kept.  The default value is 1.
-     * @param gluekeep the glue of which size clauses are kept
+     * @param glueKeep the glue of which size clauses are kept
      * @return the builder
      */
-    public Builder gluekeep(int gluekeep) {
-      this.gluekeep = gluekeep;
+    public Builder glueKeep(int glueKeep) {
+      this.glueKeep = glueKeep;
       return this;
     }
 
     /**
      * If turned on, glue updates be performed.  The default value is {@code true}.
-     * @param glueupdate {@code true} if glue updates should be performed, {@code false} otherwise
+     * @param glueUpdate {@code true} if glue updates should be performed, {@code false} otherwise
      * @return the builder
      */
-    public Builder glueupdate(boolean glueupdate) {
-      this.glueupdate = glueupdate;
+    public Builder glueUpdate(boolean glueUpdate) {
+      this.glueUpdate = glueUpdate;
       return this;
     }
 
     /**
      * Sets the iteration simplification delay in conflicts.  The default value is 10.
-     * @param itsimpdel the iteration simplification delay in conflicts
+     * @param iterationSimplificationDelay the iteration simplification delay in conflicts
      * @return the builder
      */
-    public Builder itsimpdel(int itsimpdel) {
-      this.itsimpdel = itsimpdel;
+    public Builder iterationSimplificationDelay(int iterationSimplificationDelay) {
+      this.iterationSimplificationDelay = iterationSimplificationDelay;
       return this;
     }
 
@@ -322,122 +322,122 @@ public final class CleaneLingConfig extends Configuration {
 
     /**
      * Sets the basic restart interval.  The default value is 100.
-     * @param restartint the basic restart interval
+     * @param restartInterval the basic restart interval
      * @return the builder
      */
-    public Builder restartint(int restartint) {
-      this.restartint = restartint;
+    public Builder restartInterval(int restartInterval) {
+      this.restartInterval = restartInterval;
       return this;
     }
 
     /**
      * Sets the initial reduction interval.  The default value is 1000.
-     * @param redinit the initial reduction interval
+     * @param reductionInterval the initial reduction interval
      * @return the builder
      */
-    public Builder redinit(int redinit) {
-      this.redinit = redinit;
+    public Builder reductionInterval(int reductionInterval) {
+      this.reductionInterval = reductionInterval;
       return this;
     }
 
     /**
      * Sets the reduction interval increment.  The default value is 2000.
-     * @param redinc the reduction interval increment
+     * @param reductionIntervalInc the reduction interval increment
      * @return the builder
      */
-    public Builder redinc(int redinc) {
-      this.redinc = redinc;
+    public Builder reductionIntervalInc(int reductionIntervalInc) {
+      this.reductionIntervalInc = reductionIntervalInc;
       return this;
     }
 
 
     /**
      * If turned on, the trail will be reused.  The default value is {@code true}.
-     * @param reusetrail {@code true} if the trail should be reused, {@code false} otherwise
+     * @param reuseTrail {@code true} if the trail should be reused, {@code false} otherwise
      * @return the builder
      */
-    public Builder reusetrail(boolean reusetrail) {
-      this.reusetrail = reusetrail;
+    public Builder reuseTrail(boolean reuseTrail) {
+      this.reuseTrail = reuseTrail;
       return this;
     }
 
     /**
      * Sets the inprocessing steps interval.  The default value is 2,000,000.
-     * @param simpint the inprocessing steps interval
+     * @param simpSteps the inprocessing steps interval
      * @return the builder
      */
-    public Builder simpint(int simpint) {
-      this.simpint = simpint;
+    public Builder simpSteps(int simpSteps) {
+      this.simpSteps = simpSteps;
       return this;
     }
 
     /**
      * If turned on, geometric increase in simplification effort will be performed.  The default value is {@code true}.
-     * @param simpgeom {@code true} if geometric increase in simplification effort should be performed, {@code false} otherwise
+     * @param simpGeomIncrease {@code true} if geometric increase in simplification effort should be performed, {@code false} otherwise
      * @return the builder
      */
-    public Builder simpgeom(boolean simpgeom) {
-      this.simpgeom = simpgeom;
+    public Builder simpGeomIncrease(boolean simpGeomIncrease) {
+      this.simpGeomIncrease = simpGeomIncrease;
       return this;
     }
 
     /**
      * Sets the size penalty for the number of clauses.  The default value is 1 &lt;&lt; 17.
-     * @param sizepen the size penalty for the number of clauses
+     * @param sizePenalty the size penalty for the number of clauses
      * @return the builder
      */
-    public Builder sizepen(int sizepen) {
-      this.sizepen = sizepen;
+    public Builder sizePenalty(int sizePenalty) {
+      this.sizePenalty = sizePenalty;
       return this;
     }
 
     /**
      * Sets the maximum logarithmic size penalty.  The default value is 5.
-     * @param sizemaxpen the maximum logarithmic size penalty
+     * @param sizeMaxPenalty the maximum logarithmic size penalty
      * @return the builder
      */
-    public Builder sizemaxpen(int sizemaxpen) {
-      this.sizemaxpen = sizemaxpen;
+    public Builder sizeMaxPenalty(int sizeMaxPenalty) {
+      this.sizeMaxPenalty = sizeMaxPenalty;
       return this;
     }
 
     /**
      * Sets the CDCL search conflict interval.  The default value is 5,000.
-     * @param searchint the CDCL search conflict interval
+     * @param searchInterval the CDCL search conflict interval
      * @return the builder
      */
-    public Builder searchint(int searchint) {
-      this.searchint = searchint;
+    public Builder searchInterval(int searchInterval) {
+      this.searchInterval = searchInterval;
       return this;
     }
 
     /**
      * If turned on, search is first performed instead of simplifying first.  The default value is {@code true}.
-     * @param searchfirst {@code true} if search should be first performed instead of simplifying, {@code false} otherwise
+     * @param searchFirst {@code true} if search should be first performed instead of simplifying, {@code false} otherwise
      * @return the builder
      */
-    public Builder searchfirst(boolean searchfirst) {
-      this.searchfirst = searchfirst;
+    public Builder searchFirst(boolean searchFirst) {
+      this.searchFirst = searchFirst;
       return this;
     }
 
     /**
      * Sets the variable score increment in per mille.  The default value is 1050.
-     * @param scincfact the variable score increment in per mille
+     * @param scoreIncrementFactor the variable score increment in per mille
      * @return the builder
      */
-    public Builder scincfact(int scincfact) {
-      this.scincfact = scincfact;
+    public Builder scoreIncrementFactor(int scoreIncrementFactor) {
+      this.scoreIncrementFactor = scoreIncrementFactor;
       return this;
     }
 
     /**
      * Sets the maximum steps limit (0=none).  The default value is 100,000,000.
-     * @param stepslim maximum steps limit
+     * @param stepsLim maximum steps limit
      * @return the builder
      */
-    public Builder stepslim(int stepslim) {
-      this.stepslim = stepslim;
+    public Builder stepsLim(int stepsLim) {
+      this.stepsLim = stepsLim;
       return this;
     }
 
@@ -457,38 +457,38 @@ public final class CleaneLingConfig extends Configuration {
    */
   private CleaneLingConfig(final Builder builder) {
     super(ConfigurationType.CLEANELING);
-    this.block = builder.block;
-    this.blkwait = builder.blkwait;
-    this.blkrtc = builder.blkrtc;
+    this.block = builder.blockedClauseElimination;
+    this.blkwait = builder.blockedClauseEliminationWait;
+    this.blkrtc = builder.blockedClauseEliminationRTC;
     this.boost = builder.boost;
-    this.bwclslim = builder.bwclslim;
-    this.bwocclim = builder.bwocclim;
-    this.cbump = builder.cbump;
-    this.distill = builder.distill;
-    this.elim = builder.elim;
-    this.elmrtc = builder.elmrtc;
-    this.elmocclim = builder.elmocclim;
-    this.elmpocclim1 = builder.elmpocclim1;
-    this.elmpocclim2 = builder.elmpocclim2;
-    this.elmclslim = builder.elmclslim;
+    this.bwclslim = builder.bwClauseLim;
+    this.bwocclim = builder.bwOccurrenceLim;
+    this.cbump = builder.clauseBumping;
+    this.distill = builder.distillation;
+    this.elim = builder.bvElim;
+    this.elmrtc = builder.bvElimRTC;
+    this.elmocclim = builder.bvElimOccurrenceLim;
+    this.elmpocclim1 = builder.bvElimPivotOccurrenceLimOneSided;
+    this.elmpocclim2 = builder.bvElimPivotOccurrenceLimTwoSided;
+    this.elmclslim = builder.bvElimClauseLim;
     this.gluered = builder.gluered;
-    this.gluekeep = builder.gluekeep;
-    this.glueupdate = builder.glueupdate;
-    this.itsimpdel = builder.itsimpdel;
+    this.gluekeep = builder.glueKeep;
+    this.glueupdate = builder.glueUpdate;
+    this.itsimpdel = builder.iterationSimplificationDelay;
     this.plain = builder.plain;
     this.restart = builder.restart;
-    this.restartint = builder.restartint;
-    this.redinit = builder.redinit;
-    this.redinc = builder.redinc;
-    this.reusetrail = builder.reusetrail;
-    this.simpint = builder.simpint;
-    this.simpgeom = builder.simpgeom;
-    this.sizepen = builder.sizepen;
-    this.sizemaxpen = builder.sizemaxpen;
-    this.searchint = builder.searchint;
-    this.searchfirst = builder.searchfirst;
-    this.scincfact = builder.scincfact;
-    this.stepslim = builder.stepslim;
+    this.restartint = builder.restartInterval;
+    this.redinit = builder.reductionInterval;
+    this.redinc = builder.reductionIntervalInc;
+    this.reusetrail = builder.reuseTrail;
+    this.simpint = builder.simpSteps;
+    this.simpgeom = builder.simpGeomIncrease;
+    this.sizepen = builder.sizePenalty;
+    this.sizemaxpen = builder.sizeMaxPenalty;
+    this.searchint = builder.searchInterval;
+    this.searchfirst = builder.searchFirst;
+    this.scincfact = builder.scoreIncrementFactor;
+    this.stepslim = builder.stepsLim;
   }
 
   /**
@@ -502,38 +502,38 @@ public final class CleaneLingConfig extends Configuration {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("CleaneLingConfig{\n");
-    sb.append("block=").append(this.block).append("\n");
-    sb.append("blkwait=").append(this.blkwait).append("\n");
-    sb.append("blkrtc=").append(this.blkrtc).append("\n");
+    sb.append("blockedClauseElimination=").append(this.block).append("\n");
+    sb.append("blockedClauseEliminationWait=").append(this.blkwait).append("\n");
+    sb.append("blockedClauseEliminationRTC=").append(this.blkrtc).append("\n");
     sb.append("boost=").append(this.boost).append("\n");
-    sb.append("bwclslim=").append(this.bwclslim).append("\n");
-    sb.append("bwocclim=").append(this.bwocclim).append("\n");
-    sb.append("cbump=").append(this.cbump).append("\n");
-    sb.append("distill=").append(this.distill).append("\n");
-    sb.append("elim=").append(this.elim).append("\n");
-    sb.append("elmrtc=").append(this.elmrtc).append("\n");
-    sb.append("elmocclim=").append(this.elmocclim).append("\n");
-    sb.append("elmpocclim1=").append(this.elmpocclim1).append("\n");
-    sb.append("elmpocclim2=").append(this.elmpocclim2).append("\n");
-    sb.append("elmclslim=").append(this.elmclslim).append("\n");
+    sb.append("bwClauseLim=").append(this.bwclslim).append("\n");
+    sb.append("bwOccurrenceLim=").append(this.bwocclim).append("\n");
+    sb.append("clauseBumping=").append(this.cbump).append("\n");
+    sb.append("distillation=").append(this.distill).append("\n");
+    sb.append("bvElim=").append(this.elim).append("\n");
+    sb.append("bvElimRTC=").append(this.elmrtc).append("\n");
+    sb.append("bvElimOccurrenceLim=").append(this.elmocclim).append("\n");
+    sb.append("bvElimPivotOccurrenceLimOneSided=").append(this.elmpocclim1).append("\n");
+    sb.append("bvElimPivotOccurrenceLimTwoSided=").append(this.elmpocclim2).append("\n");
+    sb.append("bvElimClauseLim=").append(this.elmclslim).append("\n");
     sb.append("gluered=").append(this.gluered).append("\n");
-    sb.append("gluekeep=").append(this.gluekeep).append("\n");
-    sb.append("glueupdate=").append(this.glueupdate).append("\n");
-    sb.append("itsimpdel=").append(this.itsimpdel).append("\n");
+    sb.append("glueKeep=").append(this.gluekeep).append("\n");
+    sb.append("glueUpdate=").append(this.glueupdate).append("\n");
+    sb.append("iterationSimplificationDelay=").append(this.itsimpdel).append("\n");
     sb.append("plain=").append(this.plain).append("\n");
     sb.append("restart=").append(this.restart).append("\n");
-    sb.append("restartint=").append(this.restartint).append("\n");
-    sb.append("redinit=").append(this.redinit).append("\n");
-    sb.append("redinc=").append(this.redinc).append("\n");
-    sb.append("reusetrail=").append(this.reusetrail).append("\n");
-    sb.append("simpint=").append(this.simpint).append("\n");
-    sb.append("simpgeom=").append(this.simpgeom).append("\n");
-    sb.append("sizepen=").append(this.sizepen).append("\n");
-    sb.append("sizemaxpen=").append(this.sizemaxpen).append("\n");
-    sb.append("searchint=").append(this.searchint).append("\n");
-    sb.append("searchfirst=").append(this.searchfirst).append("\n");
-    sb.append("scincfact=").append(this.scincfact).append("\n");
-    sb.append("stepslim=").append(this.stepslim).append("\n");
+    sb.append("restartInterval=").append(this.restartint).append("\n");
+    sb.append("reductionInterval=").append(this.redinit).append("\n");
+    sb.append("reductionIntervalInc=").append(this.redinc).append("\n");
+    sb.append("reuseTrail=").append(this.reusetrail).append("\n");
+    sb.append("simpSteps=").append(this.simpint).append("\n");
+    sb.append("simpGeomIncrease=").append(this.simpgeom).append("\n");
+    sb.append("sizePenalty=").append(this.sizepen).append("\n");
+    sb.append("sizeMaxPenalty=").append(this.sizemaxpen).append("\n");
+    sb.append("searchInterval=").append(this.searchint).append("\n");
+    sb.append("searchFirst=").append(this.searchfirst).append("\n");
+    sb.append("scoreIncrementFactor=").append(this.scincfact).append("\n");
+    sb.append("stepsLim=").append(this.stepslim).append("\n");
     sb.append("}\n");
     return sb.toString();
   }
