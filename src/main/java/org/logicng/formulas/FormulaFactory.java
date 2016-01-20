@@ -75,6 +75,8 @@ public final class FormulaFactory {
   public static final String PB_PREFIX = "@RESERVED_PB_";
   public static final String CNF_PREFIX = "@RESERVED_CNF_";
 
+  private final String name;
+
   private final CFalse cFalse;
   private final CTrue cTrue;
   private Map<String, Variable> posLiterals;
@@ -99,6 +101,9 @@ public final class FormulaFactory {
   private boolean cnfCheck;
   private boolean[] formulaAdditionResult;
 
+  private final String ccPrefix;
+  private final String pbPrefix;
+  private final String cnfPrefix;
   private int ccCounter;
   private int pbCounter;
   private int cnfCounter;
@@ -110,9 +115,11 @@ public final class FormulaFactory {
 
   /**
    * Constructor for a new formula factory.
+   * @param name                 the name of the factory
    * @param stringRepresentation the string representation of the formulas
    */
-  public FormulaFactory(final FormulaStringRepresentation stringRepresentation) {
+  public FormulaFactory(final String name, final FormulaStringRepresentation stringRepresentation) {
+    this.name = name;
     this.cFalse = new CFalse(this);
     this.cTrue = new CTrue(this);
     this.clear();
@@ -121,14 +128,34 @@ public final class FormulaFactory {
     this.configurations = new EnumMap<>(ConfigurationType.class);
     this.defaultCNFTransformation = new CNFFactorization();
     this.subformulaFunction = new SubNodeFunction();
+    if (!name.isEmpty()) {
+      this.ccPrefix = CC_PREFIX + name + "_";
+      this.pbPrefix = PB_PREFIX + name + "_";
+      this.cnfPrefix = CNF_PREFIX + name + "_";
+    } else {
+      this.ccPrefix = CC_PREFIX;
+      this.pbPrefix = PB_PREFIX;
+      this.cnfPrefix = CNF_PREFIX;
+    }
     this.parser = new PseudoBooleanParser(this);
   }
 
   /**
-   * Constructor for a new formula factory.
+   * Constructor for a new formula factory with a given name. This name is included in generated variables.
+   * If you intent to mix formulas from different factories, you have to choose different names for the factories
+   * to avoid name clashing of generated variables.
+   * @param name the name of the factory
+   */
+  public FormulaFactory(final String name) {
+    this(name, new DefaultStringRepresentation());
+  }
+
+  /**
+   * Constructor for a new formula factory with a default empty name.
+   * You should not mix formulas from formula factories without a name, since the names of generated variables will clash.
    */
   public FormulaFactory() {
-    this(new DefaultStringRepresentation());
+    this("", new DefaultStringRepresentation());
   }
 
   /**
@@ -153,6 +180,14 @@ public final class FormulaFactory {
     this.ccCounter = 0;
     this.pbCounter = 0;
     this.cnfCounter = 0;
+  }
+
+  /**
+   * Returns the name of this formula factory.
+   * @return the name of this formula factory
+   */
+  public String name() {
+    return this.name;
   }
 
   /**
@@ -772,7 +807,7 @@ public final class FormulaFactory {
    * @return the new cardinality constraint auxiliary literal
    */
   public Variable newCCVariable() {
-    final Variable var = this.variable(CC_PREFIX + this.ccCounter++);
+    final Variable var = this.variable(this.ccPrefix + this.ccCounter++);
     this.generatedVariables.add(var);
     return var;
   }
@@ -784,7 +819,7 @@ public final class FormulaFactory {
    * @return the new pseudo Boolean auxiliary literal
    */
   public Variable newPBVariable() {
-    final Variable var = this.variable(PB_PREFIX + this.pbCounter++);
+    final Variable var = this.variable(this.pbPrefix + this.pbCounter++);
     this.generatedVariables.add(var);
     return var;
   }
@@ -796,7 +831,7 @@ public final class FormulaFactory {
    * @return the new CNF auxiliary literal
    */
   public Variable newCNFVariable() {
-    final Variable var = this.variable(CNF_PREFIX + this.cnfCounter++);
+    final Variable var = this.variable(this.cnfPrefix + this.cnfCounter++);
     this.generatedVariables.add(var);
     return var;
   }
@@ -943,6 +978,7 @@ public final class FormulaFactory {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
+    sb.append("Name:              ").append(this.name).append("\n");
     sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
     sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
     sb.append("Negations:         ").append(this.nots.size()).append("\n");

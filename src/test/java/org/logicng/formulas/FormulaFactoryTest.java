@@ -46,12 +46,13 @@ public class FormulaFactoryTest {
 
   @Test
   public void testToString() {
-    final FormulaFactory f = new FormulaFactory();
+    final FormulaFactory f = new FormulaFactory("MyFormulaFactory");
     f.variable("a");
     f.literal("b", false);
     f.and(f.variable("a"), f.literal("b", false));
     f.or(f.variable("a"), f.literal("b", false), f.variable("x"), f.implication(f.variable("a"), f.variable("x")));
-    final String expected = "Positive Literals: 3\n" +
+    final String expected = "Name:              MyFormulaFactory\n" +
+            "Positive Literals: 3\n" +
             "Negative Literals: 3\n" +
             "Negations:         1\n" +
             "Implications:      1\n" +
@@ -65,6 +66,12 @@ public class FormulaFactoryTest {
             "Disjunctions (4):  1\n" +
             "Disjunctions (>4): 0\n";
     Assert.assertEquals(expected, f.toString());
+  }
+
+  @Test
+  public void testDefaultName() {
+    final FormulaFactory f = new FormulaFactory();
+    Assert.assertEquals("", f.name());
   }
 
   @Test
@@ -83,18 +90,31 @@ public class FormulaFactoryTest {
   }
 
   @Test
-  public void testGeneratedLiterals() {
-    final FormulaFactory f = new FormulaFactory();
-    final Variable ccVar = f.newCCVariable();
-    final Variable cnfVar = f.newCNFVariable();
-    final Variable pbVar = f.newPBVariable();
-    final Variable var = f.variable("x");
+  public void testGeneratedVariables() {
+    FormulaFactory f = new FormulaFactory();
+    Variable ccVar = f.newCCVariable();
+    Variable cnfVar = f.newCNFVariable();
+    Variable pbVar = f.newPBVariable();
+    Variable var = f.variable("x");
     Assert.assertTrue(f.isGeneratedVariable(ccVar));
     Assert.assertTrue(f.isGeneratedVariable(cnfVar));
     Assert.assertTrue(f.isGeneratedVariable(pbVar));
     Assert.assertFalse(f.isGeneratedVariable(var));
+    Assert.assertEquals("@RESERVED_CC_0", ccVar.name());
+    Assert.assertEquals("@RESERVED_PB_0", pbVar.name());
+    Assert.assertEquals("@RESERVED_CNF_0", cnfVar.name());
 
-
+    f = new FormulaFactory("f");
+    ccVar = f.newCCVariable();
+    cnfVar = f.newCNFVariable();
+    pbVar = f.newPBVariable();
+    var = f.variable("x");
+    Assert.assertTrue(f.isGeneratedVariable(ccVar));
+    Assert.assertTrue(f.isGeneratedVariable(cnfVar));
+    Assert.assertTrue(f.isGeneratedVariable(pbVar));
+    Assert.assertFalse(f.isGeneratedVariable(var));
+    Assert.assertEquals("@RESERVED_CC_f_0", ccVar.name());
+    Assert.assertEquals("@RESERVED_PB_f_0", pbVar.name());
+    Assert.assertEquals("@RESERVED_CNF_f_0", cnfVar.name());
   }
-
 }
