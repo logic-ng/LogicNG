@@ -149,6 +149,19 @@ public class PseudoBooleanParserTest {
   }
 
   @Test
+  public void testSkipSymbols() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(" "));
+    Assert.assertEquals(F.f.verum(), parser.parse("\t"));
+    Assert.assertEquals(F.f.verum(), parser.parse("\n"));
+    Assert.assertEquals(F.f.verum(), parser.parse("\r"));
+    Assert.assertEquals(F.f.verum(), parser.parse(" \r\n\n  \t"));
+    Assert.assertEquals(F.AND1, parser.parse("a\n&\tb"));
+    Assert.assertEquals(F.IMP1, parser.parse(" a\r=>\t\tb"));
+    Assert.assertEquals(F.PBC1, parser.parse(" 2\n*a\r+\n\n-4*\tb    +3*x=2"));
+  }
+
+  @Test
   public void testFormulaFactoryParser() throws ParserException {
     Assert.assertEquals(F.f.and(F.f.variable("a"), F.f.variable("b")), F.f.parse("a & b"));
     Assert.assertEquals(F.PBC1, F.f.parse("2*a + -4*b + 3*x = 2"));
@@ -237,6 +250,11 @@ public class PseudoBooleanParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula7() throws ParserException {
     new PseudoBooleanParser(F.f).parse("abc@");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalSkipPosition() throws ParserException {
+    new PseudoBooleanParser(F.f).parse("- 1*x <= 3");
   }
 
   @Test(expected = ParserException.class)

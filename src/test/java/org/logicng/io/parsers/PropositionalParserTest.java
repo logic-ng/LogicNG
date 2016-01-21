@@ -117,6 +117,18 @@ public class PropositionalParserTest {
     Assert.assertEquals(F.f.verum(), parser.parse(""));
   }
 
+  @Test
+  public void testSkipSymbols() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(" "));
+    Assert.assertEquals(F.f.verum(), parser.parse("\t"));
+    Assert.assertEquals(F.f.verum(), parser.parse("\n"));
+    Assert.assertEquals(F.f.verum(), parser.parse("\r"));
+    Assert.assertEquals(F.f.verum(), parser.parse(" \r\n\n  \t"));
+    Assert.assertEquals(F.AND1, parser.parse("a\n&\tb"));
+    Assert.assertEquals(F.IMP1, parser.parse(" a\r=>\t\tb"));
+  }
+
   @Test(expected = ParserException.class)
   public void testIllegalVariable1() throws ParserException {
     new PropositionalParser(F.f).parse("$$%");

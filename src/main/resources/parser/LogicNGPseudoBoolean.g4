@@ -50,33 +50,29 @@ import org.logicng.formulas.FormulaFactory;
 }
 
 formula returns [Formula f]
-  : equiv EOF {$f = $equiv.f;}
-  ;
+  : EOF {$f = f.verum();}
+  | equiv EOF {$f = $equiv.f;};
 
 constant returns [Formula f]
   : TRUE  {$f = f.verum();}
-  | FALSE {$f = f.falsum();}
-  ;
+  | FALSE {$f = f.falsum();};
 
 comparison returns [Formula f]
   : e = add EQ n = NUMBER  {$f = f.pbc(CType.EQ, Integer.parseInt($n.text), $e.literals, $e.coeffs);}
   | e = add LE n = NUMBER  {$f = f.pbc(CType.LE, Integer.parseInt($n.text), $e.literals, $e.coeffs);}
   | e = add LT n = NUMBER  {$f = f.pbc(CType.LT, Integer.parseInt($n.text), $e.literals, $e.coeffs);}
   | e = add GE n = NUMBER  {$f = f.pbc(CType.GE, Integer.parseInt($n.text), $e.literals, $e.coeffs);}
-  | e = add GT n = NUMBER  {$f = f.pbc(CType.GT, Integer.parseInt($n.text), $e.literals, $e.coeffs);}
-  ;
+  | e = add GT n = NUMBER  {$f = f.pbc(CType.GT, Integer.parseInt($n.text), $e.literals, $e.coeffs);};
 
 simp returns [Formula f]
   :	VARIABLE      {$f = f.literal($VARIABLE.text, true);}
   |	constant      {$f = $constant.f;}
   | comparison    {$f = $comparison.f;}
-  | LBR equiv RBR {$f = $equiv.f;}
-  ;
+  | LBR equiv RBR {$f = $equiv.f;};
 
 lit returns [Formula f]
   :	NOT a = lit {$f = f.not($a.f);}
-  |	simp        {$f = $simp.f;}
-  ;
+  |	simp        {$f = $simp.f;};
 
 conj returns [Formula f]
 @init{LinkedHashSet<Formula> literals = new LinkedHashSet<>(); }
@@ -96,8 +92,7 @@ equiv returns [Formula f]
 
 mul returns [Literal l, int c]
   : NUMBER MUL VARIABLE {$l = f.literal($VARIABLE.text, true); $c = Integer.parseInt($NUMBER.text);}
-  | NUMBER MUL NOT VARIABLE {$l = f.literal($VARIABLE.text, false); $c = Integer.parseInt($NUMBER.text);}
-  ;
+  | NUMBER MUL NOT VARIABLE {$l = f.literal($VARIABLE.text, false); $c = Integer.parseInt($NUMBER.text);};
 
 add returns [List<Literal> literals, List<Integer> coeffs]
 @init{$literals = new ArrayList<>(); $coeffs = new ArrayList<>();}
@@ -115,11 +110,11 @@ AND      : '&';
 OR       : '|';
 IMPL     : '=>';
 EQUIV    : '<=>';
-MUL      : '*' ;
-ADD      : [\+\-] ;
-EQ       : '=' ;
-LE       : '<=' ;
-LT       : '<' ;
-GE       : '>=' ;
-GT       : '>' ;
-WS       : [ \t\r\n]+ -> skip ;
+MUL      : '*';
+ADD      : [\+\-];
+EQ       : '=';
+LE       : '<=';
+LT       : '<';
+GE       : '>=';
+GT       : '>';
+WS       : [ \t\r\n]+ -> skip;

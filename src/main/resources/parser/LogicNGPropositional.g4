@@ -50,13 +50,12 @@ import org.logicng.formulas.FormulaFactory;
 }
 
 formula returns [Formula f]
-  : equiv EOF {$f = $equiv.f;}
-  ;
+  : EOF {$f = f.verum();}
+  | equiv EOF {$f = $equiv.f;};
 
 constant returns [Formula f]
   : TRUE  {$f = f.verum();}
-  | FALSE {$f = f.falsum();}
-  ;
+  | FALSE {$f = f.falsum();};
 
 simp returns [Formula f]
   :	VARIABLE      {$f = f.literal($VARIABLE.text, true);}
@@ -93,5 +92,5 @@ AND      : '&';
 OR       : '|';
 IMPL     : '=>';
 EQUIV    : '<=>';
-WS       : [ \t\r\n]+ -> skip ;
+WS       : [ \t\r\n]+ -> skip;
 

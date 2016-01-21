@@ -113,7 +113,7 @@ public final class PropositionalParser {
    * @throws ParserException if the string was not a valid formula
    */
   public Formula parse(final String in) throws ParserException {
-    if (in == null || in.isEmpty())
+    if (in == null)
       return f.verum();
     return this.parse(new ByteArrayInputStream(in.getBytes()));
   }

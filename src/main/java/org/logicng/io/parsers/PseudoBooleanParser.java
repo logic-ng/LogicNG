@@ -54,7 +54,7 @@ import java.io.InputStream;
  * <li>{@code *} for the multiplication of a literal and its coefficient</li>
  * <li>{@code +} for the summation</li>
  * <li>{@code =} for equals</li>
- * <li>{@code <=} for less=equals</li>
+ * <li>{@code <=} for less-equals</li>
  * <li>{@code <} for less than</li>
  * <li>{@code >=} for greater-equals</li>
  * <li>{@code >} for greater than</li>
@@ -92,7 +92,6 @@ public final class PseudoBooleanParser {
     this.lexer.removeErrorListeners();
     this.parser.removeErrorListeners();
     this.parser.setErrorHandler(new BailErrorStrategy());
-    //    this.parser.setErrorHandler(new DefaultErrorStrategy());
   }
 
   /**
@@ -124,7 +123,7 @@ public final class PseudoBooleanParser {
    * @throws ParserException if the string was not a valid formula
    */
   public Formula parse(final String in) throws ParserException {
-    if (in == null || in.isEmpty())
+    if (in == null)
       return f.verum();
     return this.parse(new ByteArrayInputStream(in.getBytes()));
   }
