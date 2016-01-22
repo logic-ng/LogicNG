@@ -163,6 +163,11 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
+  public Tristate sat(final SATHandler handler, final Collection<? extends Literal> assumptions) {
+    throw new UnsupportedOperationException("CleaneLing does not support solving with assumptions.");
+  }
+
+  @Override
   public void reset() {
     this.solver.reset();
     this.result = UNDEF;

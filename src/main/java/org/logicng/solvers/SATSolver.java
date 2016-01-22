@@ -157,6 +157,18 @@ public abstract class SATSolver {
   }
 
   /**
+   * Returns {@code Tristate.TRUE} if the current formula in the solver and a given collection of assumed literals
+   * are satisfiable, {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+   * The assumptions can be seen as an additional conjunction of literals.
+   * Note: Use ordered collections to ensure determinism in the solving process and thus in the resulting model or conflict.
+   * @param assumptions a collection of literals
+   * @return the satisfiability of the formula in the solver
+   */
+  public Tristate sat(final Collection<Literal> assumptions) {
+    return this.sat(null, assumptions);
+  }
+
+  /**
    * Returns {@code Tristate.TRUE} if the current formula in the solver and a given literal are satisfiable,
    * {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
    * @param handler the SAT handler
@@ -164,6 +176,17 @@ public abstract class SATSolver {
    * @return the satisfiability of the formula in the solver
    */
   public abstract Tristate sat(final SATHandler handler, final Literal literal);
+
+  /**
+   * Returns {@code Tristate.TRUE} if the current formula in the solver and a given collection of assumed literals
+   * are satisfiable, {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+   * The assumptions can be seen as an additional conjunction of literals.
+   * Note: Use ordered collections to ensure determinism in the solving process and thus in the resulting model or conflict.
+   * @param handler     the SAT handler
+   * @param assumptions a collection of literals
+   * @return the satisfiability of the formula in the solver
+   */
+  public abstract Tristate sat(final SATHandler handler, final Collection<? extends Literal> assumptions);
 
   /**
    * Resets the SAT solver.

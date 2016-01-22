@@ -50,8 +50,10 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
@@ -222,6 +224,23 @@ public final class MiniSat extends SATSolver {
     }
     int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
     clauseVec.push(litNum);
+    this.result = this.solver.solve(handler, clauseVec);
+    return this.result;
+  }
+
+  @Override
+  public Tristate sat(final SATHandler handler, final Collection<? extends Literal> assumptions) {
+    final Set<Literal> assumptionSet = new LinkedHashSet<>(assumptions);
+    final LNGIntVector clauseVec = new LNGIntVector(assumptionSet.size());
+    for (final Literal literal : assumptionSet) {
+      int index = this.solver.idxForName(literal.name());
+      if (index == -1) {
+        index = this.solver.newVar(true, true);
+        this.solver.addName(literal.name(), index);
+      }
+      int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
+      clauseVec.push(litNum);
+    }
     this.result = this.solver.solve(handler, clauseVec);
     return this.result;
   }

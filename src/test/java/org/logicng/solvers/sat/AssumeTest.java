@@ -31,10 +31,14 @@ package org.logicng.solvers.sat;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
@@ -67,6 +71,12 @@ public class AssumeTest {
 
   @Test
   public void testAssume() throws ParserException {
+    final List<Literal> assumptions1 = Arrays.asList(f.literal("c", true), f.literal("d", true));
+    final List<Literal> assumptions2 = Arrays.asList(f.literal("x", false), f.literal("y", true), f.literal("d", true));
+    final List<Literal> assumptions3 = Arrays.asList(f.literal("a", false), f.literal("c", true), f.literal("a", false));
+    final List<Literal> assumptions4 = Arrays.asList(f.literal("c", false), f.literal("d", true));
+    final List<Literal> assumptions5 = Arrays.asList(f.literal("x", true), f.literal("x", false));
+    final List<Literal> assumptions6 = Arrays.asList(f.literal("a", true), f.literal("a", false));
     for (final SATSolver s : this.solvers) {
       s.add(parser.parse("~a"));
       s.add(parser.parse("b"));
@@ -86,6 +96,12 @@ public class AssumeTest {
       Assert.assertEquals(FALSE, s.sat(f.literal("d", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("e", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("f", false)));
+      Assert.assertEquals(TRUE, s.sat(assumptions1));
+      Assert.assertEquals(TRUE, s.sat(assumptions2));
+      Assert.assertEquals(TRUE, s.sat(assumptions3));
+      Assert.assertEquals(FALSE, s.sat(assumptions4));
+      Assert.assertEquals(FALSE, s.sat(assumptions5));
+      Assert.assertEquals(FALSE, s.sat(assumptions6));
       s.reset();
     }
   }
