@@ -169,13 +169,11 @@ public final class MiniCard extends MiniSatStyleSolver {
     for (i = j = 0, p = LIT_UNDEF; i < ps.size(); i++) {
       if (value(ps.get(i)) == Tristate.TRUE)
         k--;
-      else if (value(ps.get(i)) == Tristate.FALSE || ps.get(i) == p)
-        continue;
       else if (ps.get(i) == not(p)) {
         p = ps.get(i);
         j--;
         k--;
-      } else {
+      } else if (value(ps.get(i)) != Tristate.FALSE && ps.get(i) != p) {
         p = ps.get(i);
         ps.set(j++, p);
       }
