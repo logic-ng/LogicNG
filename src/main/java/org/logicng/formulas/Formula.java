@@ -120,8 +120,8 @@ public abstract class Formula implements Iterable<Formula> {
   public abstract boolean isAtomicFormula();
 
   /**
-   * Returns all variables occurring in this formula as positive literals.
-   * @return all variables occurring in this formula as positive literals
+   * Returns all variables occurring in this formula.
+   * @return all variables occurring in this formula
    */
   public abstract SortedSet<Variable> variables();
 

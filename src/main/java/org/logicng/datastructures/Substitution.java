@@ -65,11 +65,8 @@ public class Substitution {
    * If there is already a mapping for this variable, it will be overwritten.
    * @param variable the variable
    * @param formula  the formula
-   * @throws IllegalArgumentException if a variable with a negative phase is added
    */
   public void addMapping(final Variable variable, final Formula formula) {
-    if (!variable.phase())
-      throw new IllegalArgumentException("A substitution can only contain mappings from positive literals: " + variable);
     subst.put(variable, formula);
   }
 

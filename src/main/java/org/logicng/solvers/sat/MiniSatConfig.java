@@ -142,7 +142,7 @@ public final class MiniSatConfig extends Configuration {
 
     /**
      * If turned on, the satisfied original clauses will be removed when simplifying on level 0, when turned off,
-     * only the satisfied learnt clauses will be removed.
+     * only the satisfied learnt clauses will be removed.  The default value is {@code true}.
      * @param removeSatisfied {@code true} if the original clauses should be simplified, {@code false} otherwise
      * @return the builder
      */

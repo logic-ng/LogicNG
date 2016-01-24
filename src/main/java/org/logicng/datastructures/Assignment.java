@@ -186,7 +186,7 @@ public class Assignment {
   }
 
   /**
-   * Returns the negative literals of this assignment as positive literals.
+   * Returns the negative literals of this assignment as variables.
    * @return the negative literals of this assignment
    */
   public List<Variable> negativeVariables() {
