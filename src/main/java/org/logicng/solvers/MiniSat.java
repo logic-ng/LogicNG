@@ -231,7 +231,7 @@ public final class MiniSat extends SATSolver {
   @Override
   public Tristate sat(final SATHandler handler, final Collection<? extends Literal> assumptions) {
     final Set<Literal> assumptionSet = new LinkedHashSet<>(assumptions);
-    final LNGIntVector clauseVec = new LNGIntVector(assumptionSet.size());
+    final LNGIntVector assumptionVec = new LNGIntVector(assumptionSet.size());
     for (final Literal literal : assumptionSet) {
       int index = this.solver.idxForName(literal.name());
       if (index == -1) {
@@ -239,9 +239,9 @@ public final class MiniSat extends SATSolver {
         this.solver.addName(literal.name(), index);
       }
       int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
-      clauseVec.push(litNum);
+      assumptionVec.push(litNum);
     }
-    this.result = this.solver.solve(handler, clauseVec);
+    this.result = this.solver.solve(handler, assumptionVec);
     return this.result;
   }
 
@@ -266,6 +266,7 @@ public final class MiniSat extends SATSolver {
       stateBeforeEnumeration = this.saveState();
     while (this.sat((SATHandler) null) == TRUE) {
       final Assignment model = this.model(variables);
+      assert model != null;
       models.add(model);
       this.add(model.blockingClause(this.f, variables));
     }
@@ -283,6 +284,7 @@ public final class MiniSat extends SATSolver {
     boolean proceed = true;
     while (proceed && this.sat((SATHandler) null) == TRUE) {
       final Assignment model = this.model(literals);
+      assert model != null;
       models.add(model);
       proceed = handler.foundModel(model);
       this.add(model.blockingClause(this.f, literals));
