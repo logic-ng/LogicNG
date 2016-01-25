@@ -28,11 +28,10 @@
 
 package org.logicng.formulas.printer;
 
+import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.CType;
-import org.logicng.formulas.Equivalence;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.Implication;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.NAryOperator;
 import org.logicng.formulas.Not;
@@ -54,29 +53,28 @@ public abstract class FormulaStringRepresentation {
   public String toString(final Formula formula) {
     switch (formula.type()) {
       case FALSE:
-        return falsum();
+        return this.falsum();
       case TRUE:
-        return verum();
+        return this.verum();
       case LITERAL:
         final Literal lit = (Literal) formula;
-        return lit.phase() ? lit.name() : negation() + lit.name();
+        return lit.phase() ? lit.name() : this.negation() + lit.name();
       case NOT:
         final Not not = (Not) formula;
-        return negation() + bracket(not.operand());
+        return this.negation() + this.bracket(not.operand());
       case IMPL:
-        final Implication impl = (Implication) formula;
-        return binaryOperator(FType.IMPL, impl.left(), impl.right(), implication());
       case EQUIV:
-        final Equivalence equiv = (Equivalence) formula;
-        return binaryOperator(FType.EQUIV, equiv.left(), equiv.right(), equivalence());
+        final BinaryOperator binary = (BinaryOperator) formula;
+        String op = formula.type() == FType.IMPL ? this.implication() : this.equivalence();
+        return this.binaryOperator(binary, op);
       case AND:
       case OR:
         final NAryOperator nary = (NAryOperator) formula;
-        final String op = formula.type() == FType.AND ? and() : or();
-        return concatOperands(nary, String.format(" %s ", op));
+        op = formula.type() == FType.AND ? this.and() : this.or();
+        return this.naryOperator(nary, String.format(" %s ", op));
       case PBC:
         final PBConstraint pbc = (PBConstraint) formula;
-        return String.format("%s %s %d", pbLhs(pbc.operands(), pbc.coefficients()), pbComparator(pbc.comparator()), pbc.rhs());
+        return String.format("%s %s %d", this.pbLhs(pbc.operands(), pbc.coefficients()), this.pbComparator(pbc.comparator()), pbc.rhs());
       default:
         throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
     }
@@ -87,32 +85,32 @@ public abstract class FormulaStringRepresentation {
    * @param formula the formula
    * @return {@code "(" + formula.toString() + ")"}
    */
-  private String bracket(final Formula formula) {
-    return String.format("%s%s%s", lbr(), toString(formula), rbr());
+  protected String bracket(final Formula formula) {
+    return String.format("%s%s%s", this.lbr(), this.toString(formula), this.rbr());
   }
 
   /**
    * Returns the string representation of a binary operator.
-   * @param type     the type of the binary operator
-   * @param left     the left-hand formula
-   * @param right    the right-hand formula
-   * @param operator the operator string
+   * @param operator the binary operator
+   * @param opString the operator string
    * @return the string representation
    */
-  private String binaryOperator(final FType type, final Formula left, final Formula right, final String operator) {
-    String leftString = type.precedence() < left.type().precedence() ? toString(left) : bracket(left);
-    String rightString = type.precedence() < right.type().precedence() ? toString(right) : bracket(right);
-    return String.format("%s %s %s", leftString, operator, rightString);
+  protected String binaryOperator(final BinaryOperator operator, final String opString) {
+    final String leftString = operator.type().precedence() < operator.left().type().precedence()
+            ? this.toString(operator.left()) : this.bracket(operator.left());
+    final String rightString = operator.type().precedence() < operator.right().type().precedence()
+            ? this.toString(operator.right()) : this.bracket(operator.right());
+    return String.format("%s %s %s", leftString, opString, rightString);
   }
 
   /**
-   * Concatenates the operands of this n-ary operator with a given separator to a string.
+   * Returns the string representation of an n-ary operator.
    * @param operator the n-ary operator
-   * @param sep      the separator
-   * @return the concatenated operands
+   * @param opString the operator string
+   * @return the string representation
    */
-  private String concatOperands(final NAryOperator operator, final String sep) {
-    StringBuilder sb = new StringBuilder();
+  protected String naryOperator(final NAryOperator operator, final String opString) {
+    final StringBuilder sb = new StringBuilder();
     int count = 0;
     int size = operator.numberOfOperands();
     Formula last = null;
@@ -120,12 +118,12 @@ public abstract class FormulaStringRepresentation {
       if (++count == size)
         last = op;
       else {
-        sb.append(operator.type().precedence() < op.type().precedence() ? toString(op) : bracket(op));
-        sb.append(sep);
+        sb.append(operator.type().precedence() < op.type().precedence() ? this.toString(op) : this.bracket(op));
+        sb.append(opString);
       }
     }
     if (last != null)
-      sb.append(operator.type().precedence() < last.type().precedence() ? toString(last) : bracket(last));
+      sb.append(operator.type().precedence() < last.type().precedence() ? this.toString(last) : this.bracket(last));
     return sb.toString();
   }
 
@@ -135,11 +133,11 @@ public abstract class FormulaStringRepresentation {
    * @param coefficients the coefficients of the constraint
    * @return the string representation
    */
-  private String pbLhs(final Literal[] operands, final int[] coefficients) {
+  protected String pbLhs(final Literal[] operands, final int[] coefficients) {
     assert operands.length == coefficients.length;
-    StringBuilder sb = new StringBuilder();
-    final String mul = pbMul();
-    final String add = pbAdd();
+    final StringBuilder sb = new StringBuilder();
+    final String mul = this.pbMul();
+    final String add = this.pbAdd();
     for (int i = 0; i < operands.length - 1; i++)
       if (coefficients[i] != 1)
         sb.append(coefficients[i]).append(mul).append(operands[i]).append(" ").append(add).append(" ");
