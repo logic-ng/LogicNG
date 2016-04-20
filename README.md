@@ -41,5 +41,5 @@ final Tristate result = miniSat.sat();
 ```
 
 ## License & Commercial Support
-The library is released under the Apache License and therefore is free to use in any private, educational, or commercial project.  Commercial support will be available soon.
+The library is released under the Apache License and therefore is free to use in any private, educational, or commercial project.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
 
