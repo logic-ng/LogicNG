@@ -26,17 +26,60 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.explanations.unsatcores;
+
+import org.logicng.explanations.unsatcores.algorithms.DeletionBasedMUS;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.propositions.Proposition;
+
+import java.util.List;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.0
- * @since 1.0
+ * Computes a minimal unsatisfiable subset (MUS) of a given formula with different algorithms.
+ * @version 1.1
+ * @since 1.1
  */
-public enum ConfigurationType {
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS
+public final class MUSGeneration {
+
+  private final DeletionBasedMUS deletion;
+
+  /**
+   * Constructs a new MUS generator.
+   */
+  public MUSGeneration() {
+    this.deletion = new DeletionBasedMUS();
+  }
+
+  /**
+   * Computes a MUS for the given propositions with the default algorithm and the default configuration.
+   * @param propositions the propositions
+   * @param f            the formula factory
+   * @return the MUS
+   */
+  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f) {
+    return this.computeMUS(propositions, f, new MUSConfig.Builder().build());
+  }
+
+  /**
+   * Computes a MUS for the given propositions and the given configuration of the MUS generation.
+   * @param propositions the propositions
+   * @param f            the formula factory
+   * @param config       the MUS configuration
+   * @return the MUS
+   */
+  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f, final MUSConfig config) {
+    if (propositions.isEmpty())
+      throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
+    switch (config.algorithm) {
+      case DELETION:
+      default:
+        return deletion.computeMUS(propositions, f, config);
+    }
+  }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
+  }
+
 }

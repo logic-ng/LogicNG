@@ -26,17 +26,28 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.explanations.unsatcores.algorithms;
+
+import org.logicng.explanations.unsatcores.MUSConfig;
+import org.logicng.explanations.unsatcores.UNSATCore;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.propositions.Proposition;
+
+import java.util.List;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.0
- * @since 1.0
+ * Abstract super class for MUS computation algorithms.
+ * @version 1.1
+ * @since 1.1
  */
-public enum ConfigurationType {
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS
+abstract class MUSAlgorithm {
+
+  /**
+   * Computes a MUS for the given propositions.
+   * @param propositions the propositions
+   * @param f            the formula factory
+   * @param config       the MUS configuration
+   * @return the MUS
+   */
+  public abstract UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f, final MUSConfig config);
 }

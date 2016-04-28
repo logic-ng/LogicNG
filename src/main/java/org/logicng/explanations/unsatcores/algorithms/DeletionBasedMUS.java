@@ -26,17 +26,44 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.explanations.unsatcores.algorithms;
+
+import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.MUSConfig;
+import org.logicng.explanations.unsatcores.UNSATCore;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.propositions.Proposition;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SolverState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.0
- * @since 1.0
+ * A naive deletion-based MUS algorithm.
+ * @version 1.1
+ * @since 1.1
  */
-public enum ConfigurationType {
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS
+public final class DeletionBasedMUS extends MUSAlgorithm {
+
+  @Override
+  public UNSATCore computeMUS(List<Proposition> propositions, final FormulaFactory f, final MUSConfig config) {
+    final List<Proposition> mus = new ArrayList<>(propositions.size());
+    final List<SolverState> solverStates = new ArrayList<>(propositions.size());
+    final MiniSat solver = MiniSat.miniSat(f);
+    for (final Proposition proposition : propositions) {
+      solverStates.add(solver.saveState());
+      solver.add(proposition);
+    }
+    if (solver.sat() != Tristate.FALSE)
+      throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
+    for (int i = solverStates.size() - 1; i >= 0; i--) {
+      solver.loadState(solverStates.get(i));
+      for (final Proposition prop : mus)
+        solver.add(prop);
+      if (solver.sat() == Tristate.TRUE)
+        mus.add(propositions.get(i));
+    }
+    return new UNSATCore(mus, true);
+  }
 }
