@@ -53,7 +53,7 @@
       <plugin>
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-maven-plugin</artifactId>
-        <version>4.5.1-1</version>
+        <version>4.5.3</version>
         <configuration>
           <sourceDirectory>src/main/resources/parser</sourceDirectory>
           <outputDirectory>target/generated-sources/antlr/org/logicng/io/parsers</outputDirectory>
@@ -134,7 +134,7 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
-      <version>4.5.1-1</version>
+      <version>4.5.3</version>
     </dependency>
 
     <!-- Testing -->
