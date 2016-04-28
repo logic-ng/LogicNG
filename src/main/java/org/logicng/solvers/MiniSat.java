@@ -61,7 +61,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
  * @author Christoph Zengler
- * @version 1.0
+ * @version 1.0.1
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
