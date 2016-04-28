@@ -45,7 +45,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
  * - does not contain duplicates
  * - does not contain complementary literals
  * - does not contain constants
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

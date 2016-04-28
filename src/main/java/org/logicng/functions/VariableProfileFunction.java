@@ -48,7 +48,6 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.VARPROFILE;
  * For this function, the non-caching version is preferred since it usually performs better.  The non-caching version
  * of this function generates the result mapping only once and fills it recursively whereas the caching version has to
  * construct a new mapping for each sub-formula.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

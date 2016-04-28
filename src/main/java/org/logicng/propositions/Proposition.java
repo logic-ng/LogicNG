@@ -33,7 +33,6 @@ import org.logicng.collections.ImmutableFormulaList;
 /**
  * An interface for a proposition in LogicNG.  A proposition is a collection of formulas with a additional information
  * like a textual description or a user-provided object.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

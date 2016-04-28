@@ -32,7 +32,6 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * Interface for a handler for MaxSAT solvers.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

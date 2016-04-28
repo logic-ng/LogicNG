@@ -42,7 +42,6 @@ import org.logicng.predicates.DNFPredicate;
 
 /**
  * Unit Tests for CNF conversion.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

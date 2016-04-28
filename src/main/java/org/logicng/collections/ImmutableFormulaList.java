@@ -51,7 +51,6 @@ import java.util.TreeSet;
 
 /**
  * A list of formulas.  This can represent the operands of an n-ary operator, a CNF, a DNF, a constraint, etc.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

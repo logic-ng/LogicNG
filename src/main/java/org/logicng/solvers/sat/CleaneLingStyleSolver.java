@@ -64,7 +64,6 @@ import org.logicng.solvers.datastructures.CLWatch;
 
 /**
  * The super class for all CleaneLing-style solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

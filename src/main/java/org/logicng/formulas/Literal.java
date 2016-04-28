@@ -41,7 +41,6 @@ import java.util.TreeSet;
  * Boolean literals.
  * <p>
  * A literal is a positive or negative variable.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

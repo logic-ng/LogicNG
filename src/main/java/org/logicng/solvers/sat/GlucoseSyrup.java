@@ -90,7 +90,6 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * Glucose 4.0 solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

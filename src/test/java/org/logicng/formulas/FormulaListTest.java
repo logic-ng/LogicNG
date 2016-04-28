@@ -47,7 +47,6 @@ import static org.logicng.formulas.FType.OR;
 
 /**
  * Unit tests for {@link ImmutableFormulaList}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

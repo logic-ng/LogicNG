@@ -30,7 +30,6 @@ package org.logicng.io.parsers;
 
 /**
  * A lexer exception for the lexers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

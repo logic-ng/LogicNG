@@ -39,7 +39,6 @@ import org.logicng.predicates.DNFPredicate;
 
 /**
  * Unit Tests for DNF conversion.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

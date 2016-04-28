@@ -30,7 +30,6 @@ package org.logicng.datastructures;
 
 /**
  * A tristate constant.  This constant can have three different values: {@code TRUE}, {@code FALSE}, and {@code UNDEF}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

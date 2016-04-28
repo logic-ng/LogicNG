@@ -37,7 +37,6 @@ import org.logicng.io.parsers.PropositionalParser;
 
 /**
  * Unit tests for the class {@link Substitution}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -39,7 +39,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
 
 /**
  * Test some common formula functionality.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

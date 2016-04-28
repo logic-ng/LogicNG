@@ -53,7 +53,6 @@ import org.logicng.collections.LNGIntVector;
 
 /**
  * A hard clause for the MaxSAT solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

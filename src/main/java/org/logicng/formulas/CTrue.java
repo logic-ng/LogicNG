@@ -32,7 +32,6 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * Boolean constant "True".
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

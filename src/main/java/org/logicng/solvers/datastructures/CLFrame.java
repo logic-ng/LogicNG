@@ -52,7 +52,6 @@ package org.logicng.solvers.datastructures;
 
 /**
  * A decision frame for the SAT solver.  Each decision opens up a new frame.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

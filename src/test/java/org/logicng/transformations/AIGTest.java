@@ -38,7 +38,6 @@ import org.logicng.predicates.AIGPredicate;
 
 /**
  * Unit Tests for AIG conversion.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

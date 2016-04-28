@@ -39,7 +39,6 @@ import java.util.NoSuchElementException;
 
 /**
  * Unit tests for {@link LNGVector}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

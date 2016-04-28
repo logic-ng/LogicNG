@@ -42,7 +42,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_DNF
 
 /**
  * Transformation of a formula in DNF by factorization.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

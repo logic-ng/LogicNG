@@ -38,7 +38,6 @@ import java.util.TreeSet;
 
 /**
  * Super class for Boolean constants.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

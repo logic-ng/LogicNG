@@ -39,7 +39,6 @@ import java.util.Objects;
  * An extended proposition in LogicNG.  An extended proposition is a collection of formulas with additional information
  * like a user-provided {@link PropositionBagpack} object.
  * @param <T> the type of the bagback
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

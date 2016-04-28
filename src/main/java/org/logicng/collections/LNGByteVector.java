@@ -36,7 +36,6 @@ import java.util.Arrays;
  * In theory one could use the {@link LNGVector} also for bytes.  But Java's auto-boxing comes with such a large
  * performance penalty that for the mission critical data structures of the SAT solvers we use this specialized
  * implementation.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

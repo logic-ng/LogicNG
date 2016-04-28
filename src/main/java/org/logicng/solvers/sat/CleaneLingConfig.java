@@ -33,7 +33,6 @@ import org.logicng.configurations.ConfigurationType;
 
 /**
  * The configuration object for a CleaneLing-style SAT solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

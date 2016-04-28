@@ -52,7 +52,6 @@ package org.logicng.solvers.datastructures;
 
 /**
  * Watcher of for a clause.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

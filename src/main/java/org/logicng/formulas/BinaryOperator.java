@@ -37,7 +37,6 @@ import java.util.TreeSet;
 
 /**
  * Super class for Boolean binary operators.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

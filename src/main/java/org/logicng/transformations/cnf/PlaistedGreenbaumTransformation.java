@@ -49,7 +49,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
  * <p>
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

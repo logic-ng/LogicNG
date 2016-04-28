@@ -39,7 +39,6 @@ import java.util.List;
 
 /**
  * Encodes that exactly one variable is assigned value true.  Uses the 2-product method due to Chen.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

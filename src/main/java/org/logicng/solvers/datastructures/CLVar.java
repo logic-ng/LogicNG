@@ -52,7 +52,6 @@ package org.logicng.solvers.datastructures;
 
 /**
  * A variable of the SAT solver for CleaneLing-style solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

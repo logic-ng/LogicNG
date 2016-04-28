@@ -53,7 +53,6 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the CleaneLing-style SAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

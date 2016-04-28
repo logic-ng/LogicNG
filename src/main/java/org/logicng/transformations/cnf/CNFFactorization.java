@@ -42,7 +42,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
 
 /**
  * Transformation of a formula in CNF by factorization.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

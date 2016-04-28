@@ -57,7 +57,6 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Super-class for the different encodings.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

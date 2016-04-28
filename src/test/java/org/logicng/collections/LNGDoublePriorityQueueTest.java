@@ -33,7 +33,6 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link LNGDoublePriorityQueue}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

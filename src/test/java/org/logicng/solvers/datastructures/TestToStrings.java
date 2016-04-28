@@ -35,7 +35,6 @@ import org.logicng.datastructures.Tristate;
 
 /**
  * Unit tests for the toString() methods of the solver data structures.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -40,7 +40,6 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Tests for the incremental/decremental interface of the SAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
@@ -63,7 +62,7 @@ public class IncDecTest {
     for (final SATSolver s : this.solvers) {
       s.add(f.variable("a"));
       final SolverState state1 = s.saveState();
-      Assert.assertEquals("SolverState{state=[1, 1, 0, 0, 1]}", state1.toString());
+      Assert.assertEquals("SolverState{id=0, state=[1, 1, 0, 0, 1]}", state1.toString());
       Assert.assertEquals(TRUE, s.sat());
       s.add(pg.generate(5));
       Assert.assertEquals(FALSE, s.sat());
@@ -75,7 +74,7 @@ public class IncDecTest {
       Assert.assertEquals(TRUE, s.sat());
       s.add(pg.generate(5));
       final SolverState state2 = s.saveState();
-      Assert.assertEquals("SolverState{state=[1, 31, 81, 0, 1]}", state2.toString());
+      Assert.assertEquals("SolverState{id=1, state=[1, 31, 81, 0, 1]}", state2.toString());
       s.add(pg.generate(4));
       Assert.assertEquals(FALSE, s.sat());
       s.loadState(state2);
@@ -85,4 +84,48 @@ public class IncDecTest {
     }
   }
 
+  @Test
+  public void testIncDecDeep() {
+    for (final SATSolver s : this.solvers) {
+      s.add(f.variable("a"));
+      final SolverState state1 = s.saveState();
+      s.add(f.variable("b"));
+      Assert.assertEquals(TRUE, s.sat());
+      final SolverState state2 = s.saveState();
+      s.add(f.literal("a", false));
+      Assert.assertEquals(FALSE, s.sat());
+      s.loadState(state1);
+      try {
+        s.loadState(state2);
+        Assert.fail("Returned to invalid state.");
+      } catch (IllegalArgumentException e) {
+        // fine
+      }
+      s.add(f.literal("b", false));
+      Assert.assertEquals(TRUE, s.sat());
+      final SolverState state3 = s.saveState();
+      s.add(f.literal("a", false));
+      Assert.assertEquals(FALSE, s.sat());
+      s.loadState(state3);
+      s.add(f.variable("c"));
+      final SolverState state4 = s.saveState();
+      final SolverState state5 = s.saveState();
+      s.loadState(state4);
+      try {
+        s.loadState(state5);
+        Assert.fail("Returned to invalid state.");
+      } catch (IllegalArgumentException e) {
+        // fine
+      }
+      Assert.assertEquals(TRUE, s.sat());
+      s.loadState(state1);
+      Assert.assertEquals(TRUE, s.sat());
+      try {
+        s.loadState(state3);
+        Assert.fail("Returned to invalid state.");
+      } catch (IllegalArgumentException e) {
+        // fine
+      }
+    }
+  }
 }

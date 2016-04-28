@@ -32,7 +32,6 @@ package org.logicng.formulas;
  * Boolean variables.
  * <p>
  * A variable is a shortcut for a positive literal.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

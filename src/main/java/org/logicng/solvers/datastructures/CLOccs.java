@@ -56,7 +56,6 @@ import java.util.Iterator;
 
 /**
  * Full occurrence lists for dense mode of the SAT solver (used during simplifications).
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

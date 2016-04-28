@@ -44,7 +44,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.AIG;
 
 /**
  * And-inverter-graph (AIG) transformation.  Returns the AIG of the given formula.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

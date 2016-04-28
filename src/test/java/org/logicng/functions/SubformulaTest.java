@@ -39,7 +39,6 @@ import java.util.LinkedHashSet;
 
 /**
  * Unit tests for {@link SubNodeFunction}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

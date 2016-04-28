@@ -32,7 +32,6 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * A model enumeration handler that terminates the solving process after a given number of models.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

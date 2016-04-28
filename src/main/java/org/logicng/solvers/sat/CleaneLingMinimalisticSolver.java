@@ -67,7 +67,6 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * A minimalistic version of the CleaneLing solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

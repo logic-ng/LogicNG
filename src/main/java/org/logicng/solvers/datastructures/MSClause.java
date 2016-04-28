@@ -50,8 +50,7 @@ import java.util.Comparator;
 
 /**
  * A clause of the SAT solver for MiniSAT-style solvers.
- * @author Christoph Zengler
- * @version 1.0
+ * @version 1.0.1
  * @since 1.0
  */
 public class MSClause {
@@ -303,22 +302,7 @@ public class MSClause {
 
   @Override
   public boolean equals(Object o) {
-    return this == o || o instanceof MSClause && dataEquals(this.data, ((MSClause) o).data);
-  }
-
-  /**
-   * Compares two integer vector for equality.
-   * @param v1 the first integer vector
-   * @param v2 the second integer vector
-   * @return {@code true} if the two vectors are equal, {@code false} otherwise
-   */
-  private static boolean dataEquals(final LNGIntVector v1, final LNGIntVector v2) {
-    if (v1.size() != v2.size())
-      return false;
-    for (int i = 0; i < v1.size(); i++)
-      if (v1.get(i) != v2.get(i))
-        return false;
-    return true;
+    return this == o;
   }
 
   @Override

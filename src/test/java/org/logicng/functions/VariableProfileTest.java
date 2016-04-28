@@ -46,7 +46,6 @@ import java.util.Map;
 
 /**
  * Unit tests for {@link VariableProfileFunction}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

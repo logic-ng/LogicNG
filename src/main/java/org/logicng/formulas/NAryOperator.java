@@ -44,7 +44,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Super class for Boolean n-ary operators.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

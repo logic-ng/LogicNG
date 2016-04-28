@@ -44,7 +44,6 @@ import java.util.List;
 
 /**
  * Unit tests for the at-most-one encoders.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

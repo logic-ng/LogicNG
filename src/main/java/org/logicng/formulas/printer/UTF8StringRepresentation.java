@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 
 /**
  * The UTF8 string representation for formulas.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

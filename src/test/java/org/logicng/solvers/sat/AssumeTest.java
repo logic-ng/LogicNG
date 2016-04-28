@@ -45,7 +45,6 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Unit tests for the assume functionality of the MiniSat style SAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

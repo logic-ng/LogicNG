@@ -47,7 +47,6 @@ import java.util.List;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
@@ -290,6 +289,7 @@ public abstract class SATSolver {
    * @param state the solver state
    * @throws UnsupportedOperationException if the solver does not support state saving/loading
    * @throws IllegalStateException         if the solver is not in incremental mode
+   * @throws IllegalArgumentException      if the given state has become invalid
    */
   public abstract void loadState(final SolverState state);
 }

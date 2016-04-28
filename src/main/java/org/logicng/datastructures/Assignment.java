@@ -49,7 +49,6 @@ import java.util.TreeSet;
  * Note: the internal data structure is a plain list - no checking of the model is performed e.g. if
  * contradictory literals are added. Since assignments are used e.g. in the model enumeration of the SAT solvers these
  * checks would be too costly.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

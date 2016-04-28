@@ -61,7 +61,6 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * A cardinality solver based on MiniCard.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

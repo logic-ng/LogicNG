@@ -49,7 +49,6 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * A minimalistic heap implementation.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

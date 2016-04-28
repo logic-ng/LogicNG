@@ -53,7 +53,6 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -30,7 +30,6 @@ package org.logicng.formulas;
 
 /**
  * Formula types for LogicNG.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

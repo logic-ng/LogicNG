@@ -65,7 +65,6 @@ import static org.logicng.formulas.FType.TRUE;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

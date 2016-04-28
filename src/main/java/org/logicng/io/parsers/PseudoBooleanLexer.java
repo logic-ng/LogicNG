@@ -33,7 +33,6 @@ import org.antlr.v4.runtime.LexerNoViableAltException;
 
 /**
  * A lexer for pseudo boolean formulas.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

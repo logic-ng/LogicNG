@@ -37,7 +37,6 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
 
 /**
  * And-inverter-graph (AIG) predicate.  Returns {@code true} if the given formula is an AIG, {@code false} otherwise.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

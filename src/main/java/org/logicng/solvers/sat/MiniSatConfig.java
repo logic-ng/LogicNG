@@ -35,7 +35,6 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.DEEP;
 
 /**
  * The configuration object for a MiniSAT-style SAT solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

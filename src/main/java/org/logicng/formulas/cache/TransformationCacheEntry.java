@@ -30,7 +30,6 @@ package org.logicng.formulas.cache;
 
 /**
  * The pre-defined transformation cache entries.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

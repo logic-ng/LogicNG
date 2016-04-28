@@ -68,7 +68,6 @@ import java.io.InputStream;
  * <p>
  * A valid pseudo Boolean expression is of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where the {@code c_i} are coefficients,
  * {@code l_i} are literals, and {@code R} is one of {@code =, >, >=, <, <=}.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

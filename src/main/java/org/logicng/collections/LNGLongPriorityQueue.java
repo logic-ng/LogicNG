@@ -52,7 +52,6 @@ package org.logicng.collections;
 
 /**
  * A simple priority queue implementation for elements with long priorities taken from CleaneLing.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

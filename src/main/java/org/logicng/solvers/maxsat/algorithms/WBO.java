@@ -73,7 +73,6 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Weighted Boolean Optimization solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

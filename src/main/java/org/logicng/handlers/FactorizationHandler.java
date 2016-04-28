@@ -32,7 +32,6 @@ import org.logicng.formulas.Formula;
 
 /**
  * A handler for factorization methods (CNF, DNF).
- * @author Christoph Zegler
  * @version 1.0
  * @since 1.0
  */
