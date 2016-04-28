@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/logic-ng/LogicNG.svg?branch=master)](https://travis-ci.org/logic-ng/LogicNG) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.0-ff69b4.svg)
+[![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.0-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -41,5 +41,5 @@ final Tristate result = miniSat.sat();
 ```
 
 ## License & Commercial Support
-The library is released under the Apache License and therefore is free to use in any private, educational, or commercial project.  Commercial support will be available soon.
+The library is released under the Apache License and therefore is free to use in any private, educational, or commercial project.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
 
