@@ -290,6 +290,7 @@ public abstract class SATSolver {
    * @param state the solver state
    * @throws UnsupportedOperationException if the solver does not support state saving/loading
    * @throws IllegalStateException         if the solver is not in incremental mode
+   * @throws IllegalArgumentException      if the given state has become invalid
    */
   public abstract void loadState(final SolverState state);
 }

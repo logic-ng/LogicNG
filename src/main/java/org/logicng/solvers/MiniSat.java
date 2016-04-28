@@ -61,7 +61,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
  * @author Christoph Zengler
- * @version 1.0
+ * @version 1.0.1
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -72,6 +72,8 @@ public final class MiniSat extends SATSolver {
   private final SolverStyle style;
   private boolean incremental;
   private boolean initialPhase;
+  private final LNGIntVector validStates;
+  private int nextStateId;
 
   /**
    * Constructs a new SAT solver instance.
@@ -99,6 +101,8 @@ public final class MiniSat extends SATSolver {
     }
     this.result = UNDEF;
     this.incremental = miniSatConfig.incremental();
+    this.validStates = new LNGIntVector();
+    this.nextStateId = 0;
   }
 
   /**
@@ -316,11 +320,20 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public SolverState saveState() {
-    return new SolverState(this.solver.saveState());
+    final int id = this.nextStateId++;
+    validStates.push(id);
+    return new SolverState(id, this.solver.saveState());
   }
 
   @Override
   public void loadState(final SolverState state) {
+    int index = -1;
+    for (int i = validStates.size() - 1; i >= 0 && index == -1; i--)
+      if (validStates.get(i) == state.id())
+        index = i;
+    if (index == -1)
+      throw new IllegalArgumentException("The given solver state is not valid anymore.");
+    this.validStates.shrinkTo(index + 1);
     this.solver.loadState(state.state());
     this.result = UNDEF;
   }

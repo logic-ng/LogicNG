@@ -33,19 +33,42 @@ import java.util.Arrays;
 /**
  * A wrapper class for the internal solver state.
  * @author Christoph Zengler
- * @version 1.0
+ * @author Steffen Hildebrandt
+ * @version 1.0.1
  * @since 1.0
  */
 public final class SolverState {
 
+  private final int id;
+
   private final int[] state;
 
   /**
-   * Creates a new solver state with a given internal solver state.
+   * Creates a new solver state with a given internal solver state and id -1.
    * @param state the internal solver state
+   * @deprecated use with explicit id
    */
+  @Deprecated
   public SolverState(final int[] state) {
+    this(-1, state);
+  }
+
+  /**
+   * Creates a new solver state with a given id and internal solver data.
+   * @param id    the id
+   * @param state the solver data
+   */
+  public SolverState(final int id, final int[] state) {
+    this.id = id;
     this.state = Arrays.copyOf(state, state.length);
+  }
+
+  /**
+   * Returns the id of this state.
+   * @return the id of this state
+   */
+  int id() {
+    return id;
   }
 
   /**
@@ -58,6 +81,6 @@ public final class SolverState {
 
   @Override
   public String toString() {
-    return String.format("SolverState{state=%s}", Arrays.toString(state));
+    return String.format("SolverState{id=%d, state=%s}", id, Arrays.toString(state));
   }
 }
