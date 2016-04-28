@@ -604,7 +604,7 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
   @Override
   public void loadState(int[] state) {
     if (!incremental)
-      throw new IllegalStateException("Cannot save a state when the incremental mode is deactivated");
+      throw new IllegalStateException("Cannot load a state when the incremental mode is deactivated");
     int i;
     completeBacktrack();
     this.ok = state[0] == 1;
