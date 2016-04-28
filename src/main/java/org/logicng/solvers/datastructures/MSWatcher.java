@@ -47,7 +47,7 @@ package org.logicng.solvers.datastructures;
 /**
  * A watcher for clauses for MiniSAT-style solvers.
  * @author Christoph Zengler
- * @version 1.0
+ * @version 1.0.1
  * @since 1.0
  */
 public final class MSWatcher {
@@ -87,7 +87,7 @@ public final class MSWatcher {
 
   @Override
   public boolean equals(final Object other) {
-    return this == other || other instanceof MSWatcher && this.clause.equals(((MSWatcher) other).clause);
+    return this == other || other instanceof MSWatcher && this.clause == (((MSWatcher) other).clause);
   }
 
   @Override
