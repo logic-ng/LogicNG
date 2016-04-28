@@ -37,7 +37,6 @@ import java.util.Objects;
 
 /**
  * A proposition in LogicNG.  A proposition is a collection of formulas with an additional textual description.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

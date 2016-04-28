@@ -54,7 +54,6 @@ import java.util.Locale;
 
 /**
  * A simple priority queue implementation for positive integer elements with double priorities taken from CleaneLing.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

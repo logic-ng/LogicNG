@@ -59,7 +59,6 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 /**
  * Encodes that exactly one literal from 'lits' is assigned value true.  Uses the Ladder/Regular encoding for
  * translating the AMO constraint into CNF.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

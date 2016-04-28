@@ -59,7 +59,6 @@ import java.util.TreeMap;
 
 /**
  * The super class for all MiniSAT-style solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

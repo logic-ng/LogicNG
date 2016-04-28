@@ -38,7 +38,6 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
 /**
  * A function that computes the all sub-nodes of a given formula.  The order of the sub-nodes is bottom-up, i.e. a
  * sub-node only appears in the result when all of its sub-nodes are already listed.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

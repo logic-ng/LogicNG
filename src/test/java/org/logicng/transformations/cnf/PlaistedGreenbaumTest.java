@@ -47,7 +47,6 @@ import java.util.SortedSet;
 
 /**
  * Unit Tests for {@link PlaistedGreenbaumTransformation}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -46,7 +46,6 @@ package org.logicng.solvers.datastructures;
 
 /**
  * A watcher for clauses for MiniSAT-style solvers.
- * @author Christoph Zengler
  * @version 1.0.1
  * @since 1.0
  */

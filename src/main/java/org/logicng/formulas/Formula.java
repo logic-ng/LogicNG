@@ -39,7 +39,6 @@ import java.util.TreeMap;
 
 /**
  * Super class for formulas.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

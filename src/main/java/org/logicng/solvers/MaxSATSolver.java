@@ -53,7 +53,6 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSAT.MaxSATResult.UNSATISF
 
 /**
  * A wrapper for the OpenWBO solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

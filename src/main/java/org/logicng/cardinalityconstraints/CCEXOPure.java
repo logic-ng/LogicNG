@@ -40,7 +40,6 @@ import java.util.List;
 /**
  * Encodes that exactly one variable is assigned value true.  Uses the 'naive' encoding with no introduction
  * of new variables but quadratic size.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

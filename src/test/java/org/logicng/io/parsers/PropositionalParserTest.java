@@ -38,7 +38,6 @@ import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PropositionalParser}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

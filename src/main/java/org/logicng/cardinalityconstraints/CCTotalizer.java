@@ -62,7 +62,6 @@ import java.util.List;
 
 /**
  * Super class for totalizers due to Bailleux and Boufkhad.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

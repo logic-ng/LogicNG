@@ -59,7 +59,6 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.PBEncoding;
 
 /**
  * Encoders for cardinality constraints, pseudo Booleans and AMO constraints.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

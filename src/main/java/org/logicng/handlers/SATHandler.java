@@ -30,7 +30,6 @@ package org.logicng.handlers;
 
 /**
  * Interface for a handler for SAT solvers.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

@@ -34,7 +34,6 @@ import java.util.Objects;
  * Data structure for a pair.
  * @param <A> the type parameter of the first entry
  * @param <B> the type parameter of the second entry
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

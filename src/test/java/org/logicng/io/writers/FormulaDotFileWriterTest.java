@@ -43,7 +43,6 @@ import java.io.IOException;
 
 /**
  * Unit tests for the {@link FormulaDotFileWriter}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

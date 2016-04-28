@@ -30,7 +30,6 @@ package org.logicng.formulas.cache;
 
 /**
  * Interface for a cache entry in the formula cache.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

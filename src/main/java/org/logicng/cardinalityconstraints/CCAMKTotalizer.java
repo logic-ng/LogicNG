@@ -58,7 +58,6 @@ import java.util.Collection;
 /**
  * Encodes that at most 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

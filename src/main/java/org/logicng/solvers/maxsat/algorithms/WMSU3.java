@@ -69,7 +69,6 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * The weighted MSU3 algorithm.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

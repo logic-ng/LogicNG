@@ -43,7 +43,6 @@ import java.util.Collection;
  * {@code f[true/x] & f[false/x]}.
  * <p>
  * This transformation cannot be cached since it is dependent on the set of literals to eliminate.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

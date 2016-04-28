@@ -48,7 +48,6 @@ import java.util.TreeMap;
 
 /**
  * Unit tests for {@link LiteralProfileFunction}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

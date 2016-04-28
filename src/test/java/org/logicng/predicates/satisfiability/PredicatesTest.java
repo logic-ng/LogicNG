@@ -40,7 +40,6 @@ import org.logicng.solvers.sat.PigeonHoleGenerator;
 
 /**
  * Unit tests for the different satisfiability predicates.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

@@ -62,7 +62,6 @@ import java.util.List;
 
 /**
  * A sequential weight counter for the encoding of pseudo-Boolean constraints in CNF.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -53,7 +53,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

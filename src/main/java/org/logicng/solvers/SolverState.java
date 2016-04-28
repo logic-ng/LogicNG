@@ -32,8 +32,6 @@ import java.util.Arrays;
 
 /**
  * A wrapper class for the internal solver state.
- * @author Christoph Zengler
- * @author Steffen Hildebrandt
  * @version 1.0.1
  * @since 1.0
  */

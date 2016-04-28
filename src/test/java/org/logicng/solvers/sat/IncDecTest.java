@@ -40,7 +40,6 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Tests for the incremental/decremental interface of the SAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

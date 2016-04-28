@@ -81,7 +81,6 @@ import org.logicng.collections.LNGIntVector;
 
 /**
  * A bounded integer queue (for Glucose)
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

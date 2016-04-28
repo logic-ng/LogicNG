@@ -38,7 +38,6 @@ import org.logicng.solvers.sat.MiniSatConfig;
 
 /**
  * Test some basic formula factory functionality.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

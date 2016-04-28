@@ -43,7 +43,6 @@ import java.util.List;
 
 /**
  * Unit tests for {@link PBSWC}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

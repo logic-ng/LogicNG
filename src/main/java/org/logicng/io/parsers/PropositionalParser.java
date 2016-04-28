@@ -58,7 +58,6 @@ import java.io.InputStream;
  * <li>can only contain alphanumerical character, or {@code _}</li>
  * <li>{@code @} is only allowed at the beginning of the variable name and is reserved for special internal variables</li>
  * </ul>
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

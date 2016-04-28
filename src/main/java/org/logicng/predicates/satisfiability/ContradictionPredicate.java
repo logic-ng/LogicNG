@@ -35,8 +35,6 @@ import org.logicng.solvers.SATSolver;
 
 /**
  * Contradiction predicate.  Indicates whether a formula is contradictory or not.
- * @author Steffen Hildebrandt
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

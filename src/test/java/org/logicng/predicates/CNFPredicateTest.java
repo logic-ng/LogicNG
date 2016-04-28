@@ -34,7 +34,6 @@ import org.logicng.formulas.F;
 
 /**
  * Unit tests for the cnf predicate.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

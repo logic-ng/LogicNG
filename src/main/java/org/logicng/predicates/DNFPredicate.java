@@ -37,7 +37,6 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
 
 /**
  * DNF predicate.  Indicates whether a formula is in DNF or not.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

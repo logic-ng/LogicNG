@@ -37,7 +37,6 @@ import java.util.NoSuchElementException;
 /**
  * A simple vector implementation (inspired by MiniSat, CleaneLing, Sat4J).
  * @param <T> the type of the elements
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

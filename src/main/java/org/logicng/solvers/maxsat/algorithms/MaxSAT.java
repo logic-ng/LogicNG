@@ -79,7 +79,6 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Super class for the MaxSAT solvers.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

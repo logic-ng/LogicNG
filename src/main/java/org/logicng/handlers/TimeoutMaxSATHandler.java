@@ -32,7 +32,6 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * A MaxSAT handler which cancels the solving process after a given timeout.
- * @author Steffen Hildebrandt
  * @version 1.0
  * @since 1.0
  */

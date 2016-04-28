@@ -32,7 +32,6 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * Interface for a handler for the enumeration of models.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

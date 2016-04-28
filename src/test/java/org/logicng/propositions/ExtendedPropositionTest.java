@@ -41,7 +41,6 @@ import java.util.Objects;
 
 /**
  * Unit tests for {@link ExtendedProposition}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

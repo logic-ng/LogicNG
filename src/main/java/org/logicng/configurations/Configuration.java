@@ -30,7 +30,6 @@ package org.logicng.configurations;
 
 /**
  * A configuration in LogicNG.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

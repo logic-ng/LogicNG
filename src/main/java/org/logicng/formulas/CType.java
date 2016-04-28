@@ -30,7 +30,6 @@ package org.logicng.formulas;
 
 /**
  * Comparison types for pseudo-Boolean constraints.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

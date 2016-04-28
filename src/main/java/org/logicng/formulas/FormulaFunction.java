@@ -31,7 +31,6 @@ package org.logicng.formulas;
 /**
  * A function on a formula.
  * @param <T> the result type of the function
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

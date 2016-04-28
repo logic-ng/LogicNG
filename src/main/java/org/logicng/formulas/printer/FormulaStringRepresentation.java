@@ -39,7 +39,6 @@ import org.logicng.formulas.PBConstraint;
 
 /**
  * Super class for a formula string representation.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

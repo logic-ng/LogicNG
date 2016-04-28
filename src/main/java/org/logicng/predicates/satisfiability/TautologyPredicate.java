@@ -39,8 +39,6 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_TAUTOLOGY;
 
 /**
  * Tautology predicate.  Indicates whether a formula is a tautology or not.
- * @author Steffen Hildebrandt
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

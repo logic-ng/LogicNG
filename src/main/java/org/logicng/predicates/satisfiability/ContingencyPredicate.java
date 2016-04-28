@@ -36,8 +36,6 @@ import org.logicng.solvers.SATSolver;
 /**
  * Contingency predicate.  Indicates whether a formula is contingent
  * (neither a tautology nor a contradiction) or not.
- * @author Steffen Hildebrandt
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

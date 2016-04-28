@@ -34,7 +34,6 @@ import org.logicng.io.parsers.ParserException;
 
 /**
  * Unit Tests for the class {@link CFalse}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -34,7 +34,6 @@ import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
 /**
  * Unit tests for the solver configurations.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

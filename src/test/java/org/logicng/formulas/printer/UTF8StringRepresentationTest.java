@@ -34,7 +34,6 @@ import org.logicng.formulas.F;
 
 /**
  * Unit tests for {@link UTF8StringRepresentation}
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

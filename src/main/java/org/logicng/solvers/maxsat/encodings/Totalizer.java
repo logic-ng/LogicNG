@@ -62,7 +62,6 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 /**
  * Encodes that at most 'rhs' literals can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

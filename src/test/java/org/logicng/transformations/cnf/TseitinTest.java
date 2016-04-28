@@ -46,7 +46,6 @@ import java.util.SortedSet;
 
 /**
  * Unit Tests for {@link TseitinTransformation}.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

@@ -40,7 +40,6 @@ import java.util.List;
 
 /**
  * Canonical DNF generation via enumeration of models by a SAT solver.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

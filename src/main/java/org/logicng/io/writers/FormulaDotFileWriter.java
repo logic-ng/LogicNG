@@ -46,7 +46,6 @@ import java.util.Map;
 
 /**
  * A dot file writer for a formula.  Writes the internal data structure of the formula to a dot file.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

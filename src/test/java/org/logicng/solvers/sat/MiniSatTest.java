@@ -37,7 +37,6 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Some MiniSat specific unit tests.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */

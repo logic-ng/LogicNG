@@ -36,7 +36,6 @@ import java.util.Map;
 
 /**
  * A Boolean substitution.
- * @author Christoph Zengler
  * @version 1.0
  * @since 1.0
  */
