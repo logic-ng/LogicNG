@@ -80,7 +80,6 @@ public class MUSGenerationTest {
   @Test
   public void testDeletionBasedMUS() throws IOException {
     final MUSGeneration mus = new MUSGeneration();
-    final long start = System.currentTimeMillis();
     final UNSATCore mus1 = mus.computeMUS(this.pg3, this.f);
     final UNSATCore mus2 = mus.computeMUS(this.pg4, this.f);
     final UNSATCore mus3 = mus.computeMUS(this.pg5, this.f);
@@ -90,8 +89,6 @@ public class MUSGenerationTest {
     final UNSATCore mus7 = mus.computeMUS(this.file2, this.f);
     final UNSATCore mus8 = mus.computeMUS(this.file3, this.f);
     final UNSATCore mus9 = mus.computeMUS(this.file4, this.f);
-    final long stop = System.currentTimeMillis();
-    System.out.println("Deletion Based MUS: " + (stop - start) + " ms.");
     testMUS(pg3, mus1);
     testMUS(pg4, mus2);
     testMUS(pg5, mus3);
@@ -101,6 +98,22 @@ public class MUSGenerationTest {
     testMUS(file2, mus7);
     testMUS(file3, mus8);
     testMUS(file4, mus9);
+  }
+
+  @Test
+  public void testPlainInsertionBasedMUS() throws IOException {
+    final MUSGeneration mus = new MUSGeneration();
+    final MUSConfig config = new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.PLAIN_INSERTION).build();
+    final UNSATCore mus1 = mus.computeMUS(this.pg3, this.f, config);
+    final UNSATCore mus2 = mus.computeMUS(this.pg4, this.f, config);
+    final UNSATCore mus3 = mus.computeMUS(this.pg5, this.f, config);
+    final UNSATCore mus6 = mus.computeMUS(this.file1, this.f, config);
+    final UNSATCore mus7 = mus.computeMUS(this.file2, this.f, config);
+    testMUS(pg3, mus1);
+    testMUS(pg4, mus2);
+    testMUS(pg5, mus3);
+    testMUS(file1, mus6);
+    testMUS(file2, mus7);
   }
 
   private List<Proposition> generatePGPropositions(int n) {

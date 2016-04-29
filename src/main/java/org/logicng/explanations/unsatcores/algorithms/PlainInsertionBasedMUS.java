@@ -26,65 +26,53 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.explanations.unsatcores;
+package org.logicng.explanations.unsatcores.algorithms;
 
-import org.logicng.explanations.unsatcores.algorithms.DeletionBasedMUS;
-import org.logicng.explanations.unsatcores.algorithms.PlainInsertionBasedMUS;
+import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.MUSConfig;
+import org.logicng.explanations.unsatcores.UNSATCore;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.propositions.Proposition;
+import org.logicng.solvers.MiniSat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Computes a minimal unsatisfiable subset (MUS) of a given formula with different algorithms.
+ * A naive plain insertion-based MUS algorithm.
  * @version 1.1
  * @since 1.1
  */
-public final class MUSGeneration {
-
-  private final DeletionBasedMUS deletion;
-  private final PlainInsertionBasedMUS insertion;
-
-  /**
-   * Constructs a new MUS generator.
-   */
-  public MUSGeneration() {
-    this.deletion = new DeletionBasedMUS();
-    this.insertion = new PlainInsertionBasedMUS();
-  }
-
-  /**
-   * Computes a MUS for the given propositions with the default algorithm and the default configuration.
-   * @param propositions the propositions
-   * @param f            the formula factory
-   * @return the MUS
-   */
-  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f) {
-    return this.computeMUS(propositions, f, new MUSConfig.Builder().build());
-  }
-
-  /**
-   * Computes a MUS for the given propositions and the given configuration of the MUS generation.
-   * @param propositions the propositions
-   * @param f            the formula factory
-   * @param config       the MUS configuration
-   * @return the MUS
-   */
-  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f, final MUSConfig config) {
-    if (propositions.isEmpty())
-      throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
-    switch (config.algorithm) {
-      case PLAIN_INSERTION:
-        return insertion.computeMUS(propositions, f, config);
-      case DELETION:
-      default:
-        return deletion.computeMUS(propositions, f, config);
-    }
-  }
+public class PlainInsertionBasedMUS extends MUSAlgorithm {
 
   @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
+  public UNSATCore computeMUS(List<Proposition> propositions, FormulaFactory f, MUSConfig config) {
+    List<Proposition> currentFormula = new ArrayList<>(propositions.size());
+    currentFormula.addAll(propositions);
+    final List<Proposition> mus = new ArrayList<>(propositions.size());
+    final MiniSat solver = MiniSat.miniSat(f);
+    while (!currentFormula.isEmpty()) {
+      final List<Proposition> currentSubset = new ArrayList<>(propositions.size());
+      Proposition transitionProposition = null;
+      solver.reset();
+      for (final Proposition p : mus)
+        solver.add(p);
+      int count = currentFormula.size();
+      while (solver.sat() == Tristate.TRUE) {
+        if (count < 0)
+          throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
+        final Proposition removeProposition = currentFormula.get(--count);
+        currentSubset.add(removeProposition);
+        transitionProposition = removeProposition;
+        solver.add(removeProposition);
+      }
+      currentFormula.clear();
+      currentFormula.addAll(currentSubset);
+      if (transitionProposition != null) {
+        currentFormula.remove(transitionProposition);
+        mus.add(transitionProposition);
+      }
+    }
+    return new UNSATCore(mus, true);
   }
-
 }

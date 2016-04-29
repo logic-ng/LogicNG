@@ -42,7 +42,7 @@ public final class MUSConfig extends Configuration {
    * The algorithm for the MUS generation.
    */
   public enum Algorithm {
-    DELETION
+    DELETION, PLAIN_INSERTION
   }
 
   final Algorithm algorithm;
