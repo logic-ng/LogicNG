@@ -53,6 +53,7 @@ public class CCAMOTest {
   private static final CCAtMostOne pure = new CCAMOPure(f);
   private static final CCAtMostOne ladder = new CCAMOLadder(f);
   private static final CCAtMostOne product = new CCAMOProduct(f);
+  private static final CCAtMostOne binary = new CCAMOBinary(f);
 
 
   @Test
@@ -60,6 +61,7 @@ public class CCAMOTest {
     Assert.assertTrue(pure.build(new LinkedList<Variable>()).empty());
     Assert.assertTrue(ladder.build(new LinkedList<Variable>()).empty());
     Assert.assertTrue(product.build(new LinkedList<Variable>()).empty());
+    Assert.assertTrue(binary.build(new LinkedList<Variable>()).empty());
   }
 
   @Test
@@ -68,6 +70,7 @@ public class CCAMOTest {
     Assert.assertTrue(pure.build(vars).empty());
     Assert.assertTrue(ladder.build(vars).empty());
     Assert.assertTrue(product.build(vars).empty());
+    Assert.assertTrue(binary.build(vars).empty());
   }
 
   @Test
@@ -95,6 +98,15 @@ public class CCAMOTest {
     testCC(100, product);
     testCC(250, product);
     testCC(500, product);
+  }
+
+  @Test
+  public void testBinary() {
+    testCC(2, binary);
+    testCC(10, binary);
+    testCC(100, binary);
+    testCC(250, binary);
+    testCC(500, binary);
   }
 
   private void testCC(int numLits, final CCAtMostOne encoder) {

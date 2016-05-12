@@ -34,7 +34,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +57,7 @@ public final class CCAMOPure extends CCAtMostOne {
 
   @Override
   public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
+    final List<Formula> result = new ArrayList<>();
     if (vars.length < 2)
       return new ImmutableFormulaList(FType.AND);
     for (int i = 0; i < vars.length; i++)
