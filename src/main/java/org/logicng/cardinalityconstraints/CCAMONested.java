@@ -78,16 +78,16 @@ public final class CCAMONested extends CCAtMostOne {
    */
   public CCAMONested(final FormulaFactory f) {
     this.f = f;
-    result = new ArrayList<>();
+    this.result = new ArrayList<>();
   }
 
   @Override
   public ImmutableFormulaList build(final Variable... vars) {
-    result.clear();
+    this.result.clear();
     if (vars.length <= 0)
-      return new ImmutableFormulaList(FType.AND, result);
-    encodeIntern(new LNGVector<Literal>(vars));
-    return new ImmutableFormulaList(FType.AND, result);
+      return new ImmutableFormulaList(FType.AND, this.result);
+    this.encodeIntern(new LNGVector<Literal>(vars));
+    return new ImmutableFormulaList(FType.AND, this.result);
   }
 
   /**
@@ -98,7 +98,7 @@ public final class CCAMONested extends CCAtMostOne {
     if (vars.size() <= 4)
       for (int i = 0; i + 1 < vars.size(); i++)
         for (int j = i + 1; j < vars.size(); j++)
-          result.add(f.clause(vars.get(i).negate(), vars.get(j).negate()));
+          this.result.add(this.f.clause(vars.get(i).negate(), vars.get(j).negate()));
     else {
       final LNGVector<Literal> l1 = new LNGVector<>(vars.size() / 2);
       final LNGVector<Literal> l2 = new LNGVector<>(vars.size() / 2);
@@ -107,11 +107,11 @@ public final class CCAMONested extends CCAtMostOne {
         l1.push(vars.get(i));
       for (; i < vars.size(); ++i)
         l2.push(vars.get(i));
-      final Variable newVariable = f.newCCVariable();
+      final Variable newVariable = this.f.newCCVariable();
       l1.push(newVariable);
       l2.push(newVariable.negate());
-      encodeIntern(l1);
-      encodeIntern(l2);
+      this.encodeIntern(l1);
+      this.encodeIntern(l2);
     }
   }
 

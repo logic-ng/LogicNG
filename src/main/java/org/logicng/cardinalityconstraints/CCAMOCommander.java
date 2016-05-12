@@ -52,32 +52,50 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.collections.LNGVector;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encodes that at most one variable is assigned value true.  Uses the binary encoding due to Doggett, Frisch, Peugniez,
- * and Nightingale.
+ * Encodes that at most one variable is assigned value true.  Uses the commander encoding due to Klieber & Kwon.
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMOBinary extends CCAtMostOne {
+public final class CCAMOCommander extends CCAtMostOne {
 
   private final FormulaFactory f;
   private List<Formula> result;
+  private int k;
+  private LNGVector<Literal> literals;
+  private LNGVector<Literal> nextLiterals;
+  private LNGVector<Literal> currentLiterals;
 
   /**
-   * Constructs the binary AMO encoder.
+   * Constructs the commander AMO encoder.
+   * @param f the formula factory
+   * @param k the group size for the encoding
+   */
+  public CCAMOCommander(final FormulaFactory f, int k) {
+    this.f = f;
+    this.k = k;
+    this.result = new ArrayList<>();
+    this.literals = new LNGVector<>();
+    this.nextLiterals = new LNGVector<>();
+    this.currentLiterals = new LNGVector<>();
+  }
+
+  /**
+   * Constructs the commander AMO encoder.
    * @param f the formula factory
    */
-  public CCAMOBinary(final FormulaFactory f) {
-    this.f = f;
-    this.result = new ArrayList<>();
+  public CCAMOCommander(final FormulaFactory f) {
+    this(f, 3);
   }
 
   @Override
@@ -85,41 +103,64 @@ public final class CCAMOBinary extends CCAtMostOne {
     this.result.clear();
     if (vars.length <= 0)
       return new ImmutableFormulaList(FType.AND, this.result);
-    final int numberOfBits = (int) Math.ceil((Math.log(vars.length) / Math.log(2)));
-    final int twoPowNBits = (int) Math.pow(2, numberOfBits);
-    final int k = (twoPowNBits - vars.length) * 2;
-    final Variable[] bits = new Variable[numberOfBits];
-    for (int i = 0; i < numberOfBits; i++)
-      bits[i] = this.f.newCCVariable();
-    int gray_code;
-    int next_gray;
-    int i = 0;
-    int index = -1;
-    while (i < k) {
-      index++;
-      gray_code = i ^ (i >> 1);
-      i++;
-      next_gray = i ^ (i >> 1);
-      for (int j = 0; j < numberOfBits; ++j)
-        if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
-          if ((gray_code & (1 << j)) != 0)
-            this.result.add(this.f.clause(vars[index].negate(), bits[j]));
-          else
-            this.result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
-        }
-      i++;
-    }
-    while (i < twoPowNBits) {
-      index++;
-      gray_code = i ^ (i >> 1);
-      for (int j = 0; j < numberOfBits; ++j)
-        if ((gray_code & (1 << j)) != 0)
-          this.result.add(this.f.clause(vars[index].negate(), bits[j]));
-        else
-          this.result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
-      i++;
-    }
+    this.currentLiterals.clear();
+    this.nextLiterals.clear();
+    for (final Variable var : vars)
+      this.currentLiterals.push(var);
+    this.encodeRecursive();
     return new ImmutableFormulaList(FType.AND, this.result);
+  }
+
+  /**
+   * Internal recursive encoding.
+   */
+  private void encodeRecursive() {
+    boolean isExactlyOne = false;
+    while (this.currentLiterals.size() > this.k) {
+      this.literals.clear();
+      this.nextLiterals.clear();
+      for (int i = 0; i < this.currentLiterals.size(); i++) {
+        this.literals.push(this.currentLiterals.get(i));
+        if (i % this.k == this.k - 1 || i == this.currentLiterals.size() - 1) {
+          this.encodeNonRecursive(this.literals);
+          this.literals.push(this.f.newCCVariable());
+          this.nextLiterals.push(this.literals.back().negate());
+          if (isExactlyOne && this.literals.size() > 0)
+            this.result.add(this.vec2clause(this.literals));
+          for (int j = 0; j < this.literals.size() - 1; j++)
+            this.result.add(this.f.clause(this.literals.back().negate(), this.literals.get(j).negate()));
+          this.literals.clear();
+        }
+      }
+      this.currentLiterals.replaceInplace(this.nextLiterals);
+      isExactlyOne = true;
+    }
+    this.encodeNonRecursive(this.currentLiterals);
+    if (isExactlyOne && this.currentLiterals.size() > 0)
+      this.result.add(this.vec2clause(this.currentLiterals));
+  }
+
+  /**
+   * Internal non recursive encoding.
+   * @param literals the current literals
+   */
+  private void encodeNonRecursive(final LNGVector<Literal> literals) {
+    if (literals.size() > 1)
+      for (int i = 0; i < literals.size(); i++)
+        for (int j = i + 1; j < literals.size(); j++)
+          this.result.add(this.f.clause(literals.get(i).negate(), literals.get(j).negate()));
+  }
+
+  /**
+   * Returns a clause for a vector of literals.
+   * @param literals the literals
+   * @return the clause
+   */
+  private Formula vec2clause(final LNGVector<Literal> literals) {
+    final List<Literal> lits = new ArrayList<>(literals.size());
+    for (final Literal l : literals)
+      lits.add(l);
+    return this.f.clause(lits);
   }
 
   @Override

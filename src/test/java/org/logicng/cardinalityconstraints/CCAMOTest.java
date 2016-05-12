@@ -55,6 +55,8 @@ public class CCAMOTest {
   private static final CCAtMostOne product = new CCAMOProduct(f);
   private static final CCAtMostOne binary = new CCAMOBinary(f);
   private static final CCAtMostOne nested = new CCAMONested(f);
+  private static final CCAtMostOne commander3 = new CCAMOCommander(f);
+  private static final CCAtMostOne commander7 = new CCAMOCommander(f, 7);
 
 
   @Test
@@ -64,6 +66,8 @@ public class CCAMOTest {
     Assert.assertTrue(product.build(new LinkedList<Variable>()).empty());
     Assert.assertTrue(binary.build(new LinkedList<Variable>()).empty());
     Assert.assertTrue(nested.build(new LinkedList<Variable>()).empty());
+    Assert.assertTrue(commander3.build(new LinkedList<Variable>()).empty());
+    Assert.assertTrue(commander7.build(new LinkedList<Variable>()).empty());
   }
 
   @Test
@@ -74,6 +78,8 @@ public class CCAMOTest {
     Assert.assertTrue(product.build(vars).empty());
     Assert.assertTrue(binary.build(vars).empty());
     Assert.assertTrue(nested.build(vars).empty());
+    Assert.assertTrue(commander3.build(vars).empty());
+    Assert.assertTrue(commander7.build(vars).empty());
   }
 
   @Test
@@ -119,6 +125,24 @@ public class CCAMOTest {
     testCC(100, nested);
     testCC(250, nested);
     testCC(500, nested);
+  }
+
+  @Test
+  public void testCommander3() {
+    testCC(2, commander3);
+    testCC(10, commander3);
+    testCC(100, commander3);
+    testCC(250, commander3);
+    testCC(500, commander3);
+  }
+
+  @Test
+  public void testCommander7() {
+    testCC(2, commander7);
+    testCC(10, commander7);
+    testCC(100, commander7);
+    testCC(250, commander7);
+    testCC(500, commander7);
   }
 
   private void testCC(int numLits, final CCAtMostOne encoder) {
