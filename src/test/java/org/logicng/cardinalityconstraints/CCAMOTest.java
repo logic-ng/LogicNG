@@ -87,145 +87,102 @@ public class CCAMOTest {
 
   @Test
   public void testPure() {
-    System.out.println("PURE");
     testCC(2, pure);
     testCC(10, pure);
     testCC(100, pure);
     testCC(250, pure);
     testCC(500, pure);
-    testCC(1000, pure);
-    testCC(2000, pure);
-    System.out.println();
   }
 
   @Test
   public void testLadder() {
-    System.out.println("LADDER");
     testCC(2, ladder);
     testCC(10, ladder);
     testCC(100, ladder);
     testCC(250, ladder);
     testCC(500, ladder);
-    testCC(1000, ladder);
-    System.out.println();
   }
 
   @Test
   public void testProduct() {
-    System.out.println("PRODUCT");
     testCC(2, product);
     testCC(10, product);
     testCC(100, product);
     testCC(250, product);
     testCC(500, product);
-    testCC(1000, product);
-    testCC(2000, product);
-    System.out.println();
   }
 
   @Test
   public void testBinary() {
-    System.out.println("BINARY");
     testCC(2, binary);
     testCC(10, binary);
     testCC(100, binary);
     testCC(250, binary);
     testCC(500, binary);
-    testCC(1000, binary);
-    testCC(2000, binary);
-    System.out.println();
   }
 
   @Test
   public void testNested() {
-    System.out.println("NESTED");
     testCC(2, nested);
     testCC(10, nested);
     testCC(100, nested);
     testCC(250, nested);
     testCC(500, nested);
-    testCC(1000, nested);
-    testCC(2000, nested);
-    System.out.println();
   }
 
   @Test
   public void testCommander3() {
-    System.out.println("COMMANDER3");
     testCC(2, commander3);
     testCC(10, commander3);
     testCC(100, commander3);
     testCC(250, commander3);
     testCC(500, commander3);
-    testCC(1000, commander3);
-    testCC(2000, commander3);
-    System.out.println();
   }
 
   @Test
   public void testCommander7() {
-    System.out.println("COMMANDER7");
     testCC(2, commander7);
     testCC(10, commander7);
     testCC(100, commander7);
     testCC(250, commander7);
     testCC(500, commander7);
-    testCC(1000, commander7);
-    testCC(2000, commander7);
-    System.out.println();
   }
 
   @Test
   public void testBimander3() {
-    System.out.println("BIMANDER3");
     testCC(2, bimander3);
     testCC(10, bimander3);
     testCC(100, bimander3);
     testCC(250, bimander3);
     testCC(500, bimander3);
-    testCC(1000, bimander3);
-    testCC(2000, bimander3);
-    System.out.println();
   }
 
   @Test
   public void testBimanderHalf() {
-    System.out.println("BIMANDER_HALF");
     final CCAtMostOne bimander1 = new CCAMOBimander(f, 1);
     final CCAtMostOne bimander5 = new CCAMOBimander(f, 5);
     final CCAtMostOne bimander50 = new CCAMOBimander(f, 50);
     final CCAtMostOne bimander125 = new CCAMOBimander(f, 125);
     final CCAtMostOne bimander250 = new CCAMOBimander(f, 250);
-    final CCAtMostOne bimander500 = new CCAMOBimander(f, 500);
-    final CCAtMostOne bimander1000 = new CCAMOBimander(f, 1000);
     testCC(2, bimander1);
     testCC(10, bimander5);
     testCC(100, bimander50);
     testCC(250, bimander125);
     testCC(500, bimander250);
-    testCC(1000, bimander500);
-    testCC(2000, bimander1000);
-    System.out.println();
   }
 
   @Test
   public void testBimanderSqrt() {
-    System.out.println("BIMANDER_SQRT");
     final CCAtMostOne bimander1 = new CCAMOBimander(f, (int) Math.sqrt(2));
     final CCAtMostOne bimander5 = new CCAMOBimander(f, (int) Math.sqrt(10));
     final CCAtMostOne bimander50 = new CCAMOBimander(f, (int) Math.sqrt(50));
     final CCAtMostOne bimander125 = new CCAMOBimander(f, (int) Math.sqrt(250));
     final CCAtMostOne bimander250 = new CCAMOBimander(f, (int) Math.sqrt(500));
-    final CCAtMostOne bimander500 = new CCAMOBimander(f, (int) Math.sqrt(1000));
-    final CCAtMostOne bimander1000 = new CCAMOBimander(f, (int) Math.sqrt(2000));
     testCC(2, bimander1);
     testCC(10, bimander5);
     testCC(100, bimander50);
     testCC(250, bimander125);
     testCC(500, bimander250);
-    testCC(1000, bimander500);
-    testCC(2000, bimander1000);
-    System.out.println();
   }
 
   private void testCC(int numLits, final CCAtMostOne encoder) {
@@ -236,19 +193,11 @@ public class CCAMOTest {
       lits.add(lit);
       problemLits[i] = lit;
     }
-    long start = System.currentTimeMillis();
     final ImmutableFormulaList clauses = encoder.build(lits);
-    long stop = System.currentTimeMillis();
-    System.out.println("Encoding:    " + (stop - start));
     final SATSolver solver = MiniSat.miniSat(f);
-
-    start = System.currentTimeMillis();
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
-    stop = System.currentTimeMillis();
-    System.out.println("Enumeration: " + (stop - start));
-
     Assert.assertEquals(numLits + 1, models.size());
     for (final Assignment model : models)
       Assert.assertTrue(model.positiveLiterals().size() <= 1);
