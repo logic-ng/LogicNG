@@ -63,104 +63,137 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encodes that at most one variable is assigned value true.  Uses the commander encoding due to Klieber & Kwon.
+ * Encodes that at most one variable is assigned value true.  Uses the bimander encoding due to Hölldobler and Nguyen.
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMOCommander extends CCAtMostOne {
+public final class CCAMOBimander extends CCAtMostOne {
+
+  //TODO configuration for group size (half, sqrt, fixed)
 
   private final FormulaFactory f;
   private List<Formula> result;
+  private LNGVector<LNGVector<Literal>> groups;
+  private LNGVector<Literal> bits;
+  private int numberOfBits;
+  private int twoPowNBits;
   private int k;
-  private LNGVector<Literal> literals;
-  private LNGVector<Literal> nextLiterals;
-  private LNGVector<Literal> currentLiterals;
+  private int m;
 
   /**
-   * Constructs the commander AMO encoder with a given group size.
+   * Constructs the bimander AMO encoder with a given number of groups.
    * @param f the formula factory
-   * @param k the group size for the encoding
    */
-  public CCAMOCommander(final FormulaFactory f, int k) {
+  public CCAMOBimander(final FormulaFactory f, int m) {
     this.f = f;
-    this.k = k;
+    this.m = m;
     this.result = new ArrayList<>();
-    this.literals = new LNGVector<>();
-    this.nextLiterals = new LNGVector<>();
-    this.currentLiterals = new LNGVector<>();
+    this.groups = new LNGVector<>();
+    this.bits = new LNGVector<>();
   }
 
   /**
-   * Constructs the commander AMO encoder with group size 3.
+   * Constructs the bimander AMO encoder with 3 groups.
    * @param f the formula factory
    */
-  public CCAMOCommander(final FormulaFactory f) {
+  public CCAMOBimander(final FormulaFactory f) {
     this(f, 3);
   }
 
   @Override
   public ImmutableFormulaList build(final Variable... vars) {
     this.result.clear();
-    if (vars.length <= 0)
+    if (vars.length <= 1)
       return new ImmutableFormulaList(FType.AND, this.result);
-    this.currentLiterals.clear();
-    this.nextLiterals.clear();
-    for (final Variable var : vars)
-      this.currentLiterals.push(var);
-    this.encodeRecursive();
+    this.encodeIntern(new LNGVector<Literal>(vars));
     return new ImmutableFormulaList(FType.AND, this.result);
   }
 
   /**
-   * Internal recursive encoding.
+   * Internal encoding.
+   * @param vars the variables of the constraint
    */
-  private void encodeRecursive() {
-    boolean isExactlyOne = false;
-    while (this.currentLiterals.size() > this.k) {
-      this.literals.clear();
-      this.nextLiterals.clear();
-      for (int i = 0; i < this.currentLiterals.size(); i++) {
-        this.literals.push(this.currentLiterals.get(i));
-        if (i % this.k == this.k - 1 || i == this.currentLiterals.size() - 1) {
-          this.encodeNonRecursive(this.literals);
-          this.literals.push(this.f.newCCVariable());
-          this.nextLiterals.push(this.literals.back().negate());
-          if (isExactlyOne && this.literals.size() > 0)
-            this.result.add(this.vec2clause(this.literals));
-          for (int j = 0; j < this.literals.size() - 1; j++)
-            this.result.add(this.f.clause(this.literals.back().negate(), this.literals.get(j).negate()));
-          this.literals.clear();
+  private void encodeIntern(final LNGVector<Literal> vars) {
+    this.initializeGroups(vars);
+    this.initializeBits();
+    int gray_code;
+    int next_gray;
+    int i = 0;
+    int index = -1;
+    for (; i < this.k; i++) {
+      index++;
+      gray_code = i ^ (i >> 1);
+      i++;
+      next_gray = i ^ (i >> 1);
+      for (int j = 0; j < this.numberOfBits; j++)
+        if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
+          if ((gray_code & (1 << j)) != 0)
+            for (int p = 0; p < this.groups.get(index).size(); ++p)
+              this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j)));
+          else
+            for (int p = 0; p < this.groups.get(index).size(); ++p)
+              this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j).negate()));
         }
-      }
-      this.currentLiterals.replaceInplace(this.nextLiterals);
-      isExactlyOne = true;
     }
-    this.encodeNonRecursive(this.currentLiterals);
-    if (isExactlyOne && this.currentLiterals.size() > 0)
-      this.result.add(this.vec2clause(this.currentLiterals));
+    for (; i < this.twoPowNBits; i++) {
+      index++;
+      gray_code = i ^ (i >> 1);
+      for (int j = 0; j < this.numberOfBits; j++)
+        if ((gray_code & (1 << j)) != 0)
+          for (int p = 0; p < this.groups.get(index).size(); ++p)
+            this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j)));
+        else
+          for (int p = 0; p < this.groups.get(index).size(); ++p)
+            this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j).negate()));
+    }
   }
 
   /**
-   * Internal non recursive encoding.
-   * @param literals the current literals
+   * Initializes the groups
+   * @param vars the variables of the constraint
    */
-  private void encodeNonRecursive(final LNGVector<Literal> literals) {
-    if (literals.size() > 1)
-      for (int i = 0; i < literals.size(); i++)
-        for (int j = i + 1; j < literals.size(); j++)
-          this.result.add(this.f.clause(literals.get(i).negate(), literals.get(j).negate()));
+  private void initializeGroups(LNGVector<Literal> vars) {
+    int n = vars.size();
+    this.groups.clear();
+    for (int i = 0; i < this.m; i++)
+      this.groups.push(new LNGVector<Literal>());
+
+    int g = (int) Math.ceil((double) n / this.m);
+    int ig = 0;
+    for (int i = 0; i < vars.size(); ) {
+      while (i < g) {
+        this.groups.get(ig).push(vars.get(i));
+        i++;
+      }
+      ig++;
+      g = g + (int) Math.ceil((double) (n - i) / (this.m - ig));
+    }
+
+    for (int i = 0; i < this.groups.size(); i++)
+      this.encodeNaive(this.groups.get(i));
   }
 
   /**
-   * Returns a clause for a vector of literals.
-   * @param literals the literals
-   * @return the clause
+   * Initializes the bits.
    */
-  private Formula vec2clause(final LNGVector<Literal> literals) {
-    final List<Literal> lits = new ArrayList<>(literals.size());
-    for (final Literal l : literals)
-      lits.add(l);
-    return this.f.clause(lits);
+  private void initializeBits() {
+    this.bits.clear();
+    this.numberOfBits = (int) Math.ceil(Math.log(this.m) / Math.log(2));
+    this.twoPowNBits = (int) Math.pow(2, this.numberOfBits);
+    this.k = (this.twoPowNBits - this.m) * 2;
+    for (int i = 0; i < this.numberOfBits; ++i)
+      this.bits.push(this.f.newCCVariable());
+  }
+
+  /**
+   * Naive encoding of a cardinality constraint.
+   * @param vars the variables of the constraint
+   */
+  private void encodeNaive(final LNGVector<Literal> vars) {
+    if (vars.size() > 1)
+      for (int i = 0; i < vars.size(); i++)
+        for (int j = i + 1; j < vars.size(); j++)
+          this.result.add(this.f.clause(vars.get(i).negate(), vars.get(j).negate()));
   }
 
   @Override
