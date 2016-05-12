@@ -54,6 +54,7 @@ public class CCAMOTest {
   private static final CCAtMostOne ladder = new CCAMOLadder(f);
   private static final CCAtMostOne product = new CCAMOProduct(f);
   private static final CCAtMostOne binary = new CCAMOBinary(f);
+  private static final CCAtMostOne nested = new CCAMONested(f);
 
 
   @Test
@@ -62,6 +63,7 @@ public class CCAMOTest {
     Assert.assertTrue(ladder.build(new LinkedList<Variable>()).empty());
     Assert.assertTrue(product.build(new LinkedList<Variable>()).empty());
     Assert.assertTrue(binary.build(new LinkedList<Variable>()).empty());
+    Assert.assertTrue(nested.build(new LinkedList<Variable>()).empty());
   }
 
   @Test
@@ -71,6 +73,7 @@ public class CCAMOTest {
     Assert.assertTrue(ladder.build(vars).empty());
     Assert.assertTrue(product.build(vars).empty());
     Assert.assertTrue(binary.build(vars).empty());
+    Assert.assertTrue(nested.build(vars).empty());
   }
 
   @Test
@@ -107,6 +110,15 @@ public class CCAMOTest {
     testCC(100, binary);
     testCC(250, binary);
     testCC(500, binary);
+  }
+
+  @Test
+  public void testNested() {
+    testCC(2, nested);
+    testCC(10, nested);
+    testCC(100, nested);
+    testCC(250, nested);
+    testCC(500, nested);
   }
 
   private void testCC(int numLits, final CCAtMostOne encoder) {
