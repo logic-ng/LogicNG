@@ -46,7 +46,7 @@ import java.util.List;
  * @version 1.0
  * @since 1.0
  */
-public class CCModularTotalizerTest {
+public class CCAMKModularTotalizerTest {
 
   private static final FormulaFactory f = new FormulaFactory();
 

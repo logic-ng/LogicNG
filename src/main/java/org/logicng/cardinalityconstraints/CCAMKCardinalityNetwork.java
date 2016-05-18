@@ -63,6 +63,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.INPUT_TO_OUTPUT;
+import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.OUTPUT_TO_INPUT;
+
 /**
  * Encodes that at most 'rhs' variables are assigned value true.  Uses the cardinality network
  * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
@@ -99,11 +102,21 @@ public final class CCAMKCardinalityNetwork extends CCAtMostK {
     }
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
-    for (final Variable v : vars)
-      input.push(v);
-    sorting.sort(rhs + 1, input, result, output, CCSorting.ImplicationDirection.INPUT_TO_OUTPUT);
-    assert (output.size() > rhs);
-    result.add(f.clause(output.get(rhs).negate()));
+    if (rhs > vars.size() / 2) {
+      int geq = vars.size() - rhs;
+      for (final Variable v : vars)
+        input.push(v.negate());
+      sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
+      for (int i = 0; i < geq; ++i)
+        result.add(f.clause(output.get(i)));
+    } else {
+      for (final Variable v : vars)
+        input.push(v);
+      sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
+      assert (output.size() > rhs);
+      result.add(f.clause(output.get(rhs).negate()));
+    }
+
     return new ImmutableFormulaList(FType.AND, this.result);
   }
 
