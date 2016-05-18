@@ -65,7 +65,7 @@ import java.util.List;
  * @version 1.0
  * @since 1.0
  */
-public final class CCTotalizer {
+final class CCTotalizer {
 
   private enum Bound {LOWER, UPPER}
 
@@ -77,7 +77,7 @@ public final class CCTotalizer {
    * Constructs a new totalizer.
    * @param f the formula factory
    */
-  public CCTotalizer(final FormulaFactory f) {
+  CCTotalizer(final FormulaFactory f) {
     this.f = f;
     this.result = new LinkedList<>();
   }

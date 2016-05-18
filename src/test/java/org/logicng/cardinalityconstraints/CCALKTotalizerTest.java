@@ -52,7 +52,7 @@ public class CCALKTotalizerTest {
 
   @Test
   public void testCC0() {
-    final CCALKTotalizer totalizer = new CCALKTotalizer(f);
+    final CCAtLeastK totalizer = new CCALKTotalizer(f);
     final ImmutableFormulaList clauses = totalizer.build(new LinkedList<Variable>(), 0);
     Assert.assertTrue(clauses.empty());
   }
