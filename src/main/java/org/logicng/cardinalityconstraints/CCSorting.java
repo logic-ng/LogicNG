@@ -78,10 +78,10 @@ final class CCSorting {
 
   private final FormulaFactory f;
 
-  private final LNGVector<LNGVector<Literal>> s_auxs;
-  private final Map<IntPair, Integer> recursive_sorter_values;
-  private final Map<IntTriple, Integer> recursive_sorter_l_values;
-  private final Map<IntTriple, Integer> recursive_merger_values;
+  private final LNGVector<LNGVector<Literal>> auxVars;
+  private final Map<IntPair, Integer> recursiveSorterValues;
+  private final Map<IntTriple, Integer> recursiveSorterLValues;
+  private final Map<IntTriple, Integer> recursiveMergerValues;
 
   /**
    * Constructs a new sorting network.
@@ -89,10 +89,10 @@ final class CCSorting {
    */
   CCSorting(final FormulaFactory f) {
     this.f = f;
-    this.s_auxs = new LNGVector<>();
-    this.recursive_sorter_values = new HashMap<>();
-    this.recursive_sorter_l_values = new HashMap<>();
-    this.recursive_merger_values = new HashMap<>();
+    this.auxVars = new LNGVector<>();
+    this.recursiveSorterValues = new HashMap<>();
+    this.recursiveSorterLValues = new HashMap<>();
+    this.recursiveMergerValues = new HashMap<>();
   }
 
   void sort(int m, final LNGVector<Literal> input, final List<Formula> result, final LNGVector<Literal> output,
@@ -131,19 +131,19 @@ final class CCSorting {
       return;
     }
     if (direction != INPUT_TO_OUTPUT) {
-      this.recursive_sorter(m, input, result, output, direction);
+      this.recursiveSorter(m, input, result, output, direction);
       return;
     }
-    int counter = counter_sorter_value(m, n);
-    int direct = direct_sorter_value(n);
-    int recursive = this.recursive_sorter_value(m, n, direction);
+    int counter = counterSorterValue(m, n);
+    int direct = directSorterValue(n);
+    int recursive = this.recursiveSorterValue(m, n, direction);
 
     if (counter < direct && counter < recursive)
-      counter_sorter(m, input, result, output, direction);
+      counterSorter(m, input, result, output, direction);
     else if (direct < counter && direct < recursive)
-      direct_sorter(m, input, result, output, direction);
+      directSorter(m, input, result, output, direction);
     else
-      this.recursive_sorter(m, input, result, output, direction);
+      this.recursiveSorter(m, input, result, output, direction);
   }
 
   private void comparator(final Literal x1, final Literal x2, final Literal y, final List<Formula> result,
@@ -173,35 +173,35 @@ final class CCSorting {
     }
   }
 
-  private void recursive_sorter(int m, int l, final LNGVector<Literal> input, final List<Formula> result,
-                                final LNGVector<Literal> output, final ImplicationDirection direction) {
+  private void recursiveSorter(int m, int l, final LNGVector<Literal> input, final List<Formula> result,
+                               final LNGVector<Literal> output, final ImplicationDirection direction) {
     int n = input.size();
     assert (output.size() == 0);
     assert (n > 1);
     assert (m <= n);
-    final LNGVector<Literal> tmp_lits_a = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_b = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_o1 = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_o2 = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsA = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsB = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsO1 = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsO2 = new LNGVector<>();
 
     for (int i = 0; i < l; i++)
-      tmp_lits_a.push(input.get(i));
+      tmpLitsA.push(input.get(i));
     for (int i = l; i < n; i++)
-      tmp_lits_b.push(input.get(i));
+      tmpLitsB.push(input.get(i));
 
-    assert (tmp_lits_a.size() + tmp_lits_b.size() == n);
+    assert (tmpLitsA.size() + tmpLitsB.size() == n);
 
-    this.sort(m, tmp_lits_a, result, tmp_lits_o1, direction);
-    this.sort(m, tmp_lits_b, result, tmp_lits_o2, direction);
-    merge(m, tmp_lits_o1, tmp_lits_o2, result, output, direction);
+    this.sort(m, tmpLitsA, result, tmpLitsO1, direction);
+    this.sort(m, tmpLitsB, result, tmpLitsO2, direction);
+    merge(m, tmpLitsO1, tmpLitsO2, result, output, direction);
 
-    assert (tmp_lits_o1.size() == Math.min(l, m));
-    assert (tmp_lits_o2.size() == Math.min(n - l, m));
+    assert (tmpLitsO1.size() == Math.min(l, m));
+    assert (tmpLitsO2.size() == Math.min(n - l, m));
     assert (output.size() == m);
   }
 
-  private void recursive_sorter(int m, final LNGVector<Literal> input, final List<Formula> result,
-                                final LNGVector<Literal> output, final ImplicationDirection direction) {
+  private void recursiveSorter(int m, final LNGVector<Literal> input, final List<Formula> result,
+                               final LNGVector<Literal> output, final ImplicationDirection direction) {
     assert (m > 0);
     assert (input.size() > 0);
 
@@ -214,62 +214,62 @@ final class CCSorting {
     if (n > 100)
       l = n / 2;
     else {
-      int min_value = this.recursive_sorter_value(m, n, l, direction);
-      for (int i = 2; i < n; ++i) {
-        int value = this.recursive_sorter_value(m, n, i, direction);
-        if (value < min_value) {
+      int minValue = this.recursiveSorterValue(m, n, l, direction);
+      for (int i = 2; i < n; i++) {
+        int value = this.recursiveSorterValue(m, n, i, direction);
+        if (value < minValue) {
           l = i;
-          min_value = value;
+          minValue = value;
         }
       }
     }
-    this.recursive_sorter(m, l, input, result, output, direction);
+    this.recursiveSorter(m, l, input, result, output, direction);
   }
 
-  private void counter_sorter(int k, final LNGVector<Literal> x, final List<Formula> formula,
-                              final LNGVector<Literal> output, final ImplicationDirection direction) {
+  private void counterSorter(int k, final LNGVector<Literal> x, final List<Formula> formula,
+                             final LNGVector<Literal> output, final ImplicationDirection direction) {
     int n = x.size();
-    s_auxs.clear();
+    auxVars.clear();
     for (int i = 0; i < n; i++)
-      s_auxs.push(new LNGVector<Literal>(k));
+      auxVars.push(new LNGVector<Literal>(k));
 
     for (int j = 0; j < k; j++)
       for (int i = j; i < n; i++)
-        s_auxs.get(i).set(j, f.newCCVariable());
+        auxVars.get(i).set(j, f.newCCVariable());
     if (direction == INPUT_TO_OUTPUT || direction == BOTH) {
-      for (int i = 0; i < n; ++i) {
-        formula.add(f.clause(x.get(i).negate(), s_auxs.get(i).get(0)));
+      for (int i = 0; i < n; i++) {
+        formula.add(f.clause(x.get(i).negate(), auxVars.get(i).get(0)));
         if (i > 0)
-          formula.add(f.clause(s_auxs.get(i - 1).get(0).negate(), s_auxs.get(i).get(0)));
+          formula.add(f.clause(auxVars.get(i - 1).get(0).negate(), auxVars.get(i).get(0)));
       }
-      for (int j = 1; j < k; ++j) {
-        for (int i = j; i < n; ++i) {
-          formula.add(f.clause(x.get(i).negate(), s_auxs.get(i - 1).get(j - 1).negate(), s_auxs.get(i).get(j)));
+      for (int j = 1; j < k; j++) {
+        for (int i = j; i < n; i++) {
+          formula.add(f.clause(x.get(i).negate(), auxVars.get(i - 1).get(j - 1).negate(), auxVars.get(i).get(j)));
           if (i > j)
-            formula.add(f.clause(s_auxs.get(i - 1).get(j).negate(), s_auxs.get(i).get(j)));
+            formula.add(f.clause(auxVars.get(i - 1).get(j).negate(), auxVars.get(i).get(j)));
         }
       }
     }
     assert (direction == INPUT_TO_OUTPUT);
     output.clear();
-    for (int i = 0; i < k; ++i)
-      output.push(s_auxs.get(n - 1).get(i));
+    for (int i = 0; i < k; i++)
+      output.push(auxVars.get(n - 1).get(i));
   }
 
-  private void direct_sorter(int m, final LNGVector<Literal> input, final List<Formula> formula,
-                             final LNGVector<Literal> output, final ImplicationDirection direction) {
+  private void directSorter(int m, final LNGVector<Literal> input, final List<Formula> formula,
+                            final LNGVector<Literal> output, final ImplicationDirection direction) {
     assert (direction == INPUT_TO_OUTPUT);
     int n = input.size();
     assert (n < 20);
     int bitmask = 1;
     final List<Literal> clause = new ArrayList<>();
     output.clear();
-    for (int i = 0; i < m; ++i)
+    for (int i = 0; i < m; i++)
       output.push(f.newCCVariable());
     while (bitmask < Math.pow(2, n)) {
       int count = 0;
       clause.clear();
-      for (int i = 0; i < n; ++i)
+      for (int i = 0; i < n; i++)
         if (((1 << i) & bitmask) != 0) {
           count++;
           if (count > m)
@@ -285,43 +285,43 @@ final class CCSorting {
     }
   }
 
-  private void merge(int m, final LNGVector<Literal> input_a, final LNGVector<Literal> input_b, final List<Formula> formula,
+  private void merge(int m, final LNGVector<Literal> inputA, final LNGVector<Literal> inputB, final List<Formula> formula,
                      final LNGVector<Literal> output, final ImplicationDirection direction) {
     assert (m >= 0);
     if (m == 0) {
       output.clear();
       return;
     }
-    int a = input_a.size();
-    int b = input_b.size();
+    int a = inputA.size();
+    int b = inputB.size();
     int n = a + b;
     if (m > n)
       m = n;
     if (a == 0 || b == 0) {
       if (a == 0)
-        output.replaceInplace(input_b);
+        output.replaceInplace(inputB);
       else
-        output.replaceInplace(input_a);
+        output.replaceInplace(inputA);
       return;
     }
     if (direction != INPUT_TO_OUTPUT) {
-      recursive_merger(m, input_a, input_a.size(), input_b, input_b.size(), formula, output, direction);
+      recursiveMerger(m, inputA, inputA.size(), inputB, inputB.size(), formula, output, direction);
       return;
     }
-    int direct = direct_merger_value(m, a, b);
-    int recursive = recursive_merger_value(m, a, b, direction);
+    int direct = directMergerValue(m, a, b);
+    int recursive = recursiveMergerValue(m, a, b, direction);
     if (direct < recursive) {
-      direct_merger(m, input_a, input_b, formula, output, direction);
+      directMerger(m, inputA, inputB, formula, output, direction);
     } else {
-      recursive_merger(m, input_a, input_a.size(), input_b, input_b.size(), formula, output, direction);
+      recursiveMerger(m, inputA, inputA.size(), inputB, inputB.size(), formula, output, direction);
     }
   }
 
-  private void recursive_merger(int c, final LNGVector<Literal> input_a, int a, final LNGVector<Literal> input_b, int b,
-                                final List<Formula> formula, final LNGVector<Literal> output,
-                                final ImplicationDirection direction) {
-    assert (input_a.size() > 0);
-    assert (input_b.size() > 0);
+  private void recursiveMerger(int c, final LNGVector<Literal> inputA, int a, final LNGVector<Literal> inputB, int b,
+                               final List<Formula> formula, final LNGVector<Literal> output,
+                               final ImplicationDirection direction) {
+    assert (inputA.size() > 0);
+    assert (inputB.size() > 0);
     assert (c > 0);
     output.clear();
     if (a > c)
@@ -330,7 +330,7 @@ final class CCSorting {
       b = c;
     if (c == 1) {
       final Variable y = f.newCCVariable();
-      comparator(input_a.get(0), input_b.get(0), y, formula, direction);
+      comparator(inputA.get(0), inputB.get(0), y, formula, direction);
       output.push(y);
       return;
     }
@@ -338,61 +338,61 @@ final class CCSorting {
       assert (c == 2);
       final Variable y1 = f.newCCVariable();
       final Variable y2 = f.newCCVariable();
-      comparator(input_a.get(0), input_b.get(0), y1, y2, formula, direction);
+      comparator(inputA.get(0), inputB.get(0), y1, y2, formula, direction);
       output.push(y1);
       output.push(y2);
       return;
     }
-    final LNGVector<Literal> odd_merge = new LNGVector<>();
-    final LNGVector<Literal> even_merge = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_odd_a = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_odd_b = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_even_a = new LNGVector<>();
-    final LNGVector<Literal> tmp_lits_even_b = new LNGVector<>();
+    final LNGVector<Literal> oddMerge = new LNGVector<>();
+    final LNGVector<Literal> evenMerge = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsOddA = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsOddB = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsEvenA = new LNGVector<>();
+    final LNGVector<Literal> tmpLitsEvenB = new LNGVector<>();
 
     for (int i = 0; i < a; i = i + 2)
-      tmp_lits_odd_a.push(input_a.get(i));
+      tmpLitsOddA.push(inputA.get(i));
     for (int i = 0; i < b; i = i + 2)
-      tmp_lits_odd_b.push(input_b.get(i));
+      tmpLitsOddB.push(inputB.get(i));
     for (int i = 1; i < a; i = i + 2)
-      tmp_lits_even_a.push(input_a.get(i));
+      tmpLitsEvenA.push(inputA.get(i));
     for (int i = 1; i < b; i = i + 2)
-      tmp_lits_even_b.push(input_b.get(i));
+      tmpLitsEvenB.push(inputB.get(i));
 
-    merge(c / 2 + 1, tmp_lits_odd_a, tmp_lits_odd_b, formula, odd_merge, direction);
-    merge(c / 2, tmp_lits_even_a, tmp_lits_even_b, formula, even_merge, direction);
+    merge(c / 2 + 1, tmpLitsOddA, tmpLitsOddB, formula, oddMerge, direction);
+    merge(c / 2, tmpLitsEvenA, tmpLitsEvenB, formula, evenMerge, direction);
 
-    assert (odd_merge.size() > 0);
+    assert (oddMerge.size() > 0);
 
-    output.push(odd_merge.get(0));
+    output.push(oddMerge.get(0));
 
     int i = 1;
     int j = 0;
     while (true) {
-      if (i < odd_merge.size() && j < even_merge.size()) {
+      if (i < oddMerge.size() && j < evenMerge.size()) {
         if (output.size() + 2 <= c) {
           final Variable z0 = f.newCCVariable();
           final Variable z1 = f.newCCVariable();
-          comparator(odd_merge.get(i), even_merge.get(j), z0, z1, formula, direction);
+          comparator(oddMerge.get(i), evenMerge.get(j), z0, z1, formula, direction);
           output.push(z0);
           output.push(z1);
           if (output.size() == c)
             break;
         } else if (output.size() + 1 == c) {
           final Variable z0 = f.newCCVariable();
-          comparator(odd_merge.get(i), even_merge.get(j), z0, formula, direction);
+          comparator(oddMerge.get(i), evenMerge.get(j), z0, formula, direction);
           output.push(z0);
           break;
         }
-      } else if (i >= odd_merge.size() && j >= even_merge.size())
+      } else if (i >= oddMerge.size() && j >= evenMerge.size())
         break;
-      else if (i >= odd_merge.size()) {
-        assert (j == even_merge.size() - 1);
-        output.push(even_merge.back());
+      else if (i >= oddMerge.size()) {
+        assert (j == evenMerge.size() - 1);
+        output.push(evenMerge.back());
         break;
       } else {
-        assert (i == odd_merge.size() - 1);
-        output.push(odd_merge.back());
+        assert (i == oddMerge.size() - 1);
+        output.push(oddMerge.back());
         break;
       }
       i++;
@@ -401,84 +401,84 @@ final class CCSorting {
     assert (output.size() == a + b || output.size() == c);
   }
 
-  private void direct_merger(int m, final LNGVector<Literal> input_a, LNGVector<Literal> input_b, final List<Formula> formula,
-                             LNGVector<Literal> output, final ImplicationDirection direction) {
+  private void directMerger(int m, final LNGVector<Literal> inputA, LNGVector<Literal> inputB, final List<Formula> formula,
+                            LNGVector<Literal> output, final ImplicationDirection direction) {
     assert (direction == INPUT_TO_OUTPUT);
-    int a = input_a.size();
-    int b = input_b.size();
-    for (int i = 0; i < m; ++i)
+    int a = inputA.size();
+    int b = inputB.size();
+    for (int i = 0; i < m; i++)
       output.push(f.newCCVariable());
     int j = m < a ? m : a;
-    for (int i = 0; i < j; ++i)
-      formula.add(f.clause(input_a.get(i).negate(), output.get(i)));
+    for (int i = 0; i < j; i++)
+      formula.add(f.clause(inputA.get(i).negate(), output.get(i)));
     j = m < b ? m : b;
-    for (int i = 0; i < j; ++i)
-      formula.add(f.clause(input_b.get(i).negate(), output.get(i)));
-    for (int i = 0; i < a; ++i)
-      for (int k = 0; k < b; ++k)
+    for (int i = 0; i < j; i++)
+      formula.add(f.clause(inputB.get(i).negate(), output.get(i)));
+    for (int i = 0; i < a; i++)
+      for (int k = 0; k < b; k++)
         if (i + k + 1 < m)
-          formula.add(f.clause(input_a.get(i).negate(), input_b.get(k).negate(), output.get(i + k + 1)));
+          formula.add(f.clause(inputA.get(i).negate(), inputB.get(k).negate(), output.get(i + k + 1)));
   }
 
-  private int recursive_sorter_value(int m, int n, int l, ImplicationDirection direction) {
-    final Integer entry = this.recursive_sorter_l_values.get(new IntTriple(m, n, l));
+  private int recursiveSorterValue(int m, int n, int l, ImplicationDirection direction) {
+    final Integer entry = this.recursiveSorterLValues.get(new IntTriple(m, n, l));
     if (entry != null)
       return entry;
     final List<Formula> formula = new ArrayList<>();
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; i++)
       input.push(f.variable("v" + (i + 1)));
     int value = formula.size();
-    recursive_sorter(m, l, input, formula, output, direction);
-    recursive_sorter_l_values.put(new IntTriple(m, n, l), value);
+    recursiveSorter(m, l, input, formula, output, direction);
+    recursiveSorterLValues.put(new IntTriple(m, n, l), value);
     return value;
   }
 
-  private int recursive_sorter_value(int m, int n, final ImplicationDirection direction) {
-    final Integer entry = recursive_sorter_values.get(new IntPair(m, n));
+  private int recursiveSorterValue(int m, int n, final ImplicationDirection direction) {
+    final Integer entry = recursiveSorterValues.get(new IntPair(m, n));
     if (entry != null)
       return entry;
     final List<Formula> formula = new ArrayList<>();
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; i++)
       input.push(f.variable("v" + (i + 1)));
-    recursive_sorter(m, input, formula, output, direction);
+    recursiveSorter(m, input, formula, output, direction);
     int value = formula.size();
-    recursive_sorter_values.put(new IntPair(m, n), value);
+    recursiveSorterValues.put(new IntPair(m, n), value);
     return value;
   }
 
-  private int counter_sorter_value(int m, int n) {
+  private int counterSorterValue(int m, int n) {
     return 2 * n + (m - 1) * (2 * (n - 1) - 1) - (m - 2) - 2 * ((m - 1) * (m - 2) / 2);
   }
 
-  private int direct_sorter_value(int n) {
+  private int directSorterValue(int n) {
     if (n > 30)
       return Integer.MAX_VALUE;
     return (int) Math.pow(2, n) - 1;
   }
 
-  private int direct_merger_value(int m, int a, int b) {
+  private int directMergerValue(int m, int a, int b) {
     return (a + b) * m - (m * m - m) / 2 - (a * a - a) / 2 - (b * b - b) / 2;
   }
 
-  private int recursive_merger_value(int m, int a, int b, ImplicationDirection direction) {
-    final Integer entry = recursive_merger_values.get(new IntTriple(m, a, b));
+  private int recursiveMergerValue(int m, int a, int b, ImplicationDirection direction) {
+    final Integer entry = recursiveMergerValues.get(new IntTriple(m, a, b));
     if (entry != null)
       return entry;
     final List<Formula> formula = new ArrayList<>();
-    final LNGVector<Literal> input_a = new LNGVector<>();
-    final LNGVector<Literal> input_b = new LNGVector<>();
+    final LNGVector<Literal> inputA = new LNGVector<>();
+    final LNGVector<Literal> inputB = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
-    for (int i = 0; i < a; ++i)
-      input_a.push(f.variable("v" + (i + 1)));
-    for (int i = 0; i < b; ++i)
-      input_b.push(f.variable("v" + (i + a + 1)));
-    recursive_merger(m, input_a, a, input_b, b, formula, output, direction);
+    for (int i = 0; i < a; i++)
+      inputA.push(f.variable("v" + (i + 1)));
+    for (int i = 0; i < b; i++)
+      inputB.push(f.variable("v" + (i + a + 1)));
+    recursiveMerger(m, inputA, a, inputB, b, formula, output, direction);
     int value = formula.size();
-    recursive_merger_values.put(new IntTriple(m, a, b), value);
+    recursiveMergerValues.put(new IntTriple(m, a, b), value);
     return value;
   }
 
