@@ -42,17 +42,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Unit tests for the {@link CCAMKTotalizer}.
+ * Unit tests for the {@link CCAMKCardinalityNetwork}.
  * @version 1.0
  * @since 1.0
  */
-public class CCAMKTotalizerTest {
+public class CCAMKCardinalityNetworkTest {
 
   private static final FormulaFactory f = new FormulaFactory();
 
   @Test
   public void testCC0() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
+    final CCAtMostK cn = new CCAMKCardinalityNetwork(f);
     final int numLits = 100;
     final List<Variable> lits = new LinkedList<>();
     final Variable[] problemLits = new Variable[numLits];
@@ -61,7 +61,7 @@ public class CCAMKTotalizerTest {
       lits.add(lit);
       problemLits[i] = lit;
     }
-    final ImmutableFormulaList clauses = totalizer.build(lits, 0);
+    final ImmutableFormulaList clauses = cn.build(lits, 0);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());
@@ -72,7 +72,7 @@ public class CCAMKTotalizerTest {
 
   @Test
   public void testCC1() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
+    final CCAtMostK cn = new CCAMKCardinalityNetwork(f);
     final int numLits = 100;
     final int rhs = 1;
     final List<Variable> lits = new LinkedList<>();
@@ -82,7 +82,7 @@ public class CCAMKTotalizerTest {
       lits.add(var);
       problemLits[i] = var;
     }
-    final ImmutableFormulaList clauses = totalizer.build(lits, rhs);
+    final ImmutableFormulaList clauses = cn.build(lits, rhs);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());
@@ -94,26 +94,26 @@ public class CCAMKTotalizerTest {
 
   @Test
   public void testCCs() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
-    testCC(10, 0, 1, totalizer);
-    testCC(10, 1, 11, totalizer);
-    testCC(10, 2, 56, totalizer);
-    testCC(10, 3, 176, totalizer);
-    testCC(10, 4, 386, totalizer);
-    testCC(10, 5, 638, totalizer);
-    testCC(10, 6, 848, totalizer);
-    testCC(10, 7, 968, totalizer);
-    testCC(10, 8, 1013, totalizer);
-    testCC(10, 9, 1023, totalizer);
-    testCC(10, 10, 1, totalizer);
-    testCC(10, 15, 1, totalizer);
+    final CCAtMostK cn = new CCAMKCardinalityNetwork(f);
+    testCC(10, 0, 1, cn);
+    testCC(10, 1, 11, cn);
+    testCC(10, 2, 56, cn);
+    testCC(10, 3, 176, cn);
+    testCC(10, 4, 386, cn);
+    testCC(10, 5, 638, cn);
+    testCC(10, 6, 848, cn);
+    testCC(10, 7, 968, cn);
+    testCC(10, 8, 1013, cn);
+    testCC(10, 9, 1023, cn);
+    testCC(10, 10, 1, cn);
+    testCC(10, 15, 1, cn);
   }
 
-  private void testCC(int numLits, int rhs, int expected, final CCAtMostK totalizer) {
+  private void testCC(int numLits, int rhs, int expected, final CCAtMostK cn) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final ImmutableFormulaList clauses = totalizer.build(problemLits, rhs);
+    final ImmutableFormulaList clauses = cn.build(problemLits, rhs);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());
@@ -125,11 +125,11 @@ public class CCAMKTotalizerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalCC1() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
+    final CCAtMostK cn = new CCAMKCardinalityNetwork(f);
     final int numLits = 100;
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    totalizer.build(problemLits, -1);
+    cn.build(problemLits, -1);
   }
 }

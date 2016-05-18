@@ -42,39 +42,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Unit tests for the {@link CCAMKTotalizer}.
+ * Unit tests for the {@link CCALKCardinalityNetwork}.
  * @version 1.0
  * @since 1.0
  */
-public class CCAMKTotalizerTest {
+public class CCALKCardinalityNetworkTest {
 
   private static final FormulaFactory f = new FormulaFactory();
 
   @Test
   public void testCC0() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
-    final int numLits = 100;
-    final List<Variable> lits = new LinkedList<>();
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++) {
-      final Variable lit = f.variable("v" + i);
-      lits.add(lit);
-      problemLits[i] = lit;
-    }
-    final ImmutableFormulaList clauses = totalizer.build(lits, 0);
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(clauses);
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    final List<Assignment> models = solver.enumerateAllModels(problemLits);
-    Assert.assertEquals(1, models.size());
-    Assert.assertEquals(100, models.get(0).negativeLiterals().size());
+    final CCAtLeastK cn = new CCALKCardinalityNetwork(f);
+    final ImmutableFormulaList clauses = cn.build(new LinkedList<Variable>(), 0);
+    Assert.assertTrue(clauses.empty());
   }
 
   @Test
-  public void testCC1() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
+  public void testCCALL() {
+    final CCAtLeastK cn = new CCALKCardinalityNetwork(f);
     final int numLits = 100;
-    final int rhs = 1;
     final List<Variable> lits = new LinkedList<>();
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++) {
@@ -82,54 +68,55 @@ public class CCAMKTotalizerTest {
       lits.add(var);
       problemLits[i] = var;
     }
-    final ImmutableFormulaList clauses = totalizer.build(lits, rhs);
+    final ImmutableFormulaList clauses = cn.build(lits, 100);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
-    Assert.assertEquals(numLits + 1, models.size());
-    for (final Assignment model : models)
-      Assert.assertTrue(model.positiveLiterals().size() <= rhs);
+    Assert.assertEquals(1, models.size());
+    Assert.assertEquals(100, models.get(0).positiveLiterals().size());
   }
 
   @Test
   public void testCCs() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
-    testCC(10, 0, 1, totalizer);
-    testCC(10, 1, 11, totalizer);
-    testCC(10, 2, 56, totalizer);
-    testCC(10, 3, 176, totalizer);
-    testCC(10, 4, 386, totalizer);
-    testCC(10, 5, 638, totalizer);
-    testCC(10, 6, 848, totalizer);
-    testCC(10, 7, 968, totalizer);
-    testCC(10, 8, 1013, totalizer);
-    testCC(10, 9, 1023, totalizer);
-    testCC(10, 10, 1, totalizer);
-    testCC(10, 15, 1, totalizer);
+    final CCAtLeastK cn = new CCALKCardinalityNetwork(f);
+    testCC(10, 1, 1023, cn);
+    testCC(10, 2, 1013, cn);
+    testCC(10, 3, 968, cn);
+    testCC(10, 4, 848, cn);
+    testCC(10, 5, 638, cn);
+    testCC(10, 6, 386, cn);
+    testCC(10, 7, 176, cn);
+    testCC(10, 8, 56, cn);
+    testCC(10, 9, 11, cn);
+    testCC(10, 10, 1, cn);
+    testCC(10, 12, 0, cn);
   }
 
-  private void testCC(int numLits, int rhs, int expected, final CCAtMostK totalizer) {
+  private void testCC(int numLits, int rhs, int expected, final CCAtLeastK cn) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final ImmutableFormulaList clauses = totalizer.build(problemLits, rhs);
+    final ImmutableFormulaList clauses = cn.build(problemLits, rhs);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
+    if (expected != 0)
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+    else
+      Assert.assertEquals(Tristate.FALSE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
     Assert.assertEquals(expected, models.size());
     for (final Assignment model : models)
-      Assert.assertTrue(model.positiveLiterals().size() <= rhs);
+      Assert.assertTrue(model.positiveLiterals().size() >= rhs);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalCC1() {
-    final CCAtMostK totalizer = new CCAMKTotalizer(f);
+    final CCAtLeastK cn = new CCALKCardinalityNetwork(f);
     final int numLits = 100;
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    totalizer.build(problemLits, -1);
+    cn.build(problemLits, -1);
   }
 }
