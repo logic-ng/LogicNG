@@ -38,8 +38,6 @@ import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
-import org.logicng.pseudobooleans.PBEncoder;
-import org.logicng.pseudobooleans.PBSWC;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +51,6 @@ import java.util.List;
 public abstract class SATSolver {
 
   protected final FormulaFactory f;
-  protected final PBEncoder pbEncoder;
   protected Tristate result;
 
   /**
@@ -62,7 +59,6 @@ public abstract class SATSolver {
    */
   protected SATSolver(final FormulaFactory f) {
     this.f = f;
-    this.pbEncoder = new PBSWC(f);
   }
 
   /**

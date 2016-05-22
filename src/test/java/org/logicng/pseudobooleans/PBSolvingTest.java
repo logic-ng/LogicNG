@@ -392,4 +392,22 @@ public class PBSolvingTest {
       solver.reset();
     }
   }
+
+  @Test
+  public void testSimple() {
+    for (final SATSolver solver : solvers) {
+      solver.reset();
+      Variable[] lits2 = new Variable[3];
+      for (int i = 0; i < 3; i++)
+        lits2[i] = f.variable("v" + i);
+      int[] coeffs2 = new int[]{3, 2, 2};
+      solver.add(f.pbc(CType.LE, 3, lits2, coeffs2));
+      Assert.assertEquals(TRUE, solver.sat());
+      List<Assignment> models = solver.enumerateAllModels(literals10);
+      Assert.assertEquals(4, models.size());
+      for (final Assignment model : models)
+        Assert.assertTrue(model.positiveLiterals().size() <= 1);
+      solver.reset();
+    }
+  }
 }
