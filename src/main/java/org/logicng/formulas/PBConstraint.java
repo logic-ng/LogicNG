@@ -82,6 +82,7 @@ public final class PBConstraint extends Formula {
   private final boolean isCC;
   private ImmutableFormulaList encoding;
   private int hashCode;
+  private int maxWeight;
 
   /**
    * Constructs a new pseudo-Boolean constraint.
@@ -99,11 +100,15 @@ public final class PBConstraint extends Formula {
     this.literals = literals;
     this.coefficients = coefficients;
     boolean cc = true;
-    for (final int c : coefficients)
+    maxWeight = Integer.MIN_VALUE;
+    for (final int c : coefficients) {
+      if (c > maxWeight)
+        maxWeight = c;
       if (c != 1) {
         cc = false;
         break;
       }
+    }
     for (final Literal lit : literals)
       if (!lit.phase()) {
         cc = false;
@@ -154,6 +159,14 @@ public final class PBConstraint extends Formula {
    */
   public boolean isCC() {
     return this.isCC;
+  }
+
+  /**
+   * Returns the maximal coefficient of this constraint.
+   * @return the maximal coefficient of this constraint
+   */
+  public int maxWeight() {
+    return this.maxWeight;
   }
 
   /**

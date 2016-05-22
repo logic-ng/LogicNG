@@ -72,9 +72,9 @@ import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.
  * @version 1.1
  * @since 1.1
  */
-final class CCSorting {
+public final class CCSorting {
 
-  enum ImplicationDirection {INPUT_TO_OUTPUT, OUTPUT_TO_INPUT, BOTH}
+  public enum ImplicationDirection {INPUT_TO_OUTPUT, OUTPUT_TO_INPUT, BOTH}
 
   private final FormulaFactory f;
 
@@ -87,7 +87,7 @@ final class CCSorting {
    * Constructs a new sorting network.
    * @param f the formula factory
    */
-  CCSorting(final FormulaFactory f) {
+  public CCSorting(final FormulaFactory f) {
     this.f = f;
     this.auxVars = new LNGVector<>();
     this.recursiveSorterValues = new HashMap<>();
@@ -95,8 +95,8 @@ final class CCSorting {
     this.recursiveMergerValues = new HashMap<>();
   }
 
-  void sort(int m, final LNGVector<Literal> input, final List<Formula> result, final LNGVector<Literal> output,
-            final ImplicationDirection direction) {
+  public void sort(int m, final LNGVector<Literal> input, final List<Formula> result, final LNGVector<Literal> output,
+                   final ImplicationDirection direction) {
     assert (m >= 0);
     if (m == 0) {
       output.clear();
@@ -285,8 +285,8 @@ final class CCSorting {
     }
   }
 
-  private void merge(int m, final LNGVector<Literal> inputA, final LNGVector<Literal> inputB, final List<Formula> formula,
-                     final LNGVector<Literal> output, final ImplicationDirection direction) {
+  public void merge(int m, final LNGVector<Literal> inputA, final LNGVector<Literal> inputB, final List<Formula> formula,
+                    final LNGVector<Literal> output, final ImplicationDirection direction) {
     assert (m >= 0);
     if (m == 0) {
       output.clear();
