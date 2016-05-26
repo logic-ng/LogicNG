@@ -28,38 +28,29 @@
 
 package org.logicng.pseudobooleans;
 
-import org.logicng.cardinalityconstraints.CCALKTotalizer;
-import org.logicng.cardinalityconstraints.CCAMKTotalizer;
-import org.logicng.cardinalityconstraints.CCAMOProduct;
-import org.logicng.cardinalityconstraints.CCAtLeastK;
-import org.logicng.cardinalityconstraints.CCAtMostK;
-import org.logicng.cardinalityconstraints.CCAtMostOne;
-import org.logicng.cardinalityconstraints.CCEXOProduct;
-import org.logicng.cardinalityconstraints.CCExactlyOne;
+import org.logicng.cardinalityconstraints.CCConfig;
+import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.CType;
+import org.logicng.configurations.Configuration;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
-import org.logicng.formulas.Variable;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * An encoder for pseudo-Boolean constraints.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class PBEncoder {
 
   protected final FormulaFactory f;
-  private final CCAtLeastK alk;
-  private final CCAtMostK amk;
-  private final CCAtMostOne amo;
-  private final CCExactlyOne exo;
+  private final CCEncoder ccEncoder;
 
   /**
    * Constructs a new pseudo-Boolean encoder.
@@ -67,12 +58,11 @@ public abstract class PBEncoder {
    */
   public PBEncoder(final FormulaFactory f) {
     this.f = f;
-    this.alk = new CCALKTotalizer(f);
-    this.amk = new CCAMKTotalizer(f);
-    this.amo = new CCAMOProduct(f);
-    this.exo = new CCEXOProduct(f);
+    Configuration ccConfig = f.configurationFor(ConfigurationType.CC_ENCODER);
+    if (ccConfig == null)
+      ccConfig = new CCConfig.Builder().build();
+    this.ccEncoder = new CCEncoder(f, (CCConfig) ccConfig);
   }
-
 
   /**
    * Builds a pseudo Boolean constraint of the form {@code c_1 * lit_1 + c_2 * lit_2 + ... + c_n * lit_n >= k}.
@@ -83,7 +73,7 @@ public abstract class PBEncoder {
    */
   public ImmutableFormulaList build(final PBConstraint constraint) {
     if (constraint.isCC())
-      return this.buildCC(constraint);
+      return this.ccEncoder.encode(constraint);
     final Formula normalized = constraint.normalize();
     switch (normalized.type()) {
       case TRUE:
@@ -93,7 +83,7 @@ public abstract class PBEncoder {
       case PBC:
         final PBConstraint pbc = (PBConstraint) normalized;
         if (pbc.isCC())
-          return this.buildCC(pbc);
+          return this.ccEncoder.encode(constraint);
         return this.build(pbc.operands(), pbc.coefficients(), pbc.rhs());
       case AND:
         final List<Formula> list = new LinkedList<>();
@@ -112,63 +102,6 @@ public abstract class PBEncoder {
       default:
         throw new IllegalArgumentException("Illegal return value of PBConstraint.normalize");
     }
-  }
-
-  /**
-   * Builds the CNF translation of a given cardinality constraint.
-   * @param constraint the cardinality constraint
-   * @return the CNF encoding of the pseudo Boolean constraint
-   */
-  private ImmutableFormulaList buildCC(final PBConstraint constraint) {
-    assert constraint.isCC();
-    final Variable[] ops = litsAsVars(constraint.operands());
-    switch (constraint.comparator()) {
-      case LE:
-        if (constraint.rhs() == 1)
-          return this.amo.build(ops);
-        else
-          return this.amk.build(ops, constraint.rhs());
-      case LT:
-        if (constraint.rhs() == 2)
-          return this.amo.build(ops);
-        else
-          return this.amk.build(ops, constraint.rhs() - 1);
-      case GE:
-        return this.alk.build(ops, constraint.rhs());
-      case GT:
-        return this.alk.build(ops, constraint.rhs() + 1);
-      case EQ:
-        if (constraint.rhs() == 1)
-          return this.exo.build(ops);
-        else {
-          Formula le = this.f.cc(CType.LE, constraint.rhs(), ops).normalize();
-          Formula ge = this.f.cc(CType.GE, constraint.rhs(), ops).normalize();
-          if (le.type() == FType.FALSE || ge.type() == FType.FALSE)
-            return new ImmutableFormulaList(FType.AND, this.f.falsum());
-          List<Formula> list = new LinkedList<>();
-          if (le.type() != FType.TRUE)
-            list.addAll(this.build((PBConstraint) le).toList());
-          if (ge.type() != FType.TRUE)
-            list.addAll(this.build((PBConstraint) ge).toList());
-          return new ImmutableFormulaList(FType.AND, list);
-        }
-      default:
-        throw new IllegalArgumentException("Unknown pseudo-Boolean comparator: " + constraint.comparator());
-    }
-  }
-
-  /**
-   * Converts a literal array to a variable array
-   * <p>
-   * ATTENTION: this only works if because the {@code isCC} method checks, that there are only positive literals.
-   * @param lits the literals
-   * @return the variables
-   */
-  private static Variable[] litsAsVars(final Literal[] lits) {
-    final Variable[] vars = new Variable[lits.length];
-    for (int i = 0; i < vars.length; i++)
-      vars[i] = lits[i].variable();
-    return vars;
   }
 
   /**

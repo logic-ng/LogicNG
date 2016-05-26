@@ -33,73 +33,81 @@ import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
-import java.util.LinkedList;
 import java.util.List;
+
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BIMANDER;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BINARY;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.COMMANDER;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.LADDER;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.NESTED;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.PRODUCT;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.PURE;
+import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.FIXED;
+import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.HALF;
+import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.SQRT;
 
 /**
  * Unit tests for the exactly-one encoders.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class CCEXOTest {
 
-  private static final FormulaFactory f = new FormulaFactory();
-  private static final CCExactlyOne pure = new CCEXOPure(f);
-  private static final CCExactlyOne ladder = new CCEXOLadder(f);
-  private static final CCExactlyOne product = new CCEXOProduct(f);
+  private final FormulaFactory f = new FormulaFactory();
+  private CCEncoder[] encoders;
 
-
-  @Test
-  public void testCC0() {
-    Assert.assertTrue(pure.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(ladder.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(product.build(new LinkedList<Variable>()).empty());
+  public CCEXOTest() {
+    encoders = new CCEncoder[10];
+    encoders[0] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(PURE).build());
+    encoders[1] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(LADDER).build());
+    encoders[2] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(PRODUCT).build());
+    encoders[3] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BINARY).build());
+    encoders[4] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(NESTED).build());
+    encoders[5] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(3).build());
+    encoders[6] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(7).build());
+    encoders[7] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build());
+    encoders[8] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build());
+    encoders[9] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build());
   }
 
   @Test
-  public void testPure() {
-    testCC(1, pure);
-    testCC(2, pure);
-    testCC(10, pure);
-    testCC(100, pure);
-    testCC(250, pure);
-    testCC(500, pure);
+  public void testEXO0() {
+    final PBConstraint cc = this.f.exo();
+    for (final CCEncoder encoder : this.encoders)
+      Assert.assertTrue(encoder.encode(cc).empty());
   }
 
   @Test
-  public void testLadder() {
-    testCC(1, ladder);
-    testCC(2, ladder);
-    testCC(10, ladder);
-    testCC(100, ladder);
-    testCC(250, ladder);
-    testCC(500, ladder);
+  public void testEXO1() {
+    final PBConstraint cc = this.f.exo(f.variable("v0"));
+    final ImmutableFormulaList expected = new ImmutableFormulaList(FType.AND, f.variable("v0"));
+    for (final CCEncoder encoder : this.encoders)
+      Assert.assertEquals(expected, encoder.encode(cc));
   }
 
   @Test
-  public void testProduct() {
-    testCC(1, product);
-    testCC(2, product);
-    testCC(10, product);
-    testCC(100, product);
-    testCC(250, product);
-    testCC(500, product);
-  }
-
-  private void testCC(int numLits, final CCExactlyOne encoder) {
-    final List<Variable> lits = new LinkedList<>();
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++) {
-      final Variable lit = f.variable("v" + i);
-      lits.add(lit);
-      problemLits[i] = lit;
+  public void testEXOK() {
+    for (final CCEncoder encoder : this.encoders) {
+      testEXO(2, encoder);
+      testEXO(10, encoder);
+      testEXO(100, encoder);
+      testEXO(250, encoder);
+      testEXO(500, encoder);
     }
-    final ImmutableFormulaList clauses = encoder.build(lits);
+  }
+
+  private void testEXO(int numLits, final CCEncoder encoder) {
+    final Variable[] problemLits = new Variable[numLits];
+    for (int i = 0; i < numLits; i++)
+      problemLits[i] = f.variable("v" + i);
+    final ImmutableFormulaList clauses = encoder.encode(f.exo(problemLits));
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());

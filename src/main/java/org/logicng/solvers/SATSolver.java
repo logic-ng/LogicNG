@@ -66,6 +66,7 @@ public abstract class SATSolver {
    * @param formula the formula
    */
   public void add(final Formula formula) {
+    //TODO not simply add the cnf here
     this.addClauseSet(formula.cnf());
   }
 

@@ -53,7 +53,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class PBConstraint extends Formula {
@@ -496,6 +496,7 @@ public final class PBConstraint extends Formula {
    * Encodes this constraint as CNF and stores the result.
    */
   private void encode() {
+    // TODO not just use PBSWC here - use the formula factory PBEncoder
     this.encoding = new PBSWC(f).build(this);
   }
 

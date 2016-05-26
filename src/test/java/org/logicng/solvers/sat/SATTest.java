@@ -30,8 +30,7 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.cardinalityconstraints.CCEXOProduct;
-import org.logicng.cardinalityconstraints.CCExactlyOne;
+import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
@@ -66,7 +65,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class SATTest {
@@ -74,7 +73,7 @@ public class SATTest {
   private final FormulaFactory f;
   private final SATSolver[] solvers;
   private final PigeonHoleGenerator pg;
-  final PropositionalParser parser;
+  private final PropositionalParser parser;
 
   public SATTest() {
     this.f = new FormulaFactory();
@@ -208,13 +207,13 @@ public class SATTest {
 
   @Test
   public void testCC1() throws InterruptedException {
-    final CCExactlyOne c = new CCEXOProduct(f);
+    final CCEncoder c = new CCEncoder(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
         lits[j] = f.variable("x" + j);
-      final ImmutableFormulaList cc = c.build(lits);
+      final ImmutableFormulaList cc = c.encode(f.exo(lits));
       s.add(cc);
       final List<Assignment> models = s.enumerateAllModels(lits);
       Assert.assertEquals(100, models.size());
@@ -226,12 +225,12 @@ public class SATTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testIllegalEnumeration() {
+    final CCEncoder c = new CCEncoder(f);
     final SATSolver s = this.solvers[7];
     final Variable[] lits = new Variable[100];
-    final CCExactlyOne c = new CCEXOProduct(f);
     for (int j = 0; j < lits.length; j++)
       lits[j] = f.variable("x" + j);
-    final ImmutableFormulaList cc = c.build(lits);
+    final ImmutableFormulaList cc = c.encode(f.exo(lits));
     s.add(cc);
     s.enumerateAllModels(lits);
   }
@@ -405,13 +404,13 @@ public class SATTest {
 
   @Test
   public void testNumberOfModelHandler() {
-    final CCExactlyOne c = new CCEXOProduct(f);
+    final CCEncoder c = new CCEncoder(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
         lits[j] = f.variable("x" + j);
-      final ImmutableFormulaList cc = c.build(lits);
+      final ImmutableFormulaList cc = c.encode(f.exo(lits));
 
       s.add(cc);
       NumberOfModelsHandler handler = new NumberOfModelsHandler(100);

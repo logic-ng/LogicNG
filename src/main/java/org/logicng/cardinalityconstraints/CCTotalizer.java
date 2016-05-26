@@ -49,20 +49,18 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Super class for totalizers due to Bailleux and Boufkhad.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 final class CCTotalizer {
@@ -89,19 +87,10 @@ final class CCTotalizer {
    * @return the constraint
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  ImmutableFormulaList buildAMK(final Collection<Variable> vars, int rhs) {
-    if (rhs < 0)
-      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    this.result.clear();
-    if (rhs >= vars.size()) // there is no constraint
-      return new ImmutableFormulaList(FType.AND);
-    if (rhs == 0) { // no variable can be true
-      for (final Variable var : vars)
-        this.result.add(var.negate());
-      return new ImmutableFormulaList(FType.AND, this.result);
-    }
-    this.cardinalityInvars = new LNGVector<>(vars.size());
-    final LNGVector<Variable> cardinalityOutlits = new LNGVector<>(vars.size());
+  List<Formula> buildAMK(final Variable[] vars, int rhs) {
+    this.result = new ArrayList<>();
+    this.cardinalityInvars = new LNGVector<>(vars.length);
+    final LNGVector<Variable> cardinalityOutlits = new LNGVector<>(vars.length);
     for (final Variable var : vars) {
       this.cardinalityInvars.push(var);
       cardinalityOutlits.push(this.f.newCCVariable());
@@ -110,7 +99,7 @@ final class CCTotalizer {
     assert this.cardinalityInvars.size() == 0;
     for (int i = rhs; i < cardinalityOutlits.size(); i++)
       this.result.add(cardinalityOutlits.get(i).negate());
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return this.result;
   }
 
   /**
@@ -120,25 +109,10 @@ final class CCTotalizer {
    * @return the constraint
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  ImmutableFormulaList buildALK(final Collection<Variable> vars, int rhs) {
-    if (rhs < 0)
-      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    this.result.clear();
-    if (rhs > vars.size())
-      return new ImmutableFormulaList(FType.AND, this.f.falsum());
-    if (rhs == 0)
-      return new ImmutableFormulaList(FType.AND);
-    if (rhs == 1) {
-      this.result.add(this.f.or(vars));
-      return new ImmutableFormulaList(FType.AND, this.result);
-    }
-    if (rhs == vars.size()) {
-      for (final Variable var : vars)
-        this.result.add(var);
-      return new ImmutableFormulaList(FType.AND, this.result);
-    }
-    this.cardinalityInvars = new LNGVector<>(vars.size());
-    final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.size());
+  List<Formula> buildALK(final Variable[] vars, int rhs) {
+    this.result = new ArrayList<>();
+    this.cardinalityInvars = new LNGVector<>(vars.length);
+    final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.length);
     for (final Variable var : vars) {
       this.cardinalityInvars.push(var);
       cardinalityOutvars.push(this.f.newCCVariable());
@@ -147,7 +121,7 @@ final class CCTotalizer {
     assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)
       this.result.add(cardinalityOutvars.get(i));
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return this.result;
   }
 
   private void toCNF(final LNGVector<Variable> vars, int rhs, final Bound bound) {

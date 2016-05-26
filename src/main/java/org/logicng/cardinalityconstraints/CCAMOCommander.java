@@ -51,9 +51,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -67,7 +65,7 @@ import java.util.List;
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMOCommander extends CCAtMostOne {
+final class CCAMOCommander implements CCAtMostOne {
 
   private final FormulaFactory f;
   private List<Formula> result;
@@ -81,34 +79,23 @@ public final class CCAMOCommander extends CCAtMostOne {
    * @param f the formula factory
    * @param k the group size for the encoding
    */
-  public CCAMOCommander(final FormulaFactory f, int k) {
+  CCAMOCommander(final FormulaFactory f, int k) {
     this.f = f;
     this.k = k;
-    this.result = new ArrayList<>();
     this.literals = new LNGVector<>();
     this.nextLiterals = new LNGVector<>();
     this.currentLiterals = new LNGVector<>();
   }
 
-  /**
-   * Constructs the commander AMO encoder with group size 3.
-   * @param f the formula factory
-   */
-  public CCAMOCommander(final FormulaFactory f) {
-    this(f, 3);
-  }
-
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    this.result.clear();
-    if (vars.length <= 0)
-      return new ImmutableFormulaList(FType.AND, this.result);
+  public List<Formula> build(final Variable... vars) {
+    this.result = new ArrayList<>();
     this.currentLiterals.clear();
     this.nextLiterals.clear();
     for (final Variable var : vars)
       this.currentLiterals.push(var);
     this.encodeRecursive();
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return this.result;
   }
 
   /**

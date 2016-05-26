@@ -51,9 +51,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -67,9 +65,7 @@ import java.util.List;
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMOBimander extends CCAtMostOne {
-
-  //TODO configuration for group size (half, sqrt, fixed)
+final class CCAMOBimander implements CCAtMostOne {
 
   private final FormulaFactory f;
   private List<Formula> result;
@@ -84,29 +80,18 @@ public final class CCAMOBimander extends CCAtMostOne {
    * Constructs the bimander AMO encoder with a given number of groups.
    * @param f the formula factory
    */
-  public CCAMOBimander(final FormulaFactory f, int m) {
+  CCAMOBimander(final FormulaFactory f, int m) {
     this.f = f;
     this.m = m;
-    this.result = new ArrayList<>();
     this.groups = new LNGVector<>();
     this.bits = new LNGVector<>();
   }
 
-  /**
-   * Constructs the bimander AMO encoder with 3 groups.
-   * @param f the formula factory
-   */
-  public CCAMOBimander(final FormulaFactory f) {
-    this(f, 3);
-  }
-
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    this.result.clear();
-    if (vars.length <= 1)
-      return new ImmutableFormulaList(FType.AND, this.result);
+  public List<Formula> build(final Variable... vars) {
+    this.result = new ArrayList<>();
     this.encodeIntern(new LNGVector<Literal>(vars));
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return this.result;
   }
 
   /**

@@ -49,8 +49,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
@@ -60,10 +58,10 @@ import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the Ladder/Regular encoding.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class CCAMOLadder extends CCAtMostOne {
+final class CCAMOLadder implements CCAtMostOne {
 
   private final FormulaFactory f;
 
@@ -71,15 +69,13 @@ public final class CCAMOLadder extends CCAtMostOne {
    * Constructs the naive AMO encoder.
    * @param f the formula factory
    */
-  public CCAMOLadder(final FormulaFactory f) {
+  CCAMOLadder(final FormulaFactory f) {
     this.f = f;
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
+  public List<Formula> build(final Variable... vars) {
     final List<Formula> result = new LinkedList<>();
-    if (vars.length < 2)
-      return new ImmutableFormulaList(FType.AND);
     final Variable[] seqAuxiliary = new Variable[vars.length - 1];
     for (int i = 0; i < vars.length - 1; i++)
       seqAuxiliary[i] = this.f.newCCVariable();
@@ -94,7 +90,7 @@ public final class CCAMOLadder extends CCAtMostOne {
         result.add(this.f.clause(vars[i].negate(), seqAuxiliary[i - 1].negate()));
       }
     }
-    return new ImmutableFormulaList(FType.AND, result);
+    return result;
   }
 
   @Override

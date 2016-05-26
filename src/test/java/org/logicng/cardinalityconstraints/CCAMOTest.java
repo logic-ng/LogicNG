@@ -34,166 +34,80 @@ import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BEST;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BIMANDER;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BINARY;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.COMMANDER;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.LADDER;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.NESTED;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.PRODUCT;
+import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.PURE;
+import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.FIXED;
+import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.HALF;
+import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.SQRT;
 
 /**
  * Unit tests for the at-most-one encoders.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class CCAMOTest {
 
-  private static final FormulaFactory f = new FormulaFactory();
-  private static final CCAtMostOne pure = new CCAMOPure(f);
-  private static final CCAtMostOne ladder = new CCAMOLadder(f);
-  private static final CCAtMostOne product = new CCAMOProduct(f);
-  private static final CCAtMostOne binary = new CCAMOBinary(f);
-  private static final CCAtMostOne nested = new CCAMONested(f);
-  private static final CCAtMostOne commander3 = new CCAMOCommander(f);
-  private static final CCAtMostOne commander7 = new CCAMOCommander(f, 7);
-  private static final CCAtMostOne bimander3 = new CCAMOBimander(f);
+  private final FormulaFactory f = new FormulaFactory();
+  private CCEncoder[] encoders;
 
-
-  @Test
-  public void testCC0() {
-    Assert.assertTrue(pure.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(ladder.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(product.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(binary.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(nested.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(commander3.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(commander7.build(new LinkedList<Variable>()).empty());
-    Assert.assertTrue(bimander3.build(new LinkedList<Variable>()).empty());
+  public CCAMOTest() {
+    encoders = new CCEncoder[11];
+    encoders[0] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(PURE).build());
+    encoders[1] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(LADDER).build());
+    encoders[2] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(PRODUCT).build());
+    encoders[3] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BINARY).build());
+    encoders[4] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(NESTED).build());
+    encoders[5] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(3).build());
+    encoders[6] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(7).build());
+    encoders[7] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build());
+    encoders[8] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build());
+    encoders[9] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build());
+    encoders[10] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BEST).build());
   }
 
   @Test
-  public void testCC1() {
-    final List<Variable> vars = new LinkedList<>(Collections.singletonList(f.variable("v0")));
-    Assert.assertTrue(pure.build(vars).empty());
-    Assert.assertTrue(ladder.build(vars).empty());
-    Assert.assertTrue(product.build(vars).empty());
-    Assert.assertTrue(binary.build(vars).empty());
-    Assert.assertTrue(nested.build(vars).empty());
-    Assert.assertTrue(commander3.build(vars).empty());
-    Assert.assertTrue(commander7.build(vars).empty());
-    Assert.assertTrue(bimander3.build(vars).empty());
+  public void testAMO0() {
+    final PBConstraint cc = this.f.amo();
+    for (final CCEncoder encoder : this.encoders)
+      Assert.assertTrue(encoder.encode(cc).empty());
   }
 
   @Test
-  public void testPure() {
-    testCC(2, pure);
-    testCC(10, pure);
-    testCC(100, pure);
-    testCC(250, pure);
-    testCC(500, pure);
+  public void testAMO1() {
+    final PBConstraint cc = this.f.amo(f.variable("v0"));
+    for (final CCEncoder encoder : this.encoders)
+      Assert.assertTrue(encoder.encode(cc).empty());
   }
 
   @Test
-  public void testLadder() {
-    testCC(2, ladder);
-    testCC(10, ladder);
-    testCC(100, ladder);
-    testCC(250, ladder);
-    testCC(500, ladder);
-  }
-
-  @Test
-  public void testProduct() {
-    testCC(2, product);
-    testCC(10, product);
-    testCC(100, product);
-    testCC(250, product);
-    testCC(500, product);
-  }
-
-  @Test
-  public void testBinary() {
-    testCC(2, binary);
-    testCC(10, binary);
-    testCC(100, binary);
-    testCC(250, binary);
-    testCC(500, binary);
-  }
-
-  @Test
-  public void testNested() {
-    testCC(2, nested);
-    testCC(10, nested);
-    testCC(100, nested);
-    testCC(250, nested);
-    testCC(500, nested);
-  }
-
-  @Test
-  public void testCommander3() {
-    testCC(2, commander3);
-    testCC(10, commander3);
-    testCC(100, commander3);
-    testCC(250, commander3);
-    testCC(500, commander3);
-  }
-
-  @Test
-  public void testCommander7() {
-    testCC(2, commander7);
-    testCC(10, commander7);
-    testCC(100, commander7);
-    testCC(250, commander7);
-    testCC(500, commander7);
-  }
-
-  @Test
-  public void testBimander3() {
-    testCC(2, bimander3);
-    testCC(10, bimander3);
-    testCC(100, bimander3);
-    testCC(250, bimander3);
-    testCC(500, bimander3);
-  }
-
-  @Test
-  public void testBimanderHalf() {
-    final CCAtMostOne bimander1 = new CCAMOBimander(f, 1);
-    final CCAtMostOne bimander5 = new CCAMOBimander(f, 5);
-    final CCAtMostOne bimander50 = new CCAMOBimander(f, 50);
-    final CCAtMostOne bimander125 = new CCAMOBimander(f, 125);
-    final CCAtMostOne bimander250 = new CCAMOBimander(f, 250);
-    testCC(2, bimander1);
-    testCC(10, bimander5);
-    testCC(100, bimander50);
-    testCC(250, bimander125);
-    testCC(500, bimander250);
-  }
-
-  @Test
-  public void testBimanderSqrt() {
-    final CCAtMostOne bimander1 = new CCAMOBimander(f, (int) Math.sqrt(2));
-    final CCAtMostOne bimander5 = new CCAMOBimander(f, (int) Math.sqrt(10));
-    final CCAtMostOne bimander50 = new CCAMOBimander(f, (int) Math.sqrt(50));
-    final CCAtMostOne bimander125 = new CCAMOBimander(f, (int) Math.sqrt(250));
-    final CCAtMostOne bimander250 = new CCAMOBimander(f, (int) Math.sqrt(500));
-    testCC(2, bimander1);
-    testCC(10, bimander5);
-    testCC(100, bimander50);
-    testCC(250, bimander125);
-    testCC(500, bimander250);
-  }
-
-  private void testCC(int numLits, final CCAtMostOne encoder) {
-    final List<Variable> lits = new LinkedList<>();
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++) {
-      final Variable lit = f.variable("v" + i);
-      lits.add(lit);
-      problemLits[i] = lit;
+  public void testAMOK() {
+    for (final CCEncoder encoder : this.encoders) {
+      testAMO(2, encoder);
+      testAMO(10, encoder);
+      testAMO(100, encoder);
+      testAMO(250, encoder);
+      testAMO(500, encoder);
     }
-    final ImmutableFormulaList clauses = encoder.build(lits);
+  }
+
+  private void testAMO(int numLits, final CCEncoder encoder) {
+    final Variable[] problemLits = new Variable[numLits];
+    for (int i = 0; i < numLits; i++)
+      problemLits[i] = f.variable("v" + i);
+    final ImmutableFormulaList clauses = encoder.encode(f.amo(problemLits));
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(clauses);
     Assert.assertEquals(Tristate.TRUE, solver.sat());

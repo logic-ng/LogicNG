@@ -51,8 +51,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
@@ -66,25 +64,21 @@ import java.util.List;
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMOBinary extends CCAtMostOne {
+final class CCAMOBinary implements CCAtMostOne {
 
   private final FormulaFactory f;
-  private List<Formula> result;
 
   /**
    * Constructs the binary AMO encoder.
    * @param f the formula factory
    */
-  public CCAMOBinary(final FormulaFactory f) {
+  CCAMOBinary(final FormulaFactory f) {
     this.f = f;
-    this.result = new ArrayList<>();
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    this.result.clear();
-    if (vars.length <= 0)
-      return new ImmutableFormulaList(FType.AND, this.result);
+  public List<Formula> build(final Variable... vars) {
+    final List<Formula> result = new ArrayList<>();
     final int numberOfBits = (int) Math.ceil((Math.log(vars.length) / Math.log(2)));
     final int twoPowNBits = (int) Math.pow(2, numberOfBits);
     final int k = (twoPowNBits - vars.length) * 2;
@@ -103,9 +97,9 @@ public final class CCAMOBinary extends CCAtMostOne {
       for (int j = 0; j < numberOfBits; ++j)
         if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
           if ((gray_code & (1 << j)) != 0)
-            this.result.add(this.f.clause(vars[index].negate(), bits[j]));
+            result.add(this.f.clause(vars[index].negate(), bits[j]));
           else
-            this.result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
+            result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
         }
       i++;
     }
@@ -114,12 +108,12 @@ public final class CCAMOBinary extends CCAtMostOne {
       gray_code = i ^ (i >> 1);
       for (int j = 0; j < numberOfBits; ++j)
         if ((gray_code & (1 << j)) != 0)
-          this.result.add(this.f.clause(vars[index].negate(), bits[j]));
+          result.add(this.f.clause(vars[index].negate(), bits[j]));
         else
-          this.result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
+          result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
       i++;
     }
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return result;
   }
 
   @Override

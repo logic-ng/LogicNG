@@ -49,25 +49,23 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Encodes that at most 'rhs' variables can be assigned value true.  Uses the modular totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class CCAMKModularTotalizer extends CCAtMostK {
+final class CCAMKModularTotalizer implements CCAtMostK {
 
   private final FormulaFactory f;
   private final Variable varUndef;
@@ -84,7 +82,7 @@ public final class CCAMKModularTotalizer extends CCAtMostK {
    * Constructs a new modular totalizer.
    * @param f the formula factory
    */
-  public CCAMKModularTotalizer(final FormulaFactory f) {
+  CCAMKModularTotalizer(final FormulaFactory f) {
     this.f = f;
     this.varUndef = f.variable("RESERVED@VAR_UNDEF");
     this.varError = f.variable("RESERVED@VAR_ERROR");
@@ -93,43 +91,32 @@ public final class CCAMKModularTotalizer extends CCAtMostK {
     this.cardinalityInvars = new LNGVector<>();
     this.cardinalityUpOutvars = new LNGVector<>();
     this.cardinalityLwOutvars = new LNGVector<>();
-    this.result = new LinkedList<>();
   }
 
   @Override
-  public ImmutableFormulaList build(final Collection<Variable> vars, int rhs) {
-    if (rhs < 0)
-      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    assert !vars.isEmpty();
-    this.result.clear();
+  public List<Formula> build(final Variable[] vars, int rhs) {
+    this.result = new ArrayList<>();
     this.cardinalityUpOutvars.clear();
     this.cardinalityLwOutvars.clear();
-    if (rhs >= vars.size())
-      return new ImmutableFormulaList(FType.AND);
-    if (rhs == 0) {
-      for (final Variable var : vars)
-        this.result.add(var.negate());
-      return new ImmutableFormulaList(FType.AND, this.result);
-    }
-    assert rhs >= 1 && rhs < vars.size();
+    assert rhs >= 1 && rhs < vars.length;
     int mod = (int) Math.ceil(Math.sqrt(rhs + 1.0));
-    this.cardinalityUpOutvars = new LNGVector<>(vars.size() / mod);
-    for (int i = 0; i < vars.size() / mod; i++)
+    this.cardinalityUpOutvars = new LNGVector<>(vars.length / mod);
+    for (int i = 0; i < vars.length / mod; i++)
       this.cardinalityUpOutvars.push(this.f.newCCVariable());
     this.cardinalityLwOutvars = new LNGVector<>(mod - 1);
     for (int i = 0; i < mod - 1; i++)
       this.cardinalityLwOutvars.push(this.f.newCCVariable());
-    this.cardinalityInvars = new LNGVector<>(vars.size());
+    this.cardinalityInvars = new LNGVector<>(vars.length);
     for (final Variable var : vars)
       this.cardinalityInvars.push(var);
     this.currentCardinalityRhs = rhs + 1;
     if (this.cardinalityUpOutvars.size() == 0)
       this.cardinalityUpOutvars.push(this.h0);
-    this.toCNF(mod, this.cardinalityUpOutvars, this.cardinalityLwOutvars, vars.size());
+    this.toCNF(mod, this.cardinalityUpOutvars, this.cardinalityLwOutvars, vars.length);
     assert this.cardinalityInvars.size() == 0;
     this.encodeOutput(rhs, mod);
     this.currentCardinalityRhs = rhs + 1;
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return this.result;
   }
 
   private void encodeOutput(int rhs, int mod) {

@@ -51,9 +51,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -67,27 +65,27 @@ import java.util.List;
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMONested extends CCAtMostOne {
+final class CCAMONested implements CCAtMostOne {
 
   private final FormulaFactory f;
+  private int groupSize;
   private List<Formula> result;
 
   /**
    * Constructs the nested AMO encoder.
-   * @param f the formula factory
+   * @param f         the formula factory
+   * @param groupSize the group size
    */
-  public CCAMONested(final FormulaFactory f) {
+  CCAMONested(final FormulaFactory f, int groupSize) {
     this.f = f;
-    this.result = new ArrayList<>();
+    this.groupSize = groupSize;
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    this.result.clear();
-    if (vars.length <= 0)
-      return new ImmutableFormulaList(FType.AND, this.result);
+  public List<Formula> build(final Variable... vars) {
+    this.result = new ArrayList<>();
     this.encodeIntern(new LNGVector<Literal>(vars));
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return this.result;
   }
 
   /**
@@ -95,7 +93,7 @@ public final class CCAMONested extends CCAtMostOne {
    * @param vars the variables of the constraint
    */
   private void encodeIntern(final LNGVector<Literal> vars) {
-    if (vars.size() <= 4)
+    if (vars.size() <= this.groupSize)
       for (int i = 0; i + 1 < vars.size(); i++)
         for (int j = i + 1; j < vars.size(); j++)
           this.result.add(this.f.clause(vars.get(i).negate(), vars.get(j).negate()));
@@ -103,9 +101,9 @@ public final class CCAMONested extends CCAtMostOne {
       final LNGVector<Literal> l1 = new LNGVector<>(vars.size() / 2);
       final LNGVector<Literal> l2 = new LNGVector<>(vars.size() / 2);
       int i = 0;
-      for (; i < vars.size() / 2; ++i)
+      for (; i < vars.size() / 2; i++)
         l1.push(vars.get(i));
-      for (; i < vars.size(); ++i)
+      for (; i < vars.size(); i++)
         l2.push(vars.get(i));
       final Variable newVariable = this.f.newCCVariable();
       l1.push(newVariable);

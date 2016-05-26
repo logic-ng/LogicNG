@@ -51,16 +51,13 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.INPUT_TO_OUTPUT;
@@ -72,38 +69,27 @@ import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.
  * @version 1.1
  * @since 1.1
  */
-public final class CCAMKCardinalityNetwork extends CCAtMostK {
+final class CCAMKCardinalityNetwork implements CCAtMostK {
 
   private final FormulaFactory f;
-  private List<Formula> result;
   private final CCSorting sorting;
 
   /**
    * Constructs a new cardinality encoder.
    * @param f the formula factory
    */
-  public CCAMKCardinalityNetwork(final FormulaFactory f) {
+  CCAMKCardinalityNetwork(final FormulaFactory f) {
     this.f = f;
-    this.result = new ArrayList<>();
     this.sorting = new CCSorting(f);
   }
 
   @Override
-  public ImmutableFormulaList build(final Collection<Variable> vars, int rhs) {
-    if (rhs < 0)
-      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    this.result.clear();
-    if (rhs >= vars.size()) // there is no constraint
-      return new ImmutableFormulaList(FType.AND);
-    if (rhs == 0) { // no variable can be true
-      for (final Variable var : vars)
-        this.result.add(var.negate());
-      return new ImmutableFormulaList(FType.AND, this.result);
-    }
+  public List<Formula> build(final Variable[] vars, int rhs) {
+    List<Formula> result = new ArrayList<>();
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
-    if (rhs > vars.size() / 2) {
-      int geq = vars.size() - rhs;
+    if (rhs > vars.length / 2) {
+      int geq = vars.length - rhs;
       for (final Variable v : vars)
         input.push(v.negate());
       sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
@@ -117,7 +103,7 @@ public final class CCAMKCardinalityNetwork extends CCAtMostK {
       result.add(f.clause(output.get(rhs).negate()));
     }
 
-    return new ImmutableFormulaList(FType.AND, this.result);
+    return result;
   }
 
   @Override

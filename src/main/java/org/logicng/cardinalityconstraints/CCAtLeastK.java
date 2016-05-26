@@ -28,19 +28,17 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * The interface for at-least-k (ALK) cardinality constraints.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public abstract class CCAtLeastK {
-
+interface CCAtLeastK {
   /**
    * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n >= k}.
    * @param vars the variables {@code var_1 ... var_n}
@@ -48,16 +46,5 @@ public abstract class CCAtLeastK {
    * @return the CNF encoding of the cardinality constraint
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
-  public abstract ImmutableFormulaList build(Collection<Variable> vars, int rhs);
-
-  /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n >= k}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @param rhs  the right hand side {@code k} of the constraint
-   * @return the CNF encoding of the cardinality constraint
-   * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
-   */
-  public ImmutableFormulaList build(final Variable[] vars, int rhs) {
-    return this.build(Arrays.asList(vars), rhs);
-  }
+  public List<Formula> build(final Variable[] vars, int rhs);
 }
