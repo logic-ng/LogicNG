@@ -76,6 +76,12 @@ public class CCAMKTest {
     }
   }
 
+  @Test
+  public void testLargeAMK() {
+    testCC(150, 2, 1 + 150 + 11175, this.encoders[0]);
+    testCC(150, 2, 1 + 150 + 11175, this.encoders[1]);
+  }
+
   private void testCC(int numLits, int rhs, int expected, final CCEncoder encoder) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
