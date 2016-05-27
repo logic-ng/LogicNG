@@ -53,6 +53,7 @@ public class CCEncoder {
 
   private final FormulaFactory f;
   private final CCConfig config;
+  private final CCConfig defaultConfig;
 
   private CCAMOPure amoPure;
   private CCAMOLadder amoLadder;
@@ -75,6 +76,7 @@ public class CCEncoder {
   public CCEncoder(final FormulaFactory f, final CCConfig config) {
     this.f = f;
     this.config = config;
+    this.defaultConfig = new CCConfig.Builder().build();
   }
 
   /**
@@ -82,11 +84,7 @@ public class CCEncoder {
    * @param f the formula factory
    */
   public CCEncoder(final FormulaFactory f) {
-    this.f = f;
-    Configuration ccConfig = f.configurationFor(ConfigurationType.CC_ENCODER);
-    if (ccConfig == null)
-      ccConfig = new CCConfig.Builder().build();
-    this.config = (CCConfig) ccConfig;
+    this(f, null);
   }
 
   /**
@@ -96,6 +94,19 @@ public class CCEncoder {
    */
   public ImmutableFormulaList encode(final PBConstraint cc) {
     return new ImmutableFormulaList(FType.AND, this.encodeConstraint(cc));
+  }
+
+  /**
+   * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
+   * configuration will always be used.  Otherwise the current configuration of the formula factory is used or - if not
+   * present - the default configuration.
+   * @return the current configuration of
+   */
+  public CCConfig config() {
+    if (this.config != null)
+      return this.config;
+    Configuration ccConfig = this.f.configurationFor(ConfigurationType.CC_ENCODER);
+    return ccConfig != null ? (CCConfig) ccConfig : this.defaultConfig;
   }
 
   /**
@@ -129,7 +140,7 @@ public class CCEncoder {
           final PBConstraint le = this.f.cc(CType.LE, cc.rhs(), ops);
           final PBConstraint ge = this.f.cc(CType.GE, cc.rhs(), ops);
           if (le.type() == FType.FALSE || ge.type() == FType.FALSE)
-            return Collections.singletonList((Formula) f.falsum());
+            return Collections.singletonList((Formula) this.f.falsum());
           final List<Formula> list = new LinkedList<>();
           if (le.type() != FType.TRUE)
             list.addAll(this.encode(le).toList());
@@ -150,37 +161,37 @@ public class CCEncoder {
   private List<Formula> amo(final Variable... vars) {
     if (vars.length <= 1)
       return new ArrayList<>();
-    switch (this.config.amoEncoder) {
+    switch (this.config().amoEncoder) {
       case PURE:
         if (this.amoPure == null)
-          this.amoPure = new CCAMOPure(f);
+          this.amoPure = new CCAMOPure(this.f);
         return this.amoPure.build(vars);
       case LADDER:
         if (this.amoLadder == null)
-          this.amoLadder = new CCAMOLadder(f);
+          this.amoLadder = new CCAMOLadder(this.f);
         return this.amoLadder.build(vars);
       case PRODUCT:
         if (this.amoProduct == null)
-          this.amoProduct = new CCAMOProduct(f, this.config.productRecursiveBound);
+          this.amoProduct = new CCAMOProduct(this.f, this.config().productRecursiveBound);
         return this.amoProduct.build(vars);
       case NESTED:
         if (this.amoNested == null)
-          this.amoNested = new CCAMONested(f, this.config.nestingGroupSize);
+          this.amoNested = new CCAMONested(this.f, this.config().nestingGroupSize);
         return this.amoNested.build(vars);
       case COMMANDER:
         if (this.amoCommander == null)
-          this.amoCommander = new CCAMOCommander(f, this.config.commanderGroupSize);
+          this.amoCommander = new CCAMOCommander(this.f, this.config().commanderGroupSize);
         return this.amoCommander.build(vars);
       case BINARY:
         if (this.amoBinary == null)
-          this.amoBinary = new CCAMOBinary(f);
+          this.amoBinary = new CCAMOBinary(this.f);
         return this.amoBinary.build(vars);
       case BIMANDER:
-        if (this.config.bimanderGroupSize != CCConfig.BIMANDER_GROUP_SIZE.FIXED || this.amoBimander == null) {
+        if (this.config().bimanderGroupSize != CCConfig.BIMANDER_GROUP_SIZE.FIXED || this.amoBimander == null) {
           int groupSize;
-          switch (this.config.bimanderGroupSize) {
+          switch (this.config().bimanderGroupSize) {
             case FIXED:
-              groupSize = this.config.bimanderFixedGroupSize;
+              groupSize = this.config().bimanderFixedGroupSize;
               break;
             case HALF:
               groupSize = vars.length / 2;
@@ -189,15 +200,15 @@ public class CCEncoder {
               groupSize = (int) Math.sqrt(vars.length);
               break;
             default:
-              throw new IllegalStateException("Unkown bimander group size: " + this.config.bimanderGroupSize);
+              throw new IllegalStateException("Unkown bimander group size: " + this.config().bimanderGroupSize);
           }
-          this.amoBimander = new CCAMOBimander(f, groupSize);
+          this.amoBimander = new CCAMOBimander(this.f, groupSize);
         }
         return this.amoBimander.build(vars);
       case BEST:
         return this.bestAMO(vars.length).build(vars);
       default:
-        throw new IllegalStateException("Unknown at-most-one encoder: " + this.config.amoEncoder);
+        throw new IllegalStateException("Unknown at-most-one encoder: " + this.config().amoEncoder);
     }
   }
 
@@ -212,7 +223,7 @@ public class CCEncoder {
     if (vars.length == 1)
       return Collections.singletonList((Formula) vars[0]);
     final List<Formula> result = this.amo(vars);
-    result.add(f.clause((Literal[]) vars));
+    result.add(this.f.clause((Literal[]) vars));
     return result;
   }
 
@@ -233,23 +244,23 @@ public class CCEncoder {
         result.add(var.negate());
       return result;
     }
-    switch (this.config.amkEncoder) {
+    switch (this.config().amkEncoder) {
       case TOTALIZER:
         if (this.amkTotalizer == null)
-          this.amkTotalizer = new CCAMKTotalizer(f);
+          this.amkTotalizer = new CCAMKTotalizer(this.f);
         return this.amkTotalizer.build(vars, rhs);
       case MODULAR_TOTALIZER:
         if (this.amkModularTotalizer == null)
-          this.amkModularTotalizer = new CCAMKModularTotalizer(f);
+          this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
         return this.amkModularTotalizer.build(vars, rhs);
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
-          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(f);
+          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
         return this.amkCardinalityNetwork.build(vars, rhs);
       case BEST:
         return this.bestAMK(vars.length).build(vars, rhs);
       default:
-        throw new IllegalStateException("Unknown at-most-k encoder: " + this.config.amkEncoder);
+        throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
     }
   }
 
@@ -273,14 +284,14 @@ public class CCEncoder {
       Collections.addAll(result, vars);
       return result;
     }
-    switch (this.config.alkEncoder) {
+    switch (this.config().alkEncoder) {
       case TOTALIZER:
       case BEST:
         if (this.alkTotalizer == null)
-          this.alkTotalizer = new CCALKTotalizer(f);
+          this.alkTotalizer = new CCALKTotalizer(this.f);
         return this.alkTotalizer.build(vars, rhs);
       default:
-        throw new IllegalStateException("Unknown at-least-k encoder: " + this.config.alkEncoder);
+        throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
     }
   }
 
@@ -294,11 +305,11 @@ public class CCEncoder {
   private CCAtMostOne bestAMO(int n) {
     if (n <= 10) {
       if (this.amoPure == null)
-        this.amoPure = new CCAMOPure(f);
+        this.amoPure = new CCAMOPure(this.f);
       return this.amoPure;
     } else {
       if (this.amoProduct == null)
-        this.amoProduct = new CCAMOProduct(f, this.config.productRecursiveBound);
+        this.amoProduct = new CCAMOProduct(this.f, this.config().productRecursiveBound);
       return this.amoProduct;
     }
   }
@@ -312,7 +323,7 @@ public class CCEncoder {
    */
   private CCAtMostK bestAMK(int n) {
     if (this.amkModularTotalizer == null)
-      this.amkModularTotalizer = new CCAMKModularTotalizer(f);
+      this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
     return this.amkModularTotalizer;
   }
 
@@ -332,6 +343,6 @@ public class CCEncoder {
 
   @Override
   public String toString() {
-    return this.config.toString();
+    return this.config().toString();
   }
 }
