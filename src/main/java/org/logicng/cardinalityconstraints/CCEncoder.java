@@ -29,6 +29,8 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.configurations.Configuration;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -81,7 +83,10 @@ public class CCEncoder {
    */
   public CCEncoder(final FormulaFactory f) {
     this.f = f;
-    this.config = new CCConfig.Builder().build();
+    Configuration ccConfig = f.configurationFor(ConfigurationType.CC_ENCODER);
+    if (ccConfig == null)
+      ccConfig = new CCConfig.Builder().build();
+    this.config = (CCConfig) ccConfig;
   }
 
   /**
