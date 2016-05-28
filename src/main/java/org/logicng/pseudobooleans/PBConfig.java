@@ -50,9 +50,9 @@ public final class PBConfig extends Configuration {
    */
   public static class Builder {
     private PB_ENCODER pbEncoder = PB_ENCODER.BEST;
-    private boolean binaryMergeUseGAC = false;
-    private boolean binaryMergeNoSupportForSingleBit = true;
-    private boolean binaryMergeUseWatchDog = false;
+    private boolean binaryMergeUseGAC = true;
+    private boolean binaryMergeNoSupportForSingleBit = false;
+    private boolean binaryMergeUseWatchDog = true;
 
     /**
      * Sets the encoder for pseudo-Boolean constraints. The default value is {@code BEST}.
@@ -65,7 +65,8 @@ public final class PBConfig extends Configuration {
     }
 
     /**
-     * Sets whether general arc consistency should be used in the binary merge encoding. The default value is {@code false}.
+     * Sets whether general arc consistency should be used in the binary merge encoding. The default value is {@code
+     * true}.
      * @param binaryMergeUseGAC {@code true} if general arc consistency should be used, {@code false} otherwise
      * @return the builder
      */
@@ -75,7 +76,7 @@ public final class PBConfig extends Configuration {
     }
 
     /**
-     * Sets the support for single bits in the binary merge encoding. The default value is {@code true}.
+     * Sets the support for single bits in the binary merge encoding. The default value is {@code false}.
      * @param binaryMergeNoSupportForSingleBit {@code true} if the support for single bits should be disabled,
      *                                         {@code false} otherwise
      * @return the builder
@@ -86,7 +87,7 @@ public final class PBConfig extends Configuration {
     }
 
     /**
-     * Sets whether the watchdog encoding should be used in the binary merge encoding. The default value is {@code false}.
+     * Sets whether the watchdog encoding should be used in the binary merge encoding. The default value is {@code true}.
      * @param binaryMergeUseWatchDog {@code true} if the watchdog encoding should be used, {@code false} otherwise
      * @return the builder
      */

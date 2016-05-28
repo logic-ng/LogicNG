@@ -422,22 +422,22 @@ public class PBSolvingTest {
   }
 
   @Test
-  public void testSimple() {
+  public void testLargePBs() {
     for (final PBEncoder encoder : this.encoders) {
-      for (final SATSolver solver : solvers) {
-        solver.reset();
-        Variable[] lits2 = new Variable[3];
-        for (int i = 0; i < 3; i++)
-          lits2[i] = f.variable("v" + i);
-        int[] coeffs2 = new int[]{3, 2, 2};
-        solver.add(encoder.encode(f.pbc(CType.LE, 3, lits2, coeffs2)));
-        Assert.assertEquals(TRUE, solver.sat());
-        List<Assignment> models = solver.enumerateAllModels(literals10);
-        Assert.assertEquals(4, models.size());
-        for (final Assignment model : models)
-          Assert.assertTrue(model.positiveLiterals().size() <= 1);
-        solver.reset();
+      final SATSolver solver = this.solvers[0];
+      solver.reset();
+      int numLits = 100;
+      Variable[] lits = new Variable[numLits];
+      int[] coeffs = new int[numLits];
+      for (int i = 0; i < numLits; i++) {
+        lits[i] = f.variable("v" + i);
+        coeffs[i] = i + 1;
       }
+      final PBConstraint pbc = f.pbc(CType.GE, 5000, lits, coeffs);
+      solver.add(encoder.encode(pbc));
+      Assert.assertEquals(TRUE, solver.sat());
+      Assignment model = solver.model();
+      Assert.assertTrue(pbc.evaluate(model));
     }
   }
 }
