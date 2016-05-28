@@ -38,7 +38,7 @@ import org.logicng.configurations.ConfigurationType;
  */
 public final class PBConfig extends Configuration {
 
-  public enum PB_ENCODER {SWC, BINARY_MERGE, BEST}
+  public enum PB_ENCODER {SWC, BINARY_MERGE, ADDER_NETWORKS, BEST}
 
   final PB_ENCODER pbEncoder;
   final boolean binaryMergeUseGAC;

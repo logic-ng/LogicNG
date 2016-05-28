@@ -59,7 +59,7 @@ public class PBEncoder {
   private final CCEncoder ccEncoder;
 
   private PBSWC swc;
-  private PBBinaryMerge binaryMerge;
+  private PBAdderNetworks adderNetworks;
 
   /**
    * Constructs a new pseudo-Boolean encoder with given configurations.
@@ -189,8 +189,11 @@ public class PBEncoder {
           this.swc = new PBSWC(this.f);
         return this.swc.encode(simplifiedLits, simplifiedCoeffs, rhs, result);
       case BINARY_MERGE:
-        this.binaryMerge = new PBBinaryMerge(f, this.config());
-        return this.binaryMerge.encode(simplifiedLits, simplifiedCoeffs, rhs, result);
+        new PBBinaryMerge(f, this.config()).encode(simplifiedLits, simplifiedCoeffs, rhs, result);
+      case ADDER_NETWORKS:
+        if (this.adderNetworks == null)
+          this.adderNetworks = new PBAdderNetworks(f);
+        return this.adderNetworks.encode(simplifiedLits, simplifiedCoeffs, rhs, result);
       default:
         throw new IllegalStateException("Unknown pseudo-Boolean encoder: " + this.config().pbEncoder);
     }

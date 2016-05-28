@@ -194,6 +194,17 @@ public final class LNGBooleanVector {
   }
 
   /**
+   * Reverses the content of this vector in-place.
+   */
+  public void reverseInplace() {
+    for (int i = 0; i < this.size / 2; i++) {
+      boolean temp = this.elements[i];
+      this.elements[i] = this.elements[this.size - i - 1];
+      this.elements[this.size() - i - 1] = temp;
+    }
+  }
+
+  /**
    * Clears the vector.
    */
   public void clear() {

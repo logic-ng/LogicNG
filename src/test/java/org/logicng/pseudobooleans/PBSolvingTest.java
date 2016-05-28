@@ -73,7 +73,7 @@ public class PBSolvingTest {
     solvers[2] = MiniSat.miniCard(f);
     solvers[3] = MiniSat.glucose(f);
     solvers[4] = CleaneLing.minimalistic(f);
-    this.encoders = new PBEncoder[9];
+    this.encoders = new PBEncoder[10];
     this.encoders[0] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.SWC).build());
     this.encoders[1] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
             .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
@@ -91,6 +91,7 @@ public class PBSolvingTest {
             .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
     this.encoders[8] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
             .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
+    this.encoders[9] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.ADDER_NETWORKS).build());
   }
 
   @Test
