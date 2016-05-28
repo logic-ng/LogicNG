@@ -35,6 +35,7 @@ import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
+import org.logicng.pseudobooleans.PBEncoder;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.util.Pair;
 
@@ -109,6 +110,7 @@ public final class FormulaFactory {
 
   private final FormulaTransformation defaultCNFTransformation;
   private final SubNodeFunction subformulaFunction;
+  private final PBEncoder pbEncoder;
 
   private final PseudoBooleanParser parser;
 
@@ -136,6 +138,7 @@ public final class FormulaFactory {
       this.pbPrefix = PB_PREFIX;
       this.cnfPrefix = CNF_PREFIX;
     }
+    this.pbEncoder = new PBEncoder(this);
     this.parser = new PseudoBooleanParser(this);
   }
 
@@ -221,6 +224,14 @@ public final class FormulaFactory {
    */
   public SubNodeFunction subformulaFunction() {
     return this.subformulaFunction;
+  }
+
+  /**
+   * Returns the default pseudo-Boolean encoder of this formula factory.
+   * @return the default pseudo-Boolean encoder of this formula factory
+   */
+  public PBEncoder pbEncoder() {
+    return this.pbEncoder;
   }
 
   /**

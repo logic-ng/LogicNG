@@ -33,7 +33,6 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
-import org.logicng.pseudobooleans.PBSWC;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -496,8 +495,7 @@ public final class PBConstraint extends Formula {
    * Encodes this constraint as CNF and stores the result.
    */
   private void encode() {
-    // TODO not just use PBSWC here - use the formula factory PBEncoder
-    this.encoding = new PBSWC(f).build(this);
+    this.encoding = this.f.pbEncoder().encode(this);
   }
 
   @Override

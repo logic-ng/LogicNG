@@ -192,7 +192,7 @@ public class ConfigurationsTest {
             .bmo(false)
             .build();
     final String expected = "MaxSATConfig{incrementalStrategy=ITERATIVE\n" +
-            "amoEncoding=LADDER\n" +
+            "pbEncoding=LADDER\n" +
             "pbEncoding=SWC\n" +
             "cardinalityEncoding=MTOTALIZER\n" +
             "weightStrategy=DIVERSIFY\n" +

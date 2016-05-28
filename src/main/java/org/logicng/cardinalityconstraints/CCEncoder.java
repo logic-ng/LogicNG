@@ -49,12 +49,12 @@ import java.util.List;
  * <p>
  * An encoder is configured with a {@link CCConfig} configuration.  There are two possible ways:
  * <ol>
- *   <li>Initialize the encoder with a given configuration in the constructor.  Then this configuration will be bound
- *   to the encoder for its whole lifetime.</li>
- *   <li>Initialize the encoder only with a {@link FormulaFactory}.  Then each encoding will be performed with the
- *   current cardinality constraint encoder configuration of the factory or the default configuration if the factory
- *   has no associated cardinality constraint encoder configuration.  If you change the configuration in the factory,
- *   all encoders constructed for this factory will be affected.</li>
+ * <li>Initialize the encoder with a given configuration in the constructor.  Then this configuration will be bound
+ * to the encoder for its whole lifetime.</li>
+ * <li>Initialize the encoder only with a {@link FormulaFactory}.  Then each encoding will be performed with the
+ * current cardinality constraint encoder configuration of the factory or the default configuration if the factory
+ * has no associated cardinality constraint encoder configuration.  If you change the configuration in the factory,
+ * all encoders constructed for this factory will be affected.</li>
  * </ol>
  * @version 1.1
  * @since 1.1
@@ -90,7 +90,7 @@ public class CCEncoder {
   }
 
   /**
-   * Constructs a new cardinality constraint encoder with the default configuration.
+   * Constructs a new cardinality constraint encoder which uses the configuration of the formula factory.
    * @param f the formula factory
    */
   public CCEncoder(final FormulaFactory f) {

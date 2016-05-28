@@ -47,7 +47,7 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Test the solving (via encoding) of pseudo-Boolean constraints.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PBSolvingTest {
@@ -55,7 +55,9 @@ public class PBSolvingTest {
   private final FormulaFactory f;
   private final Variable[] literals100;
   private final Variable[] literals10;
-  final SATSolver[] solvers;
+  private final SATSolver[] solvers;
+
+  private PBEncoder[] encoders;
 
   public PBSolvingTest() {
     this.f = new FormulaFactory();
@@ -71,6 +73,24 @@ public class PBSolvingTest {
     solvers[2] = MiniSat.miniCard(f);
     solvers[3] = MiniSat.glucose(f);
     solvers[4] = CleaneLing.minimalistic(f);
+    this.encoders = new PBEncoder[9];
+    this.encoders[0] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.SWC).build());
+    this.encoders[1] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
+    this.encoders[2] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(false).build());
+    this.encoders[3] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
+    this.encoders[4] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
+    this.encoders[5] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
+    this.encoders[6] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(false).build());
+    this.encoders[7] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
+    this.encoders[8] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+            .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
   }
 
   @Test
@@ -230,184 +250,194 @@ public class PBSolvingTest {
 
   @Test
   public void testPBEQ() {
-    for (final SATSolver solver : solvers) {
-      solver.reset();
-      int[] coeffs10 = new int[]{3, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-      solver.add(f.pbc(CType.EQ, 5, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      List<Assignment> models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(9, models.size());
-      for (final Assignment model : models) {
-        Assert.assertEquals(2, model.positiveLiterals().size());
-        Assert.assertTrue(model.positiveLiterals().contains(f.variable("v" + 0)));
+    for (final PBEncoder encoder : this.encoders) {
+      for (final SATSolver solver : solvers) {
+        solver.reset();
+        int[] coeffs10 = new int[]{3, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+        solver.add(encoder.encode(f.pbc(CType.EQ, 5, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        List<Assignment> models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(9, models.size());
+        for (final Assignment model : models) {
+          Assert.assertEquals(2, model.positiveLiterals().size());
+          Assert.assertTrue(model.positiveLiterals().contains(f.variable("v" + 0)));
+        }
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.EQ, 7, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(36, models.size());
+        for (final Assignment model : models) {
+          Assert.assertEquals(3, model.positiveLiterals().size());
+          Assert.assertTrue(model.positiveLiterals().contains(f.variable("v" + 0)));
+        }
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.EQ, 0, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.EQ, 1, literals10, coeffs10)));
+        Assert.assertEquals(FALSE, solver.sat());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.EQ, 22, literals10, coeffs10)));
+        Assert.assertEquals(FALSE, solver.sat());
       }
-      solver.reset();
-      solver.add(f.pbc(CType.EQ, 7, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(36, models.size());
-      for (final Assignment model : models) {
-        Assert.assertEquals(3, model.positiveLiterals().size());
-        Assert.assertTrue(model.positiveLiterals().contains(f.variable("v" + 0)));
-      }
-      solver.reset();
-      solver.add(f.pbc(CType.EQ, 0, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
-      solver.reset();
-      solver.add(f.pbc(CType.EQ, 1, literals10, coeffs10));
-      Assert.assertEquals(FALSE, solver.sat());
-      solver.reset();
-      solver.add(f.pbc(CType.EQ, 22, literals10, coeffs10));
-      Assert.assertEquals(FALSE, solver.sat());
     }
   }
 
   @Test
   public void testPBLess() {
-    for (final SATSolver solver : solvers) {
-      solver.reset();
-      int[] coeffs10 = new int[]{3, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-      solver.add(f.pbc(CType.LE, 6, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      List<Assignment> models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(140, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(model.positiveLiterals().size() <= 3);
-      solver.reset();
-      solver.add(f.pbc(CType.LT, 7, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(140, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(model.positiveLiterals().size() <= 3);
-      solver.reset();
-      solver.add(f.pbc(CType.LE, 0, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
-      solver.reset();
-      solver.add(f.pbc(CType.LE, 1, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
-      solver.reset();
-      solver.add(f.pbc(CType.LT, 2, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
-      solver.reset();
-      solver.add(f.pbc(CType.LT, 1, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
+    for (final PBEncoder encoder : this.encoders) {
+      for (final SATSolver solver : solvers) {
+        solver.reset();
+        int[] coeffs10 = new int[]{3, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+        solver.add(encoder.encode(f.pbc(CType.LE, 6, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        List<Assignment> models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(140, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(model.positiveLiterals().size() <= 3);
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.LT, 7, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(140, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(model.positiveLiterals().size() <= 3);
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.LE, 0, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.LE, 1, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.LT, 2, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.LT, 1, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+      }
     }
   }
 
   @Test
   public void testPBGreater() {
-    for (final SATSolver solver : solvers) {
-      solver.reset();
-      int[] coeffs10 = new int[]{3, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-      solver.add(f.pbc(CType.GE, 17, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      List<Assignment> models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(47, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(model.positiveLiterals().size() >= 8);
-      solver.reset();
-      solver.add(f.pbc(CType.GT, 16, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(47, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(model.positiveLiterals().size() >= 8);
-      solver.reset();
-      solver.add(f.pbc(CType.GE, 21, literals10, coeffs10));
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
-      solver.reset();
-      solver.add(f.pbc(CType.GE, 22, literals10, coeffs10));
-      Assert.assertEquals(FALSE, solver.sat());
-      solver.reset();
-      solver.add(f.pbc(CType.GT, 42, literals10, coeffs10));
-      Assert.assertEquals(FALSE, solver.sat());
+    for (final PBEncoder encoder : this.encoders) {
+      for (final SATSolver solver : solvers) {
+        solver.reset();
+        int[] coeffs10 = new int[]{3, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+        solver.add(encoder.encode(f.pbc(CType.GE, 17, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        List<Assignment> models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(47, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(model.positiveLiterals().size() >= 8);
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.GT, 16, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(47, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(model.positiveLiterals().size() >= 8);
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.GE, 21, literals10, coeffs10)));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.GE, 22, literals10, coeffs10)));
+        Assert.assertEquals(FALSE, solver.sat());
+        solver.reset();
+        solver.add(encoder.encode(f.pbc(CType.GT, 42, literals10, coeffs10)));
+        Assert.assertEquals(FALSE, solver.sat());
+      }
     }
   }
 
   @Test
   public void testPBNegative() {
-    for (final SATSolver solver : solvers) {
-      solver.reset();
-      int[] coeffs10 = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, -2};
-      PBConstraint pbc = f.pbc(CType.EQ, 2, literals10, coeffs10);
-      solver.add(pbc);
-      Assert.assertEquals(TRUE, solver.sat());
-      List<Assignment> models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(45, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(pbc.evaluate(model));
-      solver.reset();
+    for (final PBEncoder encoder : this.encoders) {
+      for (final SATSolver solver : solvers) {
+        solver.reset();
+        int[] coeffs10 = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, -2};
+        PBConstraint pbc = f.pbc(CType.EQ, 2, literals10, coeffs10);
+        solver.add(encoder.encode(pbc));
+        Assert.assertEquals(TRUE, solver.sat());
+        List<Assignment> models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(45, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(pbc.evaluate(model));
+        solver.reset();
 
-      coeffs10 = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, -2};
-      pbc = f.pbc(CType.EQ, 4, literals10, coeffs10);
-      solver.add(pbc);
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(120, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(pbc.evaluate(model));
-      solver.reset();
+        coeffs10 = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, -2};
+        pbc = f.pbc(CType.EQ, 4, literals10, coeffs10);
+        solver.add(encoder.encode(pbc));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(120, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(pbc.evaluate(model));
+        solver.reset();
 
-      coeffs10 = new int[]{2, 2, -3, 2, -7, 2, 2, 2, 2, -2};
-      pbc = f.pbc(CType.EQ, 4, literals10, coeffs10);
-      solver.add(pbc);
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(57, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(pbc.evaluate(model));
-      solver.reset();
+        coeffs10 = new int[]{2, 2, -3, 2, -7, 2, 2, 2, 2, -2};
+        pbc = f.pbc(CType.EQ, 4, literals10, coeffs10);
+        solver.add(encoder.encode(pbc));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(57, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(pbc.evaluate(model));
+        solver.reset();
 
-      coeffs10 = new int[]{2, 2, -3, 2, -7, 2, 2, 2, 2, -2};
-      pbc = f.pbc(CType.EQ, -10, literals10, coeffs10);
-      solver.add(pbc);
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(8, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(pbc.evaluate(model));
-      solver.reset();
+        coeffs10 = new int[]{2, 2, -3, 2, -7, 2, 2, 2, 2, -2};
+        pbc = f.pbc(CType.EQ, -10, literals10, coeffs10);
+        solver.add(encoder.encode(pbc));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(8, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(pbc.evaluate(model));
+        solver.reset();
 
-      coeffs10 = new int[]{2, 2, -4, 2, -6, 2, 2, 2, 2, -2};
-      pbc = f.pbc(CType.EQ, -12, literals10, coeffs10);
-      solver.add(pbc);
-      Assert.assertEquals(TRUE, solver.sat());
-      models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(1, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(pbc.evaluate(model));
-      solver.reset();
+        coeffs10 = new int[]{2, 2, -4, 2, -6, 2, 2, 2, 2, -2};
+        pbc = f.pbc(CType.EQ, -12, literals10, coeffs10);
+        solver.add(encoder.encode(pbc));
+        Assert.assertEquals(TRUE, solver.sat());
+        models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(1, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(pbc.evaluate(model));
+        solver.reset();
+      }
     }
   }
 
   @Test
   public void testSimple() {
-    for (final SATSolver solver : solvers) {
-      solver.reset();
-      Variable[] lits2 = new Variable[3];
-      for (int i = 0; i < 3; i++)
-        lits2[i] = f.variable("v" + i);
-      int[] coeffs2 = new int[]{3, 2, 2};
-      solver.add(f.pbc(CType.LE, 3, lits2, coeffs2));
-      Assert.assertEquals(TRUE, solver.sat());
-      List<Assignment> models = solver.enumerateAllModels(literals10);
-      Assert.assertEquals(4, models.size());
-      for (final Assignment model : models)
-        Assert.assertTrue(model.positiveLiterals().size() <= 1);
-      solver.reset();
+    for (final PBEncoder encoder : this.encoders) {
+      for (final SATSolver solver : solvers) {
+        solver.reset();
+        Variable[] lits2 = new Variable[3];
+        for (int i = 0; i < 3; i++)
+          lits2[i] = f.variable("v" + i);
+        int[] coeffs2 = new int[]{3, 2, 2};
+        solver.add(encoder.encode(f.pbc(CType.LE, 3, lits2, coeffs2)));
+        Assert.assertEquals(TRUE, solver.sat());
+        List<Assignment> models = solver.enumerateAllModels(literals10);
+        Assert.assertEquals(4, models.size());
+        for (final Assignment model : models)
+          Assert.assertTrue(model.positiveLiterals().size() <= 1);
+        solver.reset();
+      }
     }
   }
 }
