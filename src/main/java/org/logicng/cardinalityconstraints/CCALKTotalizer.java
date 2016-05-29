@@ -79,6 +79,11 @@ final class CCALKTotalizer implements CCAtLeastK {
   }
 
   @Override
+  public CCIncrementalData incrementalData() {
+    return this.totalizer.incrementalData();
+  }
+
+  @Override
   public String toString() {
     return this.getClass().getSimpleName();
   }

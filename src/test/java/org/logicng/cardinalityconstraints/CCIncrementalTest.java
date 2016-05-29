@@ -55,7 +55,7 @@ public class CCIncrementalTest {
 
   public CCIncrementalTest() {
     encoders = new CCEncoder[3];
-    encoders[0] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build());
+    encoders[0] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
     encoders[1] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build());
     encoders[2] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build());
     this.solvers = new SATSolver[5];
@@ -67,14 +67,14 @@ public class CCIncrementalTest {
   }
 
   @Test
-  public void testSimpleIncremental() {
+  public void testSimpleIncrementalAMK() {
     for (final CCEncoder encoder : this.encoders) {
       CCEncoder initialEncoder = new CCEncoder(f);
       int numLits = 10;
       Variable[] vars = new Variable[numLits];
       for (int i = 0; i < numLits; i++)
         vars[i] = f.variable("v" + i);
-      final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncrementalAMK(f.cc(CType.LE, 9, vars));
+      final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.LE, 9, vars));
       final CCIncrementalData incData = cc.second();
 
       final SATSolver solver = MiniSat.miniSat(f);
@@ -106,7 +106,45 @@ public class CCIncrementalTest {
   }
 
   @Test
-  public void testLargeTotalizerUpperBound() {
+  public void testSimpleIncrementalALK() {
+    CCEncoder encoder = this.encoders[0];
+    CCEncoder initialEncoder = new CCEncoder(f);
+    int numLits = 10;
+    Variable[] vars = new Variable[numLits];
+    for (int i = 0; i < numLits; i++)
+      vars[i] = f.variable("v" + i);
+    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.GE, 2, vars));
+    final CCIncrementalData incData = cc.second();
+
+    final SATSolver solver = MiniSat.miniSat(f);
+    solver.add(initialEncoder.encode(f.cc(CType.GE, 4, vars))); // >= 4
+    solver.add(initialEncoder.encode(f.cc(CType.LE, 7, vars))); // <= 7
+
+    solver.add(cc.first());
+    Assert.assertEquals(Tristate.TRUE, solver.sat()); // >=2
+
+    solver.add(incData.newLowerBound(3)); // >= 3
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
+    solver.add(incData.newLowerBound(4)); // >= 4
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
+    solver.add(incData.newLowerBound(5)); // >= 5
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
+    solver.add(incData.newLowerBound(6)); // >= 6
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
+    solver.add(incData.newLowerBound(7)); // >= 7
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
+
+    final SolverState state = solver.saveState();
+    solver.add(incData.newLowerBound(8)); // >= 8
+    Assert.assertEquals(Tristate.FALSE, solver.sat());
+    solver.loadState(state);
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
+    solver.add(incData.newLowerBound(9)); // <= 9
+    Assert.assertEquals(Tristate.FALSE, solver.sat());
+  }
+
+  @Test
+  public void testLargeTotalizerUpperBoundAMK() {
     final CCEncoder encoder = this.encoders[0];
     final CCEncoder initivalEncoder = new CCEncoder(f);
     int numLits = 100;
@@ -114,7 +152,7 @@ public class CCIncrementalTest {
     Variable[] vars = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       vars[i] = f.variable("v" + i);
-    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncrementalAMK(f.cc(CType.LE, currentBound, vars));
+    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.LE, currentBound, vars));
     final CCIncrementalData incData = cc.second();
 
     final SATSolver solver = this.solvers[3];
@@ -129,7 +167,30 @@ public class CCIncrementalTest {
   }
 
   @Test
-  public void testLargeModularTotalizer() {
+  public void testLargeTotalizerLowerBoundALK() {
+    final CCEncoder encoder = this.encoders[0];
+    final CCEncoder initivalEncoder = new CCEncoder(f);
+    int numLits = 100;
+    int currentBound = 2;
+    Variable[] vars = new Variable[numLits];
+    for (int i = 0; i < numLits; i++)
+      vars[i] = f.variable("v" + i);
+    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.GE, currentBound, vars));
+    final CCIncrementalData incData = cc.second();
+
+    final SATSolver solver = this.solvers[3];
+    solver.reset();
+    solver.add(initivalEncoder.encode(f.cc(CType.LE, 87, vars))); // <= 42
+    solver.add(cc.first());
+
+    // search the lower bound
+    while (solver.sat() == Tristate.TRUE)
+      solver.add(incData.newLowerBound(++currentBound)); // <= currentBound + 1
+    Assert.assertEquals(88, currentBound);
+  }
+
+  @Test
+  public void testLargeModularTotalizerAMK() {
     for (final SATSolver solver : this.solvers) {
       final CCEncoder encoder = this.encoders[2];
       final CCEncoder initivalEncoder = new CCEncoder(f);
@@ -138,7 +199,7 @@ public class CCIncrementalTest {
       Variable[] vars = new Variable[numLits];
       for (int i = 0; i < numLits; i++)
         vars[i] = f.variable("v" + i);
-      final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncrementalAMK(f.cc(CType.LE, currentBound, vars));
+      final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.LE, currentBound, vars));
       final CCIncrementalData incData = cc.second();
 
       solver.reset();
@@ -153,7 +214,7 @@ public class CCIncrementalTest {
   }
 
   @Test
-  public void testVeryLargeModularTotalizer() {
+  public void testVeryLargeModularTotalizerAMK() {
     final CCEncoder encoder = this.encoders[2];
     final CCEncoder initivalEncoder = new CCEncoder(f);
     int numLits = 300;
@@ -161,7 +222,7 @@ public class CCIncrementalTest {
     Variable[] vars = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       vars[i] = f.variable("v" + i);
-    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncrementalAMK(f.cc(CType.LE, currentBound, vars));
+    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.LE, currentBound, vars));
     final CCIncrementalData incData = cc.second();
 
     final SATSolver solver = this.solvers[3];

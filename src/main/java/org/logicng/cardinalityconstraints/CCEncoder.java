@@ -107,7 +107,7 @@ public class CCEncoder {
     return new ImmutableFormulaList(FType.AND, this.encodeConstraint(cc));
   }
 
-  public Pair<ImmutableFormulaList, CCIncrementalData> encodeIncrementalAMK(final PBConstraint cc) {
+  public Pair<ImmutableFormulaList, CCIncrementalData> encodeIncremental(final PBConstraint cc) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
     final Variable[] ops = litsAsVars(cc.operands());
@@ -122,8 +122,12 @@ public class CCEncoder {
           throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
         else
           return this.amkIncremental(ops, cc.rhs() - 1);
+      case GE:
+        return this.alkIncremental(ops, cc.rhs());
+      case GT:
+        return this.alkIncremental(ops, cc.rhs() + 1);
       default:
-        throw new IllegalArgumentException("Incremental encodings are only supported for at-most-k constraints.");
+        throw new IllegalArgumentException("Incremental encodings are only supported for at-most-k and at-least k constraints.");
     }
   }
 
@@ -300,7 +304,7 @@ public class CCEncoder {
    * Encodes an at-most-k constraint for incremental usage.
    * @param vars the variables of the constraint
    * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint
+   * @return the CNF encoding of the constraint and the incremental data
    */
   private Pair<ImmutableFormulaList, CCIncrementalData> amkIncremental(final Variable[] vars, int rhs) {
     if (rhs < 0)
@@ -364,6 +368,37 @@ public class CCEncoder {
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
         return this.alkTotalizer.build(vars, rhs);
+      default:
+        throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
+    }
+  }
+
+  /**
+   * Encodes an at-lest-k constraint for incremental usage.
+   * @param vars the variables of the constraint
+   * @param rhs  the right hand side of the constraint
+   * @return the CNF encoding of the constraint and the incremental data
+   */
+  private Pair<ImmutableFormulaList, CCIncrementalData> alkIncremental(final Variable[] vars, int rhs) {
+    if (rhs < 0)
+      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
+    if (rhs > vars.length)
+      return new Pair<>(new ImmutableFormulaList(f.falsum()), null);
+    if (rhs == 0)
+      return new Pair<>(new ImmutableFormulaList(FType.AND), null);
+    if (rhs == 1)
+      return new Pair<>(new ImmutableFormulaList(this.f.clause((Literal[]) vars)), null);
+    if (rhs == vars.length) {
+      final List<Formula> result = new ArrayList<>();
+      Collections.addAll(result, vars);
+      return new Pair<>(new ImmutableFormulaList(result), null);
+    }
+    switch (this.config().alkEncoder) {
+      case TOTALIZER:
+      case BEST:
+        if (this.alkTotalizer == null)
+          this.alkTotalizer = new CCALKTotalizer(this.f);
+        return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData());
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
     }

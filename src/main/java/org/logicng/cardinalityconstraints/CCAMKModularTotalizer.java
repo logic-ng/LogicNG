@@ -115,7 +115,7 @@ final class CCAMKModularTotalizer implements CCAtMostK {
     assert this.cardinalityInvars.size() == 0;
     this.encodeOutput(rhs, mod);
     this.currentCardinalityRhs = rhs + 1;
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, this.cardinalityUpOutvars,
+    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, rhs, this.cardinalityUpOutvars,
             this.cardinalityLwOutvars, mod);
     return this.result;
   }

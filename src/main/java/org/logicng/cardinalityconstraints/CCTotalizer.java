@@ -91,16 +91,16 @@ final class CCTotalizer {
   List<Formula> buildAMK(final Variable[] vars, int rhs) {
     this.result = new ArrayList<>();
     this.cardinalityInvars = new LNGVector<>(vars.length);
-    final LNGVector<Variable> cardinalityOutlits = new LNGVector<>(vars.length);
+    final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.length);
     for (final Variable var : vars) {
       this.cardinalityInvars.push(var);
-      cardinalityOutlits.push(this.f.newCCVariable());
+      cardinalityOutvars.push(this.f.newCCVariable());
     }
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.TOTALIZER, cardinalityOutlits);
-    this.toCNF(cardinalityOutlits, rhs, Bound.UPPER);
+    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
+    this.toCNF(cardinalityOutvars, rhs, Bound.UPPER);
     assert this.cardinalityInvars.size() == 0;
-    for (int i = rhs; i < cardinalityOutlits.size(); i++)
-      this.result.add(cardinalityOutlits.get(i).negate());
+    for (int i = rhs; i < cardinalityOutvars.size(); i++)
+      this.result.add(cardinalityOutvars.get(i).negate());
     return this.result;
   }
 
@@ -119,6 +119,7 @@ final class CCTotalizer {
       this.cardinalityInvars.push(var);
       cardinalityOutvars.push(this.f.newCCVariable());
     }
+    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)
@@ -191,8 +192,6 @@ final class CCTotalizer {
     for (int i = 0; i <= left.size(); i++) {
       for (int j = 0; j <= right.size(); j++) {
         if (i == 0 && j == 0)
-          continue;
-        if (i + j > rhs + 1)
           continue;
         if (i == 0)
           this.result.add(this.f.clause(right.get(j - 1), output.get(left.size() + j - 1).negate()));

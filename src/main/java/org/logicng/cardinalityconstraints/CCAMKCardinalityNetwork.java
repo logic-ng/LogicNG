@@ -120,7 +120,7 @@ final class CCAMKCardinalityNetwork implements CCAtMostK {
     this.sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
     if (output.size() > rhs)
       result.add(output.get(rhs).negate());
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, output);
+    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, rhs, output);
     return result;
   }
 
