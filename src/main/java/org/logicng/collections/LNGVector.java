@@ -237,7 +237,7 @@ public final class LNGVector<T> implements Iterable<T> {
    * @throws IllegalArgumentException if you try to replace a vector with itself
    */
   @SuppressWarnings("unchecked")
-  public void replaceInplace(final LNGVector<T> other) {
+  public void replaceInplace(final LNGVector<? extends T> other) {
     if (this == other)
       throw new IllegalArgumentException("cannot replace a vector in-place with itself");
     this.elements = (T[]) new Object[other.size()];

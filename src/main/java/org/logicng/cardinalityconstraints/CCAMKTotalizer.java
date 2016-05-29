@@ -80,6 +80,11 @@ final class CCAMKTotalizer implements CCAtMostK {
   }
 
   @Override
+  public CCIncrementalData incrementalData() {
+    return this.totalizer.incrementalData();
+  }
+
+  @Override
   public String toString() {
     return this.getClass().getSimpleName();
   }

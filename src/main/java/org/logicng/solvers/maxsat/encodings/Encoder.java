@@ -59,7 +59,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.PBEncoding;
 
 /**
  * Encoders for cardinality constraints, pseudo Booleans and AMO constraints.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class Encoder {
@@ -89,7 +89,7 @@ public class Encoder {
    * @param amo         the AMO constraint encoder
    * @param pb          the pseudo Boolean encoder
    */
-  public Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
+  Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
                  final AMOEncoding amo, final PBEncoding pb) {
     this.incrementalStrategy = incremental;
     this.cardinalityEncoding = cardinality;

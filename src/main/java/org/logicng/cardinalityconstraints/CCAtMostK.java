@@ -48,4 +48,10 @@ interface CCAtMostK {
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
   List<Formula> build(final Variable[] vars, int rhs);
+
+  /**
+   * Returns the incremental data for the current encoded constraint.
+   * @return the incremental data for the current encoded constraint
+   */
+  CCIncrementalData incrementalData();
 }

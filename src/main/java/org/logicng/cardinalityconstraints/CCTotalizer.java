@@ -70,6 +70,7 @@ final class CCTotalizer {
   private final FormulaFactory f;
   private LNGVector<Variable> cardinalityInvars;
   private List<Formula> result;
+  private CCIncrementalData incData;
 
   /**
    * Constructs a new totalizer.
@@ -95,6 +96,7 @@ final class CCTotalizer {
       this.cardinalityInvars.push(var);
       cardinalityOutlits.push(this.f.newCCVariable());
     }
+    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.TOTALIZER, cardinalityOutlits);
     this.toCNF(cardinalityOutlits, rhs, Bound.UPPER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = rhs; i < cardinalityOutlits.size(); i++)
@@ -122,6 +124,14 @@ final class CCTotalizer {
     for (int i = 0; i < rhs; i++)
       this.result.add(cardinalityOutvars.get(i));
     return this.result;
+  }
+
+  /**
+   * Returns the incremental data for the current encoded constraint.
+   * @return the incremental data for the current encoded constraint
+   */
+  CCIncrementalData incrementalData() {
+    return this.incData;
   }
 
   private void toCNF(final LNGVector<Variable> vars, int rhs, final Bound bound) {

@@ -55,77 +55,89 @@ import org.logicng.collections.LNGVector;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.INPUT_TO_OUTPUT;
-import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.OUTPUT_TO_INPUT;
-
 /**
- * Encodes that at most 'rhs' variables are assigned value true.  Uses the cardinality network
- * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
+ * Incremental data for an at-most-k cardinality constraint.  When an at-most-k cardinality constraint is constructed,
+ * it is possible to save incremental data with it.  Then one can modify the constraint after it is was created by
+ * tightening the original bound.
  * @version 1.1
  * @since 1.1
  */
-final class CCAMKCardinalityNetwork implements CCAtMostK {
+public final class CCIncrementalData {
 
   private final FormulaFactory f;
-  private final CCSorting sorting;
-  private CCIncrementalData incData;
+  private final CCConfig.AMK_ENCODER encoder;
+  private final LNGVector<? extends Literal> vector1;
+  private final LNGVector<? extends Literal> vector2;
+  private final int mod;
 
   /**
-   * Constructs a new cardinality encoder.
-   * @param f the formula factory
+   * Constructs new incremental data for the given internal data.
+   * @param f       the formula factory
+   * @param encoder the at-most-one encoder
+   * @param vector1 the first internal vector
+   * @param vector2 the second internal vector
+   * @param mod     the modulo value
    */
-  CCAMKCardinalityNetwork(final FormulaFactory f) {
+  CCIncrementalData(final FormulaFactory f, CCConfig.AMK_ENCODER encoder, LNGVector<? extends Literal> vector1, LNGVector<? extends Literal> vector2, int mod) {
     this.f = f;
-    this.sorting = new CCSorting(f);
+    this.encoder = encoder;
+    this.vector1 = vector1;
+    this.vector2 = vector2;
+    this.mod = mod;
   }
 
-  @Override
-  public List<Formula> build(final Variable[] vars, int rhs) {
-    List<Formula> result = new ArrayList<>();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    if (rhs > vars.length / 2) {
-      int geq = vars.length - rhs;
-      for (final Variable v : vars)
-        input.push(v.negate());
-      sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
-      for (int i = 0; i < geq; ++i)
-        result.add(f.clause(output.get(i)));
-    } else {
-      for (final Variable v : vars)
-        input.push(v);
-      sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
-      assert (output.size() > rhs);
-      result.add(f.clause(output.get(rhs).negate()));
+  /**
+   * Constructs new incremental data for the given internal data.
+   * @param f       the formula factory
+   * @param encoder the at-most-one encoder
+   * @param vector1 the first internal vector
+   */
+  CCIncrementalData(final FormulaFactory f, CCConfig.AMK_ENCODER encoder, LNGVector<? extends Literal> vector1) {
+    this(f, encoder, vector1, null, -1);
+  }
+
+  /**
+   * Tightens the upper bound of this constraint and returns the resulting formula.
+   * @param rhs the new upperBound
+   * @return the incremental encoding of the new upper bound
+   */
+  public List<Formula> newUpperBound(int rhs) {
+    final List<Formula> result = new ArrayList<>();
+    switch (encoder) {
+      case MODULAR_TOTALIZER:
+        assert vector1.size() != 0 || vector2.size() != 0;
+        int ulimit = (rhs + 1) / mod;
+        int llimit = (rhs + 1) - ulimit * mod;
+        assert ulimit <= vector1.size();
+        assert llimit <= vector2.size();
+        for (int i = ulimit; i < vector1.size(); i++)
+          result.add(vector1.get(i).negate());
+        if (ulimit != 0 && llimit != 0) {
+          for (int i = llimit - 1; i < vector2.size(); i++)
+            result.add(f.clause(vector1.get(ulimit - 1).negate(), vector2.get(i).negate()));
+        } else {
+          if (ulimit == 0) {
+            assert llimit != 0;
+            for (int i = llimit - 1; i < vector2.size(); i++)
+              result.add(vector2.get(i).negate());
+          } else
+            result.add(vector1.get(ulimit - 1).negate());
+        }
+        return result;
+      case TOTALIZER:
+        for (int i = rhs; i < vector1.size(); i++)
+          result.add(vector1.get(i).negate());
+        return result;
+      case CARDINALITY_NETWORK:
+        if (vector1.size() > rhs)
+          result.add(vector1.get(rhs).negate());
+        return result;
+      default:
+        throw new IllegalStateException("Unknown at-most-k encoder: " + encoder);
     }
-    return result;
-  }
-
-  @Override
-  public CCIncrementalData incrementalData() {
-    return this.incData;
-  }
-
-  public List<Formula> buildForIncremental(final Variable[] vars, int rhs) {
-    List<Formula> result = new ArrayList<>();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (final Variable var : vars)
-      input.push(var);
-    this.sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
-    if (output.size() > rhs)
-      result.add(output.get(rhs).negate());
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, output);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 }

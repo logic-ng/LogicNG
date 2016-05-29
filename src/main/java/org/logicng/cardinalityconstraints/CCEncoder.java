@@ -38,6 +38,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
+import org.logicng.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,12 +107,33 @@ public class CCEncoder {
     return new ImmutableFormulaList(FType.AND, this.encodeConstraint(cc));
   }
 
+  public Pair<ImmutableFormulaList, CCIncrementalData> encodeIncrementalAMK(final PBConstraint cc) {
+    if (!cc.isCC())
+      throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
+    final Variable[] ops = litsAsVars(cc.operands());
+    switch (cc.comparator()) {
+      case LE:
+        if (cc.rhs() == 1)
+          throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
+        else
+          return this.amkIncremental(ops, cc.rhs());
+      case LT:
+        if (cc.rhs() == 2)
+          throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
+        else
+          return this.amkIncremental(ops, cc.rhs() - 1);
+      default:
+        throw new IllegalArgumentException("Incremental encodings are only supported for at-most-k constraints.");
+    }
+  }
+
   /**
    * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
    * configuration will always be used.  Otherwise the current configuration of the formula factory is used or - if not
    * present - the default configuration.
    * @return the current configuration of
    */
+
   public CCConfig config() {
     if (this.config != null)
       return this.config;
@@ -269,6 +291,48 @@ public class CCEncoder {
         return this.amkCardinalityNetwork.build(vars, rhs);
       case BEST:
         return this.bestAMK(vars.length).build(vars, rhs);
+      default:
+        throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
+    }
+  }
+
+  /**
+   * Encodes an at-most-k constraint for incremental usage.
+   * @param vars the variables of the constraint
+   * @param rhs  the right hand side of the constraint
+   * @return the CNF encoding of the constraint
+   */
+  private Pair<ImmutableFormulaList, CCIncrementalData> amkIncremental(final Variable[] vars, int rhs) {
+    if (rhs < 0)
+      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
+    if (rhs >= vars.length) // there is no constraint
+      return new Pair<>(new ImmutableFormulaList(FType.AND), null);
+    if (rhs == 0) { // no variable can be true
+      final List<Formula> result = new ArrayList<>();
+      for (final Variable var : vars)
+        result.add(var.negate());
+      return new Pair<>(new ImmutableFormulaList(FType.AND, result), null);
+    }
+    List<Formula> result;
+    switch (this.config().amkEncoder) {
+      case TOTALIZER:
+        if (this.amkTotalizer == null)
+          this.amkTotalizer = new CCAMKTotalizer(this.f);
+        result = this.amkTotalizer.build(vars, rhs);
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkTotalizer.incrementalData());
+      case MODULAR_TOTALIZER:
+        if (this.amkModularTotalizer == null)
+          this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
+        result = this.amkModularTotalizer.build(vars, rhs);
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkModularTotalizer.incrementalData());
+      case CARDINALITY_NETWORK:
+        if (this.amkCardinalityNetwork == null)
+          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
+        result = this.amkCardinalityNetwork.buildForIncremental(vars, rhs);
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkCardinalityNetwork.incrementalData());
+      case BEST:
+        result = this.bestAMK(vars.length).build(vars, rhs);
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.bestAMK(vars.length).incrementalData());
       default:
         throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
     }

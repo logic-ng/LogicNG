@@ -77,6 +77,7 @@ final class CCAMKModularTotalizer implements CCAtMostK {
   private LNGVector<Variable> cardinalityLwOutvars;
   private int currentCardinalityRhs;
   private List<Formula> result;
+  private CCIncrementalData incData;
 
   /**
    * Constructs a new modular totalizer.
@@ -89,15 +90,13 @@ final class CCAMKModularTotalizer implements CCAtMostK {
     this.h0 = this.varUndef;
     this.currentCardinalityRhs = -1;
     this.cardinalityInvars = new LNGVector<>();
-    this.cardinalityUpOutvars = new LNGVector<>();
-    this.cardinalityLwOutvars = new LNGVector<>();
   }
 
   @Override
   public List<Formula> build(final Variable[] vars, int rhs) {
     this.result = new ArrayList<>();
-    this.cardinalityUpOutvars.clear();
-    this.cardinalityLwOutvars.clear();
+    this.cardinalityUpOutvars = new LNGVector<>();
+    this.cardinalityLwOutvars = new LNGVector<>();
     assert rhs >= 1 && rhs < vars.length;
     int mod = (int) Math.ceil(Math.sqrt(rhs + 1.0));
     this.cardinalityUpOutvars = new LNGVector<>(vars.length / mod);
@@ -116,7 +115,14 @@ final class CCAMKModularTotalizer implements CCAtMostK {
     assert this.cardinalityInvars.size() == 0;
     this.encodeOutput(rhs, mod);
     this.currentCardinalityRhs = rhs + 1;
+    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, this.cardinalityUpOutvars,
+            this.cardinalityLwOutvars, mod);
     return this.result;
+  }
+
+  @Override
+  public CCIncrementalData incrementalData() {
+    return this.incData;
   }
 
   private void encodeOutput(int rhs, int mod) {

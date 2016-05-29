@@ -62,10 +62,10 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 /**
  * Encodes that at most 'rhs' literals can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class Totalizer extends Encoding {
+final class Totalizer extends Encoding {
 
   private LNGVector<LNGIntVector> totalizerIterativeLeft;
   private LNGVector<LNGIntVector> totalizerIterativeRight;
@@ -82,7 +82,7 @@ public final class Totalizer extends Encoding {
    * Constructs a new totalizer with a given incremental strategy.
    * @param strategy the incremental strategy
    */
-  public Totalizer(final MaxSATConfig.IncrementalStrategy strategy) {
+  Totalizer(final MaxSATConfig.IncrementalStrategy strategy) {
     this.blocking = LIT_UNDEF;
     this.joinMode = false;
     this.currentCardinalityRhs = -1;
@@ -109,7 +109,7 @@ public final class Totalizer extends Encoding {
    * Returns {@code true} if an encoding was created, {@code false} otherwise.
    * @return {@code true} if an encoding was created
    */
-  public boolean hasCreatedEncoding() {
+  boolean hasCreatedEncoding() {
     return this.hasEncoding;
   }
 
@@ -135,7 +135,7 @@ public final class Totalizer extends Encoding {
    * @param lits the literals of the constraint
    * @param rhs  the right hand side of the constraint
    */
-  public void join(final MiniSatStyleSolver s, final LNGIntVector lits, int rhs) {
+  void join(final MiniSatStyleSolver s, final LNGIntVector lits, int rhs) {
     assert this.incrementalStrategy == MaxSATConfig.IncrementalStrategy.ITERATIVE;
     final LNGIntVector leftCardinalityOutlits = new LNGIntVector(this.cardinalityOutlits);
     int oldCardinality = this.currentCardinalityRhs;
