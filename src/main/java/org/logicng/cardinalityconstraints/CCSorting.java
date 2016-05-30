@@ -58,10 +58,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.BOTH;
 import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.INPUT_TO_OUTPUT;
@@ -79,9 +76,6 @@ public final class CCSorting {
   private final FormulaFactory f;
 
   private final LNGVector<LNGVector<Literal>> auxVars;
-  private final Map<IntPair, Integer> recursiveSorterValues;
-  private final Map<IntTriple, Integer> recursiveSorterLValues;
-  private final Map<IntTriple, Integer> recursiveMergerValues;
 
   /**
    * Constructs a new sorting network.
@@ -90,9 +84,6 @@ public final class CCSorting {
   public CCSorting(final FormulaFactory f) {
     this.f = f;
     this.auxVars = new LNGVector<>();
-    this.recursiveSorterValues = new HashMap<>();
-    this.recursiveSorterLValues = new HashMap<>();
-    this.recursiveMergerValues = new HashMap<>();
   }
 
   public void sort(int m, final LNGVector<Literal> input, final List<Formula> result, final LNGVector<Literal> output,
@@ -135,14 +126,11 @@ public final class CCSorting {
     }
     int counter = counterSorterValue(m, n);
     int direct = directSorterValue(n);
-    int recursive = this.recursiveSorterValue(m, n, direction);
 
-    if (counter < direct && counter < recursive)
+    if (counter < direct)
       counterSorter(m, input, result, output, direction);
-    else if (direct < counter && direct < recursive)
-      directSorter(m, input, result, output, direction);
     else
-      this.recursiveSorter(m, input, result, output, direction);
+      directSorter(m, input, result, output, direction);
   }
 
   private void comparator(final Literal x1, final Literal x2, final Literal y, final List<Formula> result,
@@ -203,25 +191,10 @@ public final class CCSorting {
                                final LNGVector<Literal> output, final ImplicationDirection direction) {
     assert (m > 0);
     assert (input.size() > 0);
-
     output.clear();
-
     int n = input.size();
     assert (n > 1);
-
-    int l = 1;
-    if (n > 100)
-      l = n / 2;
-    else {
-      int minValue = this.recursiveSorterValue(m, n, l, direction);
-      for (int i = 2; i < n; i++) {
-        int value = this.recursiveSorterValue(m, n, i, direction);
-        if (value < minValue) {
-          l = i;
-          minValue = value;
-        }
-      }
-    }
+    int l = n / 2;
     this.recursiveSorter(m, l, input, result, output, direction);
   }
 
@@ -307,13 +280,7 @@ public final class CCSorting {
       recursiveMerger(m, inputA, inputA.size(), inputB, inputB.size(), formula, output, direction);
       return;
     }
-    int direct = directMergerValue(m, a, b);
-    int recursive = recursiveMergerValue(m, a, b, direction);
-    if (direct < recursive) {
-      directMerger(m, inputA, inputB, formula, output, direction);
-    } else {
-      recursiveMerger(m, inputA, inputA.size(), inputB, inputB.size(), formula, output, direction);
-    }
+    directMerger(m, inputA, inputB, formula, output, direction);
   }
 
   private void recursiveMerger(int c, final LNGVector<Literal> inputA, int a, final LNGVector<Literal> inputB, int b,
@@ -419,36 +386,6 @@ public final class CCSorting {
           formula.add(f.clause(inputA.get(i).negate(), inputB.get(k).negate(), output.get(i + k + 1)));
   }
 
-  private int recursiveSorterValue(int m, int n, int l, ImplicationDirection direction) {
-    final Integer entry = this.recursiveSorterLValues.get(new IntTriple(m, n, l));
-    if (entry != null)
-      return entry;
-    final List<Formula> formula = new ArrayList<>();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (int i = 0; i < n; i++)
-      input.push(f.variable("v" + (i + 1)));
-    int value = formula.size();
-    recursiveSorter(m, l, input, formula, output, direction);
-    recursiveSorterLValues.put(new IntTriple(m, n, l), value);
-    return value;
-  }
-
-  private int recursiveSorterValue(int m, int n, final ImplicationDirection direction) {
-    final Integer entry = recursiveSorterValues.get(new IntPair(m, n));
-    if (entry != null)
-      return entry;
-    final List<Formula> formula = new ArrayList<>();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (int i = 0; i < n; i++)
-      input.push(f.variable("v" + (i + 1)));
-    recursiveSorter(m, input, formula, output, direction);
-    int value = formula.size();
-    recursiveSorterValues.put(new IntPair(m, n), value);
-    return value;
-  }
-
   private int counterSorterValue(int m, int n) {
     return 2 * n + (m - 1) * (2 * (n - 1) - 1) - (m - 2) - 2 * ((m - 1) * (m - 2) / 2);
   }
@@ -457,89 +394,5 @@ public final class CCSorting {
     if (n > 30)
       return Integer.MAX_VALUE;
     return (int) Math.pow(2, n) - 1;
-  }
-
-  private int directMergerValue(int m, int a, int b) {
-    return (a + b) * m - (m * m - m) / 2 - (a * a - a) / 2 - (b * b - b) / 2;
-  }
-
-  private int recursiveMergerValue(int m, int a, int b, ImplicationDirection direction) {
-    final Integer entry = recursiveMergerValues.get(new IntTriple(m, a, b));
-    if (entry != null)
-      return entry;
-    final List<Formula> formula = new ArrayList<>();
-    final LNGVector<Literal> inputA = new LNGVector<>();
-    final LNGVector<Literal> inputB = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (int i = 0; i < a; i++)
-      inputA.push(f.variable("v" + (i + 1)));
-    for (int i = 0; i < b; i++)
-      inputB.push(f.variable("v" + (i + a + 1)));
-    recursiveMerger(m, inputA, a, inputB, b, formula, output, direction);
-    int value = formula.size();
-    recursiveMergerValues.put(new IntTriple(m, a, b), value);
-    return value;
-  }
-
-  private static class IntPair {
-    private final int a;
-    private final int b;
-
-    private IntPair(int a, int b) {
-      this.a = a;
-      this.b = b;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (!(o instanceof IntPair))
-        return false;
-      final IntPair intPair = (IntPair) o;
-      return a == intPair.a && b == intPair.b;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(a, b);
-    }
-
-    @Override
-    public String toString() {
-      return "IntPair{a=" + a + ", b=" + b + '}';
-    }
-  }
-
-  private static class IntTriple {
-    private final int a;
-    private final int b;
-    private final int c;
-
-    private IntTriple(int a, int b, int c) {
-      this.a = a;
-      this.b = b;
-      this.c = c;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (!(o instanceof IntTriple))
-        return false;
-      final IntTriple intTriple = (IntTriple) o;
-      return a == intTriple.a && b == intTriple.b && c == intTriple.c;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(a, b, c);
-    }
-
-    @Override
-    public String toString() {
-      return "IntTriple{a=" + a + ", b=" + b + ", c=" + c + '}';
-    }
   }
 }
