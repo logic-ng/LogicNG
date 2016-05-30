@@ -57,7 +57,7 @@ public class CCIncrementalTest {
     encoders = new CCEncoder[3];
     encoders[0] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
     encoders[1] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
-    encoders[2] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build());
+    encoders[2] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).alkEncoding(CCConfig.ALK_ENCODER.MODULAR_TOTALIZER).build());
     this.solvers = new SATSolver[5];
     solvers[0] = MiniSat.miniSat(f);
     solvers[1] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(false).build());
@@ -107,8 +107,7 @@ public class CCIncrementalTest {
 
   @Test
   public void testSimpleIncrementalALK() {
-    for (int e = 0; e <= 1; e++) {
-      CCEncoder encoder = this.encoders[e];
+    for (final CCEncoder encoder : this.encoders) {
       CCEncoder initialEncoder = new CCEncoder(f);
       int numLits = 10;
       Variable[] vars = new Variable[numLits];

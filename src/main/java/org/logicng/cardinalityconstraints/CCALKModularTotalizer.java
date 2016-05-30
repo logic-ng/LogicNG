@@ -56,12 +56,12 @@ import org.logicng.formulas.Variable;
 import java.util.List;
 
 /**
- * Encodes that at most 'rhs' variables can be assigned value true.  Uses the modular totalizer encoding for
+ * Encodes that at least 'rhs' variables can be assigned value true.  Uses the modular totalizer encoding for
  * translating the cardinality constraint into CNF.
  * @version 1.1
  * @since 1.0
  */
-final class CCAMKModularTotalizer implements CCAtMostK {
+final class CCALKModularTotalizer implements CCAtLeastK {
 
   private final CCModularTotalizer totalizer;
 
@@ -69,13 +69,13 @@ final class CCAMKModularTotalizer implements CCAtMostK {
    * Constructs a new modular totalizer.
    * @param f the formula factory
    */
-  CCAMKModularTotalizer(final FormulaFactory f) {
+  CCALKModularTotalizer(final FormulaFactory f) {
     this.totalizer = new CCModularTotalizer(f);
   }
 
   @Override
   public List<Formula> build(final Variable[] vars, int rhs) {
-    return this.totalizer.buildAMK(vars, rhs);
+    return this.totalizer.buildALK(vars, rhs);
   }
 
   @Override

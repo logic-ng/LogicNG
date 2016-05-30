@@ -59,7 +59,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Super class for totalizers due to Bailleux and Boufkhad.
+ * Totalizer due to Bailleux and Boufkhad.
  * @version 1.1
  * @since 1.0
  */

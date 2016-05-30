@@ -112,19 +112,36 @@ public final class CCIncrementalData {
   /**
    * Constructs new incremental data for an at-least-k encoder and the given internal data.
    * @param f          the formula factory
-   * @param alkEncoder the at-most-one amkEncoder
+   * @param alkEncoder the at-least-one amkEncoder
    * @param rhs        the current right-hand-side
+   * @param nVars      the number of variables
    * @param vector1    the first internal vector
+   * @param vector2    the second internal vector
+   * @param mod        the modulo value
    */
-  CCIncrementalData(final FormulaFactory f, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars, final LNGVector<? extends Literal> vector1) {
+  CCIncrementalData(final FormulaFactory f, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars,
+                    final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2, int mod) {
     this.f = f;
-    this.amkEncoder = null;
     this.alkEncoder = alkEncoder;
+    this.amkEncoder = null;
     this.currentRHS = rhs;
     this.nVars = nVars;
     this.vector1 = vector1;
-    this.vector2 = null;
-    this.mod = -1;
+    this.vector2 = vector2;
+    this.mod = mod;
+
+  }
+
+  /**
+   * Constructs new incremental data for an at-least-k encoder and the given internal data.
+   * @param f          the formula factory
+   * @param alkEncoder the at-most-one amkEncoder
+   * @param rhs        the current right-hand-side
+   * @param nVars      the number of variables
+   * @param vector1    the first internal vector
+   */
+  CCIncrementalData(final FormulaFactory f, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars, final LNGVector<? extends Literal> vector1) {
+    this(f, alkEncoder, rhs, nVars, vector1, null, -1);
   }
 
   /**
@@ -190,8 +207,29 @@ public final class CCIncrementalData {
         for (int i = 0; i < rhs; i++)
           result.add(this.vector1.get(i));
         return result;
-      case CARDINALITY_NETWORK:
+      case MODULAR_TOTALIZER:
         int newRHS = nVars - rhs;
+        assert this.vector1.size() != 0 || this.vector2.size() != 0;
+        int ulimit = (newRHS + 1) / this.mod;
+        int llimit = (newRHS + 1) - ulimit * this.mod;
+        assert ulimit <= this.vector1.size();
+        assert llimit <= this.vector2.size();
+        for (int i = ulimit; i < this.vector1.size(); i++)
+          result.add(this.vector1.get(i).negate());
+        if (ulimit != 0 && llimit != 0) {
+          for (int i = llimit - 1; i < this.vector2.size(); i++)
+            result.add(this.f.clause(this.vector1.get(ulimit - 1).negate(), this.vector2.get(i).negate()));
+        } else {
+          if (ulimit == 0) {
+            assert llimit != 0;
+            for (int i = llimit - 1; i < this.vector2.size(); i++)
+              result.add(this.vector2.get(i).negate());
+          } else
+            result.add(this.vector1.get(ulimit - 1).negate());
+        }
+        return result;
+      case CARDINALITY_NETWORK:
+        newRHS = nVars - rhs;
         if (this.vector1.size() > newRHS)
           result.add(this.vector1.get(newRHS).negate());
         return result;

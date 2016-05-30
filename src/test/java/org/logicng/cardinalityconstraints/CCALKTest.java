@@ -53,9 +53,10 @@ public class CCALKTest {
   private CCEncoder[] encoders;
 
   public CCALKTest() {
-    encoders = new CCEncoder[2];
+    encoders = new CCEncoder[3];
     encoders[0] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
-    encoders[1] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
+    encoders[1] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.MODULAR_TOTALIZER).build());
+    encoders[2] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
   }
 
   @Test

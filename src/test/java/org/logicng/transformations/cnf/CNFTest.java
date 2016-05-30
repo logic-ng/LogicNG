@@ -124,7 +124,7 @@ public class CNFTest {
     Assert.assertEquals(p.parse("a"), p.parse("a <=> (1 * b <= 1)").cnf());
     Assert.assertEquals(p.parse("$false"), p.parse("~(1 * b <= 1)").cnf());
     Assert.assertEquals(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"), p.parse("(1 * b + 1 * c + 1 * d <= 1)").cnf());
-    Assert.assertEquals(p.parse("(@RESERVED_CC_3 | ~@RESERVED_CC_1) & (@RESERVED_CC_4 | ~@RESERVED_CC_2) & (d | ~@RESERVED_CC_2) & (d | @RESERVED_CC_3 | ~@RESERVED_CC_0) & (d | @RESERVED_CC_4 | ~@RESERVED_CC_1) & (b | ~@RESERVED_CC_4) & (c | ~@RESERVED_CC_4) & (c | b | ~@RESERVED_CC_3) & @RESERVED_CC_0 & @RESERVED_CC_1"), p.parse("~(1 * b + 1 * c + 1 * d <= 1)").cnf());
+    Assert.assertEquals(p.parse("(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"), p.parse("~(1 * b + 1 * c + 1 * d <= 1)").cnf());
   }
 
   private static class TestFactorizationHandler implements FactorizationHandler {

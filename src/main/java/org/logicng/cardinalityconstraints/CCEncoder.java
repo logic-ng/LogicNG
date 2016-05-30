@@ -77,6 +77,7 @@ public class CCEncoder {
   private CCAMKTotalizer amkTotalizer;
 
   private CCALKTotalizer alkTotalizer;
+  private CCALKModularTotalizer alkModularTotalizer;
   private CCALKCardinalityNetwork alkCardinalityNetwork;
 
   private CCEXKTotalizer exkTotalizer;
@@ -360,6 +361,10 @@ public class CCEncoder {
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
         return this.alkTotalizer.build(vars, rhs);
+      case MODULAR_TOTALIZER:
+        if (this.alkModularTotalizer == null)
+          this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
+        return this.alkModularTotalizer.build(vars, rhs);
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
           this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
@@ -396,6 +401,10 @@ public class CCEncoder {
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
         return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData());
+      case MODULAR_TOTALIZER:
+        if (this.alkModularTotalizer == null)
+          this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
+        return new Pair<>(new ImmutableFormulaList(this.alkModularTotalizer.build(vars, rhs)), this.alkModularTotalizer.incrementalData());
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
           this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
@@ -479,15 +488,15 @@ public class CCEncoder {
 
   /**
    * Returns the best at-least-k encoder for a given number of variables.  The valuation is based on theoretical and
-   * practical observations.  Currently the totalizer is the best encoder for all sizes and therefore is always
+   * practical observations.  Currently the modular totalizer is the best encoder for all sizes and therefore is always
    * chosen.
    * @param n the number of variables
    * @return the best at-most-one encoder
    */
   private CCAtLeastK bestALK(int n) {
-    if (this.alkTotalizer == null)
-      this.alkTotalizer = new CCALKTotalizer(this.f);
-    return this.alkTotalizer;
+    if (this.alkModularTotalizer == null)
+      this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
+    return this.alkModularTotalizer;
   }
 
   /**
