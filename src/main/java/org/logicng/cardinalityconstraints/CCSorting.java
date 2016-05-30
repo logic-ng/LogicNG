@@ -127,7 +127,6 @@ public final class CCSorting {
         this.comparator(input.get(0), input.get(1), o1, result, direction);
         output.push(o1);
       }
-
       return;
     }
     if (direction != INPUT_TO_OUTPUT) {

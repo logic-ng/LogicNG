@@ -107,7 +107,7 @@ final class CCTotalizer {
    */
   List<Formula> buildALK(final Variable[] vars, int rhs) {
     final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
-    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
+    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)

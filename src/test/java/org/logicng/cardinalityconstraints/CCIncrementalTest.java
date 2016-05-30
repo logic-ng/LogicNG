@@ -56,7 +56,7 @@ public class CCIncrementalTest {
   public CCIncrementalTest() {
     encoders = new CCEncoder[3];
     encoders[0] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
-    encoders[1] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build());
+    encoders[1] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
     encoders[2] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build());
     this.solvers = new SATSolver[5];
     solvers[0] = MiniSat.miniSat(f);
@@ -107,40 +107,41 @@ public class CCIncrementalTest {
 
   @Test
   public void testSimpleIncrementalALK() {
-    CCEncoder encoder = this.encoders[0];
-    CCEncoder initialEncoder = new CCEncoder(f);
-    int numLits = 10;
-    Variable[] vars = new Variable[numLits];
-    for (int i = 0; i < numLits; i++)
-      vars[i] = f.variable("v" + i);
-    final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.GE, 2, vars));
-    final CCIncrementalData incData = cc.second();
+    for (int e = 0; e <= 1; e++) {
+      CCEncoder encoder = this.encoders[e];
+      CCEncoder initialEncoder = new CCEncoder(f);
+      int numLits = 10;
+      Variable[] vars = new Variable[numLits];
+      for (int i = 0; i < numLits; i++)
+        vars[i] = f.variable("v" + i);
+      final Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.GE, 2, vars));
+      final CCIncrementalData incData = cc.second();
 
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(initialEncoder.encode(f.cc(CType.GE, 4, vars))); // >= 4
-    solver.add(initialEncoder.encode(f.cc(CType.LE, 7, vars))); // <= 7
+      final SATSolver solver = MiniSat.miniSat(f);
+      solver.add(initialEncoder.encode(f.cc(CType.GE, 4, vars))); // >= 4
+      solver.add(initialEncoder.encode(f.cc(CType.LE, 7, vars))); // <= 7
 
-    solver.add(cc.first());
-    Assert.assertEquals(Tristate.TRUE, solver.sat()); // >=2
+      solver.add(cc.first());
+      Assert.assertEquals(Tristate.TRUE, solver.sat()); // >=2
+      solver.add(incData.newLowerBound(3)); // >= 3
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+      solver.add(incData.newLowerBound(4)); // >= 4
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+      solver.add(incData.newLowerBound(5)); // >= 5
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+      solver.add(incData.newLowerBound(6)); // >= 6
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+      solver.add(incData.newLowerBound(7)); // >= 7
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
 
-    solver.add(incData.newLowerBound(3)); // >= 3
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    solver.add(incData.newLowerBound(4)); // >= 4
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    solver.add(incData.newLowerBound(5)); // >= 5
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    solver.add(incData.newLowerBound(6)); // >= 6
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    solver.add(incData.newLowerBound(7)); // >= 7
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-
-    final SolverState state = solver.saveState();
-    solver.add(incData.newLowerBound(8)); // >= 8
-    Assert.assertEquals(Tristate.FALSE, solver.sat());
-    solver.loadState(state);
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    solver.add(incData.newLowerBound(9)); // <= 9
-    Assert.assertEquals(Tristate.FALSE, solver.sat());
+      final SolverState state = solver.saveState();
+      solver.add(incData.newLowerBound(8)); // >= 8
+      Assert.assertEquals(Tristate.FALSE, solver.sat());
+      solver.loadState(state);
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+      solver.add(incData.newLowerBound(9)); // <= 9
+      Assert.assertEquals(Tristate.FALSE, solver.sat());
+    }
   }
 
   @Test

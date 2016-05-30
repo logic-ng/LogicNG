@@ -52,8 +52,9 @@ public class CCEXKTest {
   private CCEncoder[] encoders;
 
   public CCEXKTest() {
-    encoders = new CCEncoder[1];
+    encoders = new CCEncoder[2];
     encoders[0] = new CCEncoder(f, new CCConfig.Builder().exkEncoding(CCConfig.EXK_ENCODER.TOTALIZER).build());
+    encoders[1] = new CCEncoder(f, new CCConfig.Builder().exkEncoding(CCConfig.EXK_ENCODER.CARDINALITY_NETWORK).build());
   }
 
   @Test

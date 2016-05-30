@@ -75,8 +75,12 @@ public class CCEncoder {
   private CCAMKCardinalityNetwork amkCardinalityNetwork;
   private CCAMKModularTotalizer amkModularTotalizer;
   private CCAMKTotalizer amkTotalizer;
+
   private CCALKTotalizer alkTotalizer;
+  private CCALKCardinalityNetwork alkCardinalityNetwork;
+
   private CCEXKTotalizer exkTotalizer;
+  private CCEXKCardinalityNetwork exkCardinalityNetwork;
 
   /**
    * Constructs a new cardinality constraint encoder with a given configuration.
@@ -171,19 +175,8 @@ public class CCEncoder {
       case EQ:
         if (cc.rhs() == 1)
           return this.exo(ops);
-        else {
-          //          final PBConstraint le = this.f.cc(CType.LE, cc.rhs(), ops);
-          //          final PBConstraint ge = this.f.cc(CType.GE, cc.rhs(), ops);
-          //          if (le.type() == FType.FALSE || ge.type() == FType.FALSE)
-          //            return Collections.singletonList((Formula) this.f.falsum());
-          //          final List<Formula> list = new LinkedList<>();
-          //          if (le.type() != FType.TRUE)
-          //            list.addAll(this.encode(le).toList());
-          //          if (ge.type() != FType.TRUE)
-          //            list.addAll(this.encode(ge).toList());
-          //          return list;
+        else
           return this.exk(ops, cc.rhs());
-        }
       default:
         throw new IllegalArgumentException("Unknown pseudo-Boolean comparator: " + cc.comparator());
     }
@@ -364,10 +357,52 @@ public class CCEncoder {
     }
     switch (this.config().alkEncoder) {
       case TOTALIZER:
-      case BEST:
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
         return this.alkTotalizer.build(vars, rhs);
+      case CARDINALITY_NETWORK:
+        if (this.alkCardinalityNetwork == null)
+          this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
+        return this.alkCardinalityNetwork.build(vars, rhs);
+      case BEST:
+        return this.bestALK(vars.length).build(vars, rhs);
+      default:
+        throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
+    }
+  }
+
+  /**
+   * Encodes an at-lest-k constraint for incremental usage.
+   * @param vars the variables of the constraint
+   * @param rhs  the right hand side of the constraint
+   * @return the CNF encoding of the constraint and the incremental data
+   */
+  private Pair<ImmutableFormulaList, CCIncrementalData> alkIncremental(final Variable[] vars, int rhs) {
+    if (rhs < 0)
+      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
+    if (rhs > vars.length)
+      return new Pair<>(new ImmutableFormulaList(f.falsum()), null);
+    if (rhs == 0)
+      return new Pair<>(new ImmutableFormulaList(FType.AND), null);
+    if (rhs == 1)
+      return new Pair<>(new ImmutableFormulaList(this.f.clause((Literal[]) vars)), null);
+    List<Formula> result = new ArrayList<>();
+    if (rhs == vars.length) {
+      Collections.addAll(result, vars);
+      return new Pair<>(new ImmutableFormulaList(result), null);
+    }
+    switch (this.config().alkEncoder) {
+      case TOTALIZER:
+        if (this.alkTotalizer == null)
+          this.alkTotalizer = new CCALKTotalizer(this.f);
+        return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData());
+      case CARDINALITY_NETWORK:
+        if (this.alkCardinalityNetwork == null)
+          this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
+        return new Pair<>(new ImmutableFormulaList(this.alkCardinalityNetwork.buildForIncremental(vars, rhs)), this.alkCardinalityNetwork.incrementalData());
+      case BEST:
+        result = this.bestALK(vars.length).build(vars, rhs);
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.bestALK(vars.length).incrementalData());
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
     }
@@ -396,43 +431,17 @@ public class CCEncoder {
     }
     switch (this.config().exkEncoder) {
       case TOTALIZER:
-      case BEST:
         if (this.exkTotalizer == null)
           this.exkTotalizer = new CCEXKTotalizer(this.f);
         return this.exkTotalizer.build(vars, rhs);
+      case CARDINALITY_NETWORK:
+        if (this.exkCardinalityNetwork == null)
+          this.exkCardinalityNetwork = new CCEXKCardinalityNetwork(this.f);
+        return this.exkCardinalityNetwork.build(vars, rhs);
+      case BEST:
+        return this.bestEXK(vars.length).build(vars, rhs);
       default:
         throw new IllegalStateException("Unknown exactly-k encoder: " + this.config().exkEncoder);
-    }
-  }
-
-  /**
-   * Encodes an at-lest-k constraint for incremental usage.
-   * @param vars the variables of the constraint
-   * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint and the incremental data
-   */
-  private Pair<ImmutableFormulaList, CCIncrementalData> alkIncremental(final Variable[] vars, int rhs) {
-    if (rhs < 0)
-      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    if (rhs > vars.length)
-      return new Pair<>(new ImmutableFormulaList(f.falsum()), null);
-    if (rhs == 0)
-      return new Pair<>(new ImmutableFormulaList(FType.AND), null);
-    if (rhs == 1)
-      return new Pair<>(new ImmutableFormulaList(this.f.clause((Literal[]) vars)), null);
-    if (rhs == vars.length) {
-      final List<Formula> result = new ArrayList<>();
-      Collections.addAll(result, vars);
-      return new Pair<>(new ImmutableFormulaList(result), null);
-    }
-    switch (this.config().alkEncoder) {
-      case TOTALIZER:
-      case BEST:
-        if (this.alkTotalizer == null)
-          this.alkTotalizer = new CCALKTotalizer(this.f);
-        return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData());
-      default:
-        throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
     }
   }
 
@@ -466,6 +475,32 @@ public class CCEncoder {
     if (this.amkModularTotalizer == null)
       this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
     return this.amkModularTotalizer;
+  }
+
+  /**
+   * Returns the best at-least-k encoder for a given number of variables.  The valuation is based on theoretical and
+   * practical observations.  Currently the totalizer is the best encoder for all sizes and therefore is always
+   * chosen.
+   * @param n the number of variables
+   * @return the best at-most-one encoder
+   */
+  private CCAtLeastK bestALK(int n) {
+    if (this.alkTotalizer == null)
+      this.alkTotalizer = new CCALKTotalizer(this.f);
+    return this.alkTotalizer;
+  }
+
+  /**
+   * Returns the best exactly-k encoder for a given number of variables.  The valuation is based on theoretical and
+   * practical observations.  Currently the totalizer is the best encoder for all sizes and therefore is always
+   * chosen.
+   * @param n the number of variables
+   * @return the best at-most-one encoder
+   */
+  private CCExactlyK bestEXK(int n) {
+    if (this.exkTotalizer == null)
+      this.exkTotalizer = new CCEXKTotalizer(this.f);
+    return this.exkTotalizer;
   }
 
   /**

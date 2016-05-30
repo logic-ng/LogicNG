@@ -80,6 +80,7 @@ public class CCAMKTest {
   public void testLargeAMK() {
     testCC(150, 2, 1 + 150 + 11175, this.encoders[0]);
     testCC(150, 2, 1 + 150 + 11175, this.encoders[1]);
+    testCC(150, 2, 1 + 150 + 11175, this.encoders[2]);
   }
 
   private void testCC(int numLits, int rhs, int expected, final CCEncoder encoder) {

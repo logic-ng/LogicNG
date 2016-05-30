@@ -74,6 +74,7 @@ public final class CCIncrementalData {
   private final LNGVector<? extends Literal> vector1;
   private final LNGVector<? extends Literal> vector2;
   private final int mod;
+  private int nVars;
   private int currentRHS;
 
   /**
@@ -85,7 +86,8 @@ public final class CCIncrementalData {
    * @param vector2    the second internal vector
    * @param mod        the modulo value
    */
-  CCIncrementalData(final FormulaFactory f, CCConfig.AMK_ENCODER amkEncoder, int rhs, LNGVector<? extends Literal> vector1, LNGVector<? extends Literal> vector2, int mod) {
+  CCIncrementalData(final FormulaFactory f, CCConfig.AMK_ENCODER amkEncoder, int rhs,
+                    final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2, int mod) {
     this.f = f;
     this.amkEncoder = amkEncoder;
     this.alkEncoder = null;
@@ -103,7 +105,7 @@ public final class CCIncrementalData {
    * @param rhs     the current right-hand-side
    * @param vector1 the first internal vector
    */
-  CCIncrementalData(final FormulaFactory f, CCConfig.AMK_ENCODER encoder, int rhs, LNGVector<? extends Literal> vector1) {
+  CCIncrementalData(final FormulaFactory f, CCConfig.AMK_ENCODER encoder, int rhs, final LNGVector<? extends Literal> vector1) {
     this(f, encoder, rhs, vector1, null, -1);
   }
 
@@ -114,11 +116,12 @@ public final class CCIncrementalData {
    * @param rhs        the current right-hand-side
    * @param vector1    the first internal vector
    */
-  CCIncrementalData(final FormulaFactory f, CCConfig.ALK_ENCODER alkEncoder, int rhs, LNGVector<? extends Literal> vector1) {
+  CCIncrementalData(final FormulaFactory f, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars, final LNGVector<? extends Literal> vector1) {
     this.f = f;
     this.amkEncoder = null;
     this.alkEncoder = alkEncoder;
     this.currentRHS = rhs;
+    this.nVars = nVars;
     this.vector1 = vector1;
     this.vector2 = null;
     this.mod = -1;
@@ -181,14 +184,31 @@ public final class CCIncrementalData {
     this.currentRHS = rhs;
     if (this.alkEncoder == null)
       throw new IllegalStateException("Cannot encode a new lower bound for an at-least-k constraint");
+    final List<Formula> result = new ArrayList<>();
     switch (this.alkEncoder) {
       case TOTALIZER:
-        final List<Formula> result = new ArrayList<>();
         for (int i = 0; i < rhs; i++)
           result.add(this.vector1.get(i));
         return result;
+      case CARDINALITY_NETWORK:
+        int newRHS = nVars - rhs;
+        if (this.vector1.size() > newRHS)
+          result.add(this.vector1.get(newRHS).negate());
+        return result;
       default:
-        throw new IllegalStateException("Unknown at-least-k encoder: " + this.amkEncoder);
+        throw new IllegalStateException("Unknown at-least-k encoder: " + this.alkEncoder);
     }
+  }
+
+  @Override
+  public String toString() {
+    return "CCIncrementalData{" +
+            ", amkEncoder=" + amkEncoder +
+            ", alkEncoder=" + alkEncoder +
+            ", vector1=" + vector1 +
+            ", vector2=" + vector2 +
+            ", mod=" + mod +
+            ", currentRHS=" + currentRHS +
+            '}';
   }
 }

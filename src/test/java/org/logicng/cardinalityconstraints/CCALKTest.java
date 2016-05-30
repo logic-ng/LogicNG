@@ -36,6 +36,7 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -52,8 +53,9 @@ public class CCALKTest {
   private CCEncoder[] encoders;
 
   public CCALKTest() {
-    encoders = new CCEncoder[1];
+    encoders = new CCEncoder[2];
     encoders[0] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
+    encoders[1] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
   }
 
   @Test
@@ -84,7 +86,7 @@ public class CCALKTest {
       Assert.assertEquals(Tristate.TRUE, solver.sat());
     else
       Assert.assertEquals(Tristate.FALSE, solver.sat());
-    final List<Assignment> models = solver.enumerateAllModels(problemLits);
+    final List<Assignment> models = solver.enumerateAllModels(problemLits, new NumberOfModelsHandler(12000));
     Assert.assertEquals(expected, models.size());
     for (final Assignment model : models)
       Assert.assertTrue(model.positiveLiterals().size() >= rhs);

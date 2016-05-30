@@ -58,12 +58,12 @@ import org.logicng.formulas.Variable;
 import java.util.List;
 
 /**
- * Encodes that at most 'rhs' variables are assigned value true.  Uses the cardinality network
+ * Encodes that at least 'rhs' variables are assigned value true.  Uses the cardinality network
  * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
  * @version 1.1
  * @since 1.1
  */
-final class CCAMKCardinalityNetwork implements CCAtMostK {
+final class CCALKCardinalityNetwork implements CCAtLeastK {
 
   private final CCCardinalityNetworks cardinalityNetwork;
 
@@ -71,18 +71,13 @@ final class CCAMKCardinalityNetwork implements CCAtMostK {
    * Constructs a new cardinality encoder.
    * @param f the formula factory
    */
-  CCAMKCardinalityNetwork(final FormulaFactory f) {
+  CCALKCardinalityNetwork(final FormulaFactory f) {
     this.cardinalityNetwork = new CCCardinalityNetworks(f);
   }
 
   @Override
   public List<Formula> build(final Variable[] vars, int rhs) {
-    return cardinalityNetwork.buildAMK(vars, rhs);
-  }
-
-  @Override
-  public CCIncrementalData incrementalData() {
-    return cardinalityNetwork.incrementalData();
+    return cardinalityNetwork.buildALK(vars, rhs);
   }
 
   /**
@@ -92,7 +87,12 @@ final class CCAMKCardinalityNetwork implements CCAtMostK {
    * @return the CNF constraint for incremental usage
    */
   List<Formula> buildForIncremental(final Variable[] vars, int rhs) {
-    return cardinalityNetwork.buildAMKForIncremental(vars, rhs);
+    return cardinalityNetwork.buildALKForIncremental(vars, rhs);
+  }
+
+  @Override
+  public CCIncrementalData incrementalData() {
+    return cardinalityNetwork.incrementalData();
   }
 
   @Override
