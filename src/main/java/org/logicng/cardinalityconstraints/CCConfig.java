@@ -44,11 +44,14 @@ public final class CCConfig extends Configuration {
 
   public enum ALK_ENCODER {TOTALIZER, BEST}
 
+  public enum EXK_ENCODER {TOTALIZER, BEST}
+
   public enum BIMANDER_GROUP_SIZE {HALF, SQRT, FIXED}
 
   final AMO_ENCODER amoEncoder;
   final AMK_ENCODER amkEncoder;
   final ALK_ENCODER alkEncoder;
+  final EXK_ENCODER exkEncoder;
   final BIMANDER_GROUP_SIZE bimanderGroupSize;
   final int bimanderFixedGroupSize;
   final int nestingGroupSize;
@@ -62,6 +65,7 @@ public final class CCConfig extends Configuration {
     private AMO_ENCODER amoEncoder = AMO_ENCODER.BEST;
     private AMK_ENCODER amkEncoder = AMK_ENCODER.BEST;
     private ALK_ENCODER alkEncoder = ALK_ENCODER.BEST;
+    private EXK_ENCODER exkEncoder = EXK_ENCODER.BEST;
     private BIMANDER_GROUP_SIZE bimanderGroupSize = BIMANDER_GROUP_SIZE.SQRT;
     private int bimanderFixedGroupSize = 3;
     private int nestingGroupSize = 4;
@@ -95,6 +99,16 @@ public final class CCConfig extends Configuration {
      */
     public Builder alkEncoding(final ALK_ENCODER alkEncoder) {
       this.alkEncoder = alkEncoder;
+      return this;
+    }
+
+    /**
+     * Sets the encoder for exactly-k constraints. The default value is {@code BEST}.
+     * @param exkEncoder the exactly-k encoder
+     * @return the builder
+     */
+    public Builder exkEncoding(final EXK_ENCODER exkEncoder) {
+      this.exkEncoder = exkEncoder;
       return this;
     }
 
@@ -167,6 +181,7 @@ public final class CCConfig extends Configuration {
     this.amoEncoder = builder.amoEncoder;
     this.amkEncoder = builder.amkEncoder;
     this.alkEncoder = builder.alkEncoder;
+    this.exkEncoder = builder.exkEncoder;
     this.bimanderGroupSize = builder.bimanderGroupSize;
     this.bimanderFixedGroupSize = builder.bimanderFixedGroupSize;
     this.nestingGroupSize = builder.nestingGroupSize;
@@ -180,6 +195,7 @@ public final class CCConfig extends Configuration {
     sb.append("amoEncoder=").append(this.amoEncoder).append("\n");
     sb.append("amkEncoder=").append(this.amkEncoder).append("\n");
     sb.append("alkEncoder=").append(this.alkEncoder).append("\n");
+    sb.append("exkEncoder=").append(this.exkEncoder).append("\n");
     sb.append("bimanderGroupSize=").append(this.bimanderGroupSize).append("\n");
     sb.append("bimanderFixedGroupSize=").append(this.bimanderFixedGroupSize).append("\n");
     sb.append("nestingGroupSize=").append(this.nestingGroupSize).append("\n");

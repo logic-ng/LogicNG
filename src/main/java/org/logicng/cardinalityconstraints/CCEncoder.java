@@ -31,7 +31,6 @@ package org.logicng.cardinalityconstraints;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
-import org.logicng.formulas.CType;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -42,7 +41,6 @@ import org.logicng.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -78,6 +76,7 @@ public class CCEncoder {
   private CCAMKModularTotalizer amkModularTotalizer;
   private CCAMKTotalizer amkTotalizer;
   private CCALKTotalizer alkTotalizer;
+  private CCEXKTotalizer exkTotalizer;
 
   /**
    * Constructs a new cardinality constraint encoder with a given configuration.
@@ -173,16 +172,17 @@ public class CCEncoder {
         if (cc.rhs() == 1)
           return this.exo(ops);
         else {
-          final PBConstraint le = this.f.cc(CType.LE, cc.rhs(), ops);
-          final PBConstraint ge = this.f.cc(CType.GE, cc.rhs(), ops);
-          if (le.type() == FType.FALSE || ge.type() == FType.FALSE)
-            return Collections.singletonList((Formula) this.f.falsum());
-          final List<Formula> list = new LinkedList<>();
-          if (le.type() != FType.TRUE)
-            list.addAll(this.encode(le).toList());
-          if (ge.type() != FType.TRUE)
-            list.addAll(this.encode(ge).toList());
-          return list;
+          //          final PBConstraint le = this.f.cc(CType.LE, cc.rhs(), ops);
+          //          final PBConstraint ge = this.f.cc(CType.GE, cc.rhs(), ops);
+          //          if (le.type() == FType.FALSE || ge.type() == FType.FALSE)
+          //            return Collections.singletonList((Formula) this.f.falsum());
+          //          final List<Formula> list = new LinkedList<>();
+          //          if (le.type() != FType.TRUE)
+          //            list.addAll(this.encode(le).toList());
+          //          if (ge.type() != FType.TRUE)
+          //            list.addAll(this.encode(ge).toList());
+          //          return list;
+          return this.exk(ops, cc.rhs());
         }
       default:
         throw new IllegalArgumentException("Unknown pseudo-Boolean comparator: " + cc.comparator());
@@ -370,6 +370,38 @@ public class CCEncoder {
         return this.alkTotalizer.build(vars, rhs);
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
+    }
+  }
+
+  /**
+   * Encodes an exactly-k constraint.
+   * @param vars the variables of the constraint
+   * @param rhs  the right hand side of the constraint
+   * @return the CNF encoding of the constraint
+   */
+  private List<Formula> exk(final Variable[] vars, int rhs) {
+    if (rhs < 0)
+      throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
+    if (rhs > vars.length)
+      return Collections.singletonList((Formula) this.f.falsum());
+    final List<Formula> result = new ArrayList<>();
+    if (rhs == 0) {
+      for (final Variable var : vars)
+        result.add(var.negate());
+      return result;
+    }
+    if (rhs == vars.length) {
+      Collections.addAll(result, vars);
+      return result;
+    }
+    switch (this.config().exkEncoder) {
+      case TOTALIZER:
+      case BEST:
+        if (this.exkTotalizer == null)
+          this.exkTotalizer = new CCEXKTotalizer(this.f);
+        return this.exkTotalizer.build(vars, rhs);
+      default:
+        throw new IllegalStateException("Unknown exactly-k encoder: " + this.config().exkEncoder);
     }
   }
 

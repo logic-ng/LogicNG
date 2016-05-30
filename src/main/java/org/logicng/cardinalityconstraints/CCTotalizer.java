@@ -65,7 +65,7 @@ import java.util.List;
  */
 final class CCTotalizer {
 
-  private enum Bound {LOWER, UPPER}
+  private enum Bound {LOWER, UPPER, BOTH}
 
   private final FormulaFactory f;
   private LNGVector<Variable> cardinalityInvars;
@@ -89,13 +89,7 @@ final class CCTotalizer {
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
   List<Formula> buildAMK(final Variable[] vars, int rhs) {
-    this.result = new ArrayList<>();
-    this.cardinalityInvars = new LNGVector<>(vars.length);
-    final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.length);
-    for (final Variable var : vars) {
-      this.cardinalityInvars.push(var);
-      cardinalityOutvars.push(this.f.newCCVariable());
-    }
+    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
     this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.UPPER);
     assert this.cardinalityInvars.size() == 0;
@@ -112,6 +106,39 @@ final class CCTotalizer {
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
   List<Formula> buildALK(final Variable[] vars, int rhs) {
+    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
+    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
+    this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
+    assert this.cardinalityInvars.size() == 0;
+    for (int i = 0; i < rhs; i++)
+      this.result.add(cardinalityOutvars.get(i));
+    return this.result;
+  }
+
+  /**
+   * Builds an exactly-k constraint.
+   * @param vars the variables
+   * @param rhs  the right-hand side
+   * @return the constraint
+   * @throws IllegalArgumentException if the right hand side of the constraint was negative
+   */
+  List<Formula> buildEXK(final Variable[] vars, int rhs) {
+    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
+    this.toCNF(cardinalityOutvars, rhs, Bound.BOTH);
+    assert this.cardinalityInvars.size() == 0;
+    for (int i = 0; i < rhs; i++)
+      this.result.add(cardinalityOutvars.get(i));
+    for (int i = rhs; i < cardinalityOutvars.size(); i++)
+      this.result.add(cardinalityOutvars.get(i).negate());
+    return this.result;
+  }
+
+  /**
+   * Initializes the constraint.
+   * @param vars the variables
+   * @return the auxiliary variables
+   */
+  private LNGVector<Variable> initializeConstraint(final Variable[] vars) {
     this.result = new ArrayList<>();
     this.cardinalityInvars = new LNGVector<>(vars.length);
     final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.length);
@@ -119,12 +146,7 @@ final class CCTotalizer {
       this.cardinalityInvars.push(var);
       cardinalityOutvars.push(this.f.newCCVariable());
     }
-    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
-    this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
-    assert this.cardinalityInvars.size() == 0;
-    for (int i = 0; i < rhs; i++)
-      this.result.add(cardinalityOutvars.get(i));
-    return this.result;
+    return cardinalityOutvars;
   }
 
   /**
@@ -157,10 +179,10 @@ final class CCTotalizer {
           right.push(this.f.newCCVariable());
       }
     }
-    if (bound == Bound.UPPER)
+    if (bound == Bound.UPPER || bound == Bound.BOTH)
       this.adderAMK(left, right, vars, rhs);
-    else
-      this.adderALK(left, right, vars, rhs);
+    if (bound == Bound.LOWER || bound == Bound.BOTH)
+      this.adderALK(left, right, vars);
     if (left.size() > 1)
       this.toCNF(left, rhs, bound);
     if (right.size() > 1)
@@ -187,7 +209,7 @@ final class CCTotalizer {
   }
 
   private void adderALK(final LNGVector<Variable> left, final LNGVector<Variable> right,
-                        final LNGVector<Variable> output, int rhs) {
+                        final LNGVector<Variable> output) {
     assert output.size() == left.size() + right.size();
     for (int i = 0; i <= left.size(); i++) {
       for (int j = 0; j <= right.size(); j++) {
