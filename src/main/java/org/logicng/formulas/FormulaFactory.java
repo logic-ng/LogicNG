@@ -163,7 +163,7 @@ public final class FormulaFactory {
   /**
    * Removes all formulas from the factory cache.
    */
-  private void clear() {
+  public void clear() {
     this.posLiterals = new HashMap<>();
     this.negLiterals = new HashMap<>();
     this.generatedVariables = new HashSet<>();

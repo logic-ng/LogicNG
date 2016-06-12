@@ -52,13 +52,8 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the nested encoding.
@@ -67,25 +62,22 @@ import java.util.List;
  */
 final class CCAMONested implements CCAtMostOne {
 
-  private final FormulaFactory f;
   private int groupSize;
-  private List<Formula> result;
+  private CCResult result;
 
   /**
    * Constructs the nested AMO encoder.
-   * @param f         the formula factory
    * @param groupSize the group size
    */
-  CCAMONested(final FormulaFactory f, int groupSize) {
-    this.f = f;
+  CCAMONested(int groupSize) {
     this.groupSize = groupSize;
   }
 
   @Override
-  public List<Formula> build(final Variable... vars) {
-    this.result = new ArrayList<>();
+  public void build(final CCResult result, final Variable... vars) {
+    result.reset();
+    this.result = result;
     this.encodeIntern(new LNGVector<Literal>(vars));
-    return this.result;
   }
 
   /**
@@ -96,7 +88,7 @@ final class CCAMONested implements CCAtMostOne {
     if (vars.size() <= this.groupSize)
       for (int i = 0; i + 1 < vars.size(); i++)
         for (int j = i + 1; j < vars.size(); j++)
-          this.result.add(this.f.clause(vars.get(i).negate(), vars.get(j).negate()));
+          this.result.addClause(vars.get(i).negate(), vars.get(j).negate());
     else {
       final LNGVector<Literal> l1 = new LNGVector<>(vars.size() / 2);
       final LNGVector<Literal> l2 = new LNGVector<>(vars.size() / 2);
@@ -105,7 +97,7 @@ final class CCAMONested implements CCAtMostOne {
         l1.push(vars.get(i));
       for (; i < vars.size(); i++)
         l2.push(vars.get(i));
-      final Variable newVariable = this.f.newCCVariable();
+      final Variable newVariable = this.result.newVariable();
       l1.push(newVariable);
       l2.push(newVariable.negate());
       this.encodeIntern(l1);

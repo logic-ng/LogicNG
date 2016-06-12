@@ -51,12 +51,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the binary encoding due to Doggett, Frisch, Peugniez,
@@ -66,25 +61,23 @@ import java.util.List;
  */
 final class CCAMOBinary implements CCAtMostOne {
 
-  private final FormulaFactory f;
 
   /**
    * Constructs the binary AMO encoder.
-   * @param f the formula factory
    */
-  CCAMOBinary(final FormulaFactory f) {
-    this.f = f;
+  CCAMOBinary() {
+    //intentionally left empty
   }
 
   @Override
-  public List<Formula> build(final Variable... vars) {
-    final List<Formula> result = new ArrayList<>();
+  public void build(final CCResult result, final Variable... vars) {
+    result.reset();
     final int numberOfBits = (int) Math.ceil((Math.log(vars.length) / Math.log(2)));
     final int twoPowNBits = (int) Math.pow(2, numberOfBits);
     final int k = (twoPowNBits - vars.length) * 2;
     final Variable[] bits = new Variable[numberOfBits];
     for (int i = 0; i < numberOfBits; i++)
-      bits[i] = this.f.newCCVariable();
+      bits[i] = result.newVariable();
     int gray_code;
     int next_gray;
     int i = 0;
@@ -97,9 +90,9 @@ final class CCAMOBinary implements CCAtMostOne {
       for (int j = 0; j < numberOfBits; ++j)
         if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
           if ((gray_code & (1 << j)) != 0)
-            result.add(this.f.clause(vars[index].negate(), bits[j]));
+            result.addClause(vars[index].negate(), bits[j]);
           else
-            result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
+            result.addClause(vars[index].negate(), bits[j].negate());
         }
       i++;
     }
@@ -108,12 +101,11 @@ final class CCAMOBinary implements CCAtMostOne {
       gray_code = i ^ (i >> 1);
       for (int j = 0; j < numberOfBits; ++j)
         if ((gray_code & (1 << j)) != 0)
-          result.add(this.f.clause(vars[index].negate(), bits[j]));
+          result.addClause(vars[index].negate(), bits[j]);
         else
-          result.add(this.f.clause(vars[index].negate(), bits[j].negate()));
+          result.addClause(vars[index].negate(), bits[j].negate());
       i++;
     }
-    return result;
   }
 
   @Override

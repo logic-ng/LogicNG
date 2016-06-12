@@ -28,10 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
-
-import java.util.List;
 
 /**
  * The interface for at-most-one (AMO) cardinality constraints.
@@ -42,8 +39,9 @@ interface CCAtMostOne {
 
   /**
    * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= 1}.
-   * @param vars the variables {@code var_1 ... var_n}
+   * @param result the result for the encoding
+   * @param vars   the variables {@code var_1 ... var_n}
    * @return the CNF encoding of the cardinality constraint
    */
-  List<Formula> build(final Variable... vars);
+  void build(final CCResult result, final Variable... vars);
 }

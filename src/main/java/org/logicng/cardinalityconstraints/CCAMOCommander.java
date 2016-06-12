@@ -52,13 +52,8 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the commander encoding due to Klieber & Kwon.
@@ -67,8 +62,7 @@ import java.util.List;
  */
 final class CCAMOCommander implements CCAtMostOne {
 
-  private final FormulaFactory f;
-  private List<Formula> result;
+  private CCResult result;
   private int k;
   private LNGVector<Literal> literals;
   private LNGVector<Literal> nextLiterals;
@@ -76,11 +70,9 @@ final class CCAMOCommander implements CCAtMostOne {
 
   /**
    * Constructs the commander AMO encoder with a given group size.
-   * @param f the formula factory
    * @param k the group size for the encoding
    */
-  CCAMOCommander(final FormulaFactory f, int k) {
-    this.f = f;
+  CCAMOCommander(int k) {
     this.k = k;
     this.literals = new LNGVector<>();
     this.nextLiterals = new LNGVector<>();
@@ -88,14 +80,14 @@ final class CCAMOCommander implements CCAtMostOne {
   }
 
   @Override
-  public List<Formula> build(final Variable... vars) {
-    this.result = new ArrayList<>();
+  public void build(final CCResult result, final Variable... vars) {
+    result.reset();
+    this.result = result;
     this.currentLiterals.clear();
     this.nextLiterals.clear();
     for (final Variable var : vars)
       this.currentLiterals.push(var);
     this.encodeRecursive();
-    return this.result;
   }
 
   /**
@@ -110,12 +102,12 @@ final class CCAMOCommander implements CCAtMostOne {
         this.literals.push(this.currentLiterals.get(i));
         if (i % this.k == this.k - 1 || i == this.currentLiterals.size() - 1) {
           this.encodeNonRecursive(this.literals);
-          this.literals.push(this.f.newCCVariable());
+          this.literals.push(this.result.newVariable());
           this.nextLiterals.push(this.literals.back().negate());
           if (isExactlyOne && this.literals.size() > 0)
-            this.result.add(this.vec2clause(this.literals));
+            this.result.addClause(this.literals);
           for (int j = 0; j < this.literals.size() - 1; j++)
-            this.result.add(this.f.clause(this.literals.back().negate(), this.literals.get(j).negate()));
+            this.result.addClause(this.literals.back().negate(), this.literals.get(j).negate());
           this.literals.clear();
         }
       }
@@ -124,7 +116,7 @@ final class CCAMOCommander implements CCAtMostOne {
     }
     this.encodeNonRecursive(this.currentLiterals);
     if (isExactlyOne && this.currentLiterals.size() > 0)
-      this.result.add(this.vec2clause(this.currentLiterals));
+      this.result.addClause(this.currentLiterals);
   }
 
   /**
@@ -135,19 +127,7 @@ final class CCAMOCommander implements CCAtMostOne {
     if (literals.size() > 1)
       for (int i = 0; i < literals.size(); i++)
         for (int j = i + 1; j < literals.size(); j++)
-          this.result.add(this.f.clause(literals.get(i).negate(), literals.get(j).negate()));
-  }
-
-  /**
-   * Returns a clause for a vector of literals.
-   * @param literals the literals
-   * @return the clause
-   */
-  private Formula vec2clause(final LNGVector<Literal> literals) {
-    final List<Literal> lits = new ArrayList<>(literals.size());
-    for (final Literal l : literals)
-      lits.add(l);
-    return this.f.clause(lits);
+          this.result.addClause(literals.get(i).negate(), literals.get(j).negate());
   }
 
   @Override

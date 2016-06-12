@@ -28,12 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the 'naive' encoding with no introduction
@@ -43,23 +38,19 @@ import java.util.List;
  */
 final class CCAMOPure implements CCAtMostOne {
 
-  private final FormulaFactory f;
-
   /**
    * Constructs the naive AMO encoder.
-   * @param f the formula factory
    */
-  CCAMOPure(final FormulaFactory f) {
-    this.f = f;
+  CCAMOPure() {
+    // intentionally left empty
   }
 
   @Override
-  public List<Formula> build(final Variable... vars) {
-    final List<Formula> result = new ArrayList<>();
+  public void build(final CCResult result, final Variable... vars) {
+    result.reset();
     for (int i = 0; i < vars.length; i++)
       for (int j = i + 1; j < vars.length; j++)
-        result.add(this.f.clause(vars[i].negate(), vars[j].negate()));
-    return result;
+        result.addClause(vars[i].negate(), vars[j].negate());
   }
 
   @Override

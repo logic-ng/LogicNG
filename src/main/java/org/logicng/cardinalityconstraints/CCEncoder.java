@@ -189,33 +189,40 @@ public class CCEncoder {
    * @return the CNF encoding of the constraint
    */
   private List<Formula> amo(final Variable... vars) {
+    final CCResult result = CCResult.resultForFormula(f);
     if (vars.length <= 1)
       return new ArrayList<>();
     switch (this.config().amoEncoder) {
       case PURE:
         if (this.amoPure == null)
-          this.amoPure = new CCAMOPure(this.f);
-        return this.amoPure.build(vars);
+          this.amoPure = new CCAMOPure();
+        this.amoPure.build(result, vars);
+        return result.result();
       case LADDER:
         if (this.amoLadder == null)
-          this.amoLadder = new CCAMOLadder(this.f);
-        return this.amoLadder.build(vars);
+          this.amoLadder = new CCAMOLadder();
+        this.amoLadder.build(result, vars);
+        return result.result();
       case PRODUCT:
         if (this.amoProduct == null)
-          this.amoProduct = new CCAMOProduct(this.f, this.config().productRecursiveBound);
-        return this.amoProduct.build(vars);
+          this.amoProduct = new CCAMOProduct(this.config().productRecursiveBound);
+        this.amoProduct.build(result, vars);
+        return result.result();
       case NESTED:
         if (this.amoNested == null)
-          this.amoNested = new CCAMONested(this.f, this.config().nestingGroupSize);
-        return this.amoNested.build(vars);
+          this.amoNested = new CCAMONested(this.config().nestingGroupSize);
+        this.amoNested.build(result, vars);
+        return result.result();
       case COMMANDER:
         if (this.amoCommander == null)
-          this.amoCommander = new CCAMOCommander(this.f, this.config().commanderGroupSize);
-        return this.amoCommander.build(vars);
+          this.amoCommander = new CCAMOCommander(this.config().commanderGroupSize);
+        this.amoCommander.build(result, vars);
+        return result.result();
       case BINARY:
         if (this.amoBinary == null)
-          this.amoBinary = new CCAMOBinary(this.f);
-        return this.amoBinary.build(vars);
+          this.amoBinary = new CCAMOBinary();
+        this.amoBinary.build(result, vars);
+        return result.result();
       case BIMANDER:
         if (this.config().bimanderGroupSize != CCConfig.BIMANDER_GROUP_SIZE.FIXED || this.amoBimander == null) {
           int groupSize;
@@ -232,11 +239,13 @@ public class CCEncoder {
             default:
               throw new IllegalStateException("Unkown bimander group size: " + this.config().bimanderGroupSize);
           }
-          this.amoBimander = new CCAMOBimander(this.f, groupSize);
+          this.amoBimander = new CCAMOBimander(groupSize);
         }
-        return this.amoBimander.build(vars);
+        this.amoBimander.build(result, vars);
+        return result.result();
       case BEST:
-        return this.bestAMO(vars.length).build(vars);
+        this.bestAMO(vars.length).build(result, vars);
+        return result.result();
       default:
         throw new IllegalStateException("Unknown at-most-one encoder: " + this.config().amoEncoder);
     }
@@ -464,11 +473,11 @@ public class CCEncoder {
   private CCAtMostOne bestAMO(int n) {
     if (n <= 10) {
       if (this.amoPure == null)
-        this.amoPure = new CCAMOPure(this.f);
+        this.amoPure = new CCAMOPure();
       return this.amoPure;
     } else {
       if (this.amoProduct == null)
-        this.amoProduct = new CCAMOProduct(this.f, this.config().productRecursiveBound);
+        this.amoProduct = new CCAMOProduct(this.config().productRecursiveBound);
       return this.amoProduct;
     }
   }

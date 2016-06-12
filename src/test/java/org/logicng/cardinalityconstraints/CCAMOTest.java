@@ -95,11 +95,13 @@ public class CCAMOTest {
   @Test
   public void testAMOK() {
     for (final CCEncoder encoder : this.encoders) {
-      testAMO(2, encoder);
-      testAMO(10, encoder);
-      testAMO(100, encoder);
-      testAMO(250, encoder);
-      testAMO(500, encoder);
+      if (encoder != null) {
+        testAMO(2, encoder);
+        testAMO(10, encoder);
+        testAMO(100, encoder);
+        testAMO(250, encoder);
+        testAMO(500, encoder);
+      }
     }
   }
 

@@ -52,13 +52,8 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the bimander encoding due to Hölldobler and Nguyen.
@@ -67,8 +62,7 @@ import java.util.List;
  */
 final class CCAMOBimander implements CCAtMostOne {
 
-  private final FormulaFactory f;
-  private List<Formula> result;
+  private CCResult result;
   private LNGVector<LNGVector<Literal>> groups;
   private LNGVector<Literal> bits;
   private int numberOfBits;
@@ -78,20 +72,18 @@ final class CCAMOBimander implements CCAtMostOne {
 
   /**
    * Constructs the bimander AMO encoder with a given number of groups.
-   * @param f the formula factory
    */
-  CCAMOBimander(final FormulaFactory f, int m) {
-    this.f = f;
+  CCAMOBimander(int m) {
     this.m = m;
     this.groups = new LNGVector<>();
     this.bits = new LNGVector<>();
   }
 
   @Override
-  public List<Formula> build(final Variable... vars) {
-    this.result = new ArrayList<>();
+  public void build(final CCResult result, final Variable... vars) {
+    result.reset();
+    this.result = result;
     this.encodeIntern(new LNGVector<Literal>(vars));
-    return this.result;
   }
 
   /**
@@ -114,10 +106,10 @@ final class CCAMOBimander implements CCAtMostOne {
         if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
           if ((gray_code & (1 << j)) != 0)
             for (int p = 0; p < this.groups.get(index).size(); ++p)
-              this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j)));
+              this.result.addClause(this.groups.get(index).get(p).negate(), this.bits.get(j));
           else
             for (int p = 0; p < this.groups.get(index).size(); ++p)
-              this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j).negate()));
+              this.result.addClause(this.groups.get(index).get(p).negate(), this.bits.get(j).negate());
         }
     }
     for (; i < this.twoPowNBits; i++) {
@@ -126,10 +118,10 @@ final class CCAMOBimander implements CCAtMostOne {
       for (int j = 0; j < this.numberOfBits; j++)
         if ((gray_code & (1 << j)) != 0)
           for (int p = 0; p < this.groups.get(index).size(); ++p)
-            this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j)));
+            this.result.addClause(this.groups.get(index).get(p).negate(), this.bits.get(j));
         else
           for (int p = 0; p < this.groups.get(index).size(); ++p)
-            this.result.add(this.f.clause(this.groups.get(index).get(p).negate(), this.bits.get(j).negate()));
+            this.result.addClause(this.groups.get(index).get(p).negate(), this.bits.get(j).negate());
     }
   }
 
@@ -167,7 +159,7 @@ final class CCAMOBimander implements CCAtMostOne {
     this.twoPowNBits = (int) Math.pow(2, this.numberOfBits);
     this.k = (this.twoPowNBits - this.m) * 2;
     for (int i = 0; i < this.numberOfBits; ++i)
-      this.bits.push(this.f.newCCVariable());
+      this.bits.push(result.newVariable());
   }
 
   /**
@@ -178,7 +170,7 @@ final class CCAMOBimander implements CCAtMostOne {
     if (vars.size() > 1)
       for (int i = 0; i < vars.size(); i++)
         for (int j = i + 1; j < vars.size(); j++)
-          this.result.add(this.f.clause(vars.get(i).negate(), vars.get(j).negate()));
+          this.result.addClause(vars.get(i).negate(), vars.get(j).negate());
   }
 
   @Override
