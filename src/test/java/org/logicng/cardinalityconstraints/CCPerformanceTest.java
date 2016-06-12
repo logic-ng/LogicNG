@@ -29,6 +29,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
@@ -56,6 +57,7 @@ public class CCPerformanceTest {
     amkEncoders[2] = new CCEncoder(new FormulaFactory(), new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build());
   }
 
+  @Ignore
   @Test
   public void testAMKPerformance() {
     for (final CCEncoder encoder : this.amkEncoders) {
