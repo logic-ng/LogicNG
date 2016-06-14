@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 /**
@@ -38,11 +39,26 @@ import org.logicng.formulas.Variable;
  */
 final class CCAuxiliaryVariable extends Variable {
 
+  final boolean negated;
+
   /**
    * Constructs a new auxiliary variable
-   * @param name the literal name
+   * @param name    the literal name
+   * @param negated {@code true} if the variables is negated, {@code false} otherwise
    */
-  CCAuxiliaryVariable(String name) {
+  CCAuxiliaryVariable(String name, boolean negated) {
     super(name, null);
+    this.negated = negated;
+  }
+
+
+  @Override
+  public Literal negate() {
+    return new CCAuxiliaryVariable(this.name(), !this.negated);
+  }
+
+  @Override
+  public String toString() {
+    return name();
   }
 }

@@ -30,7 +30,6 @@ package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
@@ -54,64 +53,69 @@ import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.HA
 import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.SQRT;
 
 /**
- * Unit tests for the at-most-one encoders.
+ * Unit tests for the at-most-one configs.
  * @version 1.1
  * @since 1.0
  */
 public class CCAMOTest {
 
-  private final FormulaFactory f = new FormulaFactory();
-  private CCEncoder[] encoders;
+  private CCConfig[] configs;
 
   public CCAMOTest() {
-    encoders = new CCEncoder[11];
-    encoders[0] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(PURE).build());
-    encoders[1] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(LADDER).build());
-    encoders[2] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(PRODUCT).build());
-    encoders[3] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BINARY).build());
-    encoders[4] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(NESTED).build());
-    encoders[5] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(3).build());
-    encoders[6] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(7).build());
-    encoders[7] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build());
-    encoders[8] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build());
-    encoders[9] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build());
-    encoders[10] = new CCEncoder(f, new CCConfig.Builder().amoEncoding(BEST).build());
+    configs = new CCConfig[11];
+    configs[0] = new CCConfig.Builder().amoEncoding(PURE).build();
+    configs[1] = new CCConfig.Builder().amoEncoding(LADDER).build();
+    configs[2] = new CCConfig.Builder().amoEncoding(PRODUCT).build();
+    configs[3] = new CCConfig.Builder().amoEncoding(BINARY).build();
+    configs[4] = new CCConfig.Builder().amoEncoding(NESTED).build();
+    configs[5] = new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(3).build();
+    configs[6] = new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(7).build();
+    configs[7] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build();
+    configs[8] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build();
+    configs[9] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build();
+    configs[10] = new CCConfig.Builder().amoEncoding(BEST).build();
   }
 
   @Test
   public void testAMO0() {
-    final PBConstraint cc = this.f.amo();
-    for (final CCEncoder encoder : this.encoders)
-      Assert.assertTrue(encoder.encode(cc).empty());
+    final FormulaFactory f = new FormulaFactory();
+    final PBConstraint cc = f.amo();
+    for (final CCConfig config : this.configs)
+      Assert.assertTrue(new CCEncoder(f, config).encode(cc).empty());
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
   }
 
   @Test
   public void testAMO1() {
-    final PBConstraint cc = this.f.amo(f.variable("v0"));
-    for (final CCEncoder encoder : this.encoders)
-      Assert.assertTrue(encoder.encode(cc).empty());
+    final FormulaFactory f = new FormulaFactory();
+    final PBConstraint cc = f.amo(f.variable("v0"));
+    for (final CCConfig config : this.configs)
+      Assert.assertTrue(new CCEncoder(f, config).encode(cc).empty());
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
   }
 
   @Test
   public void testAMOK() {
-    for (final CCEncoder encoder : this.encoders) {
-      if (encoder != null) {
-        testAMO(2, encoder);
-        testAMO(10, encoder);
-        testAMO(100, encoder);
-        testAMO(250, encoder);
-        testAMO(500, encoder);
+    final FormulaFactory f = new FormulaFactory();
+    int counter = 0;
+    for (final CCConfig config : this.configs)
+      if (config != null) {
+        f.putConfiguration(config);
+        testAMO(2, f);
+        testAMO(10, f);
+        testAMO(100, f);
+        testAMO(250, f);
+        testAMO(500, f);
+        Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
       }
-    }
   }
 
-  private void testAMO(int numLits, final CCEncoder encoder) {
+  private void testAMO(int numLits, final FormulaFactory f) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final ImmutableFormulaList clauses = encoder.encode(f.amo(problemLits));
     final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(clauses);
+    solver.add(f.amo(problemLits));
     Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
     Assert.assertEquals(numLits + 1, models.size());

@@ -44,7 +44,7 @@ import java.util.List;
  * @version 1.1
  * @since 1.1
  */
-final class CCResult {
+public final class CCResult {
   final FormulaFactory f;
   private List<Formula> result;
   private final MiniSatStyleSolver miniSat;
@@ -56,6 +56,7 @@ final class CCResult {
   private CCResult(final FormulaFactory f, final MiniSatStyleSolver miniSat) {
     this.f = f;
     this.miniSat = miniSat;
+    this.reset();
   }
 
   /**
@@ -63,7 +64,7 @@ final class CCResult {
    * @param f the formula factory
    * @return the result
    */
-  static CCResult resultForFormula(final FormulaFactory f) {
+  public static CCResult resultForFormula(final FormulaFactory f) {
     return new CCResult(f, null);
   }
 
@@ -73,7 +74,7 @@ final class CCResult {
    * @param miniSat the solver
    * @return the result
    */
-  static CCResult resultForMiniSat(final FormulaFactory f, final MiniSatStyleSolver miniSat) {
+  public static CCResult resultForMiniSat(final FormulaFactory f, final MiniSatStyleSolver miniSat) {
     return new CCResult(f, miniSat);
   }
 
@@ -88,8 +89,15 @@ final class CCResult {
       final LNGIntVector clauseVec = new LNGIntVector(literals.length);
       for (Literal lit : literals) {
         int index = this.miniSat.idxForName(lit.name());
-        assert index != -1;
-        int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
+        if (index == -1) {
+          index = this.miniSat.newVar(true, true); // TODO initial phase not known here
+          this.miniSat.addName(lit.name(), index);
+        }
+        int litNum;
+        if (lit instanceof CCAuxiliaryVariable)
+          litNum = !((CCAuxiliaryVariable) lit).negated ? index * 2 : (index * 2) ^ 1;
+        else
+          litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
       miniSat.addClause(clauseVec);
@@ -108,7 +116,11 @@ final class CCResult {
       for (Literal lit : literals) {
         int index = this.miniSat.idxForName(lit.name());
         assert index != -1;
-        int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
+        int litNum;
+        if (lit instanceof CCAuxiliaryVariable)
+          litNum = !((CCAuxiliaryVariable) lit).negated ? index * 2 : (index * 2) ^ 1;
+        else
+          litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
       miniSat.addClause(clauseVec);
@@ -138,7 +150,7 @@ final class CCResult {
       final int index = this.miniSat.newVar(true, true);
       final String name = FormulaFactory.CC_PREFIX + "MINISAT_" + index;
       this.miniSat.addName(name, index);
-      return new CCAuxiliaryVariable(name);
+      return new CCAuxiliaryVariable(name, false);
     }
   }
 

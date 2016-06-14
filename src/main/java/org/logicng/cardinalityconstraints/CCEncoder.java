@@ -108,7 +108,18 @@ public class CCEncoder {
    * @return the CNF encoding of the cardinality constraint
    */
   public ImmutableFormulaList encode(final PBConstraint cc) {
-    return new ImmutableFormulaList(FType.AND, this.encodeConstraint(cc));
+    final CCResult result = CCResult.resultForFormula(f);
+    this.encodeConstraint(cc, result);
+    return new ImmutableFormulaList(FType.AND, result.result());
+  }
+
+  /**
+   * Encodes a cardinality constraint in a given result.
+   * @param cc     the cardinality constraint
+   * @param result the result of the encoding
+   */
+  public void encode(final PBConstraint cc, final CCResult result) {
+    this.encodeConstraint(cc, result);
   }
 
   public Pair<ImmutableFormulaList, CCIncrementalData> encodeIncremental(final PBConstraint cc) {
@@ -141,7 +152,6 @@ public class CCEncoder {
    * present - the default configuration.
    * @return the current configuration of
    */
-
   public CCConfig config() {
     if (this.config != null)
       return this.config;
@@ -150,34 +160,39 @@ public class CCEncoder {
   }
 
   /**
-   * Encodes the constraint.
-   * @param cc the constraint
-   * @return the encoding
+   * Encodes the constraint in the given result.
+   * @param cc     the constraint
+   * @param result the result
    */
-  private List<Formula> encodeConstraint(final PBConstraint cc) {
+  private void encodeConstraint(final PBConstraint cc, final CCResult result) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
     final Variable[] ops = litsAsVars(cc.operands());
     switch (cc.comparator()) {
       case LE:
         if (cc.rhs() == 1)
-          return this.amo(ops);
+          this.amo(result, ops);
         else
-          return this.amk(ops, cc.rhs());
+          this.amk(result, ops, cc.rhs());
+        break;
       case LT:
         if (cc.rhs() == 2)
-          return this.amo(ops);
+          this.amo(result, ops);
         else
-          return this.amk(ops, cc.rhs() - 1);
+          this.amk(result, ops, cc.rhs() - 1);
+        break;
       case GE:
-        return this.alk(ops, cc.rhs());
+        this.alk(result, ops, cc.rhs());
+        break;
       case GT:
-        return this.alk(ops, cc.rhs() + 1);
+        this.alk(result, ops, cc.rhs() + 1);
+        break;
       case EQ:
         if (cc.rhs() == 1)
-          return this.exo(ops);
+          this.exo(result, ops);
         else
-          return this.exk(ops, cc.rhs());
+          this.exk(result, ops, cc.rhs());
+        break;
       default:
         throw new IllegalArgumentException("Unknown pseudo-Boolean comparator: " + cc.comparator());
     }
@@ -185,11 +200,11 @@ public class CCEncoder {
 
   /**
    * Encodes an at-most-one constraint.
-   * @param vars the variables of the constraint
+   * @param result the result
+   * @param vars   the variables of the constraint
    * @return the CNF encoding of the constraint
    */
-  private List<Formula> amo(final Variable... vars) {
-    final CCResult result = CCResult.resultForFormula(f);
+  private List<Formula> amo(final CCResult result, final Variable... vars) {
     if (vars.length <= 1)
       return new ArrayList<>();
     switch (this.config().amoEncoder) {
@@ -253,51 +268,59 @@ public class CCEncoder {
 
   /**
    * Encodes an at-most-one constraint.
-   * @param vars the variables of the constraint
-   * @return the CNF encoding of the constraint
+   * @param result the result
+   * @param vars   the variables of the constraint
    */
-  private List<Formula> exo(final Variable... vars) {
+  private void exo(final CCResult result, final Variable... vars) {
     if (vars.length == 0)
-      return new ArrayList<>();
-    if (vars.length == 1)
-      return Collections.singletonList((Formula) vars[0]);
-    final List<Formula> result = this.amo(vars);
-    result.add(this.f.clause((Literal[]) vars));
-    return result;
+      return;
+    if (vars.length == 1) {
+      result.addClause(vars[0]);
+      return;
+    }
+    this.amo(result, vars);
+    result.addClause((Literal[]) vars);
   }
 
   /**
    * Encodes an at-most-k constraint.
-   * @param vars the variables of the constraint
-   * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint
+   * @param result the result
+   * @param vars   the variables of the constraint
+   * @param rhs    the right hand side of the constraint
    */
-  private List<Formula> amk(final Variable[] vars, int rhs) {
+  private void amk(final CCResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs >= vars.length) // there is no constraint
-      return new ArrayList<>();
+      return;
     if (rhs == 0) { // no variable can be true
-      final List<Formula> result = new ArrayList<>();
       for (final Variable var : vars)
-        result.add(var.negate());
-      return result;
+        result.addClause(var.negate());
+      return;
     }
     switch (this.config().amkEncoder) {
       case TOTALIZER:
         if (this.amkTotalizer == null)
           this.amkTotalizer = new CCAMKTotalizer(this.f);
-        return this.amkTotalizer.build(vars, rhs);
+        for (final Formula formula : this.amkTotalizer.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case MODULAR_TOTALIZER:
         if (this.amkModularTotalizer == null)
           this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
-        return this.amkModularTotalizer.build(vars, rhs);
+        for (final Formula formula : this.amkModularTotalizer.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
           this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
-        return this.amkCardinalityNetwork.build(vars, rhs);
+        for (final Formula formula : this.amkCardinalityNetwork.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case BEST:
-        return this.bestAMK(vars.length).build(vars, rhs);
+        for (final Formula formula : this.bestAMK(vars.length).build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       default:
         throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
     }
@@ -347,39 +370,51 @@ public class CCEncoder {
 
   /**
    * Encodes an at-lest-k constraint.
-   * @param vars the variables of the constraint
-   * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint
+   * @param result the result
+   * @param vars   the variables of the constraint
+   * @param rhs    the right hand side of the constraint
    */
-  private List<Formula> alk(final Variable[] vars, int rhs) {
+  private void alk(final CCResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    if (rhs > vars.length)
-      return Collections.singletonList((Formula) this.f.falsum());
+    if (rhs > vars.length) {
+      result.addClause();
+      return;
+    }
     if (rhs == 0)
-      return new ArrayList<>();
-    if (rhs == 1)
-      return Collections.singletonList(this.f.clause((Literal[]) vars));
+      return;
+    if (rhs == 1) {
+      result.addClause((Literal[]) vars);
+      return;
+    }
     if (rhs == vars.length) {
-      final List<Formula> result = new ArrayList<>();
-      Collections.addAll(result, vars);
-      return result;
+      for (final Variable var : vars)
+        result.addClause(var);
+      return;
     }
     switch (this.config().alkEncoder) {
       case TOTALIZER:
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
-        return this.alkTotalizer.build(vars, rhs);
+        for (final Formula formula : this.alkTotalizer.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case MODULAR_TOTALIZER:
         if (this.alkModularTotalizer == null)
           this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
-        return this.alkModularTotalizer.build(vars, rhs);
+        for (final Formula formula : this.alkModularTotalizer.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
           this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
-        return this.alkCardinalityNetwork.build(vars, rhs);
+        for (final Formula formula : this.alkCardinalityNetwork.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case BEST:
-        return this.bestALK(vars.length).build(vars, rhs);
+        for (final Formula formula : this.bestALK(vars.length).build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
     }
@@ -428,36 +463,44 @@ public class CCEncoder {
 
   /**
    * Encodes an exactly-k constraint.
-   * @param vars the variables of the constraint
-   * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint
+   * @param result the result
+   * @param vars   the variables of the constraint
+   * @param rhs    the right hand side of the constraint
    */
-  private List<Formula> exk(final Variable[] vars, int rhs) {
+  private void exk(final CCResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    if (rhs > vars.length)
-      return Collections.singletonList((Formula) this.f.falsum());
-    final List<Formula> result = new ArrayList<>();
+    if (rhs > vars.length) {
+      result.addClause();
+      return;
+    }
     if (rhs == 0) {
       for (final Variable var : vars)
-        result.add(var.negate());
-      return result;
+        result.addClause(var.negate());
+      return;
     }
     if (rhs == vars.length) {
-      Collections.addAll(result, vars);
-      return result;
+      for (final Variable var : vars)
+        result.addClause(var);
+      return;
     }
     switch (this.config().exkEncoder) {
       case TOTALIZER:
         if (this.exkTotalizer == null)
           this.exkTotalizer = new CCEXKTotalizer(this.f);
-        return this.exkTotalizer.build(vars, rhs);
+        for (final Formula formula : this.exkTotalizer.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case CARDINALITY_NETWORK:
         if (this.exkCardinalityNetwork == null)
           this.exkCardinalityNetwork = new CCEXKCardinalityNetwork(this.f);
-        return this.exkCardinalityNetwork.build(vars, rhs);
+        for (final Formula formula : this.exkCardinalityNetwork.build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       case BEST:
-        return this.bestEXK(vars.length).build(vars, rhs);
+        for (final Formula formula : this.bestEXK(vars.length).build(vars, rhs))
+          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        break;
       default:
         throw new IllegalStateException("Unknown exactly-k encoder: " + this.config().exkEncoder);
     }

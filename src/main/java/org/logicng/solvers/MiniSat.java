@@ -28,6 +28,8 @@
 
 package org.logicng.solvers;
 
+import org.logicng.cardinalityconstraints.CCEncoder;
+import org.logicng.cardinalityconstraints.CCResult;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
@@ -68,6 +70,7 @@ public final class MiniSat extends SATSolver {
   private enum SolverStyle {MINISAT, GLUCOSE, MINICARD}
 
   private final MiniSatStyleSolver solver;
+  private final CCEncoder ccEncoder;
   private final SolverStyle style;
   private boolean incremental;
   private boolean initialPhase;
@@ -102,6 +105,7 @@ public final class MiniSat extends SATSolver {
     this.incremental = miniSatConfig.incremental();
     this.validStates = new LNGIntVector();
     this.nextStateId = 0;
+    this.ccEncoder = new CCEncoder(f);
   }
 
   /**
@@ -168,16 +172,21 @@ public final class MiniSat extends SATSolver {
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
       this.result = UNDEF;
-      if (this.style == SolverStyle.MINICARD && constraint.isCC()) {
-        if (constraint.comparator() == CType.LE)
-          ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
-        else if (constraint.comparator() == CType.LT && constraint.rhs() > 3)
-          ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs() - 1);
-        else if (constraint.comparator() == CType.EQ && constraint.rhs() == 1) {
-          ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
-          this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())));
-        } else
-          super.add(constraint);
+      if (constraint.isCC()) {
+        if (this.style == SolverStyle.MINICARD) {
+          if (constraint.comparator() == CType.LE)
+            ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
+          else if (constraint.comparator() == CType.LT && constraint.rhs() > 3)
+            ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs() - 1);
+          else if (constraint.comparator() == CType.EQ && constraint.rhs() == 1) {
+            ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
+            this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())));
+          } else
+            super.add(constraint);
+        } else {
+          final CCResult result = CCResult.resultForMiniSat(this.f, this.solver);
+          ccEncoder.encode(constraint, result);
+        }
       } else
         super.add(constraint);
     } else

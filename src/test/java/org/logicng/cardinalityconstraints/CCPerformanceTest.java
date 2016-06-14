@@ -31,7 +31,6 @@ package org.logicng.cardinalityconstraints;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -72,29 +71,23 @@ public class CCPerformanceTest {
       problemLits[i] = f.variable("v" + i);
 
     for (int i = 10; i < 100; i = i + 10) {
-      f.clear();
       final PBConstraint pbc = f.cc(CType.LE, i, problemLits);
 
-      final long time1 = System.currentTimeMillis();
-      final ImmutableFormulaList clauses = encoder.encode(pbc);
-      final long time2 = System.currentTimeMillis();
       final SATSolver solver = MiniSat.miniSat(f);
       final long time3 = System.currentTimeMillis();
-      solver.add(clauses);
+      solver.add(pbc);
       Assert.assertEquals(Tristate.TRUE, solver.sat());
       final long time4 = System.currentTimeMillis();
 
-      final int numVars = clauses.variables().size() - numLits;
-      final int numClauses = clauses.size();
-      final long encodingTime = time2 - time1;
+      //      final int numVars = clauses.variables().size() - numLits;
+      //      final int numClauses = clauses.size();
+      //      final long encodingTime = time2 - time1;
       final long solvingTime = time4 - time3;
-      System.out.println(String.format("%s;%s;%s;%s;%s;%s", encoder.config().amkEncoder, i, numVars, numClauses, encodingTime, solvingTime));
+      System.out.println(String.format("%s;%s;%s", encoder.config().amkEncoder, i, solvingTime));
 
       final Assignment model = solver.model();
       Assert.assertTrue(pbc.evaluate(model));
       System.out.println(f.newCCVariable());
     }
   }
-
 }
-
