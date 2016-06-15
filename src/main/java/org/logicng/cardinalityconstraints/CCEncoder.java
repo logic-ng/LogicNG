@@ -40,7 +40,6 @@ import org.logicng.formulas.Variable;
 import org.logicng.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -126,21 +125,28 @@ public class CCEncoder {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
     final Variable[] ops = litsAsVars(cc.operands());
+    final CCResult result = CCResult.resultForFormula(f);
     switch (cc.comparator()) {
       case LE:
         if (cc.rhs() == 1)
           throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
-        else
-          return this.amkIncremental(ops, cc.rhs());
+        else {
+          final CCIncrementalData incData = this.amkIncremental(result, ops, cc.rhs());
+          return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
+        }
       case LT:
         if (cc.rhs() == 2)
           throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
-        else
-          return this.amkIncremental(ops, cc.rhs() - 1);
+        else {
+          final CCIncrementalData incData = this.amkIncremental(result, ops, cc.rhs() - 1);
+          return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
+        }
       case GE:
-        return this.alkIncremental(ops, cc.rhs());
+        CCIncrementalData incData = this.alkIncremental(result, ops, cc.rhs());
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
       case GT:
-        return this.alkIncremental(ops, cc.rhs() + 1);
+        incData = this.alkIncremental(result, ops, cc.rhs() + 1);
+        return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
       default:
         throw new IllegalArgumentException("Incremental encodings are only supported for at-most-k and at-least k constraints.");
     }
@@ -324,41 +330,40 @@ public class CCEncoder {
 
   /**
    * Encodes an at-most-k constraint for incremental usage.
-   * @param vars the variables of the constraint
-   * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint and the incremental data
+   * @param result the result
+   * @param vars   the variables of the constraint
+   * @param rhs    the right hand side of the constraint
+   * @return the incremental data
    */
-  private Pair<ImmutableFormulaList, CCIncrementalData> amkIncremental(final Variable[] vars, int rhs) {
+  private CCIncrementalData amkIncremental(final CCResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs >= vars.length) // there is no constraint
-      return new Pair<>(new ImmutableFormulaList(FType.AND), null);
+      return null;
     if (rhs == 0) { // no variable can be true
-      final List<Formula> result = new ArrayList<>();
       for (final Variable var : vars)
-        result.add(var.negate());
-      return new Pair<>(new ImmutableFormulaList(FType.AND, result), null);
+        result.addClause(var.negate());
+      return null;
     }
-    List<Formula> result = null; // TODO implement
     switch (this.config().amkEncoder) {
       case TOTALIZER:
         if (this.amkTotalizer == null)
           this.amkTotalizer = new CCAMKTotalizer(this.f);
-        //        result = this.amkTotalizer.build(vars, rhs);  // TODO implement
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkTotalizer.incrementalData());
+        this.amkTotalizer.build(result, vars, rhs);
+        return this.amkTotalizer.incrementalData();
       case MODULAR_TOTALIZER:
         if (this.amkModularTotalizer == null)
           this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
-        //        result = this.amkModularTotalizer.build(vars, rhs);  // TODO implement
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkModularTotalizer.incrementalData());
+        this.amkModularTotalizer.build(result, vars, rhs);
+        return this.amkModularTotalizer.incrementalData();
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
           this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
-        result = this.amkCardinalityNetwork.buildForIncremental(vars, rhs);
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkCardinalityNetwork.incrementalData());
+        this.amkCardinalityNetwork.buildForIncremental(result, vars, rhs);
+        return this.amkCardinalityNetwork.incrementalData();
       case BEST:
-        //        result = this.bestAMK(vars.length).build(vars, rhs);  // TODO implement
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.bestAMK(vars.length).incrementalData());
+        this.bestAMK(vars.length).build(result, vars, rhs);
+        return this.bestAMK(vars.length).incrementalData();
       default:
         throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
     }
@@ -414,40 +419,48 @@ public class CCEncoder {
 
   /**
    * Encodes an at-lest-k constraint for incremental usage.
-   * @param vars the variables of the constraint
-   * @param rhs  the right hand side of the constraint
-   * @return the CNF encoding of the constraint and the incremental data
+   * @param result the result
+   * @param vars   the variables of the constraint
+   * @param rhs    the right hand side of the constraint
+   * @return the incremental data
    */
-  private Pair<ImmutableFormulaList, CCIncrementalData> alkIncremental(final Variable[] vars, int rhs) {
+  private CCIncrementalData alkIncremental(final CCResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
-    if (rhs > vars.length)
-      return new Pair<>(new ImmutableFormulaList(f.falsum()), null);
+    if (rhs > vars.length) {
+      result.addClause();
+      return null;
+    }
     if (rhs == 0)
-      return new Pair<>(new ImmutableFormulaList(FType.AND), null);
-    if (rhs == 1)
-      return new Pair<>(new ImmutableFormulaList(this.f.clause((Literal[]) vars)), null);
-    List<Formula> result = new ArrayList<>();
+      return null;
+    if (rhs == 1) {
+      result.addClause((Literal[]) vars);
+      return null;
+    }
     if (rhs == vars.length) {
-      Collections.addAll(result, vars);
-      return new Pair<>(new ImmutableFormulaList(result), null);
+      for (final Variable var : vars)
+        result.addClause(var);
+      return null;
     }
     switch (this.config().alkEncoder) {
       case TOTALIZER:
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
-        //        return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData()); // TODO implement
+        this.alkTotalizer.build(result, vars, rhs);
+        return this.alkTotalizer.incrementalData();
       case MODULAR_TOTALIZER:
         if (this.alkModularTotalizer == null)
           this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
-        //        return new Pair<>(new ImmutableFormulaList(this.alkModularTotalizer.build(vars, rhs)), this.alkModularTotalizer.incrementalData());  // TODO implement
+        this.alkModularTotalizer.build(result, vars, rhs);
+        return this.alkModularTotalizer.incrementalData();
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
           this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
-        return new Pair<>(new ImmutableFormulaList(this.alkCardinalityNetwork.buildForIncremental(vars, rhs)), this.alkCardinalityNetwork.incrementalData());
+        this.alkCardinalityNetwork.buildForIncremental(result, vars, rhs);
+        return this.alkCardinalityNetwork.incrementalData();
       case BEST:
-        //        result = this.bestALK(vars.length).build(vars, rhs);  // TODO implement
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.bestALK(vars.length).incrementalData());
+        this.bestALK(vars.length).build(result, vars, rhs);
+        return this.bestALK(vars.length).incrementalData();
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
     }

@@ -31,6 +31,7 @@ package org.logicng.cardinalityconstraints;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -47,41 +48,37 @@ import org.logicng.solvers.SATSolver;
  */
 public class CCPerformanceTest {
 
-  private CCEncoder[] amkEncoders;
+  private CCConfig[] configs;
 
   public CCPerformanceTest() {
-    amkEncoders = new CCEncoder[3];
-    amkEncoders[0] = new CCEncoder(new FormulaFactory(), new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build());
-    amkEncoders[1] = new CCEncoder(new FormulaFactory(), new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build());
-    amkEncoders[2] = new CCEncoder(new FormulaFactory(), new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build());
+    configs = new CCConfig[3];
+    configs[0] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build();
+    configs[1] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build();
+    configs[2] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build();
   }
 
   @Ignore
   @Test
   public void testAMKPerformance() {
-    for (final CCEncoder encoder : this.amkEncoders) {
-      buildAMK(10_000, encoder);
+    final FormulaFactory f = new FormulaFactory();
+    int counter = 0;
+    for (final CCConfig config : this.configs) {
+      f.putConfiguration(config);
+      buildAMK(10_000, f);
+      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
   }
 
-  private void buildAMK(int numLits, final CCEncoder encoder) {
-    final FormulaFactory f = new FormulaFactory();
+  private void buildAMK(int numLits, final FormulaFactory f) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-
     for (int i = 10; i < 100; i = i + 10) {
+      System.out.println(((CCConfig) f.configurationFor(ConfigurationType.CC_ENCODER)).amkEncoder + ": " + i);
       final PBConstraint pbc = f.cc(CType.LE, i, problemLits);
-
       final SATSolver solver = MiniSat.miniSat(f);
-      final long time3 = System.currentTimeMillis();
       solver.add(pbc);
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      final long time4 = System.currentTimeMillis();
-
-      final long solvingTime = time4 - time3;
-      System.out.println(String.format("%s;%s;%s", encoder.config().amkEncoder, i, solvingTime));
-
       final Assignment model = solver.model();
       Assert.assertTrue(pbc.evaluate(model));
     }

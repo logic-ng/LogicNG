@@ -28,11 +28,8 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-
-import java.util.List;
 
 /**
  * Encodes that at least 'rhs' variables are assigned value true.  Uses the cardinality network
@@ -59,12 +56,12 @@ final class CCALKCardinalityNetwork implements CCAtLeastK {
 
   /**
    * Builds the constraint for incremental usage.
-   * @param vars the variables
-   * @param rhs  the right-hand side
-   * @return the CNF constraint for incremental usage
+   * @param result the result
+   * @param vars   the variables
+   * @param rhs    the right-hand side
    */
-  List<Formula> buildForIncremental(final Variable[] vars, int rhs) {
-    return cardinalityNetwork.buildALKForIncremental(vars, rhs);
+  void buildForIncremental(final CCResult result, final Variable[] vars, int rhs) {
+    cardinalityNetwork.buildALKForIncremental(result, vars, rhs);
   }
 
   @Override
