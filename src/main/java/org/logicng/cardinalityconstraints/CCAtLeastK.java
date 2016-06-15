@@ -28,10 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
-
-import java.util.List;
 
 /**
  * The interface for at-least-k (ALK) cardinality constraints.
@@ -41,12 +38,12 @@ import java.util.List;
 interface CCAtLeastK {
   /**
    * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n >= k}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @param rhs  the right hand side {@code k} of the constraint
-   * @return the CNF encoding of the cardinality constraint
+   * @param result the result of the encoding
+   * @param vars   the variables {@code var_1 ... var_n}
+   * @param rhs    the right hand side {@code k} of the constraint
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
-  List<Formula> build(final Variable[] vars, int rhs);
+  void build(final CCResult result, final Variable[] vars, int rhs);
 
   /**
    * Returns the incremental data for the current encoded constraint.

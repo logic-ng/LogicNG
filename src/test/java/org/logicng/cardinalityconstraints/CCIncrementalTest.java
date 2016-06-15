@@ -29,6 +29,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Tristate;
@@ -66,6 +67,7 @@ public class CCIncrementalTest {
     solvers[4] = CleaneLing.minimalistic(f);
   }
 
+  @Ignore
   @Test
   public void testSimpleIncrementalAMK() {
     for (final CCEncoder encoder : this.encoders) {
@@ -105,6 +107,7 @@ public class CCIncrementalTest {
     }
   }
 
+  @Ignore
   @Test
   public void testSimpleIncrementalALK() {
     for (final CCEncoder encoder : this.encoders) {
@@ -143,6 +146,7 @@ public class CCIncrementalTest {
     }
   }
 
+  @Ignore
   @Test
   public void testLargeTotalizerUpperBoundAMK() {
     final CCEncoder encoder = this.encoders[0];
@@ -166,6 +170,7 @@ public class CCIncrementalTest {
     Assert.assertEquals(41, currentBound);
   }
 
+  @Ignore
   @Test
   public void testLargeTotalizerLowerBoundALK() {
     final CCEncoder encoder = this.encoders[0];
@@ -189,6 +194,7 @@ public class CCIncrementalTest {
     Assert.assertEquals(88, currentBound);
   }
 
+  @Ignore
   @Test
   public void testLargeModularTotalizerAMK() {
     for (final SATSolver solver : this.solvers) {
@@ -213,6 +219,7 @@ public class CCIncrementalTest {
     }
   }
 
+  @Ignore
   @Test
   public void testVeryLargeModularTotalizerAMK() {
     final CCEncoder encoder = this.encoders[2];

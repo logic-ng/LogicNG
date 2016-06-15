@@ -302,24 +302,20 @@ public class CCEncoder {
       case TOTALIZER:
         if (this.amkTotalizer == null)
           this.amkTotalizer = new CCAMKTotalizer(this.f);
-        for (final Formula formula : this.amkTotalizer.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.amkTotalizer.build(result, vars, rhs);
         break;
       case MODULAR_TOTALIZER:
         if (this.amkModularTotalizer == null)
           this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
-        for (final Formula formula : this.amkModularTotalizer.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.amkModularTotalizer.build(result, vars, rhs);
         break;
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
           this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
-        for (final Formula formula : this.amkCardinalityNetwork.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.amkCardinalityNetwork.build(result, vars, rhs);
         break;
       case BEST:
-        for (final Formula formula : this.bestAMK(vars.length).build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.bestAMK(vars.length).build(result, vars, rhs);
         break;
       default:
         throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
@@ -343,17 +339,17 @@ public class CCEncoder {
         result.add(var.negate());
       return new Pair<>(new ImmutableFormulaList(FType.AND, result), null);
     }
-    List<Formula> result;
+    List<Formula> result = null; // TODO implement
     switch (this.config().amkEncoder) {
       case TOTALIZER:
         if (this.amkTotalizer == null)
           this.amkTotalizer = new CCAMKTotalizer(this.f);
-        result = this.amkTotalizer.build(vars, rhs);
+        //        result = this.amkTotalizer.build(vars, rhs);  // TODO implement
         return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkTotalizer.incrementalData());
       case MODULAR_TOTALIZER:
         if (this.amkModularTotalizer == null)
           this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
-        result = this.amkModularTotalizer.build(vars, rhs);
+        //        result = this.amkModularTotalizer.build(vars, rhs);  // TODO implement
         return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkModularTotalizer.incrementalData());
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
@@ -361,7 +357,7 @@ public class CCEncoder {
         result = this.amkCardinalityNetwork.buildForIncremental(vars, rhs);
         return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.amkCardinalityNetwork.incrementalData());
       case BEST:
-        result = this.bestAMK(vars.length).build(vars, rhs);
+        //        result = this.bestAMK(vars.length).build(vars, rhs);  // TODO implement
         return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.bestAMK(vars.length).incrementalData());
       default:
         throw new IllegalStateException("Unknown at-most-k encoder: " + this.config().amkEncoder);
@@ -396,24 +392,20 @@ public class CCEncoder {
       case TOTALIZER:
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
-        for (final Formula formula : this.alkTotalizer.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.alkTotalizer.build(result, vars, rhs);
         break;
       case MODULAR_TOTALIZER:
         if (this.alkModularTotalizer == null)
           this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
-        for (final Formula formula : this.alkModularTotalizer.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.alkModularTotalizer.build(result, vars, rhs);
         break;
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
           this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
-        for (final Formula formula : this.alkCardinalityNetwork.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.alkCardinalityNetwork.build(result, vars, rhs);
         break;
       case BEST:
-        for (final Formula formula : this.bestALK(vars.length).build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.bestALK(vars.length).build(result, vars, rhs);
         break;
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
@@ -444,17 +436,17 @@ public class CCEncoder {
       case TOTALIZER:
         if (this.alkTotalizer == null)
           this.alkTotalizer = new CCALKTotalizer(this.f);
-        return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData());
+        //        return new Pair<>(new ImmutableFormulaList(this.alkTotalizer.build(vars, rhs)), this.alkTotalizer.incrementalData()); // TODO implement
       case MODULAR_TOTALIZER:
         if (this.alkModularTotalizer == null)
           this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
-        return new Pair<>(new ImmutableFormulaList(this.alkModularTotalizer.build(vars, rhs)), this.alkModularTotalizer.incrementalData());
+        //        return new Pair<>(new ImmutableFormulaList(this.alkModularTotalizer.build(vars, rhs)), this.alkModularTotalizer.incrementalData());  // TODO implement
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
           this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
         return new Pair<>(new ImmutableFormulaList(this.alkCardinalityNetwork.buildForIncremental(vars, rhs)), this.alkCardinalityNetwork.incrementalData());
       case BEST:
-        result = this.bestALK(vars.length).build(vars, rhs);
+        //        result = this.bestALK(vars.length).build(vars, rhs);  // TODO implement
         return new Pair<>(new ImmutableFormulaList(FType.AND, result), this.bestALK(vars.length).incrementalData());
       default:
         throw new IllegalStateException("Unknown at-least-k encoder: " + this.config().alkEncoder);
@@ -488,18 +480,15 @@ public class CCEncoder {
       case TOTALIZER:
         if (this.exkTotalizer == null)
           this.exkTotalizer = new CCEXKTotalizer(this.f);
-        for (final Formula formula : this.exkTotalizer.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.exkTotalizer.build(result, vars, rhs);
         break;
       case CARDINALITY_NETWORK:
         if (this.exkCardinalityNetwork == null)
           this.exkCardinalityNetwork = new CCEXKCardinalityNetwork(this.f);
-        for (final Formula formula : this.exkCardinalityNetwork.build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.exkCardinalityNetwork.build(result, vars, rhs);
         break;
       case BEST:
-        for (final Formula formula : this.bestEXK(vars.length).build(vars, rhs))
-          result.addClause(formula.literals().toArray(new Literal[formula.literals().size()]));
+        this.bestEXK(vars.length).build(result, vars, rhs);
         break;
       default:
         throw new IllegalStateException("Unknown exactly-k encoder: " + this.config().exkEncoder);

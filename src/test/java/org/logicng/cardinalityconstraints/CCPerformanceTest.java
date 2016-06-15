@@ -79,15 +79,11 @@ public class CCPerformanceTest {
       Assert.assertEquals(Tristate.TRUE, solver.sat());
       final long time4 = System.currentTimeMillis();
 
-      //      final int numVars = clauses.variables().size() - numLits;
-      //      final int numClauses = clauses.size();
-      //      final long encodingTime = time2 - time1;
       final long solvingTime = time4 - time3;
       System.out.println(String.format("%s;%s;%s", encoder.config().amkEncoder, i, solvingTime));
 
       final Assignment model = solver.model();
       Assert.assertTrue(pbc.evaluate(model));
-      System.out.println(f.newCCVariable());
     }
   }
 }

@@ -30,7 +30,6 @@ package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -43,46 +42,48 @@ import org.logicng.solvers.SATSolver;
 import java.util.List;
 
 /**
- * Unit tests for the at-least-k encoders.
+ * Unit tests for the at-least-k configs.
  * @version 1.1
  * @since 1.0
  */
 public class CCALKTest {
 
-  private static final FormulaFactory f = new FormulaFactory();
-  private CCEncoder[] encoders;
+  private CCConfig[] configs;
 
   public CCALKTest() {
-    encoders = new CCEncoder[3];
-    encoders[0] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
-    encoders[1] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.MODULAR_TOTALIZER).build());
-    encoders[2] = new CCEncoder(f, new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
+    configs = new CCConfig[3];
+    configs[0] = new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build();
+    configs[1] = new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.MODULAR_TOTALIZER).build();
+    configs[2] = new CCConfig.Builder().alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build();
   }
 
   @Test
   public void testALK() {
-    for (final CCEncoder encoder : this.encoders) {
-      testCC(10, 1, 1023, encoder);
-      testCC(10, 2, 1013, encoder);
-      testCC(10, 3, 968, encoder);
-      testCC(10, 4, 848, encoder);
-      testCC(10, 5, 638, encoder);
-      testCC(10, 6, 386, encoder);
-      testCC(10, 7, 176, encoder);
-      testCC(10, 8, 56, encoder);
-      testCC(10, 9, 11, encoder);
-      testCC(10, 10, 1, encoder);
-      testCC(10, 12, 0, encoder);
+    final FormulaFactory f = new FormulaFactory();
+    int counter = 0;
+    for (final CCConfig config : this.configs) {
+      f.putConfiguration(config);
+      testCC(10, 1, 1023, f);
+      testCC(10, 2, 1013, f);
+      testCC(10, 3, 968, f);
+      testCC(10, 4, 848, f);
+      testCC(10, 5, 638, f);
+      testCC(10, 6, 386, f);
+      testCC(10, 7, 176, f);
+      testCC(10, 8, 56, f);
+      testCC(10, 9, 11, f);
+      testCC(10, 10, 1, f);
+      testCC(10, 12, 0, f);
+      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
   }
 
-  private void testCC(int numLits, int rhs, int expected, final CCEncoder encoder) {
+  private void testCC(int numLits, int rhs, int expected, final FormulaFactory f) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final ImmutableFormulaList clauses = encoder.encode(f.cc(CType.GE, rhs, problemLits));
     final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(clauses);
+    solver.add(f.cc(CType.GE, rhs, problemLits));
     if (expected != 0)
       Assert.assertEquals(Tristate.TRUE, solver.sat());
     else
@@ -95,6 +96,7 @@ public class CCALKTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalCC1() {
+    final FormulaFactory f = new FormulaFactory();
     final CCEncoder encoder = new CCEncoder(f);
     final int numLits = 100;
     final Variable[] problemLits = new Variable[numLits];

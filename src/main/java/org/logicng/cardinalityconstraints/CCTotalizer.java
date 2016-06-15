@@ -50,13 +50,8 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Totalizer due to Bailleux and Boufkhad.
@@ -69,7 +64,7 @@ final class CCTotalizer {
 
   private final FormulaFactory f;
   private LNGVector<Variable> cardinalityInvars;
-  private List<Formula> result;
+  private CCResult result;
   private CCIncrementalData incData;
 
   /**
@@ -78,41 +73,38 @@ final class CCTotalizer {
    */
   CCTotalizer(final FormulaFactory f) {
     this.f = f;
-    this.result = new LinkedList<>();
   }
 
   /**
    * Builds an at-most-k constraint.
-   * @param vars the variables
-   * @param rhs  the right-hand side
-   * @return the constraint
+   * @param result the result
+   * @param vars   the variables
+   * @param rhs    the right-hand side
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  List<Formula> buildAMK(final Variable[] vars, int rhs) {
-    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
+  void buildAMK(final CCResult result, final Variable[] vars, int rhs) {
+    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
     this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.UPPER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = rhs; i < cardinalityOutvars.size(); i++)
-      this.result.add(cardinalityOutvars.get(i).negate());
-    return this.result;
+      this.result.addClause(cardinalityOutvars.get(i).negate());
   }
 
   /**
    * Builds an at-least-k constraint.
-   * @param vars the variables
-   * @param rhs  the right-hand side
-   * @return the constraint
+   * @param result the result
+   * @param vars   the variables
+   * @param rhs    the right-hand side
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  List<Formula> buildALK(final Variable[] vars, int rhs) {
-    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
+  void buildALK(final CCResult result, final Variable[] vars, int rhs) {
+    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
     this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)
-      this.result.add(cardinalityOutvars.get(i));
-    return this.result;
+      this.result.addClause(cardinalityOutvars.get(i));
   }
 
   /**
@@ -122,15 +114,14 @@ final class CCTotalizer {
    * @return the constraint
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  List<Formula> buildEXK(final Variable[] vars, int rhs) {
-    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(vars);
+  void buildEXK(final CCResult result, final Variable[] vars, int rhs) {
+    final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
     this.toCNF(cardinalityOutvars, rhs, Bound.BOTH);
     assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)
-      this.result.add(cardinalityOutvars.get(i));
+      this.result.addClause(cardinalityOutvars.get(i));
     for (int i = rhs; i < cardinalityOutvars.size(); i++)
-      this.result.add(cardinalityOutvars.get(i).negate());
-    return this.result;
+      this.result.addClause(cardinalityOutvars.get(i).negate());
   }
 
   /**
@@ -138,13 +129,14 @@ final class CCTotalizer {
    * @param vars the variables
    * @return the auxiliary variables
    */
-  private LNGVector<Variable> initializeConstraint(final Variable[] vars) {
-    this.result = new ArrayList<>();
+  private LNGVector<Variable> initializeConstraint(final CCResult result, final Variable[] vars) {
+    result.reset();
+    this.result = result;
     this.cardinalityInvars = new LNGVector<>(vars.length);
     final LNGVector<Variable> cardinalityOutvars = new LNGVector<>(vars.length);
     for (final Variable var : vars) {
       this.cardinalityInvars.push(var);
-      cardinalityOutvars.push(this.f.newCCVariable());
+      cardinalityOutvars.push(this.result.newVariable());
     }
     return cardinalityOutvars;
   }
@@ -169,14 +161,14 @@ final class CCTotalizer {
           left.push(this.cardinalityInvars.back());
           this.cardinalityInvars.pop();
         } else
-          left.push(this.f.newCCVariable());
+          left.push(this.result.newVariable());
       } else {
         if (vars.size() - split == 1) {
           assert this.cardinalityInvars.size() > 0;
           right.push(this.cardinalityInvars.back());
           this.cardinalityInvars.pop();
         } else
-          right.push(this.f.newCCVariable());
+          right.push(this.result.newVariable());
       }
     }
     if (bound == Bound.UPPER || bound == Bound.BOTH)
@@ -199,11 +191,11 @@ final class CCTotalizer {
         if (i + j > rhs + 1)
           continue;
         if (i == 0)
-          this.result.add(this.f.clause(right.get(j - 1).negate(), output.get(j - 1)));
+          this.result.addClause(right.get(j - 1).negate(), output.get(j - 1));
         else if (j == 0)
-          this.result.add(this.f.clause(left.get(i - 1).negate(), output.get(i - 1)));
+          this.result.addClause(left.get(i - 1).negate(), output.get(i - 1));
         else
-          this.result.add(this.f.clause(left.get(i - 1).negate(), right.get(j - 1).negate(), output.get(i + j - 1)));
+          this.result.addClause(left.get(i - 1).negate(), right.get(j - 1).negate(), output.get(i + j - 1));
       }
     }
   }
@@ -216,11 +208,11 @@ final class CCTotalizer {
         if (i == 0 && j == 0)
           continue;
         if (i == 0)
-          this.result.add(this.f.clause(right.get(j - 1), output.get(left.size() + j - 1).negate()));
+          this.result.addClause(right.get(j - 1), output.get(left.size() + j - 1).negate());
         else if (j == 0)
-          this.result.add(this.f.clause(left.get(i - 1), output.get(right.size() + i - 1).negate()));
+          this.result.addClause(left.get(i - 1), output.get(right.size() + i - 1).negate());
         else
-          this.result.add(this.f.clause(left.get(i - 1), right.get(j - 1), output.get(i + j - 2).negate()));
+          this.result.addClause(left.get(i - 1), right.get(j - 1), output.get(i + j - 2).negate());
       }
     }
   }

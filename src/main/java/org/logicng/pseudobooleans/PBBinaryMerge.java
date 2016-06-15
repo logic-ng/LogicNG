@@ -51,6 +51,7 @@
 
 package org.logicng.pseudobooleans;
 
+import org.logicng.cardinalityconstraints.CCResult;
 import org.logicng.cardinalityconstraints.CCSorting;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
@@ -81,7 +82,7 @@ final class PBBinaryMerge implements PBEncoding {
   PBBinaryMerge(final FormulaFactory f, final PBConfig config) {
     this.f = f;
     this.config = config;
-    this.sorting = new CCSorting(f);
+    this.sorting = new CCSorting();
   }
 
   @Override
@@ -178,12 +179,15 @@ final class PBBinaryMerge implements PBEncoding {
     }
     assert (bucket_card.size() == buckets.size());
     final LNGVector<Literal> carries = new LNGVector<>();
+    final CCResult tempResul = CCResult.resultForFormula(f); // TODO temporary solution
     for (int i = 0; i < buckets.size(); i++) {
       int k = (int) Math.ceil(new_less_then / Math.pow(2, i));
       if (config.binaryMergeUseWatchDog)
         totalizer(buckets.get(i), bucket_card.get(i), formula);
-      else
-        sorting.sort(k, buckets.get(i), formula, bucket_card.get(i), INPUT_TO_OUTPUT);
+      else {
+        sorting.sort(k, buckets.get(i), tempResul, bucket_card.get(i), INPUT_TO_OUTPUT);
+        formula.addAll(tempResul.result());
+      }
       if (k <= buckets.get(i).size()) {
         assert (k == bucket_card.get(i).size() || config.binaryMergeUseWatchDog);
         if (gac_lit != null)
@@ -198,8 +202,10 @@ final class PBBinaryMerge implements PBEncoding {
           else {
             if (config.binaryMergeUseWatchDog)
               unary_adder(bucket_card.get(i), carries, bucket_merge.get(i), formula);
-            else
-              sorting.merge(k, bucket_card.get(i), carries, formula, bucket_merge.get(i), INPUT_TO_OUTPUT);
+            else {
+              sorting.merge(k, bucket_card.get(i), carries, tempResul, bucket_merge.get(i), INPUT_TO_OUTPUT);
+              formula.addAll(tempResul.result());
+            }
             if (k == bucket_merge.get(i).size() || (config.binaryMergeUseWatchDog && k <= bucket_merge.get(i).size())) {
               if (gac_lit != null)
                 formula.add(f.clause(gac_lit, bucket_merge.get(i).get(k - 1).negate()));

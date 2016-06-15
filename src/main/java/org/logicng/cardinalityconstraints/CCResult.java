@@ -165,7 +165,7 @@ public final class CCResult {
    * Returns the result of this algorithm.
    * @return the result of this algorithm
    */
-  List<Formula> result() {
+  public List<Formula> result() {
     return this.result;
   }
 }

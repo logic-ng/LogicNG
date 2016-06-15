@@ -41,7 +41,6 @@ interface CCAtMostOne {
    * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= 1}.
    * @param result the result for the encoding
    * @param vars   the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
    */
   void build(final CCResult result, final Variable... vars);
 }

@@ -50,14 +50,9 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Modular Totalizer.
@@ -75,7 +70,7 @@ final class CCModularTotalizer {
   private LNGVector<Literal> cardinalityUpOutvars;
   private LNGVector<Literal> cardinalityLwOutvars;
   private int currentCardinalityRhs;
-  private List<Formula> result;
+  private CCResult result;
   private CCIncrementalData incData;
 
   /**
@@ -91,8 +86,8 @@ final class CCModularTotalizer {
     this.inlits = new LNGVector<>();
   }
 
-  List<Formula> buildAMK(final Variable[] vars, int rhs) {
-    int mod = this.initialize(rhs, vars.length);
+  void buildAMK(final CCResult result, final Variable[] vars, int rhs) {
+    int mod = this.initialize(result, rhs, vars.length);
     for (final Variable var : vars)
       this.inlits.push(var);
     this.toCNF(mod, this.cardinalityUpOutvars, this.cardinalityLwOutvars, vars.length);
@@ -101,12 +96,11 @@ final class CCModularTotalizer {
     this.currentCardinalityRhs = rhs + 1;
     this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, rhs, this.cardinalityUpOutvars,
             this.cardinalityLwOutvars, mod);
-    return this.result;
   }
 
-  List<Formula> buildALK(final Variable[] vars, int rhs) {
+  void buildALK(final CCResult result, final Variable[] vars, int rhs) {
     int newRHS = vars.length - rhs;
-    int mod = this.initialize(newRHS, vars.length);
+    int mod = this.initialize(result, newRHS, vars.length);
     for (final Variable var : vars)
       this.inlits.push(var.negate());
     this.toCNF(mod, this.cardinalityUpOutvars, this.cardinalityLwOutvars, vars.length);
@@ -115,24 +109,24 @@ final class CCModularTotalizer {
     this.currentCardinalityRhs = newRHS + 1;
     this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.MODULAR_TOTALIZER, rhs, vars.length,
             this.cardinalityUpOutvars, this.cardinalityLwOutvars, mod);
-    return this.result;
   }
 
   CCIncrementalData incrementalData() {
     return this.incData;
   }
 
-  private int initialize(int rhs, int n) {
-    this.result = new ArrayList<>();
+  private int initialize(final CCResult result, int rhs, int n) {
+    result.reset();
+    this.result = result;
     this.cardinalityUpOutvars = new LNGVector<>();
     this.cardinalityLwOutvars = new LNGVector<>();
     int mod = (int) Math.ceil(Math.sqrt(rhs + 1.0));
     this.cardinalityUpOutvars = new LNGVector<>(n / mod);
     for (int i = 0; i < n / mod; i++)
-      this.cardinalityUpOutvars.push(this.f.newCCVariable());
+      this.cardinalityUpOutvars.push(this.result.newVariable());
     this.cardinalityLwOutvars = new LNGVector<>(mod - 1);
     for (int i = 0; i < mod - 1; i++)
-      this.cardinalityLwOutvars.push(this.f.newCCVariable());
+      this.cardinalityLwOutvars.push(this.result.newVariable());
     this.inlits = new LNGVector<>(n);
     this.currentCardinalityRhs = rhs + 1;
     if (this.cardinalityUpOutvars.size() == 0)
@@ -147,17 +141,17 @@ final class CCModularTotalizer {
     assert ulimit <= this.cardinalityUpOutvars.size();
     assert llimit <= this.cardinalityLwOutvars.size();
     for (int i = ulimit; i < this.cardinalityUpOutvars.size(); i++)
-      this.result.add(this.cardinalityUpOutvars.get(i).negate());
+      this.result.addClause(this.cardinalityUpOutvars.get(i).negate());
     if (ulimit != 0 && llimit != 0) {
       for (int i = llimit - 1; i < this.cardinalityLwOutvars.size(); i++)
-        this.result.add(this.f.clause(this.cardinalityUpOutvars.get(ulimit - 1).negate(), this.cardinalityLwOutvars.get(i).negate()));
+        this.result.addClause(this.cardinalityUpOutvars.get(ulimit - 1).negate(), this.cardinalityLwOutvars.get(i).negate());
     } else {
       if (ulimit == 0) {
         assert llimit != 0;
         for (int i = llimit - 1; i < this.cardinalityLwOutvars.size(); i++)
-          this.result.add(this.cardinalityLwOutvars.get(i).negate());
+          this.result.addClause(this.cardinalityLwOutvars.get(i).negate());
       } else
-        this.result.add(this.cardinalityUpOutvars.get(ulimit - 1).negate());
+        this.result.addClause(this.cardinalityUpOutvars.get(ulimit - 1).negate());
     }
   }
 
@@ -178,12 +172,12 @@ final class CCModularTotalizer {
     } else {
       left = split / mod;
       for (int i = 0; i < left; i++)
-        lupper.push(this.f.newCCVariable());
+        lupper.push(this.result.newVariable());
       int limit = mod - 1;
       if (left % mod == 0 && split < mod - 1)
         limit = split;
       for (int i = 0; i < limit; i++)
-        llower.push(this.f.newCCVariable());
+        llower.push(this.result.newVariable());
     }
     if (rhs - split == 1) {
       assert this.inlits.size() > 0;
@@ -193,13 +187,13 @@ final class CCModularTotalizer {
     } else {
       right = (rhs - split) / mod;
       for (int i = 0; i < right; i++)
-        rupper.push(this.f.newCCVariable());
+        rupper.push(this.result.newVariable());
       int limit = mod - 1;
       if (right % mod == 0 && rhs - split < mod - 1) {
         limit = rhs - split;
       }
       for (int i = 0; i < limit; i++)
-        rlower.push(this.f.newCCVariable());
+        rlower.push(this.result.newVariable());
     }
     if (lupper.size() == 0)
       lupper.push(this.h0);
@@ -219,7 +213,7 @@ final class CCModularTotalizer {
     assert lower.size() >= llower.size() && lower.size() >= rlower.size();
     Variable carry = this.varUndef;
     if (upper.get(0) != this.h0) // != is ok here - we are within the same formula factory
-      carry = this.f.newCCVariable();
+      carry = this.result.newVariable();
     for (int i = 0; i <= llower.size(); i++) {
       for (int j = 0; j <= rlower.size(); j++) {
         if (i + j > this.currentCardinalityRhs + 1 && this.currentCardinalityRhs + 1 < mod)
@@ -227,29 +221,29 @@ final class CCModularTotalizer {
         if (i + j < mod) {
           if (i == 0 && j != 0) {
             if (upper.get(0) != this.h0)
-              this.result.add(this.f.clause(rlower.get(j - 1).negate(), lower.get(i + j - 1), carry));
+              this.result.addClause(rlower.get(j - 1).negate(), lower.get(i + j - 1), carry);
             else
-              this.result.add(this.f.clause(rlower.get(j - 1).negate(), lower.get(i + j - 1)));
+              this.result.addClause(rlower.get(j - 1).negate(), lower.get(i + j - 1));
           } else if (j == 0 && i != 0) {
             if (upper.get(0) != this.h0)
-              this.result.add(this.f.clause(llower.get(i - 1).negate(), lower.get(i + j - 1), carry));
+              this.result.addClause(llower.get(i - 1).negate(), lower.get(i + j - 1), carry);
             else
-              this.result.add(this.f.clause(llower.get(i - 1).negate(), lower.get(i + j - 1)));
+              this.result.addClause(llower.get(i - 1).negate(), lower.get(i + j - 1));
           } else if (i != 0) {
             if (upper.get(0) != this.h0)
-              this.result.add(this.f.clause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get(i + j - 1), carry));
+              this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get(i + j - 1), carry);
             else {
               assert i + j - 1 < lower.size();
-              this.result.add(this.f.clause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get(i + j - 1)));
+              this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get(i + j - 1));
             }
           }
         } else if (i + j > mod) {
           assert i + j > 0;
-          this.result.add(this.f.clause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get((i + j) % mod - 1)));
+          this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get((i + j) % mod - 1));
         } else {
           assert i + j == mod;
           assert carry != this.varUndef;
-          this.result.add(this.f.clause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), carry));
+          this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), carry);
         }
       }
     }
@@ -280,25 +274,25 @@ final class CCModularTotalizer {
         if (i + j < upper.size())
           d = upper.get(i + j);
         if (c != this.varUndef && c != this.varError) {
-          final List<Literal> clause = new LinkedList<>();
+          final LNGVector<Literal> clause = new LNGVector<>();
           if (a != this.varUndef && a != this.varError)
-            clause.add(a.negate());
+            clause.push(a.negate());
           if (b != this.varUndef && b != this.varError)
-            clause.add(b.negate());
-          clause.add(c);
+            clause.push(b.negate());
+          clause.push(c);
           if (clause.size() > 1)
-            this.result.add(this.f.clause(clause));
+            this.result.addClause(clause);
         }
-        final List<Literal> clause = new LinkedList<>();
-        clause.add(carry.negate());
+        final LNGVector<Literal> clause = new LNGVector<>();
+        clause.push(carry.negate());
         if (a != this.varUndef && a != this.varError)
-          clause.add(a.negate());
+          clause.push(a.negate());
         if (b != this.varUndef && b != this.varError)
-          clause.add(b.negate());
+          clause.push(b.negate());
         if (d != this.varError && d != this.varUndef)
-          clause.add(d);
+          clause.push(d);
         if (clause.size() > 1)
-          this.result.add(this.f.clause(clause));
+          this.result.addClause(clause);
       }
     }
   }
