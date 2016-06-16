@@ -121,32 +121,46 @@ public class CCEncoder {
     this.encodeConstraint(cc, result);
   }
 
+  /**
+   * Encodes an incremental cardinality constraint and returns its encoding.
+   * @param cc the cardinality constraint
+   * @return the encoding of the constraint and the incremental data
+   */
   public Pair<ImmutableFormulaList, CCIncrementalData> encodeIncremental(final PBConstraint cc) {
+    final CCResult result = CCResult.resultForFormula(f);
+    final CCIncrementalData incData = this.encodeIncremental(cc, result);
+    return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
+  }
+
+  /**
+   * Encodes an incremental cardinality constraint on a given solver.
+   * @param cc     the cardinality constraint
+   * @param result the result of the encoding
+   * @return the incremental data
+   */
+  public CCIncrementalData encodeIncremental(final PBConstraint cc, final CCResult result) {
+    return this.encodeIncrementalConstraint(cc, result);
+  }
+
+  private CCIncrementalData encodeIncrementalConstraint(final PBConstraint cc, final CCResult result) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
     final Variable[] ops = litsAsVars(cc.operands());
-    final CCResult result = CCResult.resultForFormula(f);
     switch (cc.comparator()) {
       case LE:
         if (cc.rhs() == 1)
           throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
-        else {
-          final CCIncrementalData incData = this.amkIncremental(result, ops, cc.rhs());
-          return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
-        }
+        else
+          return this.amkIncremental(result, ops, cc.rhs());
       case LT:
         if (cc.rhs() == 2)
           throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
-        else {
-          final CCIncrementalData incData = this.amkIncremental(result, ops, cc.rhs() - 1);
-          return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
-        }
+        else
+          return this.amkIncremental(result, ops, cc.rhs() - 1);
       case GE:
-        CCIncrementalData incData = this.alkIncremental(result, ops, cc.rhs());
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
+        return this.alkIncremental(result, ops, cc.rhs());
       case GT:
-        incData = this.alkIncremental(result, ops, cc.rhs() + 1);
-        return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
+        return this.alkIncremental(result, ops, cc.rhs() + 1);
       default:
         throw new IllegalArgumentException("Incremental encodings are only supported for at-most-k and at-least k constraints.");
     }
@@ -307,7 +321,7 @@ public class CCEncoder {
     switch (this.config().amkEncoder) {
       case TOTALIZER:
         if (this.amkTotalizer == null)
-          this.amkTotalizer = new CCAMKTotalizer(this.f);
+          this.amkTotalizer = new CCAMKTotalizer();
         this.amkTotalizer.build(result, vars, rhs);
         break;
       case MODULAR_TOTALIZER:
@@ -317,7 +331,7 @@ public class CCEncoder {
         break;
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
-          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
+          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork();
         this.amkCardinalityNetwork.build(result, vars, rhs);
         break;
       case BEST:
@@ -348,7 +362,7 @@ public class CCEncoder {
     switch (this.config().amkEncoder) {
       case TOTALIZER:
         if (this.amkTotalizer == null)
-          this.amkTotalizer = new CCAMKTotalizer(this.f);
+          this.amkTotalizer = new CCAMKTotalizer();
         this.amkTotalizer.build(result, vars, rhs);
         return this.amkTotalizer.incrementalData();
       case MODULAR_TOTALIZER:
@@ -358,7 +372,7 @@ public class CCEncoder {
         return this.amkModularTotalizer.incrementalData();
       case CARDINALITY_NETWORK:
         if (this.amkCardinalityNetwork == null)
-          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork(this.f);
+          this.amkCardinalityNetwork = new CCAMKCardinalityNetwork();
         this.amkCardinalityNetwork.buildForIncremental(result, vars, rhs);
         return this.amkCardinalityNetwork.incrementalData();
       case BEST:
@@ -396,7 +410,7 @@ public class CCEncoder {
     switch (this.config().alkEncoder) {
       case TOTALIZER:
         if (this.alkTotalizer == null)
-          this.alkTotalizer = new CCALKTotalizer(this.f);
+          this.alkTotalizer = new CCALKTotalizer();
         this.alkTotalizer.build(result, vars, rhs);
         break;
       case MODULAR_TOTALIZER:
@@ -406,7 +420,7 @@ public class CCEncoder {
         break;
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
-          this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
+          this.alkCardinalityNetwork = new CCALKCardinalityNetwork();
         this.alkCardinalityNetwork.build(result, vars, rhs);
         break;
       case BEST:
@@ -445,7 +459,7 @@ public class CCEncoder {
     switch (this.config().alkEncoder) {
       case TOTALIZER:
         if (this.alkTotalizer == null)
-          this.alkTotalizer = new CCALKTotalizer(this.f);
+          this.alkTotalizer = new CCALKTotalizer();
         this.alkTotalizer.build(result, vars, rhs);
         return this.alkTotalizer.incrementalData();
       case MODULAR_TOTALIZER:
@@ -455,7 +469,7 @@ public class CCEncoder {
         return this.alkModularTotalizer.incrementalData();
       case CARDINALITY_NETWORK:
         if (this.alkCardinalityNetwork == null)
-          this.alkCardinalityNetwork = new CCALKCardinalityNetwork(this.f);
+          this.alkCardinalityNetwork = new CCALKCardinalityNetwork();
         this.alkCardinalityNetwork.buildForIncremental(result, vars, rhs);
         return this.alkCardinalityNetwork.incrementalData();
       case BEST:
@@ -492,12 +506,12 @@ public class CCEncoder {
     switch (this.config().exkEncoder) {
       case TOTALIZER:
         if (this.exkTotalizer == null)
-          this.exkTotalizer = new CCEXKTotalizer(this.f);
+          this.exkTotalizer = new CCEXKTotalizer();
         this.exkTotalizer.build(result, vars, rhs);
         break;
       case CARDINALITY_NETWORK:
         if (this.exkCardinalityNetwork == null)
-          this.exkCardinalityNetwork = new CCEXKCardinalityNetwork(this.f);
+          this.exkCardinalityNetwork = new CCEXKCardinalityNetwork();
         this.exkCardinalityNetwork.build(result, vars, rhs);
         break;
       case BEST:
@@ -562,7 +576,7 @@ public class CCEncoder {
    */
   private CCExactlyK bestEXK(int n) {
     if (this.exkTotalizer == null)
-      this.exkTotalizer = new CCEXKTotalizer(this.f);
+      this.exkTotalizer = new CCEXKTotalizer();
     return this.exkTotalizer;
   }
 

@@ -28,12 +28,14 @@
 
 package org.logicng.solvers;
 
+import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
@@ -131,6 +133,11 @@ public final class CleaneLing extends SATSolver {
    */
   public static CleaneLing full(final FormulaFactory f, final CleaneLingConfig config) {
     return new CleaneLing(f, SolverStyle.FULL, config);
+  }
+
+  @Override
+  public CCIncrementalData addIncrementalCC(PBConstraint cc) {
+    throw new UnsupportedOperationException("Incremental cardinality constraints are currently not supported by CleaneLing");
   }
 
   @Override

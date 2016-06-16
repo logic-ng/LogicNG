@@ -29,6 +29,7 @@
 package org.logicng.solvers;
 
 import org.logicng.cardinalityconstraints.CCEncoder;
+import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.cardinalityconstraints.CCResult;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
@@ -168,6 +169,14 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
+  public CCIncrementalData addIncrementalCC(PBConstraint cc) {
+    if (!cc.isCC())
+      throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");
+    final CCResult result = CCResult.resultForMiniSat(this.f, this);
+    return ccEncoder.encodeIncremental(cc, result);
+  }
+
+  @Override
   public void add(final Formula formula) {
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
@@ -184,7 +193,7 @@ public final class MiniSat extends SATSolver {
           } else
             super.add(constraint);
         } else {
-          final CCResult result = CCResult.resultForMiniSat(this.f, this.solver);
+          final CCResult result = CCResult.resultForMiniSat(this.f, this);
           ccEncoder.encode(constraint, result);
         }
       } else

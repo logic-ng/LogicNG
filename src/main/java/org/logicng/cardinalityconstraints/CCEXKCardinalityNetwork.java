@@ -28,7 +28,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
@@ -43,10 +42,9 @@ final class CCEXKCardinalityNetwork implements CCAtMostK {
 
   /**
    * Constructs a new cardinality encoder.
-   * @param f the formula factory
    */
-  CCEXKCardinalityNetwork(final FormulaFactory f) {
-    this.cardinalityNetwork = new CCCardinalityNetworks(f);
+  CCEXKCardinalityNetwork() {
+    this.cardinalityNetwork = new CCCardinalityNetworks();
   }
 
   @Override

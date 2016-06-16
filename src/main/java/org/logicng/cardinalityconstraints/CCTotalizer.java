@@ -50,7 +50,6 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
@@ -62,17 +61,15 @@ final class CCTotalizer {
 
   private enum Bound {LOWER, UPPER, BOTH}
 
-  private final FormulaFactory f;
   private LNGVector<Variable> cardinalityInvars;
   private CCResult result;
   private CCIncrementalData incData;
 
   /**
    * Constructs a new totalizer.
-   * @param f the formula factory
    */
-  CCTotalizer(final FormulaFactory f) {
-    this.f = f;
+  CCTotalizer() {
+    // intentionally left empty
   }
 
   /**
@@ -84,7 +81,7 @@ final class CCTotalizer {
    */
   void buildAMK(final CCResult result, final Variable[] vars, int rhs) {
     final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
+    this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.UPPER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = rhs; i < cardinalityOutvars.size(); i++)
@@ -100,7 +97,7 @@ final class CCTotalizer {
    */
   void buildALK(final CCResult result, final Variable[] vars, int rhs) {
     final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
-    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
+    this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
     assert this.cardinalityInvars.size() == 0;
     for (int i = 0; i < rhs; i++)
@@ -111,7 +108,6 @@ final class CCTotalizer {
    * Builds an exactly-k constraint.
    * @param vars the variables
    * @param rhs  the right-hand side
-   * @return the constraint
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
   void buildEXK(final CCResult result, final Variable[] vars, int rhs) {

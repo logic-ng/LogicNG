@@ -52,7 +52,6 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
@@ -67,16 +66,13 @@ import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.
  */
 final class CCCardinalityNetworks {
 
-  private final FormulaFactory f;
   private final CCSorting sorting;
   private CCIncrementalData incData;
 
   /**
    * Constructs a new cardinality encoder.
-   * @param f the formula factory
    */
-  CCCardinalityNetworks(final FormulaFactory f) {
-    this.f = f;
+  CCCardinalityNetworks() {
     this.sorting = new CCSorting();
   }
 
@@ -108,7 +104,7 @@ final class CCCardinalityNetworks {
     this.sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
     assert (output.size() > rhs);
     result.addClause(output.get(rhs).negate());
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, rhs, output);
+    this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, rhs, output);
   }
 
   void buildALK(final CCResult result, final Variable[] vars, int rhs) {
@@ -141,7 +137,7 @@ final class CCCardinalityNetworks {
     this.sorting.sort(newRHS + 1, input, result, output, INPUT_TO_OUTPUT);
     assert (output.size() > newRHS);
     result.addClause(output.get(newRHS).negate());
-    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
+    this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
   }
 
   void buildEXK(final CCResult result, final Variable[] vars, int rhs) {

@@ -28,12 +28,14 @@
 
 package org.logicng.solvers;
 
+import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
@@ -96,6 +98,14 @@ public abstract class SATSolver {
     for (final Formula formula : formulas)
       this.add(formula);
   }
+
+  /**
+   * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
+   * @param cc the cardinality constraint
+   * @return the incremental data of this constraint
+   */
+  public abstract CCIncrementalData addIncrementalCC(final PBConstraint cc);
+
 
   /**
    * Adds a formula which is already in CNF to the solver.
@@ -289,4 +299,11 @@ public abstract class SATSolver {
    * @throws IllegalArgumentException      if the given state has become invalid
    */
   public abstract void loadState(final SolverState state);
+
+  /**
+   * Sets the solver state to UNDEF (required if you fiddle e.g. with the underlying solver).
+   */
+  public void setSolverToUndef() {
+    this.result = Tristate.UNDEF;
+  }
 }

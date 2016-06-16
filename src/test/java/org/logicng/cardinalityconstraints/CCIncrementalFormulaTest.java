@@ -44,17 +44,17 @@ import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.util.Pair;
 
 /**
- * Tests for incremental cardinality constraints and {@link CCIncrementalData}.
+ * Tests for incremental cardinality constraints generated as formulas and {@link CCIncrementalData}.
  * @version 1.1
  * @since 1.1
  */
-public class CCIncrementalTest {
+public class CCIncrementalFormulaTest {
 
   private final FormulaFactory f = new FormulaFactory();
   private CCEncoder[] encoders;
   private final SATSolver[] solvers;
 
-  public CCIncrementalTest() {
+  public CCIncrementalFormulaTest() {
     encoders = new CCEncoder[3];
     encoders[0] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).alkEncoding(CCConfig.ALK_ENCODER.TOTALIZER).build());
     encoders[1] = new CCEncoder(f, new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).alkEncoding(CCConfig.ALK_ENCODER.CARDINALITY_NETWORK).build());
@@ -194,7 +194,7 @@ public class CCIncrementalTest {
   public void testLargeModularTotalizerAMK() {
     for (final SATSolver solver : this.solvers) {
       final CCEncoder encoder = this.encoders[2];
-      final CCEncoder initivalEncoder = new CCEncoder(f);
+      final CCEncoder initialEncoder = new CCEncoder(f);
       int numLits = 100;
       int currentBound = numLits - 1;
       Variable[] vars = new Variable[numLits];
@@ -204,7 +204,7 @@ public class CCIncrementalTest {
       final CCIncrementalData incData = cc.second();
 
       solver.reset();
-      solver.add(initivalEncoder.encode(f.cc(CType.GE, 42, vars))); // >= 42
+      solver.add(initialEncoder.encode(f.cc(CType.GE, 42, vars))); // >= 42
       solver.add(cc.first());
 
       // search the lower bound

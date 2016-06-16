@@ -28,7 +28,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
@@ -43,10 +42,9 @@ final class CCEXKTotalizer implements CCExactlyK {
 
   /**
    * Constructs a new totalizer.
-   * @param f the formula factory
    */
-  CCEXKTotalizer(final FormulaFactory f) {
-    this.totalizer = new CCTotalizer(f);
+  CCEXKTotalizer() {
+    this.totalizer = new CCTotalizer();
   }
 
 

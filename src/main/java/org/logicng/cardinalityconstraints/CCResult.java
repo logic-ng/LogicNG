@@ -34,7 +34,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-import org.logicng.solvers.sat.MiniSatStyleSolver;
+import org.logicng.solvers.MiniSat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +47,13 @@ import java.util.List;
 public final class CCResult {
   final FormulaFactory f;
   private List<Formula> result;
-  private final MiniSatStyleSolver miniSat;
+  final MiniSat miniSat;
 
   /**
    * Constructs a new CC encoding algorithm.
    * @param f the formula factory
    */
-  private CCResult(final FormulaFactory f, final MiniSatStyleSolver miniSat) {
+  private CCResult(final FormulaFactory f, final MiniSat miniSat) {
     this.f = f;
     this.miniSat = miniSat;
     this.reset();
@@ -74,7 +74,7 @@ public final class CCResult {
    * @param miniSat the solver
    * @return the result
    */
-  public static CCResult resultForMiniSat(final FormulaFactory f, final MiniSatStyleSolver miniSat) {
+  public static CCResult resultForMiniSat(final FormulaFactory f, final MiniSat miniSat) {
     return new CCResult(f, miniSat);
   }
 
@@ -88,10 +88,10 @@ public final class CCResult {
     else {
       final LNGIntVector clauseVec = new LNGIntVector(literals.length);
       for (Literal lit : literals) {
-        int index = this.miniSat.idxForName(lit.name());
+        int index = this.miniSat.underlyingSolver().idxForName(lit.name());
         if (index == -1) {
-          index = this.miniSat.newVar(true, true); // TODO initial phase not known here
-          this.miniSat.addName(lit.name(), index);
+          index = this.miniSat.underlyingSolver().newVar(true, true); // TODO initial phase not known here
+          this.miniSat.underlyingSolver().addName(lit.name(), index);
         }
         int litNum;
         if (lit instanceof CCAuxiliaryVariable)
@@ -100,7 +100,8 @@ public final class CCResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      miniSat.addClause(clauseVec);
+      miniSat.underlyingSolver().addClause(clauseVec);
+      miniSat.setSolverToUndef();
     }
   }
 
@@ -114,7 +115,7 @@ public final class CCResult {
     else {
       final LNGIntVector clauseVec = new LNGIntVector(literals.size());
       for (Literal lit : literals) {
-        int index = this.miniSat.idxForName(lit.name());
+        int index = this.miniSat.underlyingSolver().idxForName(lit.name());
         assert index != -1;
         int litNum;
         if (lit instanceof CCAuxiliaryVariable)
@@ -123,7 +124,8 @@ public final class CCResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      miniSat.addClause(clauseVec);
+      miniSat.underlyingSolver().addClause(clauseVec);
+      miniSat.setSolverToUndef();
     }
   }
 
@@ -147,9 +149,9 @@ public final class CCResult {
     if (miniSat == null)
       return this.f.newCCVariable();
     else {
-      final int index = this.miniSat.newVar(true, true);
+      final int index = this.miniSat.underlyingSolver().newVar(true, true);
       final String name = FormulaFactory.CC_PREFIX + "MINISAT_" + index;
-      this.miniSat.addName(name, index);
+      this.miniSat.underlyingSolver().addName(name, index);
       return new CCAuxiliaryVariable(name, false);
     }
   }

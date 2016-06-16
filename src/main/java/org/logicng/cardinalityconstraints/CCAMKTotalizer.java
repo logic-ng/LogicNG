@@ -28,7 +28,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
@@ -43,10 +42,9 @@ final class CCAMKTotalizer implements CCAtMostK {
 
   /**
    * Constructs a new totalizer.
-   * @param f the formula factory
    */
-  CCAMKTotalizer(final FormulaFactory f) {
-    this.totalizer = new CCTotalizer(f);
+  CCAMKTotalizer() {
+    this.totalizer = new CCTotalizer();
   }
 
 

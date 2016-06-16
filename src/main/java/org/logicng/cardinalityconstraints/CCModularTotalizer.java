@@ -61,7 +61,6 @@ import org.logicng.formulas.Variable;
  */
 final class CCModularTotalizer {
 
-  private final FormulaFactory f;
   private final Variable varUndef;
   private final Variable varError;
 
@@ -75,10 +74,8 @@ final class CCModularTotalizer {
 
   /**
    * Constructs a new modular totalizer.
-   * @param f the formula factory
    */
   CCModularTotalizer(final FormulaFactory f) {
-    this.f = f;
     this.varUndef = f.variable("RESERVED@VAR_UNDEF");
     this.varError = f.variable("RESERVED@VAR_ERROR");
     this.h0 = this.varUndef;
@@ -94,7 +91,7 @@ final class CCModularTotalizer {
     assert this.inlits.size() == 0;
     this.encodeOutput(rhs, mod);
     this.currentCardinalityRhs = rhs + 1;
-    this.incData = new CCIncrementalData(this.f, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, rhs, this.cardinalityUpOutvars,
+    this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, rhs, this.cardinalityUpOutvars,
             this.cardinalityLwOutvars, mod);
   }
 
@@ -107,7 +104,7 @@ final class CCModularTotalizer {
     assert this.inlits.size() == 0;
     this.encodeOutput(newRHS, mod);
     this.currentCardinalityRhs = newRHS + 1;
-    this.incData = new CCIncrementalData(this.f, CCConfig.ALK_ENCODER.MODULAR_TOTALIZER, rhs, vars.length,
+    this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.MODULAR_TOTALIZER, rhs, vars.length,
             this.cardinalityUpOutvars, this.cardinalityLwOutvars, mod);
   }
 

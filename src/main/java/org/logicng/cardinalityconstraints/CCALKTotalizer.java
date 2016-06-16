@@ -28,7 +28,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
@@ -43,10 +42,9 @@ final class CCALKTotalizer implements CCAtLeastK {
 
   /**
    * Constructs a new totalizer.
-   * @param f the formula factory
    */
-  CCALKTotalizer(final FormulaFactory f) {
-    this.totalizer = new CCTotalizer(f);
+  CCALKTotalizer() {
+    this.totalizer = new CCTotalizer();
   }
 
   @Override
