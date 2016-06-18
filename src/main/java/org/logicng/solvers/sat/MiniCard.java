@@ -61,7 +61,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * A cardinality solver based on MiniCard.
- * @version 1.0
+ * @version 1.0.2
  * @since 1.0
  */
 public final class MiniCard extends MiniSatStyleSolver {
@@ -365,12 +365,11 @@ public final class MiniCard extends MiniSatStyleSolver {
         if (c.isAtMost()) {
           int newWatch = findNewWatch(c, p);
           if (newWatch == LIT_UNDEF) {
-            for (int k = 0; k < c.atMostWatchers(); k++) {
+            for (int k = 0; k < c.atMostWatchers(); k++)
               if (c.get(k) != p && value(c.get(k)) != Tristate.FALSE) {
                 assert value(c.get(k)) == Tristate.UNDEF || value(c.get(k)) == Tristate.FALSE;
                 uncheckedEnqueue(not(c.get(k)), c);
               }
-            }
             ws.set(jInd++, ws.get(iInd++));
           } else if (newWatch == LIT_ERROR) {
             confl = c;
@@ -442,9 +441,8 @@ public final class MiniCard extends MiniSatStyleSolver {
       }
       assert val == Tristate.TRUE;
       numTrue++;
-      if (numTrue > maxTrue) {
+      if (numTrue > maxTrue)
         return LIT_ERROR;
-      }
       if (c.get(q) == p) {
         assert newWatch == LIT_ERROR;
         for (int next = c.atMostWatchers(); next < c.size(); next++)
@@ -572,6 +570,7 @@ public final class MiniCard extends MiniSatStyleSolver {
     while (analyzeStack.size() > 0) {
       assert v(analyzeStack.back()).reason() != null;
       MSClause c = v(analyzeStack.back()).reason();
+      analyzeStack.pop();
       if (c.isAtMost()) {
         for (int i = 0; i < c.size(); i++) {
           if (value(c.get(i)) != Tristate.TRUE)
@@ -591,7 +590,6 @@ public final class MiniCard extends MiniSatStyleSolver {
           }
         }
       } else {
-        analyzeStack.pop();
         for (int i = 1; i < c.size(); i++) {
           final int q = c.get(i);
           if (!seen.get(var(q)) && v(q).level() > 0) {
@@ -687,15 +685,8 @@ public final class MiniCard extends MiniSatStyleSolver {
       final MSClause c = cs.get(i);
       if (satisfied(c))
         removeClause(cs.get(i));
-      else {
-        assert value(c.get(0)) == Tristate.UNDEF && value(c.get(1)) == Tristate.UNDEF;
-        for (int k = 2; k < c.size(); k++)
-          if (value(c.get(k)) == Tristate.FALSE) {
-            c.set(k--, c.get(c.size() - 1));
-            c.pop();
-          }
+      else
         cs.set(j++, cs.get(i));
-      }
     }
     cs.removeElements(i - j);
   }
