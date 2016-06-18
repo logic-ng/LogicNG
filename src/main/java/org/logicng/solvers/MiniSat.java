@@ -191,15 +191,15 @@ public final class MiniSat extends SATSolver {
             ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
             this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())));
           } else
-            super.add(constraint);
+            this.addClauseSet(constraint.cnf()); //TODO not simply add the cnf here
         } else {
           final CCResult result = CCResult.resultForMiniSat(this.f, this);
           ccEncoder.encode(constraint, result);
         }
       } else
-        super.add(constraint);
+        this.addClauseSet(constraint.cnf()); //TODO not simply add the cnf here
     } else
-      this.addClauseSet(formula.cnf());
+      this.addClauseSet(formula.cnf()); //TODO not simply add the cnf here
   }
 
   @Override

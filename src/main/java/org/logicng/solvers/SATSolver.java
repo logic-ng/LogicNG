@@ -67,10 +67,7 @@ public abstract class SATSolver {
    * Adds a formula to the solver.  The formula is first converted to CNF.
    * @param formula the formula
    */
-  public void add(final Formula formula) {
-    //TODO not simply add the cnf here
-    this.addClauseSet(formula.cnf());
-  }
+  public abstract void add(final Formula formula);
 
   /**
    * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.

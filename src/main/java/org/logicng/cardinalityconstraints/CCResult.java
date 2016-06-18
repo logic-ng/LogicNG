@@ -34,6 +34,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
+import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 
 import java.util.ArrayList;
@@ -47,15 +48,19 @@ import java.util.List;
 public final class CCResult {
   final FormulaFactory f;
   private List<Formula> result;
-  final MiniSat miniSat;
+  private final MiniSat miniSat;
+  private final CleaneLing cleaneLing;
 
   /**
    * Constructs a new CC encoding algorithm.
-   * @param f the formula factory
+   * @param f          the formula factory
+   * @param miniSat    the MiniSat instance
+   * @param cleaneLing the CleaneLing instance
    */
-  private CCResult(final FormulaFactory f, final MiniSat miniSat) {
+  private CCResult(final FormulaFactory f, final MiniSat miniSat, final CleaneLing cleaneLing) {
     this.f = f;
     this.miniSat = miniSat;
+    this.cleaneLing = cleaneLing;
     this.reset();
   }
 
@@ -65,7 +70,7 @@ public final class CCResult {
    * @return the result
    */
   public static CCResult resultForFormula(final FormulaFactory f) {
-    return new CCResult(f, null);
+    return new CCResult(f, null, null);
   }
 
   /**
@@ -75,7 +80,17 @@ public final class CCResult {
    * @return the result
    */
   public static CCResult resultForMiniSat(final FormulaFactory f, final MiniSat miniSat) {
-    return new CCResult(f, miniSat);
+    return new CCResult(f, miniSat, null);
+  }
+
+  /**
+   * Constructs a new result which adds the result directly to a given CleaneLing solver.
+   * @param f          the formula factory
+   * @param cleaneLing the CleaneLing solver
+   * @return the result
+   */
+  public static CCResult resultForCleaneLing(final FormulaFactory f, final CleaneLing cleaneLing) {
+    return new CCResult(f, null, cleaneLing);
   }
 
   /**
@@ -83,9 +98,9 @@ public final class CCResult {
    * @param literals the literals of the clause
    */
   void addClause(final Literal... literals) {
-    if (miniSat == null)
-      result.add(this.f.clause(literals));
-    else {
+    if (this.miniSat == null && this.cleaneLing == null)
+      this.result.add(this.f.clause(literals));
+    else if (this.miniSat != null) {
       final LNGIntVector clauseVec = new LNGIntVector(literals.length);
       for (Literal lit : literals) {
         int index = this.miniSat.underlyingSolver().idxForName(lit.name());
@@ -100,8 +115,18 @@ public final class CCResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      miniSat.underlyingSolver().addClause(clauseVec);
-      miniSat.setSolverToUndef();
+      this.miniSat.underlyingSolver().addClause(clauseVec);
+      this.miniSat.setSolverToUndef();
+    } else {
+      for (Literal lit : literals) {
+        int index = this.cleaneLing.getOrCreateVarIndex(lit.variable());
+        if (lit instanceof CCAuxiliaryVariable)
+          this.cleaneLing.underlyingSolver().addlit(!((CCAuxiliaryVariable) lit).negated ? index : -index);
+        else
+          this.cleaneLing.underlyingSolver().addlit(lit.phase() ? index : -index);
+      }
+      this.cleaneLing.underlyingSolver().addlit(CleaneLing.CLAUSE_TERMINATOR);
+      this.cleaneLing.setSolverToUndef();
     }
   }
 
@@ -110,9 +135,9 @@ public final class CCResult {
    * @param literals the literals of the clause
    */
   void addClause(final LNGVector<Literal> literals) {
-    if (miniSat == null)
-      result.add(vec2clause(literals));
-    else {
+    if (this.miniSat == null && this.cleaneLing == null)
+      this.result.add(this.vec2clause(literals));
+    else if (this.miniSat != null) {
       final LNGIntVector clauseVec = new LNGIntVector(literals.size());
       for (Literal lit : literals) {
         int index = this.miniSat.underlyingSolver().idxForName(lit.name());
@@ -124,8 +149,18 @@ public final class CCResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      miniSat.underlyingSolver().addClause(clauseVec);
-      miniSat.setSolverToUndef();
+      this.miniSat.underlyingSolver().addClause(clauseVec);
+      this.miniSat.setSolverToUndef();
+    } else {
+      for (Literal lit : literals) {
+        int index = this.cleaneLing.getOrCreateVarIndex(lit.variable());
+        if (lit instanceof CCAuxiliaryVariable)
+          this.cleaneLing.underlyingSolver().addlit(!((CCAuxiliaryVariable) lit).negated ? index : -index);
+        else
+          this.cleaneLing.underlyingSolver().addlit(lit.phase() ? index : -index);
+      }
+      this.cleaneLing.underlyingSolver().addlit(CleaneLing.CLAUSE_TERMINATOR);
+      this.cleaneLing.setSolverToUndef();
     }
   }
 
@@ -146,14 +181,15 @@ public final class CCResult {
    * @return a new auxiliary variable
    */
   Variable newVariable() {
-    if (miniSat == null)
+    if (this.miniSat == null && this.cleaneLing == null)
       return this.f.newCCVariable();
-    else {
+    else if (miniSat != null) {
       final int index = this.miniSat.underlyingSolver().newVar(true, true);
       final String name = FormulaFactory.CC_PREFIX + "MINISAT_" + index;
       this.miniSat.underlyingSolver().addName(name, index);
       return new CCAuxiliaryVariable(name, false);
-    }
+    } else
+      return new CCAuxiliaryVariable(this.cleaneLing.createNewVariableOnSolver(FormulaFactory.CC_PREFIX + "CLEANELING"), false);
   }
 
   /**

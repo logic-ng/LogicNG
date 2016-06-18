@@ -101,20 +101,31 @@ public class CCAMOTest {
     for (final CCConfig config : this.configs)
       if (config != null) {
         f.putConfiguration(config);
-        testAMO(2, f);
-        testAMO(10, f);
-        testAMO(100, f);
-        testAMO(250, f);
-        testAMO(500, f);
+        testAMO(2, f, false);
+        testAMO(10, f, false);
+        testAMO(100, f, false);
+        testAMO(250, f, false);
+        testAMO(500, f, false);
         Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
       }
   }
 
-  private void testAMO(int numLits, final FormulaFactory f) {
+  @Test
+  public void testAMOKMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    testAMO(2, f, true);
+    testAMO(10, f, true);
+    testAMO(100, f, true);
+    testAMO(250, f, true);
+    testAMO(500, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
+  }
+
+  private void testAMO(int numLits, final FormulaFactory f, boolean miniCard) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final SATSolver solver = MiniSat.miniSat(f);
+    final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
     solver.add(f.amo(problemLits));
     Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);

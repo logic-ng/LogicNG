@@ -35,6 +35,7 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
@@ -61,7 +62,7 @@ public class CCIncrementalSolverTest {
     solvers[1] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(false).build());
     solvers[2] = MiniSat.miniCard(f);
     solvers[3] = MiniSat.glucose(f);
-    //    solvers[4] = CleaneLing.minimalistic(f);
+    solvers[4] = CleaneLing.minimalistic(f);
   }
 
   @Test
@@ -110,7 +111,8 @@ public class CCIncrementalSolverTest {
       Variable[] vars = new Variable[numLits];
       for (int i = 0; i < numLits; i++)
         vars[i] = f.variable("v" + i);
-      final SATSolver solver = MiniSat.miniSat(f);
+      final SATSolver solver = this.solvers[2];
+      solver.reset();
       solver.add(f.cc(CType.GE, 4, vars)); // >= 4
       solver.add(f.cc(CType.LE, 7, vars)); // <= 7
 
@@ -167,7 +169,7 @@ public class CCIncrementalSolverTest {
     Variable[] vars = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       vars[i] = f.variable("v" + i);
-    final SATSolver solver = this.solvers[3];
+    final SATSolver solver = this.solvers[0];
     solver.reset();
     solver.add(f.cc(CType.LE, 87, vars));
     f.putConfiguration(configs[0]);

@@ -30,8 +30,6 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.cardinalityconstraints.CCEncoder;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.F;
@@ -207,14 +205,12 @@ public class SATTest {
 
   @Test
   public void testCC1() throws InterruptedException {
-    final CCEncoder c = new CCEncoder(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
         lits[j] = f.variable("x" + j);
-      final ImmutableFormulaList cc = c.encode(f.exo(lits));
-      s.add(cc);
+      s.add(f.exo(lits));
       final List<Assignment> models = s.enumerateAllModels(lits);
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models)
@@ -225,13 +221,11 @@ public class SATTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testIllegalEnumeration() {
-    final CCEncoder c = new CCEncoder(f);
     final SATSolver s = this.solvers[7];
     final Variable[] lits = new Variable[100];
     for (int j = 0; j < lits.length; j++)
       lits[j] = f.variable("x" + j);
-    final ImmutableFormulaList cc = c.encode(f.exo(lits));
-    s.add(cc);
+    s.add(f.exo(lits));
     s.enumerateAllModels(lits);
   }
 
@@ -404,15 +398,12 @@ public class SATTest {
 
   @Test
   public void testNumberOfModelHandler() {
-    final CCEncoder c = new CCEncoder(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
         lits[j] = f.variable("x" + j);
-      final ImmutableFormulaList cc = c.encode(f.exo(lits));
-
-      s.add(cc);
+      s.add(f.exo(lits));
       NumberOfModelsHandler handler = new NumberOfModelsHandler(100);
       List<Assignment> models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(100, models.size());
@@ -420,7 +411,7 @@ public class SATTest {
         Assert.assertEquals(1, m.positiveLiterals().size());
       s.reset();
 
-      s.add(cc);
+      s.add(f.exo(lits));
       handler = new NumberOfModelsHandler(200);
       models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(100, models.size());
@@ -428,7 +419,7 @@ public class SATTest {
         Assert.assertEquals(1, m.positiveLiterals().size());
       s.reset();
 
-      s.add(cc);
+      s.add(f.exo(lits));
       handler = new NumberOfModelsHandler(50);
       models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(50, models.size());
@@ -436,7 +427,7 @@ public class SATTest {
         Assert.assertEquals(1, m.positiveLiterals().size());
       s.reset();
 
-      s.add(cc);
+      s.add(f.exo(lits));
       handler = new NumberOfModelsHandler(1);
       models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(1, models.size());

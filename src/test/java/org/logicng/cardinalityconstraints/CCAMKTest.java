@@ -29,7 +29,6 @@
 package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
@@ -63,20 +62,38 @@ public class CCAMKTest {
     int counter = 0;
     for (final CCConfig config : this.configs) {
       f.putConfiguration(config);
-      testCC(10, 0, 1, f);
-      testCC(10, 1, 11, f);
-      testCC(10, 2, 56, f);
-      testCC(10, 3, 176, f);
-      testCC(10, 4, 386, f);
-      testCC(10, 5, 638, f);
-      testCC(10, 6, 848, f);
-      testCC(10, 7, 968, f);
-      testCC(10, 8, 1013, f);
-      testCC(10, 9, 1023, f);
-      testCC(10, 10, 1, f);
-      testCC(10, 15, 1, f);
+      testCC(10, 0, 1, f, false);
+      testCC(10, 1, 11, f, false);
+      testCC(10, 2, 56, f, false);
+      testCC(10, 3, 176, f, false);
+      testCC(10, 4, 386, f, false);
+      testCC(10, 5, 638, f, false);
+      testCC(10, 6, 848, f, false);
+      testCC(10, 7, 968, f, false);
+      testCC(10, 8, 1013, f, false);
+      testCC(10, 9, 1023, f, false);
+      testCC(10, 10, 1, f, false);
+      testCC(10, 15, 1, f, false);
       Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
+  }
+
+  @Test
+  public void testAMKMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    testCC(10, 0, 1, f, true);
+    testCC(10, 1, 11, f, true);
+    testCC(10, 2, 56, f, true);
+    testCC(10, 3, 176, f, true);
+    testCC(10, 4, 386, f, true);
+    testCC(10, 5, 638, f, true);
+    testCC(10, 6, 848, f, true);
+    testCC(10, 7, 968, f, true);
+    testCC(10, 8, 1013, f, true);
+    testCC(10, 9, 1023, f, true);
+    testCC(10, 10, 1024, f, true);
+    testCC(10, 15, 1024, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
   }
 
   @Test
@@ -85,16 +102,23 @@ public class CCAMKTest {
     int counter = 0;
     for (final CCConfig config : this.configs) {
       f.putConfiguration(config);
-      testCC(150, 2, 1 + 150 + 11175, f);
+      testCC(150, 2, 1 + 150 + 11175, f, false);
       Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
   }
 
-  private void testCC(int numLits, int rhs, int expected, final FormulaFactory f) {
+  @Test
+  public void testLargeAMKMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    testCC(150, 2, 1 + 150 + 11175, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
+  }
+
+  private void testCC(int numLits, int rhs, int expected, final FormulaFactory f, boolean miniCard) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final SATSolver solver = MiniSat.miniSat(f);
+    final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
     solver.add(f.cc(CType.LE, rhs, problemLits));
     Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
