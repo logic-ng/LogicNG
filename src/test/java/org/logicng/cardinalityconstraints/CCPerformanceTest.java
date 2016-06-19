@@ -31,7 +31,6 @@ package org.logicng.cardinalityconstraints;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -64,19 +63,26 @@ public class CCPerformanceTest {
     int counter = 0;
     for (final CCConfig config : this.configs) {
       f.putConfiguration(config);
-      buildAMK(10_000, f);
+      buildAMK(10_000, f, false);
       Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
   }
 
-  private void buildAMK(int numLits, final FormulaFactory f) {
+  @Test
+  public void testAMKPerformanceMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    buildAMK(10_000, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
+  }
+
+  private void buildAMK(int numLits, final FormulaFactory f, boolean miniCard) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
+    final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
     for (int i = 10; i < 100; i = i + 10) {
-      System.out.println(((CCConfig) f.configurationFor(ConfigurationType.CC_ENCODER)).amkEncoder + ": " + i);
       final PBConstraint pbc = f.cc(CType.LE, i, problemLits);
-      final SATSolver solver = MiniSat.miniSat(f);
+      solver.reset();
       solver.add(pbc);
       Assert.assertEquals(Tristate.TRUE, solver.sat());
       final Assignment model = solver.model();

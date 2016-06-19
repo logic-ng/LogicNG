@@ -81,24 +81,24 @@ public class CCIncrementalSolverTest {
 
       final CCIncrementalData incData = solver.addIncrementalCC(f.cc(CType.LE, 9, vars));
       Assert.assertEquals(Tristate.TRUE, solver.sat()); // <= 9
-      incData.newUpperBound(8); // <= 8
+      incData.newUpperBoundForSolver(8); // <= 8
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newUpperBound(7); // <= 7
+      incData.newUpperBoundForSolver(7); // <= 7
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newUpperBound(6); // <= 6
+      incData.newUpperBoundForSolver(6); // <= 6
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newUpperBound(5); // <= 5
+      incData.newUpperBoundForSolver(5); // <= 5
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newUpperBound(4); // <= 4
+      incData.newUpperBoundForSolver(4); // <= 4
       Assert.assertEquals(Tristate.TRUE, solver.sat());
 
       final SolverState state = solver.saveState();
-      incData.newUpperBound(3); // <= 3
+      incData.newUpperBoundForSolver(3); // <= 3
       Assert.assertEquals(Tristate.FALSE, solver.sat());
       solver.loadState(state);
       Assert.assertEquals(Tristate.TRUE, solver.sat());
 
-      incData.newUpperBound(2); // <= 2
+      incData.newUpperBoundForSolver(2); // <= 2
       Assert.assertEquals(Tristate.FALSE, solver.sat());
     }
   }
@@ -120,24 +120,24 @@ public class CCIncrementalSolverTest {
 
       final CCIncrementalData incData = solver.addIncrementalCC(f.cc(CType.GE, 2, vars));
       Assert.assertEquals(Tristate.TRUE, solver.sat()); // >=2
-      incData.newLowerBound(3); // >= 3
+      incData.newLowerBoundForSolver(3); // >= 3
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newLowerBound(4); // >= 4
+      incData.newLowerBoundForSolver(4); // >= 4
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newLowerBound(5); // >= 5
+      incData.newLowerBoundForSolver(5); // >= 5
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newLowerBound(6); // >= 6
+      incData.newLowerBoundForSolver(6); // >= 6
       Assert.assertEquals(Tristate.TRUE, solver.sat());
-      incData.newLowerBound(7); // >= 7
+      incData.newLowerBoundForSolver(7); // >= 7
       Assert.assertEquals(Tristate.TRUE, solver.sat());
 
       final SolverState state = solver.saveState();
-      incData.newLowerBound(8); // >= 8
+      incData.newLowerBoundForSolver(8); // >= 8
       Assert.assertEquals(Tristate.FALSE, solver.sat());
       solver.loadState(state);
       Assert.assertEquals(Tristate.TRUE, solver.sat());
 
-      incData.newLowerBound(9); // <= 9
+      incData.newLowerBoundForSolver(9); // <= 9
       Assert.assertEquals(Tristate.FALSE, solver.sat());
     }
   }
@@ -157,7 +157,7 @@ public class CCIncrementalSolverTest {
     final CCIncrementalData incData = solver.addIncrementalCC(f.cc(CType.LE, currentBound, vars));
     // search the lower bound
     while (solver.sat() == Tristate.TRUE)
-      incData.newUpperBound(--currentBound); // <= currentBound - 1
+      incData.newUpperBoundForSolver(--currentBound); // <= currentBound - 1
     Assert.assertEquals(41, currentBound);
   }
 
@@ -176,7 +176,7 @@ public class CCIncrementalSolverTest {
     final CCIncrementalData incData = solver.addIncrementalCC(f.cc(CType.GE, currentBound, vars));
     // search the lower bound
     while (solver.sat() == Tristate.TRUE)
-      incData.newLowerBound(++currentBound); // <= currentBound + 1
+      incData.newLowerBoundForSolver(++currentBound); // <= currentBound + 1
     Assert.assertEquals(88, currentBound);
   }
 
@@ -195,7 +195,7 @@ public class CCIncrementalSolverTest {
         final CCIncrementalData incData = solver.addIncrementalCC(f.cc(CType.LE, currentBound, vars));
         // search the lower bound
         while (solver.sat() == Tristate.TRUE)
-          incData.newUpperBound(--currentBound); // <= currentBound - 1
+          incData.newUpperBoundForSolver(--currentBound); // <= currentBound - 1
         Assert.assertEquals(41, currentBound);
       }
     }
@@ -216,7 +216,7 @@ public class CCIncrementalSolverTest {
     final CCIncrementalData incData = solver.addIncrementalCC(f.cc(CType.LE, currentBound, vars));
     // search the lower bound
     while (solver.sat() == Tristate.TRUE)
-      incData.newUpperBound(--currentBound);
+      incData.newUpperBoundForSolver(--currentBound);
     Assert.assertEquals(233, currentBound);
   }
 }
