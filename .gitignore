@@ -9,7 +9,7 @@
 # vim swap files
 *.swp
 
-# build files
+# encode files
 target/
 .sonar/
 

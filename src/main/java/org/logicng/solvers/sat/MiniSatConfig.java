@@ -31,7 +31,9 @@ package org.logicng.solvers.sat;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
 import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.DEEP;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * The configuration object for a MiniSAT-style SAT solver.

@@ -32,26 +32,26 @@ import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
+ * Encodes that exactly 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-final class CCAMKTotalizer implements CCAtMostK {
+final class CCEXKTotalizer implements CCExactlyK {
 
   private final CCTotalizer totalizer;
 
   /**
    * Constructs a new totalizer.
    */
-  CCAMKTotalizer() {
+  CCEXKTotalizer() {
     this.totalizer = new CCTotalizer();
   }
 
 
   @Override
   public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-    this.totalizer.buildAMK(result, vars, rhs);
+    this.totalizer.buildEXK(result, vars, rhs);
   }
 
   @Override

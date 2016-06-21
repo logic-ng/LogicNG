@@ -248,7 +248,7 @@ public final class MaxSATConfig extends Configuration {
   public String toString() {
     final StringBuilder sb = new StringBuilder("MaxSATConfig{");
     sb.append("incrementalStrategy=").append(this.incrementalStrategy).append("\n");
-    sb.append("amoEncoding=").append(this.amoEncoding).append("\n");
+    sb.append("pbEncoding=").append(this.amoEncoding).append("\n");
     sb.append("pbEncoding=").append(this.pbEncoding).append("\n");
     sb.append("cardinalityEncoding=").append(this.cardinalityEncoding).append("\n");
     sb.append("weightStrategy=").append(this.weightStrategy).append("\n");

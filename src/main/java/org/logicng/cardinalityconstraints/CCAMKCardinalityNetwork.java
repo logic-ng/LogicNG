@@ -32,31 +32,40 @@ import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
- * translating the cardinality constraint into CNF.
+ * Encodes that at most 'rhs' variables are assigned value true.  Uses the cardinality network
+ * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-final class CCAMKTotalizer implements CCAtMostK {
+final class CCAMKCardinalityNetwork implements CCAtMostK {
 
-  private final CCTotalizer totalizer;
+  private final CCCardinalityNetworks cardinalityNetwork;
 
   /**
-   * Constructs a new totalizer.
+   * Constructs a new cardinality encoder.
    */
-  CCAMKTotalizer() {
-    this.totalizer = new CCTotalizer();
+  CCAMKCardinalityNetwork() {
+    this.cardinalityNetwork = new CCCardinalityNetworks();
   }
-
 
   @Override
   public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-    this.totalizer.buildAMK(result, vars, rhs);
+    cardinalityNetwork.buildAMK(result, vars, rhs);
   }
 
   @Override
   public CCIncrementalData incrementalData() {
-    return this.totalizer.incrementalData();
+    return cardinalityNetwork.incrementalData();
+  }
+
+  /**
+   * Builds the constraint for incremental usage.
+   * @param result the result
+   * @param vars   the variables
+   * @param rhs    the right-hand side
+   */
+  void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
+    cardinalityNetwork.buildAMKForIncremental(result, vars, rhs);
   }
 
   @Override

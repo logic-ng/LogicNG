@@ -28,42 +28,30 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the 'naive' encoding with no introduction
  * of new variables but quadratic size.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class CCAMOPure extends CCAtMostOne {
-
-  private final FormulaFactory f;
+final class CCAMOPure implements CCAtMostOne {
 
   /**
    * Constructs the naive AMO encoder.
-   * @param f the formula factory
    */
-  public CCAMOPure(final FormulaFactory f) {
-    this.f = f;
+  CCAMOPure() {
+    // intentionally left empty
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    if (vars.length < 2)
-      return new ImmutableFormulaList(FType.AND);
+  public void build(final EncodingResult result, final Variable... vars) {
+    result.reset();
     for (int i = 0; i < vars.length; i++)
       for (int j = i + 1; j < vars.length; j++)
-        result.add(this.f.clause(vars[i].negate(), vars[j].negate()));
-    return new ImmutableFormulaList(FType.AND, result);
+        result.addClause(vars[i].negate(), vars[j].negate());
   }
 
   @Override
