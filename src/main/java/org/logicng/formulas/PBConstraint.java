@@ -33,7 +33,6 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
-import org.logicng.pseudobooleans.PBSWC;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -53,7 +52,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class PBConstraint extends Formula {
@@ -82,6 +81,7 @@ public final class PBConstraint extends Formula {
   private final boolean isCC;
   private ImmutableFormulaList encoding;
   private int hashCode;
+  private int maxWeight;
 
   /**
    * Constructs a new pseudo-Boolean constraint.
@@ -99,11 +99,15 @@ public final class PBConstraint extends Formula {
     this.literals = literals;
     this.coefficients = coefficients;
     boolean cc = true;
-    for (final int c : coefficients)
+    maxWeight = Integer.MIN_VALUE;
+    for (final int c : coefficients) {
+      if (c > maxWeight)
+        maxWeight = c;
       if (c != 1) {
         cc = false;
         break;
       }
+    }
     for (final Literal lit : literals)
       if (!lit.phase()) {
         cc = false;
@@ -154,6 +158,14 @@ public final class PBConstraint extends Formula {
    */
   public boolean isCC() {
     return this.isCC;
+  }
+
+  /**
+   * Returns the maximal coefficient of this constraint.
+   * @return the maximal coefficient of this constraint
+   */
+  public int maxWeight() {
+    return this.maxWeight;
   }
 
   /**
@@ -483,7 +495,7 @@ public final class PBConstraint extends Formula {
    * Encodes this constraint as CNF and stores the result.
    */
   private void encode() {
-    this.encoding = new PBSWC(f).build(this);
+    this.encoding = this.f.pbEncoder().encode(this);
   }
 
   @Override

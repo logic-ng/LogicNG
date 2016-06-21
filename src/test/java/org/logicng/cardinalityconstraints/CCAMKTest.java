@@ -30,93 +30,111 @@ package org.logicng.cardinalityconstraints;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.CType;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Unit tests for the {@link CCALKTotalizer}.
- * @version 1.0
+ * Unit tests for the at-most-k encoders.
+ * @version 1.1
  * @since 1.0
  */
-public class CCALKTotalizerTest {
+public class CCAMKTest {
 
-  private static final FormulaFactory f = new FormulaFactory();
+  private CCConfig[] configs;
 
-  @Test
-  public void testCC0() {
-    final CCALKTotalizer totalizer = new CCALKTotalizer(f);
-    final ImmutableFormulaList clauses = totalizer.build(new LinkedList<Variable>(), 0);
-    Assert.assertTrue(clauses.empty());
+  public CCAMKTest() {
+    configs = new CCConfig[3];
+    configs[0] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build();
+    configs[1] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build();
+    configs[2] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build();
   }
 
   @Test
-  public void testCCALL() {
-    final CCAtLeastK totalizer = new CCALKTotalizer(f);
-    final int numLits = 100;
-    final List<Variable> lits = new LinkedList<>();
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++) {
-      final Variable var = f.variable("v" + i);
-      lits.add(var);
-      problemLits[i] = var;
+  public void testAMK() {
+    final FormulaFactory f = new FormulaFactory();
+    int counter = 0;
+    for (final CCConfig config : this.configs) {
+      f.putConfiguration(config);
+      testCC(10, 0, 1, f, false);
+      testCC(10, 1, 11, f, false);
+      testCC(10, 2, 56, f, false);
+      testCC(10, 3, 176, f, false);
+      testCC(10, 4, 386, f, false);
+      testCC(10, 5, 638, f, false);
+      testCC(10, 6, 848, f, false);
+      testCC(10, 7, 968, f, false);
+      testCC(10, 8, 1013, f, false);
+      testCC(10, 9, 1023, f, false);
+      testCC(10, 10, 1, f, false);
+      testCC(10, 15, 1, f, false);
+      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
-    final ImmutableFormulaList clauses = totalizer.build(lits, 100);
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(clauses);
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    final List<Assignment> models = solver.enumerateAllModels(problemLits);
-    Assert.assertEquals(1, models.size());
-    Assert.assertEquals(100, models.get(0).positiveLiterals().size());
   }
 
   @Test
-  public void testCCs() {
-    final CCAtLeastK totalizer = new CCALKTotalizer(f);
-    testCC(10, 1, 1023, totalizer);
-    testCC(10, 2, 1013, totalizer);
-    testCC(10, 3, 968, totalizer);
-    testCC(10, 4, 848, totalizer);
-    testCC(10, 5, 638, totalizer);
-    testCC(10, 6, 386, totalizer);
-    testCC(10, 7, 176, totalizer);
-    testCC(10, 8, 56, totalizer);
-    testCC(10, 9, 11, totalizer);
-    testCC(10, 10, 1, totalizer);
-    testCC(10, 12, 0, totalizer);
+  public void testAMKMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    testCC(10, 0, 1, f, true);
+    testCC(10, 1, 11, f, true);
+    testCC(10, 2, 56, f, true);
+    testCC(10, 3, 176, f, true);
+    testCC(10, 4, 386, f, true);
+    testCC(10, 5, 638, f, true);
+    testCC(10, 6, 848, f, true);
+    testCC(10, 7, 968, f, true);
+    testCC(10, 8, 1013, f, true);
+    testCC(10, 9, 1023, f, true);
+    testCC(10, 10, 1024, f, true);
+    testCC(10, 15, 1024, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
   }
 
-  private void testCC(int numLits, int rhs, int expected, final CCAtLeastK totalizer) {
+  @Test
+  public void testLargeAMK() {
+    final FormulaFactory f = new FormulaFactory();
+    int counter = 0;
+    for (final CCConfig config : this.configs) {
+      f.putConfiguration(config);
+      testCC(150, 2, 1 + 150 + 11175, f, false);
+      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
+    }
+  }
+
+  @Test
+  public void testLargeAMKMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    testCC(150, 2, 1 + 150 + 11175, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
+  }
+
+  private void testCC(int numLits, int rhs, int expected, final FormulaFactory f, boolean miniCard) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    final ImmutableFormulaList clauses = totalizer.build(problemLits, rhs);
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(clauses);
-    if (expected != 0)
-      Assert.assertEquals(Tristate.TRUE, solver.sat());
-    else
-      Assert.assertEquals(Tristate.FALSE, solver.sat());
+    final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
+    solver.add(f.cc(CType.LE, rhs, problemLits));
+    Assert.assertEquals(Tristate.TRUE, solver.sat());
     final List<Assignment> models = solver.enumerateAllModels(problemLits);
     Assert.assertEquals(expected, models.size());
     for (final Assignment model : models)
-      Assert.assertTrue(model.positiveLiterals().size() >= rhs);
+      Assert.assertTrue(model.positiveLiterals().size() <= rhs);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalCC1() {
-    final CCAtLeastK totalizer = new CCALKTotalizer(f);
+    final FormulaFactory f = new FormulaFactory();
+    final CCEncoder encoder = new CCEncoder(f);
     final int numLits = 100;
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
-    totalizer.build(problemLits, -1);
+    encoder.encode(f.cc(CType.LE, -1, problemLits));
   }
 }

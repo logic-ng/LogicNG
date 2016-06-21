@@ -28,31 +28,27 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
-import java.util.Collection;
-
 /**
- * The interface for exactly-one (EXO) cardinality constraints.
- * @version 1.0
- * @since 1.0
+ * The interface for exactly-k (ALK) cardinality constraints.
+ * @version 1.1
+ * @since 1.1
  */
-public abstract class CCExactlyOne {
+interface CCExactlyK {
+  /**
+   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = k}.
+   * @param result the result of the encoding
+   * @param vars   the variables {@code var_1 ... var_n}
+   * @param rhs    the right hand side {@code k} of the constraint
+   * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
+   */
+  void build(final EncodingResult result, final Variable[] vars, int rhs);
 
   /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = 1}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
+   * Returns the incremental data for the current encoded constraint.
+   * @return the incremental data for the current encoded constraint
    */
-  public ImmutableFormulaList build(Collection<Variable> vars) {
-    return this.build(vars.toArray(new Variable[vars.size()]));
-  }
-
-  /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = 1}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
-   */
-  public abstract ImmutableFormulaList build(final Variable... vars);
+  CCIncrementalData incrementalData();
 }

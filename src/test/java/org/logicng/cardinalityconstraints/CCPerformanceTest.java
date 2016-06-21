@@ -28,51 +28,65 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.CType;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 
 /**
- * Encodes that exactly one variable is assigned value true.  Uses the 'naive' encoding with no introduction
- * of new variables but quadratic size.
- * @version 1.0
- * @since 1.0
+ * Performance tests for cardinality constraints.
+ * @version 1.1
+ * @since 1.1
  */
-public final class CCEXOPure extends CCExactlyOne {
+public class CCPerformanceTest {
 
-  private final FormulaFactory f;
+  private CCConfig[] configs;
 
-  /**
-   * Constructs the naive EXO encoder.
-   * @param f the formula factory
-   */
-  public CCEXOPure(final FormulaFactory f) {
-    this.f = f;
+  public CCPerformanceTest() {
+    configs = new CCConfig[3];
+    configs[0] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build();
+    configs[1] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build();
+    configs[2] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build();
   }
 
-  @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    if (vars.length == 0)
-      return new ImmutableFormulaList(FType.AND);
-    if (vars.length == 1) {
-      result.add(vars[0]);
-      return new ImmutableFormulaList(FType.AND, result);
+  @Ignore
+  @Test
+  public void testAMKPerformance() {
+    final FormulaFactory f = new FormulaFactory();
+    int counter = 0;
+    for (final CCConfig config : this.configs) {
+      f.putConfiguration(config);
+      buildAMK(10_000, f, false);
+      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
     }
-    result.add(this.f.clause(vars));
-    for (int i = 0; i < vars.length; i++)
-      for (int j = i + 1; j < vars.length; j++)
-        result.add(this.f.clause(vars[i].negate(), vars[j].negate()));
-    return new ImmutableFormulaList(FType.AND, result);
   }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
+  @Test
+  public void testAMKPerformanceMiniCard() {
+    final FormulaFactory f = new FormulaFactory();
+    buildAMK(10_000, f, true);
+    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
+  }
+
+  private void buildAMK(int numLits, final FormulaFactory f, boolean miniCard) {
+    final Variable[] problemLits = new Variable[numLits];
+    for (int i = 0; i < numLits; i++)
+      problemLits[i] = f.variable("v" + i);
+    final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
+    for (int i = 10; i < 100; i = i + 10) {
+      final PBConstraint pbc = f.cc(CType.LE, i, problemLits);
+      solver.reset();
+      solver.add(pbc);
+      Assert.assertEquals(Tristate.TRUE, solver.sat());
+      final Assignment model = solver.model();
+      Assert.assertTrue(pbc.evaluate(model));
+    }
   }
 }

@@ -28,31 +28,20 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
-
-import java.util.Collection;
 
 /**
  * The interface for at-most-one (AMO) cardinality constraints.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public abstract class CCAtMostOne {
+interface CCAtMostOne {
 
   /**
    * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= 1}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
+   * @param result the result for the encoding
+   * @param vars   the variables {@code var_1 ... var_n}
    */
-  public ImmutableFormulaList build(Collection<Variable> vars) {
-    return this.build(vars.toArray(new Variable[vars.size()]));
-  }
-
-  /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= 1}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
-   */
-  public abstract ImmutableFormulaList build(final Variable... vars);
+  void build(final EncodingResult result, final Variable... vars);
 }

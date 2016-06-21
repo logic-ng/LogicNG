@@ -60,10 +60,10 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * A sequential weight counter for the encoding of pseudo-Boolean constraints in CNF.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class SequentialWeightCounter extends Encoding {
+final class SequentialWeightCounter extends Encoding {
 
   private LNGIntVector pbOutlits;
   private int currentPbRhs;
@@ -77,7 +77,7 @@ public final class SequentialWeightCounter extends Encoding {
   /**
    * Constructs a new sequential weight counter encoder.
    */
-  public SequentialWeightCounter() {
+  SequentialWeightCounter() {
     this.currentPbRhs = -1;
     this.currentLitBlocking = LIT_UNDEF;
     this.pbOutlits = new LNGIntVector();
@@ -92,7 +92,7 @@ public final class SequentialWeightCounter extends Encoding {
    * Updates the assumptions with the unit literals.
    * @param assumptions the current assumptions
    */
-  public void updateAssumptions(final LNGIntVector assumptions) {
+  void updateAssumptions(final LNGIntVector assumptions) {
     assumptions.push(not(this.currentLitBlocking));
     for (int i = 0; i < this.unitLits.size(); i++)
       assumptions.push(not(this.unitLits.get(i)));
@@ -102,7 +102,7 @@ public final class SequentialWeightCounter extends Encoding {
    * Returns {@code true} if an encoding was created, {@code false} otherwise.
    * @return {@code true} if an encoding was created
    */
-  public boolean hasCreatedEncoding() {
+  boolean hasCreatedEncoding() {
     return this.hasEncoding;
   }
 
@@ -323,7 +323,7 @@ public final class SequentialWeightCounter extends Encoding {
    * @param lits   the literals of the constraint
    * @param coeffs the coefficients of the constraint
    */
-  public void join(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs) {
+  void join(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs) {
     assert this.currentLitBlocking != LIT_UNDEF;
     int rhs = this.currentPbRhs;
     if (rhs == Integer.MAX_VALUE)

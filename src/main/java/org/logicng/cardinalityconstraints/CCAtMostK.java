@@ -28,36 +28,28 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * The interface for at-most-k (AMK) cardinality constraints.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public abstract class CCAtMostK {
+interface CCAtMostK {
 
   /**
    * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= k}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @param rhs  the right hand side {@code k} of the constraint
-   * @return the CNF encoding of the cardinality constraint
+   * @param result the result for the encoding
+   * @param vars   the variables {@code var_1 ... var_n}
+   * @param rhs    the right hand side {@code k} of the constraint
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
-  public abstract ImmutableFormulaList build(Collection<Variable> vars, int rhs);
+  void build(final EncodingResult result, final Variable[] vars, int rhs);
 
   /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= k}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @param rhs  the right hand side {@code k} of the constraint
-   * @return the CNF encoding of the cardinality constraint
-   * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
+   * Returns the incremental data for the current encoded constraint.
+   * @return the incremental data for the current encoded constraint
    */
-  public ImmutableFormulaList build(final Variable[] vars, int rhs) {
-    return this.build(Arrays.asList(vars), rhs);
-  }
+  CCIncrementalData incrementalData();
 }

@@ -28,45 +28,44 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Encodes that exactly one variable is assigned value true.  Uses the 2-product method due to Chen.
- * @version 1.0
- * @since 1.0
+ * Encodes that at least 'rhs' variables are assigned value true.  Uses the cardinality network
+ * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
+ * @version 1.1
+ * @since 1.1
  */
-public final class CCEXOProduct extends CCExactlyOne {
-  private final FormulaFactory f;
-  private final CCAMOProduct amo;
+final class CCALKCardinalityNetwork implements CCAtLeastK {
+
+  private final CCCardinalityNetworks cardinalityNetwork;
 
   /**
-   * Constructs the naive AMO encoder.
-   * @param f the formula factory
+   * Constructs a new cardinality encoder.
    */
-  public CCEXOProduct(final FormulaFactory f) {
-    this.f = f;
-    this.amo = new CCAMOProduct(f);
+  CCALKCardinalityNetwork() {
+    this.cardinalityNetwork = new CCCardinalityNetworks();
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    if (vars.length == 0)
-      return new ImmutableFormulaList(FType.AND);
-    if (vars.length == 1) {
-      result.add(vars[0]);
-      return new ImmutableFormulaList(FType.AND, result);
-    }
-    result.add(this.f.or(vars));
-    result.addAll(this.amo.build(vars).toList());
-    return new ImmutableFormulaList(FType.AND, result);
+  public void build(final EncodingResult result, final Variable[] vars, int rhs) {
+    cardinalityNetwork.buildALK(result, vars, rhs);
+  }
+
+  /**
+   * Builds the constraint for incremental usage.
+   * @param result the result
+   * @param vars   the variables
+   * @param rhs    the right-hand side
+   */
+  void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
+    cardinalityNetwork.buildALKForIncremental(result, vars, rhs);
+  }
+
+  @Override
+  public CCIncrementalData incrementalData() {
+    return cardinalityNetwork.incrementalData();
   }
 
   @Override

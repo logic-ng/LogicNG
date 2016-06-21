@@ -49,52 +49,39 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the Ladder/Regular encoding.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class CCAMOLadder extends CCAtMostOne {
-
-  private final FormulaFactory f;
+final class CCAMOLadder implements CCAtMostOne {
 
   /**
    * Constructs the naive AMO encoder.
-   * @param f the formula factory
    */
-  public CCAMOLadder(final FormulaFactory f) {
-    this.f = f;
+  CCAMOLadder() {
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    if (vars.length < 2)
-      return new ImmutableFormulaList(FType.AND);
+  public void build(final EncodingResult result, final Variable... vars) {
+    result.reset();
     final Variable[] seqAuxiliary = new Variable[vars.length - 1];
     for (int i = 0; i < vars.length - 1; i++)
-      seqAuxiliary[i] = this.f.newCCVariable();
+      seqAuxiliary[i] = result.newVariable();
     for (int i = 0; i < vars.length; i++) {
       if (i == 0)
-        result.add(this.f.clause(vars[0].negate(), seqAuxiliary[0]));
+        result.addClause(vars[0].negate(), seqAuxiliary[0]);
       else if (i == vars.length - 1)
-        result.add(this.f.clause(vars[i].negate(), seqAuxiliary[i - 1].negate()));
+        result.addClause(vars[i].negate(), seqAuxiliary[i - 1].negate());
       else {
-        result.add(this.f.clause(vars[i].negate(), seqAuxiliary[i]));
-        result.add(this.f.clause(seqAuxiliary[i - 1].negate(), seqAuxiliary[i]));
-        result.add(this.f.clause(vars[i].negate(), seqAuxiliary[i - 1].negate()));
+        result.addClause(vars[i].negate(), seqAuxiliary[i]);
+        result.addClause(seqAuxiliary[i - 1].negate(), seqAuxiliary[i]);
+        result.addClause(vars[i].negate(), seqAuxiliary[i - 1].negate());
       }
     }
-    return new ImmutableFormulaList(FType.AND, result);
   }
 
   @Override

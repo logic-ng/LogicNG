@@ -26,41 +26,39 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.cardinalityconstraints;
+package org.logicng.datastructures;
 
-import org.logicng.datastructures.EncodingResult;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
- * translating the cardinality constraint into CNF.
- * @version 1.1
- * @since 1.0
+ * An auxiliary variable for encoding results.
+ * <p></p>
+ * This variable is used, if the result is added directly to a solver.  In this case no variable on the factory has
+ * to be created.
  */
-final class CCAMKTotalizer implements CCAtMostK {
+final class EncodingAuxiliaryVariable extends Variable {
 
-  private final CCTotalizer totalizer;
+  final boolean negated;
 
   /**
-   * Constructs a new totalizer.
+   * Constructs a new auxiliary variable
+   * @param name    the literal name
+   * @param negated {@code true} if the variables is negated, {@code false} otherwise
    */
-  CCAMKTotalizer() {
-    this.totalizer = new CCTotalizer();
+  EncodingAuxiliaryVariable(String name, boolean negated) {
+    super(name, null);
+    this.negated = negated;
   }
 
 
   @Override
-  public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-    this.totalizer.buildAMK(result, vars, rhs);
-  }
-
-  @Override
-  public CCIncrementalData incrementalData() {
-    return this.totalizer.incrementalData();
+  public Literal negate() {
+    return new EncodingAuxiliaryVariable(this.name(), !this.negated);
   }
 
   @Override
   public String toString() {
-    return this.getClass().getSimpleName();
+    return name();
   }
 }

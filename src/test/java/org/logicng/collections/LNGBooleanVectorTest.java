@@ -173,6 +173,20 @@ public class LNGBooleanVectorTest {
   }
 
   @Test
+  public void testReverseInplace() {
+    LNGBooleanVector v1 = new LNGBooleanVector(true, true, false, true, false, false, true, true);
+    v1.shrinkTo(7);
+    v1.reverseInplace();
+    Assert.assertEquals(true, v1.get(0));
+    Assert.assertEquals(false, v1.get(1));
+    Assert.assertEquals(false, v1.get(2));
+    Assert.assertEquals(true, v1.get(3));
+    Assert.assertEquals(false, v1.get(4));
+    Assert.assertEquals(true, v1.get(5));
+    Assert.assertEquals(true, v1.get(6));
+  }
+
+  @Test
   public void testToArray() {
     LNGBooleanVector v1 = new LNGBooleanVector(1000);
     boolean[] expected = new boolean[500];

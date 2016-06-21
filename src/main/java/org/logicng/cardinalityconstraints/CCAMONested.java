@@ -26,67 +26,84 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+/**
+ * PBLib       -- Copyright (c) 2012-2013  Peter Steinke
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.EncodingResult;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most one variable is assigned value true.  Uses the 2-product method due to Chen.
+ * Encodes that at most one variable is assigned value true.  Uses the nested encoding.
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-final class CCAMOProduct implements CCAtMostOne {
-  private final int recursiveBound;
+final class CCAMONested implements CCAtMostOne {
+
+  private int groupSize;
   private EncodingResult result;
 
   /**
-   * Constructs the naive AMO encoder.
+   * Constructs the nested AMO encoder.
+   * @param groupSize the group size
    */
-  CCAMOProduct(int recursiveBound) {
-    this.recursiveBound = recursiveBound;
+  CCAMONested(int groupSize) {
+    this.groupSize = groupSize;
   }
 
   @Override
   public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
     this.result = result;
-    this.productRec(vars);
+    this.encodeIntern(new LNGVector<Literal>(vars));
   }
 
-  private void productRec(final Variable... vars) {
-    int n = vars.length;
-    int p = (int) Math.ceil(Math.sqrt(n));
-    int q = (int) Math.ceil((double) n / (double) p);
-    final Variable[] us = new Variable[p];
-    for (int i = 0; i < us.length; i++)
-      us[i] = result.newVariable();
-    final Variable[] vs = new Variable[q];
-    for (int i = 0; i < vs.length; i++)
-      vs[i] = result.newVariable();
-    if (us.length <= this.recursiveBound)
-      buildPure(us);
-    else
-      this.productRec(us);
-    if (vs.length <= this.recursiveBound)
-      buildPure(vs);
-    else
-      this.productRec(vs);
-    for (int i = 0; i < p; i++) {
-      for (int j = 0; j < q; j++) {
-        final int k = i * q + j;
-        if (k >= 0 && k < n) {
-          result.addClause(vars[k].negate(), us[i]);
-          result.addClause(vars[k].negate(), vs[j]);
-        }
-      }
+  /**
+   * Internal recursive encoding.
+   * @param vars the variables of the constraint
+   */
+  private void encodeIntern(final LNGVector<Literal> vars) {
+    if (vars.size() <= this.groupSize)
+      for (int i = 0; i + 1 < vars.size(); i++)
+        for (int j = i + 1; j < vars.size(); j++)
+          this.result.addClause(vars.get(i).negate(), vars.get(j).negate());
+    else {
+      final LNGVector<Literal> l1 = new LNGVector<>(vars.size() / 2);
+      final LNGVector<Literal> l2 = new LNGVector<>(vars.size() / 2);
+      int i = 0;
+      for (; i < vars.size() / 2; i++)
+        l1.push(vars.get(i));
+      for (; i < vars.size(); i++)
+        l2.push(vars.get(i));
+      final Variable newVariable = this.result.newVariable();
+      l1.push(newVariable);
+      l2.push(newVariable.negate());
+      this.encodeIntern(l1);
+      this.encodeIntern(l2);
     }
-  }
-
-  private void buildPure(final Variable... vars) {
-    for (int i = 0; i < vars.length; i++)
-      for (int j = i + 1; j < vars.length; j++)
-        result.addClause(vars[i].negate(), vars[j].negate());
   }
 
   @Override

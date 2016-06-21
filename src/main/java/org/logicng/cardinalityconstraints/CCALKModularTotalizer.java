@@ -29,29 +29,30 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.datastructures.EncodingResult;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
+ * Encodes that at least 'rhs' variables can be assigned value true.  Uses the modular totalizer encoding for
  * translating the cardinality constraint into CNF.
  * @version 1.1
  * @since 1.0
  */
-final class CCAMKTotalizer implements CCAtMostK {
+final class CCALKModularTotalizer implements CCAtLeastK {
 
-  private final CCTotalizer totalizer;
+  private final CCModularTotalizer totalizer;
 
   /**
-   * Constructs a new totalizer.
+   * Constructs a new modular totalizer.
+   * @param f the formula factory
    */
-  CCAMKTotalizer() {
-    this.totalizer = new CCTotalizer();
+  CCALKModularTotalizer(final FormulaFactory f) {
+    this.totalizer = new CCModularTotalizer(f);
   }
-
 
   @Override
   public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-    this.totalizer.buildAMK(result, vars, rhs);
+    this.totalizer.buildALK(result, vars, rhs);
   }
 
   @Override

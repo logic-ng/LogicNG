@@ -50,8 +50,8 @@
 package org.logicng.solvers.maxsat.encodings;
 
 import org.logicng.collections.LNGIntVector;
-import org.logicng.solvers.sat.MiniSatStyleSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
+import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import static org.logicng.solvers.sat.MiniSatStyleSolver.LIT_UNDEF;
 import static org.logicng.solvers.sat.MiniSatStyleSolver.mkLit;
@@ -60,10 +60,10 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 /**
  * Encodes that at most 'rhs' literals can be assigned value true.  Uses the modular totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class ModularTotalizer extends Encoding {
+final class ModularTotalizer extends Encoding {
 
   private static final int LIT_ERROR = -2;
 
@@ -77,7 +77,7 @@ public final class ModularTotalizer extends Encoding {
   /**
    * Constructs a new modular totalizer.
    */
-  public ModularTotalizer() {
+  ModularTotalizer() {
     this.h0 = LIT_UNDEF;
     this.modulo = -1;
     this.currentCardinalityRhs = -1;
@@ -90,7 +90,7 @@ public final class ModularTotalizer extends Encoding {
    * Sets the modulo value.
    * @param m the modulo value
    */
-  public void setModulo(int m) {
+  void setModulo(int m) {
     this.modulo = m;
   }
 
@@ -98,7 +98,7 @@ public final class ModularTotalizer extends Encoding {
    * Returns {@code true} if an encoding was created, {@code false} otherwise.
    * @return {@code true} if an encoding was created
    */
-  public boolean hasCreatedEncoding() {
+  boolean hasCreatedEncoding() {
     return this.hasEncoding;
   }
 
@@ -111,8 +111,8 @@ public final class ModularTotalizer extends Encoding {
   public void encode(final MiniSatStyleSolver s, final LNGIntVector lits, int rhs) {
     assert lits.size() > 0;
     hasEncoding = false;
-    cardinalityUpoutlits.clear();
-    cardinalityLwoutlits.clear();
+    this.cardinalityUpoutlits.clear();
+    this.cardinalityLwoutlits.clear();
     if (rhs == 0) {
       for (int i = 0; i < lits.size(); i++)
         addUnitClause(s, not(lits.get(i)));
@@ -123,27 +123,27 @@ public final class ModularTotalizer extends Encoding {
       return;
     hasEncoding = true;
     int mod = (int) Math.ceil(Math.sqrt(rhs + 1.0));
-    if (modulo == -1)
-      modulo = mod;
+    if (this.modulo == -1)
+      this.modulo = mod;
     else
-      mod = modulo;
+      mod = this.modulo;
     for (int i = 0; i < lits.size() / mod; i++) {
       final int p = mkLit(s.nVars(), false);
       MaxSAT.newSATVariable(s);
-      cardinalityUpoutlits.push(p);
+      this.cardinalityUpoutlits.push(p);
     }
     for (int i = 0; i < mod - 1; i++) {
       int p = mkLit(s.nVars(), false);
       MaxSAT.newSATVariable(s);
-      cardinalityLwoutlits.push(p);
+      this.cardinalityLwoutlits.push(p);
     }
-    cardinalityInlits = new LNGIntVector(lits);
-    currentCardinalityRhs = rhs + 1;
-    if (cardinalityUpoutlits.size() == 0)
-      cardinalityUpoutlits.push(h0);
-    toCNF(s, mod, cardinalityUpoutlits, cardinalityLwoutlits, lits.size());
-    assert cardinalityInlits.size() == 0;
-    update(s, rhs);
+    this.cardinalityInlits = new LNGIntVector(lits);
+    this.currentCardinalityRhs = rhs + 1;
+    if (this.cardinalityUpoutlits.size() == 0)
+      this.cardinalityUpoutlits.push(this.h0);
+    this.toCNF(s, mod, this.cardinalityUpoutlits, this.cardinalityLwoutlits, lits.size());
+    assert this.cardinalityInlits.size() == 0;
+    this.update(s, rhs);
   }
 
   /**
@@ -152,33 +152,32 @@ public final class ModularTotalizer extends Encoding {
    * @param rhs the new right hand side
    */
   public void update(final MiniSatStyleSolver s, int rhs) {
-    assert currentCardinalityRhs != -1;
+    assert this.currentCardinalityRhs != -1;
     assert hasEncoding;
-    encodeOutput(s, rhs);
-    currentCardinalityRhs = rhs + 1;
-
+    this.encodeOutput(s, rhs);
+    this.currentCardinalityRhs = rhs + 1;
   }
 
   private void encodeOutput(final MiniSatStyleSolver s, int rhs) {
     assert hasEncoding;
-    assert cardinalityUpoutlits.size() != 0 || cardinalityLwoutlits.size() != 0;
-    int mod = modulo;
+    assert this.cardinalityUpoutlits.size() != 0 || this.cardinalityLwoutlits.size() != 0;
+    int mod = this.modulo;
     int ulimit = (rhs + 1) / mod;
     int llimit = (rhs + 1) - ulimit * mod;
-    assert ulimit <= cardinalityUpoutlits.size();
-    assert llimit <= cardinalityLwoutlits.size();
-    for (int i = ulimit; i < cardinalityUpoutlits.size(); i++)
-      addUnitClause(s, not(cardinalityUpoutlits.get(i)));
+    assert ulimit <= this.cardinalityUpoutlits.size();
+    assert llimit <= this.cardinalityLwoutlits.size();
+    for (int i = ulimit; i < this.cardinalityUpoutlits.size(); i++)
+      addUnitClause(s, not(this.cardinalityUpoutlits.get(i)));
     if (ulimit != 0 && llimit != 0) {
-      for (int i = llimit - 1; i < cardinalityLwoutlits.size(); i++)
-        addBinaryClause(s, not(cardinalityUpoutlits.get(ulimit - 1)), not(cardinalityLwoutlits.get(i)));
+      for (int i = llimit - 1; i < this.cardinalityLwoutlits.size(); i++)
+        addBinaryClause(s, not(this.cardinalityUpoutlits.get(ulimit - 1)), not(this.cardinalityLwoutlits.get(i)));
     } else {
       if (ulimit == 0) {
         assert llimit != 0;
-        for (int i = llimit - 1; i < cardinalityLwoutlits.size(); i++)
-          addUnitClause(s, not(cardinalityLwoutlits.get(i)));
+        for (int i = llimit - 1; i < this.cardinalityLwoutlits.size(); i++)
+          addUnitClause(s, not(this.cardinalityLwoutlits.get(i)));
       } else
-        addUnitClause(s, not(cardinalityUpoutlits.get(ulimit - 1)));
+        addUnitClause(s, not(this.cardinalityUpoutlits.get(ulimit - 1)));
     }
   }
 
@@ -192,10 +191,10 @@ public final class ModularTotalizer extends Encoding {
     int left = 1;
     int right = 1;
     if (split == 1) {
-      assert cardinalityInlits.size() > 0;
-      lupper.push(h0);
-      llower.push(cardinalityInlits.back());
-      cardinalityInlits.pop();
+      assert this.cardinalityInlits.size() > 0;
+      lupper.push(this.h0);
+      llower.push(this.cardinalityInlits.back());
+      this.cardinalityInlits.pop();
     } else {
       left = split / mod;
       for (int i = 0; i < left; i++) {
@@ -213,10 +212,10 @@ public final class ModularTotalizer extends Encoding {
       }
     }
     if (rhs - split == 1) {
-      assert cardinalityInlits.size() > 0;
-      rupper.push(h0);
-      rlower.push(cardinalityInlits.back());
-      cardinalityInlits.pop();
+      assert this.cardinalityInlits.size() > 0;
+      rupper.push(this.h0);
+      rlower.push(this.cardinalityInlits.back());
+      this.cardinalityInlits.pop();
     } else {
       right = (rhs - split) / mod;
       for (int i = 0; i < right; i++) {
@@ -235,14 +234,14 @@ public final class ModularTotalizer extends Encoding {
       }
     }
     if (lupper.size() == 0)
-      lupper.push(h0);
+      lupper.push(this.h0);
     if (rupper.size() == 0)
-      rupper.push(h0);
-    adder(s, mod, ublits, lwlits, rupper, rlower, lupper, llower);
+      rupper.push(this.h0);
+    this.adder(s, mod, ublits, lwlits, rupper, rlower, lupper, llower);
     if (left * mod + split - left * mod > 1)
-      toCNF(s, mod, lupper, llower, left * mod + split - left * mod);
+      this.toCNF(s, mod, lupper, llower, left * mod + split - left * mod);
     if (right * mod + (rhs - split) - right * mod > 1)
-      toCNF(s, mod, rupper, rlower, right * mod + (rhs - split) - right * mod);
+      this.toCNF(s, mod, rupper, rlower, right * mod + (rhs - split) - right * mod);
   }
 
   private void adder(final MiniSatStyleSolver s, int mod, final LNGIntVector upper, final LNGIntVector lower,
@@ -251,27 +250,27 @@ public final class ModularTotalizer extends Encoding {
     assert upper.size() != 0;
     assert lower.size() >= llower.size() && lower.size() >= rlower.size();
     int carry = LIT_UNDEF;
-    if (upper.get(0) != h0) {
+    if (upper.get(0) != this.h0) {
       carry = mkLit(s.nVars(), false);
       MaxSAT.newSATVariable(s);
     }
     for (int i = 0; i <= llower.size(); i++) {
       for (int j = 0; j <= rlower.size(); j++) {
-        if (i + j > currentCardinalityRhs + 1 && currentCardinalityRhs + 1 < modulo)
+        if (i + j > this.currentCardinalityRhs + 1 && this.currentCardinalityRhs + 1 < this.modulo)
           continue;
         if (i + j < mod) {
           if (i == 0 && j != 0) {
-            if (upper.get(0) != h0)
+            if (upper.get(0) != this.h0)
               addTernaryClause(s, not(rlower.get(j - 1)), lower.get(i + j - 1), carry);
             else
               addBinaryClause(s, not(rlower.get(j - 1)), lower.get(i + j - 1));
           } else if (j == 0 && i != 0) {
-            if (upper.get(0) != h0)
+            if (upper.get(0) != this.h0)
               addTernaryClause(s, not(llower.get(i - 1)), lower.get(i + j - 1), carry);
             else
               addBinaryClause(s, not(llower.get(i - 1)), lower.get(i + j - 1));
           } else if (i != 0) {
-            if (upper.get(0) != h0)
+            if (upper.get(0) != this.h0)
               addQuaternaryClause(s, not(llower.get(i - 1)), not(rlower.get(j - 1)), lower.get(i + j - 1), carry);
             else {
               assert i + j - 1 < lower.size();
@@ -288,15 +287,15 @@ public final class ModularTotalizer extends Encoding {
         }
       }
     }
-    if (upper.get(0) != h0) {
+    if (upper.get(0) != this.h0) {
       for (int i = 0; i <= lupper.size(); i++) {
         for (int j = 0; j <= rupper.size(); j++) {
           int a = LIT_ERROR;
           int b = LIT_ERROR;
           int c = LIT_ERROR;
           int d = LIT_ERROR;
-          int closeMod = currentCardinalityRhs / mod;
-          if (currentCardinalityRhs % mod != 0)
+          int closeMod = this.currentCardinalityRhs / mod;
+          if (this.currentCardinalityRhs % mod != 0)
             closeMod++;
           if (mod * (i + j) > closeMod * mod)
             continue;
