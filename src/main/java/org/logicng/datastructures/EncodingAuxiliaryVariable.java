@@ -26,18 +26,18 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.cardinalityconstraints;
+package org.logicng.datastructures;
 
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 /**
- * An auxiliary variable for cardinality constraints.
+ * An auxiliary variable for encoding results.
  * <p></p>
  * This variable is used, if the result is added directly to a solver.  In this case no variable on the factory has
  * to be created.
  */
-final class CCAuxiliaryVariable extends Variable {
+final class EncodingAuxiliaryVariable extends Variable {
 
   final boolean negated;
 
@@ -46,7 +46,7 @@ final class CCAuxiliaryVariable extends Variable {
    * @param name    the literal name
    * @param negated {@code true} if the variables is negated, {@code false} otherwise
    */
-  CCAuxiliaryVariable(String name, boolean negated) {
+  EncodingAuxiliaryVariable(String name, boolean negated) {
     super(name, null);
     this.negated = negated;
   }
@@ -54,7 +54,7 @@ final class CCAuxiliaryVariable extends Variable {
 
   @Override
   public Literal negate() {
-    return new CCAuxiliaryVariable(this.name(), !this.negated);
+    return new EncodingAuxiliaryVariable(this.name(), !this.negated);
   }
 
   @Override

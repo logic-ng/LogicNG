@@ -51,6 +51,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -70,7 +71,7 @@ final class CCAMOBinary implements CCAtMostOne {
   }
 
   @Override
-  public void build(final CCResult result, final Variable... vars) {
+  public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
     final int numberOfBits = (int) Math.ceil((Math.log(vars.length) / Math.log(2)));
     final int twoPowNBits = (int) Math.pow(2, numberOfBits);

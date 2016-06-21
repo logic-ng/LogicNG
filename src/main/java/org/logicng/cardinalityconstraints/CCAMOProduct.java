@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -37,7 +38,7 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMOProduct implements CCAtMostOne {
   private final int recursiveBound;
-  private CCResult result;
+  private EncodingResult result;
 
   /**
    * Constructs the naive AMO encoder.
@@ -47,7 +48,7 @@ final class CCAMOProduct implements CCAtMostOne {
   }
 
   @Override
-  public void build(final CCResult result, final Variable... vars) {
+  public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
     this.result = result;
     this.productRec(vars);

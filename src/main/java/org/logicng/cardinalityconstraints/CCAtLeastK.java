@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -43,7 +44,7 @@ interface CCAtLeastK {
    * @param rhs    the right hand side {@code k} of the constraint
    * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative
    */
-  void build(final CCResult result, final Variable[] vars, int rhs);
+  void build(final EncodingResult result, final Variable[] vars, int rhs);
 
   /**
    * Returns the incremental data for the current encoded constraint.

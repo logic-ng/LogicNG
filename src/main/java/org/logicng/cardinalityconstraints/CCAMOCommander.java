@@ -52,6 +52,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
@@ -62,7 +63,7 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMOCommander implements CCAtMostOne {
 
-  private CCResult result;
+  private EncodingResult result;
   private int k;
   private LNGVector<Literal> literals;
   private LNGVector<Literal> nextLiterals;
@@ -80,7 +81,7 @@ final class CCAMOCommander implements CCAtMostOne {
   }
 
   @Override
-  public void build(final CCResult result, final Variable... vars) {
+  public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
     this.result = result;
     this.currentLiterals.clear();

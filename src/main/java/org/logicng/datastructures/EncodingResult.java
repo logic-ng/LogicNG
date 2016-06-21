@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.cardinalityconstraints;
+package org.logicng.datastructures;
 
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
@@ -41,11 +41,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The result of a cardinality constraint encoding.
+ * The result of an encoding.
+ * <p></p>
+ * Encodings (normal forms, cardinality constraints, pseudo-Boolean constraint) are often used only when adding
+ * formulas to the SAT solver.  Therefore it is not necessary to generate all the formulas required for the encoding
+ * in the formula factory and therefore polluting the factory and the heap.  This class can be used to connect an
+ * encoding directly with a SAT solver and therefore introducing the variables only on the solver - not in the factory.
+ * When working with many encodings, this can be a large performance gain.
  * @version 1.1
  * @since 1.1
  */
-public final class CCResult {
+public final class EncodingResult {
   final FormulaFactory f;
   private List<Formula> result;
   private final MiniSat miniSat;
@@ -57,7 +63,7 @@ public final class CCResult {
    * @param miniSat    the MiniSat instance
    * @param cleaneLing the CleaneLing instance
    */
-  private CCResult(final FormulaFactory f, final MiniSat miniSat, final CleaneLing cleaneLing) {
+  private EncodingResult(final FormulaFactory f, final MiniSat miniSat, final CleaneLing cleaneLing) {
     this.f = f;
     this.miniSat = miniSat;
     this.cleaneLing = cleaneLing;
@@ -69,8 +75,8 @@ public final class CCResult {
    * @param f the formula factory
    * @return the result
    */
-  public static CCResult resultForFormula(final FormulaFactory f) {
-    return new CCResult(f, null, null);
+  public static EncodingResult resultForFormula(final FormulaFactory f) {
+    return new EncodingResult(f, null, null);
   }
 
   /**
@@ -79,8 +85,8 @@ public final class CCResult {
    * @param miniSat the solver
    * @return the result
    */
-  public static CCResult resultForMiniSat(final FormulaFactory f, final MiniSat miniSat) {
-    return new CCResult(f, miniSat, null);
+  public static EncodingResult resultForMiniSat(final FormulaFactory f, final MiniSat miniSat) {
+    return new EncodingResult(f, miniSat, null);
   }
 
   /**
@@ -89,15 +95,15 @@ public final class CCResult {
    * @param cleaneLing the CleaneLing solver
    * @return the result
    */
-  public static CCResult resultForCleaneLing(final FormulaFactory f, final CleaneLing cleaneLing) {
-    return new CCResult(f, null, cleaneLing);
+  public static EncodingResult resultForCleaneLing(final FormulaFactory f, final CleaneLing cleaneLing) {
+    return new EncodingResult(f, null, cleaneLing);
   }
 
   /**
    * Adds a clause to the result
    * @param literals the literals of the clause
    */
-  void addClause(final Literal... literals) {
+  public void addClause(final Literal... literals) {
     if (this.miniSat == null && this.cleaneLing == null)
       this.result.add(this.f.clause(literals));
     else if (this.miniSat != null) {
@@ -109,8 +115,8 @@ public final class CCResult {
           this.miniSat.underlyingSolver().addName(lit.name(), index);
         }
         int litNum;
-        if (lit instanceof CCAuxiliaryVariable)
-          litNum = !((CCAuxiliaryVariable) lit).negated ? index * 2 : (index * 2) ^ 1;
+        if (lit instanceof EncodingAuxiliaryVariable)
+          litNum = !((EncodingAuxiliaryVariable) lit).negated ? index * 2 : (index * 2) ^ 1;
         else
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
@@ -120,8 +126,8 @@ public final class CCResult {
     } else {
       for (Literal lit : literals) {
         int index = this.cleaneLing.getOrCreateVarIndex(lit.variable());
-        if (lit instanceof CCAuxiliaryVariable)
-          this.cleaneLing.underlyingSolver().addlit(!((CCAuxiliaryVariable) lit).negated ? index : -index);
+        if (lit instanceof EncodingAuxiliaryVariable)
+          this.cleaneLing.underlyingSolver().addlit(!((EncodingAuxiliaryVariable) lit).negated ? index : -index);
         else
           this.cleaneLing.underlyingSolver().addlit(lit.phase() ? index : -index);
       }
@@ -134,7 +140,7 @@ public final class CCResult {
    * Adds a clause to the result
    * @param literals the literals of the clause
    */
-  void addClause(final LNGVector<Literal> literals) {
+  public void addClause(final LNGVector<Literal> literals) {
     if (this.miniSat == null && this.cleaneLing == null)
       this.result.add(this.vec2clause(literals));
     else if (this.miniSat != null) {
@@ -143,8 +149,8 @@ public final class CCResult {
         int index = this.miniSat.underlyingSolver().idxForName(lit.name());
         assert index != -1;
         int litNum;
-        if (lit instanceof CCAuxiliaryVariable)
-          litNum = !((CCAuxiliaryVariable) lit).negated ? index * 2 : (index * 2) ^ 1;
+        if (lit instanceof EncodingAuxiliaryVariable)
+          litNum = !((EncodingAuxiliaryVariable) lit).negated ? index * 2 : (index * 2) ^ 1;
         else
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
@@ -154,8 +160,8 @@ public final class CCResult {
     } else {
       for (Literal lit : literals) {
         int index = this.cleaneLing.getOrCreateVarIndex(lit.variable());
-        if (lit instanceof CCAuxiliaryVariable)
-          this.cleaneLing.underlyingSolver().addlit(!((CCAuxiliaryVariable) lit).negated ? index : -index);
+        if (lit instanceof EncodingAuxiliaryVariable)
+          this.cleaneLing.underlyingSolver().addlit(!((EncodingAuxiliaryVariable) lit).negated ? index : -index);
         else
           this.cleaneLing.underlyingSolver().addlit(lit.phase() ? index : -index);
       }
@@ -180,22 +186,22 @@ public final class CCResult {
    * Returns a new auxiliary variable.
    * @return a new auxiliary variable
    */
-  Variable newVariable() {
+  public Variable newVariable() {
     if (this.miniSat == null && this.cleaneLing == null)
       return this.f.newCCVariable();
     else if (miniSat != null) {
       final int index = this.miniSat.underlyingSolver().newVar(true, true);
       final String name = FormulaFactory.CC_PREFIX + "MINISAT_" + index;
       this.miniSat.underlyingSolver().addName(name, index);
-      return new CCAuxiliaryVariable(name, false);
+      return new EncodingAuxiliaryVariable(name, false);
     } else
-      return new CCAuxiliaryVariable(this.cleaneLing.createNewVariableOnSolver(FormulaFactory.CC_PREFIX + "CLEANELING"), false);
+      return new EncodingAuxiliaryVariable(this.cleaneLing.createNewVariableOnSolver(FormulaFactory.CC_PREFIX + "CLEANELING"), false);
   }
 
   /**
    * Resets the result.
    */
-  void reset() {
+  public void reset() {
     this.result = new ArrayList<>();
   }
 

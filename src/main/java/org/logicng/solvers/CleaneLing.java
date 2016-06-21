@@ -30,7 +30,7 @@ package org.logicng.solvers;
 
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
-import org.logicng.cardinalityconstraints.CCResult;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
@@ -146,7 +146,7 @@ public final class CleaneLing extends SATSolver {
       final PBConstraint constraint = (PBConstraint) formula;
       this.result = UNDEF;
       if (constraint.isCC()) {
-        final CCResult result = CCResult.resultForCleaneLing(this.f, this);
+        final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
         ccEncoder.encode(constraint, result);
       } else
         this.addClauseSet(formula.cnf()); //TODO not simply add the cnf here
@@ -158,7 +158,7 @@ public final class CleaneLing extends SATSolver {
   public CCIncrementalData addIncrementalCC(PBConstraint cc) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");
-    final CCResult result = CCResult.resultForCleaneLing(this.f, this);
+    final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
     return ccEncoder.encodeIncremental(cc, result);
   }
 

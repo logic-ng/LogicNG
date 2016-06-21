@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -46,7 +47,7 @@ final class CCAMOPure implements CCAtMostOne {
   }
 
   @Override
-  public void build(final CCResult result, final Variable... vars) {
+  public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
     for (int i = 0; i < vars.length; i++)
       for (int j = i + 1; j < vars.length; j++)

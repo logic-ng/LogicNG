@@ -52,6 +52,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
@@ -76,7 +77,7 @@ final class CCCardinalityNetworks {
     this.sorting = new CCSorting();
   }
 
-  void buildAMK(final CCResult result, final Variable[] vars, int rhs) {
+  void buildAMK(final EncodingResult result, final Variable[] vars, int rhs) {
     result.reset();
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
@@ -96,7 +97,7 @@ final class CCCardinalityNetworks {
     }
   }
 
-  void buildAMKForIncremental(final CCResult result, final Variable[] vars, int rhs) {
+  void buildAMKForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
     for (final Variable var : vars)
@@ -107,7 +108,7 @@ final class CCCardinalityNetworks {
     this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, rhs, output);
   }
 
-  void buildALK(final CCResult result, final Variable[] vars, int rhs) {
+  void buildALK(final EncodingResult result, final Variable[] vars, int rhs) {
     result.reset();
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
@@ -128,7 +129,7 @@ final class CCCardinalityNetworks {
     }
   }
 
-  void buildALKForIncremental(final CCResult result, final Variable[] vars, int rhs) {
+  void buildALKForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();
     for (final Variable var : vars)
@@ -140,7 +141,7 @@ final class CCCardinalityNetworks {
     this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
   }
 
-  void buildEXK(final CCResult result, final Variable[] vars, int rhs) {
+  void buildEXK(final EncodingResult result, final Variable[] vars, int rhs) {
     result.reset();
     final LNGVector<Literal> input = new LNGVector<>();
     final LNGVector<Literal> output = new LNGVector<>();

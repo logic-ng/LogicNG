@@ -49,6 +49,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -65,7 +66,7 @@ final class CCAMOLadder implements CCAtMostOne {
   }
 
   @Override
-  public void build(final CCResult result, final Variable... vars) {
+  public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
     final Variable[] seqAuxiliary = new Variable[vars.length - 1];
     for (int i = 0; i < vars.length - 1; i++)

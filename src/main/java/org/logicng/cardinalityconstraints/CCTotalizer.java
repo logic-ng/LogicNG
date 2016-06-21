@@ -50,6 +50,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -62,7 +63,7 @@ final class CCTotalizer {
   private enum Bound {LOWER, UPPER, BOTH}
 
   private LNGVector<Variable> cardinalityInvars;
-  private CCResult result;
+  private EncodingResult result;
   private CCIncrementalData incData;
 
   /**
@@ -79,7 +80,7 @@ final class CCTotalizer {
    * @param rhs    the right-hand side
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  void buildAMK(final CCResult result, final Variable[] vars, int rhs) {
+  void buildAMK(final EncodingResult result, final Variable[] vars, int rhs) {
     final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
     this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.TOTALIZER, rhs, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.UPPER);
@@ -95,7 +96,7 @@ final class CCTotalizer {
    * @param rhs    the right-hand side
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  void buildALK(final CCResult result, final Variable[] vars, int rhs) {
+  void buildALK(final EncodingResult result, final Variable[] vars, int rhs) {
     final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
     this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
     this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
@@ -110,7 +111,7 @@ final class CCTotalizer {
    * @param rhs  the right-hand side
    * @throws IllegalArgumentException if the right hand side of the constraint was negative
    */
-  void buildEXK(final CCResult result, final Variable[] vars, int rhs) {
+  void buildEXK(final EncodingResult result, final Variable[] vars, int rhs) {
     final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
     this.toCNF(cardinalityOutvars, rhs, Bound.BOTH);
     assert this.cardinalityInvars.size() == 0;
@@ -125,7 +126,7 @@ final class CCTotalizer {
    * @param vars the variables
    * @return the auxiliary variables
    */
-  private LNGVector<Variable> initializeConstraint(final CCResult result, final Variable[] vars) {
+  private LNGVector<Variable> initializeConstraint(final EncodingResult result, final Variable[] vars) {
     result.reset();
     this.result = result;
     this.cardinalityInvars = new LNGVector<>(vars.length);

@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -42,5 +43,5 @@ interface CCAtMostOne {
    * @param result the result for the encoding
    * @param vars   the variables {@code var_1 ... var_n}
    */
-  void build(final CCResult result, final Variable... vars);
+  void build(final EncodingResult result, final Variable... vars);
 }

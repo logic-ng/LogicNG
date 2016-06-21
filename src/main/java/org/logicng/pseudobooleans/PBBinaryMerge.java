@@ -51,7 +51,7 @@
 
 package org.logicng.pseudobooleans;
 
-import org.logicng.cardinalityconstraints.CCResult;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.cardinalityconstraints.CCSorting;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
@@ -179,7 +179,7 @@ final class PBBinaryMerge implements PBEncoding {
     }
     assert (bucket_card.size() == buckets.size());
     final LNGVector<Literal> carries = new LNGVector<>();
-    final CCResult tempResul = CCResult.resultForFormula(f); // TODO temporary solution
+    final EncodingResult tempResul = EncodingResult.resultForFormula(f); // TODO temporary solution
     for (int i = 0; i < buckets.size(); i++) {
       int k = (int) Math.ceil(new_less_then / Math.pow(2, i));
       if (config.binaryMergeUseWatchDog)

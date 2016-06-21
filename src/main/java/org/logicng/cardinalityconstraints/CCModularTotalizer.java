@@ -50,6 +50,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
@@ -69,7 +70,7 @@ final class CCModularTotalizer {
   private LNGVector<Literal> cardinalityUpOutvars;
   private LNGVector<Literal> cardinalityLwOutvars;
   private int currentCardinalityRhs;
-  private CCResult result;
+  private EncodingResult result;
   private CCIncrementalData incData;
 
   /**
@@ -83,7 +84,13 @@ final class CCModularTotalizer {
     this.inlits = new LNGVector<>();
   }
 
-  void buildAMK(final CCResult result, final Variable[] vars, int rhs) {
+  /**
+   * Builds an at-most-k constraint.
+   * @param result the result of the encoding
+   * @param vars the variables of the constraint
+   * @param rhs the right hand side of the constraint
+   */
+  void buildAMK(final EncodingResult result, final Variable[] vars, int rhs) {
     int mod = this.initialize(result, rhs, vars.length);
     for (final Variable var : vars)
       this.inlits.push(var);
@@ -95,7 +102,13 @@ final class CCModularTotalizer {
             this.cardinalityLwOutvars, mod);
   }
 
-  void buildALK(final CCResult result, final Variable[] vars, int rhs) {
+  /**
+   * Builds an at-least-k constraint.
+   * @param result the result of the encoding
+   * @param vars the variables of the constraint
+   * @param rhs the right hand side of the constraint
+   */
+  void buildALK(final EncodingResult result, final Variable[] vars, int rhs) {
     int newRHS = vars.length - rhs;
     int mod = this.initialize(result, newRHS, vars.length);
     for (final Variable var : vars)
@@ -108,11 +121,15 @@ final class CCModularTotalizer {
             this.cardinalityUpOutvars, this.cardinalityLwOutvars, mod);
   }
 
+  /**
+   * Returns the incremental data of this encoding.
+   * @return the incremental data of this encoding
+   */
   CCIncrementalData incrementalData() {
     return this.incData;
   }
 
-  private int initialize(final CCResult result, int rhs, int n) {
+  private int initialize(final EncodingResult result, int rhs, int n) {
     result.reset();
     this.result = result;
     this.cardinalityUpOutvars = new LNGVector<>();

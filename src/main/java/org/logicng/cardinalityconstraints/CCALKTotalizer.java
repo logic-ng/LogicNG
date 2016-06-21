@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -48,7 +49,7 @@ final class CCALKTotalizer implements CCAtLeastK {
   }
 
   @Override
-  public void build(final CCResult result, final Variable[] vars, int rhs) {
+  public void build(final EncodingResult result, final Variable[] vars, int rhs) {
     this.totalizer.buildALK(result, vars, rhs);
   }
 

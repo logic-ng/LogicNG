@@ -31,6 +31,7 @@ package org.logicng.cardinalityconstraints;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -107,7 +108,7 @@ public class CCEncoder {
    * @return the CNF encoding of the cardinality constraint
    */
   public ImmutableFormulaList encode(final PBConstraint cc) {
-    final CCResult result = CCResult.resultForFormula(f);
+    final EncodingResult result = EncodingResult.resultForFormula(f);
     this.encodeConstraint(cc, result);
     return new ImmutableFormulaList(FType.AND, result.result());
   }
@@ -117,7 +118,7 @@ public class CCEncoder {
    * @param cc     the cardinality constraint
    * @param result the result of the encoding
    */
-  public void encode(final PBConstraint cc, final CCResult result) {
+  public void encode(final PBConstraint cc, final EncodingResult result) {
     this.encodeConstraint(cc, result);
   }
 
@@ -127,7 +128,7 @@ public class CCEncoder {
    * @return the encoding of the constraint and the incremental data
    */
   public Pair<ImmutableFormulaList, CCIncrementalData> encodeIncremental(final PBConstraint cc) {
-    final CCResult result = CCResult.resultForFormula(f);
+    final EncodingResult result = EncodingResult.resultForFormula(f);
     final CCIncrementalData incData = this.encodeIncremental(cc, result);
     return new Pair<>(new ImmutableFormulaList(FType.AND, result.result()), incData);
   }
@@ -138,11 +139,11 @@ public class CCEncoder {
    * @param result the result of the encoding
    * @return the incremental data
    */
-  public CCIncrementalData encodeIncremental(final PBConstraint cc, final CCResult result) {
+  public CCIncrementalData encodeIncremental(final PBConstraint cc, final EncodingResult result) {
     return this.encodeIncrementalConstraint(cc, result);
   }
 
-  private CCIncrementalData encodeIncrementalConstraint(final PBConstraint cc, final CCResult result) {
+  private CCIncrementalData encodeIncrementalConstraint(final PBConstraint cc, final EncodingResult result) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
     final Variable[] ops = litsAsVars(cc.operands());
@@ -184,7 +185,7 @@ public class CCEncoder {
    * @param cc     the constraint
    * @param result the result
    */
-  private void encodeConstraint(final PBConstraint cc, final CCResult result) {
+  private void encodeConstraint(final PBConstraint cc, final EncodingResult result) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot encode a non-cardinality constraint with a cardinality constraint encoder.");
     final Variable[] ops = litsAsVars(cc.operands());
@@ -224,7 +225,7 @@ public class CCEncoder {
    * @param vars   the variables of the constraint
    * @return the CNF encoding of the constraint
    */
-  private List<Formula> amo(final CCResult result, final Variable... vars) {
+  private List<Formula> amo(final EncodingResult result, final Variable... vars) {
     if (vars.length <= 1)
       return new ArrayList<>();
     switch (this.config().amoEncoder) {
@@ -291,7 +292,7 @@ public class CCEncoder {
    * @param result the result
    * @param vars   the variables of the constraint
    */
-  private void exo(final CCResult result, final Variable... vars) {
+  private void exo(final EncodingResult result, final Variable... vars) {
     if (vars.length == 0)
       return;
     if (vars.length == 1) {
@@ -308,7 +309,7 @@ public class CCEncoder {
    * @param vars   the variables of the constraint
    * @param rhs    the right hand side of the constraint
    */
-  private void amk(final CCResult result, final Variable[] vars, int rhs) {
+  private void amk(final EncodingResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs >= vars.length) // there is no constraint
@@ -349,7 +350,7 @@ public class CCEncoder {
    * @param rhs    the right hand side of the constraint
    * @return the incremental data
    */
-  private CCIncrementalData amkIncremental(final CCResult result, final Variable[] vars, int rhs) {
+  private CCIncrementalData amkIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs >= vars.length) // there is no constraint
@@ -389,7 +390,7 @@ public class CCEncoder {
    * @param vars   the variables of the constraint
    * @param rhs    the right hand side of the constraint
    */
-  private void alk(final CCResult result, final Variable[] vars, int rhs) {
+  private void alk(final EncodingResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs > vars.length) {
@@ -438,7 +439,7 @@ public class CCEncoder {
    * @param rhs    the right hand side of the constraint
    * @return the incremental data
    */
-  private CCIncrementalData alkIncremental(final CCResult result, final Variable[] vars, int rhs) {
+  private CCIncrementalData alkIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs > vars.length) {
@@ -486,7 +487,7 @@ public class CCEncoder {
    * @param vars   the variables of the constraint
    * @param rhs    the right hand side of the constraint
    */
-  private void exk(final CCResult result, final Variable[] vars, int rhs) {
+  private void exk(final EncodingResult result, final Variable[] vars, int rhs) {
     if (rhs < 0)
       throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
     if (rhs > vars.length) {

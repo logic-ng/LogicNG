@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
@@ -48,7 +49,7 @@ final class CCAMKCardinalityNetwork implements CCAtMostK {
   }
 
   @Override
-  public void build(final CCResult result, final Variable[] vars, int rhs) {
+  public void build(final EncodingResult result, final Variable[] vars, int rhs) {
     cardinalityNetwork.buildAMK(result, vars, rhs);
   }
 
@@ -63,7 +64,7 @@ final class CCAMKCardinalityNetwork implements CCAtMostK {
    * @param vars   the variables
    * @param rhs    the right-hand side
    */
-  void buildForIncremental(final CCResult result, final Variable[] vars, int rhs) {
+  void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
     cardinalityNetwork.buildAMKForIncremental(result, vars, rhs);
   }
 

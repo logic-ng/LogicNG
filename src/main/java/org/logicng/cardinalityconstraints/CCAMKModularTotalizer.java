@@ -28,6 +28,7 @@
 
 package org.logicng.cardinalityconstraints;
 
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
@@ -50,7 +51,7 @@ final class CCAMKModularTotalizer implements CCAtMostK {
   }
 
   @Override
-  public void build(final CCResult result, Variable[] vars, int rhs) {
+  public void build(final EncodingResult result, Variable[] vars, int rhs) {
     this.totalizer.buildAMK(result, vars, rhs);
   }
 

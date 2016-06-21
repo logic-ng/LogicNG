@@ -52,6 +52,7 @@
 package org.logicng.cardinalityconstraints;
 
 import org.logicng.collections.LNGVector;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 
@@ -65,7 +66,7 @@ import java.util.List;
  * @since 1.1
  */
 public final class CCIncrementalData {
-  private final CCResult result;
+  private final EncodingResult result;
   private final CCConfig.AMK_ENCODER amkEncoder;
   private final CCConfig.ALK_ENCODER alkEncoder;
   private final LNGVector<? extends Literal> vector1;
@@ -83,7 +84,7 @@ public final class CCIncrementalData {
    * @param vector2    the second internal vector
    * @param mod        the modulo value
    */
-  CCIncrementalData(final CCResult result, CCConfig.AMK_ENCODER amkEncoder, int rhs,
+  CCIncrementalData(final EncodingResult result, CCConfig.AMK_ENCODER amkEncoder, int rhs,
                     final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2, int mod) {
     this.result = result;
     this.amkEncoder = amkEncoder;
@@ -102,7 +103,7 @@ public final class CCIncrementalData {
    * @param rhs     the current right-hand-side
    * @param vector1 the first internal vector
    */
-  CCIncrementalData(final CCResult result, CCConfig.AMK_ENCODER encoder, int rhs, final LNGVector<? extends Literal> vector1) {
+  CCIncrementalData(final EncodingResult result, CCConfig.AMK_ENCODER encoder, int rhs, final LNGVector<? extends Literal> vector1) {
     this(result, encoder, rhs, vector1, null, -1);
   }
 
@@ -116,7 +117,7 @@ public final class CCIncrementalData {
    * @param vector2    the second internal vector
    * @param mod        the modulo value
    */
-  CCIncrementalData(final CCResult result, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars,
+  CCIncrementalData(final EncodingResult result, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars,
                     final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2, int mod) {
     this.result = result;
     this.alkEncoder = alkEncoder;
@@ -137,7 +138,7 @@ public final class CCIncrementalData {
    * @param nVars      the number of variables
    * @param vector1    the first internal vector
    */
-  CCIncrementalData(final CCResult result, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars, final LNGVector<? extends Literal> vector1) {
+  CCIncrementalData(final EncodingResult result, CCConfig.ALK_ENCODER alkEncoder, int rhs, int nVars, final LNGVector<? extends Literal> vector1) {
     this(result, alkEncoder, rhs, nVars, vector1, null, -1);
   }
 
@@ -160,7 +161,7 @@ public final class CCIncrementalData {
     computeUBConstraint(result, rhs);
   }
 
-  private void computeUBConstraint(final CCResult result, int rhs) {
+  private void computeUBConstraint(final EncodingResult result, int rhs) {
     if (rhs >= this.currentRHS)
       throw new IllegalArgumentException("New upper bound " + rhs + " + does not tighten the current bound of " + this.currentRHS);
     this.currentRHS = rhs;
@@ -219,7 +220,7 @@ public final class CCIncrementalData {
     computeLBConstraint(result, rhs);
   }
 
-  private void computeLBConstraint(final CCResult result, int rhs) {
+  private void computeLBConstraint(final EncodingResult result, int rhs) {
     if (rhs <= this.currentRHS)
       throw new IllegalArgumentException("New lower bound " + rhs + " + does not tighten the current bound of " + this.currentRHS);
     this.currentRHS = rhs;
