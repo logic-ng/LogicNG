@@ -30,9 +30,9 @@ package org.logicng.solvers;
 
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
-import org.logicng.datastructures.EncodingResult;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -51,7 +51,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
@@ -165,7 +167,23 @@ public final class CleaneLing extends SATSolver {
   @Override
   protected void addClause(final Formula formula) {
     this.result = UNDEF;
-    for (Literal lit : formula.literals()) {
+    addClause(formula.literals());
+  }
+
+  @Override
+  protected void addClauseWithRelaxation(Variable relaxationVar, Formula formula) {
+    this.result = UNDEF;
+    final SortedSet<Literal> literals = new TreeSet<>(formula.literals());
+    literals.add(relaxationVar);
+    addClause(literals);
+  }
+
+  /**
+   * Adds a collection of literals to the solver.
+   * @param literals the literals
+   */
+  private void addClause(final Collection<Literal> literals) {
+    for (Literal lit : literals) {
       Integer index = this.name2idx.get(lit.variable().name());
       if (index == null) {
         index = this.name2idx.size() + 1;

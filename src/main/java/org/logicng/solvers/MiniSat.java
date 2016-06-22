@@ -30,10 +30,10 @@ package org.logicng.solvers;
 
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
-import org.logicng.datastructures.EncodingResult;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FType;
@@ -57,6 +57,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
@@ -206,6 +208,14 @@ public final class MiniSat extends SATSolver {
   protected void addClause(final Formula formula) {
     this.result = UNDEF;
     this.solver.addClause(generateClauseVector(formula.literals()));
+  }
+
+  @Override
+  protected void addClauseWithRelaxation(Variable relaxationVar, Formula formula) {
+    this.result = UNDEF;
+    final SortedSet<Literal> literals = new TreeSet<>(formula.literals());
+    literals.add(relaxationVar);
+    this.solver.addClause(generateClauseVector(literals));
   }
 
   /**
