@@ -26,19 +26,53 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.explanations.unsatcores.algorithms;
+
+import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.MUSConfig;
+import org.logicng.explanations.unsatcores.UNSATCore;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.propositions.Proposition;
+import org.logicng.solvers.MiniSat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The different types of configurations in LogicNG.
+ * A naive plain insertion-based MUS algorithm.
  * @version 1.1
  * @since 1.1
  */
-public enum ConfigurationType {
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER
+public class PlainInsertionBasedMUS extends MUSAlgorithm {
+
+  @Override
+  public UNSATCore computeMUS(List<Proposition> propositions, FormulaFactory f, MUSConfig config) {
+    List<Proposition> currentFormula = new ArrayList<>(propositions.size());
+    currentFormula.addAll(propositions);
+    final List<Proposition> mus = new ArrayList<>(propositions.size());
+    final MiniSat solver = MiniSat.miniSat(f);
+    while (!currentFormula.isEmpty()) {
+      final List<Proposition> currentSubset = new ArrayList<>(propositions.size());
+      Proposition transitionProposition = null;
+      solver.reset();
+      for (final Proposition p : mus)
+        solver.add(p);
+      int count = currentFormula.size();
+      while (solver.sat() == Tristate.TRUE) {
+        if (count < 0)
+          throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
+        final Proposition removeProposition = currentFormula.get(--count);
+        currentSubset.add(removeProposition);
+        transitionProposition = removeProposition;
+        solver.add(removeProposition);
+      }
+      currentFormula.clear();
+      currentFormula.addAll(currentSubset);
+      if (transitionProposition != null) {
+        currentFormula.remove(transitionProposition);
+        mus.add(transitionProposition);
+      }
+    }
+    return new UNSATCore(mus, true);
+  }
 }

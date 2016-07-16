@@ -97,6 +97,45 @@ public abstract class SATSolver {
   }
 
   /**
+   * Adds a formula to the solver and relaxes the given CNF with the given relaxation variable.
+   * @param relaxationVar the relaxation variable
+   * @param formula       the formula
+   */
+  public void addWithRelaxation(final Variable relaxationVar, final Formula formula) {
+    this.addClauseSetWithRelaxation(relaxationVar, formula.cnf()); //TODO not simply add the cnf here
+  }
+
+  /**
+   * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.
+   * @param relaxationVar the relaxation variable
+   * @param proposition   the proposition
+   */
+  public void addWithRelaxation(final Variable relaxationVar, final Proposition proposition) {
+    for (final Formula formula : proposition.formulas())
+      this.addWithRelaxation(relaxationVar, formula);
+  }
+
+  /**
+   * Adds a formula list to the solver.
+   * @param relaxationVar the relaxation variable
+   * @param formulas      the formula list
+   */
+  public void addWithRelaxation(final Variable relaxationVar, final ImmutableFormulaList formulas) {
+    for (final Formula formula : formulas)
+      this.addWithRelaxation(relaxationVar, formula);
+  }
+
+  /**
+   * Adds a collection of formulas to the solver.
+   * @param relaxationVar the relaxation variable
+   * @param formulas      the collection of formulas
+   */
+  public void add(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
+    for (final Formula formula : formulas)
+      this.addWithRelaxation(relaxationVar, formula);
+  }
+
+  /**
    * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
    * @param cc the cardinality constraint
    * @return the incremental data of this constraint
@@ -127,10 +166,39 @@ public abstract class SATSolver {
   }
 
   /**
+   * Adds a formula which is already in CNF with a given relaxation to the solver.
+   * @param relaxationVar the relaxation variable
+   * @param formula       the formula in CNF
+   */
+  protected void addClauseSetWithRelaxation(final Variable relaxationVar, final Formula formula) {
+    switch (formula.type()) {
+      case TRUE:
+        break;
+      case FALSE:
+      case LITERAL:
+      case OR:
+        this.addClauseWithRelaxation(relaxationVar, formula);
+        break;
+      case AND:
+        for (Formula op : formula)
+          this.addClauseWithRelaxation(relaxationVar, op);
+        break;
+      default:
+        throw new IllegalArgumentException("Input formula ist not a valid CNF: " + formula);
+    }
+  }
+
+  /**
    * Adds a formula which must be a clause to the solver.
    * @param formula the clause
    */
   protected abstract void addClause(final Formula formula);
+
+  /**
+   * Adds a formula which must be a clause to the solver.
+   * @param formula the clause
+   */
+  protected abstract void addClauseWithRelaxation(final Variable relaxationVar, final Formula formula);
 
   /**
    * Returns {@code Tristate.TRUE} if the current formula in the solver is satisfiable, @{code Tristate.FALSE} if it is

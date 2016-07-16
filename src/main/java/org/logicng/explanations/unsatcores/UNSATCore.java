@@ -26,19 +26,66 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.explanations.unsatcores;
+
+import org.logicng.propositions.Proposition;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
- * The different types of configurations in LogicNG.
+ * An unsatisfiable core (can be a minimal unsatisfiable sub-formula).
  * @version 1.1
  * @since 1.1
  */
-public enum ConfigurationType {
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER
+final public class UNSATCore {
+
+  private final List<Proposition> propositions;
+  private final boolean isMUS;
+
+  /**
+   * Constructs a new unsatisfiable core.
+   * @param propositions the propositions of the core
+   * @param isMUS        {@code true} if it is a MUS, {@code false} otherwise
+   */
+  public UNSATCore(final List<Proposition> propositions, boolean isMUS) {
+    this.propositions = propositions;
+    this.isMUS = isMUS;
+  }
+
+  /**
+   * Returns the propositions of this MUS.
+   * @return the propositions of this MUS
+   */
+  public List<Proposition> propositions() {
+    return this.propositions;
+  }
+
+  /**
+   * Returns {@code true} if this core is a MUS, {@code false} otherwise.
+   * @return {@code true} if this core is a MUS, {@code false} otherwise
+   */
+  public boolean isMUS() {
+    return this.isMUS;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof UNSATCore))
+      return false;
+    UNSATCore unsatCore = (UNSATCore) o;
+    return this.isMUS == unsatCore.isMUS && Objects.equals(this.propositions, unsatCore.propositions);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.propositions, this.isMUS);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("UNSATCore{isMUS=%s, propositions=%s}", this.isMUS, this.propositions);
+  }
 }
