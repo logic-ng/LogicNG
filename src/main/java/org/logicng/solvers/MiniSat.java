@@ -193,15 +193,15 @@ public final class MiniSat extends SATSolver {
             ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
             this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())));
           } else
-            this.addClauseSet(constraint.cnf()); //TODO not simply add the cnf here
+            this.addClauseSet(constraint.cnf());
         } else {
           final EncodingResult result = EncodingResult.resultForMiniSat(this.f, this);
           ccEncoder.encode(constraint, result);
         }
       } else
-        this.addClauseSet(constraint.cnf()); //TODO not simply add the cnf here
+        this.addClauseSet(constraint.cnf());
     } else
-      this.addClauseSet(formula.cnf()); //TODO not simply add the cnf here
+      this.addClauseSet(formula.cnf());
   }
 
   @Override
@@ -250,7 +250,7 @@ public final class MiniSat extends SATSolver {
     final LNGIntVector clauseVec = new LNGIntVector(1);
     int index = this.solver.idxForName(literal.name());
     if (index == -1) {
-      index = this.solver.newVar(true, true);
+      index = this.solver.newVar(!initialPhase, true);
       this.solver.addName(literal.name(), index);
     }
     int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
@@ -266,7 +266,7 @@ public final class MiniSat extends SATSolver {
     for (final Literal literal : assumptionSet) {
       int index = this.solver.idxForName(literal.name());
       if (index == -1) {
-        index = this.solver.newVar(true, true);
+        index = this.solver.newVar(!initialPhase, true);
         this.solver.addName(literal.name(), index);
       }
       int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
@@ -374,6 +374,14 @@ public final class MiniSat extends SATSolver {
    */
   public MiniSatStyleSolver underlyingSolver() {
     return this.solver;
+  }
+
+  /**
+   * Returns the initial phase of literals of this solver.
+   * @return the initial phase of literals of this solver
+   */
+  public boolean initialPhase() {
+    return this.initialPhase;
   }
 
   @Override

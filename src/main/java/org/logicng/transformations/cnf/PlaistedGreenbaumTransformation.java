@@ -56,6 +56,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
 
   private final int boundaryForFactorization;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
+  private final CNFFactorization factorization = new CNFFactorization();
 
   /**
    * Constructor for a Plaisted &amp; Greenbaum transformation.
@@ -67,10 +68,10 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
 
   /**
    * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
-   * bound of 20.
+   * bound of 12.
    */
   public PlaistedGreenbaumTransformation() {
-    this(20);
+    this(12);
   }
 
   @Override
@@ -80,7 +81,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       return f;
     Formula pg;
     if (f.numberOfAtoms() < this.boundaryForFactorization)
-      pg = f.cnf();
+      pg = f.transform(factorization);
     else {
       pg = this.computeTransformation(f, null);
       final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));

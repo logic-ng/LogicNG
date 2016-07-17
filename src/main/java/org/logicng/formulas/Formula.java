@@ -210,7 +210,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @return a copy of this formula which is in CNF
    */
   public Formula cnf() {
-    return this.transform(f.cnfTransformation());
+    return this.f.cnfEncoder().encode(this);
   }
 
   /**

@@ -151,9 +151,9 @@ public final class CleaneLing extends SATSolver {
         final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
         ccEncoder.encode(constraint, result);
       } else
-        this.addClauseSet(formula.cnf()); //TODO not simply add the cnf here
+        this.addClauseSet(formula.cnf());
     } else
-      this.addClauseSet(formula.cnf()); //TODO not simply add the cnf here
+      this.addClauseSet(formula.cnf());
   }
 
   @Override

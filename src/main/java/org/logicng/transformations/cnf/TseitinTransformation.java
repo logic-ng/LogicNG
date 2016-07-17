@@ -54,6 +54,7 @@ public final class TseitinTransformation implements FormulaTransformation {
 
   private final int boundaryForFactorization;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
+  private final CNFFactorization factorization = new CNFFactorization();
 
   /**
    * Constructor for a Tseitin transformation.
@@ -64,10 +65,10 @@ public final class TseitinTransformation implements FormulaTransformation {
   }
 
   /**
-   * Constructor for a Tseitin transformation with a factorization bound of 20.
+   * Constructor for a Tseitin transformation with a factorization bound of 12.
    */
   public TseitinTransformation() {
-    this.boundaryForFactorization = 20;
+    this.boundaryForFactorization = 12;
   }
 
   @Override
@@ -81,7 +82,7 @@ public final class TseitinTransformation implements FormulaTransformation {
       return f.transformationCacheEntry(TSEITIN).restrict(topLevel);
     }
     if (f.numberOfAtoms() < this.boundaryForFactorization)
-      tseitin = f.cnf();
+      tseitin = f.transform(factorization);
     else {
       for (final Formula subformula : f.apply(f.factory().subformulaFunction()))
         computeTseitin(subformula);

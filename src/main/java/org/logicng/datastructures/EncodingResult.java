@@ -111,7 +111,7 @@ public final class EncodingResult {
       for (Literal lit : literals) {
         int index = this.miniSat.underlyingSolver().idxForName(lit.name());
         if (index == -1) {
-          index = this.miniSat.underlyingSolver().newVar(true, true); // TODO initial phase not known here
+          index = this.miniSat.underlyingSolver().newVar(!miniSat.initialPhase(), true);
           this.miniSat.underlyingSolver().addName(lit.name(), index);
         }
         int litNum;
@@ -190,7 +190,7 @@ public final class EncodingResult {
     if (this.miniSat == null && this.cleaneLing == null)
       return this.f.newCCVariable();
     else if (miniSat != null) {
-      final int index = this.miniSat.underlyingSolver().newVar(true, true);
+      final int index = this.miniSat.underlyingSolver().newVar(!miniSat.initialPhase(), true);
       final String name = FormulaFactory.CC_PREFIX + "MINISAT_" + index;
       this.miniSat.underlyingSolver().addName(name, index);
       return new EncodingAuxiliaryVariable(name, false);

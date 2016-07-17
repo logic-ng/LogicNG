@@ -102,7 +102,7 @@ public abstract class SATSolver {
    * @param formula       the formula
    */
   public void addWithRelaxation(final Variable relaxationVar, final Formula formula) {
-    this.addClauseSetWithRelaxation(relaxationVar, formula.cnf()); //TODO not simply add the cnf here
+    this.addClauseSetWithRelaxation(relaxationVar, formula.cnf());
   }
 
   /**
