@@ -40,7 +40,7 @@ import java.util.Objects;
  * @version 1.0
  * @since 1.0
  */
-public final class StandardProposition implements Proposition {
+public final class StandardProposition extends Proposition {
 
   private final ImmutableFormulaList formulas;
   private final String decription;
