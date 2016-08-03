@@ -123,6 +123,7 @@ public class NotTest {
   @Test
   public void testNumberOfAtoms() {
     Assert.assertEquals(2, F.NOT1.numberOfAtoms());
+    Assert.assertEquals(2, F.NOT2.numberOfAtoms());
     Assert.assertEquals(2, F.OR1.numberOfAtoms());
     Assert.assertEquals(2, F.OR1.numberOfAtoms());
   }

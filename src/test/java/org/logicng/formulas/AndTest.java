@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.logicng.formulas.F.OR1;
+
 /**
  * Unit Tests for the class {@link And}.
  * @version 1.0
@@ -126,11 +128,11 @@ public class AndTest {
   @Test
   public void testEquals() {
     Assert.assertEquals(F.AND1, F.f.and(F.A, F.B));
-    Assert.assertEquals(F.AND3, F.f.and(F.OR1, F.OR2));
+    Assert.assertEquals(F.AND3, F.f.and(OR1, F.OR2));
     Assert.assertEquals(F.AND2, F.AND2);
     Assert.assertEquals(F.f.and(F.f.or(F.f.variable("a"), F.f.variable("b")), F.f.or(F.f.variable("x"), F.f.literal("y", false))),
             F.f.and(F.f.or(F.f.literal("y", false), F.f.variable("x")), F.f.or(F.f.variable("b"), F.f.variable("a"))));
-    Assert.assertEquals(F.f.and(F.A, F.NB, F.OR1, F.NX), F.f.and(F.NX, F.A, F.NB, F.OR1));
+    Assert.assertEquals(F.f.and(F.A, F.NB, OR1, F.NX), F.f.and(F.NX, F.A, F.NB, OR1));
     Assert.assertNotEquals(F.AND1, null);
     Assert.assertNotEquals(F.AND1, F.A);
     Assert.assertNotEquals(F.AND1, F.AND2);
@@ -140,10 +142,10 @@ public class AndTest {
   @Test
   public void testEqualsDifferentFormulaFactory() {
     Assert.assertEquals(F.AND1, F.g.and(F.g.variable("a"), F.g.variable("b")));
-    Assert.assertEquals(F.AND3, F.g.and(F.OR1, F.OR2));
+    Assert.assertEquals(F.AND3, F.g.and(OR1, F.OR2));
     Assert.assertEquals(F.f.and(F.f.or(F.f.variable("a"), F.f.variable("b")), F.f.or(F.f.variable("x"), F.f.literal("y", false))),
             F.g.and(F.g.or(F.g.literal("y", false), F.g.variable("x")), F.f.or(F.g.variable("b"), F.g.variable("a"))));
-    Assert.assertEquals(F.f.and(F.A, F.NB, F.OR1, F.NX), F.g.and(F.g.literal("x", false), F.g.variable("a"), F.g.literal("b", false), F.g.or(F.g.variable("x"), F.g.variable("y"))));
+    Assert.assertEquals(F.f.and(F.A, F.NB, OR1, F.NX), F.g.and(F.g.literal("x", false), F.g.variable("a"), F.g.literal("b", false), F.g.or(F.g.variable("x"), F.g.variable("y"))));
     Assert.assertNotEquals(F.AND1, F.g.variable("a"));
     Assert.assertNotEquals(F.AND1, F.g.and(F.g.literal("a", false), F.g.variable("b")));
     Assert.assertNotEquals(F.AND1, F.g.and(F.g.variable("a"), F.g.literal("b", false)));
@@ -152,7 +154,7 @@ public class AndTest {
 
   @Test
   public void testHash() {
-    Formula and = F.f.and(F.OR1, F.OR2);
+    Formula and = F.f.and(OR1, F.OR2);
     Assert.assertEquals(F.AND3.hashCode(), and.hashCode());
     Assert.assertEquals(F.AND3.hashCode(), and.hashCode());
     Assert.assertEquals(F.AND2.hashCode(), F.f.and(F.NA, F.NB).hashCode());

@@ -181,5 +181,7 @@ public class EquivalenceTest {
   public void testContains() {
     Assert.assertTrue(F.EQ4.containsVariable(F.f.variable("a")));
     Assert.assertFalse(F.EQ4.containsVariable(F.f.variable("x")));
+    Assert.assertTrue(F.EQ4.containsNode(F.IMP1));
+    Assert.assertFalse(F.EQ4.containsNode(F.IMP4));
   }
 }

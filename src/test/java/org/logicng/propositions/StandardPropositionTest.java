@@ -52,6 +52,7 @@ public class StandardPropositionTest {
   private final StandardProposition prop3;
   private final StandardProposition prop4;
   private final StandardProposition prop5;
+  private final StandardProposition prop6;
 
   public StandardPropositionTest() throws ParserException {
     FormulaFactory f = new FormulaFactory();
@@ -61,6 +62,7 @@ public class StandardPropositionTest {
     prop3 = new StandardProposition("prop3", Arrays.asList(p.parse("a & b"), p.parse("~c")));
     prop4 = new StandardProposition("prop4", p.parse("a & b"), p.parse("~c"));
     prop5 = new StandardProposition("prop5", new ImmutableFormulaList(p.parse("a & b"), p.parse("~c")));
+    prop6 = new StandardProposition(null,p.parse("a & b"));
   }
 
   @Test
@@ -78,8 +80,7 @@ public class StandardPropositionTest {
     Assert.assertEquals("prop3", prop3.description());
     Assert.assertEquals("prop4", prop4.description());
     Assert.assertEquals("prop5", prop5.description());
-
-    Assert.assertEquals(prop2.formula(new FormulaFactory()),p.parse("a & b"));
+    Assert.assertEquals("", prop6.description());
   }
 
   @Test

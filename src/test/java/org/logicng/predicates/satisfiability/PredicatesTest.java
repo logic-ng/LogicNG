@@ -30,13 +30,14 @@ package org.logicng.predicates.satisfiability;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.formulas.F;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.FormulaPredicate;
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.*;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.sat.PigeonHoleGenerator;
+
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_TAUTOLOGY;
 
 /**
  * Unit tests for the different satisfiability predicates.
@@ -124,6 +125,22 @@ public class PredicatesTest {
     Assert.assertFalse(new PigeonHoleGenerator(F.f).generate(1).holds(sat));
     Assert.assertFalse(new PigeonHoleGenerator(F.f).generate(2).holds(sat));
     Assert.assertFalse(new PigeonHoleGenerator(F.f).generate(3).holds(sat));
+  }
+
+  @Test
+  public void testNotCache(){
+    final FormulaFactory f = F.f;
+    final Formula taut = f.or(F.AND1, f.and(F.NA, F.B), f.and(F.A, F.NB), f.and(F.NA, F.NB));
+    taut.holds(tau, false);
+    Assert.assertEquals(Tristate.UNDEF,taut.predicateCacheEntry(IS_TAUTOLOGY));
+
+    Variable a = f.variable("A");
+    Variable b = f.variable("B");
+    Variable c = f.variable("C");
+    Variable d = f.variable("D");
+    final Formula satDNF = f.or(f.and(a,b),f.and(b,c),f.and(d,a));
+    Assert.assertTrue(satDNF.holds(sat,false));
+    Assert.assertEquals(Tristate.UNDEF, satDNF.predicateCacheEntry(IS_SAT));
   }
 
   @Test
