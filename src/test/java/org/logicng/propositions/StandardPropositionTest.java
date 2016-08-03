@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.formulas.FType;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -77,6 +78,16 @@ public class StandardPropositionTest {
     Assert.assertEquals("prop3", prop3.description());
     Assert.assertEquals("prop4", prop4.description());
     Assert.assertEquals("prop5", prop5.description());
+
+    Assert.assertEquals(prop2.formula(new FormulaFactory()),p.parse("a & b"));
+  }
+
+  @Test
+  public void testFormula() throws ParserException {
+    FormulaFactory f = new FormulaFactory();
+
+    Assert.assertEquals(p.parse("a & b"),prop1.formula(f));
+    Assert.assertEquals(p.parse("a & b & ~c"),prop3.formula(f));
   }
 
   @Test

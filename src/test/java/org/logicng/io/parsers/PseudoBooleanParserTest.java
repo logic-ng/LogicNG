@@ -47,6 +47,14 @@ import java.io.InputStream;
 public class PseudoBooleanParserTest {
 
   @Test
+  public void testExceptions() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
+    String s = null;
+    Assert.assertEquals(F.f.verum(), parser.parse(s));
+  }
+
+  @Test
   public void testParseConstants() throws ParserException {
     PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse("$true"));

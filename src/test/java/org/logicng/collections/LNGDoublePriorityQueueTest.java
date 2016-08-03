@@ -97,6 +97,8 @@ public class LNGDoublePriorityQueueTest {
     q1.update(1, 7.0);
     Assert.assertEquals(5, q1.size());
     Assert.assertEquals(1, q1.top());
+    q1.update(1, 7.0);
+    Assert.assertEquals(1, q1.top());
     q1.update(1, 2.0);
     Assert.assertEquals(0, q1.top());
     q1.update(4, 8.0);

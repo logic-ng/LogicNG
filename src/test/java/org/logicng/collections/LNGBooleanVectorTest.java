@@ -125,6 +125,9 @@ public class LNGBooleanVectorTest {
     for (int i = 0; i < 1000; i++)
       v1.push(i % 2 == 0);
     Assert.assertFalse(v1.empty());
+    int beforeSize = v1.size();
+    v1.shrinkTo(v1.size()+50);
+    Assert.assertEquals(v1.size(),beforeSize);
     for (int i = 500; i > 0; i--) {
       v1.shrinkTo(i);
       Assert.assertEquals((i - 1) % 2 == 0, v1.back());

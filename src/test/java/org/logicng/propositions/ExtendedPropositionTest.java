@@ -77,6 +77,14 @@ public class ExtendedPropositionTest {
   }
 
   @Test
+  public void testFormula() throws ParserException {
+    FormulaFactory f = new FormulaFactory();
+
+    Assert.assertEquals(p.parse("a & b"),prop1.formula(f));
+    Assert.assertEquals(p.parse("a & b & ~c"),prop3.formula(f));
+  }
+
+  @Test
   public void testHashCode() throws ParserException {
     ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
     ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));

@@ -122,6 +122,9 @@ public class LNGByteVectorTest {
     for (int i = 0; i < 100; i++)
       v1.push((byte) i);
     Assert.assertFalse(v1.empty());
+    int beforeSize = v1.size();
+    v1.shrinkTo(v1.size()+50);
+    Assert.assertEquals(v1.size(),beforeSize);
     for (int i = 50; i > 0; i--) {
       v1.shrinkTo(i);
       Assert.assertEquals((i - 1), v1.back());

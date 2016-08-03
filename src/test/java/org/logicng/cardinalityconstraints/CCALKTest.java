@@ -43,6 +43,7 @@ import java.util.List;
 
 /**
  * Unit tests for the at-least-k configs.
+ *
  * @version 1.1
  * @since 1.0
  */
@@ -63,6 +64,7 @@ public class CCALKTest {
     int counter = 0;
     for (final CCConfig config : this.configs) {
       f.putConfiguration(config);
+      testCC(10, 0, 1, f);
       testCC(10, 1, 1023, f);
       testCC(10, 2, 1013, f);
       testCC(10, 3, 968, f);

@@ -62,7 +62,7 @@ public class CCAMOTest {
   private CCConfig[] configs;
 
   public CCAMOTest() {
-    configs = new CCConfig[11];
+    configs = new CCConfig[14];
     configs[0] = new CCConfig.Builder().amoEncoding(PURE).build();
     configs[1] = new CCConfig.Builder().amoEncoding(LADDER).build();
     configs[2] = new CCConfig.Builder().amoEncoding(PRODUCT).build();
@@ -73,7 +73,10 @@ public class CCAMOTest {
     configs[7] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build();
     configs[8] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build();
     configs[9] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build();
-    configs[10] = new CCConfig.Builder().amoEncoding(BEST).build();
+    configs[10] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).bimanderFixedGroupSize(2).build();
+    configs[11] = new CCConfig.Builder().amoEncoding(NESTED).nestingGroupSize(5).build();
+    configs[12] = new CCConfig.Builder().amoEncoding(PRODUCT).productRecursiveBound(10).build();
+    configs[13] = new CCConfig.Builder().amoEncoding(BEST).build();
   }
 
   @Test

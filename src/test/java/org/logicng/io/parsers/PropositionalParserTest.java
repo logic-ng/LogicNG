@@ -44,6 +44,14 @@ import java.io.InputStream;
 public class PropositionalParserTest {
 
   @Test
+  public void testExceptions() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
+    String s = null;
+    Assert.assertEquals(F.f.verum(), parser.parse(s));
+  }
+
+  @Test
   public void testParseConstants() throws ParserException {
     PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse("$true"));
