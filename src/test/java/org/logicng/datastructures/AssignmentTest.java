@@ -31,12 +31,16 @@ package org.logicng.datastructures;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for the class {@link Assignment}.
@@ -155,6 +159,8 @@ public class AssignmentTest {
     Assert.assertEquals(F.f.and(F.A, F.NX, F.NB, F.Y), ass.formula(F.f));
     ass = new Assignment(Arrays.asList(F.A, F.NX), true);
     Assert.assertTrue(ass.fastEvaluable());
+    ass.convertToFastEvaluable();
+    Assert.assertTrue(ass.fastEvaluable());
   }
 
   @Test
@@ -187,6 +193,22 @@ public class AssignmentTest {
     Assert.assertNotEquals(ass, new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY, F.C)));
     Assert.assertNotEquals(ass, null);
     Assert.assertNotEquals(ass, F.TRUE);
+  }
+
+  @Test
+  public void testBlockingClause(){
+    Assignment ass = new Assignment();
+    ass.addLiteral(F.A);
+    ass.addLiteral(F.B);
+    ass.addLiteral(F.NX);
+    ass.addLiteral(F.NY);
+    List<Literal> lits = new ArrayList<>();
+    lits.add(F.A);
+    lits.add(F.X);
+    lits.add(F.C);
+    Formula bc = ass.blockingClause(F.f, lits);
+    Assert.assertTrue(!bc.containsVariable(F.C));
+    Assert.assertEquals("~a | x",bc.toString());
   }
 
   @Test

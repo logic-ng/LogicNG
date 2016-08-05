@@ -135,6 +135,9 @@ public class TestToStrings {
     clause.setSeen(true);
     final String expected = "MSClause{activity=0.0, learnt=true, szWithoutSelectors=0, seen=true, lbd=42, canBeDel=true, oneWatched=false, isAtMost=false, atMostWatchers=-1, lits=[1, 2, 3]}";
     Assert.assertEquals(expected, clause.toString());
+    Assert.assertTrue(clause.equals(clause));
+    Assert.assertEquals(clause.hashCode(),clause.hashCode());
+    Assert.assertFalse(clause.equals("Test"));
   }
 
   @Test
@@ -180,6 +183,7 @@ public class TestToStrings {
     final MSWatcher watcher = new MSWatcher(clause, 2);
     final String expected = "MSWatcher{clause=MSClause{activity=0.0, learnt=true, szWithoutSelectors=0, seen=false, lbd=0, canBeDel=true, oneWatched=false, isAtMost=false, atMostWatchers=-1, lits=[1, 2, 3]}, blocker=2}";
     Assert.assertEquals(expected, watcher.toString());
+    Assert.assertEquals(watcher.hashCode(),watcher.hashCode());
   }
 
 }
