@@ -42,6 +42,7 @@ import org.logicng.solvers.SATSolver;
 
 /**
  * Performance tests for cardinality constraints.
+ *
  * @version 1.1
  * @since 1.1
  */

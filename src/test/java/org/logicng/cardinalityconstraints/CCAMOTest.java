@@ -124,6 +124,18 @@ public class CCAMOTest {
     Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
   }
 
+  @Test
+  public void testToString() {
+    Assert.assertEquals("PURE", configs[0].amoEncoder.toString());
+    Assert.assertEquals("LADDER", configs[1].amoEncoder.toString());
+    Assert.assertEquals("PRODUCT", configs[2].amoEncoder.toString());
+    Assert.assertEquals("BINARY", configs[3].amoEncoder.toString());
+    Assert.assertEquals("NESTED", configs[4].amoEncoder.toString());
+    Assert.assertEquals("COMMANDER", configs[5].amoEncoder.toString());
+    Assert.assertEquals("BIMANDER", configs[7].amoEncoder.toString());
+    Assert.assertEquals("BEST", configs[13].amoEncoder.toString());
+  }
+
   private void testAMO(int numLits, final FormulaFactory f, boolean miniCard) {
     final Variable[] problemLits = new Variable[numLits];
     for (int i = 0; i < numLits; i++)

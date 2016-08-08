@@ -198,6 +198,7 @@ public class SubformulaTest {
   public void testNotCache() throws ParserException {
     PropositionalParser p = new PropositionalParser(F.f);
     final Formula f1 = p.parse("(d | (a & b)) & (c | (a & b)) | (a & b )");
+    f1.apply(new SubNodeFunction(), false);
     Assert.assertNull(f1.functionCacheEntry(SUBFORMULAS));
   }
 }

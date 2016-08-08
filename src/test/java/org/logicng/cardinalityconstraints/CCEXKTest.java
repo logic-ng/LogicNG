@@ -102,4 +102,10 @@ public class CCEXKTest {
       problemLits[i] = f.variable("v" + i);
     encoder.encode(f.cc(CType.EQ, -1, problemLits));
   }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("TOTALIZER", configs[0].exkEncoder.toString());
+    Assert.assertEquals("CARDINALITY_NETWORK", configs[1].exkEncoder.toString());
+  }
 }

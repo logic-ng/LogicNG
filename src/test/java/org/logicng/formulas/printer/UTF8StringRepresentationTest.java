@@ -31,6 +31,7 @@ package org.logicng.formulas.printer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
+import org.logicng.formulas.Variable;
 
 /**
  * Unit tests for {@link UTF8StringRepresentation}
@@ -62,5 +63,12 @@ public class UTF8StringRepresentationTest {
     Assert.assertEquals("2a + -4b + 3x ≥ 2", F.f.string(F.PBC3, sr));
     Assert.assertEquals("2a + -4b + 3x < 2", F.f.string(F.PBC4, sr));
     Assert.assertEquals("2a + -4b + 3x ≤ 2", F.f.string(F.PBC5, sr));
+  }
+
+  @Test
+  public void testSpecialCases(){
+    Variable var = F.f.variable("\ntest9t");
+    Assert.assertEquals("\ntest9t", F.f.string(var,sr));
+    Assert.assertEquals("UTF8StringRepresentation", sr.toString());
   }
 }

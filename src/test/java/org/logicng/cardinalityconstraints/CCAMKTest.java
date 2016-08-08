@@ -137,4 +137,11 @@ public class CCAMKTest {
       problemLits[i] = f.variable("v" + i);
     encoder.encode(f.cc(CType.LE, -1, problemLits));
   }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("TOTALIZER", configs[0].amkEncoder.toString());
+    Assert.assertEquals("MODULAR_TOTALIZER", configs[1].amkEncoder.toString());
+    Assert.assertEquals("CARDINALITY_NETWORK", configs[2].amkEncoder.toString());
+  }
 }

@@ -78,9 +78,17 @@ public class FormulaDotFileWriterTest {
     testFiles("f5", f5);
   }
 
+  @Test
+  public void testDuplicateFormulaParts() throws ParserException, IOException {
+    final Formula f6 = p.parse("(a & b) | (c & ~(a & b))");
+    testFiles("f6", f6);
+    final Formula f7 = p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))");
+    testFiles("f7", f7);
+  }
+
   private void testFiles(final String fileName, final Formula formula) throws IOException {
     FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_t.dot", formula, true);
-    FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_f.dot", formula, false);
+    FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_f", formula, false);
     final File expectedT = new File("tests/writers/formulas-dot/" + fileName + "_t.dot");
     final File expectedF = new File("tests/writers/formulas-dot/" + fileName + "_f.dot");
     final File tempT = new File("tests/writers/temp/" + fileName + "_t.dot");

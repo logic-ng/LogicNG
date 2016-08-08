@@ -187,6 +187,7 @@ public class PBConstraintTest {
     final SortedSet<Variable> lits1 = new TreeSet<>(Collections.singletonList(f.variable("a")));
     final SortedSet<Variable> lits2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
     Assert.assertEquals(lits1, pb1.variables());
+    Assert.assertEquals(lits1, pb1.variables());
     Assert.assertEquals(lits2, pb2.variables());
     Assert.assertEquals(lits1, cc1.variables());
     Assert.assertEquals(lits2, cc2.variables());

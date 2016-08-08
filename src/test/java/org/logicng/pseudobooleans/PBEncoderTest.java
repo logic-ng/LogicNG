@@ -27,18 +27,18 @@
 ///////////////////////////////////////////////////////////////////////////
 package org.logicng.pseudobooleans;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.CType;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
-import org.logicng.formulas.Variable;
+import org.logicng.formulas.*;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,10 +51,15 @@ public class PBEncoderTest {
 
   private final FormulaFactory f = new FormulaFactory();
   private PBEncoder[] encoders;
+  private PBBinaryMerge encoderBM;
 
   public PBEncoderTest() {
-    this.encoders = new PBEncoder[1];
+    this.encoders = new PBEncoder[3];
     this.encoders[0] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.SWC).build());
+    this.encoders[1] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).build(),new CCConfig.Builder().amoEncoding(CCConfig.AMO_ENCODER.NESTED).build());
+    this.encoders[2] = new PBEncoder(this.f, null);
+    this.encoderBM = new PBBinaryMerge(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).build());
+
   }
 
   @Test
@@ -136,6 +141,64 @@ public class PBEncoderTest {
     Assert.assertEquals(expected, models.size());
     for (final Assignment model : models)
       Assert.assertTrue(model.positiveLiterals().size() <= rhs);
+  }
+
+  @Test
+  public void testNotNullConfig(){
+    for (final PBEncoder encoder : this.encoders) {
+      Assert.assertNotNull(encoder.config());
+    }
+  }
+
+  @Test
+  public void testSpecialCases(){
+    List<Literal> lits = new ArrayList<>();
+    lits.add(f.literal("m", true));
+    lits.add(f.literal("n", true));
+    List<Integer> coeffs = new ArrayList<>();
+    coeffs.add(2);
+    coeffs.add(1);
+    PBConstraint truePBC = f.pbc(CType.GE, 0, lits, coeffs);
+    for (final PBEncoder encoder : this.encoders) {
+      Assert.assertEquals(new ImmutableFormulaList(FType.AND), encoder.encode(truePBC));
+    }
+  }
+
+
+  public void showBug(){
+    List<Literal> lits = new ArrayList<>();
+    lits.add(f.literal("m", true));
+    lits.add(f.literal("n", true));
+    List<Integer> coeffs2 = new ArrayList<>();
+    coeffs2.add(2);
+    coeffs2.add(2);
+    PBConstraint normCC = f.pbc(CType.LE, 2, lits, coeffs2);
+    System.out.println(encoders[0].encode(normCC).toString());
+  }
+
+//  @Ignore //TODO
+//  @Test(expected=IllegalArgumentException.class)
+  public void testIllegalRHS(){
+    List<Literal> lits = new ArrayList<>();
+    lits.add(f.literal("m", true));
+    lits.add(f.literal("n", true));
+    List<Integer> coeffs = new ArrayList<>();
+    coeffs.add(1);
+    coeffs.add(-1);
+    PBConstraint pbc = f.pbc(CType.EQ, 0, lits, coeffs);
+    System.out.println(pbc);
+    System.out.println(pbc.normalize());
+    encoders[0].encode(pbc);
+  }
+
+  @Test
+  public void testConfigToString(){
+    Assert.assertEquals("PBConfig{\n" +
+            "pbEncoder=SWC\n" +
+            "binaryMergeUseGAC=true\n" +
+            "binaryMergeNoSupportForSingleBit=false\n" +
+            "binaryMergeUseWatchDog=true\n" +
+            "}\n",encoders[0].config().toString());
   }
 
 }

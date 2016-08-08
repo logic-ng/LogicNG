@@ -106,4 +106,11 @@ public class CCALKTest {
       problemLits[i] = f.variable("v" + i);
     encoder.encode(f.cc(CType.GE, -1, problemLits));
   }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("TOTALIZER", configs[0].alkEncoder.toString());
+    Assert.assertEquals("MODULAR_TOTALIZER", configs[1].alkEncoder.toString());
+    Assert.assertEquals("CARDINALITY_NETWORK", configs[2].alkEncoder.toString());
+  }
 }

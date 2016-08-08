@@ -31,6 +31,7 @@ package org.logicng.formulas.printer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
+import org.logicng.formulas.Variable;
 
 /**
  * Unit tests for {@link LatexStringRepresentation}
@@ -62,5 +63,12 @@ public class LatexStringRepresentationTest {
     Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\geq 2", F.f.string(F.PBC3, sr));
     Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x < 2", F.f.string(F.PBC4, sr));
     Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\leq 2", F.f.string(F.PBC5, sr));
+  }
+
+  @Test
+  public void testSpecialCases(){
+    Variable var = F.f.variable("\ntest9t");
+    Assert.assertEquals("\ntest9t", F.f.string(var,sr));
+    Assert.assertEquals("LatexStringRepresentation", sr.toString());
   }
 }
