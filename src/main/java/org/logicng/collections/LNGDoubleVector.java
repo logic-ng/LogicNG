@@ -163,7 +163,8 @@ public final class LNGDoubleVector {
    * @param newSize the new size
    */
   public void shrinkTo(int newSize) {
-    this.size = newSize;
+    if (newSize < this.size)
+      this.size = newSize;
   }
 
   /**

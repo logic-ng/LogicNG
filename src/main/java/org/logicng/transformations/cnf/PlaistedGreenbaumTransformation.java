@@ -117,10 +117,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     final FormulaFactory f = formula.factory();
     final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
     switch (formula.type()) {
-      case NOT:
-        result = f.or(pgVar.negate(), pgVariable(((Not) formula).operand()).negate());
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
-        return result;
       case AND:
         List<Formula> nops = new ArrayList<>();
         for (final Formula op : formula)

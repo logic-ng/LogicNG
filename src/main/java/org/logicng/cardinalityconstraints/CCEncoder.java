@@ -293,8 +293,10 @@ public class CCEncoder {
    * @param vars   the variables of the constraint
    */
   private void exo(final EncodingResult result, final Variable... vars) {
-    if (vars.length == 0)
+    if (vars.length == 0) {
+      result.addClause();
       return;
+    }
     if (vars.length == 1) {
       result.addClause(vars[0]);
       return;

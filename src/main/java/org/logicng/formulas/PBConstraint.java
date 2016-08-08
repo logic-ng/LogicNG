@@ -105,7 +105,6 @@ public final class PBConstraint extends Formula {
         maxWeight = c;
       if (c != 1) {
         cc = false;
-        break;
       }
     }
     for (final Literal lit : literals)
@@ -215,7 +214,8 @@ public final class PBConstraint extends Formula {
   }
 
   /**
-   * Internal helper for normalization of a <= constraint.
+   * Internal helper for normalization of a <= constraint. Can also be used for >= constraints by multiplying the right
+   * side and the coefficients with -1.
    * @param ps  the literals
    * @param cs  the coefficients
    * @param rhs the right-hand side

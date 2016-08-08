@@ -77,7 +77,7 @@ public final class SATPredicate implements FormulaPredicate {
     else if (formula.type() == FType.TRUE || formula.type() == FType.LITERAL)
       result = true;
     else if (formula.holds(dnfPredicate))
-      result = formula != factory.falsum();
+      result = true;
     else {
       this.solver.add(formula);
       result = solver.sat() == Tristate.TRUE;

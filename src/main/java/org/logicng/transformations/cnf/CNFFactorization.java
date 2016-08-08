@@ -89,12 +89,14 @@ public final class CNFFactorization implements FormulaTransformation {
             return null;
           nops.add(this.apply(op, cache));
         }
-        final Iterator<Formula> it = nops.iterator();
-        cached = it.next();
-        while (it.hasNext()) {
-          if (!this.proceed)
-            return null;
-          cached = this.distribute(cached, it.next());
+        if (proceed) {
+          final Iterator<Formula> it = nops.iterator();
+          cached = it.next();
+          while (it.hasNext()) {
+            if (!this.proceed)
+              return null;
+            cached = this.distribute(cached, it.next());
+          }
         }
         break;
       case AND:
@@ -104,7 +106,8 @@ public final class CNFFactorization implements FormulaTransformation {
             return null;
           nops.add(this.apply(op, cache));
         }
-        cached = formula.factory().and(nops);
+        if (proceed)
+          cached = formula.factory().and(nops);
         break;
       case PBC:
         cached = formula.nnf();

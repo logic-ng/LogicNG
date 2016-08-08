@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
+import org.logicng.handlers.FactorizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.predicates.CNFPredicate;
@@ -115,5 +116,29 @@ public class DNFTest {
     final Formula cdnf = p.parse("x0 & x1 & x2 & x3 | x0 & x1 & x2 & ~x3 | x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & x3 | x0 & x1 & ~x2 & x3 | ~x0 & x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & x3");
     Assert.assertEquals(cdnf, f.transform(new CanonicalDNFEnumeration()));
     Assert.assertEquals(F.f.falsum(), F.f.and(F.A, F.NA).transform(new CanonicalDNFEnumeration()));
+  }
+
+  @Test
+  public void testWithHandler() throws ParserException {
+    PropositionalParser p = new PropositionalParser(F.f);
+    Formula formula = p.parse("(~(~(a | b) => ~(x | y))) & ((a | x) => ~(b | y))");
+    DNFFactorization factorization = new DNFFactorization(new FactorizationHandler() {
+      private int dists = 0;
+      private int clauses = 0;
+      @Override
+      public boolean performedDistribution() {
+        dists++;
+        System.out.println(dists);
+        return dists <100;
+      }
+
+      @Override
+      public boolean createdClause(Formula clause) {
+        System.out.println(clause);
+        clauses++;
+        return clauses < 5;
+      }
+    });
+    factorization.apply(formula, false);
   }
 }

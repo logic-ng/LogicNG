@@ -55,7 +55,7 @@ public final class FormulaDotFileWriter {
    * Private constructor.
    */
   private FormulaDotFileWriter() {
-    throw new AssertionError();
+    // Intentionally left empty.
   }
 
   /**
@@ -177,10 +177,5 @@ public final class FormulaDotFileWriter {
     sb.append("  id").append(id).append(" [label=\"").append(op).append("\"];\n");
     for (final Formula operand : formula)
       sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(";\n");
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 }

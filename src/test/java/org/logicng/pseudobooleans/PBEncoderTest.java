@@ -164,8 +164,8 @@ public class PBEncoderTest {
     }
   }
 
-
-  public void showBug(){
+  @Test
+  public void testCCNormalized(){
     List<Literal> lits = new ArrayList<>();
     lits.add(f.literal("m", true));
     lits.add(f.literal("n", true));
@@ -173,7 +173,7 @@ public class PBEncoderTest {
     coeffs2.add(2);
     coeffs2.add(2);
     PBConstraint normCC = f.pbc(CType.LE, 2, lits, coeffs2);
-    System.out.println(encoders[0].encode(normCC).toString());
+    Assert.assertEquals("AND[~m | ~n]", encoders[0].encode(normCC).toString());
   }
 
 //  @Ignore //TODO

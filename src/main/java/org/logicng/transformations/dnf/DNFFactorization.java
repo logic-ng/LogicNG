@@ -90,7 +90,8 @@ public final class DNFFactorization implements FormulaTransformation {
             return null;
           nops.add(this.apply(op, cache));
         }
-        cached = formula.factory().or(nops);
+        if (proceed)
+          cached = formula.factory().or(nops);
         break;
       case AND:
         nops = new LinkedHashSet<>();
@@ -99,12 +100,14 @@ public final class DNFFactorization implements FormulaTransformation {
             return null;
           nops.add(this.apply(op, cache));
         }
-        final Iterator<Formula> it = nops.iterator();
-        cached = it.next();
-        while (it.hasNext()) {
-          if (!this.proceed)
-            return null;
-          cached = this.distribute(cached, it.next());
+        if (proceed) {
+          final Iterator<Formula> it = nops.iterator();
+          cached = it.next();
+          while (it.hasNext()) {
+            if (!this.proceed)
+              return null;
+            cached = this.distribute(cached, it.next());
+          }
         }
         break;
       default:

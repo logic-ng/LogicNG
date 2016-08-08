@@ -114,7 +114,7 @@ public class PBEncoder {
       case PBC:
         final PBConstraint pbc = (PBConstraint) normalized;
         if (pbc.isCC())
-          return this.ccEncoder.encode(constraint);
+          return this.ccEncoder.encode(pbc);
         return new ImmutableFormulaList(FType.AND, this.encode(pbc.operands(), pbc.coefficients(), pbc.rhs()));
       case AND:
         final List<Formula> list = new LinkedList<>();
