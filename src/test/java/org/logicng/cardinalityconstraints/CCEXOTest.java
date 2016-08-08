@@ -83,7 +83,7 @@ public class CCEXOTest {
     final FormulaFactory f = new FormulaFactory();
     final PBConstraint cc = f.exo();
     for (final CCConfig config : this.configs)
-      Assert.assertTrue(new CCEncoder(f, config).encode(cc).empty());
+      Assert.assertEquals(f.falsum(), new CCEncoder(f, config).encode(cc).formula(f).cnf());
     Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
   }
 
