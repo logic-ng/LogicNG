@@ -59,4 +59,9 @@ public class CNFPredicateTest {
     Assert.assertFalse(F.NOT2.holds(cnfPredicate));
     Assert.assertFalse(F.f.and(F.OR1, F.EQ1).holds(cnfPredicate));
   }
+
+  @Test
+  public void testToString(){
+    Assert.assertEquals("CNFPredicate", cnfPredicate.toString());
+  }
 }

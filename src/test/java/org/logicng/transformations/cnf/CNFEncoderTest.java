@@ -37,6 +37,7 @@ import org.logicng.io.parsers.PropositionalParser;
 
 /**
  * Unit tests for the class {@link CNFEncoder}.
+ *
  * @version 1.1
  * @since 1.1
  */
@@ -152,6 +153,27 @@ public class CNFEncoderTest {
     Assert.assertEquals(p.parse("(y1 | y2) & y3 & y4 & (~@RESERVED_CNF_0 | y1) & (~@RESERVED_CNF_0 | y5) & (~@RESERVED_CNF_0 | ~y6) & (~@RESERVED_CNF_0 | ~y7) & (@RESERVED_CNF_0 | ~y1 | ~y5 | y6 | y7) & (@RESERVED_CNF_0 | y8 | y9)"), encoder2.encode(phi2));
     CNFEncoder encoder3 = new CNFEncoder(f, new CNFConfig.Builder().createdClauseBoundary(-1).distributionBoundary(5).atomBoundary(3).build());
     Assert.assertEquals(p.parse("(z1 | z2) & z3 & z4 & (~@RESERVED_CNF_2 | z1) & (~@RESERVED_CNF_2 | z5) & (~@RESERVED_CNF_2 | ~z6) & (~@RESERVED_CNF_2 | ~z7) & (@RESERVED_CNF_2 | ~z1 | ~z5 | z6 | z7) & (@RESERVED_CNF_2 | z8 | z9)"), encoder3.encode(phi3));
+  }
+
+  @Test
+  public void testToString() {
+    String expected = "CNFConfig{\n" +
+            "algorithm=TSEITIN\n" +
+            "fallbackAlgorithmForAdvancedEncoding=PLAISTED_GREENBAUM\n" +
+            "distributedBoundary=-1\n" +
+            "createdClauseBoundary=1000\n" +
+            "atomBoundary=12\n" +
+            "}\n";
+    FormulaFactory f = new FormulaFactory();
+    CNFConfig config = new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.TSEITIN).fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build();
+    CNFEncoder encoder = new CNFEncoder(f, config);
+    Assert.assertEquals(expected, config.toString());
+    Assert.assertEquals(expected, encoder.toString());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testWrongFallbackForConfig() {
+    CNFConfig config = new CNFConfig.Builder().fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.FACTORIZATION).build();
   }
 
 }

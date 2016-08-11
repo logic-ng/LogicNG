@@ -203,6 +203,11 @@ public class PlaistedGreenbaumTest {
     Assert.assertEquals(f4.variables().size(), f4.transform(pgf).variables().size());
   }
 
+  @Test
+  public void testToString(){
+    Assert.assertEquals("PlaistedGreenbaumTransformation{boundary=0}", pg.toString());
+  }
+
   private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {
     final SATSolver s = MiniSat.miniSat(f1.factory());
     s.add(f1);

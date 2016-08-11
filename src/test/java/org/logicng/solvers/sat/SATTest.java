@@ -32,12 +32,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.F;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
-import org.logicng.formulas.Variable;
+import org.logicng.formulas.*;
 import org.logicng.handlers.NumberOfModelsHandler;
+import org.logicng.handlers.SATHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -45,11 +42,13 @@ import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.SolverState;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +62,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
+ *
  * @version 1.1
  * @since 1.0
  */
@@ -72,6 +72,7 @@ public class SATTest {
   private final SATSolver[] solvers;
   private final PigeonHoleGenerator pg;
   private final PropositionalParser parser;
+  private final String[] testStrings;
 
   public SATTest() {
     this.f = new FormulaFactory();
@@ -87,6 +88,16 @@ public class SATTest {
     this.solvers[5] = CleaneLing.minimalistic(f);
     this.solvers[6] = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(true).glueUpdate(true).gluered(true).build());
     this.solvers[7] = CleaneLing.full(f);
+
+    this.testStrings = new String[8];
+    this.testStrings[0] = "MiniSat{result=UNDEF, incremental=true}";
+    this.testStrings[1] = "MiniSat{result=UNDEF, incremental=false}";
+    this.testStrings[2] = "MiniSat{result=UNDEF, incremental=false}";
+    this.testStrings[3] = "MiniSat{result=UNDEF, incremental=true}";
+    this.testStrings[4] = "MiniSat{result=UNDEF, incremental=false}";
+    this.testStrings[5] = "CleaneLing{result=UNDEF, idx2name={}}";
+    this.testStrings[6] = "CleaneLing{result=UNDEF, idx2name={}}";
+    this.testStrings[7] = "CleaneLing{result=UNDEF, idx2name={}}";
   }
 
   @Test
@@ -95,6 +106,7 @@ public class SATTest {
       s.add(F.TRUE);
       Assert.assertEquals(TRUE, s.sat());
       Assert.assertEquals(0, s.model().size());
+      Assert.assertTrue(s.toString().contains("{result=TRUE"));
       s.reset();
     }
   }
@@ -215,6 +227,42 @@ public class SATTest {
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models)
         Assert.assertEquals(1, m.positiveLiterals().size());
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testPBC() {
+    for (SATSolver s : this.solvers) {
+      List<Literal> lits = new ArrayList<>();
+      List<Integer> coeffs = new ArrayList<>();
+      Variable[] vars = new Variable[5];
+      for (int i = 0; i < 5; i++) {
+        lits.add(f.literal("x" + i, i % 2 == 0));
+        vars[i] = f.variable("x" + i);
+        coeffs.add(i + 1);
+      }
+      s.add(f.pbc(CType.GE, 10, lits, coeffs));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testWithRelaxation() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(f);
+    Formula one = parser.parse("a & b & (c | ~d)");
+    Formula two = parser.parse("~a | ~c");
+
+    for (SATSolver s : this.solvers) {
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), two);
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      }catch (Exception e){
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
       s.reset();
     }
   }
@@ -440,5 +488,74 @@ public class SATTest {
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalHandler() {
     new NumberOfModelsHandler(0);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testAddNonCCAsCC(){
+    MiniSat solver = MiniSat.miniSat(f);
+    solver.addIncrementalCC((PBConstraint) F.PBC3);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testModelBeforeSolving(){
+    MiniSat solver = MiniSat.miniSat(f);
+    solver.model();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCLAddNonCCAsCC(){
+    CleaneLing solver = CleaneLing.minimalistic(f, new CleaneLingConfig.Builder().gluered(true).build());
+    solver.addIncrementalCC((PBConstraint) F.PBC3);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testCLModelBeforeSolving(){
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.model();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLSatWithLit(){
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    solver.sat(new TimeoutSATHandler(10000), F.A);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLSaveState(){
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    solver.saveState();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLLoadState(){
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    solver.loadState(new SolverState(27, new int[3]));
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLSatWithLitCollection(){
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    List<Literal> lits = new ArrayList<>();
+    lits.add(F.A);
+    lits.add(F.B);
+    solver.sat(new TimeoutSATHandler(10000), lits);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLEnumerateWithWrongConfig(){
+    CleaneLing solver = CleaneLing.full(f,new CleaneLingConfig.Builder().plain(false).build());
+    solver.add(F.AND1);
+    solver.enumerateAllModels();
+  }
+
+  @Test
+  public void testToString() {
+    for (int i = 0; i < this.solvers.length; i++) {
+      Assert.assertEquals(this.testStrings[i], this.solvers[i].toString());
+    }
   }
 }

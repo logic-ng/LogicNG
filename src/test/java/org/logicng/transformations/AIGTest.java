@@ -147,5 +147,6 @@ public class AIGTest {
   @Test
   public void testToString(){
     Assert.assertEquals("AIGTransformation", aigTrans.toString());
+    Assert.assertEquals("AIGPredicate", aigPred.toString());
   }
 }

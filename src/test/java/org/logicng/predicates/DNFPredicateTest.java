@@ -59,4 +59,9 @@ public class DNFPredicateTest {
     Assert.assertFalse(F.NOT2.holds(dnfPredicate));
     Assert.assertFalse(F.f.or(F.AND1, F.EQ1).holds(dnfPredicate));
   }
+
+  @Test
+  public void testToString(){
+    Assert.assertEquals("DNFPredicate", dnfPredicate.toString());
+  }
 }

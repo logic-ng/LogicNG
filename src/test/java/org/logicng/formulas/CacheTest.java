@@ -7,6 +7,9 @@ import org.logicng.formulas.cache.PredicateCacheEntry;
 import org.logicng.formulas.cache.TransformationCacheEntry;
 import org.logicng.transformations.AIGTransformation;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Unit tests for the package formulas.cache.
  */
@@ -27,6 +30,24 @@ public class CacheTest {
     Assert.assertEquals("FunctionCacheEntry{description=literal profile}", FunctionCacheEntry.LITPROFILE.description());
     Assert.assertEquals("FunctionCacheEntry{description=variable profile}", FunctionCacheEntry.VARPROFILE.description());
     Assert.assertEquals("FunctionCacheEntry{description=sub-formulas}", FunctionCacheEntry.SUBFORMULAS.description());
+  }
+
+  @Test
+  public void testValues(){
+    List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
+    Assert.assertTrue(valuesTrans.size() == 9);
+    Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF")));
+    Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG")));
+
+    List<PredicateCacheEntry> valuesPred = Arrays.asList(PredicateCacheEntry.values());
+    Assert.assertTrue(valuesPred.size() == 5);
+    Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_DNF")));
+    Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_SAT")));
+
+    List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
+    Assert.assertTrue(valuesFunc.size() == 3);
+    Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("LITPROFILE")));
+    Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("SUBFORMULAS")));
   }
 
 }

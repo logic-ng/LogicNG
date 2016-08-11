@@ -128,17 +128,21 @@ public class DNFTest {
       @Override
       public boolean performedDistribution() {
         dists++;
-        System.out.println(dists);
         return dists <100;
       }
 
       @Override
       public boolean createdClause(Formula clause) {
-        System.out.println(clause);
         clauses++;
         return clauses < 5;
       }
     });
     factorization.apply(formula, false);
+  }
+
+  @Test
+  public void testToString(){
+    Assert.assertEquals("DNFFactorization", dnfFactorization.toString());
+    Assert.assertEquals("CanonicalDNFEnumeration", new CanonicalDNFEnumeration().toString());
   }
 }

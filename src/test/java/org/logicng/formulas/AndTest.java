@@ -196,8 +196,11 @@ public class AndTest {
   }
 
   @Test
-  public void testContains() {
+  public void testContains() throws ParserException {
     Assert.assertTrue(F.AND3.containsVariable(F.f.variable("x")));
     Assert.assertFalse(F.AND3.containsVariable(F.f.variable("a")));
+    PropositionalParser parser = new PropositionalParser(F.f);
+    Formula contAnd = parser.parse("a & b & (c | (d & e))");
+    Assert.assertTrue(contAnd.containsNode(parser.parse("d & e")));
   }
 }
