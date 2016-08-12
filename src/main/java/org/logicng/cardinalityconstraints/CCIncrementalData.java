@@ -155,6 +155,11 @@ public final class CCIncrementalData {
 
   /**
    * Tightens the upper bound of an at-most-k constraint and encodes it on the solver of the result.
+   *
+   * Usage constraints:
+   * -New right hand side must be smaller than current right hand side.
+   * -Cannot be used for at-least-k constraints.
+   *
    * @param rhs the new upperBound
    */
   public void newUpperBoundForSolver(int rhs) {
@@ -214,6 +219,11 @@ public final class CCIncrementalData {
 
   /**
    * Tightens the lower bound of an at-least-k constraint and encodes it on the solver of the result.
+   *
+   *  Usage constraints:
+   * -New right hand side must be greater than current right hand side.
+   * -Cannot be used for at-most-k constraints.
+   *
    * @param rhs the new upperBound
    */
   public void newLowerBoundForSolver(int rhs) {

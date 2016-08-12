@@ -40,6 +40,7 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -200,7 +201,9 @@ public class PBEncoderTest {
             "binaryMergeNoSupportForSingleBit=false\n" +
             "binaryMergeUseWatchDog=true\n" +
             "}\n",encoders[0].config().toString());
+    Assert.assertTrue(encoders[0].config().toString().contains("pbEncoder="+PBConfig.PB_ENCODER.valueOf("SWC")));
     Assert.assertEquals(ConfigurationType.PB_ENCODER, encoders[0].config().type());
     Assert.assertEquals("PBSWC", new PBSWC(f).toString());
+    Assert.assertTrue(Arrays.asList(PBConfig.PB_ENCODER.values()).contains(PBConfig.PB_ENCODER.valueOf("ADDER_NETWORKS")));
   }
 }

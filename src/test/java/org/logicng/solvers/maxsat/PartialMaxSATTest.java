@@ -28,6 +28,7 @@
 
 package org.logicng.solvers.maxsat;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.FormulaFactory;
@@ -168,19 +169,14 @@ public class PartialMaxSATTest {
     handler = new TimeoutMaxSATHandler(5000);
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
   }
-
+  
   @Test
   public void testTimeoutHandlerUB() throws IOException {
     MaxSATSolver solver = MaxSATSolver.linearSU(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
-    readCNF(solver, "tests/partialmaxsat/c1355_F176gat-1278gat@1.wcnf");
-    MaxSATHandler handler = new TimeoutMaxSATHandler(100);
-    Assert.assertEquals(MaxSAT.MaxSATResult.UNDEF, solver.solve(handler));
-    Assert.assertTrue(handler.upperBoundApproximation()>13);
-
-    solver = MaxSATSolver.linearSU(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
     readCNF(solver, "tests/partialmaxsat/c1355_F1229gat@1.wcnf");
-    handler = new TimeoutMaxSATHandler(5000);
+    MaxSATHandler handler = new TimeoutMaxSATHandler(5000);
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
+    Assert.assertEquals(solver.result(), handler.upperBoundApproximation());
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {
