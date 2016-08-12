@@ -33,12 +33,14 @@ import org.junit.Test;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 
+import java.util.Arrays;
+
 /**
  * Unit tests for the toString() methods of the solver data structures.
  * @version 1.0
  * @since 1.0
  */
-public class TestToStrings {
+public class SolversDatastructuresTests {
 
   @Test
   public void testCLClause() {
@@ -184,6 +186,12 @@ public class TestToStrings {
     final String expected = "MSWatcher{clause=MSClause{activity=0.0, learnt=true, szWithoutSelectors=0, seen=false, lbd=0, canBeDel=true, oneWatched=false, isAtMost=false, atMostWatchers=-1, lits=[1, 2, 3]}, blocker=2}";
     Assert.assertEquals(expected, watcher.toString());
     Assert.assertEquals(watcher.hashCode(),watcher.hashCode());
+  }
+
+  @Test
+  public void testCLVarState(){
+    Assert.assertEquals(CLVar.State.ELIMINATED, CLVar.State.valueOf("ELIMINATED"));
+    Assert.assertTrue(Arrays.asList(CLVar.State.values()).contains(CLVar.State.valueOf("FREE")));
   }
 
 }

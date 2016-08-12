@@ -137,7 +137,7 @@ public class DNFTest {
         return clauses < 5;
       }
     });
-    factorization.apply(formula, false);
+    Assert.assertNull(factorization.apply(formula, false));
   }
 
   @Test

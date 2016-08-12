@@ -156,7 +156,7 @@ public class CNFEncoderTest {
   }
 
   @Test
-  public void testToString() {
+  public void testStrings() {
     String expected = "CNFConfig{\n" +
             "algorithm=TSEITIN\n" +
             "fallbackAlgorithmForAdvancedEncoding=PLAISTED_GREENBAUM\n" +
@@ -169,6 +169,7 @@ public class CNFEncoderTest {
     CNFEncoder encoder = new CNFEncoder(f, config);
     Assert.assertEquals(expected, config.toString());
     Assert.assertEquals(expected, encoder.toString());
+    Assert.assertEquals(CNFConfig.Algorithm.TSEITIN, CNFConfig.Algorithm.valueOf("TSEITIN"));
   }
 
   @Test(expected = IllegalArgumentException.class)

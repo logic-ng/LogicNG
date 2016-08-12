@@ -112,18 +112,21 @@ public class PBConstraintTest {
     Assert.assertEquals(CType.LE, pb1.comparator());
     Assert.assertEquals(2, pb1.rhs());
     Assert.assertFalse(pb1.isCC());
+    Assert.assertEquals(3, pb1.maxWeight());
 
     Assert.assertArrayEquals(lits2, pb2.operands());
     Assert.assertArrayEquals(coeffs2, pb2.coefficients());
     Assert.assertEquals(CType.LE, pb2.comparator());
     Assert.assertEquals(8, pb2.rhs());
     Assert.assertFalse(pb2.isCC());
+    Assert.assertEquals(7, pb2.maxWeight());
 
     Assert.assertArrayEquals(lits1, cc1.operands());
     Assert.assertArrayEquals(coeffsCC1, cc1.coefficients());
     Assert.assertEquals(CType.LT, cc1.comparator());
     Assert.assertEquals(1, cc1.rhs());
     Assert.assertTrue(cc1.isCC());
+    Assert.assertEquals(1, cc1.maxWeight());
 
     Assert.assertArrayEquals(litsCC2, cc2.operands());
     Assert.assertArrayEquals(coeffsCC2, cc2.coefficients());

@@ -19,6 +19,7 @@ public class LNGHeapTest {
     LNGHeap heap = new LNGHeap(solver);
     Assert.assertTrue(heap.empty());
     heap.insert(5);
+    Assert.assertEquals(5,heap.get(0));
     Assert.assertTrue(heap.toString().contains("5"));
     Assert.assertEquals(1,heap.size());
     heap.clear();

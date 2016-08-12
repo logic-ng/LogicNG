@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.*;
@@ -199,6 +200,7 @@ public class PBEncoderTest {
             "binaryMergeNoSupportForSingleBit=false\n" +
             "binaryMergeUseWatchDog=true\n" +
             "}\n",encoders[0].config().toString());
+    Assert.assertEquals(ConfigurationType.PB_ENCODER, encoders[0].config().type());
+    Assert.assertEquals("PBSWC", new PBSWC(f).toString());
   }
-
 }

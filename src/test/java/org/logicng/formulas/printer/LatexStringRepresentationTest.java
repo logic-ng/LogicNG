@@ -42,7 +42,7 @@ public class LatexStringRepresentationTest {
   private final FormulaStringRepresentation sr = new LatexStringRepresentation();
 
   @Test
-  public void testUTF8Printer() {
+  public void testLatexPrinter() {
     Assert.assertEquals("\\bottom", F.f.string(F.FALSE, sr));
     Assert.assertEquals("\\top", F.f.string(F.TRUE, sr));
     Assert.assertEquals("x", F.f.string(F.X, sr));
