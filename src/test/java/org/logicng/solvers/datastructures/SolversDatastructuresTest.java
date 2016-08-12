@@ -40,7 +40,7 @@ import java.util.Arrays;
  * @version 1.0
  * @since 1.0
  */
-public class SolversDatastructuresTests {
+public class SolversDatastructuresTest {
 
   @Test
   public void testCLClause() {
