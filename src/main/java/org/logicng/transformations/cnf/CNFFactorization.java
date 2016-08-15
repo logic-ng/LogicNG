@@ -42,7 +42,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
 
 /**
  * Transformation of a formula in CNF by factorization.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CNFFactorization implements FormulaTransformation {
@@ -100,9 +100,10 @@ public final class CNFFactorization implements FormulaTransformation {
       case AND:
         nops = new LinkedHashSet<>();
         for (final Formula op : formula) {
+          final Formula apply = this.apply(op, cache);
           if (!this.proceed)
             return null;
-          nops.add(this.apply(op, cache));
+          nops.add(apply);
         }
         cached = formula.factory().and(nops);
         break;
@@ -133,8 +134,12 @@ public final class CNFFactorization implements FormulaTransformation {
       final FormulaFactory f = f1.factory();
       if (f1.type() == AND || f2.type() == AND) {
         final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-        for (final Formula op : f1.type() == AND ? f1 : f2)
-          nops.add(this.distribute(op, f1.type() == AND ? f2 : f1));
+        for (final Formula op : f1.type() == AND ? f1 : f2) {
+          final Formula distribute = this.distribute(op, f1.type() == AND ? f2 : f1);
+          if (!this.proceed)
+            return null;
+          nops.add(distribute);
+        }
         return f.and(nops);
       }
       final Formula clause = f.or(f1, f2);

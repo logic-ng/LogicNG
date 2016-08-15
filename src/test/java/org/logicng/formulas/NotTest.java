@@ -39,7 +39,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Not}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class NotTest {
@@ -123,6 +123,7 @@ public class NotTest {
   @Test
   public void testNumberOfAtoms() {
     Assert.assertEquals(2, F.NOT1.numberOfAtoms());
+    Assert.assertEquals(2, F.NOT2.numberOfAtoms());
     Assert.assertEquals(2, F.OR1.numberOfAtoms());
     Assert.assertEquals(2, F.OR1.numberOfAtoms());
   }

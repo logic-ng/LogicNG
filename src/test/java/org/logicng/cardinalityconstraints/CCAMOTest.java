@@ -62,7 +62,7 @@ public class CCAMOTest {
   private CCConfig[] configs;
 
   public CCAMOTest() {
-    configs = new CCConfig[11];
+    configs = new CCConfig[14];
     configs[0] = new CCConfig.Builder().amoEncoding(PURE).build();
     configs[1] = new CCConfig.Builder().amoEncoding(LADDER).build();
     configs[2] = new CCConfig.Builder().amoEncoding(PRODUCT).build();
@@ -73,7 +73,10 @@ public class CCAMOTest {
     configs[7] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build();
     configs[8] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build();
     configs[9] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build();
-    configs[10] = new CCConfig.Builder().amoEncoding(BEST).build();
+    configs[10] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).bimanderFixedGroupSize(2).build();
+    configs[11] = new CCConfig.Builder().amoEncoding(NESTED).nestingGroupSize(5).build();
+    configs[12] = new CCConfig.Builder().amoEncoding(PRODUCT).productRecursiveBound(10).build();
+    configs[13] = new CCConfig.Builder().amoEncoding(BEST).build();
   }
 
   @Test
@@ -119,6 +122,18 @@ public class CCAMOTest {
     testAMO(250, f, true);
     testAMO(500, f, true);
     Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
+  }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("PURE", configs[0].amoEncoder.toString());
+    Assert.assertEquals("LADDER", configs[1].amoEncoder.toString());
+    Assert.assertEquals("PRODUCT", configs[2].amoEncoder.toString());
+    Assert.assertEquals("BINARY", configs[3].amoEncoder.toString());
+    Assert.assertEquals("NESTED", configs[4].amoEncoder.toString());
+    Assert.assertEquals("COMMANDER", configs[5].amoEncoder.toString());
+    Assert.assertEquals("BIMANDER", configs[7].amoEncoder.toString());
+    Assert.assertEquals("BEST", configs[13].amoEncoder.toString());
   }
 
   private void testAMO(int numLits, final FormulaFactory f, boolean miniCard) {

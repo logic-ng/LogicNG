@@ -34,7 +34,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.Not;
 import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
  * <p>
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class PlaistedGreenbaumTransformation implements FormulaTransformation {
@@ -117,10 +116,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     final FormulaFactory f = formula.factory();
     final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
     switch (formula.type()) {
-      case NOT:
-        result = f.or(pgVar.negate(), pgVariable(((Not) formula).operand()).negate());
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
-        return result;
       case AND:
         List<Formula> nops = new ArrayList<>();
         for (final Formula op : formula)

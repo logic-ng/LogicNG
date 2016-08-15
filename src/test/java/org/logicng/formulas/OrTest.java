@@ -41,7 +41,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Or}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class OrTest {
@@ -187,8 +187,11 @@ public class OrTest {
   }
 
   @Test
-  public void testContains() {
+  public void testContains() throws ParserException {
     Assert.assertTrue(F.OR1.containsVariable(F.f.variable("x")));
     Assert.assertFalse(F.OR1.containsVariable(F.f.variable("a")));
+    PropositionalParser parser = new PropositionalParser(F.f);
+    Formula contAnd = parser.parse("a | b | (c & (d | e))");
+    Assert.assertTrue(contAnd.containsNode(parser.parse("d | e")));
   }
 }

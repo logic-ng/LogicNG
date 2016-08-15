@@ -39,7 +39,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Unit tests for {@link LNGVector}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class LNGVectorTest {
@@ -157,6 +157,9 @@ public class LNGVectorTest {
     for (int i = 0; i < 1000; i++)
       v1.push("s" + i);
     Assert.assertFalse(v1.empty());
+    int beforeSize = v1.size();
+    v1.shrinkTo(v1.size() + 50);
+    Assert.assertEquals(v1.size(), beforeSize);
     for (int i = 500; i > 0; i--) {
       v1.shrinkTo(i);
       Assert.assertEquals("s" + (i - 1), v1.back());

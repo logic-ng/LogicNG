@@ -37,9 +37,11 @@ import org.logicng.io.parsers.PropositionalParser;
 
 import java.util.LinkedHashSet;
 
+import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
+
 /**
  * Unit tests for {@link SubNodeFunction}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class SubformulaTest {
@@ -190,5 +192,13 @@ public class SubformulaTest {
     expected.add(p.parse("a => (~x | y) & (x | ~z)"));
     expected.add(p.parse("((a & ~b & c) | (d & (~e | c))) & (a => (~x | y) & (x | ~z))"));
     Assert.assertEquals(expected, f1.apply(new SubNodeFunction()));
+  }
+
+  @Test
+  public void testNotCache() throws ParserException {
+    PropositionalParser p = new PropositionalParser(F.f);
+    final Formula f1 = p.parse("(d | (a & b)) & (c | (a & b)) | (a & b )");
+    f1.apply(new SubNodeFunction(), false);
+    Assert.assertNull(f1.functionCacheEntry(SUBFORMULAS));
   }
 }

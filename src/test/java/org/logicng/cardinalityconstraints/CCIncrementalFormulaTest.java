@@ -107,6 +107,48 @@ public class CCIncrementalFormulaTest {
   }
 
   @Test
+  public void testIncrementalData() {
+    for (final CCEncoder encoder : this.encoders) {
+      int numLits = 10;
+      Variable[] vars = new Variable[numLits];
+      for (int i = 0; i < numLits; i++)
+        vars[i] = f.variable("v" + i);
+      Pair<ImmutableFormulaList, CCIncrementalData> cc = encoder.encodeIncremental(f.cc(CType.LT, 10, vars));
+      CCIncrementalData incData = cc.second();
+      Assert.assertTrue(incData.toString().contains("currentRHS=9"));
+
+      cc = encoder.encodeIncremental(f.cc(CType.GT, 1, vars));
+      incData = cc.second();
+      Assert.assertTrue(incData.toString().contains("currentRHS=2"));
+
+      cc = encoder.encodeIncremental(f.cc(CType.LT, 1, vars));
+      incData = cc.second();
+      Assert.assertNull(incData);
+      Assert.assertTrue(cc.first().containsFormula(vars[0].negate()));
+
+      cc = encoder.encodeIncremental(f.cc(CType.LE, numLits + 1, vars));
+      incData = cc.second();
+      Assert.assertNull(incData);
+
+      cc = encoder.encodeIncremental(f.cc(CType.GE, numLits + 1, vars));
+      incData = cc.second();
+      Assert.assertNull(incData);
+
+      cc = encoder.encodeIncremental(f.cc(CType.GE, numLits, vars));
+      incData = cc.second();
+      Assert.assertNull(incData);
+
+      cc = encoder.encodeIncremental(f.cc(CType.GE, 0, vars));
+      incData = cc.second();
+      Assert.assertNull(incData);
+
+      cc = encoder.encodeIncremental(f.cc(CType.GE, 1, vars));
+      incData = cc.second();
+      Assert.assertNull(incData);
+    }
+  }
+
+  @Test
   public void testSimpleIncrementalALK() {
     for (final CCEncoder encoder : this.encoders) {
       CCEncoder initialEncoder = new CCEncoder(f);
@@ -212,6 +254,23 @@ public class CCIncrementalFormulaTest {
         solver.add(incData.newUpperBound(--currentBound)); // <= currentBound - 1
       Assert.assertEquals(41, currentBound);
     }
+  }
+
+  @Test
+  public void testToString() {
+    String expected = "CCConfig{\n" +
+            "amoEncoder=BEST\n" +
+            "amkEncoder=TOTALIZER\n" +
+            "alkEncoder=TOTALIZER\n" +
+            "exkEncoder=BEST\n" +
+            "bimanderGroupSize=SQRT\n" +
+            "bimanderFixedGroupSize=3\n" +
+            "nestingGroupSize=4\n" +
+            "productRecursiveBound=20\n" +
+            "commanderGroupSize=3\n" +
+            "}\n";
+    Assert.assertEquals(expected, encoders[0].config().toString());
+    Assert.assertEquals(expected, encoders[0].toString());
   }
 
   @Ignore

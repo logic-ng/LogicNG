@@ -26,49 +26,50 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.printer;
+package org.logicng.solvers.maxsat.encodings;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.formulas.F;
-import org.logicng.formulas.Variable;
+import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
 /**
- * Unit tests for {@link UTF8StringRepresentation}
+ * Unit test for the package {@link org.logicng.solvers.maxsat.encodings}.
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-public class UTF8StringRepresentationTest {
-  private final FormulaStringRepresentation sr = new UTF8StringRepresentation();
+public class EncodingsTest {
 
   @Test
-  public void testUTF8Printer() {
-    Assert.assertEquals("⊥", F.f.string(F.FALSE, sr));
-    Assert.assertEquals("⊤", F.f.string(F.TRUE, sr));
-    Assert.assertEquals("x", F.f.string(F.X, sr));
-    Assert.assertEquals("¬a", F.f.string(F.NA, sr));
-    Assert.assertEquals("x₁", F.f.string(F.f.variable("x1"), sr));
-    Assert.assertEquals("x₁₉₀", F.f.string(F.f.variable("x190"), sr));
-    Assert.assertEquals("x₂₃₄", F.f.string(F.f.variable("x234"), sr));
-    Assert.assertEquals("x₅₆₇", F.f.string(F.f.variable("x567"), sr));
-    Assert.assertEquals("abc₈", F.f.string(F.f.variable("abc8"), sr));
-    Assert.assertEquals("¬a ⇒ ¬b", F.f.string(F.IMP2, sr));
-    Assert.assertEquals("a ∧ b ⇒ x ∨ y", F.f.string(F.IMP3, sr));
-    Assert.assertEquals("a ⇒ b ⇔ ¬a ⇒ ¬b", F.f.string(F.EQ4, sr));
-    Assert.assertEquals("(x ∨ y) ∧ (¬x ∨ ¬y)", F.f.string(F.AND3, sr));
-    Assert.assertEquals("a ∧ b ∧ c ∧ x", F.f.string(F.f.and(F.A, F.B, F.C, F.X), sr));
-    Assert.assertEquals("a ∨ b ∨ c ∨ x", F.f.string(F.f.or(F.A, F.B, F.C, F.X), sr));
-    Assert.assertEquals("2a + -4b + 3x = 2", F.f.string(F.PBC1, sr));
-    Assert.assertEquals("2a + -4b + 3x > 2", F.f.string(F.PBC2, sr));
-    Assert.assertEquals("2a + -4b + 3x ≥ 2", F.f.string(F.PBC3, sr));
-    Assert.assertEquals("2a + -4b + 3x < 2", F.f.string(F.PBC4, sr));
-    Assert.assertEquals("2a + -4b + 3x ≤ 2", F.f.string(F.PBC5, sr));
+  public void testEncoder() {
+    Encoder encoder = new Encoder(MaxSATConfig.CardinalityEncoding.TOTALIZER);
+    Assert.assertEquals("Encoder", encoder.toString());
   }
 
   @Test
-  public void testSpecialCases() {
-    Variable var = F.f.variable("\ntest9t");
-    Assert.assertEquals("\ntest9t", F.f.string(var, sr));
-    Assert.assertEquals("UTF8StringRepresentation", sr.toString());
+  public void testTotalizer() {
+    Totalizer totalizer = new Totalizer(MaxSATConfig.IncrementalStrategy.ITERATIVE);
+    Assert.assertEquals(MaxSATConfig.IncrementalStrategy.ITERATIVE, totalizer.incremental());
+    Assert.assertEquals("Totalizer", totalizer.toString());
+  }
+
+  @Test
+  public void testModularTotalizer() {
+    ModularTotalizer mTotalizer = new ModularTotalizer();
+    Assert.assertEquals(false, mTotalizer.hasCreatedEncoding());
+    Assert.assertEquals("ModularTotalizer", mTotalizer.toString());
+  }
+
+  @Test
+  public void testSequentialWeightCounter() {
+    SequentialWeightCounter swc = new SequentialWeightCounter();
+    Assert.assertEquals(false, swc.hasCreatedEncoding());
+    Assert.assertEquals("SequentialWeightCounter", swc.toString());
+  }
+
+  @Test
+  public void testLadder() {
+    Ladder ladder = new Ladder();
+    Assert.assertEquals("Ladder", ladder.toString());
+    System.out.println(ladder.toString());
   }
 }

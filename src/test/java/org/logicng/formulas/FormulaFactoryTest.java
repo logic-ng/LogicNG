@@ -36,9 +36,12 @@ import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Test some basic formula factory functionality.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class FormulaFactoryTest {
@@ -115,5 +118,31 @@ public class FormulaFactoryTest {
     Assert.assertEquals("@RESERVED_CC_f_0", ccVar.name());
     Assert.assertEquals("@RESERVED_PB_f_0", pbVar.name());
     Assert.assertEquals("@RESERVED_CNF_f_0", cnfVar.name());
+  }
+
+  @Test
+  public void testCNF() {
+    FormulaFactory f = new FormulaFactory();
+    Variable a = f.variable("A");
+    Variable b = f.variable("B");
+    Variable c = f.variable("C");
+    Variable d = f.variable("D");
+    Formula clause1 = f.or(a, b);
+    Formula clause2 = f.or(c, d.negate());
+    Formula nClause1 = f.implication(a, c);
+
+    List<Formula> clauses = new ArrayList<>();
+    clauses.add(clause1);
+    clauses.add(clause2);
+
+    List<Formula> nClauses = new ArrayList<>();
+    nClauses.add(clause1);
+    nClauses.add(clause2);
+    nClauses.add(nClause1);
+
+    Formula cnf = f.cnf(clauses);
+    Formula nCnf = f.cnf(nClauses);
+    Assert.assertEquals(cnf, cnf.cnf());
+    Assert.assertNotEquals(nCnf, nCnf.cnf());
   }
 }

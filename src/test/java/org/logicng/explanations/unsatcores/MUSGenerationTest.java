@@ -116,6 +116,12 @@ public class MUSGenerationTest {
     testMUS(file2, mus7);
   }
 
+  @Test
+  public void testToString() {
+    final MUSGeneration mus = new MUSGeneration();
+    Assert.assertEquals("MUSGeneration", mus.toString());
+  }
+
   private List<Proposition> generatePGPropositions(int n) {
     final List<Proposition> result = new ArrayList<>();
     final Formula pgf = pg.generate(n);

@@ -46,7 +46,7 @@ import java.util.Map;
 
 /**
  * A dot file writer for a formula.  Writes the internal data structure of the formula to a dot file.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class FormulaDotFileWriter {
@@ -55,7 +55,7 @@ public final class FormulaDotFileWriter {
    * Private constructor.
    */
   private FormulaDotFileWriter() {
-    throw new AssertionError();
+    // Intentionally left empty.
   }
 
   /**
@@ -177,10 +177,5 @@ public final class FormulaDotFileWriter {
     sb.append("  id").append(id).append(" [label=\"").append(op).append("\"];\n");
     for (final Formula operand : formula)
       sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(";\n");
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 }

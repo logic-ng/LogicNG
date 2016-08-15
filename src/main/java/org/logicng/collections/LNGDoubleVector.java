@@ -36,7 +36,7 @@ import java.util.Arrays;
  * In theory one could use the {@link LNGVector} also for doubles.  But Java's auto-boxing comes with such a large
  * performance penalty that for the mission critical data structures of the SAT solvers we use this specialized
  * implementation.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class LNGDoubleVector {
@@ -163,7 +163,8 @@ public final class LNGDoubleVector {
    * @param newSize the new size
    */
   public void shrinkTo(int newSize) {
-    this.size = newSize;
+    if (newSize < this.size)
+      this.size = newSize;
   }
 
   /**

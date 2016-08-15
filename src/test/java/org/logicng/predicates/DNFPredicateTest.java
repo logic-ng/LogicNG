@@ -34,7 +34,7 @@ import org.logicng.formulas.F;
 
 /**
  * Unit tests for the dnf predicate.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class DNFPredicateTest {
@@ -58,5 +58,10 @@ public class DNFPredicateTest {
     Assert.assertFalse(F.NOT1.holds(dnfPredicate));
     Assert.assertFalse(F.NOT2.holds(dnfPredicate));
     Assert.assertFalse(F.f.or(F.AND1, F.EQ1).holds(dnfPredicate));
+  }
+
+  @Test
+  public void testToString(){
+    Assert.assertEquals("DNFPredicate", dnfPredicate.toString());
   }
 }

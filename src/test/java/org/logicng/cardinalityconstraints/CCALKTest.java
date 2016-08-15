@@ -63,6 +63,7 @@ public class CCALKTest {
     int counter = 0;
     for (final CCConfig config : this.configs) {
       f.putConfiguration(config);
+      testCC(10, 0, 1, f);
       testCC(10, 1, 1023, f);
       testCC(10, 2, 1013, f);
       testCC(10, 3, 968, f);
@@ -103,5 +104,12 @@ public class CCALKTest {
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
     encoder.encode(f.cc(CType.GE, -1, problemLits));
+  }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("TOTALIZER", configs[0].alkEncoder.toString());
+    Assert.assertEquals("MODULAR_TOTALIZER", configs[1].alkEncoder.toString());
+    Assert.assertEquals("CARDINALITY_NETWORK", configs[2].alkEncoder.toString());
   }
 }

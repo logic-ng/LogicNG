@@ -26,49 +26,30 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.printer;
+package org.logicng.solvers.datastructures;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.formulas.F;
-import org.logicng.formulas.Variable;
+import org.logicng.solvers.sat.MiniCard;
+import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
- * Unit tests for {@link UTF8StringRepresentation}
+ * Unit tests for the class {@link LNGHeap}.
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
-public class UTF8StringRepresentationTest {
-  private final FormulaStringRepresentation sr = new UTF8StringRepresentation();
+public class LNGHeapTest {
 
   @Test
-  public void testUTF8Printer() {
-    Assert.assertEquals("⊥", F.f.string(F.FALSE, sr));
-    Assert.assertEquals("⊤", F.f.string(F.TRUE, sr));
-    Assert.assertEquals("x", F.f.string(F.X, sr));
-    Assert.assertEquals("¬a", F.f.string(F.NA, sr));
-    Assert.assertEquals("x₁", F.f.string(F.f.variable("x1"), sr));
-    Assert.assertEquals("x₁₉₀", F.f.string(F.f.variable("x190"), sr));
-    Assert.assertEquals("x₂₃₄", F.f.string(F.f.variable("x234"), sr));
-    Assert.assertEquals("x₅₆₇", F.f.string(F.f.variable("x567"), sr));
-    Assert.assertEquals("abc₈", F.f.string(F.f.variable("abc8"), sr));
-    Assert.assertEquals("¬a ⇒ ¬b", F.f.string(F.IMP2, sr));
-    Assert.assertEquals("a ∧ b ⇒ x ∨ y", F.f.string(F.IMP3, sr));
-    Assert.assertEquals("a ⇒ b ⇔ ¬a ⇒ ¬b", F.f.string(F.EQ4, sr));
-    Assert.assertEquals("(x ∨ y) ∧ (¬x ∨ ¬y)", F.f.string(F.AND3, sr));
-    Assert.assertEquals("a ∧ b ∧ c ∧ x", F.f.string(F.f.and(F.A, F.B, F.C, F.X), sr));
-    Assert.assertEquals("a ∨ b ∨ c ∨ x", F.f.string(F.f.or(F.A, F.B, F.C, F.X), sr));
-    Assert.assertEquals("2a + -4b + 3x = 2", F.f.string(F.PBC1, sr));
-    Assert.assertEquals("2a + -4b + 3x > 2", F.f.string(F.PBC2, sr));
-    Assert.assertEquals("2a + -4b + 3x ≥ 2", F.f.string(F.PBC3, sr));
-    Assert.assertEquals("2a + -4b + 3x < 2", F.f.string(F.PBC4, sr));
-    Assert.assertEquals("2a + -4b + 3x ≤ 2", F.f.string(F.PBC5, sr));
-  }
-
-  @Test
-  public void testSpecialCases() {
-    Variable var = F.f.variable("\ntest9t");
-    Assert.assertEquals("\ntest9t", F.f.string(var, sr));
-    Assert.assertEquals("UTF8StringRepresentation", sr.toString());
+  public void test() {
+    MiniSatStyleSolver solver = new MiniCard();
+    LNGHeap heap = new LNGHeap(solver);
+    Assert.assertTrue(heap.empty());
+    heap.insert(5);
+    Assert.assertEquals(5, heap.get(0));
+    Assert.assertTrue(heap.toString().contains("5"));
+    Assert.assertEquals(1, heap.size());
+    heap.clear();
+    Assert.assertTrue(heap.empty());
   }
 }

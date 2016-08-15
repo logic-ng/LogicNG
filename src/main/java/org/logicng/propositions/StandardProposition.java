@@ -37,13 +37,13 @@ import java.util.Objects;
 
 /**
  * A proposition in LogicNG.  A proposition is a collection of formulas with an additional textual description.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class StandardProposition extends Proposition {
 
   private final ImmutableFormulaList formulas;
-  private final String decription;
+  private final String description;
 
   /**
    * Constructs a new proposition for a single formulas.
@@ -51,7 +51,7 @@ public final class StandardProposition extends Proposition {
    */
   public StandardProposition(final Formula formula) {
     this.formulas = new ImmutableFormulaList(FType.AND, formula);
-    this.decription = "";
+    this.description = "";
   }
 
   /**
@@ -61,7 +61,7 @@ public final class StandardProposition extends Proposition {
    */
   public StandardProposition(final String description, final Formula formula) {
     this.formulas = new ImmutableFormulaList(FType.AND, formula);
-    this.decription = description;
+    this.description = description == null ? "" : description;
   }
 
   /**
@@ -71,7 +71,7 @@ public final class StandardProposition extends Proposition {
    */
   public StandardProposition(final String description, final Collection<? extends Formula> formulas) {
     this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.decription = description;
+    this.description = description == null ? "" : description;
   }
 
   /**
@@ -81,7 +81,7 @@ public final class StandardProposition extends Proposition {
    */
   public StandardProposition(final String description, final Formula... formulas) {
     this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.decription = description;
+    this.description = description == null ? "" : description;
   }
 
   /**
@@ -91,7 +91,7 @@ public final class StandardProposition extends Proposition {
    */
   public StandardProposition(final String description, final ImmutableFormulaList formulas) {
     this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.decription = description;
+    this.description = description == null ? "" : description;
   }
 
   @Override
@@ -104,12 +104,12 @@ public final class StandardProposition extends Proposition {
    * @return the bagpack of this proposition
    */
   public String description() {
-    return this.decription == null ? "" : this.decription;
+    return this.description;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.formulas, this.decription);
+    return Objects.hash(this.formulas, this.description);
   }
 
   @Override
@@ -118,13 +118,13 @@ public final class StandardProposition extends Proposition {
       return true;
     if (other instanceof StandardProposition) {
       final StandardProposition o = (StandardProposition) other;
-      return Objects.equals(this.formulas, o.formulas) && Objects.equals(this.decription, o.decription);
+      return Objects.equals(this.formulas, o.formulas) && Objects.equals(this.description, o.description);
     }
     return false;
   }
 
   @Override
   public String toString() {
-    return String.format("StandardProposition{formulas=%s, description=%s}", this.formulas, this.decription);
+    return String.format("StandardProposition{formulas=%s, description=%s}", this.formulas, this.description);
   }
 }

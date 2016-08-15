@@ -38,6 +38,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -136,5 +137,17 @@ public class CCAMKTest {
     for (int i = 0; i < numLits; i++)
       problemLits[i] = f.variable("v" + i);
     encoder.encode(f.cc(CType.LE, -1, problemLits));
+  }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("TOTALIZER", configs[0].amkEncoder.toString());
+    Assert.assertEquals("MODULAR_TOTALIZER", configs[1].amkEncoder.toString());
+    Assert.assertEquals("CARDINALITY_NETWORK", configs[2].amkEncoder.toString());
+  }
+
+  @Test
+  public void testCCSorting() {
+    Assert.assertTrue(Arrays.asList(CCSorting.ImplicationDirection.values()).contains(CCSorting.ImplicationDirection.valueOf("INPUT_TO_OUTPUT")));
   }
 }

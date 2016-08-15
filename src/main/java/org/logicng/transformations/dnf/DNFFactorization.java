@@ -42,7 +42,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_DNF
 
 /**
  * Transformation of a formula in DNF by factorization.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class DNFFactorization implements FormulaTransformation {
@@ -86,9 +86,10 @@ public final class DNFFactorization implements FormulaTransformation {
       case OR:
         LinkedHashSet<Formula> nops = new LinkedHashSet<>();
         for (final Formula op : formula) {
+          final Formula apply = this.apply(op, cache);
           if (!this.proceed)
             return null;
-          nops.add(this.apply(op, cache));
+          nops.add(apply);
         }
         cached = formula.factory().or(nops);
         break;
@@ -131,8 +132,12 @@ public final class DNFFactorization implements FormulaTransformation {
       final FormulaFactory f = f1.factory();
       if (f1.type() == FType.OR || f2.type() == FType.OR) {
         final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-        for (final Formula op : f1.type() == FType.OR ? f1 : f2)
-          nops.add(this.distribute(op, f1.type() == FType.OR ? f2 : f1));
+        for (final Formula op : f1.type() == FType.OR ? f1 : f2) {
+          final Formula distribute = this.distribute(op, f1.type() == FType.OR ? f2 : f1);
+          if (!this.proceed)
+            return null;
+          nops.add(distribute);
+        }
         return f.or(nops);
       }
       final Formula clause = f.and(f1, f2);

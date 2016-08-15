@@ -33,7 +33,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link LNGDoublePriorityQueue}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class LNGDoublePriorityQueueTest {
@@ -96,6 +96,8 @@ public class LNGDoublePriorityQueueTest {
     q1.update(0, 6.0);
     q1.update(1, 7.0);
     Assert.assertEquals(5, q1.size());
+    Assert.assertEquals(1, q1.top());
+    q1.update(1, 7.0);
     Assert.assertEquals(1, q1.top());
     q1.update(1, 2.0);
     Assert.assertEquals(0, q1.top());

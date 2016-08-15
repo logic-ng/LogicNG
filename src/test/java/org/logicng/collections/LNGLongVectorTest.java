@@ -33,7 +33,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link LNGLongVector}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class LNGLongVectorTest {
@@ -122,6 +122,9 @@ public class LNGLongVectorTest {
     for (int i = 0; i < 1000; i++)
       v1.push(i);
     Assert.assertFalse(v1.empty());
+    int beforeSize = v1.size();
+    v1.shrinkTo(v1.size() + 50);
+    Assert.assertEquals(v1.size(), beforeSize);
     for (int i = 500; i > 0; i--) {
       v1.shrinkTo(i);
       Assert.assertEquals((i - 1), v1.back());

@@ -29,16 +29,22 @@ package org.logicng.pseudobooleans;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.collections.ImmutableFormulaList;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,8 +59,10 @@ public class PBEncoderTest {
   private PBEncoder[] encoders;
 
   public PBEncoderTest() {
-    this.encoders = new PBEncoder[1];
+    this.encoders = new PBEncoder[3];
     this.encoders[0] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.SWC).build());
+    this.encoders[1] = new PBEncoder(this.f, new PBConfig.Builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).build(), new CCConfig.Builder().amoEncoding(CCConfig.AMO_ENCODER.NESTED).build());
+    this.encoders[2] = new PBEncoder(this.f, null);
   }
 
   @Test
@@ -138,4 +146,50 @@ public class PBEncoderTest {
       Assert.assertTrue(model.positiveLiterals().size() <= rhs);
   }
 
+  @Test
+  public void testNotNullConfig() {
+    for (final PBEncoder encoder : this.encoders) {
+      Assert.assertNotNull(encoder.config());
+    }
+  }
+
+  @Test
+  public void testSpecialCases() {
+    List<Literal> lits = new ArrayList<>();
+    lits.add(f.literal("m", true));
+    lits.add(f.literal("n", true));
+    List<Integer> coeffs = new ArrayList<>();
+    coeffs.add(2);
+    coeffs.add(1);
+    PBConstraint truePBC = f.pbc(CType.GE, 0, lits, coeffs);
+    for (final PBEncoder encoder : this.encoders) {
+      Assert.assertEquals(new ImmutableFormulaList(FType.AND), encoder.encode(truePBC));
+    }
+  }
+
+  @Test
+  public void testCCNormalized() {
+    List<Literal> lits = new ArrayList<>();
+    lits.add(f.literal("m", true));
+    lits.add(f.literal("n", true));
+    List<Integer> coeffs2 = new ArrayList<>();
+    coeffs2.add(2);
+    coeffs2.add(2);
+    PBConstraint normCC = f.pbc(CType.LE, 2, lits, coeffs2);
+    Assert.assertEquals("AND[~m | ~n]", encoders[0].encode(normCC).toString());
+  }
+  
+  @Test
+  public void testConfigToString() {
+    Assert.assertEquals("PBConfig{\n" +
+            "pbEncoder=SWC\n" +
+            "binaryMergeUseGAC=true\n" +
+            "binaryMergeNoSupportForSingleBit=false\n" +
+            "binaryMergeUseWatchDog=true\n" +
+            "}\n", encoders[0].config().toString());
+    Assert.assertTrue(encoders[0].config().toString().contains("pbEncoder=" + PBConfig.PB_ENCODER.valueOf("SWC")));
+    Assert.assertEquals(ConfigurationType.PB_ENCODER, encoders[0].config().type());
+    Assert.assertEquals("PBSWC", new PBSWC(f).toString());
+    Assert.assertTrue(Arrays.asList(PBConfig.PB_ENCODER.values()).contains(PBConfig.PB_ENCODER.valueOf("ADDER_NETWORKS")));
+  }
 }

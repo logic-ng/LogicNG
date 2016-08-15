@@ -41,10 +41,17 @@ import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PseudoBooleanParserTest {
+
+  @Test
+  public void testExceptions() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
+    Assert.assertEquals(F.f.verum(), parser.parse((String) null));
+  }
 
   @Test
   public void testParseConstants() throws ParserException {

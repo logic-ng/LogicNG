@@ -103,10 +103,8 @@ public final class PBConstraint extends Formula {
     for (final int c : coefficients) {
       if (c > maxWeight)
         maxWeight = c;
-      if (c != 1) {
+      if (c != 1)
         cc = false;
-        break;
-      }
     }
     for (final Literal lit : literals)
       if (!lit.phase()) {
@@ -215,7 +213,8 @@ public final class PBConstraint extends Formula {
   }
 
   /**
-   * Internal helper for normalization of a <= constraint.
+   * Internal helper for normalization of a <= constraint. Can also be used for >= constraints by multiplying the right
+   * side and the coefficients with -1.
    * @param ps  the literals
    * @param cs  the coefficients
    * @param rhs the right-hand side
