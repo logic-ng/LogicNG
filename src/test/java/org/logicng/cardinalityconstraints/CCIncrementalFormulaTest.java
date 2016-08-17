@@ -86,6 +86,7 @@ public class CCIncrementalFormulaTest {
       Assert.assertEquals(Tristate.TRUE, solver.sat()); // <= 9
       solver.add(incData.newUpperBound(8)); // <= 8
       Assert.assertEquals(Tristate.TRUE, solver.sat());
+      Assert.assertEquals(8, incData.currentRHS());
       solver.add(incData.newUpperBound(7)); // <= 7
       Assert.assertEquals(Tristate.TRUE, solver.sat());
       solver.add(incData.newUpperBound(6)); // <= 6

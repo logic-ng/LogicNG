@@ -49,10 +49,14 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import java.io.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -558,5 +562,26 @@ public class SATTest {
     for (int i = 0; i < this.solvers.length; i++) {
       Assert.assertEquals(this.testStrings[i], this.solvers[i].toString());
     }
+  }
+
+  @Test
+  public void testPrintMinimalisticCleaneLing() throws FileNotFoundException {
+    CleaneLingMinimalisticSolver clms = new CleaneLingMinimalisticSolver(new CleaneLingConfig.Builder().build());
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(baos);
+    clms.printSolverState(ps);
+    Assert.assertEquals("level=0\n" +
+            "next=0\n" +
+            "ignore=null\n" +
+            "empty=null\n" +
+            "vars=[]\n" +
+            "vals=[]\n" +
+            "phases=[]\n" +
+            "decisions=LNGDoublePriorityQueue{}\n" +
+            "control=[CLFrame{decision=0, level=0, trail=0, mark=false}]\n" +
+            "watches=[]\n" +
+            "trail=[]\n" +
+            "frames=[]\n", baos.toString());
+
   }
 }

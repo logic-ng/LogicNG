@@ -53,7 +53,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PureMaxSATTest {
@@ -230,6 +230,23 @@ public class PureMaxSATTest {
     solver.addSoftFormula(p.parse("~e"), 1);
     solver.addSoftFormula(p.parse("~x"), 1);
     solver.model();
+  }
+
+  @Test
+  public void testToString() {
+    MaxSATSolver[] solvers = new MaxSATSolver[6];
+    solvers[0] = MaxSATSolver.incWBO();
+    solvers[1] = MaxSATSolver.linearSU();
+    solvers[2] = MaxSATSolver.linearUS();
+    solvers[3] = MaxSATSolver.msu3();
+    solvers[4] = MaxSATSolver.wbo();
+    solvers[5] = MaxSATSolver.wmsu3();
+
+    String expected = "MaxSATSolver{result=UNDEF, var2index={}}";
+
+    for (int i = 0; i < 6; i++) {
+      Assert.assertEquals(expected, solvers[i].toString());
+    }
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {

@@ -134,6 +134,14 @@ public class CCAMOTest {
     Assert.assertEquals("COMMANDER", configs[5].amoEncoder.toString());
     Assert.assertEquals("BIMANDER", configs[7].amoEncoder.toString());
     Assert.assertEquals("BEST", configs[13].amoEncoder.toString());
+
+    Assert.assertEquals("CCAMOPure", new CCAMOPure().toString());
+    Assert.assertEquals("CCAMOLadder", new CCAMOLadder().toString());
+    Assert.assertEquals("CCAMOProduct", new CCAMOProduct(2).toString());
+    Assert.assertEquals("CCAMOBinary", new CCAMOBinary().toString());
+    Assert.assertEquals("CCAMONested", new CCAMONested(2).toString());
+    Assert.assertEquals("CCAMOCommander", new CCAMOCommander(2).toString());
+    Assert.assertEquals("CCAMOBimander", new CCAMOBimander(2).toString());
   }
 
   private void testAMO(int numLits, final FormulaFactory f, boolean miniCard) {

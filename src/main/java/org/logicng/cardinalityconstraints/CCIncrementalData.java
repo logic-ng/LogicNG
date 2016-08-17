@@ -270,6 +270,14 @@ public final class CCIncrementalData {
     }
   }
 
+  /**
+   * Returns the current right hand side of this CCIncrementalData.
+   * @return the current right hand side of this CCIncrementalData.
+   */
+  public int currentRHS() {
+    return currentRHS;
+  }
+
   @Override
   public String toString() {
     return "CCIncrementalData{" +

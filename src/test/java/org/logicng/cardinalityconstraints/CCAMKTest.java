@@ -141,9 +141,14 @@ public class CCAMKTest {
 
   @Test
   public void testToString() {
+    FormulaFactory f = new FormulaFactory();
     Assert.assertEquals("TOTALIZER", configs[0].amkEncoder.toString());
     Assert.assertEquals("MODULAR_TOTALIZER", configs[1].amkEncoder.toString());
     Assert.assertEquals("CARDINALITY_NETWORK", configs[2].amkEncoder.toString());
+
+    Assert.assertEquals("CCAMKTotalizer", new CCAMKTotalizer().toString());
+    Assert.assertEquals("CCAMKModularTotalizer", new CCAMKModularTotalizer(f).toString());
+    Assert.assertEquals("CCAMKCardinalityNetwork", new CCAMKCardinalityNetwork().toString());
   }
 
   @Test
