@@ -177,7 +177,7 @@ final class PBBinaryMerge implements PBEncoding {
       bucket_card.push(new LNGVector<Literal>());
       bucket_merge.push(new LNGVector<Literal>());
     }
-    assert (bucket_card.size() == buckets.size());
+    assert bucket_card.size() == buckets.size();
     final LNGVector<Literal> carries = new LNGVector<>();
     final EncodingResult tempResul = EncodingResult.resultForFormula(f); // TODO temporary solution
     for (int i = 0; i < buckets.size(); i++) {
@@ -189,7 +189,7 @@ final class PBBinaryMerge implements PBEncoding {
         formula.addAll(tempResul.result());
       }
       if (k <= buckets.get(i).size()) {
-        assert (k == bucket_card.get(i).size() || config.binaryMergeUseWatchDog);
+        assert k == bucket_card.get(i).size() || config.binaryMergeUseWatchDog;
         if (gac_lit != null)
           formula.add(f.clause(gac_lit, bucket_card.get(i).get(k - 1).negate()));
         else

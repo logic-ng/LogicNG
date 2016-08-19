@@ -73,24 +73,24 @@ final class CCAMOBinary implements CCAtMostOne {
   @Override
   public void build(final EncodingResult result, final Variable... vars) {
     result.reset();
-    final int numberOfBits = (int) Math.ceil((Math.log(vars.length) / Math.log(2)));
+    final int numberOfBits = (int) Math.ceil(Math.log(vars.length) / Math.log(2));
     final int twoPowNBits = (int) Math.pow(2, numberOfBits);
     final int k = (twoPowNBits - vars.length) * 2;
     final Variable[] bits = new Variable[numberOfBits];
     for (int i = 0; i < numberOfBits; i++)
       bits[i] = result.newVariable();
-    int gray_code;
-    int next_gray;
+    int grayCode;
+    int nextGray;
     int i = 0;
     int index = -1;
     while (i < k) {
       index++;
-      gray_code = i ^ (i >> 1);
+      grayCode = i ^ (i >> 1);
       i++;
-      next_gray = i ^ (i >> 1);
+      nextGray = i ^ (i >> 1);
       for (int j = 0; j < numberOfBits; ++j)
-        if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
-          if ((gray_code & (1 << j)) != 0)
+        if ((grayCode & (1 << j)) == (nextGray & (1 << j))) {
+          if ((grayCode & (1 << j)) != 0)
             result.addClause(vars[index].negate(), bits[j]);
           else
             result.addClause(vars[index].negate(), bits[j].negate());
@@ -99,9 +99,9 @@ final class CCAMOBinary implements CCAtMostOne {
     }
     while (i < twoPowNBits) {
       index++;
-      gray_code = i ^ (i >> 1);
+      grayCode = i ^ (i >> 1);
       for (int j = 0; j < numberOfBits; ++j)
-        if ((gray_code & (1 << j)) != 0)
+        if ((grayCode & (1 << j)) != 0)
           result.addClause(vars[index].negate(), bits[j]);
         else
           result.addClause(vars[index].negate(), bits[j].negate());

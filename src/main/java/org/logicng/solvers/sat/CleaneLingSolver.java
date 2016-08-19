@@ -1562,9 +1562,7 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     boolean res = true;
     for (int i = 0; i < addedlits.size(); i++) {
       lit = addedlits.get(i);
-      if (marked(lit) != 0)
-        res = false;
-      else if (marked(-lit) != 0)
+      if (marked(lit) != 0 || marked(-lit) != 0)
         res = false;
       else
         mark(lit);

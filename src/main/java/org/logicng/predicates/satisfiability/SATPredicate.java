@@ -73,9 +73,7 @@ public final class SATPredicate implements FormulaPredicate {
     boolean result;
     if (formula.type() == FType.FALSE)
       result = false;
-    else if (formula.type() == FType.TRUE || formula.type() == FType.LITERAL)
-      result = true;
-    else if (formula.holds(dnfPredicate))
+    else if (formula.type() == FType.TRUE || formula.type() == FType.LITERAL || formula.holds(dnfPredicate))
       result = true;
     else {
       this.solver.add(formula);
