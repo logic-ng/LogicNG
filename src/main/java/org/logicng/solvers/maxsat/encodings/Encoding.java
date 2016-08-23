@@ -193,9 +193,4 @@ public abstract class Encoding {
     s.addClause(this.clause);
     this.clause.clear();
   }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
 }

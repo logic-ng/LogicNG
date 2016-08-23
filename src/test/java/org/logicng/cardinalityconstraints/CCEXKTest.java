@@ -40,6 +40,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -123,5 +124,7 @@ public class CCEXKTest {
   public void testToString() {
     Assert.assertEquals("TOTALIZER", configs[0].exkEncoder.toString());
     Assert.assertEquals("CARDINALITY_NETWORK", configs[1].exkEncoder.toString());
+
+    Assert.assertTrue(Arrays.asList(CCConfig.EXK_ENCODER.values()).contains(CCConfig.EXK_ENCODER.valueOf("CARDINALITY_NETWORK")));
   }
 }

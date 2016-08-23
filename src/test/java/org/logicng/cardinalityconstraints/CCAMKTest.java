@@ -149,6 +149,8 @@ public class CCAMKTest {
     Assert.assertEquals("CCAMKTotalizer", new CCAMKTotalizer().toString());
     Assert.assertEquals("CCAMKModularTotalizer", new CCAMKModularTotalizer(f).toString());
     Assert.assertEquals("CCAMKCardinalityNetwork", new CCAMKCardinalityNetwork().toString());
+
+    Assert.assertTrue(Arrays.asList(CCConfig.AMK_ENCODER.values()).contains(CCConfig.AMK_ENCODER.valueOf("TOTALIZER")));
   }
 
   @Test

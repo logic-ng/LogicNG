@@ -42,16 +42,6 @@ public final class SolverState {
   private final int[] state;
 
   /**
-   * Creates a new solver state with a given internal solver state and id -1.
-   * @param state the internal solver state
-   * @deprecated use with explicit id
-   */
-  @Deprecated
-  public SolverState(final int[] state) {
-    this(-1, state);
-  }
-
-  /**
    * Creates a new solver state with a given id and internal solver data.
    * @param id    the id
    * @param state the solver data

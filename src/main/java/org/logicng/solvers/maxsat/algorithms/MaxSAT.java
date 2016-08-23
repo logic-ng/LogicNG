@@ -441,11 +441,6 @@ public abstract class MaxSAT {
     return handler == null || handler.foundUpperBound(upperBound, model);
   }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
-
   /**
    * The MaxSAT solver statistics.
    */
