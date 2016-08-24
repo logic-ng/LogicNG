@@ -70,6 +70,5 @@ public class EncodingsTest {
   public void testLadder() {
     Ladder ladder = new Ladder();
     Assert.assertEquals("Ladder", ladder.toString());
-    System.out.println(ladder.toString());
   }
 }

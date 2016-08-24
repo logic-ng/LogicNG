@@ -154,7 +154,8 @@ public class TseitinTest {
 
   @Test
   public void testToString() {
-    Assert.assertEquals("TseitinTransformation{boundary=0}", ts.toString());
+    TseitinTransformation tseitinTransformation = new TseitinTransformation(5);
+    Assert.assertEquals("TseitinTransformation{boundary=5}", tseitinTransformation.toString());
   }
 
   private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {

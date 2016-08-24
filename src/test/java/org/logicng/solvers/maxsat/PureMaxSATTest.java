@@ -31,11 +31,13 @@ package org.logicng.solvers.maxsat;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.F;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.MaxSATSolver;
+import org.logicng.solvers.maxsat.algorithms.LinearUS;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
@@ -242,10 +244,19 @@ public class PureMaxSATTest {
     solvers[4] = MaxSATSolver.wbo();
     solvers[5] = MaxSATSolver.wmsu3();
 
-    String expected = "MaxSATSolver{result=UNDEF, var2index={}}";
+    String expected = "MaxSATSolver{result=OPTIMUM, var2index={a=0, b=1}}";
 
-    for (int i = 0; i < 6; i++) {
-      Assert.assertEquals(expected, solvers[i].toString());
+    for (int i = 0; i<6;i++) {
+      MaxSATSolver s = solvers[i];
+      s.addHardFormula(F.OR3);
+      s.addSoftFormula(F.A, 1);
+      if(i==2 || i == 3) {
+        s.addSoftFormula(F.NA, 1);
+      }else {
+        s.addSoftFormula(F.NA, 2);
+      }
+      s.solve();
+      Assert.assertEquals(expected, s.toString());
     }
   }
 

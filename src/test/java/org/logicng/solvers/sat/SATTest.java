@@ -39,6 +39,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
@@ -113,7 +114,7 @@ public class SATTest {
       s.add(F.TRUE);
       Assert.assertEquals(TRUE, s.sat());
       Assert.assertEquals(0, s.model().size());
-      Assert.assertTrue(s.toString().contains("{result=TRUE"));
+      Assert.assertTrue(s.toString().contains("MiniSat{result=TRUE, incremental=") || s.toString().equals("CleaneLing{result=TRUE, idx2name={}}"));
       s.reset();
     }
   }
@@ -249,6 +250,48 @@ public class SATTest {
       }
       s.add(f.pbc(CType.GE, 10, lits, coeffs));
       Assert.assertEquals(Tristate.TRUE, s.sat());
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testPartialModel() {
+    for (SATSolver s : this.solvers) {
+      s.add(F.A);
+      s.add(F.B);
+      s.add(F.C);
+      Variable[] relevantVars = new Variable[2];
+      relevantVars[0] = F.A;
+      relevantVars[1] = F.B;
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      Assignment relModel = s.model(relevantVars);
+      Assert.assertTrue(relModel.negativeLiterals().isEmpty());
+      Assert.assertFalse(relModel.literals().contains(F.C));
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumerationHandler() {
+    for (SATSolver s : solvers) {
+      s.add(F.IMP3);
+      try {
+        List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
+          @Override
+          public boolean foundModel(Assignment assignment) {
+            return !assignment.negativeLiterals().isEmpty();
+          }
+        });
+        Assert.assertFalse(models.isEmpty());
+        Assert.assertTrue(models.get(models.size() - 1).negativeLiterals().isEmpty());
+        models.remove(models.size() - 1);
+        for (Assignment model : models) {
+          Assert.assertFalse(model.negativeLiterals().isEmpty());
+        }
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+
       s.reset();
     }
   }

@@ -205,7 +205,8 @@ public class PlaistedGreenbaumTest {
 
   @Test
   public void testToString() {
-    Assert.assertEquals("PlaistedGreenbaumTransformation{boundary=0}", pg.toString());
+    PlaistedGreenbaumTransformation pGTransformation = new PlaistedGreenbaumTransformation(5);
+    Assert.assertEquals("PlaistedGreenbaumTransformation{boundary=5}", pGTransformation.toString());
   }
 
   private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {
