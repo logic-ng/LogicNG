@@ -31,6 +31,7 @@ package org.logicng.solvers.maxsat;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.F;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
@@ -53,7 +54,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PureMaxSATTest {
@@ -230,6 +231,32 @@ public class PureMaxSATTest {
     solver.addSoftFormula(p.parse("~e"), 1);
     solver.addSoftFormula(p.parse("~x"), 1);
     solver.model();
+  }
+
+  @Test
+  public void testToString() {
+    MaxSATSolver[] solvers = new MaxSATSolver[6];
+    solvers[0] = MaxSATSolver.incWBO();
+    solvers[1] = MaxSATSolver.linearSU();
+    solvers[2] = MaxSATSolver.linearUS();
+    solvers[3] = MaxSATSolver.msu3();
+    solvers[4] = MaxSATSolver.wbo();
+    solvers[5] = MaxSATSolver.wmsu3();
+
+    String expected = "MaxSATSolver{result=OPTIMUM, var2index={a=0, b=1}}";
+
+    for (int i = 0; i < 6; i++) {
+      MaxSATSolver s = solvers[i];
+      s.addHardFormula(F.OR3);
+      s.addSoftFormula(F.A, 1);
+      if (i == 2 || i == 3) {
+        s.addSoftFormula(F.NA, 1);
+      } else {
+        s.addSoftFormula(F.NA, 2);
+      }
+      s.solve();
+      Assert.assertEquals(expected, s.toString());
+    }
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {

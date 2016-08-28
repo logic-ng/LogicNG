@@ -39,6 +39,7 @@ import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -108,8 +109,19 @@ public class CCALKTest {
 
   @Test
   public void testToString() {
+    FormulaFactory f = new FormulaFactory();
     Assert.assertEquals("TOTALIZER", configs[0].alkEncoder.toString());
     Assert.assertEquals("MODULAR_TOTALIZER", configs[1].alkEncoder.toString());
     Assert.assertEquals("CARDINALITY_NETWORK", configs[2].alkEncoder.toString());
+
+    Assert.assertEquals("CCTotalizer", new CCTotalizer().toString());
+    Assert.assertEquals("CCModularTotalizer", new CCModularTotalizer(f).toString());
+    Assert.assertEquals("CCCardinalityNetworks", new CCCardinalityNetworks().toString());
+
+    Assert.assertEquals("CCALKTotalizer", new CCALKTotalizer().toString());
+    Assert.assertEquals("CCALKModularTotalizer", new CCALKModularTotalizer(f).toString());
+    Assert.assertEquals("CCALKCardinalityNetwork", new CCALKCardinalityNetwork().toString());
+
+    Assert.assertTrue(Arrays.asList(CCConfig.ALK_ENCODER.values()).contains(CCConfig.ALK_ENCODER.valueOf("MODULAR_TOTALIZER")));
   }
 }

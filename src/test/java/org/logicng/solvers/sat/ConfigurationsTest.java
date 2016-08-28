@@ -32,9 +32,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
+import java.util.Arrays;
+
 /**
  * Unit tests for the solver configurations.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class ConfigurationsTest {
@@ -176,6 +178,11 @@ public class ConfigurationsTest {
             "stepsLim=999999\n" +
             "}\n";
     Assert.assertEquals(expected, config.toString());
+  }
+
+  @Test
+  public void testClauseBumping() {
+    Assert.assertTrue(Arrays.asList(CleaneLingConfig.ClauseBumping.values()).contains(CleaneLingConfig.ClauseBumping.valueOf("AVG")));
   }
 
   @Test

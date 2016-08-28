@@ -31,6 +31,7 @@ package org.logicng.cardinalityconstraints;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FormulaFactory;
@@ -38,6 +39,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -104,8 +106,24 @@ public class CCEXKTest {
   }
 
   @Test
+  public void testCCEXKTotalizer() {
+    FormulaFactory f = new FormulaFactory();
+    CCEXKTotalizer totalizer = new CCEXKTotalizer();
+    totalizer.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
+    Assert.assertNull(totalizer.incrementalData());
+    Assert.assertEquals("CCEXKTotalizer", totalizer.toString());
+
+    CCEXKCardinalityNetwork cNetwork = new CCEXKCardinalityNetwork();
+    cNetwork.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
+    Assert.assertNull(cNetwork.incrementalData());
+    Assert.assertEquals("CCEXKCardinalityNetwork", cNetwork.toString());
+  }
+
+  @Test
   public void testToString() {
     Assert.assertEquals("TOTALIZER", configs[0].exkEncoder.toString());
     Assert.assertEquals("CARDINALITY_NETWORK", configs[1].exkEncoder.toString());
+
+    Assert.assertTrue(Arrays.asList(CCConfig.EXK_ENCODER.values()).contains(CCConfig.EXK_ENCODER.valueOf("CARDINALITY_NETWORK")));
   }
 }

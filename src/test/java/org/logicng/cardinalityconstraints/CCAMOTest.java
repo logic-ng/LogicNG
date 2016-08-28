@@ -38,6 +38,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BEST;
@@ -134,6 +135,17 @@ public class CCAMOTest {
     Assert.assertEquals("COMMANDER", configs[5].amoEncoder.toString());
     Assert.assertEquals("BIMANDER", configs[7].amoEncoder.toString());
     Assert.assertEquals("BEST", configs[13].amoEncoder.toString());
+
+    Assert.assertEquals("CCAMOPure", new CCAMOPure().toString());
+    Assert.assertEquals("CCAMOLadder", new CCAMOLadder().toString());
+    Assert.assertEquals("CCAMOProduct", new CCAMOProduct(2).toString());
+    Assert.assertEquals("CCAMOBinary", new CCAMOBinary().toString());
+    Assert.assertEquals("CCAMONested", new CCAMONested(2).toString());
+    Assert.assertEquals("CCAMOCommander", new CCAMOCommander(2).toString());
+    Assert.assertEquals("CCAMOBimander", new CCAMOBimander(2).toString());
+
+    Assert.assertTrue(Arrays.asList(CCConfig.AMO_ENCODER.values()).contains(CCConfig.AMO_ENCODER.valueOf("LADDER")));
+    Assert.assertTrue(Arrays.asList(CCConfig.BIMANDER_GROUP_SIZE.values()).contains(CCConfig.BIMANDER_GROUP_SIZE.valueOf("SQRT")));
   }
 
   private void testAMO(int numLits, final FormulaFactory f, boolean miniCard) {

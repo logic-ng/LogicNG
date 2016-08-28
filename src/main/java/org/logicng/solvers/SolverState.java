@@ -32,7 +32,7 @@ import java.util.Arrays;
 
 /**
  * A wrapper class for the internal solver state.
- * @version 1.0.1
+ * @version 1.1
  * @since 1.0
  */
 public final class SolverState {
@@ -40,16 +40,6 @@ public final class SolverState {
   private final int id;
 
   private final int[] state;
-
-  /**
-   * Creates a new solver state with a given internal solver state and id -1.
-   * @param state the internal solver state
-   * @deprecated use with explicit id
-   */
-  @Deprecated
-  public SolverState(final int[] state) {
-    this(-1, state);
-  }
 
   /**
    * Creates a new solver state with a given id and internal solver data.

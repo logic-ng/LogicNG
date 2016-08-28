@@ -149,8 +149,8 @@ public final class CCIncrementalData {
    */
   public List<Formula> newUpperBound(int rhs) {
     this.result.reset();
-    computeUBConstraint(result, rhs);
-    return result.result();
+    this.computeUBConstraint(this.result, rhs);
+    return this.result.result();
   }
 
   /**
@@ -162,7 +162,7 @@ public final class CCIncrementalData {
    * @param rhs the new upperBound
    */
   public void newUpperBoundForSolver(int rhs) {
-    computeUBConstraint(result, rhs);
+    this.computeUBConstraint(this.result, rhs);
   }
 
   private void computeUBConstraint(final EncodingResult result, int rhs) {
@@ -212,8 +212,8 @@ public final class CCIncrementalData {
    */
   public List<Formula> newLowerBound(int rhs) {
     this.result.reset();
-    computeLBConstraint(result, rhs);
-    return result.result();
+    this.computeLBConstraint(this.result, rhs);
+    return this.result.result();
   }
 
   /**
@@ -225,7 +225,7 @@ public final class CCIncrementalData {
    * @param rhs the new upperBound
    */
   public void newLowerBoundForSolver(int rhs) {
-    computeLBConstraint(result, rhs);
+    this.computeLBConstraint(this.result, rhs);
   }
 
   private void computeLBConstraint(final EncodingResult result, int rhs) {
@@ -240,7 +240,7 @@ public final class CCIncrementalData {
           result.addClause(this.vector1.get(i));
         break;
       case MODULAR_TOTALIZER:
-        int newRHS = nVars - rhs;
+        int newRHS = this.nVars - rhs;
         assert this.vector1.size() != 0 || this.vector2.size() != 0;
         int ulimit = (newRHS + 1) / this.mod;
         int llimit = (newRHS + 1) - ulimit * this.mod;
@@ -261,7 +261,7 @@ public final class CCIncrementalData {
         }
         break;
       case CARDINALITY_NETWORK:
-        newRHS = nVars - rhs;
+        newRHS = this.nVars - rhs;
         if (this.vector1.size() > newRHS)
           result.addClause(this.vector1.get(newRHS).negate());
         break;
@@ -270,15 +270,23 @@ public final class CCIncrementalData {
     }
   }
 
+  /**
+   * Returns the current right hand side of this CCIncrementalData.
+   * @return the current right hand side of this CCIncrementalData.
+   */
+  public int currentRHS() {
+    return this.currentRHS;
+  }
+
   @Override
   public String toString() {
     return "CCIncrementalData{" +
-            ", amkEncoder=" + amkEncoder +
-            ", alkEncoder=" + alkEncoder +
-            ", vector1=" + vector1 +
-            ", vector2=" + vector2 +
-            ", mod=" + mod +
-            ", currentRHS=" + currentRHS +
+            ", amkEncoder=" + this.amkEncoder +
+            ", alkEncoder=" + this.alkEncoder +
+            ", vector1=" + this.vector1 +
+            ", vector2=" + this.vector2 +
+            ", mod=" + this.mod +
+            ", currentRHS=" + this.currentRHS +
             '}';
   }
 }

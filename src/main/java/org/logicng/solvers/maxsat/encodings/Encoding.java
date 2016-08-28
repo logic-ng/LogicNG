@@ -180,7 +180,7 @@ public abstract class Encoding {
    * @param d        the fourth literal
    * @param blocking the blocking literal
    */
-  void addQuaternaryClause(final MiniSatStyleSolver s, int a, int b, int c, int d, int blocking) {
+  private void addQuaternaryClause(final MiniSatStyleSolver s, int a, int b, int c, int d, int blocking) {
     assert this.clause.size() == 0;
     assert a != LIT_UNDEF && b != LIT_UNDEF && c != LIT_UNDEF && d != LIT_UNDEF;
     assert var(a) < s.nVars() && var(b) < s.nVars() && var(c) < s.nVars() && var(d) < s.nVars();
@@ -192,10 +192,5 @@ public abstract class Encoding {
       this.clause.push(blocking);
     s.addClause(this.clause);
     this.clause.clear();
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 }
