@@ -65,7 +65,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 1.0.1
+ * @version 1.1
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -75,9 +75,9 @@ public final class MiniSat extends SATSolver {
   private final MiniSatStyleSolver solver;
   private final CCEncoder ccEncoder;
   private final SolverStyle style;
+  private final LNGIntVector validStates;
   private boolean incremental;
   private boolean initialPhase;
-  private final LNGIntVector validStates;
   private int nextStateId;
 
   /**
@@ -171,14 +171,6 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public CCIncrementalData addIncrementalCC(PBConstraint cc) {
-    if (!cc.isCC())
-      throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");
-    final EncodingResult result = EncodingResult.resultForMiniSat(this.f, this);
-    return ccEncoder.encodeIncremental(cc, result);
-  }
-
-  @Override
   public void add(final Formula formula) {
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
@@ -205,6 +197,14 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
+  public CCIncrementalData addIncrementalCC(PBConstraint cc) {
+    if (!cc.isCC())
+      throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");
+    final EncodingResult result = EncodingResult.resultForMiniSat(this.f, this);
+    return ccEncoder.encodeIncremental(cc, result);
+  }
+
+  @Override
   protected void addClause(final Formula formula) {
     this.result = UNDEF;
     this.solver.addClause(generateClauseVector(formula.literals()));
@@ -216,25 +216,6 @@ public final class MiniSat extends SATSolver {
     final SortedSet<Literal> literals = new TreeSet<>(formula.literals());
     literals.add(relaxationVar);
     this.solver.addClause(generateClauseVector(literals));
-  }
-
-  /**
-   * Generates a clause vector of a collection of literals.
-   * @param literals the literals
-   * @return the clause vector
-   */
-  private LNGIntVector generateClauseVector(final Collection<Literal> literals) {
-    final LNGIntVector clauseVec = new LNGIntVector(literals.size());
-    for (Literal lit : literals) {
-      int index = this.solver.idxForName(lit.name());
-      if (index == -1) {
-        index = this.solver.newVar(!initialPhase, true);
-        this.solver.addName(lit.name(), index);
-      }
-      int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
-      clauseVec.push(litNum);
-    }
-    return clauseVec;
   }
 
   @Override
@@ -325,26 +306,6 @@ public final class MiniSat extends SATSolver {
     return models;
   }
 
-  /**
-   * Creates an assignment from a Boolean vector of the solver.
-   * @param vec       the vector of the solver
-   * @param variables the variables which should appear in the model or {@code null} if all variables should
-   *                  appear
-   * @return the assignment
-   */
-  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
-    final Assignment model = new Assignment();
-    for (int i = 0; i < vec.size(); i++) {
-      final Variable var = this.f.variable(this.solver.nameForIdx(i));
-      if (vec.get(i)) {
-        if (variables == null || variables.contains(var))
-          model.addLiteral(var);
-      } else if (variables == null || variables.contains(var))
-        model.addLiteral(var.negate());
-    }
-    return model;
-  }
-
   @Override
   public SolverState saveState() {
     final int id = this.nextStateId++;
@@ -363,6 +324,45 @@ public final class MiniSat extends SATSolver {
     this.validStates.shrinkTo(index + 1);
     this.solver.loadState(state.state());
     this.result = UNDEF;
+  }
+
+  /**
+   * Generates a clause vector of a collection of literals.
+   * @param literals the literals
+   * @return the clause vector
+   */
+  private LNGIntVector generateClauseVector(final Collection<Literal> literals) {
+    final LNGIntVector clauseVec = new LNGIntVector(literals.size());
+    for (Literal lit : literals) {
+      int index = this.solver.idxForName(lit.name());
+      if (index == -1) {
+        index = this.solver.newVar(!initialPhase, true);
+        this.solver.addName(lit.name(), index);
+      }
+      int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
+      clauseVec.push(litNum);
+    }
+    return clauseVec;
+  }
+
+  /**
+   * Creates an assignment from a Boolean vector of the solver.
+   * @param vec       the vector of the solver
+   * @param variables the variables which should appear in the model or {@code null} if all variables should
+   *                  appear
+   * @return the assignment
+   */
+  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
+    final Assignment model = new Assignment();
+    for (int i = 0; i < vec.size(); i++) {
+      final Variable var = this.f.variable(this.solver.nameForIdx(i));
+      if (vec.get(i)) {
+        if (variables == null || variables.contains(var))
+          model.addLiteral(var);
+      } else if (variables == null || variables.contains(var))
+        model.addLiteral(var.negate());
+    }
+    return model;
   }
 
   /**

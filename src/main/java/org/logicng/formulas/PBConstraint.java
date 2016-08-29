@@ -119,6 +119,16 @@ public final class PBConstraint extends Formula {
   }
 
   /**
+   * Returns the GCD of two given values.
+   * @param small the smaller value
+   * @param big   the larger value
+   * @return the GCD of the two values
+   */
+  private static int gcd(int small, int big) {
+    return small == 0 ? big : gcd(big % small, small);
+  }
+
+  /**
    * Returns the literals of this constraint.
    * @return the literals of this constraint
    */
@@ -296,16 +306,6 @@ public final class PBConstraint extends Formula {
     return f.pbc(CType.LE, c, lits, coeffs);
   }
 
-  /**
-   * Returns the GCD of two given values.
-   * @param small the smaller value
-   * @param big   the larger value
-   * @return the GCD of the two values
-   */
-  private static int gcd(int small, int big) {
-    return small == 0 ? big : gcd(big % small, small);
-  }
-
   @Override
   public long numberOfAtoms() {
     return 1L;
@@ -320,13 +320,13 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
-  public boolean isAtomicFormula() {
-    return true;
+  public int numberOfOperands() {
+    return 0;
   }
 
   @Override
-  public int numberOfOperands() {
-    return 0;
+  public boolean isAtomicFormula() {
+    return true;
   }
 
   @Override
@@ -358,41 +358,6 @@ public final class PBConstraint extends Formula {
   public boolean evaluate(final Assignment assignment) {
     int lhs = this.evaluateLHS(assignment);
     return this.evaluateComparator(lhs);
-  }
-
-  /**
-   * Returns the evaluation of the left-hand side of this constraint.
-   * @param assignment the assignment
-   * @return the evaluation of the left-hand side of this constraint
-   */
-  private int evaluateLHS(final Assignment assignment) {
-    int lhs = 0;
-    for (int i = 0; i < this.literals.length; i++)
-      if (this.literals[i].evaluate(assignment))
-        lhs += this.coefficients[i];
-    return lhs;
-  }
-
-  /**
-   * Computes the result of evaluating the comparator with a given left-hand side.
-   * @param lhs the left-hand side
-   * @return {@code true} if the comparator evaluates to true, {@code false} otherwise
-   */
-  private boolean evaluateComparator(int lhs) {
-    switch (this.comparator) {
-      case EQ:
-        return lhs == this.rhs;
-      case LE:
-        return lhs <= this.rhs;
-      case LT:
-        return lhs < this.rhs;
-      case GE:
-        return lhs >= this.rhs;
-      case GT:
-        return lhs > this.rhs;
-      default:
-        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
-    }
   }
 
   @Override
@@ -488,6 +453,41 @@ public final class PBConstraint extends Formula {
       this.setTransformationCacheEntry(NNF, nnf);
     }
     return nnf;
+  }
+
+  /**
+   * Returns the evaluation of the left-hand side of this constraint.
+   * @param assignment the assignment
+   * @return the evaluation of the left-hand side of this constraint
+   */
+  private int evaluateLHS(final Assignment assignment) {
+    int lhs = 0;
+    for (int i = 0; i < this.literals.length; i++)
+      if (this.literals[i].evaluate(assignment))
+        lhs += this.coefficients[i];
+    return lhs;
+  }
+
+  /**
+   * Computes the result of evaluating the comparator with a given left-hand side.
+   * @param lhs the left-hand side
+   * @return {@code true} if the comparator evaluates to true, {@code false} otherwise
+   */
+  private boolean evaluateComparator(int lhs) {
+    switch (this.comparator) {
+      case EQ:
+        return lhs == this.rhs;
+      case LE:
+        return lhs <= this.rhs;
+      case LT:
+        return lhs < this.rhs;
+      case GE:
+        return lhs >= this.rhs;
+      case GT:
+        return lhs > this.rhs;
+      default:
+        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
+    }
   }
 
   /**

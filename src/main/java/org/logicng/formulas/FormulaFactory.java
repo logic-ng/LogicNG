@@ -66,7 +66,7 @@ import static org.logicng.formulas.FType.TRUE;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class FormulaFactory {
@@ -79,6 +79,15 @@ public final class FormulaFactory {
 
   private final CFalse cFalse;
   private final CTrue cTrue;
+  private final FormulaStringRepresentation stringRepresentation;
+  private final Map<ConfigurationType, Configuration> configurations;
+  private final String ccPrefix;
+  private final String pbPrefix;
+  private final String cnfPrefix;
+  private final SubNodeFunction subformulaFunction;
+  private final PBEncoder pbEncoder;
+  private final CNFEncoder cnfEncoder;
+  private final PseudoBooleanParser parser;
   private Map<String, Variable> posLiterals;
   private Map<String, Literal> negLiterals;
   private Set<Variable> generatedVariables;
@@ -94,25 +103,11 @@ public final class FormulaFactory {
   private Map<LinkedHashSet<? extends Formula>, Or> ors4;
   private Map<LinkedHashSet<? extends Formula>, Or> orsN;
   private Map<PBOperands, PBConstraint> pbConstraints;
-
-  private final FormulaStringRepresentation stringRepresentation;
-  private final Map<ConfigurationType, Configuration> configurations;
-
   private boolean cnfCheck;
   private boolean[] formulaAdditionResult;
-
-  private final String ccPrefix;
-  private final String pbPrefix;
-  private final String cnfPrefix;
   private int ccCounter;
   private int pbCounter;
   private int cnfCounter;
-
-  private final SubNodeFunction subformulaFunction;
-  private final PBEncoder pbEncoder;
-  private final CNFEncoder cnfEncoder;
-
-  private final PseudoBooleanParser parser;
 
   /**
    * Constructor for a new formula factory.
@@ -158,6 +153,17 @@ public final class FormulaFactory {
    */
   public FormulaFactory() {
     this("", new DefaultStringRepresentation());
+  }
+
+  /**
+   * Returns {@code true} if a given list of formulas contains the negation of a  given formula,
+   * {@code false} otherwise.
+   * @param formulas the list of formulas
+   * @param f        the formula
+   * @return {@code true} if a given list of formulas contains a given formula, {@code false} otherwise
+   */
+  private static boolean containsComplement(final LinkedHashSet<Formula> formulas, Formula f) {
+    return formulas.contains(f.negate());
   }
 
   /**
@@ -975,17 +981,23 @@ public final class FormulaFactory {
   }
 
   /**
-   * Returns {@code true} if a given list of formulas contains the negation of a  given formula,
-   * {@code false} otherwise.
-   * @param formulas the list of formulas
-   * @param f        the formula
-   * @return {@code true} if a given list of formulas contains a given formula, {@code false} otherwise
+   * Returns a string representation of a formula with this factories string representation
+   * @param formula the formula
+   * @return the string representation
    */
-  private static boolean containsComplement(final LinkedHashSet<Formula> formulas, Formula f) {
-    return formulas.contains(f.negate());
+  public String string(final Formula formula) {
+    return this.stringRepresentation.toString(formula);
   }
 
-  @Override
+  /**
+   * Returns a string representation of a formula with this factories string representation
+   * @param formula              the formula
+   * @param stringRepresentation the string representation
+   * @return the string representation
+   */
+  public String string(final Formula formula, final FormulaStringRepresentation stringRepresentation) {
+    return stringRepresentation.toString(formula);
+  }  @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
     sb.append("Name:              ").append(this.name).append("\n");
@@ -1003,25 +1015,6 @@ public final class FormulaFactory {
     sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
     sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
     return sb.toString();
-  }
-
-  /**
-   * Returns a string representation of a formula with this factories string representation
-   * @param formula the formula
-   * @return the string representation
-   */
-  public String string(final Formula formula) {
-    return this.stringRepresentation.toString(formula);
-  }
-
-  /**
-   * Returns a string representation of a formula with this factories string representation
-   * @param formula              the formula
-   * @param stringRepresentation the string representation
-   * @return the string representation
-   */
-  public String string(final Formula formula, final FormulaStringRepresentation stringRepresentation) {
-    return stringRepresentation.toString(formula);
   }
 
   /**
@@ -1065,4 +1058,8 @@ public final class FormulaFactory {
       return false;
     }
   }
+
+
+
+
 }

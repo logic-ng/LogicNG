@@ -51,10 +51,10 @@
 
 package org.logicng.pseudobooleans;
 
-import org.logicng.datastructures.EncodingResult;
 import org.logicng.cardinalityconstraints.CCSorting;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;

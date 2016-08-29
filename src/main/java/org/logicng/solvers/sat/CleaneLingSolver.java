@@ -68,7 +68,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * A complete Reimplementation of the CleaneLing solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CleaneLingSolver extends CleaneLingStyleSolver {
@@ -129,9 +129,121 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
   }
 
   @Override
+  public Tristate solve(final SATHandler handler) {
+    this.handler = handler;
+    if (this.handler != null)
+      this.handler.startedSolving();
+    model.clear();
+    initLimits();
+    biasPhases();
+    Tristate res;
+    while (true)
+      if ((res = search()) != UNDEF || this.canceledByHandler)
+        break;
+      else if ((res = simplify()) != UNDEF || this.canceledByHandler)
+        break;
+      else updateLimits();
+    switch (res) {
+      case TRUE:
+        extend();
+        break;
+      case FALSE:
+        break;
+      default:
+        break;
+    }
+    if (res == TRUE)
+      for (int i = 0; i < this.vals.size(); i++)
+        model.push(this.vals.get(i) == VALUE_TRUE);
+    if (this.handler != null)
+      this.handler.finishedSolving();
+    this.handler = null;
+    this.canceledByHandler = false;
+    backtrack();
+    return res;
+  }
+
+  @Override
   public void reset() {
     super.reset();
     this.initializeOriginalSolver();
+  }
+
+  @Override
+  protected void importLit(int lit) {
+    int idx = Math.abs(lit);
+    assert lit != 0;
+    int newIdx;
+    while (idx >= (newIdx = vars.size())) {
+      vars.push(new CLVar());
+      vals.push((byte) 0);
+      phases.push((byte) 0);
+      watches.push(new LNGVector<CLWatch>());
+      watches.push(new LNGVector<CLWatch>());
+      occs.push(new CLOccs[]{new CLOccs(), new CLOccs()});
+      if (newIdx == 0)
+        continue;
+      decisions.push(newIdx);
+    }
+  }
+
+  @Override
+  protected void newPushConnectClause(boolean redundant, int glue) {
+    final CLClause c = newClause(redundant, glue);
+    clauses.push(c);
+    connectClause(c);
+  }
+
+  @Override
+  protected void assign(int lit, final CLClause reason) {
+    final CLVar v = var(lit);
+    assert val(lit) == VALUE_UNASSIGNED;
+    int idx = Math.abs(lit);
+    final byte s = sign(lit);
+    vals.set(idx, s);
+    if (simplifier == Simplifier.NOSIMP)
+      phases.set(idx, s);
+    v.setLevel(level);
+    if (level == 0) {
+      stats.varsFixed++;
+      if (v.state() == CLVar.State.ELIMINATED) {
+        assert stats.varsEliminated > 0;
+        stats.varsEliminated--;
+      } else
+        assert v.state() == CLVar.State.FREE;
+      v.setState(CLVar.State.FIXED);
+    }
+    trail.push(lit);
+    v.setReason(reason);
+    if (v.reason() != null) {
+      assert !reason.forcing();
+      reason.setForcing(true);
+      if (reason.redundant() && !reason.important())
+        limits.reduceForcing++;
+      updateGlue(reason);
+    }
+  }
+
+  @Override
+  protected void unassign(int lit) {
+    assert level > 0;
+    final CLClause reason;
+    final CLVar v = var(lit);
+    vals.set(Math.abs(lit), VALUE_UNASSIGNED);
+    assert v.level() == level;
+    v.setLevel(Integer.MAX_VALUE);
+    reason = v.reason();
+    if (reason != null) {
+      assert reason.forcing();
+      reason.setForcing(false);
+      if (reason.redundant() && !reason.important()) {
+        assert limits.reduceForcing > 0;
+        limits.reduceForcing--;
+      }
+    }
+    final int idx = Math.abs(lit);
+    if (!decisions.contains(idx))
+      decisions.push(idx);
   }
 
   @Override
@@ -188,37 +300,284 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
   }
 
   @Override
-  public Tristate solve(final SATHandler handler) {
-    this.handler = handler;
-    if (this.handler != null)
-      this.handler.startedSolving();
-    model.clear();
-    initLimits();
-    biasPhases();
-    Tristate res;
-    while (true)
-      if ((res = search()) != UNDEF || this.canceledByHandler)
-        break;
-      else if ((res = simplify()) != UNDEF || this.canceledByHandler)
-        break;
-      else updateLimits();
-    switch (res) {
-      case TRUE:
-        extend();
-        break;
-      case FALSE:
-        break;
-      default:
-        break;
+  protected CLClause newClause(boolean redundant, int glue) {
+    CLClause c = new CLClause();
+    assert glue == 0 || redundant;
+    assert eachVariableOccursOnlyOnce();
+    if (config.gluered)
+      c.setGlue(glue);
+    else
+      assert c.glue() == 0;
+    c.setImportant(glue <= config.gluekeep);
+    c.setRedundant(redundant);
+    c.setActivity(stats.conflicts);
+    for (int i = 0; i < addedlits.size(); i++)
+      c.lits().push(addedlits.get(i));
+    if (redundant)
+      stats.clausesRedundant++;
+    else
+      stats.clausesIrredundant++;
+    return c;
+  }
+
+  @Override
+  protected void connectClause(final CLClause c) {
+    if (c.satisfied())
+      return;
+
+    int size = c.size();
+    boolean binary = size == 2;
+    for (int p = 0; p < 2; p++)
+      for (int q = p + 1; q < c.lits().size(); q++) {
+        int lit = c.lits().get(q);
+        int litP = c.lits().get(p);
+        int cmp = var(lit).level() - var(litP).level();
+        if (cmp > 0 || (cmp == 0 && (val(lit) > val(litP)))) {
+          c.lits().set(p, lit);
+          c.lits().set(q, litP);
+        }
+      }
+    int l0 = c.lits().get(0);
+    int l1 = l0 != 0 ? c.lits().get(1) : 0;
+    int newLevel = (l0 != 0 && l1 != 0) ? Math.min(var(l0).level(), var(l1).level()) : 0;
+    if (newLevel != Integer.MAX_VALUE)
+      backtrack(newLevel);
+    if (size >= 2) {
+      addWatch(l0, l1, binary, c);
+      addWatch(l1, l0, binary, c);
+      if (dense)
+        connectOccs(c);
     }
-    if (res == TRUE)
-      for (int i = 0; i < this.vals.size(); i++)
-        model.push(this.vals.get(i) == VALUE_TRUE);
-    if (this.handler != null)
-      this.handler.finishedSolving();
-    this.handler = null;
-    this.canceledByHandler = false;
-    backtrack();
+    boolean ignore = false;
+    int lit = 0;
+    int other;
+    int tmp;
+    int p;
+    for (p = 0; p < c.lits().size(); p++) {
+      other = c.lits().get(p);
+      tmp = val(other);
+      if (tmp == VALUE_TRUE) {
+        ignore = true;
+        break;
+      }
+      if (tmp == VALUE_UNASSIGNED) {
+        if (lit != 0)
+          ignore = true;
+        else
+          lit = other;
+      }
+    }
+    if (!ignore) {
+      if (lit == 0) {
+        assert level == 0;
+        if (empty == null)
+          empty = c;
+      } else assign(lit, c);
+    }
+    if (c.redundant() && c.important())
+      limits.reduceImportant++;
+  }
+
+  @Override
+  protected CLClause bcp() {
+    int visits = 0;
+    int propagations = 0;
+    CLClause conflict = empty;
+    while (conflict == null && next < trail.size()) {
+      propagations++;
+      int lit = -trail.get(next++);
+      stats.steps++;
+      LNGVector<CLWatch> ws = watches(lit);
+      LNGVector<CLWatch> newWS = new LNGVector<>();
+      int i;
+      for (i = 0; conflict == null && i < ws.size(); i++) {
+        CLWatch w = ws.get(i);
+        newWS.push(w);
+        int other = w.blit();
+        byte v = val(other);
+        if (v == VALUE_TRUE)
+          continue;
+        CLClause clause = w.clause();
+        if (ignore != null) {
+          if (ignore == clause)
+            continue;
+          if (clause.redundant()) {
+            if (!w.binary())
+              visits++;
+            continue;
+          }
+        }
+        if (w.binary()) {
+          if (v == VALUE_FALSE)
+            conflict = clause;
+          else
+            assign(other, clause);
+        } else {
+          visits++;
+          if (clause.dumped()) {
+            newWS.pop();
+            continue;
+          }
+          int p;
+          if (clause.lits().get(0) == lit) {
+            int temp = clause.lits().get(0);
+            clause.lits().set(0, clause.lits().get(1));
+            clause.lits().set(1, temp);
+          }
+          assert clause.lits().get(1) == lit;
+          for (p = 2; p < clause.lits().size(); p++) {
+            other = clause.lits().get(p);
+            if (val(other) >= 0)
+              break;
+          }
+          if (p == clause.size())
+            other = 0;
+          if (other != 0) {
+            clause.lits().set(p, lit);
+            clause.lits().set(1, other);
+            addWatch(other, clause.lits().get(0), false, clause);
+            newWS.pop();
+          } else {
+            other = clause.lits().get(0);
+            v = val(other);
+            if (v == VALUE_FALSE)
+              conflict = clause;
+            else if (v != VALUE_TRUE)
+              assign(other, clause);
+            else
+              newWS.back().setBlit(other);
+          }
+        }
+      }
+      if (conflict != null)
+        while (i < ws.size())
+          newWS.push(ws.get(i++));
+      ws.replaceInplace(newWS);
+    }
+    if (conflict != null && simplifier == Simplifier.NOSIMP)
+      stats.conflicts++;
+    stats.propagations += propagations;
+    stats.steps += visits;
+    return conflict;
+  }
+
+  @Override
+  protected void minimizeClause() {
+    int learned = addedlits.size();
+    stats.litsLearned += learned;
+    LNGIntVector newAddedLits = new LNGIntVector(addedlits.size());
+    for (int i = 0; i < addedlits.size(); i++) {
+      final int lit = addedlits.get(i);
+      if (!minimizeLit(-lit))
+        newAddedLits.push(lit);
+    }
+    addedlits = newAddedLits;
+    stats.litsMinimized += learned - addedlits.size();
+  }
+
+  @Override
+  protected void analyze(final CLClause r) {
+    CLClause reason = r;
+    if (empty != null) {
+      assert level == 0;
+      return;
+    }
+    updateGlue(reason);
+    assert addedlits.empty();
+    int lit = 0;
+    int open = 0;
+    int it = trail.size();
+    while (true) {
+      bumpClause(reason);
+      for (int p = 0; p < reason.lits().size(); p++) {
+        lit = reason.lits().get(p);
+        if (pullLit(lit))
+          open++;
+      }
+      while (it > 0 && marked(lit = -trail.get(--it)) == 0)
+        assert var(lit).level() == level;
+      if (it == 0 || --open == 0)
+        break;
+      reason = var(lit).reason();
+      assert reason != null;
+    }
+
+    assert lit != 0;
+    addedlits.push(lit);
+    minimizeClause();
+    unmark();
+    int glue = unmarkFrames();
+    stats.gluesCount++;
+    stats.gluesSum += glue;
+    stats.sizes += addedlits.size();
+    newPushConnectClause(true, glue);
+    addedlits.clear();
+    scoreIncrement *= config.scincfact / 1000.0;
+    if (simplifier == Simplifier.NOSIMP && level == 0 && empty == null) {
+      limits.searchConflicts += config.itsimpdel;
+      stats.iterations++;
+    }
+  }
+
+  @Override
+  protected boolean restarting() {
+    return config.restart && stats.conflicts >= limits.restart;
+  }
+
+  @Override
+  protected void restart() {
+    stats.restartsCount++;
+    int nextDecision = 0;
+    while (nextDecision == 0 && !decisions.empty()) {
+      int lit = decisions.top();
+      if (val(lit) != 0)
+        decisions.pop(lit);
+      else nextDecision = lit;
+    }
+    if (nextDecision != 0) {
+      int newLevel;
+      if (config.reusetrail) {
+        double nextDecisionPriority = decisions.priority(nextDecision);
+        for (newLevel = 0; newLevel < level; newLevel++) {
+          CLFrame frame = control.get(newLevel + 1);
+          int decision = Math.abs(frame.decision());
+          if (decisions.priority(decision) < nextDecisionPriority)
+            break;
+        }
+        if (newLevel != 0) {
+          stats.restartsReuseCount++;
+          stats.restartsReuseSum += (100 * newLevel) / level;
+        }
+      } else
+        newLevel = 0; // Do not reuse trail.  Back track to the top.
+      backtrack(newLevel);
+    }
+    newRestartLimit();
+  }
+
+  @Override
+  protected Tristate search() {
+    long conflicts = 0;
+    CLClause conflict;
+    Tristate res = UNDEF;
+    while (res == UNDEF)
+      if (empty != null)
+        res = FALSE;
+      else if ((conflict = bcp()) != null) {
+        if (handler != null && !handler.detectedConflict()) {
+          canceledByHandler = true;
+          return UNDEF;
+        }
+        analyze(conflict);
+        conflicts++;
+      } else if (conflicts >= limits.searchConflicts)
+        break;
+      else if (reducing())
+        reduce();
+      else if (restarting())
+        restart();
+      else if (!decide())
+        res = TRUE;
     return res;
   }
 
@@ -258,7 +617,8 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
    * Updates and pushes a literal as candidate to simplify.
    * @param lit the literal
    */
-  private void touch(int lit) {
+  private void touch(int l) {
+    int lit = l;
     if (lit < 0)
       lit = -lit;
     long newPriority = (long) occs(lit).count() + occs(-lit).count();
@@ -349,58 +709,6 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     touch(lit);
   }
 
-  @Override
-  protected void assign(int lit, final CLClause reason) {
-    final CLVar v = var(lit);
-    assert val(lit) == VALUE_UNASSIGNED;
-    int idx = Math.abs(lit);
-    final byte s = sign(lit);
-    vals.set(idx, s);
-    if (simplifier == Simplifier.NOSIMP)
-      phases.set(idx, s);
-    v.setLevel(level);
-    if (level == 0) {
-      stats.varsFixed++;
-      if (v.state() == CLVar.State.ELIMINATED) {
-        assert stats.varsEliminated > 0;
-        stats.varsEliminated--;
-      } else
-        assert v.state() == CLVar.State.FREE;
-      v.setState(CLVar.State.FIXED);
-    }
-    trail.push(lit);
-    v.setReason(reason);
-    if (v.reason() != null) {
-      assert !reason.forcing();
-      reason.setForcing(true);
-      if (reason.redundant() && !reason.important())
-        limits.reduceForcing++;
-      updateGlue(reason);
-    }
-  }
-
-  @Override
-  protected void unassign(int lit) {
-    assert level > 0;
-    final CLClause reason;
-    final CLVar v = var(lit);
-    vals.set(Math.abs(lit), VALUE_UNASSIGNED);
-    assert v.level() == level;
-    v.setLevel(Integer.MAX_VALUE);
-    reason = v.reason();
-    if (reason != null) {
-      assert reason.forcing();
-      reason.setForcing(false);
-      if (reason.redundant() && !reason.important()) {
-        assert limits.reduceForcing > 0;
-        limits.reduceForcing--;
-      }
-    }
-    final int idx = Math.abs(lit);
-    if (!decisions.contains(idx))
-      decisions.push(idx);
-  }
-
   /**
    * Updates the glue value for a given clause.
    * @param c the clause
@@ -422,92 +730,6 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     stats.gluesSum += newGlue;
     stats.gluesCount++;
     stats.gluesUpdates++;
-  }
-
-  @Override
-  protected CLClause newClause(boolean redundant, int glue) {
-    CLClause c = new CLClause();
-    assert glue == 0 || redundant;
-    assert eachVariableOccursOnlyOnce();
-    if (config.gluered)
-      c.setGlue(glue);
-    else
-      assert c.glue() == 0;
-    c.setImportant(glue <= config.gluekeep);
-    c.setRedundant(redundant);
-    c.setActivity(stats.conflicts);
-    for (int i = 0; i < addedlits.size(); i++)
-      c.lits().push(addedlits.get(i));
-    if (redundant)
-      stats.clausesRedundant++;
-    else
-      stats.clausesIrredundant++;
-    return c;
-  }
-
-  @Override
-  protected void newPushConnectClause(boolean redundant, int glue) {
-    final CLClause c = newClause(redundant, glue);
-    clauses.push(c);
-    connectClause(c);
-  }
-
-  @Override
-  protected void connectClause(final CLClause c) {
-    if (c.satisfied())
-      return;
-
-    int size = c.size();
-    boolean binary = size == 2;
-    for (int p = 0; p < 2; p++)
-      for (int q = p + 1; q < c.lits().size(); q++) {
-        int lit = c.lits().get(q);
-        int litP = c.lits().get(p);
-        int cmp = var(lit).level() - var(litP).level();
-        if (cmp > 0 || (cmp == 0 && (val(lit) > val(litP)))) {
-          c.lits().set(p, lit);
-          c.lits().set(q, litP);
-        }
-      }
-    int l0 = c.lits().get(0);
-    int l1 = l0 != 0 ? c.lits().get(1) : 0;
-    int newLevel = (l0 != 0 && l1 != 0) ? Math.min(var(l0).level(), var(l1).level()) : 0;
-    if (newLevel != Integer.MAX_VALUE)
-      backtrack(newLevel);
-    if (size >= 2) {
-      addWatch(l0, l1, binary, c);
-      addWatch(l1, l0, binary, c);
-      if (dense)
-        connectOccs(c);
-    }
-    boolean ignore = false;
-    int lit = 0;
-    int other;
-    int tmp;
-    int p;
-    for (p = 0; p < c.lits().size(); p++) {
-      other = c.lits().get(p);
-      tmp = val(other);
-      if (tmp == VALUE_TRUE) {
-        ignore = true;
-        break;
-      }
-      if (tmp == VALUE_UNASSIGNED) {
-        if (lit != 0)
-          ignore = true;
-        else
-          lit = other;
-      }
-    }
-    if (!ignore) {
-      if (lit == 0) {
-        assert level == 0;
-        if (empty == null)
-          empty = c;
-      } else assign(lit, c);
-    }
-    if (c.redundant() && c.important())
-      limits.reduceImportant++;
   }
 
   /**
@@ -538,107 +760,6 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     dumpClause(c);
   }
 
-  @Override
-  protected void importLit(int lit) {
-    int idx = Math.abs(lit);
-    assert lit != 0;
-    int newIdx;
-    while (idx >= (newIdx = vars.size())) {
-      vars.push(new CLVar());
-      vals.push((byte) 0);
-      phases.push((byte) 0);
-      watches.push(new LNGVector<CLWatch>());
-      watches.push(new LNGVector<CLWatch>());
-      occs.push(new CLOccs[]{new CLOccs(), new CLOccs()});
-      if (newIdx == 0)
-        continue;
-      decisions.push(newIdx);
-    }
-  }
-
-  @Override
-  protected CLClause bcp() {
-    int visits = 0;
-    int propagations = 0;
-    CLClause conflict = empty;
-    while (conflict == null && next < trail.size()) {
-      propagations++;
-      int lit = -trail.get(next++);
-      stats.steps++;
-      LNGVector<CLWatch> ws = watches(lit);
-      LNGVector<CLWatch> newWS = new LNGVector<>();
-      int i;
-      for (i = 0; conflict == null && i < ws.size(); i++) {
-        CLWatch w = ws.get(i);
-        newWS.push(w);
-        int other = w.blit();
-        byte v = val(other);
-        if (v == VALUE_TRUE)
-          continue;
-        CLClause clause = w.clause();
-        if (ignore != null) {
-          if (ignore == clause)
-            continue;
-          if (clause.redundant()) {
-            if (!w.binary())
-              visits++;
-            continue;
-          }
-        }
-        if (w.binary()) {
-          if (v == VALUE_FALSE)
-            conflict = clause;
-          else
-            assign(other, clause);
-        } else {
-          visits++;
-          if (clause.dumped()) {
-            newWS.pop();
-            continue;
-          }
-          int p;
-          if (clause.lits().get(0) == lit) {
-            int temp = clause.lits().get(0);
-            clause.lits().set(0, clause.lits().get(1));
-            clause.lits().set(1, temp);
-          }
-          assert clause.lits().get(1) == lit;
-          for (p = 2; p < clause.lits().size(); p++) {
-            other = clause.lits().get(p);
-            if (val(other) >= 0)
-              break;
-          }
-          if (p == clause.size())
-            other = 0;
-          if (other != 0) {
-            clause.lits().set(p, lit);
-            clause.lits().set(1, other);
-            addWatch(other, clause.lits().get(0), false, clause);
-            newWS.pop();
-          } else {
-            other = clause.lits().get(0);
-            v = val(other);
-            if (v == VALUE_FALSE)
-              conflict = clause;
-            else if (v != VALUE_TRUE)
-              assign(other, clause);
-            else
-              newWS.back().setBlit(other);
-          }
-        }
-      }
-      if (conflict != null)
-        while (i < ws.size())
-          newWS.push(ws.get(i++));
-      ws.replaceInplace(newWS);
-    }
-    if (conflict != null && simplifier == Simplifier.NOSIMP)
-      stats.conflicts++;
-    stats.propagations += propagations;
-    stats.steps += visits;
-    return conflict;
-  }
-
   /**
    * Bumps a clause and increments it's activity.
    * @param c the clause
@@ -659,99 +780,6 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         assert config.cbump == CleaneLingConfig.ClauseBumping.NONE;
         break;
     }
-  }
-
-  @Override
-  protected void minimizeClause() {
-    int learned = addedlits.size();
-    stats.litsLearned += learned;
-    LNGIntVector newAddedLits = new LNGIntVector(addedlits.size());
-    for (int i = 0; i < addedlits.size(); i++) {
-      final int lit = addedlits.get(i);
-      if (!minimizeLit(-lit))
-        newAddedLits.push(lit);
-    }
-    addedlits = newAddedLits;
-    stats.litsMinimized += learned - addedlits.size();
-  }
-
-  @Override
-  protected void analyze(CLClause reason) {
-    if (empty != null) {
-      assert level == 0;
-      return;
-    }
-    updateGlue(reason);
-    assert addedlits.empty();
-    int lit = 0;
-    int open = 0;
-    int it = trail.size();
-    while (true) {
-      bumpClause(reason);
-      for (int p = 0; p < reason.lits().size(); p++) {
-        lit = reason.lits().get(p);
-        if (pullLit(lit))
-          open++;
-      }
-      while (it > 0 && marked(lit = -trail.get(--it)) == 0)
-        assert var(lit).level() == level;
-      if (it == 0 || --open == 0)
-        break;
-      reason = var(lit).reason();
-      assert reason != null;
-    }
-
-    assert lit != 0;
-    addedlits.push(lit);
-    minimizeClause();
-    unmark();
-    int glue = unmarkFrames();
-    stats.gluesCount++;
-    stats.gluesSum += glue;
-    stats.sizes += addedlits.size();
-    newPushConnectClause(true, glue);
-    addedlits.clear();
-    scoreIncrement *= config.scincfact / 1000.0;
-    if (simplifier == Simplifier.NOSIMP && level == 0 && empty == null) {
-      limits.searchConflicts += config.itsimpdel;
-      stats.iterations++;
-    }
-  }
-
-  @Override
-  protected boolean restarting() {
-    return config.restart && stats.conflicts >= limits.restart;
-  }
-
-  @Override
-  protected void restart() {
-    stats.restartsCount++;
-    int nextDecision = 0;
-    while (nextDecision == 0 && !decisions.empty()) {
-      int lit = decisions.top();
-      if (val(lit) != 0)
-        decisions.pop(lit);
-      else nextDecision = lit;
-    }
-    if (nextDecision != 0) {
-      int newLevel;
-      if (config.reusetrail) {
-        double nextDecisionPriority = decisions.priority(nextDecision);
-        for (newLevel = 0; newLevel < level; newLevel++) {
-          CLFrame frame = control.get(newLevel + 1);
-          int decision = Math.abs(frame.decision());
-          if (decisions.priority(decision) < nextDecisionPriority)
-            break;
-        }
-        if (newLevel != 0) {
-          stats.restartsReuseCount++;
-          stats.restartsReuseSum += (100 * newLevel) / level;
-        }
-      } else
-        newLevel = 0; // Do not reuse trail.  Back track to the top.
-      backtrack(newLevel);
-    }
-    newRestartLimit();
   }
 
   /**
@@ -1501,32 +1529,6 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     assert varsBefore >= varsAfter;
     limits.simpRemovedVars = varsBefore - varsAfter;
     return empty != null ? FALSE : UNDEF;
-  }
-
-  @Override
-  protected Tristate search() {
-    long conflicts = 0;
-    CLClause conflict;
-    Tristate res = UNDEF;
-    while (res == UNDEF)
-      if (empty != null)
-        res = FALSE;
-      else if ((conflict = bcp()) != null) {
-        if (handler != null && !handler.detectedConflict()) {
-          canceledByHandler = true;
-          return UNDEF;
-        }
-        analyze(conflict);
-        conflicts++;
-      } else if (conflicts >= limits.searchConflicts)
-        break;
-      else if (reducing())
-        reduce();
-      else if (restarting())
-        restart();
-      else if (!decide())
-        res = TRUE;
-    return res;
   }
 
   /**

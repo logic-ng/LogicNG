@@ -70,6 +70,11 @@ final public class UNSATCore {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(this.propositions, this.isMUS);
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -77,11 +82,6 @@ final public class UNSATCore {
       return false;
     UNSATCore unsatCore = (UNSATCore) o;
     return this.isMUS == unsatCore.isMUS && Objects.equals(this.propositions, unsatCore.propositions);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.propositions, this.isMUS);
   }
 
   @Override

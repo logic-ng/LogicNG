@@ -41,7 +41,7 @@ import java.util.TreeSet;
  * Boolean literals.
  * <p>
  * A literal is a positive or negative variable.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class Literal extends Formula implements Comparable<Literal> {
@@ -65,10 +65,10 @@ public class Literal extends Formula implements Comparable<Literal> {
 
   private final String name;
   private final boolean phase;
-  private volatile Literal negated;
-  private volatile int hashCode;
   private final SortedSet<Literal> literals;
   private final Variable var;
+  private volatile Literal negated;
+  private volatile int hashCode;
 
   /**
    * Constructor.
@@ -101,13 +101,13 @@ public class Literal extends Formula implements Comparable<Literal> {
   }
 
   @Override
-  public boolean isAtomicFormula() {
-    return true;
+  public int numberOfOperands() {
+    return 0;
   }
 
   @Override
-  public int numberOfOperands() {
-    return 0;
+  public boolean isAtomicFormula() {
+    return true;
   }
 
   @Override

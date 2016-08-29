@@ -48,6 +48,22 @@ public final class MUSConfig extends Configuration {
   final Algorithm algorithm;
 
   /**
+   * Constructs a new configuration with a given type.
+   */
+  public MUSConfig(final Builder builder) {
+    super(ConfigurationType.MUS);
+    this.algorithm = builder.algorithm;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("MUSConfig{\n");
+    sb.append("algorithm=").append(this.algorithm).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
+
+  /**
    * The builder for a MUS configuration.
    */
   public static class Builder {
@@ -71,21 +87,5 @@ public final class MUSConfig extends Configuration {
     public MUSConfig build() {
       return new MUSConfig(this);
     }
-  }
-
-  /**
-   * Constructs a new configuration with a given type.
-   */
-  public MUSConfig(final Builder builder) {
-    super(ConfigurationType.MUS);
-    this.algorithm = builder.algorithm;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("MUSConfig{\n");
-    sb.append("algorithm=").append(this.algorithm).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

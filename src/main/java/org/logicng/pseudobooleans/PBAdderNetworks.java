@@ -80,6 +80,14 @@ final class PBAdderNetworks implements PBEncoding {
     this.f = f;
   }
 
+  private static int ldInt(int x) {
+    int ldretutn = 0;
+    for (int i = 0; i < 31; i++)
+      if ((x & (1 << i)) > 0)
+        ldretutn = i + 1;
+    return ldretutn;
+  }
+
   @Override
   public List<Formula> encode(LNGVector<Literal> lits, LNGIntVector coeffs, int rhs, List<Formula> formula) {
     this.formula = formula;
@@ -131,7 +139,8 @@ final class PBAdderNetworks implements PBEncoding {
     }
   }
 
-  private LNGBooleanVector numToBits(int n, int number) {
+  private LNGBooleanVector numToBits(int n, int num) {
+    int number = num;
     final LNGBooleanVector bits = new LNGBooleanVector();
     for (int i = n - 1; i >= 0; i--) {
       int tmp = 1 << i;
@@ -184,7 +193,6 @@ final class PBAdderNetworks implements PBEncoding {
     this.formula.add(this.f.clause(xc, xs, c.negate()));
   }
 
-
   private Literal faCarry(final Literal a, final Literal b, final Literal c) {
     final Literal x = this.f.newPBVariable();
     this.formula.add(this.f.clause(b, c, x.negate()));
@@ -224,13 +232,5 @@ final class PBAdderNetworks implements PBEncoding {
     this.formula.add(this.f.clause(a.negate(), b, x));
     this.formula.add(this.f.clause(a, b.negate(), x));
     return x;
-  }
-
-  private static int ldInt(int x) {
-    int ldretutn = 0;
-    for (int i = 0; i < 31; i++)
-      if ((x & (1 << i)) > 0)
-        ldretutn = i + 1;
-    return ldretutn;
   }
 }

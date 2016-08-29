@@ -69,11 +69,13 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * The weighted MSU3 algorithm.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class WMSU3 extends MaxSAT {
 
+  boolean bmoStrategy;
+  boolean isBmo;
   private MiniSatStyleSolver solver;
   private Encoder encoder;
   private IncrementalStrategy incrementalStrategy;
@@ -82,8 +84,6 @@ public final class WMSU3 extends MaxSAT {
   private LNGIntVector coeffs;
   private SortedMap<Integer, Integer> coreMapping;
   private LNGBooleanVector activeSoft;
-  boolean bmoStrategy;
-  boolean isBmo;
   private PrintStream output;
 
   /**
@@ -112,6 +112,25 @@ public final class WMSU3 extends MaxSAT {
     this.coreMapping = new TreeMap<>();
     this.activeSoft = new LNGBooleanVector();
     this.output = config.output;
+  }
+
+  private static boolean subsetSum(final LNGIntVector set, int sum) {
+    int n = set.size();
+    boolean[][] subset = new boolean[sum + 1][];
+    for (int i = 0; i <= sum; i++)
+      subset[i] = new boolean[n + 1];
+    for (int i = 0; i <= n; i++)
+      subset[0][i] = true;
+    for (int i = 1; i <= sum; i++)
+      subset[i][0] = false;
+    for (int i = 1; i <= sum; i++) {
+      for (int j = 1; j <= n; j++) {
+        subset[i][j] = subset[i][j - 1];
+        if (i >= set.get(j - 1))
+          subset[i][j] = subset[i][j] || subset[i - set.get(j - 1)][j - 1];
+      }
+    }
+    return subset[sum][n];
   }
 
   @Override
@@ -459,25 +478,6 @@ public final class WMSU3 extends MaxSAT {
       softClauses.get(i).relaxationVars().push(l);
       softClauses.get(i).setAssumptionVar(l);
     }
-  }
-
-  private static boolean subsetSum(final LNGIntVector set, int sum) {
-    int n = set.size();
-    boolean[][] subset = new boolean[sum + 1][];
-    for (int i = 0; i <= sum; i++)
-      subset[i] = new boolean[n + 1];
-    for (int i = 0; i <= n; i++)
-      subset[0][i] = true;
-    for (int i = 1; i <= sum; i++)
-      subset[i][0] = false;
-    for (int i = 1; i <= sum; i++) {
-      for (int j = 1; j <= n; j++) {
-        subset[i][j] = subset[i][j - 1];
-        if (i >= set.get(j - 1))
-          subset[i][j] = subset[i][j] || subset[i - set.get(j - 1)][j - 1];
-      }
-    }
-    return subset[sum][n];
   }
 
   @Override

@@ -16,9 +16,9 @@ public interface PBEncoding {
 
   /**
    * Encodes a pseudo-Boolean constraint and returns its CNF encoding.
-   * @param lits the literals of the constraint
+   * @param lits   the literals of the constraint
    * @param coeffs the coefficients of the constraint
-   * @param rhs the right hand side of the constraint
+   * @param rhs    the right hand side of the constraint
    * @param result the current result CNF
    * @return the CNF encoding of the constraint
    */

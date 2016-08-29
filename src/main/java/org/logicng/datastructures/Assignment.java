@@ -49,14 +49,14 @@ import java.util.TreeSet;
  * Note: the internal data structure is a plain list - no checking of the model is performed e.g. if
  * contradictory literals are added. Since assignments are used e.g. in the model enumeration of the SAT solvers these
  * checks would be too costly.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class Assignment {
 
+  protected final List<Variable> negVars;
   protected Collection<Variable> pos;
   protected Collection<Literal> neg;
-  protected final List<Variable> negVars;
   protected boolean fastEvaluable;
 
   /**

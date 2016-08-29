@@ -53,9 +53,9 @@ import java.util.List;
  */
 public final class EncodingResult {
   final FormulaFactory f;
-  private List<Formula> result;
   private final MiniSat miniSat;
   private final CleaneLing cleaneLing;
+  private List<Formula> result;
 
   /**
    * Constructs a new CC encoding algorithm.

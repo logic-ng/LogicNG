@@ -73,6 +73,24 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     this(12);
   }
 
+  /**
+   * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
+   * auxiliary variable or a new one is
+   * generated.
+   * @param formula the formula
+   * @return the old or new auxiliary variable
+   */
+  private static Formula pgVariable(final Formula formula) {
+    if (formula.type() == FType.LITERAL)
+      return formula;
+    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
+    if (var == null) {
+      var = formula.factory().newCNFVariable();
+      formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
+    }
+    return var;
+  }
+
   @Override
   public Formula apply(final Formula formula, boolean cache) {
     final Formula f = formula.nnf();
@@ -134,24 +152,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       default:
         throw new IllegalArgumentException("not yet implemented");
     }
-  }
-
-  /**
-   * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
-   * auxiliary variable or a new one is
-   * generated.
-   * @param formula the formula
-   * @return the old or new auxiliary variable
-   */
-  private static Formula pgVariable(final Formula formula) {
-    if (formula.type() == FType.LITERAL)
-      return formula;
-    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
-    if (var == null) {
-      var = formula.factory().newCNFVariable();
-      formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
-    }
-    return var;
   }
 
   @Override

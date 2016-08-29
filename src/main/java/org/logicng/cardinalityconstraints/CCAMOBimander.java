@@ -94,18 +94,18 @@ final class CCAMOBimander implements CCAtMostOne {
   private void encodeIntern(final LNGVector<Literal> vars) {
     this.initializeGroups(vars);
     this.initializeBits();
-    int gray_code;
-    int next_gray;
+    int grayCode;
+    int nextGray;
     int i = 0;
     int index = -1;
     for (; i < this.k; i++) {
       index++;
-      gray_code = i ^ (i >> 1);
+      grayCode = i ^ (i >> 1);
       i++;
-      next_gray = i ^ (i >> 1);
+      nextGray = i ^ (i >> 1);
       for (int j = 0; j < this.numberOfBits; j++)
-        if ((gray_code & (1 << j)) == (next_gray & (1 << j))) {
-          if ((gray_code & (1 << j)) != 0)
+        if ((grayCode & (1 << j)) == (nextGray & (1 << j))) {
+          if ((grayCode & (1 << j)) != 0)
             for (int p = 0; p < this.groups.get(index).size(); ++p)
               this.result.addClause(this.groups.get(index).get(p).negate(), this.bits.get(j));
           else
@@ -115,9 +115,9 @@ final class CCAMOBimander implements CCAtMostOne {
     }
     for (; i < this.twoPowNBits; i++) {
       index++;
-      gray_code = i ^ (i >> 1);
+      grayCode = i ^ (i >> 1);
       for (int j = 0; j < this.numberOfBits; j++)
-        if ((gray_code & (1 << j)) != 0)
+        if ((grayCode & (1 << j)) != 0)
           for (int p = 0; p < this.groups.get(index).size(); ++p)
             this.result.addClause(this.groups.get(index).get(p).negate(), this.bits.get(j));
         else

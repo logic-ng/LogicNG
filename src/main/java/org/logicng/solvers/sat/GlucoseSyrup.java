@@ -90,7 +90,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * Glucose 4.0 solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class GlucoseSyrup extends MiniSatStyleSolver {
@@ -251,6 +251,53 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   }
 
   @Override
+  public Tristate solve(final SATHandler handler) {
+    this.handler = handler;
+    if (this.handler != null)
+      this.handler.startedSolving();
+    model.clear();
+    conflict.clear();
+    if (!ok)
+      return Tristate.FALSE;
+    for (int i = 0; i < assumptions.size(); i++)
+      assump.set(var(assumptions.get(i)), true);
+
+    Tristate status = Tristate.UNDEF;
+    while (status == Tristate.UNDEF && !canceledByHandler)
+      status = search();
+    if (status == Tristate.TRUE) {
+      model = new LNGBooleanVector(vars.size());
+      for (final MSVariable v : this.vars)
+        model.push(v.assignment() == Tristate.TRUE);
+    } else if (status == Tristate.FALSE && conflict.size() == 0)
+      ok = false;
+    if (this.handler != null)
+      this.handler.finishedSolving();
+    cancelUntil(0);
+    this.handler = null;
+    this.canceledByHandler = false;
+    for (int i = 0; i < assumptions.size(); i++)
+      assump.set(var(assumptions.get(i)), false);
+    return status;
+  }
+
+  @Override
+  public void reset() {
+    super.initialize();
+    this.initializeGlucose();
+  }
+
+  @Override
+  public int[] saveState() {
+    throw new UnsupportedOperationException("The Glucose solver does not support state loading/saving");
+  }
+
+  @Override
+  public void loadState(int[] state) {
+    throw new UnsupportedOperationException("The Glucose solver does not support state loading/saving");
+  }
+
+  @Override
   protected void uncheckedEnqueue(int lit, MSClause reason) {
     assert value(lit) == Tristate.UNDEF;
     final MSVariable var = v(lit);
@@ -297,6 +344,244 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     detachClause(c);
     if (locked(c))
       v(c.get(0)).setReason(null);
+  }
+
+  @Override
+  protected MSClause propagate() {
+    MSClause confl = null;
+    int numProps = 0;
+    while (qhead < trail.size()) {
+      int p = trail.get(qhead++);
+      LNGVector<MSWatcher> ws = watches.get(p);
+      int iInd = 0;
+      int jInd = 0;
+      numProps++;
+      LNGVector<MSWatcher> wbin = watchesBin.get(p);
+      for (int k = 0; k < wbin.size(); k++) {
+        int imp = wbin.get(k).blocker();
+        if (value(imp) == Tristate.FALSE) {
+          return wbin.get(k).clause();
+        }
+        if (value(imp) == Tristate.UNDEF) {
+          uncheckedEnqueue(imp, wbin.get(k).clause());
+        }
+      }
+      while (iInd < ws.size()) {
+        MSWatcher i = ws.get(iInd);
+        int blocker = i.blocker();
+        if (value(blocker) == Tristate.TRUE) {
+          ws.set(jInd++, i);
+          iInd++;
+          continue;
+        }
+        MSClause c = i.clause();
+        assert !c.oneWatched();
+        int falseLit = not(p);
+        if (c.get(0) == falseLit) {
+          c.set(0, c.get(1));
+          c.set(1, falseLit);
+        }
+        assert c.get(1) == falseLit;
+        iInd++;
+        int first = c.get(0);
+        MSWatcher w = new MSWatcher(c, first);
+        if (first != blocker && value(first) == Tristate.TRUE) {
+          ws.set(jInd++, w);
+          continue;
+        }
+        boolean foundWatch = false;
+        if (incremental) {
+          int choosenPos = -1;
+          for (int k = 2; k < c.size(); k++) {
+            if (value(c.get(k)) != Tristate.FALSE) {
+              if (decisionLevel() > assumptions.size()) {
+                choosenPos = k;
+                break;
+              } else {
+                choosenPos = k;
+                if (value(c.get(k)) == Tristate.TRUE || !isSelector(var(c.get(k))))
+                  break;
+              }
+            }
+          }
+          if (choosenPos != -1) {
+            c.set(1, c.get(choosenPos));
+            c.set(choosenPos, falseLit);
+            watches.get(not(c.get(1))).push(w);
+            foundWatch = true;
+          }
+        } else {
+          for (int k = 2; k < c.size() && !foundWatch; k++)
+            if (value(c.get(k)) != Tristate.FALSE) {
+              c.set(1, c.get(k));
+              c.set(k, falseLit);
+              watches.get(not(c.get(1))).push(w);
+              foundWatch = true;
+            }
+        }
+        if (!foundWatch) {
+          ws.set(jInd++, w);
+          if (value(first) == Tristate.FALSE) {
+            confl = c;
+            qhead = trail.size();
+            while (iInd < ws.size())
+              ws.set(jInd++, ws.get(iInd++));
+          } else
+            uncheckedEnqueue(first, c);
+        }
+      }
+      ws.removeElements(iInd - jInd);
+    }
+    simpDBProps -= numProps;
+    return confl;
+  }
+
+  @Override
+  protected boolean litRedundant(int p, int abstractLevels) {
+    analyzeStack.clear();
+    analyzeStack.push(p);
+    int top = analyzeToClear.size();
+    while (analyzeStack.size() > 0) {
+      assert v(analyzeStack.back()).reason() != null;
+      MSClause c = v(analyzeStack.back()).reason();
+      analyzeStack.pop();
+      if (c.size() == 2 && value(c.get(0)) == Tristate.FALSE) {
+        assert value(c.get(1)) == Tristate.TRUE;
+        int tmp = c.get(0);
+        c.set(0, c.get(1));
+        c.set(1, tmp);
+      }
+      for (int i = 1; i < c.size(); i++) {
+        int q = c.get(i);
+        if (!seen.get(var(q)) && v(q).level() > 0) {
+          if (v(q).reason() != null && (abstractLevel(var(q)) & abstractLevels) != 0) {
+            seen.set(var(q), true);
+            analyzeStack.push(q);
+            analyzeToClear.push(q);
+          } else {
+            for (int j = top; j < analyzeToClear.size(); j++)
+              seen.set(var(analyzeToClear.get(j)), false);
+            analyzeToClear.removeElements(analyzeToClear.size() - top);
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  @Override
+  protected void analyzeFinal(int p, final LNGIntVector outConflict) {
+    outConflict.clear();
+    outConflict.push(p);
+    if (decisionLevel() == 0)
+      return;
+    seen.set(var(p), true);
+    int x;
+    MSVariable v;
+    for (int i = trail.size() - 1; i >= trailLim.get(0); i--) {
+      x = var(trail.get(i));
+      if (seen.get(x)) {
+        v = this.vars.get(x);
+        if (v.reason() == null) {
+          assert v.level() > 0;
+          outConflict.push(not(trail.get(i)));
+        } else {
+          final MSClause c = v.reason();
+          for (int j = c.size() == 2 ? 0 : 1; j < c.size(); j++)
+            if (v(c.get(j)).level() > 0)
+              seen.set(var(c.get(j)), true);
+        }
+        seen.set(x, false);
+      }
+    }
+    seen.set(var(p), false);
+  }
+
+  @Override
+  protected void cancelUntil(int level) {
+    if (decisionLevel() > level) {
+      for (int c = trail.size() - 1; c >= trailLim.get(level); c--) {
+        int x = var(trail.get(c));
+        MSVariable v = this.vars.get(x);
+        v.assign(Tristate.UNDEF);
+        v.setPolarity(sign(trail.get(c)));
+        insertVarOrder(x);
+      }
+      qhead = trailLim.get(level);
+      trail.removeElements(trail.size() - trailLim.get(level));
+      trailLim.removeElements(trailLim.size() - level);
+    }
+  }
+
+  @Override
+  protected void reduceDB() {
+    int i;
+    int j;
+    learnts.manualSort(MSClause.glucoseComparator);
+    if (learnts.get(learnts.size() / RATIO_REMOVE_CLAUSES).lbd() <= 3)
+      nbclausesbeforereduce += specialIncReduceDB;
+    if (learnts.back().lbd() <= 5)
+      nbclausesbeforereduce += specialIncReduceDB;
+    int limit = learnts.size() / 2;
+    for (i = j = 0; i < learnts.size(); i++) {
+      final MSClause c = learnts.get(i);
+      if (c.lbd() > 2 && c.size() > 2 && c.canBeDel() && !locked(c) && (i < limit))
+        removeClause(learnts.get(i));
+      else {
+        if (!c.canBeDel())
+          limit++;
+        c.setCanBeDel(true);
+        learnts.set(j++, learnts.get(i));
+      }
+    }
+    learnts.removeElements(i - j);
+  }
+
+  @Override
+  protected void removeSatisfied(final LNGVector<MSClause> cs) {
+    int i;
+    int j;
+    for (i = j = 0; i < cs.size(); i++) {
+      final MSClause c = cs.get(i);
+      if (satisfied(c))
+        removeClause(cs.get(i));
+      else
+        cs.set(j++, cs.get(i));
+    }
+    cs.removeElements(i - j);
+  }
+
+  @Override
+  protected boolean satisfied(final MSClause c) {
+    if (incremental)
+      return (value(c.get(0)) == Tristate.TRUE) || (value(c.get(1)) == Tristate.TRUE);
+    for (int i = 0; i < c.size(); i++)
+      if (value(c.get(i)) == Tristate.TRUE)
+        return true;
+    return false;
+  }
+
+  @Override
+  protected boolean simplify() {
+    assert decisionLevel() == 0;
+    if (!ok)
+      return ok = false;
+    else {
+      final MSClause cr = propagate();
+      if (cr != null) {
+        return ok = false;
+      }
+    }
+    if (nAssigns() == simpDBAssigns || (simpDBProps > 0))
+      return true;
+    removeSatisfied(learnts);
+    if (removeSatisfied)
+      removeSatisfied(clauses);
+    rebuildOrderHeap();
+    simpDBAssigns = nAssigns();
+    simpDBProps = clausesLiterals + learntsLiterals;
+    return true;
   }
 
   /**
@@ -512,96 +797,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     }
   }
 
-  @Override
-  protected MSClause propagate() {
-    MSClause confl = null;
-    int numProps = 0;
-    while (qhead < trail.size()) {
-      int p = trail.get(qhead++);
-      LNGVector<MSWatcher> ws = watches.get(p);
-      int iInd = 0;
-      int jInd = 0;
-      numProps++;
-      LNGVector<MSWatcher> wbin = watchesBin.get(p);
-      for (int k = 0; k < wbin.size(); k++) {
-        int imp = wbin.get(k).blocker();
-        if (value(imp) == Tristate.FALSE) {
-          return wbin.get(k).clause();
-        }
-        if (value(imp) == Tristate.UNDEF) {
-          uncheckedEnqueue(imp, wbin.get(k).clause());
-        }
-      }
-      while (iInd < ws.size()) {
-        MSWatcher i = ws.get(iInd);
-        int blocker = i.blocker();
-        if (value(blocker) == Tristate.TRUE) {
-          ws.set(jInd++, i);
-          iInd++;
-          continue;
-        }
-        MSClause c = i.clause();
-        assert !c.oneWatched();
-        int falseLit = not(p);
-        if (c.get(0) == falseLit) {
-          c.set(0, c.get(1));
-          c.set(1, falseLit);
-        }
-        assert c.get(1) == falseLit;
-        iInd++;
-        int first = c.get(0);
-        MSWatcher w = new MSWatcher(c, first);
-        if (first != blocker && value(first) == Tristate.TRUE) {
-          ws.set(jInd++, w);
-          continue;
-        }
-        boolean foundWatch = false;
-        if (incremental) {
-          int choosenPos = -1;
-          for (int k = 2; k < c.size(); k++) {
-            if (value(c.get(k)) != Tristate.FALSE) {
-              if (decisionLevel() > assumptions.size()) {
-                choosenPos = k;
-                break;
-              } else {
-                choosenPos = k;
-                if (value(c.get(k)) == Tristate.TRUE || !isSelector(var(c.get(k))))
-                  break;
-              }
-            }
-          }
-          if (choosenPos != -1) {
-            c.set(1, c.get(choosenPos));
-            c.set(choosenPos, falseLit);
-            watches.get(not(c.get(1))).push(w);
-            foundWatch = true;
-          }
-        } else {
-          for (int k = 2; k < c.size() && !foundWatch; k++)
-            if (value(c.get(k)) != Tristate.FALSE) {
-              c.set(1, c.get(k));
-              c.set(k, falseLit);
-              watches.get(not(c.get(1))).push(w);
-              foundWatch = true;
-            }
-        }
-        if (!foundWatch) {
-          ws.set(jInd++, w);
-          if (value(first) == Tristate.FALSE) {
-            confl = c;
-            qhead = trail.size();
-            while (iInd < ws.size())
-              ws.set(jInd++, ws.get(iInd++));
-          } else
-            uncheckedEnqueue(first, c);
-        }
-      }
-      ws.removeElements(iInd - jInd);
-    }
-    simpDBProps -= numProps;
-    return confl;
-  }
-
   /**
    * Analyzes a given conflict clause wrt. the current solver state.  A 1-UIP clause is created during this procedure
    * and the new backtracking level is stored in the solver state.
@@ -738,201 +933,6 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
       seen.set(var(analyzeToClear.get(m)), false);
     for (int m = 0; m < selectors.size(); m++)
       seen.set(var(selectors.get(m)), false);
-  }
-
-  @Override
-  protected boolean litRedundant(int p, int abstractLevels) {
-    analyzeStack.clear();
-    analyzeStack.push(p);
-    int top = analyzeToClear.size();
-    while (analyzeStack.size() > 0) {
-      assert v(analyzeStack.back()).reason() != null;
-      MSClause c = v(analyzeStack.back()).reason();
-      analyzeStack.pop();
-      if (c.size() == 2 && value(c.get(0)) == Tristate.FALSE) {
-        assert value(c.get(1)) == Tristate.TRUE;
-        int tmp = c.get(0);
-        c.set(0, c.get(1));
-        c.set(1, tmp);
-      }
-      for (int i = 1; i < c.size(); i++) {
-        int q = c.get(i);
-        if (!seen.get(var(q)) && v(q).level() > 0) {
-          if (v(q).reason() != null && (abstractLevel(var(q)) & abstractLevels) != 0) {
-            seen.set(var(q), true);
-            analyzeStack.push(q);
-            analyzeToClear.push(q);
-          } else {
-            for (int j = top; j < analyzeToClear.size(); j++)
-              seen.set(var(analyzeToClear.get(j)), false);
-            analyzeToClear.removeElements(analyzeToClear.size() - top);
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  @Override
-  protected void analyzeFinal(int p, final LNGIntVector outConflict) {
-    outConflict.clear();
-    outConflict.push(p);
-    if (decisionLevel() == 0)
-      return;
-    seen.set(var(p), true);
-    int x;
-    MSVariable v;
-    for (int i = trail.size() - 1; i >= trailLim.get(0); i--) {
-      x = var(trail.get(i));
-      if (seen.get(x)) {
-        v = this.vars.get(x);
-        if (v.reason() == null) {
-          assert v.level() > 0;
-          outConflict.push(not(trail.get(i)));
-        } else {
-          final MSClause c = v.reason();
-          for (int j = c.size() == 2 ? 0 : 1; j < c.size(); j++)
-            if (v(c.get(j)).level() > 0)
-              seen.set(var(c.get(j)), true);
-        }
-        seen.set(x, false);
-      }
-    }
-    seen.set(var(p), false);
-  }
-
-  @Override
-  protected void cancelUntil(int level) {
-    if (decisionLevel() > level) {
-      for (int c = trail.size() - 1; c >= trailLim.get(level); c--) {
-        int x = var(trail.get(c));
-        MSVariable v = this.vars.get(x);
-        v.assign(Tristate.UNDEF);
-        v.setPolarity(sign(trail.get(c)));
-        insertVarOrder(x);
-      }
-      qhead = trailLim.get(level);
-      trail.removeElements(trail.size() - trailLim.get(level));
-      trailLim.removeElements(trailLim.size() - level);
-    }
-  }
-
-  @Override
-  protected void reduceDB() {
-    int i;
-    int j;
-    learnts.manualSort(MSClause.glucoseComparator);
-    if (learnts.get(learnts.size() / RATIO_REMOVE_CLAUSES).lbd() <= 3)
-      nbclausesbeforereduce += specialIncReduceDB;
-    if (learnts.back().lbd() <= 5)
-      nbclausesbeforereduce += specialIncReduceDB;
-    int limit = learnts.size() / 2;
-    for (i = j = 0; i < learnts.size(); i++) {
-      final MSClause c = learnts.get(i);
-      if (c.lbd() > 2 && c.size() > 2 && c.canBeDel() && !locked(c) && (i < limit))
-        removeClause(learnts.get(i));
-      else {
-        if (!c.canBeDel())
-          limit++;
-        c.setCanBeDel(true);
-        learnts.set(j++, learnts.get(i));
-      }
-    }
-    learnts.removeElements(i - j);
-  }
-
-  @Override
-  protected void removeSatisfied(final LNGVector<MSClause> cs) {
-    int i;
-    int j;
-    for (i = j = 0; i < cs.size(); i++) {
-      final MSClause c = cs.get(i);
-      if (satisfied(c))
-        removeClause(cs.get(i));
-      else
-        cs.set(j++, cs.get(i));
-    }
-    cs.removeElements(i - j);
-  }
-
-  @Override
-  protected boolean satisfied(final MSClause c) {
-    if (incremental)
-      return (value(c.get(0)) == Tristate.TRUE) || (value(c.get(1)) == Tristate.TRUE);
-    for (int i = 0; i < c.size(); i++)
-      if (value(c.get(i)) == Tristate.TRUE)
-        return true;
-    return false;
-  }
-
-  @Override
-  protected boolean simplify() {
-    assert decisionLevel() == 0;
-    if (!ok)
-      return ok = false;
-    else {
-      final MSClause cr = propagate();
-      if (cr != null) {
-        return ok = false;
-      }
-    }
-    if (nAssigns() == simpDBAssigns || (simpDBProps > 0))
-      return true;
-    removeSatisfied(learnts);
-    if (removeSatisfied)
-      removeSatisfied(clauses);
-    rebuildOrderHeap();
-    simpDBAssigns = nAssigns();
-    simpDBProps = clausesLiterals + learntsLiterals;
-    return true;
-  }
-
-  @Override
-  public Tristate solve(final SATHandler handler) {
-    this.handler = handler;
-    if (this.handler != null)
-      this.handler.startedSolving();
-    model.clear();
-    conflict.clear();
-    if (!ok)
-      return Tristate.FALSE;
-    for (int i = 0; i < assumptions.size(); i++)
-      assump.set(var(assumptions.get(i)), true);
-
-    Tristate status = Tristate.UNDEF;
-    while (status == Tristate.UNDEF && !canceledByHandler)
-      status = search();
-    if (status == Tristate.TRUE) {
-      model = new LNGBooleanVector(vars.size());
-      for (final MSVariable v : this.vars)
-        model.push(v.assignment() == Tristate.TRUE);
-    } else if (status == Tristate.FALSE && conflict.size() == 0)
-      ok = false;
-    if (this.handler != null)
-      this.handler.finishedSolving();
-    cancelUntil(0);
-    this.handler = null;
-    this.canceledByHandler = false;
-    for (int i = 0; i < assumptions.size(); i++)
-      assump.set(var(assumptions.get(i)), false);
-    return status;
-  }
-
-  @Override
-  public void reset() {
-    super.initialize();
-    this.initializeGlucose();
-  }
-
-  @Override
-  public int[] saveState() {
-    throw new UnsupportedOperationException("The Glucose solver does not support state loading/saving");
-  }
-
-  @Override
-  public void loadState(int[] state) {
-    throw new UnsupportedOperationException("The Glucose solver does not support state loading/saving");
   }
 }
 

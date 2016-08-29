@@ -56,12 +56,12 @@ import java.util.Iterator;
 
 /**
  * Full occurrence lists for dense mode of the SAT solver (used during simplifications).
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CLOccs implements Iterable<CLClause> {
-  private int count;
   private final LNGVector<CLClause> clauses;
+  private int count;
 
   /**
    * Constructs a new occurrence list.

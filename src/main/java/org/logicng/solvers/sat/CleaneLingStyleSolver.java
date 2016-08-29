@@ -64,19 +64,15 @@ import org.logicng.solvers.datastructures.CLWatch;
 
 /**
  * The super class for all CleaneLing-style solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class CleaneLingStyleSolver {
 
-  // external solver configuration
-  protected final CleaneLingConfig config;
-
   public static final byte VALUE_TRUE = 1;
   public static final byte VALUE_FALSE = -1;
   public static final byte VALUE_UNASSIGNED = 0;
-
-  // internal solver state
+  protected final CleaneLingConfig config;
   protected int level;
   protected int next;
   protected double scoreIncrement;
@@ -110,31 +106,6 @@ public abstract class CleaneLingStyleSolver {
   }
 
   /**
-   * Initializes the internal solver state.
-   */
-  private void initialize() {
-    this.level = 0;
-    this.next = 0;
-    this.empty = null;
-    this.scoreIncrement = 1;
-    this.ignore = null;
-    this.vars = new LNGVector<>();
-    this.vals = new LNGByteVector();
-    this.phases = new LNGByteVector();
-    this.decisions = new LNGDoublePriorityQueue();
-    this.control = new LNGVector<>();
-    this.trail = new LNGIntVector();
-    this.addedlits = new LNGIntVector(100);
-    this.seen = new LNGIntVector();
-    this.frames = new LNGIntVector();
-    this.watches = new LNGVector<>();
-    this.stats = new CLStats();
-    this.limits = new CLLimits();
-    this.model = new LNGBooleanVector();
-    control.push(new CLFrame());
-  }
-
-  /**
    * Returns the sign of a literal.
    * @param lit the literal
    * @return -1 for a negative literal, 1 for a positive literal
@@ -162,6 +133,31 @@ public abstract class CleaneLingStyleSolver {
       k++;
     }
     return res;
+  }
+
+  /**
+   * Initializes the internal solver state.
+   */
+  private void initialize() {
+    this.level = 0;
+    this.next = 0;
+    this.empty = null;
+    this.scoreIncrement = 1;
+    this.ignore = null;
+    this.vars = new LNGVector<>();
+    this.vals = new LNGByteVector();
+    this.phases = new LNGByteVector();
+    this.decisions = new LNGDoublePriorityQueue();
+    this.control = new LNGVector<>();
+    this.trail = new LNGIntVector();
+    this.addedlits = new LNGIntVector(100);
+    this.seen = new LNGIntVector();
+    this.frames = new LNGIntVector();
+    this.watches = new LNGVector<>();
+    this.stats = new CLStats();
+    this.limits = new CLLimits();
+    this.model = new LNGBooleanVector();
+    control.push(new CLFrame());
   }
 
   /**

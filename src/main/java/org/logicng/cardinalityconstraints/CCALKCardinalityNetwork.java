@@ -53,6 +53,11 @@ final class CCALKCardinalityNetwork implements CCAtLeastK {
     cardinalityNetwork.buildALK(result, vars, rhs);
   }
 
+  @Override
+  public CCIncrementalData incrementalData() {
+    return cardinalityNetwork.incrementalData();
+  }
+
   /**
    * Builds the constraint for incremental usage.
    * @param result the result
@@ -61,11 +66,6 @@ final class CCALKCardinalityNetwork implements CCAtLeastK {
    */
   void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
     cardinalityNetwork.buildALKForIncremental(result, vars, rhs);
-  }
-
-  @Override
-  public CCIncrementalData incrementalData() {
-    return cardinalityNetwork.incrementalData();
   }
 
   @Override

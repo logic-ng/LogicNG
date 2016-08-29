@@ -52,7 +52,7 @@ package org.logicng.collections;
 
 /**
  * A simple priority queue implementation for elements with long priorities taken from CleaneLing.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class LNGLongPriorityQueue {
@@ -68,6 +68,34 @@ public final class LNGLongPriorityQueue {
     this.heap = new LNGIntVector();
     this.prior = new LNGLongVector();
     this.pos = new LNGIntVector();
+  }
+
+  /**
+   * Returns the left position on the heap for a given position.
+   * @param position the position
+   * @return the left position
+   */
+  private static int left(int position) {
+    return 2 * position + 1;
+  }
+
+  /**
+   * Returns the right position on the heap for a given position.
+   * @param position the position
+   * @return the right position
+   */
+  private static int right(int position) {
+    return 2 * position + 2;
+  }
+
+  /**
+   * Returns the parent position on the heap for a given position.
+   * @param position the position
+   * @return the parent position
+   */
+  private static int parent(int position) {
+    assert position > 0;
+    return (position - 1) / 2;
   }
 
   /**
@@ -184,34 +212,6 @@ public final class LNGLongPriorityQueue {
    */
   private boolean less(int e1, int e2) {
     return this.prior.get(e1) < this.prior.get(e2);
-  }
-
-  /**
-   * Returns the left position on the heap for a given position.
-   * @param position the position
-   * @return the left position
-   */
-  private static int left(int position) {
-    return 2 * position + 1;
-  }
-
-  /**
-   * Returns the right position on the heap for a given position.
-   * @param position the position
-   * @return the right position
-   */
-  private static int right(int position) {
-    return 2 * position + 2;
-  }
-
-  /**
-   * Returns the parent position on the heap for a given position.
-   * @param position the position
-   * @return the parent position
-   */
-  private static int parent(int position) {
-    assert position > 0;
-    return (position - 1) / 2;
   }
 
   /**

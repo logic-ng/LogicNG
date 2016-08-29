@@ -49,7 +49,7 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * A minimalistic heap implementation.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class LNGHeap {
@@ -67,6 +67,33 @@ public final class LNGHeap {
     this.s = solver;
     this.heap = new LNGIntVector(1000);
     this.indices = new LNGIntVector(1000);
+  }
+
+  /**
+   * Returns the left position on the heap for a given position.
+   * @param pos the position
+   * @return the left position
+   */
+  private static int left(int pos) {
+    return pos * 2 + 1;
+  }
+
+  /**
+   * Returns the right position on the heap for a given position.
+   * @param pos the position
+   * @return the right position
+   */
+  private static int right(int pos) {
+    return (pos + 1) * 2;
+  }
+
+  /**
+   * Returns the parent position on the heap for a given position.
+   * @param pos the position
+   * @return the parent position
+   */
+  private static int parent(int pos) {
+    return (pos - 1) >> 1;
   }
 
   /**
@@ -180,33 +207,6 @@ public final class LNGHeap {
     for (int i = 0; i < this.heap.size(); i++)
       this.indices.set(this.heap.get(i), -1);
     this.heap.clear();
-  }
-
-  /**
-   * Returns the left position on the heap for a given position.
-   * @param pos the position
-   * @return the left position
-   */
-  private static int left(int pos) {
-    return pos * 2 + 1;
-  }
-
-  /**
-   * Returns the right position on the heap for a given position.
-   * @param pos the position
-   * @return the right position
-   */
-  private static int right(int pos) {
-    return (pos + 1) * 2;
-  }
-
-  /**
-   * Returns the parent position on the heap for a given position.
-   * @param pos the position
-   * @return the parent position
-   */
-  private static int parent(int pos) {
-    return (pos - 1) >> 1;
   }
 
   /**

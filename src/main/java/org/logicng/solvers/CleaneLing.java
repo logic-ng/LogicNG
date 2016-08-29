@@ -60,7 +60,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the CleaneLing-style SAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CleaneLing extends SATSolver {
@@ -68,11 +68,10 @@ public final class CleaneLing extends SATSolver {
   private enum SolverStyle {MINIMALISTIC, FULL}
 
   public static final int CLAUSE_TERMINATOR = 0;
-
-  private SolverStyle solverStyle;
   private final CCEncoder ccEncoder;
-  private boolean plain;
   private final CleaneLingStyleSolver solver;
+  private SolverStyle solverStyle;
+  private boolean plain;
   private SortedMap<String, Integer> name2idx;
   private SortedMap<Integer, String> idx2name;
 
@@ -178,23 +177,6 @@ public final class CleaneLing extends SATSolver {
     addClause(literals);
   }
 
-  /**
-   * Adds a collection of literals to the solver.
-   * @param literals the literals
-   */
-  private void addClause(final Collection<Literal> literals) {
-    for (Literal lit : literals) {
-      Integer index = this.name2idx.get(lit.variable().name());
-      if (index == null) {
-        index = this.name2idx.size() + 1;
-        this.name2idx.put(lit.variable().name(), index);
-        this.idx2name.put(index, lit.variable().name());
-      }
-      this.solver.addlit(lit.phase() ? index : -index);
-    }
-    this.solver.addlit(CLAUSE_TERMINATOR);
-  }
-
   @Override
   public Tristate sat(final SATHandler handler) {
     if (this.result != UNDEF)
@@ -224,28 +206,6 @@ public final class CleaneLing extends SATSolver {
     if (this.result == UNDEF)
       throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
     return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
-  }
-
-  /**
-   * Creates an assignment from a Boolean vector of the solver.
-   * @param vec       the vector of the solver
-   * @param variables the variables which should appear in the model or {@code null} if all variables should
-   *                  appear
-   * @return the assignment
-   */
-  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
-    final Assignment model = new Assignment();
-    if (!vec.empty()) {
-      for (int i = 1; i < vec.size(); i++) {
-        final Variable var = f.variable(this.idx2name.get(i));
-        if (vec.get(i)) {
-          if (variables == null || variables.contains(var))
-            model.addLiteral(var);
-        } else if (variables == null || variables.contains(var))
-          model.addLiteral(var.negate());
-      }
-    }
-    return model;
   }
 
   @Override
@@ -286,6 +246,45 @@ public final class CleaneLing extends SATSolver {
   @Override
   public void loadState(SolverState state) {
     throw new UnsupportedOperationException("The CleaneLing solver does not support state loading/saving");
+  }
+
+  /**
+   * Adds a collection of literals to the solver.
+   * @param literals the literals
+   */
+  private void addClause(final Collection<Literal> literals) {
+    for (Literal lit : literals) {
+      Integer index = this.name2idx.get(lit.variable().name());
+      if (index == null) {
+        index = this.name2idx.size() + 1;
+        this.name2idx.put(lit.variable().name(), index);
+        this.idx2name.put(index, lit.variable().name());
+      }
+      this.solver.addlit(lit.phase() ? index : -index);
+    }
+    this.solver.addlit(CLAUSE_TERMINATOR);
+  }
+
+  /**
+   * Creates an assignment from a Boolean vector of the solver.
+   * @param vec       the vector of the solver
+   * @param variables the variables which should appear in the model or {@code null} if all variables should
+   *                  appear
+   * @return the assignment
+   */
+  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
+    final Assignment model = new Assignment();
+    if (!vec.empty()) {
+      for (int i = 1; i < vec.size(); i++) {
+        final Variable var = f.variable(this.idx2name.get(i));
+        if (vec.get(i)) {
+          if (variables == null || variables.contains(var))
+            model.addLiteral(var);
+        } else if (variables == null || variables.contains(var))
+          model.addLiteral(var.negate());
+      }
+    }
+    return model;
   }
 
   /**

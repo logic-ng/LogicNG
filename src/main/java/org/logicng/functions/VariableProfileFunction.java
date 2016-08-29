@@ -48,15 +48,10 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.VARPROFILE;
  * For this function, the non-caching version is preferred since it usually performs better.  The non-caching version
  * of this function generates the result mapping only once and fills it recursively whereas the caching version has to
  * construct a new mapping for each sub-formula.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class VariableProfileFunction implements FormulaFunction<Map<Variable, Integer>> {
-
-  @Override
-  public Map<Variable, Integer> apply(final Formula formula, boolean cache) {
-    return cache ? cachingVariableProfile(formula) : nonCachingVariableProfile(formula);
-  }
 
   /**
    * The non-caching implementation of the variable profile computation.  In this case the result map is only
@@ -121,5 +116,10 @@ public final class VariableProfileFunction implements FormulaFunction<Map<Variab
       }
     formula.setFunctionCacheEntry(VARPROFILE, result);
     return result;
+  }
+
+  @Override
+  public Map<Variable, Integer> apply(final Formula formula, boolean cache) {
+    return cache ? cachingVariableProfile(formula) : nonCachingVariableProfile(formula);
   }
 }

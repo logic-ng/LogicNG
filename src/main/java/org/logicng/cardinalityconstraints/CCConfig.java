@@ -38,15 +38,40 @@ import org.logicng.configurations.ConfigurationType;
  */
 public final class CCConfig extends Configuration {
 
-  public enum AMO_ENCODER {PURE, LADDER, PRODUCT, NESTED, COMMANDER, BINARY, BIMANDER, BEST}
+  /**
+   * The encoder for at-most-one and exactly-one constraints.
+   */
+  public enum AMO_ENCODER {
+    PURE, LADDER, PRODUCT, NESTED, COMMANDER, BINARY, BIMANDER, BEST
+  }
 
-  public enum AMK_ENCODER {TOTALIZER, MODULAR_TOTALIZER, CARDINALITY_NETWORK, BEST}
+  /**
+   * The encoder for at-most-k constraints.
+   */
+  public enum AMK_ENCODER {
+    TOTALIZER, MODULAR_TOTALIZER, CARDINALITY_NETWORK, BEST
+  }
 
-  public enum ALK_ENCODER {TOTALIZER, MODULAR_TOTALIZER, CARDINALITY_NETWORK, BEST}
+  /**
+   * The encoder for at-least-k constraints.
+   */
+  public enum ALK_ENCODER {
+    TOTALIZER, MODULAR_TOTALIZER, CARDINALITY_NETWORK, BEST
+  }
 
-  public enum EXK_ENCODER {TOTALIZER, CARDINALITY_NETWORK, BEST}
+  /**
+   * The encoder for exactly-k constraints.
+   */
+  public enum EXK_ENCODER {
+    TOTALIZER, CARDINALITY_NETWORK, BEST
+  }
 
-  public enum BIMANDER_GROUP_SIZE {HALF, SQRT, FIXED}
+  /**
+   * The group size for the Bimander encoding.
+   */
+  public enum BIMANDER_GROUP_SIZE {
+    HALF, SQRT, FIXED
+  }
 
   final AMO_ENCODER amoEncoder;
   final AMK_ENCODER amkEncoder;
@@ -57,6 +82,39 @@ public final class CCConfig extends Configuration {
   final int nestingGroupSize;
   final int productRecursiveBound;
   final int commanderGroupSize;
+
+  /**
+   * Constructs a new cardinality constraint encoder configuration from a given builder.
+   * @param builder the builder
+   */
+  private CCConfig(final Builder builder) {
+    super(ConfigurationType.CC_ENCODER);
+    this.amoEncoder = builder.amoEncoder;
+    this.amkEncoder = builder.amkEncoder;
+    this.alkEncoder = builder.alkEncoder;
+    this.exkEncoder = builder.exkEncoder;
+    this.bimanderGroupSize = builder.bimanderGroupSize;
+    this.bimanderFixedGroupSize = builder.bimanderFixedGroupSize;
+    this.nestingGroupSize = builder.nestingGroupSize;
+    this.productRecursiveBound = builder.productRecursiveBound;
+    this.commanderGroupSize = builder.commanderGroupSize;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("CCConfig{\n");
+    sb.append("amoEncoder=").append(this.amoEncoder).append("\n");
+    sb.append("amkEncoder=").append(this.amkEncoder).append("\n");
+    sb.append("alkEncoder=").append(this.alkEncoder).append("\n");
+    sb.append("exkEncoder=").append(this.exkEncoder).append("\n");
+    sb.append("bimanderGroupSize=").append(this.bimanderGroupSize).append("\n");
+    sb.append("bimanderFixedGroupSize=").append(this.bimanderFixedGroupSize).append("\n");
+    sb.append("nestingGroupSize=").append(this.nestingGroupSize).append("\n");
+    sb.append("productRecursiveBound=").append(this.productRecursiveBound).append("\n");
+    sb.append("commanderGroupSize=").append(this.commanderGroupSize).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
 
   /**
    * The builder for a cardinality constraint encoder configuration.
@@ -170,38 +228,5 @@ public final class CCConfig extends Configuration {
     public CCConfig build() {
       return new CCConfig(this);
     }
-  }
-
-  /**
-   * Constructs a new cardinality constraint encoder configuration from a given builder.
-   * @param builder the builder
-   */
-  private CCConfig(final Builder builder) {
-    super(ConfigurationType.CC_ENCODER);
-    this.amoEncoder = builder.amoEncoder;
-    this.amkEncoder = builder.amkEncoder;
-    this.alkEncoder = builder.alkEncoder;
-    this.exkEncoder = builder.exkEncoder;
-    this.bimanderGroupSize = builder.bimanderGroupSize;
-    this.bimanderFixedGroupSize = builder.bimanderFixedGroupSize;
-    this.nestingGroupSize = builder.nestingGroupSize;
-    this.productRecursiveBound = builder.productRecursiveBound;
-    this.commanderGroupSize = builder.commanderGroupSize;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("CCConfig{\n");
-    sb.append("amoEncoder=").append(this.amoEncoder).append("\n");
-    sb.append("amkEncoder=").append(this.amkEncoder).append("\n");
-    sb.append("alkEncoder=").append(this.alkEncoder).append("\n");
-    sb.append("exkEncoder=").append(this.exkEncoder).append("\n");
-    sb.append("bimanderGroupSize=").append(this.bimanderGroupSize).append("\n");
-    sb.append("bimanderFixedGroupSize=").append(this.bimanderFixedGroupSize).append("\n");
-    sb.append("nestingGroupSize=").append(this.nestingGroupSize).append("\n");
-    sb.append("productRecursiveBound=").append(this.productRecursiveBound).append("\n");
-    sb.append("commanderGroupSize=").append(this.commanderGroupSize).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

@@ -103,6 +103,20 @@ public class CCEncoder {
   }
 
   /**
+   * Converts a literal array to a variable array
+   * <p>
+   * ATTENTION: this only works if because the {@code isCC} method checks, that there are only positive literals.
+   * @param lits the literals
+   * @return the variables
+   */
+  private static Variable[] litsAsVars(final Literal[] lits) {
+    final Variable[] vars = new Variable[lits.length];
+    for (int i = 0; i < vars.length; i++)
+      vars[i] = lits[i].variable();
+    return vars;
+  }
+
+  /**
    * Encodes a cardinality constraint and returns its CNF encoding.
    * @param cc the cardinality constraint
    * @return the CNF encoding of the cardinality constraint
@@ -581,20 +595,6 @@ public class CCEncoder {
     if (this.exkTotalizer == null)
       this.exkTotalizer = new CCEXKTotalizer();
     return this.exkTotalizer;
-  }
-
-  /**
-   * Converts a literal array to a variable array
-   * <p>
-   * ATTENTION: this only works if because the {@code isCC} method checks, that there are only positive literals.
-   * @param lits the literals
-   * @return the variables
-   */
-  private static Variable[] litsAsVars(final Literal[] lits) {
-    final Variable[] vars = new Variable[lits.length];
-    for (int i = 0; i < vars.length; i++)
-      vars[i] = lits[i].variable();
-    return vars;
   }
 
   @Override

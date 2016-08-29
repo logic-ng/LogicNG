@@ -38,12 +38,40 @@ import org.logicng.configurations.ConfigurationType;
  */
 public final class PBConfig extends Configuration {
 
-  public enum PB_ENCODER {SWC, BINARY_MERGE, ADDER_NETWORKS, BEST}
+  /**
+   * The pseudo-Boolean encoder.
+   */
+  public enum PB_ENCODER {
+    SWC, BINARY_MERGE, ADDER_NETWORKS, BEST
+  }
 
   final PB_ENCODER pbEncoder;
   final boolean binaryMergeUseGAC;
   final boolean binaryMergeNoSupportForSingleBit;
   final boolean binaryMergeUseWatchDog;
+
+  /**
+   * Constructs a new pseudo-Boolean encoder configuration from a given builder.
+   * @param builder the builder
+   */
+  private PBConfig(final Builder builder) {
+    super(ConfigurationType.PB_ENCODER);
+    this.pbEncoder = builder.pbEncoder;
+    this.binaryMergeUseGAC = builder.binaryMergeUseGAC;
+    this.binaryMergeNoSupportForSingleBit = builder.binaryMergeNoSupportForSingleBit;
+    this.binaryMergeUseWatchDog = builder.binaryMergeUseWatchDog;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("PBConfig{\n");
+    sb.append("pbEncoder=").append(this.pbEncoder).append("\n");
+    sb.append("binaryMergeUseGAC=").append(this.binaryMergeUseGAC).append("\n");
+    sb.append("binaryMergeNoSupportForSingleBit=").append(this.binaryMergeNoSupportForSingleBit).append("\n");
+    sb.append("binaryMergeUseWatchDog=").append(this.binaryMergeUseWatchDog).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
 
   /**
    * The builder for a pseudo-Boolean encoder configuration.
@@ -103,28 +131,5 @@ public final class PBConfig extends Configuration {
     public PBConfig build() {
       return new PBConfig(this);
     }
-  }
-
-  /**
-   * Constructs a new pseudo-Boolean encoder configuration from a given builder.
-   * @param builder the builder
-   */
-  private PBConfig(final Builder builder) {
-    super(ConfigurationType.PB_ENCODER);
-    this.pbEncoder = builder.pbEncoder;
-    this.binaryMergeUseGAC = builder.binaryMergeUseGAC;
-    this.binaryMergeNoSupportForSingleBit = builder.binaryMergeNoSupportForSingleBit;
-    this.binaryMergeUseWatchDog = builder.binaryMergeUseWatchDog;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("PBConfig{\n");
-    sb.append("pbEncoder=").append(this.pbEncoder).append("\n");
-    sb.append("binaryMergeUseGAC=").append(this.binaryMergeUseGAC).append("\n");
-    sb.append("binaryMergeNoSupportForSingleBit=").append(this.binaryMergeNoSupportForSingleBit).append("\n");
-    sb.append("binaryMergeUseWatchDog=").append(this.binaryMergeUseWatchDog).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

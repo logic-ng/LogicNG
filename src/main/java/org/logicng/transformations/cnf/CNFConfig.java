@@ -52,6 +52,30 @@ public final class CNFConfig extends Configuration {
   final int atomBoundary;
 
   /**
+   * Constructs a new configuration with a given type.
+   */
+  public CNFConfig(final Builder builder) {
+    super(ConfigurationType.CNF);
+    this.algorithm = builder.algorithm;
+    this.fallbackAlgorithmForAdvancedEncoding = builder.fallbackAlgorithmForAdvancedEncoding;
+    this.distributionBoundary = builder.distributionBoundary;
+    this.createdClauseBoundary = builder.createdClauseBoundary;
+    this.atomBoundary = builder.atomBoundary;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("CNFConfig{\n");
+    sb.append("algorithm=").append(this.algorithm).append("\n");
+    sb.append("fallbackAlgorithmForAdvancedEncoding=").append(this.fallbackAlgorithmForAdvancedEncoding).append("\n");
+    sb.append("distributedBoundary=").append(this.distributionBoundary).append("\n");
+    sb.append("createdClauseBoundary=").append(this.createdClauseBoundary).append("\n");
+    sb.append("atomBoundary=").append(this.atomBoundary).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
+
+  /**
    * The builder for a CNF configuration.
    */
   public static class Builder {
@@ -128,29 +152,5 @@ public final class CNFConfig extends Configuration {
     public CNFConfig build() {
       return new CNFConfig(this);
     }
-  }
-
-  /**
-   * Constructs a new configuration with a given type.
-   */
-  public CNFConfig(final Builder builder) {
-    super(ConfigurationType.CNF);
-    this.algorithm = builder.algorithm;
-    this.fallbackAlgorithmForAdvancedEncoding = builder.fallbackAlgorithmForAdvancedEncoding;
-    this.distributionBoundary = builder.distributionBoundary;
-    this.createdClauseBoundary = builder.createdClauseBoundary;
-    this.atomBoundary = builder.atomBoundary;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("CNFConfig{\n");
-    sb.append("algorithm=").append(this.algorithm).append("\n");
-    sb.append("fallbackAlgorithmForAdvancedEncoding=").append(this.fallbackAlgorithmForAdvancedEncoding).append("\n");
-    sb.append("distributedBoundary=").append(this.distributionBoundary).append("\n");
-    sb.append("createdClauseBoundary=").append(this.createdClauseBoundary).append("\n");
-    sb.append("atomBoundary=").append(this.atomBoundary).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

@@ -90,7 +90,7 @@ public class Encoder {
    * @param pb          the pseudo Boolean encoder
    */
   Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
-                 final AMOEncoding amo, final PBEncoding pb) {
+          final AMOEncoding amo, final PBEncoding pb) {
     this.incrementalStrategy = incremental;
     this.cardinalityEncoding = cardinality;
     this.amoEncoding = amo;
