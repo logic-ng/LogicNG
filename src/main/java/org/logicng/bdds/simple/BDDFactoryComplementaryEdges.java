@@ -110,7 +110,7 @@ public class BDDFactoryComplementaryEdges extends BDDFactory {
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(BDD bdd, Collection<Literal> literals) {
+  public List<Assignment> enumerateAllModels(BDD bdd, Collection<Variable> variables) {
     //TODO implement
     return new LinkedList<>();
   }
@@ -328,7 +328,7 @@ public class BDDFactoryComplementaryEdges extends BDDFactory {
    * @param m1 the index
    * @param vs the set of variables to eliminate (existentially quantified)
    */
-  public int bddExists(int m1, final Set<Literal> vs) {
+  public int bddExists(int m1, final Set<Variable> vs) {
     if (m1 == 1 || m1 == -1)
       return m1;
     final BDDNode node = expandNode(m1);
@@ -343,7 +343,7 @@ public class BDDFactoryComplementaryEdges extends BDDFactory {
    * @param m1 the index
    * @param vs the set of variables to eliminate (universally quantified)
    */
-  public int bddForAll(int m1, final Set<Literal> vs) {
+  public int bddForAll(int m1, final Set<Variable> vs) {
     if (m1 == 1 || m1 == -1)
       return m1;
     final BDDNode node = expandNode(m1);

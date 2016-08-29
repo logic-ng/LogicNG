@@ -32,7 +32,6 @@ import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.math.BigDecimal;
@@ -122,26 +121,26 @@ public abstract class BDDFactory {
    * @return the list of all models
    */
   public List<Assignment> enumerateAllModels(final BDD bdd) {
-    return enumerateAllModels(bdd, (Collection<Literal>) null);
+    return enumerateAllModels(bdd, (Collection<Variable>) null);
   }
 
   /**
    * Enumerates all models of a given BDD wrt. a given set of variables.
-   * @param bdd      the BDD
-   * @param literals the variables
+   * @param bdd       the BDD
+   * @param variables the variables
    * @return the list of all models
    */
-  public List<Assignment> enumerateAllModels(final BDD bdd, final Literal[] literals) {
-    return this.enumerateAllModels(bdd, Arrays.asList(literals));
+  public List<Assignment> enumerateAllModels(final BDD bdd, final Variable[] variables) {
+    return this.enumerateAllModels(bdd, Arrays.asList(variables));
   }
 
   /**
    * Enumerates all models of a given BDD wrt. a given set of variables.
-   * @param bdd      the BDD
-   * @param literals the variables
+   * @param bdd       the BDD
+   * @param variables the variables
    * @return the list of all models
    */
-  public abstract List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Literal> literals);
+  public abstract List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Variable> variables);
 
   /**
    * Returns a CNF formula for a given BDD.

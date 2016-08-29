@@ -90,8 +90,8 @@ public final class JBuddyFactory extends BDDFactory {
 
   private final BDDKernel kernel;
 
-  private SortedMap<Literal, Integer> lit2idx;
-  private SortedMap<Integer, Literal> idx2lit;
+  private SortedMap<Variable, Integer> var2idx;
+  private SortedMap<Integer, Variable> idx2var;
 
 
   /**
@@ -103,8 +103,8 @@ public final class JBuddyFactory extends BDDFactory {
   public JBuddyFactory(int numNodes, int cacheSize, final FormulaFactory f) {
     super(f);
     this.kernel = new BDDKernel(numNodes, cacheSize);
-    this.lit2idx = new TreeMap<>();
-    this.idx2lit = new TreeMap<>();
+    this.var2idx = new TreeMap<>();
+    this.idx2var = new TreeMap<>();
   }
 
   @Override
@@ -125,11 +125,11 @@ public final class JBuddyFactory extends BDDFactory {
         return BDDKernel.BDD_TRUE;
       case LITERAL:
         final Literal lit = (Literal) formula;
-        Integer idx = lit2idx.get(lit.variable());
+        Integer idx = var2idx.get(lit.variable());
         if (idx == null) {
-          idx = lit2idx.size();
-          lit2idx.put(lit.variable(), idx);
-          idx2lit.put(idx, lit.variable());
+          idx = var2idx.size();
+          var2idx.put(lit.variable(), idx);
+          idx2var.put(idx, lit.variable());
         }
         return lit.phase() ? kernel.ithVar(idx) : kernel.nithVar(idx);
       case NOT:
@@ -162,9 +162,9 @@ public final class JBuddyFactory extends BDDFactory {
   public void setVariableOrder(final Variable... varOrder) {
     kernel.setNumberOfVars(varOrder.length);
     for (final Variable lit : varOrder) {
-      int idx = lit2idx.size();
-      lit2idx.put(lit.variable(), idx);
-      idx2lit.put(idx, lit.variable());
+      int idx = var2idx.size();
+      var2idx.put(lit.variable(), idx);
+      idx2var.put(idx, lit.variable());
     }
   }
 
@@ -325,12 +325,12 @@ public final class JBuddyFactory extends BDDFactory {
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Literal> literals) {
+  public List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Variable> variables) {
     final List<Assignment> res = new LinkedList<>();
     final List<byte[]> models = kernel.allSat(bdd.index());
     final SortedSet<Integer> temp = new TreeSet<>();
-    for (final Map.Entry<Literal, Integer> e : this.lit2idx.entrySet())
-      if (literals.contains(e.getKey()))
+    for (final Map.Entry<Variable, Integer> e : this.var2idx.entrySet())
+      if (variables.contains(e.getKey()))
         temp.add(e.getValue());
     final int[] relevantIndices = new int[temp.size()];
     int count = 0;
@@ -350,9 +350,9 @@ public final class JBuddyFactory extends BDDFactory {
       final Assignment assignment = new Assignment();
       for (final int i : relevantIndices)
         if (model[i] == 0)
-          assignment.addLiteral(idx2lit.get(i).negate());
+          assignment.addLiteral(idx2var.get(i).negate());
         else
-          assignment.addLiteral(idx2lit.get(i));
+          assignment.addLiteral(idx2var.get(i));
       assignments.add(assignment);
     } else if (model[relevantIndices[position]] != -1)
       generateAllModels(assignments, model, relevantIndices, position + 1);
@@ -374,9 +374,9 @@ public final class JBuddyFactory extends BDDFactory {
       literals = new LinkedList<>();
       for (int i = 0; i < path.length; i++)
         if (path[i] == 0)
-          literals.add(this.idx2lit.get(i));
+          literals.add(this.idx2var.get(i));
         else if (path[i] == 1)
-          literals.add(this.idx2lit.get(i).negate());
+          literals.add(this.idx2var.get(i).negate());
       clauses.add(f.or(literals));
     }
     return f.and(clauses);

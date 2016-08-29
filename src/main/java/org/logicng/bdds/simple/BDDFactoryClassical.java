@@ -35,7 +35,6 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.math.BigDecimal;
@@ -112,7 +111,7 @@ public final class BDDFactoryClassical extends BDDFactory {
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(BDD bdd, Collection<Literal> literals) {
+  public List<Assignment> enumerateAllModels(BDD bdd, Collection<Variable> variables) {
     //TODO implement
     return new LinkedList<>();
   }

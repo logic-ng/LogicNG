@@ -29,6 +29,7 @@
 package org.logicng.bdds;
 
 import org.logicng.formulas.Constant;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 
 import java.util.Collections;
@@ -72,8 +73,8 @@ public final class BDDTerminalNode implements BDDNode {
   }
 
   @Override
-  public String label() {
-    return value.toString();
+  public Formula label() {
+    return value;
   }
 
   @Override

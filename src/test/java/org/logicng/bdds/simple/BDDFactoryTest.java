@@ -72,6 +72,6 @@ public class BDDFactoryTest {
     final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
     final BDDNode bddNode = bdd.bddForFormula(f1);
     Assert.assertEquals(5, bddNode.nodes().size());
-    Assert.assertEquals("a", bddNode.label());
+    Assert.assertEquals(f.variable("a"), bddNode.label());
   }
 }

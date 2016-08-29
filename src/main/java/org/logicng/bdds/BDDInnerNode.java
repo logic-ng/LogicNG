@@ -28,7 +28,7 @@
 
 package org.logicng.bdds;
 
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,25 +42,25 @@ import java.util.Set;
  */
 public final class BDDInnerNode implements BDDNode {
 
-  private final Literal lit;
+  private final Variable var;
   private final BDDNode low;
   private final BDDNode high;
 
   /**
-   * Constructor for a new inner BDD node holding a positive literal.
-   * @param lit  the literal
+   * Constructor for a new inner BDD node holding a variable.
+   * @param var  the variable
    * @param low  the low child node
    * @param high the high child node
    */
-  public BDDInnerNode(final Literal lit, final BDDNode low, final BDDNode high) {
-    this.lit = lit;
+  public BDDInnerNode(final Variable var, final BDDNode low, final BDDNode high) {
+    this.var = var;
     this.low = low;
     this.high = high;
   }
 
   @Override
-  public String label() {
-    return this.lit.name();
+  public Variable label() {
+    return this.var;
   }
 
   @Override
@@ -88,7 +88,7 @@ public final class BDDInnerNode implements BDDNode {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.lit, this.low, this.high);
+    return Objects.hash(this.var, this.low, this.high);
   }
 
   @Override
@@ -97,7 +97,7 @@ public final class BDDInnerNode implements BDDNode {
       return true;
     if (other instanceof BDDInnerNode) {
       final BDDInnerNode o = (BDDInnerNode) other;
-      return Objects.equals(this.lit, o.lit)
+      return Objects.equals(this.var, o.var)
               && Objects.equals(this.low, o.low)
               && Objects.equals(this.high, o.high);
     }
@@ -106,6 +106,6 @@ public final class BDDInnerNode implements BDDNode {
 
   @Override
   public String toString() {
-    return "<" + this.lit.name() + " | low=" + this.low + " high=" + this.high + ">";
+    return "<" + this.var + " | low=" + this.low + " high=" + this.high + ">";
   }
 }
