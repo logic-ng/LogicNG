@@ -47,15 +47,10 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.LITPROFILE;
  * For this function, the non-caching version is preferred since it usually performs better.  The non-caching version
  * of this function generates the result mapping only once and fills it recursively whereas the caching version has to
  * construct a new mapping for each sub-formula.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class LiteralProfileFunction implements FormulaFunction<Map<Literal, Integer>> {
-
-  @Override
-  public Map<Literal, Integer> apply(final Formula formula, boolean cache) {
-    return cache ? cachingLiteralProfile(formula) : nonCachingLiteralProfile(formula);
-  }
 
   /**
    * The non-caching implementation of the literal profile computation.  In this case the result map is only
@@ -120,5 +115,10 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
       }
     formula.setFunctionCacheEntry(LITPROFILE, result);
     return result;
+  }
+
+  @Override
+  public Map<Literal, Integer> apply(final Formula formula, boolean cache) {
+    return cache ? cachingLiteralProfile(formula) : nonCachingLiteralProfile(formula);
   }
 }

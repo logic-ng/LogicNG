@@ -26,53 +26,35 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.cardinalityconstraints;
+package org.logicng.solvers.datastructures;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Variable;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
+import org.logicng.solvers.sat.MiniCard;
+import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
- * Encodes that exactly one variable is assigned value true.  Uses the 'naive' encoding with no introduction
- * of new variables but quadratic size.
- * @version 1.0
- * @since 1.0
+ * Unit tests for the class {@link LNGHeap}.
+ * @version 1.1
+ * @since 1.1
  */
-public final class CCEXOPure extends CCExactlyOne {
+public class LNGHeapTest {
 
-  private final FormulaFactory f;
-
-  /**
-   * Constructs the naive EXO encoder.
-   * @param f the formula factory
-   */
-  public CCEXOPure(final FormulaFactory f) {
-    this.f = f;
-  }
-
-  @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    if (vars.length == 0)
-      return new ImmutableFormulaList(FType.AND);
-    if (vars.length == 1) {
-      result.add(vars[0]);
-      return new ImmutableFormulaList(FType.AND, result);
-    }
-    result.add(this.f.clause(vars));
-    for (int i = 0; i < vars.length; i++)
-      for (int j = i + 1; j < vars.length; j++)
-        result.add(this.f.clause(vars[i].negate(), vars[j].negate()));
-    return new ImmutableFormulaList(FType.AND, result);
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
+  @Test
+  public void test() {
+    MiniSatStyleSolver solver = new MiniCard();
+    solver.newVar(true, true);
+    solver.newVar(true, true);
+    solver.newVar(true, true);
+    LNGHeap heap = new LNGHeap(solver);
+    Assert.assertTrue(heap.empty());
+    heap.insert(1);
+    heap.insert(2);
+    heap.insert(0);
+    Assert.assertEquals(1, heap.get(0));
+    Assert.assertEquals("LNGHeap{[1, 2], [2, 0], [0, 1]}", heap.toString());
+    Assert.assertEquals(3, heap.size());
+    heap.clear();
+    Assert.assertTrue(heap.empty());
   }
 }

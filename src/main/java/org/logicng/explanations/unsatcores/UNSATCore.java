@@ -26,33 +26,66 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.cardinalityconstraints;
+package org.logicng.explanations.unsatcores;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.Variable;
+import org.logicng.propositions.Proposition;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * The interface for exactly-one (EXO) cardinality constraints.
- * @version 1.0
- * @since 1.0
+ * An unsatisfiable core (can be a minimal unsatisfiable sub-formula).
+ * @version 1.1
+ * @since 1.1
  */
-public abstract class CCExactlyOne {
+final public class UNSATCore {
+
+  private final List<Proposition> propositions;
+  private final boolean isMUS;
 
   /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = 1}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
+   * Constructs a new unsatisfiable core.
+   * @param propositions the propositions of the core
+   * @param isMUS        {@code true} if it is a MUS, {@code false} otherwise
    */
-  public ImmutableFormulaList build(Collection<Variable> vars) {
-    return this.build(vars.toArray(new Variable[vars.size()]));
+  public UNSATCore(final List<Proposition> propositions, boolean isMUS) {
+    this.propositions = propositions;
+    this.isMUS = isMUS;
   }
 
   /**
-   * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n = 1}.
-   * @param vars the variables {@code var_1 ... var_n}
-   * @return the CNF encoding of the cardinality constraint
+   * Returns the propositions of this MUS.
+   * @return the propositions of this MUS
    */
-  public abstract ImmutableFormulaList build(final Variable... vars);
+  public List<Proposition> propositions() {
+    return this.propositions;
+  }
+
+  /**
+   * Returns {@code true} if this core is a MUS, {@code false} otherwise.
+   * @return {@code true} if this core is a MUS, {@code false} otherwise
+   */
+  public boolean isMUS() {
+    return this.isMUS;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.propositions, this.isMUS);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof UNSATCore))
+      return false;
+    UNSATCore unsatCore = (UNSATCore) o;
+    return this.isMUS == unsatCore.isMUS && Objects.equals(this.propositions, unsatCore.propositions);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("UNSATCore{isMUS=%s, propositions=%s}", this.isMUS, this.propositions);
+  }
 }

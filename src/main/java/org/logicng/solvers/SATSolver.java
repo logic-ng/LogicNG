@@ -28,18 +28,18 @@
 
 package org.logicng.solvers;
 
+import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
-import org.logicng.pseudobooleans.PBEncoder;
-import org.logicng.pseudobooleans.PBSWC;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,13 +47,12 @@ import java.util.List;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class SATSolver {
 
   protected final FormulaFactory f;
-  protected final PBEncoder pbEncoder;
   protected Tristate result;
 
   /**
@@ -62,16 +61,13 @@ public abstract class SATSolver {
    */
   protected SATSolver(final FormulaFactory f) {
     this.f = f;
-    this.pbEncoder = new PBSWC(f);
   }
 
   /**
    * Adds a formula to the solver.  The formula is first converted to CNF.
    * @param formula the formula
    */
-  public void add(final Formula formula) {
-    this.addClauseSet(formula.cnf());
-  }
+  public abstract void add(final Formula formula);
 
   /**
    * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.
@@ -101,6 +97,59 @@ public abstract class SATSolver {
   }
 
   /**
+   * Adds a formula to the solver and relaxes the given CNF with the given relaxation variable.
+   * @param relaxationVar the relaxation variable
+   * @param formula       the formula
+   */
+  public void addWithRelaxation(final Variable relaxationVar, final Formula formula) {
+    this.addClauseSetWithRelaxation(relaxationVar, formula.cnf());
+  }
+
+  /**
+   * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.
+   * @param relaxationVar the relaxation variable
+   * @param proposition   the proposition
+   */
+  public void addWithRelaxation(final Variable relaxationVar, final Proposition proposition) {
+    for (final Formula formula : proposition.formulas())
+      this.addWithRelaxation(relaxationVar, formula);
+  }
+
+  /**
+   * Adds a formula list to the solver.
+   * @param relaxationVar the relaxation variable
+   * @param formulas      the formula list
+   */
+  public void addWithRelaxation(final Variable relaxationVar, final ImmutableFormulaList formulas) {
+    for (final Formula formula : formulas)
+      this.addWithRelaxation(relaxationVar, formula);
+  }
+
+  /**
+   * Adds a collection of formulas to the solver.
+   * @param relaxationVar the relaxation variable
+   * @param formulas      the collection of formulas
+   */
+  public void add(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
+    for (final Formula formula : formulas)
+      this.addWithRelaxation(relaxationVar, formula);
+  }
+
+  /**
+   * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
+   *
+   * Usage constraints:
+   * - "<": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
+   * - "<=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
+   * - ">": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side >= number of variables.
+   * - ">=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side > number of variables.
+   * @param cc the cardinality constraint
+   * @return the incremental data of this constraint, or null if the right hand side of cc is 1
+   */
+  public abstract CCIncrementalData addIncrementalCC(final PBConstraint cc);
+
+
+  /**
    * Adds a formula which is already in CNF to the solver.
    * @param formula the formula in CNF
    */
@@ -123,10 +172,39 @@ public abstract class SATSolver {
   }
 
   /**
+   * Adds a formula which is already in CNF with a given relaxation to the solver.
+   * @param relaxationVar the relaxation variable
+   * @param formula       the formula in CNF
+   */
+  protected void addClauseSetWithRelaxation(final Variable relaxationVar, final Formula formula) {
+    switch (formula.type()) {
+      case TRUE:
+        break;
+      case FALSE:
+      case LITERAL:
+      case OR:
+        this.addClauseWithRelaxation(relaxationVar, formula);
+        break;
+      case AND:
+        for (Formula op : formula)
+          this.addClauseWithRelaxation(relaxationVar, op);
+        break;
+      default:
+        throw new IllegalArgumentException("Input formula ist not a valid CNF: " + formula);
+    }
+  }
+
+  /**
    * Adds a formula which must be a clause to the solver.
    * @param formula the clause
    */
   protected abstract void addClause(final Formula formula);
+
+  /**
+   * Adds a formula which must be a clause to the solver.
+   * @param formula the clause
+   */
+  protected abstract void addClauseWithRelaxation(final Variable relaxationVar, final Formula formula);
 
   /**
    * Returns {@code Tristate.TRUE} if the current formula in the solver is satisfiable, @{code Tristate.FALSE} if it is
@@ -292,4 +370,11 @@ public abstract class SATSolver {
    * @throws IllegalArgumentException      if the given state has become invalid
    */
   public abstract void loadState(final SolverState state);
+
+  /**
+   * Sets the solver state to UNDEF (required if you fiddle e.g. with the underlying solver).
+   */
+  public void setSolverToUndef() {
+    this.result = Tristate.UNDEF;
+  }
 }

@@ -37,23 +37,12 @@ import java.util.regex.Pattern;
 
 /**
  * The LaTeX string representation for formulas.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class LatexStringRepresentation extends FormulaStringRepresentation {
 
   private static final Pattern pattern = Pattern.compile("(.*?)(\\d*)");
-
-  @Override
-  public String toString(final Formula formula) {
-    switch (formula.type()) {
-      case LITERAL:
-        final Literal lit = (Literal) formula;
-        return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
-      default:
-        return super.toString(formula);
-    }
-  }
 
   /**
    * Returns the latex string for a variable name
@@ -67,6 +56,17 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
     if (matcher.group(2).isEmpty())
       return matcher.group(1);
     return matcher.group(1) + "_{" + matcher.group(2) + "}";
+  }
+
+  @Override
+  public String toString(final Formula formula) {
+    switch (formula.type()) {
+      case LITERAL:
+        final Literal lit = (Literal) formula;
+        return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
+      default:
+        return super.toString(formula);
+    }
   }
 
   @Override

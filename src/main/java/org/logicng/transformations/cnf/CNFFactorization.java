@@ -42,7 +42,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
 
 /**
  * Transformation of a formula in CNF by factorization.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CNFFactorization implements FormulaTransformation {

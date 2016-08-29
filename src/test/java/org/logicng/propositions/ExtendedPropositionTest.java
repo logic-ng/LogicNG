@@ -37,11 +37,12 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
  * Unit tests for {@link ExtendedProposition}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class ExtendedPropositionTest {
@@ -77,6 +78,14 @@ public class ExtendedPropositionTest {
   }
 
   @Test
+  public void testFormula() throws ParserException {
+    FormulaFactory f = new FormulaFactory();
+
+    Assert.assertEquals(p.parse("a & b"), prop1.formula(f));
+    Assert.assertEquals(p.parse("a & b & ~c"), prop3.formula(f));
+  }
+
+  @Test
   public void testHashCode() throws ParserException {
     ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
     ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
@@ -89,7 +98,7 @@ public class ExtendedPropositionTest {
   public void testEquals() throws ParserException {
     ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
     ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
-    ExtendedProposition<BagPack> prop31 = new ExtendedProposition<>(new BagPack("prop3"), Arrays.asList(p.parse("a & b")));
+    ExtendedProposition<BagPack> prop31 = new ExtendedProposition<>(new BagPack("prop3"), Collections.singletonList(p.parse("a & b")));
     Assert.assertTrue(prop1.equals(prop1));
     Assert.assertTrue(prop1.equals(prop11));
     Assert.assertTrue(prop2.equals(prop21));

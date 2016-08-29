@@ -41,7 +41,7 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
 
 /**
  * A SAT solver based SAT predicate.  Indicates whether a formula is satisfiable or not.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class SATPredicate implements FormulaPredicate {
@@ -70,14 +70,11 @@ public final class SATPredicate implements FormulaPredicate {
     final Tristate cached = formula.predicateCacheEntry(IS_SAT);
     if (cached != Tristate.UNDEF)
       return cached == Tristate.TRUE;
-    final FormulaFactory factory = formula.factory();
     boolean result;
     if (formula.type() == FType.FALSE)
       result = false;
-    else if (formula.type() == FType.TRUE || formula.type() == FType.LITERAL)
+    else if (formula.type() == FType.TRUE || formula.type() == FType.LITERAL || formula.holds(dnfPredicate))
       result = true;
-    else if (formula.holds(dnfPredicate))
-      result = formula != factory.falsum();
     else {
       this.solver.add(formula);
       result = solver.sat() == Tristate.TRUE;

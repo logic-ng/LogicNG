@@ -33,13 +33,15 @@ import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.CacheEntry;
 
+import java.util.Arrays;
+
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
 /**
  * Test some common formula functionality.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class FormulaTest {
@@ -81,6 +83,22 @@ public class FormulaTest {
     Assert.assertEquals("My Key 1", MyOwnCacheKey.MYKEY1.description);
     Assert.assertEquals("key1", formula.functionCacheEntry(MyOwnCacheKey.MYKEY1));
     Assert.assertEquals("key2", formula.functionCacheEntry(MyOwnCacheKey.MYKEY2));
+  }
+
+  @Test
+  public void testFType() {
+    Assert.assertEquals(FType.AND, FType.valueOf("AND"));
+    Assert.assertEquals(FType.NONE, FType.valueOf("NONE"));
+    Assert.assertTrue(Arrays.asList(FType.values()).contains(FType.valueOf("PBC")));
+    Assert.assertEquals(10, FType.values().length);
+  }
+
+  @Test
+  public void testCType() {
+    Assert.assertEquals(CType.EQ, CType.valueOf("EQ"));
+    Assert.assertEquals(CType.LE, CType.valueOf("LE"));
+    Assert.assertTrue(Arrays.asList(CType.values()).contains(CType.valueOf("GT")));
+    Assert.assertEquals(5, CType.values().length);
   }
 
   private enum MyOwnCacheKey implements CacheEntry {

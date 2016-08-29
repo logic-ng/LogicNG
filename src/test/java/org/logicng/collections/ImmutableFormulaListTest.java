@@ -26,51 +26,28 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.cardinalityconstraints;
+package org.logicng.collections;
 
-import org.logicng.collections.ImmutableFormulaList;
+import org.junit.Assert;
+import org.junit.Test;
 import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Encodes that exactly one variable is assigned value true.  Uses the 2-product method due to Chen.
- * @version 1.0
- * @since 1.0
+ * Unit tests for {@link ImmutableFormulaList}.
+ * @version 1.1
+ * @since 1.1
  */
-public final class CCEXOProduct extends CCExactlyOne {
-  private final FormulaFactory f;
-  private final CCAMOProduct amo;
+public class ImmutableFormulaListTest {
+  private FormulaFactory formulaFactory = new FormulaFactory();
+  private Variable a = formulaFactory.variable("A");
+  private Variable b = formulaFactory.variable("B");
 
-  /**
-   * Constructs the naive AMO encoder.
-   * @param f the formula factory
-   */
-  public CCEXOProduct(final FormulaFactory f) {
-    this.f = f;
-    this.amo = new CCAMOProduct(f);
-  }
-
-  @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    if (vars.length == 0)
-      return new ImmutableFormulaList(FType.AND);
-    if (vars.length == 1) {
-      result.add(vars[0]);
-      return new ImmutableFormulaList(FType.AND, result);
-    }
-    result.add(this.f.or(vars));
-    result.addAll(this.amo.build(vars).toList());
-    return new ImmutableFormulaList(FType.AND, result);
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
+  @Test
+  public void testFormula() {
+    ImmutableFormulaList ifl = new ImmutableFormulaList(FType.AND, a, b);
+    Assert.assertEquals(ifl.formula(formulaFactory), ifl.formula(formulaFactory)); //On purpose to check if both ways in method lead to the same result
+    Assert.assertEquals(formulaFactory.and(a, b), ifl.formula(formulaFactory));
   }
 }

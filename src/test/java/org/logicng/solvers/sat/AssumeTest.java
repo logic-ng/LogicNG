@@ -45,14 +45,14 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Unit tests for the assume functionality of the MiniSat style SAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class AssumeTest {
 
   private final FormulaFactory f;
   private final SATSolver[] solvers;
-  final PropositionalParser parser;
+  private final PropositionalParser parser;
 
   public AssumeTest() {
     this.f = new FormulaFactory();
@@ -89,12 +89,14 @@ public class AssumeTest {
       Assert.assertEquals(TRUE, s.sat(f.variable("d")));
       Assert.assertEquals(TRUE, s.sat(f.variable("e")));
       Assert.assertEquals(TRUE, s.sat(f.variable("f")));
+      Assert.assertEquals(TRUE, s.sat(f.variable("g")));
       Assert.assertEquals(FALSE, s.sat(f.variable("a")));
       Assert.assertEquals(FALSE, s.sat(f.literal("b", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("c", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("d", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("e", false)));
       Assert.assertEquals(FALSE, s.sat(f.literal("f", false)));
+      Assert.assertEquals(TRUE, s.sat(f.literal("g", false)));
       Assert.assertEquals(TRUE, s.sat(assumptions1));
       Assert.assertEquals(TRUE, s.sat(assumptions2));
       Assert.assertEquals(TRUE, s.sat(assumptions3));

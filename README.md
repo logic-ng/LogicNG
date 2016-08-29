@@ -1,9 +1,9 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.0.3-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.1-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
 ## Introduction
-LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like [MiniSAT](http://minisat.se), [CleaneLing](http://fmv.jku.at/cleaneling/), [Glucose](http://www.labri.fr/perso/lsimon/glucose/), or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
+LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like [MiniSAT](http://minisat.se), [CleaneLing](http://fmv.jku.at/cleaneling/), [Glucose](http://www.labri.fr/perso/lsimon/glucose/), [PBLib](http://tools.computational-logic.org/content/pblib.php), or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
 
 Its main focus lies on memory-efficient data-structures for Boolean formulas and efficient algorithms for manipulating and solving them.
 The library is designed to be used in industrial systems which have to manipulate and solve millions of formulas per day.

@@ -41,10 +41,17 @@ import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PseudoBooleanParserTest {
+
+  @Test
+  public void testExceptions() throws ParserException {
+    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
+    Assert.assertEquals(F.f.verum(), parser.parse((String) null));
+  }
 
   @Test
   public void testParseConstants() throws ParserException {
@@ -102,6 +109,12 @@ public class PseudoBooleanParserTest {
     Assert.assertEquals(F.f.pbc(CType.LT, -4, new Literal[]{F.f.variable("c"), F.f.literal("d", false)}, new int[]{4, -4}), parser.parse("4 * c + -4 * ~d < -4"));
     Assert.assertEquals(F.f.pbc(CType.GE, -5, new Literal[]{F.f.variable("c"), F.f.literal("c", false)}, new int[]{5, -5}), parser.parse("5 * c + -5 * ~c >= -5"));
     Assert.assertEquals(F.f.pbc(CType.GT, -6, new Literal[]{F.f.variable("a"), F.f.literal("b", false), F.f.literal("c", false)}, new int[]{6, -6, 12}), parser.parse("6 * a + -6 * ~b + 12 * ~c > -6"));
+    Assert.assertEquals(F.f.pbc(CType.LT, -4, new Literal[]{F.f.variable("c"), F.f.literal("d", false)}, new int[]{1, -4}), parser.parse("c + -4 * ~d < -4"));
+    Assert.assertEquals(F.f.pbc(CType.GE, -5, new Literal[]{F.f.variable("c"), F.f.literal("c", false)}, new int[]{5, 1}), parser.parse("5 * c + ~c >= -5"));
+    Assert.assertEquals(F.f.pbc(CType.GE, -5, new Literal[]{F.f.variable("c"), F.f.literal("d", true)}, new int[]{1, 1}), parser.parse("c + d >= -5"));
+    Assert.assertEquals(F.f.pbc(CType.GE, -5, new Literal[]{F.f.literal("c", false), F.f.literal("d", false)}, new int[]{1, 1}), parser.parse("~c + ~d >= -5"));
+    Assert.assertEquals(F.f.pbc(CType.EQ, -5, new Literal[]{F.f.literal("c", false)}, new int[]{1}), parser.parse("~c = -5"));
+    Assert.assertEquals(F.f.not(F.f.pbc(CType.EQ, -5, new Literal[]{F.f.literal("c", true)}, new int[]{1})), parser.parse("~(c = -5)"));
   }
 
   @Test

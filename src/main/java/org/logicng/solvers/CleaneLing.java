@@ -28,12 +28,17 @@
 
 package org.logicng.solvers;
 
+import org.logicng.cardinalityconstraints.CCEncoder;
+import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
@@ -46,27 +51,29 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the CleaneLing-style SAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CleaneLing extends SATSolver {
 
   private enum SolverStyle {MINIMALISTIC, FULL}
 
-  private static final int CLAUSE_TERMINATOR = 0;
-
+  public static final int CLAUSE_TERMINATOR = 0;
+  private final CCEncoder ccEncoder;
+  private final CleaneLingStyleSolver solver;
   private SolverStyle solverStyle;
   private boolean plain;
-  private final CleaneLingStyleSolver solver;
-  private SortedMap<Variable, Integer> var2index;
-  private SortedMap<Integer, Variable> index2var;
+  private SortedMap<String, Integer> name2idx;
+  private SortedMap<Integer, String> idx2name;
 
   /**
    * Constructs a new SAT solver instance.
@@ -91,8 +98,9 @@ public final class CleaneLing extends SATSolver {
     this.result = UNDEF;
     this.solverStyle = solverStyle;
     this.plain = config.plain();
-    this.var2index = new TreeMap<>();
-    this.index2var = new TreeMap<>();
+    this.name2idx = new TreeMap<>();
+    this.idx2name = new TreeMap<>();
+    this.ccEncoder = new CCEncoder(f);
   }
 
   /**
@@ -134,18 +142,39 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
+  public void add(final Formula formula) {
+    if (formula.type() == FType.PBC) {
+      final PBConstraint constraint = (PBConstraint) formula;
+      this.result = UNDEF;
+      if (constraint.isCC()) {
+        final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
+        ccEncoder.encode(constraint, result);
+      } else
+        this.addClauseSet(formula.cnf());
+    } else
+      this.addClauseSet(formula.cnf());
+  }
+
+  @Override
+  public CCIncrementalData addIncrementalCC(PBConstraint cc) {
+    if (!cc.isCC())
+      throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");
+    final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
+    return ccEncoder.encodeIncremental(cc, result);
+  }
+
+  @Override
   protected void addClause(final Formula formula) {
     this.result = UNDEF;
-    for (Literal lit : formula.literals()) {
-      Integer index = this.var2index.get(lit.variable());
-      if (index == null) {
-        index = this.var2index.size() + 1;
-        this.var2index.put(lit.variable(), index);
-        this.index2var.put(index, lit.variable());
-      }
-      this.solver.addlit(lit.phase() ? index : -index);
-    }
-    this.solver.addlit(CLAUSE_TERMINATOR);
+    addClause(formula.literals());
+  }
+
+  @Override
+  protected void addClauseWithRelaxation(Variable relaxationVar, Formula formula) {
+    this.result = UNDEF;
+    final SortedSet<Literal> literals = new TreeSet<>(formula.literals());
+    literals.add(relaxationVar);
+    addClause(literals);
   }
 
   @Override
@@ -177,28 +206,6 @@ public final class CleaneLing extends SATSolver {
     if (this.result == UNDEF)
       throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
     return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
-  }
-
-  /**
-   * Creates an assignment from a Boolean vector of the solver.
-   * @param vec       the vector of the solver
-   * @param variables the variables which should appear in the model or {@code null} if all variables should
-   *                  appear
-   * @return the assignment
-   */
-  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
-    final Assignment model = new Assignment();
-    if (!vec.empty()) {
-      for (int i = 1; i < vec.size(); i++) {
-        final Variable var = this.index2var.get(i);
-        if (vec.get(i)) {
-          if (variables == null || variables.contains(var))
-            model.addLiteral(var);
-        } else if (variables == null || variables.contains(var))
-          model.addLiteral(var.negate());
-      }
-    }
-    return model;
   }
 
   @Override
@@ -241,8 +248,86 @@ public final class CleaneLing extends SATSolver {
     throw new UnsupportedOperationException("The CleaneLing solver does not support state loading/saving");
   }
 
+  /**
+   * Adds a collection of literals to the solver.
+   * @param literals the literals
+   */
+  private void addClause(final Collection<Literal> literals) {
+    for (Literal lit : literals) {
+      Integer index = this.name2idx.get(lit.variable().name());
+      if (index == null) {
+        index = this.name2idx.size() + 1;
+        this.name2idx.put(lit.variable().name(), index);
+        this.idx2name.put(index, lit.variable().name());
+      }
+      this.solver.addlit(lit.phase() ? index : -index);
+    }
+    this.solver.addlit(CLAUSE_TERMINATOR);
+  }
+
+  /**
+   * Creates an assignment from a Boolean vector of the solver.
+   * @param vec       the vector of the solver
+   * @param variables the variables which should appear in the model or {@code null} if all variables should
+   *                  appear
+   * @return the assignment
+   */
+  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
+    final Assignment model = new Assignment();
+    if (!vec.empty()) {
+      for (int i = 1; i < vec.size(); i++) {
+        final Variable var = f.variable(this.idx2name.get(i));
+        if (vec.get(i)) {
+          if (variables == null || variables.contains(var))
+            model.addLiteral(var);
+        } else if (variables == null || variables.contains(var))
+          model.addLiteral(var.negate());
+      }
+    }
+    return model;
+  }
+
+  /**
+   * Returns the underlying core solver.
+   * <p>
+   * ATTENTION: by influencing the underlying solver directly, you can mess things up completely!  You should really
+   * know, what you are doing.
+   * @return the underlying core solver
+   */
+  public CleaneLingStyleSolver underlyingSolver() {
+    return this.solver;
+  }
+
+  /**
+   * Returns the existing internal solver index for a variable or creates a new one if the variable is yet unknown.
+   * @param var the variable
+   * @return the (old or new) internal variable index
+   */
+  public int getOrCreateVarIndex(final Variable var) {
+    Integer index = this.name2idx.get(var.name());
+    if (index == null) {
+      index = this.name2idx.size() + 1;
+      this.name2idx.put(var.name(), index);
+      this.idx2name.put(index, var.name());
+    }
+    return index;
+  }
+
+  /**
+   * Creates a new variable on the solver and returns its name.
+   * @param prefix the prefix of the variable name
+   * @return the name of the new variable
+   */
+  public String createNewVariableOnSolver(final String prefix) {
+    int index = this.name2idx.size() + 1;
+    final String varName = prefix + "_" + index;
+    this.name2idx.put(varName, index);
+    this.idx2name.put(index, varName);
+    return varName;
+  }
+
   @Override
   public String toString() {
-    return String.format("CleaneLing{result=%s, index2var=%s}", this.result, this.index2var);
+    return String.format("CleaneLing{result=%s, idx2name=%s}", this.result, this.idx2name);
   }
 }

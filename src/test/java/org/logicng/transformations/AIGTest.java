@@ -31,6 +31,8 @@ package org.logicng.transformations;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.cache.TransformationCacheEntry;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.predicates.AIGPredicate;
@@ -38,7 +40,7 @@ import org.logicng.predicates.AIGPredicate;
 
 /**
  * Unit Tests for AIG conversion.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class AIGTest {
@@ -80,6 +82,14 @@ public class AIGTest {
     Assert.assertFalse(F.IMP3.holds(aigPred));
     Assert.assertFalse(F.EQ1.holds(aigPred));
     Assert.assertFalse(F.EQ2.holds(aigPred));
+    Formula impl = p.parse("m => n");
+    impl.transform(aigTrans, false);
+    Formula aigIMPL = impl.transformationCacheEntry(TransformationCacheEntry.AIG);
+    Assert.assertNull(aigIMPL);
+    Formula equi = p.parse("m <=> n");
+    equi.transform(aigTrans, false);
+    Formula aigEQUI = impl.transformationCacheEntry(TransformationCacheEntry.AIG);
+    Assert.assertNull(aigEQUI);
   }
 
   @Test
@@ -100,6 +110,14 @@ public class AIGTest {
     Assert.assertFalse(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").holds(aigPred));
     Assert.assertFalse(p.parse("~(a & b) | c | ~(x | ~y)").holds(aigPred));
     Assert.assertFalse(p.parse("a | b | (~x & ~y)").holds(aigPred));
+    Formula or = p.parse("m | n | o");
+    or.transform(aigTrans, false);
+    Formula aigOR = or.transformationCacheEntry(TransformationCacheEntry.AIG);
+    Assert.assertNull(aigOR);
+    Formula and = p.parse("m & n & o");
+    and.transform(aigTrans, false);
+    Formula aigAND = and.transformationCacheEntry(TransformationCacheEntry.AIG);
+    Assert.assertNull(aigAND);
   }
 
   @Test
@@ -114,5 +132,20 @@ public class AIGTest {
     Assert.assertEquals(p.parse("~(a & b & ~x & ~y)"), p.parse("~(a & b & ~x & ~y)").transform(aigTrans));
     Assert.assertEquals(p.parse("~a & ~b & x & y"), p.parse("~(a | b | ~x | ~y)").transform(aigTrans));
     Assert.assertEquals(p.parse("~a & ~b & x & y"), p.parse("~(a | b | ~x | ~y)").transform(aigTrans)); // test caching
+    Formula not = p.parse("~(m | n)");
+    not.transform(aigTrans, false);
+    Formula aig = not.transformationCacheEntry(TransformationCacheEntry.AIG);
+    Assert.assertNull(aig);
+  }
+
+  @Test
+  public void testPBC() {
+    Assert.assertTrue(F.PBC1.transform(aigTrans).holds(aigPred));
+  }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("AIGTransformation", aigTrans.toString());
+    Assert.assertEquals("AIGPredicate", aigPred.toString());
   }
 }

@@ -42,7 +42,7 @@ import org.logicng.predicates.DNFPredicate;
 
 /**
  * Unit Tests for CNF conversion.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class CNFTest {
@@ -123,8 +123,13 @@ public class CNFTest {
     PseudoBooleanParser p = new PseudoBooleanParser(F.f);
     Assert.assertEquals(p.parse("a"), p.parse("a <=> (1 * b <= 1)").cnf());
     Assert.assertEquals(p.parse("$false"), p.parse("~(1 * b <= 1)").cnf());
-    Assert.assertEquals(p.parse("(~@RESERVED_CC_0 | ~@RESERVED_CC_1) & (~@RESERVED_CC_2 | ~@RESERVED_CC_3) & (~b | @RESERVED_CC_0) & (~b | @RESERVED_CC_2) & (~c | @RESERVED_CC_0) & (~c | @RESERVED_CC_3) & (~d | @RESERVED_CC_1) & (~d | @RESERVED_CC_2)"), p.parse("(1 * b + 1 * c + 1 * d <= 1)").cnf());
-    Assert.assertEquals(p.parse("(@RESERVED_CC_7 | ~@RESERVED_CC_5) & (@RESERVED_CC_8 | ~@RESERVED_CC_6) & (d | ~@RESERVED_CC_6) & (d | @RESERVED_CC_7 | ~@RESERVED_CC_4) & (d | @RESERVED_CC_8 | ~@RESERVED_CC_5) & (b | ~@RESERVED_CC_8) & (c | ~@RESERVED_CC_8) & (c | b | ~@RESERVED_CC_7) & @RESERVED_CC_4 & @RESERVED_CC_5"), p.parse("~(1 * b + 1 * c + 1 * d <= 1)").cnf());
+    Assert.assertEquals(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"), p.parse("(1 * b + 1 * c + 1 * d <= 1)").cnf());
+    Assert.assertEquals(p.parse("(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"), p.parse("~(1 * b + 1 * c + 1 * d <= 1)").cnf());
+  }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("CNFFactorization", cnf.toString());
   }
 
   private static class TestFactorizationHandler implements FactorizationHandler {
@@ -144,18 +149,6 @@ public class CNFTest {
       clauseCount++;
       longestClause = Math.max(clause.numberOfAtoms(), longestClause);
       return true;
-    }
-
-    private int distCount() {
-      return this.distCount;
-    }
-
-    private int clauseCount() {
-      return this.clauseCount;
-    }
-
-    private long longestClause() {
-      return this.longestClause;
     }
   }
 }

@@ -37,7 +37,7 @@ import java.util.TreeSet;
 
 /**
  * Super class for Boolean binary operators.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class BinaryOperator extends Formula {
@@ -85,13 +85,13 @@ public abstract class BinaryOperator extends Formula {
   }
 
   @Override
-  public boolean isAtomicFormula() {
-    return false;
+  public int numberOfOperands() {
+    return 2;
   }
 
   @Override
-  public int numberOfOperands() {
-    return 2;
+  public boolean isAtomicFormula() {
+    return false;
   }
 
   @Override

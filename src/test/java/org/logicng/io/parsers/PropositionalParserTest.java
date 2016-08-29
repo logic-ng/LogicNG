@@ -38,10 +38,18 @@ import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PropositionalParser}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PropositionalParserTest {
+
+  @Test
+  public void testExceptions() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(F.f);
+    Assert.assertEquals(F.f.verum(), parser.parse(""));
+    String s = null;
+    Assert.assertEquals(F.f.verum(), parser.parse(s));
+  }
 
   @Test
   public void testParseConstants() throws ParserException {

@@ -33,7 +33,7 @@ import org.logicng.configurations.ConfigurationType;
 
 /**
  * The configuration object for the Glucose SAT solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class GlucoseConfig extends Configuration {
@@ -51,6 +51,47 @@ public final class GlucoseConfig extends Configuration {
   final boolean reduceOnSize;
   final int reduceOnSizeSize;
   final double maxVarDecay;
+
+  /**
+   * Constructs a new Glucose configuration from a given builder.
+   * @param builder the builder
+   */
+  private GlucoseConfig(final Builder builder) {
+    super(ConfigurationType.GLUCOSE);
+    this.lbLBDMinimizingClause = builder.lbLBDMinimizingClause;
+    this.lbLBDFrozenClause = builder.lbLBDFrozenClause;
+    this.lbSizeMinimizingClause = builder.lbSizeMinimizingClause;
+    this.firstReduceDB = builder.firstReduceDB;
+    this.specialIncReduceDB = builder.specialIncReduceDB;
+    this.incReduceDB = builder.incReduceDB;
+    this.factorK = builder.factorK;
+    this.factorR = builder.factorR;
+    this.sizeLBDQueue = builder.sizeLBDQueue;
+    this.sizeTrailQueue = builder.sizeTrailQueue;
+    this.reduceOnSize = builder.reduceOnSize;
+    this.reduceOnSizeSize = builder.reduceOnSizeSize;
+    this.maxVarDecay = builder.maxVarDecay;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("GlucoseConfig{\n");
+    sb.append("lbLBDMinimizingClause=").append(this.lbLBDMinimizingClause).append("\n");
+    sb.append("lbLBDFrozenClause=").append(this.lbLBDFrozenClause).append("\n");
+    sb.append("lbSizeMinimizingClause=").append(this.lbSizeMinimizingClause).append("\n");
+    sb.append("firstReduceDB=").append(this.firstReduceDB).append("\n");
+    sb.append("specialIncReduceDB=").append(this.specialIncReduceDB).append("\n");
+    sb.append("incReduceDB=").append(this.incReduceDB).append("\n");
+    sb.append("factorK=").append(this.factorK).append("\n");
+    sb.append("factorR=").append(this.factorR).append("\n");
+    sb.append("sizeLBDQueue=").append(this.sizeLBDQueue).append("\n");
+    sb.append("sizeTrailQueue=").append(this.sizeTrailQueue).append("\n");
+    sb.append("reduceOnSize=").append(this.reduceOnSize).append("\n");
+    sb.append("reduceOnSizeSize=").append(this.reduceOnSizeSize).append("\n");
+    sb.append("maxVarDecay=").append(this.maxVarDecay).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
 
   /**
    * The builder for a Glucose configuration.
@@ -210,46 +251,5 @@ public final class GlucoseConfig extends Configuration {
     public GlucoseConfig build() {
       return new GlucoseConfig(this);
     }
-  }
-
-  /**
-   * Constructs a new Glucose configuration from a given builder.
-   * @param builder the builder
-   */
-  private GlucoseConfig(final Builder builder) {
-    super(ConfigurationType.GLUCOSE);
-    this.lbLBDMinimizingClause = builder.lbLBDMinimizingClause;
-    this.lbLBDFrozenClause = builder.lbLBDFrozenClause;
-    this.lbSizeMinimizingClause = builder.lbSizeMinimizingClause;
-    this.firstReduceDB = builder.firstReduceDB;
-    this.specialIncReduceDB = builder.specialIncReduceDB;
-    this.incReduceDB = builder.incReduceDB;
-    this.factorK = builder.factorK;
-    this.factorR = builder.factorR;
-    this.sizeLBDQueue = builder.sizeLBDQueue;
-    this.sizeTrailQueue = builder.sizeTrailQueue;
-    this.reduceOnSize = builder.reduceOnSize;
-    this.reduceOnSizeSize = builder.reduceOnSizeSize;
-    this.maxVarDecay = builder.maxVarDecay;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("GlucoseConfig{\n");
-    sb.append("lbLBDMinimizingClause=").append(this.lbLBDMinimizingClause).append("\n");
-    sb.append("lbLBDFrozenClause=").append(this.lbLBDFrozenClause).append("\n");
-    sb.append("lbSizeMinimizingClause=").append(this.lbSizeMinimizingClause).append("\n");
-    sb.append("firstReduceDB=").append(this.firstReduceDB).append("\n");
-    sb.append("specialIncReduceDB=").append(this.specialIncReduceDB).append("\n");
-    sb.append("incReduceDB=").append(this.incReduceDB).append("\n");
-    sb.append("factorK=").append(this.factorK).append("\n");
-    sb.append("factorR=").append(this.factorR).append("\n");
-    sb.append("sizeLBDQueue=").append(this.sizeLBDQueue).append("\n");
-    sb.append("sizeTrailQueue=").append(this.sizeTrailQueue).append("\n");
-    sb.append("reduceOnSize=").append(this.reduceOnSize).append("\n");
-    sb.append("reduceOnSizeSize=").append(this.reduceOnSizeSize).append("\n");
-    sb.append("maxVarDecay=").append(this.maxVarDecay).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

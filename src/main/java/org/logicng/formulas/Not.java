@@ -40,7 +40,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Boolean negation.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class Not extends Formula {
@@ -84,13 +84,13 @@ public final class Not extends Formula {
   }
 
   @Override
-  public boolean isAtomicFormula() {
-    return false;
+  public int numberOfOperands() {
+    return 1;
   }
 
   @Override
-  public int numberOfOperands() {
-    return 1;
+  public boolean isAtomicFormula() {
+    return false;
   }
 
   @Override

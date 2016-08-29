@@ -28,70 +28,65 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
+import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the 2-product method due to Chen.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public final class CCAMOProduct extends CCAtMostOne {
-  private final FormulaFactory f;
-  private final CCAMOPure amo;
+final class CCAMOProduct implements CCAtMostOne {
+  private final int recursiveBound;
+  private EncodingResult result;
 
   /**
    * Constructs the naive AMO encoder.
-   * @param f the formula factory
    */
-  public CCAMOProduct(final FormulaFactory f) {
-    this.f = f;
-    this.amo = new CCAMOPure(f);
+  CCAMOProduct(int recursiveBound) {
+    this.recursiveBound = recursiveBound;
   }
 
   @Override
-  public ImmutableFormulaList build(final Variable... vars) {
-    if (vars.length < 2)
-      return new ImmutableFormulaList(FType.AND);
-    return new ImmutableFormulaList(FType.AND, this.productRec(vars));
+  public void build(final EncodingResult result, final Variable... vars) {
+    result.reset();
+    this.result = result;
+    this.productRec(vars);
   }
 
-  private List<Formula> productRec(final Variable... vars) {
-    final List<Formula> result = new LinkedList<>();
-    int recBound = 20;
+  private void productRec(final Variable... vars) {
     int n = vars.length;
     int p = (int) Math.ceil(Math.sqrt(n));
     int q = (int) Math.ceil((double) n / (double) p);
     final Variable[] us = new Variable[p];
     for (int i = 0; i < us.length; i++)
-      us[i] = this.f.newCCVariable();
+      us[i] = result.newVariable();
     final Variable[] vs = new Variable[q];
     for (int i = 0; i < vs.length; i++)
-      vs[i] = this.f.newCCVariable();
-    if (us.length <= recBound)
-      result.addAll(this.amo.build(us).toList());
+      vs[i] = result.newVariable();
+    if (us.length <= this.recursiveBound)
+      buildPure(us);
     else
-      result.addAll(this.productRec(us));
-    if (vs.length <= recBound)
-      result.addAll(this.amo.build(vs).toList());
+      this.productRec(us);
+    if (vs.length <= this.recursiveBound)
+      buildPure(vs);
     else
-      result.addAll(this.productRec(vs));
+      this.productRec(vs);
     for (int i = 0; i < p; i++) {
       for (int j = 0; j < q; j++) {
         final int k = i * q + j;
         if (k >= 0 && k < n) {
-          result.add(this.f.clause(this.f.literal(vars[k].name(), false), us[i]));
-          result.add(this.f.clause(this.f.literal(vars[k].name(), false), vs[j]));
+          result.addClause(vars[k].negate(), us[i]);
+          result.addClause(vars[k].negate(), vs[j]);
         }
       }
     }
-    return result;
+  }
+
+  private void buildPure(final Variable... vars) {
+    for (int i = 0; i < vars.length; i++)
+      for (int j = i + 1; j < vars.length; j++)
+        result.addClause(vars[i].negate(), vars[j].negate());
   }
 
   @Override

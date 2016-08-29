@@ -42,7 +42,7 @@ import java.util.Objects;
  * @version 1.0
  * @since 1.0
  */
-public final class ExtendedProposition<T extends PropositionBagpack> implements Proposition {
+public final class ExtendedProposition<T extends PropositionBagpack> extends Proposition {
 
   private final ImmutableFormulaList formulas;
   private final T bagback;

@@ -30,16 +30,16 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.cardinalityconstraints.CCEXOProduct;
-import org.logicng.cardinalityconstraints.CCExactlyOne;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
@@ -48,11 +48,15 @@ import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.SolverState;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +70,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class SATTest {
@@ -74,7 +78,8 @@ public class SATTest {
   private final FormulaFactory f;
   private final SATSolver[] solvers;
   private final PigeonHoleGenerator pg;
-  final PropositionalParser parser;
+  private final PropositionalParser parser;
+  private final String[] testStrings;
 
   public SATTest() {
     this.f = new FormulaFactory();
@@ -90,6 +95,16 @@ public class SATTest {
     this.solvers[5] = CleaneLing.minimalistic(f);
     this.solvers[6] = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(true).glueUpdate(true).gluered(true).build());
     this.solvers[7] = CleaneLing.full(f);
+
+    this.testStrings = new String[8];
+    this.testStrings[0] = "MiniSat{result=UNDEF, incremental=true}";
+    this.testStrings[1] = "MiniSat{result=UNDEF, incremental=false}";
+    this.testStrings[2] = "MiniSat{result=UNDEF, incremental=false}";
+    this.testStrings[3] = "MiniSat{result=UNDEF, incremental=true}";
+    this.testStrings[4] = "MiniSat{result=UNDEF, incremental=false}";
+    this.testStrings[5] = "CleaneLing{result=UNDEF, idx2name={}}";
+    this.testStrings[6] = "CleaneLing{result=UNDEF, idx2name={}}";
+    this.testStrings[7] = "CleaneLing{result=UNDEF, idx2name={}}";
   }
 
   @Test
@@ -98,6 +113,7 @@ public class SATTest {
       s.add(F.TRUE);
       Assert.assertEquals(TRUE, s.sat());
       Assert.assertEquals(0, s.model().size());
+      Assert.assertTrue(s.toString().contains("MiniSat{result=TRUE, incremental=") || s.toString().equals("CleaneLing{result=TRUE, idx2name={}}"));
       s.reset();
     }
   }
@@ -208,14 +224,12 @@ public class SATTest {
 
   @Test
   public void testCC1() throws InterruptedException {
-    final CCExactlyOne c = new CCEXOProduct(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
         lits[j] = f.variable("x" + j);
-      final ImmutableFormulaList cc = c.build(lits);
-      s.add(cc);
+      s.add(f.exo(lits));
       final List<Assignment> models = s.enumerateAllModels(lits);
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models)
@@ -224,15 +238,89 @@ public class SATTest {
     }
   }
 
+  @Test
+  public void testPBC() {
+    for (SATSolver s : this.solvers) {
+      List<Literal> lits = new ArrayList<>();
+      List<Integer> coeffs = new ArrayList<>();
+      for (int i = 0; i < 5; i++) {
+        lits.add(f.literal("x" + i, i % 2 == 0));
+        coeffs.add(i + 1);
+      }
+      s.add(f.pbc(CType.GE, 10, lits, coeffs));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testPartialModel() {
+    for (SATSolver s : this.solvers) {
+      s.add(F.A);
+      s.add(F.B);
+      s.add(F.C);
+      Variable[] relevantVars = new Variable[2];
+      relevantVars[0] = F.A;
+      relevantVars[1] = F.B;
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      Assignment relModel = s.model(relevantVars);
+      Assert.assertTrue(relModel.negativeLiterals().isEmpty());
+      Assert.assertFalse(relModel.literals().contains(F.C));
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumerationHandler() {
+    for (SATSolver s : solvers) {
+      s.add(F.IMP3);
+      try {
+        List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
+          @Override
+          public boolean foundModel(Assignment assignment) {
+            return !assignment.negativeLiterals().isEmpty();
+          }
+        });
+        Assert.assertFalse(models.isEmpty());
+        Assert.assertTrue(models.get(models.size() - 1).negativeLiterals().isEmpty());
+        models.remove(models.size() - 1);
+        for (Assignment model : models) {
+          Assert.assertFalse(model.negativeLiterals().isEmpty());
+        }
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testWithRelaxation() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(f);
+    Formula one = parser.parse("a & b & (c | ~d)");
+    Formula two = parser.parse("~a | ~c");
+
+    for (SATSolver s : this.solvers) {
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), two);
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+    }
+  }
+
   @Test(expected = UnsupportedOperationException.class)
   public void testIllegalEnumeration() {
     final SATSolver s = this.solvers[7];
     final Variable[] lits = new Variable[100];
-    final CCExactlyOne c = new CCEXOProduct(f);
     for (int j = 0; j < lits.length; j++)
       lits[j] = f.variable("x" + j);
-    final ImmutableFormulaList cc = c.build(lits);
-    s.add(cc);
+    s.add(f.exo(lits));
     s.enumerateAllModels(lits);
   }
 
@@ -405,15 +493,12 @@ public class SATTest {
 
   @Test
   public void testNumberOfModelHandler() {
-    final CCExactlyOne c = new CCEXOProduct(f);
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
       for (int j = 0; j < lits.length; j++)
         lits[j] = f.variable("x" + j);
-      final ImmutableFormulaList cc = c.build(lits);
-
-      s.add(cc);
+      s.add(f.exo(lits));
       NumberOfModelsHandler handler = new NumberOfModelsHandler(100);
       List<Assignment> models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(100, models.size());
@@ -421,7 +506,7 @@ public class SATTest {
         Assert.assertEquals(1, m.positiveLiterals().size());
       s.reset();
 
-      s.add(cc);
+      s.add(f.exo(lits));
       handler = new NumberOfModelsHandler(200);
       models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(100, models.size());
@@ -429,7 +514,7 @@ public class SATTest {
         Assert.assertEquals(1, m.positiveLiterals().size());
       s.reset();
 
-      s.add(cc);
+      s.add(f.exo(lits));
       handler = new NumberOfModelsHandler(50);
       models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(50, models.size());
@@ -437,7 +522,7 @@ public class SATTest {
         Assert.assertEquals(1, m.positiveLiterals().size());
       s.reset();
 
-      s.add(cc);
+      s.add(f.exo(lits));
       handler = new NumberOfModelsHandler(1);
       models = s.enumerateAllModels(lits, handler);
       Assert.assertEquals(1, models.size());
@@ -450,5 +535,95 @@ public class SATTest {
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalHandler() {
     new NumberOfModelsHandler(0);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testAddNonCCAsCC() {
+    MiniSat solver = MiniSat.miniSat(f);
+    solver.addIncrementalCC((PBConstraint) F.PBC3);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testModelBeforeSolving() {
+    MiniSat solver = MiniSat.miniSat(f);
+    solver.model();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCLAddNonCCAsCC() {
+    CleaneLing solver = CleaneLing.minimalistic(f, new CleaneLingConfig.Builder().gluered(true).build());
+    solver.addIncrementalCC((PBConstraint) F.PBC3);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testCLModelBeforeSolving() {
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.model();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLSatWithLit() {
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    solver.sat(new TimeoutSATHandler(10000), F.A);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLSaveState() {
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    solver.saveState();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLLoadState() {
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    solver.loadState(new SolverState(27, new int[3]));
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLSatWithLitCollection() {
+    CleaneLing solver = CleaneLing.minimalistic(f);
+    solver.add(F.AND1);
+    List<Literal> lits = new ArrayList<>();
+    lits.add(F.A);
+    lits.add(F.B);
+    solver.sat(new TimeoutSATHandler(10000), lits);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testCLEnumerateWithWrongConfig() {
+    CleaneLing solver = CleaneLing.full(f, new CleaneLingConfig.Builder().plain(false).build());
+    solver.add(F.AND1);
+    solver.enumerateAllModels();
+  }
+
+  @Test
+  public void testToString() {
+    for (int i = 0; i < this.solvers.length; i++) {
+      Assert.assertEquals(this.testStrings[i], this.solvers[i].toString());
+    }
+  }
+
+  @Test
+  public void testPrintMinimalisticCleaneLing() throws FileNotFoundException {
+    CleaneLingMinimalisticSolver clms = new CleaneLingMinimalisticSolver(new CleaneLingConfig.Builder().build());
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(baos);
+    clms.printSolverState(ps);
+    Assert.assertEquals("level=0\n" +
+            "next=0\n" +
+            "ignore=null\n" +
+            "empty=null\n" +
+            "vars=[]\n" +
+            "vals=[]\n" +
+            "phases=[]\n" +
+            "decisions=LNGDoublePriorityQueue{}\n" +
+            "control=[CLFrame{decision=0, level=0, trail=0, mark=false}]\n" +
+            "watches=[]\n" +
+            "trail=[]\n" +
+            "frames=[]\n", baos.toString());
+
   }
 }

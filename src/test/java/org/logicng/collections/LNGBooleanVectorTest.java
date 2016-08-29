@@ -33,7 +33,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link LNGBooleanVector}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class LNGBooleanVectorTest {
@@ -125,6 +125,9 @@ public class LNGBooleanVectorTest {
     for (int i = 0; i < 1000; i++)
       v1.push(i % 2 == 0);
     Assert.assertFalse(v1.empty());
+    int beforeSize = v1.size();
+    v1.shrinkTo(v1.size() + 50);
+    Assert.assertEquals(v1.size(), beforeSize);
     for (int i = 500; i > 0; i--) {
       v1.shrinkTo(i);
       Assert.assertEquals((i - 1) % 2 == 0, v1.back());
@@ -170,6 +173,20 @@ public class LNGBooleanVectorTest {
     Assert.assertEquals(100, v1.size());
     v1.removeElements(100);
     Assert.assertTrue(v1.empty());
+  }
+
+  @Test
+  public void testReverseInplace() {
+    LNGBooleanVector v1 = new LNGBooleanVector(true, true, false, true, false, false, true, true);
+    v1.shrinkTo(7);
+    v1.reverseInplace();
+    Assert.assertEquals(true, v1.get(0));
+    Assert.assertEquals(false, v1.get(1));
+    Assert.assertEquals(false, v1.get(2));
+    Assert.assertEquals(true, v1.get(3));
+    Assert.assertEquals(false, v1.get(4));
+    Assert.assertEquals(true, v1.get(5));
+    Assert.assertEquals(true, v1.get(6));
   }
 
   @Test

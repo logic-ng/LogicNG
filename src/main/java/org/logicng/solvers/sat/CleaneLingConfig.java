@@ -33,7 +33,7 @@ import org.logicng.configurations.ConfigurationType;
 
 /**
  * The configuration object for a CleaneLing-style SAT solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CleaneLingConfig extends Configuration {
@@ -81,6 +81,93 @@ public final class CleaneLingConfig extends Configuration {
   final boolean searchfirst;
   final int scincfact;
   final int stepslim;
+
+  /**
+   * Constructs a new CleaneLing configuration from a given builder.
+   * @param builder the builder
+   */
+  private CleaneLingConfig(final Builder builder) {
+    super(ConfigurationType.CLEANELING);
+    this.block = builder.blockedClauseElimination;
+    this.blkwait = builder.blockedClauseEliminationWait;
+    this.blkrtc = builder.blockedClauseEliminationRTC;
+    this.boost = builder.boost;
+    this.bwclslim = builder.bwClauseLim;
+    this.bwocclim = builder.bwOccurrenceLim;
+    this.cbump = builder.clauseBumping;
+    this.distill = builder.distillation;
+    this.elim = builder.bvElim;
+    this.elmrtc = builder.bvElimRTC;
+    this.elmocclim = builder.bvElimOccurrenceLim;
+    this.elmpocclim1 = builder.bvElimPivotOccurrenceLimOneSided;
+    this.elmpocclim2 = builder.bvElimPivotOccurrenceLimTwoSided;
+    this.elmclslim = builder.bvElimClauseLim;
+    this.gluered = builder.gluered;
+    this.gluekeep = builder.glueKeep;
+    this.glueupdate = builder.glueUpdate;
+    this.itsimpdel = builder.iterationSimplificationDelay;
+    this.plain = builder.plain;
+    this.restart = builder.restart;
+    this.restartint = builder.restartInterval;
+    this.redinit = builder.reductionInterval;
+    this.redinc = builder.reductionIntervalInc;
+    this.reusetrail = builder.reuseTrail;
+    this.simpint = builder.simpSteps;
+    this.simpgeom = builder.simpGeomIncrease;
+    this.sizepen = builder.sizePenalty;
+    this.sizemaxpen = builder.sizeMaxPenalty;
+    this.searchint = builder.searchInterval;
+    this.searchfirst = builder.searchFirst;
+    this.scincfact = builder.scoreIncrementFactor;
+    this.stepslim = builder.stepsLim;
+  }
+
+  /**
+   * Returns whether the solver is in 'plain' mode or not.
+   * @return {@code true} if the solver is in plain mode, {@code false} otherwise
+   */
+  public boolean plain() {
+    return this.plain;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("CleaneLingConfig{\n");
+    sb.append("blockedClauseElimination=").append(this.block).append("\n");
+    sb.append("blockedClauseEliminationWait=").append(this.blkwait).append("\n");
+    sb.append("blockedClauseEliminationRTC=").append(this.blkrtc).append("\n");
+    sb.append("boost=").append(this.boost).append("\n");
+    sb.append("bwClauseLim=").append(this.bwclslim).append("\n");
+    sb.append("bwOccurrenceLim=").append(this.bwocclim).append("\n");
+    sb.append("clauseBumping=").append(this.cbump).append("\n");
+    sb.append("distillation=").append(this.distill).append("\n");
+    sb.append("bvElim=").append(this.elim).append("\n");
+    sb.append("bvElimRTC=").append(this.elmrtc).append("\n");
+    sb.append("bvElimOccurrenceLim=").append(this.elmocclim).append("\n");
+    sb.append("bvElimPivotOccurrenceLimOneSided=").append(this.elmpocclim1).append("\n");
+    sb.append("bvElimPivotOccurrenceLimTwoSided=").append(this.elmpocclim2).append("\n");
+    sb.append("bvElimClauseLim=").append(this.elmclslim).append("\n");
+    sb.append("gluered=").append(this.gluered).append("\n");
+    sb.append("glueKeep=").append(this.gluekeep).append("\n");
+    sb.append("glueUpdate=").append(this.glueupdate).append("\n");
+    sb.append("iterationSimplificationDelay=").append(this.itsimpdel).append("\n");
+    sb.append("plain=").append(this.plain).append("\n");
+    sb.append("restart=").append(this.restart).append("\n");
+    sb.append("restartInterval=").append(this.restartint).append("\n");
+    sb.append("reductionInterval=").append(this.redinit).append("\n");
+    sb.append("reductionIntervalInc=").append(this.redinc).append("\n");
+    sb.append("reuseTrail=").append(this.reusetrail).append("\n");
+    sb.append("simpSteps=").append(this.simpint).append("\n");
+    sb.append("simpGeomIncrease=").append(this.simpgeom).append("\n");
+    sb.append("sizePenalty=").append(this.sizepen).append("\n");
+    sb.append("sizeMaxPenalty=").append(this.sizemaxpen).append("\n");
+    sb.append("searchInterval=").append(this.searchint).append("\n");
+    sb.append("searchFirst=").append(this.searchfirst).append("\n");
+    sb.append("scoreIncrementFactor=").append(this.scincfact).append("\n");
+    sb.append("stepsLim=").append(this.stepslim).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
 
   /**
    * The builder for a MiniSAT configuration.
@@ -448,92 +535,5 @@ public final class CleaneLingConfig extends Configuration {
       return new CleaneLingConfig(this);
     }
 
-  }
-
-  /**
-   * Constructs a new CleaneLing configuration from a given builder.
-   * @param builder the builder
-   */
-  private CleaneLingConfig(final Builder builder) {
-    super(ConfigurationType.CLEANELING);
-    this.block = builder.blockedClauseElimination;
-    this.blkwait = builder.blockedClauseEliminationWait;
-    this.blkrtc = builder.blockedClauseEliminationRTC;
-    this.boost = builder.boost;
-    this.bwclslim = builder.bwClauseLim;
-    this.bwocclim = builder.bwOccurrenceLim;
-    this.cbump = builder.clauseBumping;
-    this.distill = builder.distillation;
-    this.elim = builder.bvElim;
-    this.elmrtc = builder.bvElimRTC;
-    this.elmocclim = builder.bvElimOccurrenceLim;
-    this.elmpocclim1 = builder.bvElimPivotOccurrenceLimOneSided;
-    this.elmpocclim2 = builder.bvElimPivotOccurrenceLimTwoSided;
-    this.elmclslim = builder.bvElimClauseLim;
-    this.gluered = builder.gluered;
-    this.gluekeep = builder.glueKeep;
-    this.glueupdate = builder.glueUpdate;
-    this.itsimpdel = builder.iterationSimplificationDelay;
-    this.plain = builder.plain;
-    this.restart = builder.restart;
-    this.restartint = builder.restartInterval;
-    this.redinit = builder.reductionInterval;
-    this.redinc = builder.reductionIntervalInc;
-    this.reusetrail = builder.reuseTrail;
-    this.simpint = builder.simpSteps;
-    this.simpgeom = builder.simpGeomIncrease;
-    this.sizepen = builder.sizePenalty;
-    this.sizemaxpen = builder.sizeMaxPenalty;
-    this.searchint = builder.searchInterval;
-    this.searchfirst = builder.searchFirst;
-    this.scincfact = builder.scoreIncrementFactor;
-    this.stepslim = builder.stepsLim;
-  }
-
-  /**
-   * Returns whether the solver is in 'plain' mode or not.
-   * @return {@code true} if the solver is in plain mode, {@code false} otherwise
-   */
-  public boolean plain() {
-    return this.plain;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("CleaneLingConfig{\n");
-    sb.append("blockedClauseElimination=").append(this.block).append("\n");
-    sb.append("blockedClauseEliminationWait=").append(this.blkwait).append("\n");
-    sb.append("blockedClauseEliminationRTC=").append(this.blkrtc).append("\n");
-    sb.append("boost=").append(this.boost).append("\n");
-    sb.append("bwClauseLim=").append(this.bwclslim).append("\n");
-    sb.append("bwOccurrenceLim=").append(this.bwocclim).append("\n");
-    sb.append("clauseBumping=").append(this.cbump).append("\n");
-    sb.append("distillation=").append(this.distill).append("\n");
-    sb.append("bvElim=").append(this.elim).append("\n");
-    sb.append("bvElimRTC=").append(this.elmrtc).append("\n");
-    sb.append("bvElimOccurrenceLim=").append(this.elmocclim).append("\n");
-    sb.append("bvElimPivotOccurrenceLimOneSided=").append(this.elmpocclim1).append("\n");
-    sb.append("bvElimPivotOccurrenceLimTwoSided=").append(this.elmpocclim2).append("\n");
-    sb.append("bvElimClauseLim=").append(this.elmclslim).append("\n");
-    sb.append("gluered=").append(this.gluered).append("\n");
-    sb.append("glueKeep=").append(this.gluekeep).append("\n");
-    sb.append("glueUpdate=").append(this.glueupdate).append("\n");
-    sb.append("iterationSimplificationDelay=").append(this.itsimpdel).append("\n");
-    sb.append("plain=").append(this.plain).append("\n");
-    sb.append("restart=").append(this.restart).append("\n");
-    sb.append("restartInterval=").append(this.restartint).append("\n");
-    sb.append("reductionInterval=").append(this.redinit).append("\n");
-    sb.append("reductionIntervalInc=").append(this.redinc).append("\n");
-    sb.append("reuseTrail=").append(this.reusetrail).append("\n");
-    sb.append("simpSteps=").append(this.simpint).append("\n");
-    sb.append("simpGeomIncrease=").append(this.simpgeom).append("\n");
-    sb.append("sizePenalty=").append(this.sizepen).append("\n");
-    sb.append("sizeMaxPenalty=").append(this.sizemaxpen).append("\n");
-    sb.append("searchInterval=").append(this.searchint).append("\n");
-    sb.append("searchFirst=").append(this.searchfirst).append("\n");
-    sb.append("scoreIncrementFactor=").append(this.scincfact).append("\n");
-    sb.append("stepsLim=").append(this.stepslim).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

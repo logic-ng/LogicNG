@@ -50,7 +50,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class PartialMaxSATTest {
@@ -161,11 +161,21 @@ public class PartialMaxSATTest {
     readCNF(solver, "tests/partialmaxsat/c1355_F176gat-1278gat@1.wcnf");
     MaxSATHandler handler = new TimeoutMaxSATHandler(1000);
     Assert.assertEquals(MaxSAT.MaxSATResult.UNDEF, solver.solve(handler));
+    Assert.assertTrue(handler.lowerBoundApproximation() < 13);
 
     solver = MaxSATSolver.wbo(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
     readCNF(solver, "tests/partialmaxsat/c1355_F1229gat@1.wcnf");
     handler = new TimeoutMaxSATHandler(5000);
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
+  }
+
+  @Test
+  public void testTimeoutHandlerUB() throws IOException {
+    MaxSATSolver solver = MaxSATSolver.linearSU(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
+    readCNF(solver, "tests/partialmaxsat/c1355_F1229gat@1.wcnf");
+    MaxSATHandler handler = new TimeoutMaxSATHandler(5000);
+    Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
+    Assert.assertEquals(solver.result(), handler.upperBoundApproximation());
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {

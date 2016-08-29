@@ -33,7 +33,6 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
-import org.logicng.pseudobooleans.PBSWC;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -53,7 +52,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class PBConstraint extends Formula {
@@ -82,6 +81,7 @@ public final class PBConstraint extends Formula {
   private final boolean isCC;
   private ImmutableFormulaList encoding;
   private int hashCode;
+  private int maxWeight;
 
   /**
    * Constructs a new pseudo-Boolean constraint.
@@ -99,11 +99,13 @@ public final class PBConstraint extends Formula {
     this.literals = literals;
     this.coefficients = coefficients;
     boolean cc = true;
-    for (final int c : coefficients)
-      if (c != 1) {
+    maxWeight = Integer.MIN_VALUE;
+    for (final int c : coefficients) {
+      if (c > maxWeight)
+        maxWeight = c;
+      if (c != 1)
         cc = false;
-        break;
-      }
+    }
     for (final Literal lit : literals)
       if (!lit.phase()) {
         cc = false;
@@ -114,6 +116,16 @@ public final class PBConstraint extends Formula {
     this.rhs = rhs;
     this.encoding = null;
     this.hashCode = 0;
+  }
+
+  /**
+   * Returns the GCD of two given values.
+   * @param small the smaller value
+   * @param big   the larger value
+   * @return the GCD of the two values
+   */
+  private static int gcd(int small, int big) {
+    return small == 0 ? big : gcd(big % small, small);
   }
 
   /**
@@ -154,6 +166,14 @@ public final class PBConstraint extends Formula {
    */
   public boolean isCC() {
     return this.isCC;
+  }
+
+  /**
+   * Returns the maximal coefficient of this constraint.
+   * @return the maximal coefficient of this constraint
+   */
+  public int maxWeight() {
+    return this.maxWeight;
   }
 
   /**
@@ -203,7 +223,8 @@ public final class PBConstraint extends Formula {
   }
 
   /**
-   * Internal helper for normalization of a <= constraint.
+   * Internal helper for normalization of a <= constraint. Can also be used for >= constraints by multiplying the right
+   * side and the coefficients with -1.
    * @param ps  the literals
    * @param cs  the coefficients
    * @param rhs the right-hand side
@@ -285,16 +306,6 @@ public final class PBConstraint extends Formula {
     return f.pbc(CType.LE, c, lits, coeffs);
   }
 
-  /**
-   * Returns the GCD of two given values.
-   * @param small the smaller value
-   * @param big   the larger value
-   * @return the GCD of the two values
-   */
-  private static int gcd(int small, int big) {
-    return small == 0 ? big : gcd(big % small, small);
-  }
-
   @Override
   public long numberOfAtoms() {
     return 1L;
@@ -309,13 +320,13 @@ public final class PBConstraint extends Formula {
   }
 
   @Override
-  public boolean isAtomicFormula() {
-    return true;
+  public int numberOfOperands() {
+    return 0;
   }
 
   @Override
-  public int numberOfOperands() {
-    return 0;
+  public boolean isAtomicFormula() {
+    return true;
   }
 
   @Override
@@ -347,41 +358,6 @@ public final class PBConstraint extends Formula {
   public boolean evaluate(final Assignment assignment) {
     int lhs = this.evaluateLHS(assignment);
     return this.evaluateComparator(lhs);
-  }
-
-  /**
-   * Returns the evaluation of the left-hand side of this constraint.
-   * @param assignment the assignment
-   * @return the evaluation of the left-hand side of this constraint
-   */
-  private int evaluateLHS(final Assignment assignment) {
-    int lhs = 0;
-    for (int i = 0; i < this.literals.length; i++)
-      if (this.literals[i].evaluate(assignment))
-        lhs += this.coefficients[i];
-    return lhs;
-  }
-
-  /**
-   * Computes the result of evaluating the comparator with a given left-hand side.
-   * @param lhs the left-hand side
-   * @return {@code true} if the comparator evaluates to true, {@code false} otherwise
-   */
-  private boolean evaluateComparator(int lhs) {
-    switch (this.comparator) {
-      case EQ:
-        return lhs == this.rhs;
-      case LE:
-        return lhs <= this.rhs;
-      case LT:
-        return lhs < this.rhs;
-      case GE:
-        return lhs >= this.rhs;
-      case GT:
-        return lhs > this.rhs;
-      default:
-        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
-    }
   }
 
   @Override
@@ -480,10 +456,45 @@ public final class PBConstraint extends Formula {
   }
 
   /**
+   * Returns the evaluation of the left-hand side of this constraint.
+   * @param assignment the assignment
+   * @return the evaluation of the left-hand side of this constraint
+   */
+  private int evaluateLHS(final Assignment assignment) {
+    int lhs = 0;
+    for (int i = 0; i < this.literals.length; i++)
+      if (this.literals[i].evaluate(assignment))
+        lhs += this.coefficients[i];
+    return lhs;
+  }
+
+  /**
+   * Computes the result of evaluating the comparator with a given left-hand side.
+   * @param lhs the left-hand side
+   * @return {@code true} if the comparator evaluates to true, {@code false} otherwise
+   */
+  private boolean evaluateComparator(int lhs) {
+    switch (this.comparator) {
+      case EQ:
+        return lhs == this.rhs;
+      case LE:
+        return lhs <= this.rhs;
+      case LT:
+        return lhs < this.rhs;
+      case GE:
+        return lhs >= this.rhs;
+      case GT:
+        return lhs > this.rhs;
+      default:
+        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
+    }
+  }
+
+  /**
    * Encodes this constraint as CNF and stores the result.
    */
   private void encode() {
-    this.encoding = new PBSWC(f).build(this);
+    this.encoding = this.f.pbEncoder().encode(this);
   }
 
   @Override

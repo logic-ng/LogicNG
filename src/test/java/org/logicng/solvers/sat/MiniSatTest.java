@@ -32,12 +32,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.collections.LNGIntVector;
 
+import java.util.Arrays;
+
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Some MiniSat specific unit tests.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class MiniSatTest {
@@ -67,6 +69,12 @@ public class MiniSatTest {
   public void testInvalidLoadState() {
     final MiniSat2Solver solver = new MiniSat2Solver(new MiniSatConfig.Builder().incremental(false).build());
     solver.loadState(null);
+  }
+
+  @Test
+  public void testConfig() {
+    Assert.assertEquals("MINISAT", new MiniSatConfig.Builder().build().type().toString());
+    Assert.assertTrue(Arrays.asList(MiniSatConfig.ClauseMinimization.values()).contains(MiniSatConfig.ClauseMinimization.valueOf("DEEP")));
   }
 
   private LNGIntVector clause(int... lits) {

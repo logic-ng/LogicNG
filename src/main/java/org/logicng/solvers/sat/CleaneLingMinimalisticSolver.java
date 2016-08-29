@@ -67,7 +67,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * A minimalistic version of the CleaneLing solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
@@ -78,29 +78,6 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
    */
   public CleaneLingMinimalisticSolver(final CleaneLingConfig config) {
     super(config);
-  }
-
-  @Override
-  protected void initLimits() {
-    newRestartLimit();
-    if (limits.simpSteps == 0)
-      limits.simpSteps = Integer.MAX_VALUE;
-  }
-
-  @Override
-  protected void updateLimits() {
-    limits.simpInc = Integer.MAX_VALUE;
-    limits.simpSteps = limits.simpInc;
-    if (limits.searchInc == 0)
-      limits.searchInc = config.searchint;
-    if (limits.searchConflicts != 0) {
-      int inc = limits.searchInc;
-      if (limits.searchInc >= Integer.MAX_VALUE - inc)
-        limits.searchInc = Integer.MAX_VALUE;
-      else
-        limits.searchInc += inc;
-    }
-    limits.searchConflicts = limits.searchInc;
   }
 
   @Override
@@ -125,6 +102,11 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
     this.handler = null;
     this.canceledByHandler = false;
     return res;
+  }
+
+  @Override
+  protected void newPushConnectClause(boolean redundant, int glue) {
+    connectClause(newClause(redundant, glue));
   }
 
   @Override
@@ -166,17 +148,35 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
   }
 
   @Override
+  protected void initLimits() {
+    newRestartLimit();
+    if (limits.simpSteps == 0)
+      limits.simpSteps = Integer.MAX_VALUE;
+  }
+
+  @Override
+  protected void updateLimits() {
+    limits.simpInc = Integer.MAX_VALUE;
+    limits.simpSteps = limits.simpInc;
+    if (limits.searchInc == 0)
+      limits.searchInc = config.searchint;
+    if (limits.searchConflicts != 0) {
+      int inc = limits.searchInc;
+      if (limits.searchInc >= Integer.MAX_VALUE - inc)
+        limits.searchInc = Integer.MAX_VALUE;
+      else
+        limits.searchInc += inc;
+    }
+    limits.searchConflicts = limits.searchInc;
+  }
+
+  @Override
   protected CLClause newClause(boolean redundant, int glue) {
     CLClause c = new CLClause();
     c.setRedundant(redundant);
     for (int i = 0; i < addedlits.size(); i++)
       c.lits().push(addedlits.get(i));
     return c;
-  }
-
-  @Override
-  protected void newPushConnectClause(boolean redundant, int glue) {
-    connectClause(newClause(redundant, glue));
   }
 
   @Override
@@ -310,7 +310,8 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
   }
 
   @Override
-  protected void analyze(CLClause reason) {
+  protected void analyze(final CLClause r) {
+    CLClause reason = r;
     if (empty != null) {
       assert level == 0;
       return;

@@ -65,7 +65,7 @@ comparison returns [Formula f]
   | e = add GT n = NUMBER  {$f = f.pbc(CType.GT, Integer.parseInt($n.text), $e.literals, $e.coeffs);};
 
 simp returns [Formula f]
-  :	VARIABLE      {$f = f.literal($VARIABLE.text, true);}
+  :	LITERAL       {$f = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true));}
   |	constant      {$f = $constant.f;}
   | comparison    {$f = $comparison.f;}
   | LBR equiv RBR {$f = $equiv.f;};
@@ -91,8 +91,8 @@ equiv returns [Formula f]
   :	a = impl {operands[0] =$a.f;} (EQUIV b = equiv {operands[1] = $b.f;})? {$f = operands[1] == null ? operands[0] : f.equivalence(operands[0], operands[1]);};
 
 mul returns [Literal l, int c]
-  : NUMBER MUL VARIABLE {$l = f.literal($VARIABLE.text, true); $c = Integer.parseInt($NUMBER.text);}
-  | NUMBER MUL NOT VARIABLE {$l = f.literal($VARIABLE.text, false); $c = Integer.parseInt($NUMBER.text);};
+  : LITERAL {$l = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true)); $c = 1;}
+  | NUMBER MUL LITERAL {$l = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true)); $c = Integer.parseInt($NUMBER.text);};
 
 add returns [List<Literal> literals, List<Integer> coeffs]
 @init{$literals = new ArrayList<>(); $coeffs = new ArrayList<>();}
@@ -100,7 +100,7 @@ add returns [List<Literal> literals, List<Integer> coeffs]
 
 
 NUMBER   : [\-]?[0-9]+;
-VARIABLE : [A-Za-z_@][A-Za-z0-9_]*;
+LITERAL  : [~]?[A-Za-z_@][A-Za-z0-9_]*;
 TRUE     : '$true';
 FALSE    : '$false';
 LBR      : '(';

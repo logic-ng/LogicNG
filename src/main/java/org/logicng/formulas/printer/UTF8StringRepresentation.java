@@ -37,23 +37,12 @@ import java.util.regex.Pattern;
 
 /**
  * The UTF8 string representation for formulas.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class UTF8StringRepresentation extends FormulaStringRepresentation {
 
   private static final Pattern pattern = Pattern.compile("(.*?)(\\d*)");
-
-  @Override
-  public String toString(final Formula formula) {
-    switch (formula.type()) {
-      case LITERAL:
-        final Literal lit = (Literal) formula;
-        return lit.phase() ? utf8Name(lit.name()) : this.negation() + utf8Name(lit.name());
-      default:
-        return super.toString(formula);
-    }
-  }
 
   /**
    * Returns the UTF8 string for a variable name
@@ -107,6 +96,17 @@ public final class UTF8StringRepresentation extends FormulaStringRepresentation 
           break;
       }
     return sb.toString();
+  }
+
+  @Override
+  public String toString(final Formula formula) {
+    switch (formula.type()) {
+      case LITERAL:
+        final Literal lit = (Literal) formula;
+        return lit.phase() ? utf8Name(lit.name()) : this.negation() + utf8Name(lit.name());
+      default:
+        return super.toString(formula);
+    }
   }
 
   @Override

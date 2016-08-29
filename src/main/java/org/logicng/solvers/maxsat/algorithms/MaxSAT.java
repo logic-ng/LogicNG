@@ -79,7 +79,7 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Super class for the MaxSAT solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class MaxSAT {
@@ -141,6 +141,35 @@ public abstract class MaxSAT {
     this.orderWeights = new LNGIntVector();
     this.solverType = config.solverType;
     this.handler = null;
+  }
+
+  /**
+   * Creates a new variable in the SAT solver.
+   * @param s the SAT solver
+   */
+  public static void newSATVariable(final MiniSatStyleSolver s) {
+    s.newVar(true, true);
+  }
+
+  /**
+   * Solves the formula that is currently loaded in the SAT solver with a set of assumptions.
+   * @param s           the SAT solver
+   * @param handler     a SAT handler
+   * @param assumptions the assumptions
+   * @return the result of the solving process
+   */
+  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler handler, final LNGIntVector assumptions) {
+    return s.solve(handler, assumptions);
+  }
+
+  /**
+   * Solves the formula without assumptions.
+   * @param s       the SAT solver
+   * @param handler a SAT handler
+   * @return the result of the solving process
+   */
+  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler handler) {
+    return s.solve(handler);
   }
 
   /**
@@ -293,35 +322,6 @@ public abstract class MaxSAT {
   }
 
   /**
-   * Creates a new variable in the SAT solver.
-   * @param s the SAT solver
-   */
-  public static void newSATVariable(final MiniSatStyleSolver s) {
-    s.newVar(true, true);
-  }
-
-  /**
-   * Solves the formula that is currently loaded in the SAT solver with a set of assumptions.
-   * @param s           the SAT solver
-   * @param handler     a SAT handler
-   * @param assumptions the assumptions
-   * @return the result of the solving process
-   */
-  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler handler, final LNGIntVector assumptions) {
-    return s.solve(handler, assumptions);
-  }
-
-  /**
-   * Solves the formula without assumptions.
-   * @param s       the SAT solver
-   * @param handler a SAT handler
-   * @return the result of the solving process
-   */
-  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler handler) {
-    return s.solve(handler);
-  }
-
-  /**
    * Saves the current model found by the SAT solver.
    * @param currentModel the model found by the solver
    */
@@ -439,11 +439,6 @@ public abstract class MaxSAT {
 
   protected boolean foundUpperBound(final int upperBound, final Assignment model) {
     return handler == null || handler.foundUpperBound(upperBound, model);
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 
   /**

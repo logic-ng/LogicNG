@@ -53,7 +53,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSAT.MaxSATResult.UNSATISF
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class MaxSATSolver {
@@ -77,38 +77,6 @@ public final class MaxSATSolver {
     this.algorithm = algorithm;
     this.configuration = configuration;
     this.reset();
-  }
-
-  /**
-   * Resets the solver.
-   * @throws IllegalArgumentException if the algorithm was unknown
-   */
-  public void reset() {
-    this.result = UNDEF;
-    this.var2index = new TreeMap<>();
-    this.index2var = new TreeMap<>();
-    switch (this.algorithm) {
-      case WBO:
-        this.solver = new WBO(this.configuration);
-        break;
-      case INC_WBO:
-        this.solver = new IncWBO(this.configuration);
-        break;
-      case LINEAR_SU:
-        this.solver = new LinearSU(this.configuration);
-        break;
-      case LINEAR_US:
-        this.solver = new LinearUS(this.configuration);
-        break;
-      case MSU3:
-        this.solver = new MSU3(this.configuration);
-        break;
-      case WMSU3:
-        this.solver = new WMSU3(this.configuration);
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown MaxSAT algorithm: " + this.algorithm);
-    }
   }
 
   /**
@@ -211,6 +179,38 @@ public final class MaxSATSolver {
    */
   public static MaxSATSolver wmsu3(final MaxSATConfig config) {
     return new MaxSATSolver(config, Algorithm.WMSU3);
+  }
+
+  /**
+   * Resets the solver.
+   * @throws IllegalArgumentException if the algorithm was unknown
+   */
+  public void reset() {
+    this.result = UNDEF;
+    this.var2index = new TreeMap<>();
+    this.index2var = new TreeMap<>();
+    switch (this.algorithm) {
+      case WBO:
+        this.solver = new WBO(this.configuration);
+        break;
+      case INC_WBO:
+        this.solver = new IncWBO(this.configuration);
+        break;
+      case LINEAR_SU:
+        this.solver = new LinearSU(this.configuration);
+        break;
+      case LINEAR_US:
+        this.solver = new LinearUS(this.configuration);
+        break;
+      case MSU3:
+        this.solver = new MSU3(this.configuration);
+        break;
+      case WMSU3:
+        this.solver = new WMSU3(this.configuration);
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown MaxSAT algorithm: " + this.algorithm);
+    }
   }
 
   /**

@@ -35,7 +35,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.DEEP;
 
 /**
  * The configuration object for a MiniSAT-style SAT solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class MiniSatConfig extends Configuration {
@@ -61,6 +61,59 @@ public final class MiniSatConfig extends Configuration {
   final double learntsizeInc;
   final boolean incremental;
   final boolean initialPhase;
+
+  /**
+   * Constructs a new MiniSAT configuration from a given builder.
+   * @param builder the builder
+   */
+  private MiniSatConfig(final Builder builder) {
+    super(ConfigurationType.MINISAT);
+    this.varDecay = builder.varDecay;
+    this.varInc = builder.varInc;
+    this.clauseMin = builder.clauseMin;
+    this.restartFirst = builder.restartFirst;
+    this.restartInc = builder.restartInc;
+    this.clauseDecay = builder.clauseDecay;
+    this.removeSatisfied = builder.removeSatisfied;
+    this.learntsizeFactor = builder.learntsizeFactor;
+    this.learntsizeInc = builder.learntsizeInc;
+    this.incremental = builder.incremental;
+    this.initialPhase = builder.initialPhase;
+  }
+
+  /**
+   * Returns whether the solver is incremental or not
+   * @return {@code true} if the solver is incremental, {@code false} otherwise
+   */
+  public boolean incremental() {
+    return this.incremental;
+  }
+
+  /**
+   * Returns the initial phase of the solver.
+   * @return the initial phase of the solver
+   */
+  public boolean initialPhase() {
+    return this.initialPhase;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("MiniSatConfig{\n");
+    sb.append("varDecay=").append(this.varDecay).append("\n");
+    sb.append("varInc=").append(this.varInc).append("\n");
+    sb.append("clauseMin=").append(this.clauseMin).append("\n");
+    sb.append("restartFirst=").append(this.restartFirst).append("\n");
+    sb.append("restartInc=").append(this.restartInc).append("\n");
+    sb.append("clauseDecay=").append(this.clauseDecay).append("\n");
+    sb.append("removeSatisfied=").append(this.removeSatisfied).append("\n");
+    sb.append("learntsizeFactor=").append(this.learntsizeFactor).append("\n");
+    sb.append("learntsizeInc=").append(this.learntsizeInc).append("\n");
+    sb.append("incremental=").append(this.incremental).append("\n");
+    sb.append("initialPhase=").append(this.initialPhase).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
 
   /**
    * The builder for a MiniSAT configuration.
@@ -199,58 +252,5 @@ public final class MiniSatConfig extends Configuration {
     public MiniSatConfig build() {
       return new MiniSatConfig(this);
     }
-  }
-
-  /**
-   * Constructs a new MiniSAT configuration from a given builder.
-   * @param builder the builder
-   */
-  private MiniSatConfig(final Builder builder) {
-    super(ConfigurationType.MINISAT);
-    this.varDecay = builder.varDecay;
-    this.varInc = builder.varInc;
-    this.clauseMin = builder.clauseMin;
-    this.restartFirst = builder.restartFirst;
-    this.restartInc = builder.restartInc;
-    this.clauseDecay = builder.clauseDecay;
-    this.removeSatisfied = builder.removeSatisfied;
-    this.learntsizeFactor = builder.learntsizeFactor;
-    this.learntsizeInc = builder.learntsizeInc;
-    this.incremental = builder.incremental;
-    this.initialPhase = builder.initialPhase;
-  }
-
-  /**
-   * Returns whether the solver is incremental or not
-   * @return {@code true} if the solver is incremental, {@code false} otherwise
-   */
-  public boolean incremental() {
-    return this.incremental;
-  }
-
-  /**
-   * Returns the initial phase of the solver.
-   * @return the initial phase of the solver
-   */
-  public boolean initialPhase() {
-    return this.initialPhase;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("MiniSatConfig{\n");
-    sb.append("varDecay=").append(this.varDecay).append("\n");
-    sb.append("varInc=").append(this.varInc).append("\n");
-    sb.append("clauseMin=").append(this.clauseMin).append("\n");
-    sb.append("restartFirst=").append(this.restartFirst).append("\n");
-    sb.append("restartInc=").append(this.restartInc).append("\n");
-    sb.append("clauseDecay=").append(this.clauseDecay).append("\n");
-    sb.append("removeSatisfied=").append(this.removeSatisfied).append("\n");
-    sb.append("learntsizeFactor=").append(this.learntsizeFactor).append("\n");
-    sb.append("learntsizeInc=").append(this.learntsizeInc).append("\n");
-    sb.append("incremental=").append(this.incremental).append("\n");
-    sb.append("initialPhase=").append(this.initialPhase).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

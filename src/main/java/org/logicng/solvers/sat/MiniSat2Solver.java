@@ -61,7 +61,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
  * Therefore clause deletion and simplifications are deactivated in this mode.  This mode is most efficient on small
  * to mid-size industrial formulas (up to 50,000 variables, 100,000 clauses).  Whenever you have lots of small formulas
  * to solve or need the ability to add and delete formulas from the solver, we recommend to consider this mode.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class MiniSat2Solver extends MiniSatStyleSolver {
@@ -150,6 +150,93 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
   }
 
   @Override
+  public Tristate solve(final SATHandler handler) {
+    this.handler = handler;
+    if (this.handler != null)
+      this.handler.startedSolving();
+    model.clear();
+    conflict.clear();
+    if (!ok)
+      return Tristate.FALSE;
+    learntsizeAdjustConfl = learntsizeAdjustStartConfl;
+    learntsizeAdjustCnt = (int) learntsizeAdjustConfl;
+    maxLearnts = clauses.size() * learntsizeFactor;
+    Tristate status = Tristate.UNDEF;
+    int currRestarts = 0;
+    while (status == Tristate.UNDEF && !canceledByHandler) {
+      double restBase = luby(restartInc, currRestarts);
+      status = search((int) (restBase * restartFirst));
+      currRestarts++;
+    }
+    if (status == Tristate.TRUE) {
+      model = new LNGBooleanVector(vars.size());
+      for (final MSVariable v : this.vars)
+        model.push(v.assignment() == Tristate.TRUE);
+    } else if (status == Tristate.FALSE && conflict.empty())
+      ok = false;
+    if (this.handler != null)
+      this.handler.finishedSolving();
+    cancelUntil(0);
+    this.handler = null;
+    this.canceledByHandler = false;
+    return status;
+  }
+
+  @Override
+  public void reset() {
+    super.initialize();
+    this.initializeMiniSAT();
+  }
+
+  /**
+   * Saves and returns the solver state expressed as an integer array which stores the length of the internal data
+   * structures.  The array has length 5 and has the following layout:
+   * <p>
+   * {@code | current solver state | #vars | #clauses | #learnt clauses | #unit clauses |}
+   * @return the current solver state
+   */
+  @Override
+  public int[] saveState() {
+    if (!incremental)
+      throw new IllegalStateException("Cannot save a state when the incremental mode is deactivated");
+    int[] state;
+    state = new int[5];
+    state[0] = ok ? 1 : 0;
+    state[1] = vars.size();
+    state[2] = clauses.size();
+    state[3] = learnts.size();
+    state[4] = unitClauses.size();
+    return state;
+  }
+
+  @Override
+  public void loadState(int[] state) {
+    if (!incremental)
+      throw new IllegalStateException("Cannot load a state when the incremental mode is deactivated");
+    int i;
+    completeBacktrack();
+    this.ok = state[0] == 1;
+    int newVarsSize = Math.min(state[1], vars.size());
+    for (i = this.vars.size() - 1; i >= newVarsSize; i--)
+      this.orderHeap.remove(this.name2idx.remove(this.idx2name.remove(i)));
+    vars.shrinkTo(newVarsSize);
+    int newClausesSize = Math.min(state[2], this.clauses.size());
+    for (i = this.clauses.size() - 1; i >= newClausesSize; i--)
+      simpleRemoveClause(this.clauses.get(i));
+    this.clauses.shrinkTo(newClausesSize);
+    int newLearntsSize = Math.min(state[3], this.learnts.size());
+    for (i = this.learnts.size() - 1; i >= newLearntsSize; i--)
+      simpleRemoveClause(this.learnts.get(i));
+    this.learnts.shrinkTo(newLearntsSize);
+    this.watches.shrinkTo(newVarsSize * 2);
+    this.unitClauses.shrinkTo(state[4]);
+    for (i = 0; this.ok && i < this.unitClauses.size(); i++) {
+      uncheckedEnqueue(this.unitClauses.get(i), null);
+      this.ok = propagate() == null;
+    }
+  }
+
+  @Override
   protected void uncheckedEnqueue(int lit, MSClause reason) {
     assert value(lit) == Tristate.UNDEF;
     final MSVariable var = v(lit);
@@ -186,83 +273,6 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
     detachClause(c);
     if (locked(c))
       v(c.get(0)).setReason(null);
-  }
-
-  /**
-   * The main search procedure of the CDCL algorithm.
-   * @param nofConflicts the number of conflicts till the next restart
-   * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
-   * formula is SAT, and {@code UNDEF} if the state is not known yet (restart) or the handler canceled the computation
-   */
-  private Tristate search(int nofConflicts) {
-    if (!ok)
-      return Tristate.FALSE;
-    int conflictC = 0;
-    while (true) {
-      MSClause confl = propagate();
-      if (confl != null) {
-        if (handler != null && !handler.detectedConflict()) {
-          canceledByHandler = true;
-          return Tristate.UNDEF;
-        }
-        conflictC++;
-        if (decisionLevel() == 0)
-          return Tristate.FALSE;
-        LNGIntVector learntClause = new LNGIntVector();
-        analyze(confl, learntClause);
-        cancelUntil(analyzeBtLevel);
-        if (learntClause.size() == 1) {
-          uncheckedEnqueue(learntClause.get(0), null);
-          this.unitClauses.push(learntClause.get(0));
-        } else {
-          final MSClause cr = new MSClause(learntClause, true);
-          learnts.push(cr);
-          attachClause(cr);
-          if (!incremental)
-            claBumpActivity(cr);
-          uncheckedEnqueue(learntClause.get(0), cr);
-        }
-        varDecayActivity();
-        if (!incremental)
-          claDecayActivity();
-        if (--learntsizeAdjustCnt == 0) {
-          learntsizeAdjustConfl *= learntsizeAdjustInc;
-          learntsizeAdjustCnt = (int) learntsizeAdjustConfl;
-          maxLearnts *= learntsizeInc;
-        }
-      } else {
-        if (nofConflicts >= 0 && conflictC >= nofConflicts) {
-          cancelUntil(0);
-          return Tristate.UNDEF;
-        }
-        if (!incremental) {
-          if (decisionLevel() == 0 && !simplify())
-            return Tristate.FALSE;
-          if (learnts.size() - nAssigns() >= maxLearnts)
-            reduceDB();
-        }
-        int next = LIT_UNDEF;
-        while (decisionLevel() < assumptions.size()) {
-          int p = assumptions.get(decisionLevel());
-          if (value(p) == Tristate.TRUE) {
-            trailLim.push(trail.size());
-          } else if (value(p) == Tristate.FALSE) {
-            analyzeFinal(not(p), conflict);
-            return Tristate.FALSE;
-          } else {
-            next = p;
-            break;
-          }
-        }
-        if (next == LIT_UNDEF) {
-          next = pickBranchLit();
-          if (next == LIT_UNDEF)
-            return Tristate.TRUE;
-        }
-        trailLim.push(trail.size());
-        uncheckedEnqueue(next, null);
-      }
-    }
   }
 
   @Override
@@ -320,89 +330,6 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
     }
     simpDBProps -= numProps;
     return confl;
-  }
-
-  /**
-   * Analyzes a given conflict clause wrt. the current solver state.  A 1-UIP clause is created during this procedure
-   * and the new backtracking level is stored in the solver state.
-   * @param conflictClause the conflict clause to start the resolution analysis with
-   * @param outLearnt      the vector where the new learnt 1-UIP clause is stored
-   */
-  private void analyze(final MSClause conflictClause, final LNGIntVector outLearnt) {
-    MSClause c = conflictClause;
-    int pathC = 0;
-    int p = LIT_UNDEF;
-    outLearnt.push(-1);
-    int index = trail.size() - 1;
-    do {
-      assert c != null;
-      if (!incremental && c.learnt())
-        claBumpActivity(c);
-      for (int j = (p == LIT_UNDEF) ? 0 : 1; j < c.size(); j++) {
-        int q = c.get(j);
-        if (!seen.get(var(q)) && v(q).level() > 0) {
-          varBumpActivity(var(q));
-          seen.set(var(q), true);
-          if (v(q).level() >= decisionLevel())
-            pathC++;
-          else
-            outLearnt.push(q);
-        }
-      }
-      while (!seen.get(var(trail.get(index--)))) ;
-      p = trail.get(index + 1);
-      c = v(p).reason();
-      seen.set(var(p), false);
-      pathC--;
-    } while (pathC > 0);
-    outLearnt.set(0, not(p));
-    simplifyClause(outLearnt);
-  }
-
-  /**
-   * Minimizes a given learnt clause depending on the minimization method of the solver configuration.
-   * @param outLearnt the learnt clause which should be minimized
-   */
-  private void simplifyClause(final LNGIntVector outLearnt) {
-    int i;
-    int j;
-    this.analyzeToClear = new LNGIntVector(outLearnt);
-    if (ccminMode == MiniSatConfig.ClauseMinimization.DEEP) {
-      int abstractLevel = 0;
-      for (i = 1; i < outLearnt.size(); i++)
-        abstractLevel |= abstractLevel(var(outLearnt.get(i)));
-      for (i = j = 1; i < outLearnt.size(); i++)
-        if (v(outLearnt.get(i)).reason() == null || !litRedundant(outLearnt.get(i), abstractLevel))
-          outLearnt.set(j++, outLearnt.get(i));
-    } else if (ccminMode == MiniSatConfig.ClauseMinimization.BASIC) {
-      for (i = j = 1; i < outLearnt.size(); i++) {
-        if (v(outLearnt.get(i)).reason() == null)
-          outLearnt.set(j++, outLearnt.get(i));
-        else {
-          MSClause c = v(outLearnt.get(i)).reason();
-          for (int k = 1; k < c.size(); k++)
-            if (!seen.get(var(c.get(k))) && v(c.get(k)).level() > 0) {
-              outLearnt.set(j++, outLearnt.get(i));
-              break;
-            }
-        }
-      }
-    } else
-      i = j = outLearnt.size();
-    outLearnt.removeElements(i - j);
-    analyzeBtLevel = 0;
-    if (outLearnt.size() > 1) {
-      int max = 1;
-      for (int k = 2; k < outLearnt.size(); k++)
-        if (v(outLearnt.get(k)).level() > v(outLearnt.get(max)).level())
-          max = k;
-      int p = outLearnt.get(max);
-      outLearnt.set(max, outLearnt.get(1));
-      outLearnt.set(1, p);
-      analyzeBtLevel = v(p).level();
-    }
-    for (int l = 0; l < analyzeToClear.size(); l++)
-      seen.set(var(analyzeToClear.get(l)), false);
   }
 
   @Override
@@ -540,91 +467,164 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
     return true;
   }
 
-  @Override
-  public Tristate solve(final SATHandler handler) {
-    this.handler = handler;
-    if (this.handler != null)
-      this.handler.startedSolving();
-    model.clear();
-    conflict.clear();
+  /**
+   * The main search procedure of the CDCL algorithm.
+   * @param nofConflicts the number of conflicts till the next restart
+   * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
+   * formula is SAT, and {@code UNDEF} if the state is not known yet (restart) or the handler canceled the computation
+   */
+  private Tristate search(int nofConflicts) {
     if (!ok)
       return Tristate.FALSE;
-    learntsizeAdjustConfl = learntsizeAdjustStartConfl;
-    learntsizeAdjustCnt = (int) learntsizeAdjustConfl;
-    maxLearnts = clauses.size() * learntsizeFactor;
-    Tristate status = Tristate.UNDEF;
-    int currRestarts = 0;
-    while (status == Tristate.UNDEF && !canceledByHandler) {
-      double restBase = luby(restartInc, currRestarts);
-      status = search((int) (restBase * restartFirst));
-      currRestarts++;
+    int conflictC = 0;
+    while (true) {
+      MSClause confl = propagate();
+      if (confl != null) {
+        if (handler != null && !handler.detectedConflict()) {
+          canceledByHandler = true;
+          return Tristate.UNDEF;
+        }
+        conflictC++;
+        if (decisionLevel() == 0)
+          return Tristate.FALSE;
+        LNGIntVector learntClause = new LNGIntVector();
+        analyze(confl, learntClause);
+        cancelUntil(analyzeBtLevel);
+        if (learntClause.size() == 1) {
+          uncheckedEnqueue(learntClause.get(0), null);
+          this.unitClauses.push(learntClause.get(0));
+        } else {
+          final MSClause cr = new MSClause(learntClause, true);
+          learnts.push(cr);
+          attachClause(cr);
+          if (!incremental)
+            claBumpActivity(cr);
+          uncheckedEnqueue(learntClause.get(0), cr);
+        }
+        varDecayActivity();
+        if (!incremental)
+          claDecayActivity();
+        if (--learntsizeAdjustCnt == 0) {
+          learntsizeAdjustConfl *= learntsizeAdjustInc;
+          learntsizeAdjustCnt = (int) learntsizeAdjustConfl;
+          maxLearnts *= learntsizeInc;
+        }
+      } else {
+        if (nofConflicts >= 0 && conflictC >= nofConflicts) {
+          cancelUntil(0);
+          return Tristate.UNDEF;
+        }
+        if (!incremental) {
+          if (decisionLevel() == 0 && !simplify())
+            return Tristate.FALSE;
+          if (learnts.size() - nAssigns() >= maxLearnts)
+            reduceDB();
+        }
+        int next = LIT_UNDEF;
+        while (decisionLevel() < assumptions.size()) {
+          int p = assumptions.get(decisionLevel());
+          if (value(p) == Tristate.TRUE) {
+            trailLim.push(trail.size());
+          } else if (value(p) == Tristate.FALSE) {
+            analyzeFinal(not(p), conflict);
+            return Tristate.FALSE;
+          } else {
+            next = p;
+            break;
+          }
+        }
+        if (next == LIT_UNDEF) {
+          next = pickBranchLit();
+          if (next == LIT_UNDEF)
+            return Tristate.TRUE;
+        }
+        trailLim.push(trail.size());
+        uncheckedEnqueue(next, null);
+      }
     }
-    if (status == Tristate.TRUE) {
-      model = new LNGBooleanVector(vars.size());
-      for (final MSVariable v : this.vars)
-        model.push(v.assignment() == Tristate.TRUE);
-    } else if (status == Tristate.FALSE && conflict.empty())
-      ok = false;
-    if (this.handler != null)
-      this.handler.finishedSolving();
-    cancelUntil(0);
-    this.handler = null;
-    this.canceledByHandler = false;
-    return status;
-  }
-
-  @Override
-  public void reset() {
-    super.initialize();
-    this.initializeMiniSAT();
   }
 
   /**
-   * Saves and returns the solver state expressed as an integer array which stores the length of the internal data
-   * structures.  The array has length 5 and has the following layout:
-   * <p>
-   * {@code | current solver state | #vars | #clauses | #learnt clauses | #unit clauses |}
-   * @return the current solver state
+   * Analyzes a given conflict clause wrt. the current solver state.  A 1-UIP clause is created during this procedure
+   * and the new backtracking level is stored in the solver state.
+   * @param conflictClause the conflict clause to start the resolution analysis with
+   * @param outLearnt      the vector where the new learnt 1-UIP clause is stored
    */
-  @Override
-  public int[] saveState() {
-    if (!incremental)
-      throw new IllegalStateException("Cannot save a state when the incremental mode is deactivated");
-    int[] state;
-    state = new int[5];
-    state[0] = ok ? 1 : 0;
-    state[1] = vars.size();
-    state[2] = clauses.size();
-    state[3] = learnts.size();
-    state[4] = unitClauses.size();
-    return state;
+  private void analyze(final MSClause conflictClause, final LNGIntVector outLearnt) {
+    MSClause c = conflictClause;
+    int pathC = 0;
+    int p = LIT_UNDEF;
+    outLearnt.push(-1);
+    int index = trail.size() - 1;
+    do {
+      assert c != null;
+      if (!incremental && c.learnt())
+        claBumpActivity(c);
+      for (int j = (p == LIT_UNDEF) ? 0 : 1; j < c.size(); j++) {
+        int q = c.get(j);
+        if (!seen.get(var(q)) && v(q).level() > 0) {
+          varBumpActivity(var(q));
+          seen.set(var(q), true);
+          if (v(q).level() >= decisionLevel())
+            pathC++;
+          else
+            outLearnt.push(q);
+        }
+      }
+      while (!seen.get(var(trail.get(index--)))) ;
+      p = trail.get(index + 1);
+      c = v(p).reason();
+      seen.set(var(p), false);
+      pathC--;
+    } while (pathC > 0);
+    outLearnt.set(0, not(p));
+    simplifyClause(outLearnt);
   }
 
-  @Override
-  public void loadState(int[] state) {
-    if (!incremental)
-      throw new IllegalStateException("Cannot load a state when the incremental mode is deactivated");
+  /**
+   * Minimizes a given learnt clause depending on the minimization method of the solver configuration.
+   * @param outLearnt the learnt clause which should be minimized
+   */
+  private void simplifyClause(final LNGIntVector outLearnt) {
     int i;
-    completeBacktrack();
-    this.ok = state[0] == 1;
-    int newVarsSize = Math.min(state[1], vars.size());
-    for (i = this.vars.size() - 1; i >= newVarsSize; i--)
-      this.orderHeap.remove(this.name2idx.remove(this.idx2name.remove(i)));
-    vars.shrinkTo(newVarsSize);
-    int newClausesSize = Math.min(state[2], this.clauses.size());
-    for (i = this.clauses.size() - 1; i >= newClausesSize; i--)
-      simpleRemoveClause(this.clauses.get(i));
-    this.clauses.shrinkTo(newClausesSize);
-    int newLearntsSize = Math.min(state[3], this.learnts.size());
-    for (i = this.learnts.size() - 1; i >= newLearntsSize; i--)
-      simpleRemoveClause(this.learnts.get(i));
-    this.learnts.shrinkTo(newLearntsSize);
-    this.watches.shrinkTo(newVarsSize * 2);
-    this.unitClauses.shrinkTo(state[4]);
-    for (i = 0; this.ok && i < this.unitClauses.size(); i++) {
-      uncheckedEnqueue(this.unitClauses.get(i), null);
-      this.ok = propagate() == null;
+    int j;
+    this.analyzeToClear = new LNGIntVector(outLearnt);
+    if (ccminMode == MiniSatConfig.ClauseMinimization.DEEP) {
+      int abstractLevel = 0;
+      for (i = 1; i < outLearnt.size(); i++)
+        abstractLevel |= abstractLevel(var(outLearnt.get(i)));
+      for (i = j = 1; i < outLearnt.size(); i++)
+        if (v(outLearnt.get(i)).reason() == null || !litRedundant(outLearnt.get(i), abstractLevel))
+          outLearnt.set(j++, outLearnt.get(i));
+    } else if (ccminMode == MiniSatConfig.ClauseMinimization.BASIC) {
+      for (i = j = 1; i < outLearnt.size(); i++) {
+        if (v(outLearnt.get(i)).reason() == null)
+          outLearnt.set(j++, outLearnt.get(i));
+        else {
+          MSClause c = v(outLearnt.get(i)).reason();
+          for (int k = 1; k < c.size(); k++)
+            if (!seen.get(var(c.get(k))) && v(c.get(k)).level() > 0) {
+              outLearnt.set(j++, outLearnt.get(i));
+              break;
+            }
+        }
+      }
+    } else
+      i = j = outLearnt.size();
+    outLearnt.removeElements(i - j);
+    analyzeBtLevel = 0;
+    if (outLearnt.size() > 1) {
+      int max = 1;
+      for (int k = 2; k < outLearnt.size(); k++)
+        if (v(outLearnt.get(k)).level() > v(outLearnt.get(max)).level())
+          max = k;
+      int p = outLearnt.get(max);
+      outLearnt.set(max, outLearnt.get(1));
+      outLearnt.set(1, p);
+      analyzeBtLevel = v(p).level();
     }
+    for (int l = 0; l < analyzeToClear.size(); l++)
+      seen.set(var(analyzeToClear.get(l)), false);
   }
 
   /**

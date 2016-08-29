@@ -35,7 +35,7 @@ import java.io.PrintStream;
 
 /**
  * The configuration object for a MaxSAT solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class MaxSATConfig extends Configuration {
@@ -100,6 +100,42 @@ public final class MaxSATConfig extends Configuration {
   final boolean symmetry;
   final int limit;
   final boolean bmo;
+
+  /**
+   * Constructor for a MaxSAT configuration.
+   * @param builder the builder
+   */
+  private MaxSATConfig(final Builder builder) {
+    super(ConfigurationType.MAXSAT);
+    this.incrementalStrategy = builder.incrementalStrategy;
+    this.amoEncoding = builder.amoEncoding;
+    this.pbEncoding = builder.pbEncoding;
+    this.cardinalityEncoding = builder.cardinalityEncoding;
+    this.weightStrategy = builder.weightStrategy;
+    this.solverType = builder.solverType;
+    this.verbosity = builder.verbosity;
+    this.output = builder.output;
+    this.symmetry = builder.symmetry;
+    this.limit = builder.limit;
+    this.bmo = builder.bmo;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("MaxSATConfig{");
+    sb.append("incrementalStrategy=").append(this.incrementalStrategy).append("\n");
+    sb.append("pbEncoding=").append(this.amoEncoding).append("\n");
+    sb.append("pbEncoding=").append(this.pbEncoding).append("\n");
+    sb.append("cardinalityEncoding=").append(this.cardinalityEncoding).append("\n");
+    sb.append("weightStrategy=").append(this.weightStrategy).append("\n");
+    sb.append("solverType=").append(this.solverType).append("\n");
+    sb.append("verbosity=").append(this.verbosity).append("\n");
+    sb.append("symmetry=").append(this.symmetry).append("\n");
+    sb.append("limit=").append(this.limit).append("\n");
+    sb.append("bmo=").append(this.bmo).append("\n");
+    sb.append("}\n");
+    return sb.toString();
+  }
 
   /**
    * The builder for a MaxSAT configuration.
@@ -223,41 +259,5 @@ public final class MaxSATConfig extends Configuration {
     public MaxSATConfig build() {
       return new MaxSATConfig(this);
     }
-  }
-
-  /**
-   * Constructor for a MaxSAT configuration.
-   * @param builder the builder
-   */
-  private MaxSATConfig(final Builder builder) {
-    super(ConfigurationType.MAXSAT);
-    this.incrementalStrategy = builder.incrementalStrategy;
-    this.amoEncoding = builder.amoEncoding;
-    this.pbEncoding = builder.pbEncoding;
-    this.cardinalityEncoding = builder.cardinalityEncoding;
-    this.weightStrategy = builder.weightStrategy;
-    this.solverType = builder.solverType;
-    this.verbosity = builder.verbosity;
-    this.output = builder.output;
-    this.symmetry = builder.symmetry;
-    this.limit = builder.limit;
-    this.bmo = builder.bmo;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("MaxSATConfig{");
-    sb.append("incrementalStrategy=").append(this.incrementalStrategy).append("\n");
-    sb.append("amoEncoding=").append(this.amoEncoding).append("\n");
-    sb.append("pbEncoding=").append(this.pbEncoding).append("\n");
-    sb.append("cardinalityEncoding=").append(this.cardinalityEncoding).append("\n");
-    sb.append("weightStrategy=").append(this.weightStrategy).append("\n");
-    sb.append("solverType=").append(this.solverType).append("\n");
-    sb.append("verbosity=").append(this.verbosity).append("\n");
-    sb.append("symmetry=").append(this.symmetry).append("\n");
-    sb.append("limit=").append(this.limit).append("\n");
-    sb.append("bmo=").append(this.bmo).append("\n");
-    sb.append("}\n");
-    return sb.toString();
   }
 }

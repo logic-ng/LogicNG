@@ -70,7 +70,7 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Incremental WBO solver.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class IncWBO extends WBO {
@@ -126,6 +126,11 @@ public final class IncWBO extends WBO {
     else if (weightStrategy == WeightStrategy.NORMAL || weightStrategy == WeightStrategy.DIVERSIFY)
       return this.weightSearch();
     throw new IllegalArgumentException("Unknown problem type.");
+  }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName();
   }
 
   private void incrementalBuildWeightSolver(final WeightStrategy strategy) {
@@ -432,10 +437,5 @@ public final class IncWBO extends WBO {
         return MaxSATResult.OPTIMUM;
       }
     }
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 }

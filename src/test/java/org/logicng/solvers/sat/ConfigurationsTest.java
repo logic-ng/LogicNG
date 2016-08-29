@@ -32,9 +32,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
+import java.util.Arrays;
+
 /**
  * Unit tests for the solver configurations.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class ConfigurationsTest {
@@ -179,6 +181,11 @@ public class ConfigurationsTest {
   }
 
   @Test
+  public void testClauseBumping() {
+    Assert.assertTrue(Arrays.asList(CleaneLingConfig.ClauseBumping.values()).contains(CleaneLingConfig.ClauseBumping.valueOf("AVG")));
+  }
+
+  @Test
   public void testMaxSATConfigToString() {
     final MaxSATConfig config = new MaxSATConfig.Builder()
             .incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
@@ -192,7 +199,7 @@ public class ConfigurationsTest {
             .bmo(false)
             .build();
     final String expected = "MaxSATConfig{incrementalStrategy=ITERATIVE\n" +
-            "amoEncoding=LADDER\n" +
+            "pbEncoding=LADDER\n" +
             "pbEncoding=SWC\n" +
             "cardinalityEncoding=MTOTALIZER\n" +
             "weightStrategy=DIVERSIFY\n" +

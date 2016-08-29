@@ -34,7 +34,7 @@ import org.logicng.formulas.F;
 
 /**
  * Unit tests for the cnf predicate.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public class CNFPredicateTest {
@@ -58,5 +58,10 @@ public class CNFPredicateTest {
     Assert.assertFalse(F.NOT1.holds(cnfPredicate));
     Assert.assertFalse(F.NOT2.holds(cnfPredicate));
     Assert.assertFalse(F.f.and(F.OR1, F.EQ1).holds(cnfPredicate));
+  }
+
+  @Test
+  public void testToString() {
+    Assert.assertEquals("CNFPredicate", cnfPredicate.toString());
   }
 }

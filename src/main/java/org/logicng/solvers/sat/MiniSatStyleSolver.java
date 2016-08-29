@@ -59,7 +59,7 @@ import java.util.TreeMap;
 
 /**
  * The super class for all MiniSAT-style solvers.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public abstract class MiniSatStyleSolver {
@@ -125,6 +125,65 @@ public abstract class MiniSatStyleSolver {
   }
 
   /**
+   * Creates a literal for a given variable number and literal.
+   * @param var  the variable number
+   * @param sign {@code true} if the literal is negative, {@code false} otherwise
+   * @return the literal (as integer value)
+   */
+  public static int mkLit(int var, boolean sign) {
+    return var + var + (sign ? 1 : 0);
+  }
+
+  /**
+   * Negates a given literal.
+   * @param lit the literal
+   * @return the negated literal
+   */
+  public static int not(int lit) {
+    return lit ^ 1;
+  }
+
+  /**
+   * Returns {@code true} if a given literal is negated, {@code false} otherwise.
+   * @param lit the literal
+   * @return {@code true} if the literal is negated
+   */
+  public static boolean sign(int lit) {
+    return (lit & 1) == 1;
+  }
+
+  /**
+   * Returns the variable index for a given literal.
+   * @param lit the literal
+   * @return the variable index of the literal
+   */
+  public static int var(int lit) {
+    return lit >> 1;
+  }
+
+  /**
+   * Computes the next number in the Luby sequence.
+   * @param y the restart increment
+   * @param x the current number of restarts
+   * @return the next number in the Luby sequence
+   */
+  protected static double luby(double y, int x) {
+    int intX = x;
+    int size = 1;
+    int seq = 0;
+    while (size < intX + 1) {
+      seq++;
+      size = 2 * size + 1;
+    }
+    while (size - 1 != intX) {
+      size = (size - 1) >> 1;
+      seq--;
+      intX = intX % size;
+    }
+    return Math.pow(y, seq);
+  }
+
+  /**
    * Initializes the internal solver state.
    */
   protected void initialize() {
@@ -169,43 +228,6 @@ public abstract class MiniSatStyleSolver {
     this.learntsizeFactor = this.config.learntsizeFactor;
     this.learntsizeInc = this.config.learntsizeInc;
     this.incremental = this.config.incremental;
-  }
-
-  /**
-   * Creates a literal for a given variable number and literal.
-   * @param var  the variable number
-   * @param sign {@code true} if the literal is negative, {@code false} otherwise
-   * @return the literal (as integer value)
-   */
-  public static int mkLit(int var, boolean sign) {
-    return var + var + (sign ? 1 : 0);
-  }
-
-  /**
-   * Negates a given literal.
-   * @param lit the literal
-   * @return the negated literal
-   */
-  public static int not(int lit) {
-    return lit ^ 1;
-  }
-
-  /**
-   * Returns {@code true} if a given literal is negated, {@code false} otherwise.
-   * @param lit the literal
-   * @return {@code true} if the literal is negated
-   */
-  public static boolean sign(int lit) {
-    return (lit & 1) == 1;
-  }
-
-  /**
-   * Returns the variable index for a given literal.
-   * @param lit the literal
-   * @return the variable index of the literal
-   */
-  public static int var(int lit) {
-    return lit >> 1;
   }
 
   /**
@@ -402,28 +424,6 @@ public abstract class MiniSatStyleSolver {
   protected void insertVarOrder(int x) {
     if (!this.orderHeap.inHeap(x) && this.vars.get(x).decision())
       this.orderHeap.insert(x);
-  }
-
-  /**
-   * Computes the next number in the Luby sequence.
-   * @param y the restart increment
-   * @param x the current number of restarts
-   * @return the next number in the Luby sequence
-   */
-  protected static double luby(double y, int x) {
-    int intX = x;
-    int size = 1;
-    int seq = 0;
-    while (size < intX + 1) {
-      seq++;
-      size = 2 * size + 1;
-    }
-    while (size - 1 != intX) {
-      size = (size - 1) >> 1;
-      seq--;
-      intX = intX % size;
-    }
-    return Math.pow(y, seq);
   }
 
   /**

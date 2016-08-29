@@ -34,7 +34,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.Not;
 import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
@@ -49,13 +48,14 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
  * <p>
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class PlaistedGreenbaumTransformation implements FormulaTransformation {
 
   private final int boundaryForFactorization;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
+  private final CNFFactorization factorization = new CNFFactorization();
 
   /**
    * Constructor for a Plaisted &amp; Greenbaum transformation.
@@ -67,10 +67,28 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
 
   /**
    * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
-   * bound of 20.
+   * bound of 12.
    */
   public PlaistedGreenbaumTransformation() {
-    this(20);
+    this(12);
+  }
+
+  /**
+   * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
+   * auxiliary variable or a new one is
+   * generated.
+   * @param formula the formula
+   * @return the old or new auxiliary variable
+   */
+  private static Formula pgVariable(final Formula formula) {
+    if (formula.type() == FType.LITERAL)
+      return formula;
+    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
+    if (var == null) {
+      var = formula.factory().newCNFVariable();
+      formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
+    }
+    return var;
   }
 
   @Override
@@ -80,7 +98,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       return f;
     Formula pg;
     if (f.numberOfAtoms() < this.boundaryForFactorization)
-      pg = f.cnf();
+      pg = f.transform(factorization);
     else {
       pg = this.computeTransformation(f, null);
       final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
@@ -116,10 +134,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     final FormulaFactory f = formula.factory();
     final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
     switch (formula.type()) {
-      case NOT:
-        result = f.or(pgVar.negate(), pgVariable(((Not) formula).operand()).negate());
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
-        return result;
       case AND:
         List<Formula> nops = new ArrayList<>();
         for (final Formula op : formula)
@@ -138,24 +152,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       default:
         throw new IllegalArgumentException("not yet implemented");
     }
-  }
-
-  /**
-   * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
-   * auxiliary variable or a new one is
-   * generated.
-   * @param formula the formula
-   * @return the old or new auxiliary variable
-   */
-  private static Formula pgVariable(final Formula formula) {
-    if (formula.type() == FType.LITERAL)
-      return formula;
-    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
-    if (var == null) {
-      var = formula.factory().newCNFVariable();
-      formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
-    }
-    return var;
   }
 
   @Override

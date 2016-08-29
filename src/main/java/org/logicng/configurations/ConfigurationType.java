@@ -30,12 +30,16 @@ package org.logicng.configurations;
 
 /**
  * The different types of configurations in LogicNG.
- * @version 1.0
- * @since 1.0
+ * @version 1.1
+ * @since 1.1
  */
 public enum ConfigurationType {
+  CNF,
   MINISAT,
   GLUCOSE,
   CLEANELING,
-  MAXSAT
+  MAXSAT,
+  MUS,
+  CC_ENCODER,
+  PB_ENCODER
 }

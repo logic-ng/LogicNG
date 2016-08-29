@@ -52,13 +52,13 @@ package org.logicng.solvers.datastructures;
 
 /**
  * Watcher of for a clause.
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
 public final class CLWatch {
-  private int blit;
   private final boolean binary;
   private final CLClause clause;
+  private int blit;
 
   /**
    * Constructs a new clause watcher.
