@@ -26,21 +26,52 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds.simple;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.logicng.bdds.BDD;
+import org.logicng.bdds.BDDNode;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * Unit tests for {@link BDDFactoryClassical}.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+public class BDDFactoryTest {
+
+  @Test
+  public void test1() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula f1 = p.parse("a & b | ~c");
+    final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
+    Assert.assertEquals(bdd.build(f1), new BDD(bdd.buildWithApply(f1)));
+  }
+
+
+  @Test
+  public void test2() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula f1 = p.parse("~(~a & ~b & ~x & ~y) & ~(~(~a & ~b) & ~(~x & ~y))");
+    final Formula f2 = p.parse("~(~(~a & ~b & ~(~x & ~y)) & ~((a | b) & ~(x | y)))");
+    final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
+    Assert.assertEquals(bdd.build(f1), bdd.build(f2));
+  }
+
+  @Test
+  public void test3() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula f1 = p.parse("a & b | ~c");
+    final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
+    final BDDNode bddNode = bdd.bddForFormula(f1);
+    Assert.assertEquals(5, bddNode.nodes().size());
+    Assert.assertEquals("a", bddNode.label());
+  }
 }

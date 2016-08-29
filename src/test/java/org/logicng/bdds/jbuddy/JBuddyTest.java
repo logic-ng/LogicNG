@@ -26,21 +26,34 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds.jbuddy;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.logicng.bdds.BDD;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.predicates.CNFPredicate;
+import org.logicng.predicates.satisfiability.TautologyPredicate;
+
+import java.util.Arrays;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * Unit tests for {@link JBuddyFactory}.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+public class JBuddyTest {
+
+  @Test
+  public void test() {
+    final FormulaFactory f = new FormulaFactory();
+    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    factory.setVariableOrder(Arrays.asList(f.variable("x"), f.variable("y"), f.variable("a"), f.variable("b")));
+    final Formula formula = f.or(f.and(f.literal("a", false), f.variable("b")), f.and(f.variable("x"), f.variable("y")));
+    final BDD bdd = factory.build(formula);
+    final Formula cnf = factory.cnf(bdd);
+    Assert.assertTrue(cnf.holds(new CNFPredicate()));
+    Assert.assertTrue(f.equivalence(formula, cnf).holds(new TautologyPredicate(f)));
+  }
 }

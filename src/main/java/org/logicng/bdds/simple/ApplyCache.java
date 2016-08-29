@@ -26,21 +26,44 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds.simple;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * Apply cache for the simple BDD implementation.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+final class ApplyCache {
+  private final Map<Integer[], Integer> cache;
+
+  /**
+   * Constructor.
+   */
+  ApplyCache() {
+    this.cache = new HashMap<>();
+  }
+
+  /**
+   * Inserts the computation
+   * @param node1  the first node index
+   * @param node2  the second node index
+   * @param result the result node index
+   */
+  void insert(int node1, int node2, int result) {
+    this.cache.put(new Integer[]{node1, node2}, result);
+  }
+
+  /**
+   * Looks up a given node combination and returns its node index or -1 if not found.
+   * @param node1 the first node index
+   * @param node2 the second node index
+   * @return the node index of the cached node or -1 if the node was not in the cache
+   */
+  int lookup(int node1, int node2) {
+    final Integer result = this.cache.get(new Integer[]{node1, node2});
+    return result == null ? -1 : result;
+  }
 }

@@ -26,21 +26,53 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds.simple;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * Node cache for the simple BDD implementation.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+final class NodeCache {
+
+  /**
+   * Mapping from [var, low, high] -> node index
+   */
+  private final Map<List<Integer>, Integer> cache;
+
+  /**
+   * Constructor.
+   */
+  NodeCache() {
+    this.cache = new HashMap<>();
+  }
+
+  /**
+   * Inserts a new node into the cache.
+   * @param var  the variable index
+   * @param low  the low index
+   * @param high the high index
+   * @param node the node index
+   */
+  void insert(int var, int low, int high, int node) {
+    this.cache.put(Arrays.asList(var, low, high), node);
+  }
+
+  /**
+   * Looks up a given variable/low/high combination and returns its node index or -1 if not found.
+   * @param var  the variable index
+   * @param low  the low index
+   * @param high the high index
+   * @return the node index of the cached node or -1 if the node was not in the cache
+   */
+  int lookup(int var, int low, int high) {
+    final Integer result = this.cache.get(Arrays.asList(var, low, high));
+    return result == null ? -1 : result;
+  }
+
 }

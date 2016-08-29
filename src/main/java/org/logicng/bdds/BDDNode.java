@@ -26,21 +26,20 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds;
+
+import java.util.Set;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * A node in a BDD.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+public interface BDDNode {
+
+  String label();
+  boolean isInnerNode();
+  BDDNode low();
+  BDDNode high();
+  Set<BDDNode> nodes();
 }

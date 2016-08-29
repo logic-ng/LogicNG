@@ -26,21 +26,89 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds;
+
+import org.logicng.formulas.Constant;
+import org.logicng.formulas.FormulaFactory;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * A terminal in a BDD.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+public final class BDDTerminalNode implements BDDNode {
+
+  private final Constant value;
+
+  /**
+   * Private constructor.
+   * @param value the constant value
+   */
+  private BDDTerminalNode(final Constant value) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the terminal 0 node.
+   * @param f the formula factory
+   * @return the terminal 0 node
+   */
+  public static BDDTerminalNode getFalsumNode(final FormulaFactory f) {
+    return new BDDTerminalNode(f.falsum());
+  }
+
+  /**
+   * Returns the terminal 1 node.
+   * @param f the formula factory
+   * @return the terminal 1 node
+   */
+  public static BDDTerminalNode getVerumNode(final FormulaFactory f) {
+    return new BDDTerminalNode(f.verum());
+  }
+
+  @Override
+  public String label() {
+    return value.toString();
+  }
+
+  @Override
+  public boolean isInnerNode() {
+    return false;
+  }
+
+  @Override
+  public BDDNode low() {
+    return null;
+  }
+
+  @Override
+  public BDDNode high() {
+    return null;
+  }
+
+  @Override
+  public Set<BDDNode> nodes() {
+    return new HashSet<BDDNode>(Collections.singletonList(this));
+  }
+
+  @Override
+  public int hashCode() {
+    return this.value.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    return this == other || other instanceof BDDTerminalNode
+            && Objects.equals(this.value, ((BDDTerminalNode) other).value);
+  }
+
+  @Override
+  public String toString() {
+    return "<" + value + ">";
+  }
 }

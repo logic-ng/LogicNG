@@ -26,21 +26,45 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.configurations;
+package org.logicng.bdds;
 
 /**
- * The different types of configurations in LogicNG.
- * @version 1.1
- * @since 1.1
+ * The internal representation of a BDD.
+ * @version 1.2
+ * @since 1.2
  */
-public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER,
-  BDD
+public final class BDD {
+
+  private final int index;
+
+  /**
+   * Constructs a new BDD with a given index.
+   * @param index the index
+   */
+  public BDD(int index) {
+    this.index = index;
+  }
+
+  /**
+   * Returns the index of this BDD.
+   * @return the index of this BDD
+   */
+  public int index() {
+    return this.index;
+  }
+
+  @Override
+  public int hashCode() {
+    return index;
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    return this == other || other instanceof BDD && this.index == ((BDD) other).index;
+  }
+
+  @Override
+  public String toString() {
+    return "BDD{" + index + "}";
+  }
 }
