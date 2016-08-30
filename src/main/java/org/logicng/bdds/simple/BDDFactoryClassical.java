@@ -95,7 +95,7 @@ public final class BDDFactoryClassical extends BDDFactory {
 
   @Override
   public BDD build(final Formula formula) {
-    return new BDD(this.build(formula, 0));
+    return new BDD(this.build(formula, 0), this);
   }
 
   @Override

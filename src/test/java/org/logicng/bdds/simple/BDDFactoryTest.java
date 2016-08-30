@@ -50,7 +50,7 @@ public class BDDFactoryTest {
     final PropositionalParser p = new PropositionalParser(f);
     final Formula f1 = p.parse("a & b | ~c");
     final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
-    Assert.assertEquals(bdd.build(f1), new BDD(bdd.buildWithApply(f1)));
+    Assert.assertEquals(bdd.build(f1), new BDD(bdd.buildWithApply(f1), bdd));
   }
 
 

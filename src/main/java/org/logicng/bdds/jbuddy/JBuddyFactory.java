@@ -109,7 +109,7 @@ public final class JBuddyFactory extends BDDFactory {
 
   @Override
   public BDD build(final Formula formula) {
-    return new BDD(buildRec(formula));
+    return new BDD(buildRec(formula), this);
   }
 
   /**

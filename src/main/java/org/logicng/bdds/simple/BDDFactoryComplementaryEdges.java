@@ -94,7 +94,7 @@ public class BDDFactoryComplementaryEdges extends BDDFactory {
 
   @Override
   public BDD build(final Formula f) {
-    return new BDD(buildRec(f));
+    return new BDD(buildRec(f), this);
   }
 
   @Override
