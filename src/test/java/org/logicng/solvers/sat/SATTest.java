@@ -612,18 +612,19 @@ public class SATTest {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(baos);
     clms.printSolverState(ps);
-    Assert.assertEquals("level=0\n" +
-            "next=0\n" +
-            "ignore=null\n" +
-            "empty=null\n" +
-            "vars=[]\n" +
-            "vals=[]\n" +
-            "phases=[]\n" +
-            "decisions=LNGDoublePriorityQueue{}\n" +
-            "control=[CLFrame{decision=0, level=0, trail=0, mark=false}]\n" +
-            "watches=[]\n" +
-            "trail=[]\n" +
-            "frames=[]\n", baos.toString());
+    String expected = String.format("level=0%n" +
+            "next=0%n" +
+            "ignore=null%n" +
+            "empty=null%n" +
+            "vars=[]%n" +
+            "vals=[]%n" +
+            "phases=[]%n" +
+            "decisions=LNGDoublePriorityQueue{}%n" +
+            "control=[CLFrame{decision=0, level=0, trail=0, mark=false}]%n" +
+            "watches=[]%n" +
+            "trail=[]%n" +
+            "frames=[]%n");
+    Assert.assertEquals(expected, baos.toString());
 
   }
 }
