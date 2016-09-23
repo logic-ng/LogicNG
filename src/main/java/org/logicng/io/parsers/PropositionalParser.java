@@ -35,7 +35,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -58,12 +57,11 @@ import java.io.InputStream;
  * <li>can only contain alphanumerical character, or {@code _}</li>
  * <li>{@code @} is only allowed at the beginning of the variable name and is reserved for special internal variables</li>
  * </ul>
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
-public final class PropositionalParser {
+public final class PropositionalParser extends FormulaParser {
 
-  private final FormulaFactory f;
   private final PropositionalLexer lexer;
   private final LogicNGPropositionalParser parser;
 
@@ -72,7 +70,7 @@ public final class PropositionalParser {
    * @param f the formula factory
    */
   public PropositionalParser(final FormulaFactory f) {
-    this.f = f;
+    super(f);
     ANTLRInputStream input = new ANTLRInputStream();
     this.lexer = new PropositionalLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(this.lexer);
@@ -83,13 +81,8 @@ public final class PropositionalParser {
     this.parser.setErrorHandler(new BailErrorStrategy());
   }
 
-  /**
-   * Parses and returns a given input stream.
-   * @param inputStream an input stream
-   * @return the {@link Formula} representation of this stream
-   * @throws ParserException if there was a problem with the input stream
-   */
-  public Formula parse(InputStream inputStream) throws ParserException {
+  @Override
+  public Formula parse(final InputStream inputStream) throws ParserException {
     try {
       ANTLRInputStream input = new ANTLRInputStream(inputStream);
       this.lexer.setInputStream(input);
@@ -103,22 +96,5 @@ public final class PropositionalParser {
     } catch (LexerException e) {
       throw new ParserException("Lexer exception when parsing the formula.", e);
     }
-  }
-
-  /**
-   * Parses and returns a given string.
-   * @param in a string
-   * @return the {@link Formula} representation of this string
-   * @throws ParserException if the string was not a valid formula
-   */
-  public Formula parse(final String in) throws ParserException {
-    if (in == null)
-      return f.verum();
-    return this.parse(new ByteArrayInputStream(in.getBytes()));
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
   }
 }
