@@ -139,10 +139,10 @@ public abstract class SATSolver {
    * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
    *
    * Usage constraints:
-   * - "<": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
-   * - "<=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
-   * - ">": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side >= number of variables.
-   * - ">=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side > number of variables.
+   * - "&lt;": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
+   * - "&lt;=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
+   * - "&gt;": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side &gt;= number of variables.
+   * - "&gt;=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side &gt; number of variables.
    * @param cc the cardinality constraint
    * @return the incremental data of this constraint, or null if the right hand side of cc is 1
    */
@@ -202,7 +202,8 @@ public abstract class SATSolver {
 
   /**
    * Adds a formula which must be a clause to the solver.
-   * @param formula the clause
+   * @param relaxationVar the relaxation variable
+   * @param formula       the clause
    */
   protected abstract void addClauseWithRelaxation(final Variable relaxationVar, final Formula formula);
 

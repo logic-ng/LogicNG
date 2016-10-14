@@ -53,6 +53,7 @@ public final class CNFConfig extends Configuration {
 
   /**
    * Constructs a new configuration with a given type.
+   * @param builder the builder
    */
   public CNFConfig(final Builder builder) {
     super(ConfigurationType.CNF);
@@ -135,7 +136,7 @@ public final class CNFConfig extends Configuration {
     }
 
     /**
-     * Sets the boundary for how many atoms in a formula factorization is performed in Tseitin and Plaisted & Greenbaum.
+     * Sets the boundary for how many atoms in a formula factorization is performed in Tseitin and Plaisted &amp; Greenbaum.
      * The default value is 12.
      * @param atomBoundary the atom boundary
      * @return the builder

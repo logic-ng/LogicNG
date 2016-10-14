@@ -49,6 +49,7 @@ public final class MUSConfig extends Configuration {
 
   /**
    * Constructs a new configuration with a given type.
+   * @param builder the builder
    */
   public MUSConfig(final Builder builder) {
     super(ConfigurationType.MUS);
