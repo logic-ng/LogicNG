@@ -64,7 +64,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
  * @version 1.1
  * @since 1.0
  */
-public final class MiniSat2Solver extends MiniSatStyleSolver {
+public class MiniSat2Solver extends MiniSatStyleSolver {
 
   private LNGIntVector unitClauses;
   private double learntsizeAdjustConfl;

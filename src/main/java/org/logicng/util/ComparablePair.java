@@ -28,64 +28,27 @@
 
 package org.logicng.util;
 
-import java.util.Objects;
-
 /**
- * Data structure for a pair.
+ * Data structure for a comparable pair.
  * @param <A> the type parameter of the first entry
  * @param <B> the type parameter of the second entry
- * @version 1.0
- * @since 1.0
+ * @version 1.2
+ * @since 1.2
  */
-public class Pair<A, B> {
-
-  protected final A a;
-  protected final B b;
+public final class ComparablePair<A extends Comparable<A>, B extends Comparable<B>> extends Pair<A, B> implements Comparable<ComparablePair<A, B>> {
 
   /**
-   * Constructs a new pair.
+   * Constructs a new comparable pair.
    * @param a the first entry
    * @param b the second entry
    */
-  public Pair(final A a, final B b) {
-    this.a = a;
-    this.b = b;
-  }
-
-  /**
-   * Returns the first entry of this pair.
-   * @return the first entry
-   */
-  public A first() {
-    return a;
-  }
-
-  /**
-   * Returns the second entry of this pair.
-   * @return the second entry
-   */
-  public B second() {
-    return b;
+  public ComparablePair(final A a, final B b) {
+    super(a, b);
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(a, b);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof Pair) {
-      Pair o = (Pair) other;
-      return Objects.equals(b, o.b) && Objects.equals(a, o.a);
-    }
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("<%s, %s>", a, b);
+  public int compareTo(final ComparablePair<A, B> o) {
+    int compare = this.a.compareTo(o.a);
+    return compare != 0 ? compare : this.b.compareTo(o.b);
   }
 }
