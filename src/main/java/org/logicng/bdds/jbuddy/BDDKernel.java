@@ -1038,12 +1038,6 @@ final class BDDKernel {
     return satCount(r).divide(new BigDecimal(2).pow(unused));
   }
 
-  BigDecimal satCountSetInt(int r, int unimp) {
-    if (isZero(r))
-      return BigDecimal.ZERO;
-    return satCount(r).divide(new BigDecimal(2).pow(unimp));
-  }
-
   private BigDecimal satCountRec(int root, int miscid) {
     if (root < 2)
       return new BigDecimal(root);

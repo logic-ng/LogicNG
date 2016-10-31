@@ -142,6 +142,14 @@ public final class BDD {
   }
 
   /**
+   * Returns the number of clauses for the CNF formula of the BDD.
+   * @return the number of clauses for the CNF formula of the BDD
+   */
+  public BigDecimal numberOfClausesCNF() {
+    return this.factory.numberOfClausesCNF(this);
+  }
+
+  /**
    * Returns a DNF formula for a this BDD.
    * @return the DNF for the formula represented by this BDD
    */

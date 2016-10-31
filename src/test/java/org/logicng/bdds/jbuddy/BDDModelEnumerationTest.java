@@ -26,52 +26,82 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.simple;
+package org.logicng.bdds.jbuddy;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.bdds.BDD;
-import org.logicng.bdds.BDDNode;
+import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
-import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.formulas.Variable;
+import org.logicng.testutils.NQueensGenerator;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
- * Unit tests for {@link BDDFactoryClassical}.
+ * Unit tests for the BDDs.
  * @version 1.2
  * @since 1.2
  */
-public class BDDFactoryTest {
+public class BDDModelEnumerationTest {
 
-  @Test
-  public void test1() throws ParserException {
-    final FormulaFactory f = new FormulaFactory();
-    final PropositionalParser p = new PropositionalParser(f);
-    final Formula f1 = p.parse("a & b | ~c");
-    final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
-    Assert.assertEquals(bdd.build(f1), new BDD(bdd.buildWithApply(f1), bdd));
+  private final FormulaFactory f;
+
+  private final List<Formula> formulas;
+  private final List<SortedSet<Variable>> variables;
+  private final BigDecimal[] expected;
+
+  public BDDModelEnumerationTest() {
+    int[] problems = new int[]{3, 4, 5, 6, 7, 8, 9};
+    this.expected = new BigDecimal[]{
+            BigDecimal.valueOf(0),
+            BigDecimal.valueOf(2),
+            BigDecimal.valueOf(10),
+            BigDecimal.valueOf(4),
+            BigDecimal.valueOf(40),
+            BigDecimal.valueOf(92),
+            BigDecimal.valueOf(352)
+    };
+
+    this.f = new FormulaFactory();
+    final NQueensGenerator generator = new NQueensGenerator(f);
+    this.formulas = new ArrayList<>(problems.length);
+    this.variables = new ArrayList<>(problems.length);
+
+    for (final int problem : problems) {
+      final Formula p = generator.generate(problem);
+      formulas.add(p);
+      variables.add(p.variables());
+    }
   }
 
-
   @Test
-  public void test2() throws ParserException {
-    final FormulaFactory f = new FormulaFactory();
-    final PropositionalParser p = new PropositionalParser(f);
-    final Formula f1 = p.parse("~(~a & ~b & ~x & ~y) & ~(~(~a & ~b) & ~(~x & ~y))");
-    final Formula f2 = p.parse("~(~(~a & ~b & ~(~x & ~y)) & ~((a | b) & ~(x | y)))");
-    final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
-    Assert.assertEquals(bdd.build(f1), bdd.build(f2));
+  public void testModelCount() {
+    for (int i = 0; i < this.formulas.size(); i++) {
+      JBuddyFactory factory = new JBuddyFactory(10000, 10000, f);
+      factory.setNumberOfVars(this.variables.get(i).size());
+      final BDD bdd = factory.build(this.formulas.get(i));
+      Assert.assertEquals(this.expected[i], bdd.modelCount());
+    }
   }
 
   @Test
-  public void test3() throws ParserException {
-    final FormulaFactory f = new FormulaFactory();
-    final PropositionalParser p = new PropositionalParser(f);
-    final Formula f1 = p.parse("a & b | ~c");
-    final BDDFactoryClassical bdd = new BDDFactoryClassical(f, f1.variables());
-    final BDDNode bddNode = bdd.bddForFormula(f1);
-    Assert.assertEquals(5, bddNode.nodes().size());
-    Assert.assertEquals(f.variable("a"), bddNode.label());
+  public void testModelEnumeration() {
+    for (int i = 0; i < this.formulas.size(); i++) {
+      JBuddyFactory factory = new JBuddyFactory(10000, 10000, f);
+      factory.setNumberOfVars(this.variables.get(i).size());
+      final BDD bdd = factory.build(this.formulas.get(i));
+      Set<Assignment> models = new HashSet<>(bdd.enumerateAllModels());
+      Assert.assertEquals(this.expected[i].intValue(), models.size());
+      for (final Assignment model : models)
+        Assert.assertTrue(formulas.get(i).evaluate(model));
+    }
   }
+
 }

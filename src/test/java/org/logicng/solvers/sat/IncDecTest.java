@@ -34,6 +34,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
+import org.logicng.testutils.PigeonHoleGenerator;
 
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;

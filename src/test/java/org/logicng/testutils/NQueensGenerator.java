@@ -26,53 +26,78 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.simple;
+package org.logicng.testutils;
 
+import org.logicng.cardinalityconstraints.CCConfig;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
+
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Node cache for the simple BDD implementation.
+ * A generator for the n-queens problem.
  * @version 1.2
  * @since 1.2
  */
-final class NodeCache {
+public class NQueensGenerator {
 
-  /**
-   * Mapping from [var, low, high] -> node index
-   */
-  private final Map<List<Integer>, Integer> cache;
+  private final FormulaFactory f;
 
-  /**
-   * Constructor.
-   */
-  NodeCache() {
-    this.cache = new HashMap<>();
+  public NQueensGenerator(final FormulaFactory f) {
+    this.f = f;
+    this.f.putConfiguration(new CCConfig.Builder().amoEncoding(CCConfig.AMO_ENCODER.PURE).build());
   }
 
-  /**
-   * Inserts a new node into the cache.
-   * @param var  the variable index
-   * @param low  the low index
-   * @param high the high index
-   * @param node the node index
-   */
-  void insert(int var, int low, int high, int node) {
-    this.cache.put(Arrays.asList(var, low, high), node);
-  }
+  public Formula generate(int n) {
+    int kk = 1;
+    Variable[][] varNames = new Variable[n][];
+    for (int i = 0; i < n; i++) {
+      varNames[i] = new Variable[n];
+      for (int j = 0; j < n; j++)
+        varNames[i][j] = f.variable("v" + kk++);
+    }
 
-  /**
-   * Looks up a given variable/low/high combination and returns its node index or -1 if not found.
-   * @param var  the variable index
-   * @param low  the low index
-   * @param high the high index
-   * @return the node index of the cached node or -1 if the node was not in the cache
-   */
-  int lookup(int var, int low, int high) {
-    final Integer result = this.cache.get(Arrays.asList(var, low, high));
-    return result == null ? -1 : result;
-  }
+    List<Formula> operands = new ArrayList<>();
+    List<Variable> vars = new ArrayList<>();
 
+    for (int i = 0; i < n; i++) {
+      vars.addAll(Arrays.asList(varNames[i]).subList(0, n));
+      operands.add(f.exo(vars).cnf());
+      vars.clear();
+    }
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++)
+        vars.add(varNames[j][i]);
+      operands.add(f.exo(vars).cnf());
+      vars.clear();
+    }
+    for (int i = 0; i < n - 1; i++) {
+      for (int j = 0; j < n - i; j++)
+        vars.add(varNames[j][i + j]);
+      operands.add(f.amo(vars).cnf());
+      vars.clear();
+    }
+    for (int i = 1; i < n - 1; i++) {
+      for (int j = 0; j < n - i; j++)
+        vars.add(varNames[j + i][j]);
+      operands.add(f.amo(vars).cnf());
+      vars.clear();
+    }
+    for (int i = 0; i < n - 1; i++) {
+      for (int j = 0; j < n - i; j++)
+        vars.add(varNames[j][n - 1 - (i + j)]);
+      operands.add(f.amo(vars).cnf());
+      vars.clear();
+    }
+    for (int i = 1; i < n - 1; i++) {
+      for (int j = 0; j < n - i; j++)
+        vars.add(varNames[j + i][n - 1 - j]);
+      operands.add(f.amo(vars).cnf());
+      vars.clear();
+    }
+    return f.and(operands);
+  }
 }

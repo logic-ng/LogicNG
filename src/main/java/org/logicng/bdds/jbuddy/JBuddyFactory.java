@@ -320,18 +320,18 @@ public final class JBuddyFactory extends BDDFactory {
   }
 
   @Override
-  public BigDecimal modelCount(final BDD bdd, int unimportantVars) {
-    return kernel.satCountSetInt(bdd.index(), unimportantVars);
-  }
-
-  @Override
   public List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Variable> variables) {
     final List<Assignment> res = new LinkedList<>();
     final List<byte[]> models = kernel.allSat(bdd.index());
-    final SortedSet<Integer> temp = new TreeSet<>();
-    for (final Map.Entry<Variable, Integer> e : this.var2idx.entrySet())
-      if (variables.contains(e.getKey()))
-        temp.add(e.getValue());
+    SortedSet<Integer> temp;
+    if (variables == null)
+      temp = new TreeSet<>(this.var2idx.values());
+    else {
+      temp = new TreeSet<>();
+      for (final Map.Entry<Variable, Integer> e : this.var2idx.entrySet())
+        if (variables.contains(e.getKey()))
+          temp.add(e.getValue());
+    }
     final int[] relevantIndices = new int[temp.size()];
     int count = 0;
     for (final Integer i : temp)
@@ -380,6 +380,11 @@ public final class JBuddyFactory extends BDDFactory {
       clauses.add(f.or(literals));
     }
     return f.and(clauses);
+  }
+
+  @Override
+  public BigDecimal numberOfClausesCNF(final BDD bdd) {
+    return kernel.pathCountZero(bdd.index());
   }
 
   /**

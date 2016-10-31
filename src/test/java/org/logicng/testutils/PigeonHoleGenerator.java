@@ -26,44 +26,53 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.simple;
+package org.logicng.testutils;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Apply cache for the simple BDD implementation.
- * @version 1.2
- * @since 1.2
+ * A generator for pigeon hole formulas.
+ * @version 1.0
+ * @since 1.0
  */
-final class ApplyCache {
-  private final Map<Integer[], Integer> cache;
+public class PigeonHoleGenerator {
 
-  /**
-   * Constructor.
-   */
-  ApplyCache() {
-    this.cache = new HashMap<>();
+  private final FormulaFactory f;
+
+  public PigeonHoleGenerator(final FormulaFactory f) {
+    this.f = f;
   }
 
-  /**
-   * Inserts the computation
-   * @param node1  the first node index
-   * @param node2  the second node index
-   * @param result the result node index
-   */
-  void insert(int node1, int node2, int result) {
-    this.cache.put(new Integer[]{node1, node2}, result);
+  public Formula generate(int n) {
+    return f.and(placeInSomeHole(n), onlyOnePigeonInHole(n));
   }
 
-  /**
-   * Looks up a given node combination and returns its node index or -1 if not found.
-   * @param node1 the first node index
-   * @param node2 the second node index
-   * @return the node index of the cached node or -1 if the node was not in the cache
-   */
-  int lookup(int node1, int node2) {
-    final Integer result = this.cache.get(new Integer[]{node1, node2});
-    return result == null ? -1 : result;
+  private Formula placeInSomeHole(int n) {
+    if (n == 1)
+      return f.and(f.variable("v1"), f.variable("v2"));
+    List<Formula> ors = new LinkedList<>();
+    for (int i = 1; i <= n + 1; i++) {
+      List<Literal> orOps = new LinkedList<>();
+      for (int j = 1; j <= n; j++)
+        orOps.add(f.variable("v" + (n * (i - 1) + j)));
+      ors.add(f.or(orOps));
+    }
+    return f.and(ors);
+  }
+
+  private Formula onlyOnePigeonInHole(int n) {
+    if (n == 1)
+      return f.or(f.literal("v1", false), f.literal("v2", false));
+    List<Formula> ors = new LinkedList<>();
+    for (int j = 1; j <= n; j++)
+      for (int i = 1; i <= n; i++)
+        for (int k = i + 1; k <= n + 1; k++)
+          ors.add(f.or(f.literal("v" + (n * (i - 1) + j), false), f.literal("v" + (n * (k - 1) + j), false)));
+    return f.and(ors);
   }
 }

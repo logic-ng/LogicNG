@@ -113,7 +113,9 @@ public abstract class BDDFactory {
    * @param unimportantVars the number of unimportant variables
    * @return the model count
    */
-  public abstract BigDecimal modelCount(final BDD bdd, int unimportantVars);
+  public BigDecimal modelCount(final BDD bdd, int unimportantVars) {
+    return modelCount(bdd).divide(BigDecimal.valueOf((int) Math.pow(2, unimportantVars)));
+  }
 
   /**
    * Enumerates all models of a given BDD.
@@ -148,6 +150,13 @@ public abstract class BDDFactory {
    * @return the CNF for the formula represented by the BDD
    */
   public abstract Formula cnf(final BDD bdd);
+
+  /**
+   * Returns the number of clauses for the CNF formula of the given BDD.
+   * @param bdd the node
+   * @return the number of clauses for the CNF formula of the given BDD
+   */
+  public abstract BigDecimal numberOfClausesCNF(final BDD bdd);
 
   /**
    * Returns a DNF formula for a given BDD.

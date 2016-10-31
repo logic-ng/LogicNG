@@ -52,7 +52,7 @@ public class JBuddyTest {
     factory.setVariableOrder(Arrays.asList(f.variable("x"), f.variable("y"), f.variable("a"), f.variable("b")));
     final Formula formula = f.or(f.and(f.literal("a", false), f.variable("b")), f.and(f.variable("x"), f.variable("y")));
     final BDD bdd = factory.build(formula);
-    final Formula cnf = factory.cnf(bdd);
+    final Formula cnf = bdd.cnf();
     Assert.assertTrue(cnf.holds(new CNFPredicate()));
     Assert.assertTrue(f.equivalence(formula, cnf).holds(new TautologyPredicate(f)));
   }
