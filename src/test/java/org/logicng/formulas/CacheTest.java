@@ -64,7 +64,7 @@ public class CacheTest {
   @Test
   public void testValues() {
     List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
-    Assert.assertTrue(valuesTrans.size() == 9);
+    Assert.assertTrue(valuesTrans.size() == 10);
     Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF")));
     Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG")));
 
