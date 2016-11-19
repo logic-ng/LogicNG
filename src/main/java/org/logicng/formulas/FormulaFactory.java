@@ -997,7 +997,17 @@ public final class FormulaFactory {
    */
   public String string(final Formula formula, final FormulaStringRepresentation stringRepresentation) {
     return stringRepresentation.toString(formula);
-  }  @Override
+  }
+
+  /**
+   * Returns the formula formatter of this factory.
+   * @return the formula formatter of this factory
+   */
+  public FormulaStringRepresentation stringRepresentation() {
+    return this.stringRepresentation;
+  }
+
+  @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
     sb.append("Name:              ").append(this.name).append("\n");
@@ -1058,8 +1068,4 @@ public final class FormulaFactory {
       return false;
     }
   }
-
-
-
-
 }
