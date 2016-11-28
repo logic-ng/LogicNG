@@ -44,6 +44,7 @@ import org.logicng.propositions.Proposition;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
@@ -378,4 +379,13 @@ public abstract class SATSolver {
   public void setSolverToUndef() {
     this.result = Tristate.UNDEF;
   }
+
+  /**
+   * Returns the set of variables currently known by the solver.
+   * NOTE: Due to the incremental/decremental interface of some of the solvers.  This set is generated each time,
+   * the method is called.  So if you can maintain a list of relevant/known variables in your own application,
+   * this is recommended.
+   * @return the set of variables currently known by the solver
+   */
+  public abstract SortedSet<Variable> knownVariables();
 }

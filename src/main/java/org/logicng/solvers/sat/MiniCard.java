@@ -202,12 +202,13 @@ public final class MiniCard extends MiniSatStyleSolver {
     if (!incremental)
       throw new IllegalStateException("Cannot save a state when the incremental mode is deactivated");
     int[] state;
-    state = new int[5];
+    state = new int[6];
     state[0] = ok ? 1 : 0;
     state[1] = vars.size();
     state[2] = clauses.size();
     state[3] = learnts.size();
     state[4] = unitClauses.size();
+    state[5] = names.size();
     return state;
   }
 
@@ -236,6 +237,7 @@ public final class MiniCard extends MiniSatStyleSolver {
       uncheckedEnqueue(this.unitClauses.get(i), null);
       this.ok = propagate() == null;
     }
+    this.names.shrinkTo(state[5]);
   }
 
   @Override

@@ -385,6 +385,14 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    for (final String name : solver.names())
+      result.add(this.f.variable(name));
+    return result;
+  }
+
+  @Override
   public String toString() {
     return String.format("MiniSat{result=%s, incremental=%s}", this.result, this.incremental);
   }

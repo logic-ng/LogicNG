@@ -327,6 +327,14 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    for (final String name : this.name2idx.keySet())
+      result.add(this.f.variable(name));
+    return result;
+  }
+
+  @Override
   public String toString() {
     return String.format("CleaneLing{result=%s, idx2name=%s}", this.result, this.idx2name);
   }
