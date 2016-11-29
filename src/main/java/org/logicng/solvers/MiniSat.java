@@ -198,6 +198,19 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
+  public void addWithoutUnknown(final Formula formula) {
+    final int nVars = this.solver.nVars();
+    final Assignment restriction = new Assignment(true);
+    final Map<String, Integer> map = this.solver.name2idx();
+    for (final Variable var : formula.variables()) {
+      final Integer index = map.get(var.name());
+      if (index == null || index >= nVars)
+        restriction.addLiteral(var.negate());
+    }
+    this.add(formula.restrict(restriction));
+  }
+
+  @Override
   public CCIncrementalData addIncrementalCC(PBConstraint cc) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");

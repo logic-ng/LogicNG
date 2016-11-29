@@ -50,6 +50,7 @@ import org.logicng.solvers.sat.CleaneLingStyleSolver;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -153,6 +154,15 @@ public final class CleaneLing extends SATSolver {
         this.addClauseSet(formula.cnf());
     } else
       this.addClauseSet(formula.cnf());
+  }
+
+  @Override
+  public void addWithoutUnknown(final Formula formula) {
+    final Assignment restriction = new Assignment(true);
+    for (final Variable var : formula.variables())
+      if (this.name2idx.get(var.name()) == null)
+        restriction.addLiteral(var.negate());
+    this.add(formula.restrict(restriction));
   }
 
   @Override
