@@ -127,4 +127,16 @@ public class ExtendedFormulaFactoryTest {
     Assert.assertTrue(set.isEmpty());
   }
 
+  @Test
+  public void testShouldCache() {
+    FormulaFactory f = new FormulaFactory();
+    Assert.assertTrue(f.shouldCache());
+    ExtendedFormulaFactory ef = new ExtendedFormulaFactory();
+    Assert.assertTrue(ef.shouldCache());
+
+    Variable q = ef.variable("Q");
+    FormulaFactoryState efState = ef.save();
+    Assert.assertFalse(ef.shouldCache());
+  }
+
 }

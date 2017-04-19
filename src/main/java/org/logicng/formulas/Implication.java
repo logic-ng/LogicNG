@@ -34,7 +34,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Boolean implication.
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public final class Implication extends BinaryOperator {
@@ -67,7 +67,8 @@ public final class Implication extends BinaryOperator {
     Formula nnf = this.transformationCache.get(NNF);
     if (nnf == null) {
       nnf = f.or(f.not(left).nnf(), right.nnf());
-      this.transformationCache.put(NNF, nnf);
+      if (f.shouldCache())
+        this.transformationCache.put(NNF, nnf);
     }
     return nnf;
   }

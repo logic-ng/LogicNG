@@ -34,7 +34,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Boolean equivalence.
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public final class Equivalence extends BinaryOperator {
@@ -64,7 +64,8 @@ public final class Equivalence extends BinaryOperator {
     Formula nnf = this.transformationCache.get(NNF);
     if (nnf == null) {
       nnf = f.or(f.and(left.nnf(), right.nnf()), f.and(f.not(left).nnf(), f.not(right).nnf()));
-      this.transformationCache.put(NNF, nnf);
+      if (f.shouldCache())
+        this.transformationCache.put(NNF, nnf);
     }
     return nnf;
   }

@@ -155,6 +155,11 @@ public class FormulaFactory {
     this("", new DefaultStringRepresentation());
   }
 
+
+  public boolean shouldCache() {
+    return true;
+  }
+  
   /**
    * Returns {@code true} if a given list of formulas contains the negation of a  given formula,
    * {@code false} otherwise.

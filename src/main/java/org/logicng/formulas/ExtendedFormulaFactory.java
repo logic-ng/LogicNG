@@ -118,6 +118,11 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     this.cnfCounter = state.state()[17];
   }
 
+  @Override
+  public boolean shouldCache() {
+    return validStates.empty();
+  }
+
   static <T, U> void shrinkMap(final Map<T, U> map, int newSize) {
     if (!(map instanceof LinkedHashMap)) {
       throw new IllegalStateException("Cannot shrink a map which is not of type LinkedHashMap");
@@ -125,7 +130,7 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     if (newSize > map.size()) {
       throw new IllegalStateException("Cannot shrink a map of size " + map.size() + " to new size " + newSize);
     }
-    Iterator<Map.Entry<T,U>> entryIterator = map.entrySet().iterator();
+    Iterator<Map.Entry<T, U>> entryIterator = map.entrySet().iterator();
     int count = 0;
     while (count < newSize) {
       entryIterator.next();
@@ -139,7 +144,7 @@ public class ExtendedFormulaFactory extends FormulaFactory {
 
   static <T> void shrinkSet(final Set<T> set, int newSize) {
     if (!(set instanceof LinkedHashSet)) {
-      throw new IllegalStateException("Cannot shrink a map which is not of type LinkedHashSet");
+      throw new IllegalStateException("Cannot shrink a set which is not of type LinkedHashSet");
     }
     if (newSize > set.size()) {
       throw new IllegalStateException("Cannot shrink a set of size " + set.size() + " to new size " + newSize);

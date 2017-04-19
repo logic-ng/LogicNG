@@ -34,10 +34,13 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_POS;
 import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
@@ -48,7 +51,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
  * <p>
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public final class PlaistedGreenbaumTransformation implements FormulaTransformation {
@@ -56,6 +59,8 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   private final int boundaryForFactorization;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
   private final CNFFactorization factorization = new CNFFactorization();
+  private Map<Formula, Variable> formula2Var = new LinkedHashMap<>();
+  private Map<Formula, Formula> formula2Formula = new LinkedHashMap<>();
 
   /**
    * Constructor for a Plaisted &amp; Greenbaum transformation.
@@ -80,7 +85,15 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
    * @param formula the formula
    * @return the old or new auxiliary variable
    */
-  private static Formula pgVariable(final Formula formula) {
+  private Formula pgVariable(final Formula formula) {
+    if (formula.factory().shouldCache()) {
+      return pgVariableNormal(formula);
+    } else {
+      return pgVariableNoCache(formula);
+    }
+  }
+
+  private Formula pgVariableNormal(final Formula formula) {
     if (formula.type() == FType.LITERAL)
       return formula;
     Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
@@ -91,8 +104,30 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     return var;
   }
 
+  private Formula pgVariableNoCache(final Formula formula) {
+    if (formula.type() == FType.LITERAL)
+      return formula;
+    Variable var = formula2Var.get(formula);
+    if (var == null) {
+      var = formula.factory().newCNFVariable();
+      formula2Var.put(formula, var);
+    }
+    return var;
+  }
+
   @Override
   public Formula apply(final Formula formula, boolean cache) {
+    if (formula.factory().shouldCache()) {
+      return applyNormal(formula, cache);
+    } else {
+      Formula result = applyNoCache(formula);
+      formula2Var.clear();
+      formula2Formula.clear();
+      return result;
+    }
+  }
+
+  public Formula applyNormal(final Formula formula, boolean cache) {
     final Formula f = formula.nnf();
     if (f.holds(this.cnfPredicate))
       return f;
@@ -107,6 +142,21 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     if (cache)
       formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
               f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+    return pg;
+  }
+
+  public Formula applyNoCache(final Formula formula) {
+    final Formula f = formula.nnf();
+    if (f.holds(this.cnfPredicate))
+      return f;
+    Formula pg;
+    if (f.numberOfAtoms() < this.boundaryForFactorization)
+      pg = f.transform(factorization);
+    else {
+      pg = this.computeTransformation(f, null);
+      final Assignment topLevel = new Assignment(formula2Var.get(f));
+      pg = pg.restrict(topLevel);
+    }
     return pg;
   }
 
@@ -128,6 +178,14 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   }
 
   private Formula computePosPolarity(final Formula formula, final Literal fixedPGVar) {
+    if (formula.factory().shouldCache()) {
+      return computePosPolarityNormal(formula, fixedPGVar);
+    } else {
+      return computePosPolarityNoCache(formula, fixedPGVar);
+    }
+  }
+
+  private Formula computePosPolarityNormal(final Formula formula, final Literal fixedPGVar) {
     Formula result = formula.transformationCacheEntry(PLAISTED_GREENBAUM_POS);
     if (result != null)
       return result;
@@ -148,6 +206,33 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
           nops.add(pgVariable(op));
         result = f.or(nops);
         formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
+        return result;
+      default:
+        throw new IllegalArgumentException("not yet implemented");
+    }
+  }
+
+  private Formula computePosPolarityNoCache(final Formula formula, final Literal fixedPGVar) {
+    Formula result = formula2Formula.get(formula);
+    if (result != null)
+      return result;
+    final FormulaFactory f = formula.factory();
+    final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
+    switch (formula.type()) {
+      case AND:
+        List<Formula> nops = new ArrayList<>();
+        for (final Formula op : formula)
+          nops.add(f.or(pgVar.negate(), pgVariable(op)));
+        result = f.and(nops);
+        formula2Formula.put(formula, result);
+        return result;
+      case OR:
+        nops = new ArrayList<>();
+        nops.add(pgVar.negate());
+        for (final Formula op : formula)
+          nops.add(pgVariable(op));
+        result = f.or(nops);
+        formula2Formula.put(formula, result);
         return result;
       default:
         throw new IllegalArgumentException("not yet implemented");

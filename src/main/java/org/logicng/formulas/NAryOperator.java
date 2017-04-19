@@ -44,7 +44,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Super class for Boolean n-ary operators.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public abstract class NAryOperator extends Formula {
@@ -171,7 +171,8 @@ public abstract class NAryOperator extends Formula {
       for (final Formula op : this.operands)
         nops.add(op.nnf());
       nnf = f.naryOperator(type, nops);
-      this.transformationCache.put(NNF, nnf);
+      if (f.shouldCache())
+        this.transformationCache.put(NNF, nnf);
     }
     return nnf;
   }

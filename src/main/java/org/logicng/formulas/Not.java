@@ -40,7 +40,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Boolean negation.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public final class Not extends Formula {
@@ -160,7 +160,8 @@ public final class Not extends Formula {
         default:
           nnf = this;
       }
-      this.transformationCache.put(NNF, nnf);
+      if (f.shouldCache())
+        this.transformationCache.put(NNF, nnf);
     }
     return nnf;
   }

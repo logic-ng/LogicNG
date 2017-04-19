@@ -37,7 +37,9 @@ import org.logicng.formulas.Literal;
 import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.TSEITIN;
 import static org.logicng.formulas.cache.TransformationCacheEntry.TSEITIN_VARIABLE;
@@ -47,7 +49,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.TSEITIN_VARIAB
  * <p>
  * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
  * introduced variables.
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public final class TseitinTransformation implements FormulaTransformation {
@@ -55,6 +57,8 @@ public final class TseitinTransformation implements FormulaTransformation {
   private final int boundaryForFactorization;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
   private final CNFFactorization factorization = new CNFFactorization();
+  private Map<Formula, Literal> formula2tseitinVar = new LinkedHashMap<>();
+  private Map<Formula, Formula> formula2tseitinFormula = new LinkedHashMap<>();
 
   /**
    * Constructor for a Tseitin transformation.
@@ -73,6 +77,17 @@ public final class TseitinTransformation implements FormulaTransformation {
 
   @Override
   public Formula apply(final Formula formula, boolean cache) {
+    if (formula.factory().shouldCache()) {
+      return applyNormal(formula, cache);
+    } else {
+      Formula result = applyNoCache(formula);
+      formula2tseitinVar.clear();
+      formula2tseitinFormula.clear();
+      return result;
+    }
+  }
+
+  public Formula applyNormal(final Formula formula, boolean cache) {
     final Formula f = formula.nnf();
     if (f.holds(cnfPredicate))
       return f;
@@ -95,11 +110,39 @@ public final class TseitinTransformation implements FormulaTransformation {
     return tseitin;
   }
 
+  public Formula applyNoCache(final Formula formula) {
+    final Formula f = formula.nnf();
+    if (f.holds(cnfPredicate))
+      return f;
+    Formula tseitin = formula2tseitinFormula.get(f);
+    if (tseitin != null) {
+      final Assignment topLevel = new Assignment(formula2tseitinVar.get(f));
+      return formula2tseitinFormula.get(f).restrict(topLevel);
+    }
+    if (f.numberOfAtoms() < this.boundaryForFactorization)
+      tseitin = f.transform(factorization);
+    else {
+      for (final Formula subformula : f.apply(f.factory().subformulaFunction()))
+        computeTseitin(subformula);
+      final Assignment topLevel = new Assignment(formula2tseitinVar.get(f));
+      tseitin = formula2tseitinFormula.get(f).restrict(topLevel);
+    }
+    return tseitin;
+  }
+
   /**
    * Computes the Tseitin transformation for a given formula and stores it in the formula cache.
    * @param formula the formula
    */
   private void computeTseitin(final Formula formula) {
+    if (formula.factory().shouldCache()) {
+      computeTseitinNormal(formula);
+    } else {
+      computeTseitinNoCache(formula);
+    }
+  }
+
+  private void computeTseitinNormal(final Formula formula) {
     if (formula.transformationCacheEntry(TSEITIN) != null)
       return;
     final FormulaFactory f = formula.factory();
@@ -147,6 +190,60 @@ public final class TseitinTransformation implements FormulaTransformation {
         nops.add(f.or(operands));
         formula.setTransformationCacheEntry(TSEITIN_VARIABLE, tsLiteral);
         formula.setTransformationCacheEntry(TSEITIN, f.and(nops));
+        break;
+      default:
+        throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+    }
+  }
+
+  private void computeTseitinNoCache(final Formula formula) {
+    if (formula2tseitinFormula.get(formula) != null)
+      return;
+    final FormulaFactory f = formula.factory();
+    switch (formula.type()) {
+      case LITERAL:
+        formula2tseitinFormula.put(formula, formula);
+        formula2tseitinVar.put(formula, (Literal) formula);
+        break;
+      case AND:
+        Literal tsLiteral = f.newCNFVariable();
+        List<Formula> nops = new ArrayList<>();
+        List<Formula> operands = new ArrayList<>(formula.numberOfOperands());
+        List<Formula> negOperands = new ArrayList<>(formula.numberOfOperands());
+        negOperands.add(tsLiteral);
+        for (final Formula op : formula) {
+          if (op.type() != FType.LITERAL) {
+            computeTseitin(op);
+            nops.add(formula2tseitinFormula.get(op));
+          }
+          operands.add(formula2tseitinVar.get(op));
+          negOperands.add(formula2tseitinVar.get(op).negate());
+        }
+        for (final Formula op : operands)
+          nops.add(f.or(tsLiteral.negate(), op));
+        nops.add(f.or(negOperands));
+        formula2tseitinVar.put(formula, tsLiteral);
+        formula2tseitinFormula.put(formula, f.and(nops));
+        break;
+      case OR:
+        tsLiteral = f.newCNFVariable();
+        nops = new ArrayList<>();
+        operands = new ArrayList<>(formula.numberOfOperands());
+        negOperands = new ArrayList<>(formula.numberOfOperands());
+        operands.add(tsLiteral.negate());
+        for (final Formula op : formula) {
+          if (op.type() != FType.LITERAL) {
+            computeTseitin(op);
+            nops.add(formula2tseitinFormula.get(op));
+          }
+          operands.add(formula2tseitinVar.get(op));
+          negOperands.add(formula2tseitinVar.get(op).negate());
+        }
+        for (final Formula op : negOperands)
+          nops.add(f.or(tsLiteral, op));
+        nops.add(f.or(operands));
+        formula2tseitinVar.put(formula, tsLiteral);
+        formula2tseitinFormula.put(formula, f.and(nops));
         break;
       default:
         throw new IllegalArgumentException("Could not process the formula type " + formula.type());
