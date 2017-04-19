@@ -66,10 +66,10 @@ import static org.logicng.formulas.FType.TRUE;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
-public final class FormulaFactory {
+public class FormulaFactory {
 
   public static final String CC_PREFIX = "@RESERVED_CC_";
   public static final String PB_PREFIX = "@RESERVED_PB_";
@@ -88,26 +88,26 @@ public final class FormulaFactory {
   private final PBEncoder pbEncoder;
   private final CNFEncoder cnfEncoder;
   private final PseudoBooleanParser parser;
-  private Map<String, Variable> posLiterals;
-  private Map<String, Literal> negLiterals;
-  private Set<Variable> generatedVariables;
-  private Map<Formula, Not> nots;
-  private Map<Pair<Formula, Formula>, Implication> implications;
-  private Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;
-  private Map<LinkedHashSet<? extends Formula>, And> ands2;
-  private Map<LinkedHashSet<? extends Formula>, And> ands3;
-  private Map<LinkedHashSet<? extends Formula>, And> ands4;
-  private Map<LinkedHashSet<? extends Formula>, And> andsN;
-  private Map<LinkedHashSet<? extends Formula>, Or> ors2;
-  private Map<LinkedHashSet<? extends Formula>, Or> ors3;
-  private Map<LinkedHashSet<? extends Formula>, Or> ors4;
-  private Map<LinkedHashSet<? extends Formula>, Or> orsN;
-  private Map<PBOperands, PBConstraint> pbConstraints;
+  Map<String, Variable> posLiterals;
+  Map<String, Literal> negLiterals;
+  Set<Variable> generatedVariables;
+  Map<Formula, Not> nots;
+  Map<Pair<Formula, Formula>, Implication> implications;
+  Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;
+  Map<LinkedHashSet<? extends Formula>, And> ands2;
+  Map<LinkedHashSet<? extends Formula>, And> ands3;
+  Map<LinkedHashSet<? extends Formula>, And> ands4;
+  Map<LinkedHashSet<? extends Formula>, And> andsN;
+  Map<LinkedHashSet<? extends Formula>, Or> ors2;
+  Map<LinkedHashSet<? extends Formula>, Or> ors3;
+  Map<LinkedHashSet<? extends Formula>, Or> ors4;
+  Map<LinkedHashSet<? extends Formula>, Or> orsN;
+  Map<PBOperands, PBConstraint> pbConstraints;
   private boolean cnfCheck;
   private boolean[] formulaAdditionResult;
-  private int ccCounter;
-  private int pbCounter;
-  private int cnfCounter;
+  int ccCounter;
+  int pbCounter;
+  int cnfCounter;
 
   /**
    * Constructor for a new formula factory.
