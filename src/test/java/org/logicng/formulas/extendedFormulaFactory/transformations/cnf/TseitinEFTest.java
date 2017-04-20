@@ -31,7 +31,9 @@ package org.logicng.formulas.extendedFormulaFactory.transformations.cnf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.ExtendedFormulaFactory;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactoryState;
 import org.logicng.formulas.Variable;
 import org.logicng.formulas.extendedFormulaFactory.EF;
 import org.logicng.io.parsers.ParserException;
@@ -159,6 +161,31 @@ public class TseitinEFTest {
   public void testToString() {
     TseitinTransformation tseitinTransformation = new TseitinTransformation(5);
     Assert.assertEquals("TseitinTransformation{boundary=5}", tseitinTransformation.toString());
+  }
+
+  @Test
+  public void testSaveState() throws ParserException {
+    ExtendedFormulaFactory f = new ExtendedFormulaFactory();
+    PropositionalParser p = new PropositionalParser(f);
+
+    Variable a = f.variable("a");
+    Variable b = f.variable("b");
+    Variable x = f.variable("x");
+    Variable y = f.variable("y");
+
+    Formula or1 = f.or(x, y);
+    Formula and1 = f.and(a, b);
+    Formula eq3 = f.equivalence(and1, or1);
+
+    Assert.assertEquals(p.parse("x | y"), or1.transform(ts));
+
+    FormulaFactoryState state = f.save();
+    Assert.assertFalse(f.shouldCache());
+    Assert.assertEquals(p.parse("(@RESERVED_CNF_0 | ~x) & (@RESERVED_CNF_0 | ~y) & (~@RESERVED_CNF_0 | x | y) & (~@RESERVED_CNF_1 | a) & (~@RESERVED_CNF_1 | b) & (~@RESERVED_CNF_1 | @RESERVED_CNF_0) & (@RESERVED_CNF_1 | ~a | ~b | ~@RESERVED_CNF_0) & (@RESERVED_CNF_2 | a) & (@RESERVED_CNF_2 | b) & (~@RESERVED_CNF_2 | ~a | ~b) & (~@RESERVED_CNF_3 | @RESERVED_CNF_2) & (~@RESERVED_CNF_3 | ~x) & (~@RESERVED_CNF_3 | ~y) & (@RESERVED_CNF_3 | ~@RESERVED_CNF_2 | x | y) & (@RESERVED_CNF_1 | @RESERVED_CNF_3)"), eq3.transform(ts));
+    f.load(state);
+    f.invalidateStates();
+    Assert.assertTrue(f.shouldCache());
+    Assert.assertEquals(p.parse("(@RESERVED_CNF_0 | ~x) & (@RESERVED_CNF_0 | ~y) & (~@RESERVED_CNF_0 | x | y) & (~@RESERVED_CNF_1 | a) & (~@RESERVED_CNF_1 | b) & (~@RESERVED_CNF_1 | @RESERVED_CNF_0) & (@RESERVED_CNF_1 | ~a | ~b | ~@RESERVED_CNF_0) & (@RESERVED_CNF_2 | a) & (@RESERVED_CNF_2 | b) & (~@RESERVED_CNF_2 | ~a | ~b) & (~@RESERVED_CNF_3 | @RESERVED_CNF_2) & (~@RESERVED_CNF_3 | ~x) & (~@RESERVED_CNF_3 | ~y) & (@RESERVED_CNF_3 | ~@RESERVED_CNF_2 | x | y) & (@RESERVED_CNF_1 | @RESERVED_CNF_3)"), eq3.transform(ts));
   }
 
   private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {

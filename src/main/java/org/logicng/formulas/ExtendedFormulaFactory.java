@@ -118,6 +118,10 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     this.cnfCounter = state.state()[17];
   }
 
+  public void invalidateStates() {
+    this.validStates.clear();
+  }
+
   @Override
   public boolean shouldCache() {
     return validStates.empty();

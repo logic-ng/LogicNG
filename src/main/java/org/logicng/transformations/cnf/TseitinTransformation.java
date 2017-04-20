@@ -114,18 +114,18 @@ public final class TseitinTransformation implements FormulaTransformation {
     final Formula f = formula.nnf();
     if (f.holds(cnfPredicate))
       return f;
-    Formula tseitin = formula2tseitinFormula.get(f);
+    Formula tseitin = getTseitinFormula(f);
     if (tseitin != null) {
-      final Assignment topLevel = new Assignment(formula2tseitinVar.get(f));
-      return formula2tseitinFormula.get(f).restrict(topLevel);
+      final Assignment topLevel = new Assignment(getTseitinVar(f));
+      return getTseitinFormula(f).restrict(topLevel);
     }
     if (f.numberOfAtoms() < this.boundaryForFactorization)
       tseitin = f.transform(factorization);
     else {
       for (final Formula subformula : f.apply(f.factory().subformulaFunction()))
         computeTseitin(subformula);
-      final Assignment topLevel = new Assignment(formula2tseitinVar.get(f));
-      tseitin = formula2tseitinFormula.get(f).restrict(topLevel);
+      final Assignment topLevel = new Assignment(getTseitinVar(f));
+      tseitin = getTseitinFormula(f).restrict(topLevel);
     }
     return tseitin;
   }
@@ -214,10 +214,10 @@ public final class TseitinTransformation implements FormulaTransformation {
         for (final Formula op : formula) {
           if (op.type() != FType.LITERAL) {
             computeTseitin(op);
-            nops.add(formula2tseitinFormula.get(op));
+            nops.add(getTseitinFormula(op));
           }
-          operands.add(formula2tseitinVar.get(op));
-          negOperands.add(formula2tseitinVar.get(op).negate());
+          operands.add(getTseitinVar(op));
+          negOperands.add(getTseitinVar(op).negate());
         }
         for (final Formula op : operands)
           nops.add(f.or(tsLiteral.negate(), op));
@@ -234,10 +234,10 @@ public final class TseitinTransformation implements FormulaTransformation {
         for (final Formula op : formula) {
           if (op.type() != FType.LITERAL) {
             computeTseitin(op);
-            nops.add(formula2tseitinFormula.get(op));
+            nops.add(getTseitinFormula(op));
           }
-          operands.add(formula2tseitinVar.get(op));
-          negOperands.add(formula2tseitinVar.get(op).negate());
+          operands.add(getTseitinVar(op));
+          negOperands.add(getTseitinVar(op).negate());
         }
         for (final Formula op : negOperands)
           nops.add(f.or(tsLiteral, op));
@@ -247,6 +247,24 @@ public final class TseitinTransformation implements FormulaTransformation {
         break;
       default:
         throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+    }
+  }
+
+  private Literal getTseitinVar(Formula formula) {
+    Formula var = formula.transformationCacheEntry(TSEITIN_VARIABLE);
+    if (var != null && var.type().equals(FType.LITERAL)) {
+      return (Literal) var;
+    } else {
+      return formula2tseitinVar.get(formula);
+    }
+  }
+
+  private Formula getTseitinFormula(Formula formula) {
+    Formula form = formula.transformationCacheEntry(TSEITIN);
+    if (form != null) {
+      return form;
+    } else {
+      return formula2tseitinFormula.get(formula);
     }
   }
 

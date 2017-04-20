@@ -107,7 +107,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   private Formula pgVariableNoCache(final Formula formula) {
     if (formula.type() == FType.LITERAL)
       return formula;
-    Variable var = formula2Var.get(formula);
+    Variable var = getPGVar(formula);
     if (var == null) {
       var = formula.factory().newCNFVariable();
       formula2Var.put(formula, var);
@@ -154,7 +154,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
       pg = f.transform(factorization);
     else {
       pg = this.computeTransformation(f, null);
-      final Assignment topLevel = new Assignment(formula2Var.get(f));
+      final Assignment topLevel = new Assignment(getPGVar(f));
       pg = pg.restrict(topLevel);
     }
     return pg;
@@ -213,7 +213,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
   }
 
   private Formula computePosPolarityNoCache(final Formula formula, final Literal fixedPGVar) {
-    Formula result = formula2Formula.get(formula);
+    Formula result = getPGFormula(formula);
     if (result != null)
       return result;
     final FormulaFactory f = formula.factory();
@@ -236,6 +236,24 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
         return result;
       default:
         throw new IllegalArgumentException("not yet implemented");
+    }
+  }
+
+  private Variable getPGVar(Formula formula) {
+    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
+    if (var != null && var.type().equals(FType.LITERAL) && ((Literal) var).phase()) {
+      return ((Variable) var);
+    } else {
+      return formula2Var.get(formula);
+    }
+  }
+
+  private Formula getPGFormula(Formula formula) {
+    Formula form = formula.transformationCacheEntry(PLAISTED_GREENBAUM_POS);
+    if (form != null) {
+      return form;
+    } else {
+      return formula2Formula.get(formula);
     }
   }
 
