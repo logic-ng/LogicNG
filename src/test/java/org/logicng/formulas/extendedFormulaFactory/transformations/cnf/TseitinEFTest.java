@@ -183,7 +183,7 @@ public class TseitinEFTest {
     Assert.assertFalse(f.shouldCache());
     Assert.assertEquals(p.parse("(@RESERVED_CNF_0 | ~x) & (@RESERVED_CNF_0 | ~y) & (~@RESERVED_CNF_0 | x | y) & (~@RESERVED_CNF_1 | a) & (~@RESERVED_CNF_1 | b) & (~@RESERVED_CNF_1 | @RESERVED_CNF_0) & (@RESERVED_CNF_1 | ~a | ~b | ~@RESERVED_CNF_0) & (@RESERVED_CNF_2 | a) & (@RESERVED_CNF_2 | b) & (~@RESERVED_CNF_2 | ~a | ~b) & (~@RESERVED_CNF_3 | @RESERVED_CNF_2) & (~@RESERVED_CNF_3 | ~x) & (~@RESERVED_CNF_3 | ~y) & (@RESERVED_CNF_3 | ~@RESERVED_CNF_2 | x | y) & (@RESERVED_CNF_1 | @RESERVED_CNF_3)"), eq3.transform(ts));
     f.load(state);
-    f.invalidateStates();
+    f.fixateCurrentState();
     Assert.assertTrue(f.shouldCache());
     Assert.assertEquals(p.parse("(@RESERVED_CNF_0 | ~x) & (@RESERVED_CNF_0 | ~y) & (~@RESERVED_CNF_0 | x | y) & (~@RESERVED_CNF_1 | a) & (~@RESERVED_CNF_1 | b) & (~@RESERVED_CNF_1 | @RESERVED_CNF_0) & (@RESERVED_CNF_1 | ~a | ~b | ~@RESERVED_CNF_0) & (@RESERVED_CNF_2 | a) & (@RESERVED_CNF_2 | b) & (~@RESERVED_CNF_2 | ~a | ~b) & (~@RESERVED_CNF_3 | @RESERVED_CNF_2) & (~@RESERVED_CNF_3 | ~x) & (~@RESERVED_CNF_3 | ~y) & (@RESERVED_CNF_3 | ~@RESERVED_CNF_2 | x | y) & (@RESERVED_CNF_1 | @RESERVED_CNF_3)"), eq3.transform(ts));
   }

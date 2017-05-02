@@ -257,6 +257,11 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     }
   }
 
+  public void clearCache() {
+    formula2Formula.clear();
+    formula2Var.clear();
+  }
+
   @Override
   public String toString() {
     return String.format("PlaistedGreenbaumTransformation{boundary=%d}", this.boundaryForFactorization);

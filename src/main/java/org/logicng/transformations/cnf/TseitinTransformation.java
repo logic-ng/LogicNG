@@ -268,6 +268,11 @@ public final class TseitinTransformation implements FormulaTransformation {
     }
   }
 
+  public void clearCache() {
+    formula2tseitinFormula.clear();
+    formula2tseitinVar.clear();
+  }
+
   @Override
   public String toString() {
     return String.format("TseitinTransformation{boundary=%d}", boundaryForFactorization);

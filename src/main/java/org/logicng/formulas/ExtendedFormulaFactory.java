@@ -116,9 +116,11 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     this.ccCounter = state.state()[15];
     this.pbCounter = state.state()[16];
     this.cnfCounter = state.state()[17];
+
+    cnfEncoder().clearCaches();
   }
 
-  public void invalidateStates() {
+  public void fixateCurrentState() {
     this.validStates.clear();
   }
 

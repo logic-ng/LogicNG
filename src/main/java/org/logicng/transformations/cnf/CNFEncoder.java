@@ -163,6 +163,13 @@ public class CNFEncoder {
     return cnfConfig != null ? (CNFConfig) cnfConfig : this.defaultConfig;
   }
 
+  public void clearCaches() {
+    if (plaistedGreenbaum != null)
+      plaistedGreenbaum.clearCache();
+    if (tseitin != null)
+      tseitin.clearCache();
+  }
+
   @Override
   public String toString() {
     return this.config().toString();

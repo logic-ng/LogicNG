@@ -234,7 +234,7 @@ public class PlaistedGreenbaumEFTest {
     Assert.assertFalse(f.shouldCache());
     Assert.assertEquals(p.parse("(@RESERVED_CNF_1 | @RESERVED_CNF_2) & (~@RESERVED_CNF_1 | a) & (~@RESERVED_CNF_1 | b) & (~@RESERVED_CNF_1 | @RESERVED_CNF_3) & (~@RESERVED_CNF_3 | x | y) & (~@RESERVED_CNF_2 | @RESERVED_CNF_4) & (~@RESERVED_CNF_2 | ~x) & (~@RESERVED_CNF_2 | ~y) & (~@RESERVED_CNF_4 | ~a | ~b)"), eq3.transform(pg));
     f.load(state);
-    f.invalidateStates();
+    f.fixateCurrentState();
     Assert.assertTrue(f.shouldCache());
     Assert.assertEquals(p.parse("(@RESERVED_CNF_1 | @RESERVED_CNF_2) & (~@RESERVED_CNF_1 | a) & (~@RESERVED_CNF_1 | b) & (~@RESERVED_CNF_1 | @RESERVED_CNF_3) & (~@RESERVED_CNF_3 | x | y) & (~@RESERVED_CNF_2 | @RESERVED_CNF_4) & (~@RESERVED_CNF_2 | ~x) & (~@RESERVED_CNF_2 | ~y) & (~@RESERVED_CNF_4 | ~a | ~b)\n"), eq3.transform(pg));
   }
