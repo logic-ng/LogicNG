@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 //TODO add comments
-public class ExtendedFormulaFactory extends FormulaFactory {
+public class ClearCacheFormulaFactory extends FormulaFactory {
 
   private int nextStateId;
   private final LNGIntVector validStates = new LNGIntVector();
@@ -118,7 +118,7 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     this.pbCounter = state.state()[16];
     this.cnfCounter = state.state()[17];
 
-    cnfEncoder().clearCaches();
+    clearCaches();
   }
 
   public void fixateCurrentState() {
@@ -127,7 +127,55 @@ public class ExtendedFormulaFactory extends FormulaFactory {
 
   @Override
   public boolean shouldCache() {
-    return validStates.empty();
+    return true;
+  }
+
+  private void clearCaches() {
+    for (Formula formula : this.posLiterals.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.negLiterals.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.generatedVariables) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.nots.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.implications.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.equivalences.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.ands2.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.ands3.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.ands4.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.andsN.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.ors2.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.ors3.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.ors4.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.orsN.values()) {
+      formula.clearCaches();
+    }
+    for (Formula formula : this.pbConstraints.values()) {
+      formula.clearCaches();
+    }
   }
 
   static <T, U> void shrinkMap(final Map<T, U> map, int newSize) {

@@ -159,7 +159,7 @@ public class FormulaFactory {
   public boolean shouldCache() {
     return true;
   }
-  
+
   /**
    * Returns {@code true} if a given list of formulas contains the negation of a  given formula,
    * {@code false} otherwise.
@@ -1071,6 +1071,133 @@ public class FormulaFactory {
                 && Arrays.equals(this.literals, o.literals);
       }
       return false;
+    }
+  }
+
+  public FormulaFactory copy() {
+    return copy(name() + "_copy");
+  }
+
+  public FormulaFactory copy(String name) {
+    FormulaFactory r = new FormulaFactory(name, this.stringRepresentation);
+
+    for (Configuration config : configurations.values()) {
+      r.putConfiguration(config);
+    }
+
+    for (Formula formula : getAllFormulas()) {
+      getFormulaInFormulaFactory(formula, r);
+    }
+    //TODO copy caches, too?
+    //    for (String varName : this.posLiterals.keySet()) {
+    //      r.variable(varName);
+    //    }
+    //    for (String litName : this.negLiterals.keySet()) {
+    //      r.literal(litName, false);
+    //    }
+    //    for (Variable variable : this.generatedVariables) { //TODO rename to new FormulaFactory?
+    //      r.variable(variable.name());
+    //    }
+    //    for (Formula formula : this.nots.keySet()) {
+    //      r.not(formula);
+    //    }
+    //    for (Pair<Formula, Formula> impl : this.implications.keySet()) {
+    //      r.implication(impl.first(), impl.second());
+    //    }
+    //    for (LinkedHashSet<? extends Formula> equi : this.equivalences.keySet()) {
+    //      Object[] equiArr = equi.toArray();
+    //      r.equivalence((Formula) equiArr[0], (Formula) equiArr[1]);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.ands2.keySet()) {
+    //      r.and(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.ands3.keySet()) {
+    //      r.and(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.ands4.keySet()) {
+    //      r.and(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.andsN.keySet()) {
+    //      r.and(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.ors2.keySet()) {
+    //      r.or(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.ors3.keySet()) {
+    //      r.or(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.ors4.keySet()) {
+    //      r.or(ands);
+    //    }
+    //    for (LinkedHashSet<? extends Formula> ands : this.orsN.keySet()) {
+    //      r.or(ands);
+    //    }
+    //    for (PBOperands operands : this.pbConstraints.keySet()) {
+    //      r.pbc(operands.comparator, operands.rhs, operands.literals, operands.coefficients);
+    //    }
+    return r;
+  }
+
+  protected Set<Formula> getAllFormulas() {
+    Set<Formula> result = new LinkedHashSet<>();
+    result.addAll(posLiterals.values());
+    result.addAll(negLiterals.values());
+    result.addAll(generatedVariables);
+    result.addAll(nots.values());
+    result.addAll(implications.values());
+    result.addAll(equivalences.values());
+    result.addAll(ands2.values());
+    result.addAll(ands3.values());
+    result.addAll(ands4.values());
+    result.addAll(andsN.values());
+    result.addAll(ors2.values());
+    result.addAll(ors3.values());
+    result.addAll(ors4.values());
+    result.addAll(orsN.values());
+    result.addAll(pbConstraints.values());
+
+    return result;
+  }
+
+  private Formula getFormulaInFormulaFactory(Formula formula, FormulaFactory r) {
+    switch (formula.type()) {
+      case TRUE:
+        return r.verum();
+      case FALSE:
+        return r.falsum();
+      case LITERAL:
+        Literal lit = (Literal) formula;
+        return r.literal(lit.name(), lit.phase());
+      case NOT:
+        return r.not(getFormulaInFormulaFactory(((Not) formula).operand(), r));
+      case IMPL:
+        Implication impl = (Implication) formula;
+        return r.implication(getFormulaInFormulaFactory(impl.left(), r), getFormulaInFormulaFactory(impl.right(), r));
+      case EQUIV:
+        Equivalence equi = (Equivalence) formula;
+        return r.equivalence(getFormulaInFormulaFactory(equi.left(), r), getFormulaInFormulaFactory(equi.right(), r));
+      case AND:
+        Set<Formula> andParts = new LinkedHashSet<>();
+        for (Formula operand : formula) {
+          andParts.add(getFormulaInFormulaFactory(operand, r));
+        }
+        return r.and(andParts);
+      case OR:
+        Set<Formula> orParts = new LinkedHashSet<>();
+        for (Formula operand : formula) {
+          orParts.add(getFormulaInFormulaFactory(operand, r));
+        }
+        return r.or(orParts);
+      case PBC:
+        PBConstraint pbc = (PBConstraint) formula;
+        Literal[] lits = new Literal[pbc.operands().length];
+        for (int i = 0; i < pbc.operands().length; i++) {
+          Literal litF = pbc.operands()[i];
+          lits[i] = r.literal(litF.name(), litF.phase());
+        }
+        return r.pbc(pbc.comparator(), pbc.rhs(), lits, pbc.coefficients());
+      default:
+        return r.verum(); //TODO proper default case. Own case for NONE?
     }
   }
 }

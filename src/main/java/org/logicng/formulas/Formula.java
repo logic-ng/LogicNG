@@ -344,4 +344,10 @@ public abstract class Formula implements Iterable<Formula> {
   public String toString() {
     return f.string(this);
   }
+
+  public void clearCaches() {
+    transformationCache.clear();
+    predicateCache.clear(); //TODO rather not necessary CNF stays CNF and so on
+    functionCache.clear(); //TODO necessary?
+  }
 }
