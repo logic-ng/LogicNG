@@ -39,7 +39,7 @@ import java.util.TreeMap;
 
 /**
  * Super class for formulas.
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public abstract class Formula implements Iterable<Formula> {
@@ -337,6 +337,14 @@ public abstract class Formula implements Iterable<Formula> {
    */
   public void setFunctionCacheEntry(final CacheEntry key, final Object value) {
     this.functionCache.put(key, value);
+  }
+
+  /**
+   * Clears all caches of the formula.
+   */
+  public void clearCaches() {
+    transformationCache.clear();
+    functionCache.clear();
   }
 
   @Override
