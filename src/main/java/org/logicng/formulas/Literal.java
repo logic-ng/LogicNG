@@ -112,12 +112,12 @@ public class Literal extends Formula implements Comparable<Literal> {
 
   @Override
   public SortedSet<Variable> variables() {
-    return this.variables;
+    return Collections.unmodifiableSortedSet(this.variables);
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    return this.literals;
+    return Collections.unmodifiableSortedSet(this.literals);
   }
 
   @Override

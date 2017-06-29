@@ -31,10 +31,7 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.NoSuchElementException;
-import java.util.SortedSet;
+import java.util.*;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
@@ -97,7 +94,7 @@ public final class Not extends Formula {
   public SortedSet<Variable> variables() {
     if (this.variables == null)
       this.variables = this.operand.variables();
-    return this.variables;
+    return Collections.unmodifiableSortedSet(this.variables);
   }
 
   @Override
@@ -187,7 +184,6 @@ public final class Not extends Formula {
 
   @Override
   public Iterator<Formula> iterator() {
-    final Formula instance = this.operand;
     return new Iterator<Formula>() {
       private boolean iterated;
 
@@ -200,7 +196,7 @@ public final class Not extends Formula {
       public Formula next() {
         if (!iterated) {
           iterated = true;
-          return instance;
+          return Not.this.operand;
         }
         throw new NoSuchElementException();
       }
