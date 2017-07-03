@@ -80,20 +80,20 @@
         </configuration>
         <executions>
           <execution>
-            <content>default-prepare-agent</content>
+            <id>default-prepare-agent</id>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
           </execution>
           <execution>
-            <content>default-report</content>
+            <id>default-report</id>
             <phase>prepare-package</phase>
             <goals>
               <goal>report</goal>
             </goals>
           </execution>
           <execution>
-            <content>default-check</content>
+            <id>default-check</id>
             <goals>
               <goal>check</goal>
             </goals>
@@ -122,7 +122,7 @@
         <version>3.0.1</version>
         <executions>
           <execution>
-            <content>attach-sources</content>
+            <id>attach-sources</id>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -137,7 +137,7 @@
         <version>2.10.4</version>
         <executions>
           <execution>
-            <content>attach-javadocs</content>
+            <id>attach-javadocs</id>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -184,7 +184,7 @@
 
   <repositories>
     <repository>
-      <content>sonatype-nexus-snapshots</content>
+      <id>sonatype-nexus-snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
@@ -196,7 +196,7 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <content>sonatype-nexus-snapshot</content>
+      <id>sonatype-nexus-snapshot</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
