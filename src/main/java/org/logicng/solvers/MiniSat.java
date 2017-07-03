@@ -65,7 +65,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -382,6 +382,14 @@ public final class MiniSat extends SATSolver {
    */
   public boolean initialPhase() {
     return this.initialPhase;
+  }
+
+  @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    for (final String name : solver.names())
+      result.add(this.f.variable(name));
+    return result;
   }
 
   @Override

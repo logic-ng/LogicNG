@@ -61,10 +61,10 @@ import org.logicng.solvers.datastructures.MSWatcher;
  * Therefore clause deletion and simplifications are deactivated in this mode.  This mode is most efficient on small
  * to mid-size industrial formulas (up to 50,000 variables, 100,000 clauses).  Whenever you have lots of small formulas
  * to solve or need the ability to add and delete formulas from the solver, we recommend to consider this mode.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
-public final class MiniSat2Solver extends MiniSatStyleSolver {
+public class MiniSat2Solver extends MiniSatStyleSolver {
 
   private LNGIntVector unitClauses;
   private double learntsizeAdjustConfl;
@@ -200,12 +200,13 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
     if (!incremental)
       throw new IllegalStateException("Cannot save a state when the incremental mode is deactivated");
     int[] state;
-    state = new int[5];
+    state = new int[6];
     state[0] = ok ? 1 : 0;
     state[1] = vars.size();
     state[2] = clauses.size();
     state[3] = learnts.size();
     state[4] = unitClauses.size();
+    state[5] = names.size();
     return state;
   }
 
@@ -234,6 +235,7 @@ public final class MiniSat2Solver extends MiniSatStyleSolver {
       uncheckedEnqueue(this.unitClauses.get(i), null);
       this.ok = propagate() == null;
     }
+    this.names().shrinkTo(state[5]);
   }
 
   @Override

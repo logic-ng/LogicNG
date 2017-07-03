@@ -30,7 +30,7 @@ package org.logicng.formulas.cache;
 
 /**
  * The pre-defined transformation cache entries.
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public enum TransformationCacheEntry implements CacheEntry {
@@ -42,7 +42,8 @@ public enum TransformationCacheEntry implements CacheEntry {
   TSEITIN_VARIABLE("Tseitin variable"),
   FACTORIZED_CNF("factorized conjunctive normal form"),
   FACTORIZED_DNF("factorized disjunctive normal form"),
-  AIG("and-inverter graph");
+  AIG("and-inverter graph"),
+  UNIT_PROPAGATION("unit propagation");
 
   private String description;
 

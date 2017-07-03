@@ -59,7 +59,7 @@ import java.util.TreeMap;
 
 /**
  * The super class for all MiniSAT-style solvers.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public abstract class MiniSatStyleSolver {
@@ -110,6 +110,7 @@ public abstract class MiniSatStyleSolver {
   // mapping of variable names to variable indices
   protected Map<String, Integer> name2idx;
   protected Map<Integer, String> idx2name;
+  protected LNGVector<String> names;
 
   // SAT handler
   protected SATHandler handler;
@@ -211,6 +212,7 @@ public abstract class MiniSatStyleSolver {
     this.learntsLiterals = 0;
     this.name2idx = new TreeMap<>();
     this.idx2name = new TreeMap<>();
+    this.names = new LNGVector<>();
     this.canceledByHandler = false;
   }
 
@@ -278,6 +280,14 @@ public abstract class MiniSatStyleSolver {
   }
 
   /**
+   * Returns the currently known variable names on the solver.
+   * @return the currently known variable names on the solver
+   */
+  public LNGVector<String> names() {
+    return this.names;
+  }
+
+  /**
    * Adds a new variable name with a given variable index to this solver.
    * @param name the variable name
    * @param id   the variable index
@@ -285,6 +295,7 @@ public abstract class MiniSatStyleSolver {
   public void addName(final String name, int id) {
     this.name2idx.put(name, id);
     this.idx2name.put(id, name);
+    this.names.push(name);
   }
 
   /**

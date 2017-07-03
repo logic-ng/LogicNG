@@ -66,7 +66,7 @@ import static org.logicng.formulas.FType.TRUE;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public final class FormulaFactory {
@@ -997,7 +997,17 @@ public final class FormulaFactory {
    */
   public String string(final Formula formula, final FormulaStringRepresentation stringRepresentation) {
     return stringRepresentation.toString(formula);
-  }  @Override
+  }
+
+  /**
+   * Returns the formula formatter of this factory.
+   * @return the formula formatter of this factory
+   */
+  public FormulaStringRepresentation stringRepresentation() {
+    return this.stringRepresentation;
+  }
+
+  @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
     sb.append("Name:              ").append(this.name).append("\n");
@@ -1058,8 +1068,4 @@ public final class FormulaFactory {
       return false;
     }
   }
-
-
-
-
 }

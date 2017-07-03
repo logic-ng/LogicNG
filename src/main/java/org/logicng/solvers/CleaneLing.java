@@ -60,7 +60,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the CleaneLing-style SAT solvers.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public final class CleaneLing extends SATSolver {
@@ -324,6 +324,14 @@ public final class CleaneLing extends SATSolver {
     this.name2idx.put(varName, index);
     this.idx2name.put(index, varName);
     return varName;
+  }
+
+  @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    for (final String name : this.name2idx.keySet())
+      result.add(this.f.variable(name));
+    return result;
   }
 
   @Override

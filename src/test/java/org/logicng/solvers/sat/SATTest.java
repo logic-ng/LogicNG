@@ -58,9 +58,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
@@ -70,7 +73,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class SATTest {
@@ -625,6 +628,48 @@ public class SATTest {
             "trail=[]%n" +
             "frames=[]%n");
     Assert.assertEquals(expected, baos.toString());
+  }
 
+  @Test
+  public void testKnownVariables() throws ParserException {
+    final PropositionalParser parser = new PropositionalParser(f);
+    final Formula phi = parser.parse("x1 & x2 & x3 & (x4 | ~x5)");
+    final SATSolver minisat = MiniSat.miniSat(f);
+    final SATSolver minicard = MiniSat.miniCard(f);
+    final SATSolver cleaneling = CleaneLing.minimalistic(f);
+    minisat.add(phi);
+    minicard.add(phi);
+    cleaneling.add(phi);
+    final SortedSet<Variable> expected = new TreeSet<>(Arrays.asList(
+            f.variable("x1"),
+            f.variable("x2"),
+            f.variable("x3"),
+            f.variable("x4"),
+            f.variable("x5")));
+    Assert.assertEquals(expected, minisat.knownVariables());
+    Assert.assertEquals(expected, minicard.knownVariables());
+    Assert.assertEquals(expected, cleaneling.knownVariables());
+
+    final SolverState state = minisat.saveState();
+    final SolverState stateCard = minicard.saveState();
+    minisat.add(f.variable("x6"));
+    minicard.add(f.variable("x6"));
+    cleaneling.add(f.variable("x6"));
+    final SortedSet<Variable> expected2 = new TreeSet<>(Arrays.asList(
+            f.variable("x1"),
+            f.variable("x2"),
+            f.variable("x3"),
+            f.variable("x4"),
+            f.variable("x5"),
+            f.variable("x6")));
+    Assert.assertEquals(expected2, minisat.knownVariables());
+    Assert.assertEquals(expected2, minicard.knownVariables());
+    Assert.assertEquals(expected2, cleaneling.knownVariables());
+
+    // load state for minisat
+    minisat.loadState(state);
+    minicard.loadState(stateCard);
+    Assert.assertEquals(expected, minisat.knownVariables());
+    Assert.assertEquals(expected, minicard.knownVariables());
   }
 }

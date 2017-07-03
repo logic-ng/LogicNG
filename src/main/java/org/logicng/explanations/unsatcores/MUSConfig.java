@@ -33,7 +33,7 @@ import org.logicng.configurations.ConfigurationType;
 
 /**
  * The configuration object for the MUS generation.
- * @version 1.1
+ * @version 1.2
  * @since 1.1
  */
 public final class MUSConfig extends Configuration {
@@ -49,6 +49,7 @@ public final class MUSConfig extends Configuration {
 
   /**
    * Constructs a new configuration with a given type.
+   * @param builder the builder
    */
   public MUSConfig(final Builder builder) {
     super(ConfigurationType.MUS);

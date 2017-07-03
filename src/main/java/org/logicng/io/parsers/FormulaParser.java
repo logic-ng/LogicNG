@@ -26,66 +26,61 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.util;
+package org.logicng.io.parsers;
 
-import java.util.Objects;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
- * Data structure for a pair.
- * @param <A> the type parameter of the first entry
- * @param <B> the type parameter of the second entry
+ * Super class for a formula parser.
  * @version 1.2
- * @since 1.0
+ * @since 1.2
  */
-public class Pair<A, B> {
+public abstract class FormulaParser {
 
-  protected final A a;
-  protected final B b;
+  private final FormulaFactory f;
 
   /**
-   * Constructs a new pair.
-   * @param a the first entry
-   * @param b the second entry
+   * Constructor.
+   * @param f the formula factory
    */
-  public Pair(final A a, final B b) {
-    this.a = a;
-    this.b = b;
+  public FormulaParser(FormulaFactory f) {
+    this.f = f;
   }
 
   /**
-   * Returns the first entry of this pair.
-   * @return the first entry
+   * Parses and returns a given input stream.
+   * @param inputStream an input stream
+   * @return the {@link Formula} representation of this stream
+   * @throws ParserException if there was a problem with the input stream
    */
-  public A first() {
-    return a;
+  public abstract Formula parse(final InputStream inputStream) throws ParserException;
+
+  /**
+   * Parses and returns a given string.
+   * @param in a string
+   * @return the {@link Formula} representation of this string
+   * @throws ParserException if the string was not a valid formula
+   */
+  public Formula parse(final String in) throws ParserException {
+    if (in == null)
+      return f.verum();
+    return this.parse(new ByteArrayInputStream(in.getBytes()));
   }
 
   /**
-   * Returns the second entry of this pair.
-   * @return the second entry
+   * Returns the factory of this parser.
+   * @return the factory of this parser
    */
-  public B second() {
-    return b;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(a, b);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof Pair) {
-      Pair o = (Pair) other;
-      return Objects.equals(b, o.b) && Objects.equals(a, o.a);
-    }
-    return false;
+  public FormulaFactory factory() {
+    return this.f;
   }
 
   @Override
   public String toString() {
-    return String.format("<%s, %s>", a, b);
+    return this.getClass().getSimpleName();
   }
 }

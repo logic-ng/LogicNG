@@ -26,66 +26,54 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.util;
+package org.logicng.transformations;
 
-import java.util.Objects;
+import org.junit.Assert;
+import org.junit.Test;
+import org.logicng.formulas.F;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 
 /**
- * Data structure for a pair.
- * @param <A> the type parameter of the first entry
- * @param <B> the type parameter of the second entry
+ * Unit tests for {@link UnitPropagation}.
  * @version 1.2
- * @since 1.0
+ * @since 1.2
  */
-public class Pair<A, B> {
+public class UnitPropagationTest {
 
-  protected final A a;
-  protected final B b;
+  private UnitPropagation unitPropagation = new UnitPropagation();
 
-  /**
-   * Constructs a new pair.
-   * @param a the first entry
-   * @param b the second entry
-   */
-  public Pair(final A a, final B b) {
-    this.a = a;
-    this.b = b;
+  @Test
+  public void testConstants() {
+    Assert.assertEquals(F.TRUE, F.TRUE.transform(unitPropagation));
+    Assert.assertEquals(F.FALSE, F.FALSE.transform(unitPropagation));
   }
 
-  /**
-   * Returns the first entry of this pair.
-   * @return the first entry
-   */
-  public A first() {
-    return a;
+  @Test
+  public void testLiterals() {
+    Assert.assertEquals(F.A, F.A.transform(unitPropagation));
+    Assert.assertEquals(F.NA, F.NA.transform(unitPropagation));
   }
 
-  /**
-   * Returns the second entry of this pair.
-   * @return the second entry
-   */
-  public B second() {
-    return b;
+  @Test
+  public void testNoPropagation() {
+    Assert.assertEquals(F.AND1, F.AND1.transform(unitPropagation));
+    Assert.assertEquals(F.AND2, F.AND2.transform(unitPropagation));
+    Assert.assertEquals(F.OR1, F.OR1.transform(unitPropagation));
+    Assert.assertEquals(F.OR2, F.OR2.transform(unitPropagation));
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(a, b);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof Pair) {
-      Pair o = (Pair) other;
-      return Objects.equals(b, o.b) && Objects.equals(a, o.a);
-    }
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("<%s, %s>", a, b);
+  @Test
+  public void testPropagations() throws ParserException {
+    final PropositionalParser p = new PropositionalParser(F.f);
+    Assert.assertEquals(F.AND1, F.f.and(F.AND1, F.A).transform(unitPropagation));
+    Assert.assertEquals(F.FALSE, F.f.and(F.AND2, F.A).transform(unitPropagation));
+    Assert.assertEquals(F.X, F.f.and(F.OR1, F.X).transform(unitPropagation));
+    Assert.assertEquals(F.f.and(F.X, F.NY), F.f.and(F.OR2, F.X).transform(unitPropagation));
+    Assert.assertEquals(F.A, F.f.or(F.AND1, F.A).transform(unitPropagation));
+    Assert.assertEquals(F.f.or(F.A, F.NB), F.f.or(F.AND2, F.A).transform(unitPropagation));
+    Assert.assertEquals(F.OR1, F.f.or(F.OR1, F.X).transform(unitPropagation));
+    Assert.assertEquals(p.parse("(e | g) & (e | ~g | h) & f & c & d & ~a & b"),
+            p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c").transform(unitPropagation));
   }
 }

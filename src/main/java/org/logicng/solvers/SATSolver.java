@@ -44,10 +44,11 @@ import org.logicng.propositions.Proposition;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public abstract class SATSolver {
@@ -139,10 +140,10 @@ public abstract class SATSolver {
    * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
    *
    * Usage constraints:
-   * - "<": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
-   * - "<=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
-   * - ">": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side >= number of variables.
-   * - ">=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side > number of variables.
+   * - "&lt;": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
+   * - "&lt;=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
+   * - "&gt;": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side &gt;= number of variables.
+   * - "&gt;=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side &gt; number of variables.
    * @param cc the cardinality constraint
    * @return the incremental data of this constraint, or null if the right hand side of cc is 1
    */
@@ -153,7 +154,7 @@ public abstract class SATSolver {
    * Adds a formula which is already in CNF to the solver.
    * @param formula the formula in CNF
    */
-  protected void addClauseSet(final Formula formula) {
+  void addClauseSet(final Formula formula) {
     switch (formula.type()) {
       case TRUE:
         break;
@@ -176,7 +177,7 @@ public abstract class SATSolver {
    * @param relaxationVar the relaxation variable
    * @param formula       the formula in CNF
    */
-  protected void addClauseSetWithRelaxation(final Variable relaxationVar, final Formula formula) {
+  private void addClauseSetWithRelaxation(final Variable relaxationVar, final Formula formula) {
     switch (formula.type()) {
       case TRUE:
         break;
@@ -202,7 +203,8 @@ public abstract class SATSolver {
 
   /**
    * Adds a formula which must be a clause to the solver.
-   * @param formula the clause
+   * @param relaxationVar the relaxation variable
+   * @param formula       the clause
    */
   protected abstract void addClauseWithRelaxation(final Variable relaxationVar, final Formula formula);
 
@@ -377,4 +379,13 @@ public abstract class SATSolver {
   public void setSolverToUndef() {
     this.result = Tristate.UNDEF;
   }
+
+  /**
+   * Returns the set of variables currently known by the solver.
+   * NOTE: Due to the incremental/decremental interface of some of the solvers, this set is generated each time,
+   * the method is called.  So if you can maintain a list of relevant/known variables in your own application,
+   * this is recommended.
+   * @return the set of variables currently known by the solver
+   */
+  public abstract SortedSet<Variable> knownVariables();
 }
