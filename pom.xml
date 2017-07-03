@@ -80,20 +80,20 @@
         </configuration>
         <executions>
           <execution>
-            <id>default-prepare-agent</id>
+            <content>default-prepare-agent</content>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
           </execution>
           <execution>
-            <id>default-report</id>
+            <content>default-report</content>
             <phase>prepare-package</phase>
             <goals>
               <goal>report</goal>
             </goals>
           </execution>
           <execution>
-            <id>default-check</id>
+            <content>default-check</content>
             <goals>
               <goal>check</goal>
             </goals>
@@ -122,7 +122,7 @@
         <version>3.0.1</version>
         <executions>
           <execution>
-            <id>attach-sources</id>
+            <content>attach-sources</content>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -137,7 +137,7 @@
         <version>2.10.4</version>
         <executions>
           <execution>
-            <id>attach-javadocs</id>
+            <content>attach-javadocs</content>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -174,11 +174,17 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>2.6.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <repositories>
     <repository>
-      <id>sonatype-nexus-snapshots</id>
+      <content>sonatype-nexus-snapshots</content>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
@@ -190,7 +196,7 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>sonatype-nexus-snapshot</id>
+      <content>sonatype-nexus-snapshot</content>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
