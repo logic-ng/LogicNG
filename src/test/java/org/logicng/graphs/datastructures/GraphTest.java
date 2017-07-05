@@ -47,7 +47,7 @@ public class GraphTest {
 
   @Test
   public void testLongGraph() {
-    Graph<Long> g = new Graph<Long>();
+    Graph<Long> g = new Graph<Long>("Graph with Long nodes.");
 
     Node<Long> a = g.node(1L);
     Node<Long> b = g.node(2L);
@@ -76,7 +76,7 @@ public class GraphTest {
   @Test
   public void testFormulaGraph() {
     FormulaFactory f = new FormulaFactory();
-    Graph<Formula> g = new Graph<>();
+    Graph<Formula> g = new Graph<>("Graph with Formula nodes.");
 
     Variable a = f.variable("A");
     Node<Formula> an = g.node(a);
@@ -92,6 +92,8 @@ public class GraphTest {
     Assert.assertTrue(an.neighbours().contains(aNbn));
     Assert.assertTrue(bn.neighbours().contains(aNbn));
 
+    Assert.assertEquals(g.name(), an.graph().name());
+
     g.disconnect(aNbn, an);
 
     Assert.assertTrue(an.neighbours().isEmpty());
@@ -100,7 +102,7 @@ public class GraphTest {
   }
 
   public static Graph<Long> getLongGraph(String id) throws IOException {
-    Graph<Long> g = new Graph<>();
+    Graph<Long> g = new Graph<>(id + "-Long");
 
     final BufferedReader reader = new BufferedReader(new FileReader("tests/graphs/graph" + id + ".txt"));
 

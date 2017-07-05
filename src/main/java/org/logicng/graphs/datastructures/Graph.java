@@ -34,19 +34,29 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A generic graph.
+ * A generic graph.  Two graphs are only equal if they really are the same object.
  * @version 1.2
  * @since 1.2
  */
 public class Graph<T> {
 
-  private Map<T, Node<T>> nodes;
+  private final String name;
+  private final Map<T, Node<T>> nodes;
 
   /**
    * Constructor for a new graph.
    */
   public Graph() {
+    this("");
+  }
+
+  /**
+   * Constructor for a new graph.
+   * @param name the name of the graph
+   */
+  public Graph(final String name) {
     this.nodes = new LinkedHashMap<>();
+    this.name = name;
   }
 
   /**
@@ -93,5 +103,13 @@ public class Graph<T> {
       o.disconnectFrom(t);
       t.disconnectFrom(o);
     }
+  }
+
+  /**
+   * Returns the name of the graph.
+   * @return the name of the graph
+   */
+  public String name() {
+    return name;
   }
 }
