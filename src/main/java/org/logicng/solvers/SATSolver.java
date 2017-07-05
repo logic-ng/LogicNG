@@ -71,6 +71,12 @@ public abstract class SATSolver {
   public abstract void add(final Formula formula);
 
   /**
+   * Adds a formula to the solver, but sets all variables to false which are not known to the solver.
+   * @param formula the formula
+   */
+  public abstract void addWithoutUnknown(final Formula formula);
+
+  /**
    * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.
    * @param proposition the proposition
    */

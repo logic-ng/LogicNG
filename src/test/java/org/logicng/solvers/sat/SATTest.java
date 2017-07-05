@@ -672,4 +672,54 @@ public class SATTest {
     Assert.assertEquals(expected, minisat.knownVariables());
     Assert.assertEquals(expected, minicard.knownVariables());
   }
+
+  @Test
+  public void testAddWithoutUnknown() throws ParserException {
+    final PropositionalParser parser = new PropositionalParser(f);
+    final Formula phi = parser.parse("x1 & (~x2 | x3) & (x4 | ~x5)");
+    final SortedSet<Variable> phiVars = new TreeSet<>(Arrays.asList(
+            f.variable("x1"),
+            f.variable("x2"),
+            f.variable("x3"),
+            f.variable("x4"),
+            f.variable("x5")));
+    final Formula add1 = parser.parse("x1 | x6 | x7");
+    final Formula add2 = parser.parse("~x1 | ~x6 | x8");
+    final Formula add3 = parser.parse("x2 & ~x3 | x7");
+    final Formula add4 = parser.parse("x8 | x9");
+    final SATSolver minisat = MiniSat.miniSat(f);
+    final SATSolver minicard = MiniSat.miniCard(f);
+    final SATSolver cleaneling = CleaneLing.minimalistic(f);
+    final SATSolver[] solvers = new SATSolver[]{minisat, minicard, cleaneling};
+    for (final SATSolver solver : solvers) {
+      solver.add(phi);
+      solver.addWithoutUnknown(add1);
+      Assert.assertEquals(TRUE, solver.sat());
+      Assert.assertEquals(phiVars, solver.model().formula(f).variables());
+      solver.addWithoutUnknown(add2);
+      Assert.assertEquals(TRUE, solver.sat());
+      Assert.assertEquals(phiVars, solver.model().formula(f).variables());
+      if (solver instanceof MiniSat) {
+        final SolverState state = solver.saveState();
+        solver.addWithoutUnknown(add3);
+        Assert.assertEquals(FALSE, solver.sat());
+        solver.loadState(state);
+        solver.add(add1);
+        Assert.assertEquals(TRUE, solver.sat());
+        Assert.assertTrue(solver.model().formula(f).variables().containsAll(Arrays.asList(f.variable("x6"), f.variable("x7"))));
+        solver.loadState(state);
+        solver.sat();
+        Assert.assertEquals(phiVars, solver.model().formula(f).variables());
+      } else {
+        solver.add(add1);
+        Assert.assertEquals(TRUE, solver.sat());
+        Assert.assertTrue(solver.model().formula(f).variables().containsAll(Arrays.asList(f.variable("x6"), f.variable("x7"))));
+        solver.add(f.variable("x7"));
+        Assert.assertEquals(TRUE, solver.sat());
+        Assert.assertTrue(solver.model().formula(f).variables().containsAll(Arrays.asList(f.variable("x6"), f.variable("x7"))));
+        solver.addWithoutUnknown(add4);
+        Assert.assertEquals(FALSE, solver.sat());
+      }
+    }
+  }
 }

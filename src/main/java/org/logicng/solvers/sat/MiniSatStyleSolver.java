@@ -110,7 +110,6 @@ public abstract class MiniSatStyleSolver {
   // mapping of variable names to variable indices
   protected Map<String, Integer> name2idx;
   protected Map<Integer, String> idx2name;
-  protected LNGVector<String> names;
 
   // SAT handler
   protected SATHandler handler;
@@ -212,7 +211,6 @@ public abstract class MiniSatStyleSolver {
     this.learntsLiterals = 0;
     this.name2idx = new TreeMap<>();
     this.idx2name = new TreeMap<>();
-    this.names = new LNGVector<>();
     this.canceledByHandler = false;
   }
 
@@ -280,14 +278,6 @@ public abstract class MiniSatStyleSolver {
   }
 
   /**
-   * Returns the currently known variable names on the solver.
-   * @return the currently known variable names on the solver
-   */
-  public LNGVector<String> names() {
-    return this.names;
-  }
-
-  /**
    * Adds a new variable name with a given variable index to this solver.
    * @param name the variable name
    * @param id   the variable index
@@ -295,7 +285,6 @@ public abstract class MiniSatStyleSolver {
   public void addName(final String name, int id) {
     this.name2idx.put(name, id);
     this.idx2name.put(id, name);
-    this.names.push(name);
   }
 
   /**
@@ -401,6 +390,14 @@ public abstract class MiniSatStyleSolver {
    */
   public int nVars() {
     return this.vars.size();
+  }
+
+  /**
+   * Returns the mapping from variable names to internal solver indices.
+   * @return the mapping from variable names to internal solver indices
+   */
+  public Map<String, Integer> name2idx() {
+    return name2idx;
   }
 
   /**

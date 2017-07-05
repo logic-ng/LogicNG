@@ -156,6 +156,15 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
+  public void addWithoutUnknown(final Formula formula) {
+    final Assignment restriction = new Assignment(true);
+    for (final Variable var : formula.variables())
+      if (this.name2idx.get(var.name()) == null)
+        restriction.addLiteral(var.negate());
+    this.add(formula.restrict(restriction));
+  }
+
+  @Override
   public CCIncrementalData addIncrementalCC(PBConstraint cc) {
     if (!cc.isCC())
       throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");

@@ -56,6 +56,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -194,6 +195,19 @@ public final class MiniSat extends SATSolver {
         this.addClauseSet(constraint.cnf());
     } else
       this.addClauseSet(formula.cnf());
+  }
+
+  @Override
+  public void addWithoutUnknown(final Formula formula) {
+    final int nVars = this.solver.nVars();
+    final Assignment restriction = new Assignment(true);
+    final Map<String, Integer> map = this.solver.name2idx();
+    for (final Variable var : formula.variables()) {
+      final Integer index = map.get(var.name());
+      if (index == null || index >= nVars)
+        restriction.addLiteral(var.negate());
+    }
+    this.add(formula.restrict(restriction));
   }
 
   @Override
@@ -387,8 +401,10 @@ public final class MiniSat extends SATSolver {
   @Override
   public SortedSet<Variable> knownVariables() {
     final SortedSet<Variable> result = new TreeSet<>();
-    for (final String name : solver.names())
-      result.add(this.f.variable(name));
+    final int nVars = this.solver.nVars();
+    for (final Map.Entry<String, Integer> entry : this.solver.name2idx().entrySet())
+      if (entry.getValue() < nVars)
+        result.add(this.f.variable(entry.getKey()));
     return result;
   }
 
