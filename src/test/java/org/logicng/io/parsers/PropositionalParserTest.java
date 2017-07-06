@@ -32,10 +32,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * Unit Tests for the class {@link PropositionalParser}.
  * @version 1.1
@@ -214,13 +210,6 @@ public class PropositionalParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula7() throws ParserException {
     new PropositionalParser(F.f).parse("ab@cd)");
-  }
-
-  @Test(expected = ParserException.class)
-  public void testIOException() throws ParserException, IOException {
-    final InputStream invalidStream = new FileInputStream("README.md");
-    invalidStream.close();
-    new PropositionalParser(F.f).parse(invalidStream);
   }
 
   @Test

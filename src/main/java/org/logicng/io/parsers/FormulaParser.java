@@ -52,24 +52,12 @@ public abstract class FormulaParser {
   }
 
   /**
-   * Parses and returns a given input stream.
-   * @param inputStream an input stream
-   * @return the {@link Formula} representation of this stream
-   * @throws ParserException if there was a problem with the input stream
-   */
-  public abstract Formula parse(final InputStream inputStream) throws ParserException;
-
-  /**
    * Parses and returns a given string.
-   * @param in a string
-   * @return the {@link Formula} representation of this string
-   * @throws ParserException if the string was not a valid formula
+   * @param string the input string
+   * @return the {@link Formula} representation of the given string
+   * @throws ParserException if there was a problem parsing the string
    */
-  public Formula parse(final String in) throws ParserException {
-    if (in == null)
-      return f.verum();
-    return this.parse(new ByteArrayInputStream(in.getBytes()));
-  }
+  public abstract Formula parse(final String string) throws ParserException;
 
   /**
    * Returns the factory of this parser.
