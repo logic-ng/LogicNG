@@ -28,15 +28,13 @@
 
 package org.logicng.io.parsers;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * A parser for pseudo Boolean formulas.
@@ -81,8 +79,7 @@ public final class PseudoBooleanParser extends FormulaParser {
    */
   public PseudoBooleanParser(final FormulaFactory f) {
     super(f);
-    ANTLRInputStream input = new ANTLRInputStream();
-    this.lexer = new PseudoBooleanLexer(input);
+    this.lexer = new PseudoBooleanLexer(null);
     CommonTokenStream tokens = new CommonTokenStream(this.lexer);
     this.parser = new LogicNGPseudoBooleanParser(tokens);
     this.parser.setFormulaFactory(f);
@@ -92,15 +89,15 @@ public final class PseudoBooleanParser extends FormulaParser {
   }
 
   @Override
-  public Formula parse(final InputStream inputStream) throws ParserException {
+  public Formula parse(final String string) throws ParserException {
+    if (string == null || string.isEmpty())
+      return factory().verum();
     try {
-      ANTLRInputStream input = new ANTLRInputStream(inputStream);
+      CharStream input = CharStreams.fromString(string);
       this.lexer.setInputStream(input);
       CommonTokenStream tokens = new CommonTokenStream(this.lexer);
       this.parser.setInputStream(tokens);
       return this.parser.formula().f;
-    } catch (IOException e) {
-      throw new ParserException("IO exception when parsing the formula", e);
     } catch (ParseCancellationException e) {
       throw new ParserException("Parse cancellation exception when parsing the formula", e);
     } catch (LexerException e) {

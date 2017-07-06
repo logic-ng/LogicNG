@@ -35,10 +35,6 @@ import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
  * @version 1.1
@@ -267,13 +263,6 @@ public class PseudoBooleanParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalSkipPosition() throws ParserException {
     new PseudoBooleanParser(F.f).parse("- 1*x <= 3");
-  }
-
-  @Test(expected = ParserException.class)
-  public void testIOException() throws ParserException, IOException {
-    final InputStream invalidStream = new FileInputStream("README.md");
-    invalidStream.close();
-    new PseudoBooleanParser(F.f).parse(invalidStream);
   }
 
   @Test

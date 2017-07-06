@@ -60,7 +60,7 @@ public class GraphDotFileWriter {
    * @param graph    the graph
    * @throws IOException if there was a problem writing the file
    */
-  public static void write(final String fileName, final Graph graph) throws IOException {
+  public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
     write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
   }
 
