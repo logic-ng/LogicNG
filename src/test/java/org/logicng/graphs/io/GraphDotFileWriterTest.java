@@ -80,7 +80,7 @@ public class GraphDotFileWriterTest {
   }
 
 
-  private void testFiles(final String fileName, final Graph g) throws IOException {
+  private <T> void testFiles(final String fileName, final Graph<T> g) throws IOException {
     GraphDotFileWriter.write("tests/graphs/io/temp/" + fileName + ".dot", g);
     final File expected = new File("tests/graphs/io/graphs-dot/" + fileName + ".dot");
     final File temp = new File("tests/graphs/io/temp/" + fileName + ".dot");

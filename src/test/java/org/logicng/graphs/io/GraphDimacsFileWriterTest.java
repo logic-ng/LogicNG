@@ -79,7 +79,7 @@ public class GraphDimacsFileWriterTest {
     testFiles("50p1", g);
   }
 
-  private void testFiles(final String fileName, final Graph g) throws IOException {
+  private <T> void testFiles(final String fileName, final Graph<T> g) throws IOException {
     GraphDimacsFileWriter.write("tests/graphs/io/temp/" + fileName + "_t.col", g, true);
     GraphDimacsFileWriter.write("tests/graphs/io/temp/" + fileName + "_f", g, false);
     final File expectedT = new File("tests/graphs/io/graphs-dimacs/" + fileName + "_t.col");
