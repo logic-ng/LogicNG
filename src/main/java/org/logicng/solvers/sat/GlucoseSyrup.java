@@ -260,7 +260,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     if (!ok)
       return Tristate.FALSE;
     for (int i = 0; i < assumptions.size(); i++)
-      assump.set(var(assumptions.get(i)), true);
+      this.assump.set(var(this.assumptions.get(i)), !sign(this.assumptions.get(i)));
 
     Tristate status = Tristate.UNDEF;
     while (status == Tristate.UNDEF && !canceledByHandler)
