@@ -101,6 +101,20 @@ public class GraphTest {
     Assert.assertEquals(3, g.nodes().size());
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testTwoGraphs() {
+    Graph<String> g1 = new Graph<>("G1");
+    Graph<String> g2 = new Graph<>("G2");
+
+    Node<String> a = g1.node("A");
+    Node<String> b = g2.node("B");
+
+    g1.disconnect(a, b);
+    Assert.assertTrue(a.neighbours().isEmpty());
+
+    g1.connect(a, b);
+  }
+
   public static Graph<Long> getLongGraph(String id) throws IOException {
     Graph<Long> g = new Graph<>(id + "-Long");
 
@@ -114,4 +128,5 @@ public class GraphTest {
 
     return g;
   }
+
 }

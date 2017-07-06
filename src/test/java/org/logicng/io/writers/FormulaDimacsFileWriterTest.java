@@ -29,7 +29,6 @@
 package org.logicng.io.writers;
 
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.logicng.formulas.Formula;
@@ -37,6 +36,8 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
+import org.logicng.transformations.cnf.CNFConfig;
+import org.logicng.transformations.cnf.CNFEncoder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -50,11 +51,13 @@ import java.io.IOException;
  */
 public class FormulaDimacsFileWriterTest {
 
+
   @Rule
   public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
 
   private final FormulaFactory f = new FormulaFactory();
+  private final CNFEncoder encoder = new CNFEncoder(f, new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build());
   private final PropositionalParser p = new PropositionalParser(f);
   private final PseudoBooleanParser pp = new PseudoBooleanParser(f);
 
@@ -70,14 +73,13 @@ public class FormulaDimacsFileWriterTest {
     testFiles("not_x", f.literal("x", false));
   }
 
-  @Ignore
   @Test
   public void testFormulas() throws IOException, ParserException {
-    final Formula f1 = p.parse("(a & b) <=> (~c => (x | z))").cnf();
-    final Formula f2 = p.parse("a & b | b & ~c").cnf();
-    final Formula f3 = p.parse("(a & b) <=> (~c => (a | b))").cnf();
-    final Formula f4 = p.parse("~(a & b) | b & ~c").cnf();
-    final Formula f5 = pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 4)").cnf();
+    final Formula f1 = encoder.encode(p.parse("(a & b) <=> (~c => (x | z))"));
+    final Formula f2 = encoder.encode(p.parse("a & b | b & ~c"));
+    final Formula f3 = encoder.encode(p.parse("(a & b) <=> (~c => (a | b))"));
+    final Formula f4 = encoder.encode(p.parse("~(a & b) | b & ~c"));
+    final Formula f5 = encoder.encode(pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 4)"));
     testFiles("f1", f1);
     testFiles("f2", f2);
     testFiles("f3", f3);
@@ -85,12 +87,11 @@ public class FormulaDimacsFileWriterTest {
     testFiles("f5", f5);
   }
 
-  @Ignore
   @Test
   public void testDuplicateFormulaParts() throws ParserException, IOException {
-    final Formula f6 = p.parse("(a & b) | (c & ~(a & b))").cnf();
+    final Formula f6 = encoder.encode(p.parse("(a & b) | (c & ~(a & b))"));
     testFiles("f6", f6);
-    final Formula f7 = p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))").cnf();
+    final Formula f7 = encoder.encode(p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))"));
     testFiles("f7", f7);
   }
 

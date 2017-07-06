@@ -33,8 +33,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.predicates.CNFPredicate;
-import org.logicng.transformations.cnf.CNFConfig;
-import org.logicng.transformations.cnf.CNFEncoder;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -47,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * A dimacs file writer for a formula.  Writes the internal data structure of the formula to a dimacs file.
@@ -69,24 +68,18 @@ public final class FormulaDimacsFileWriter {
    * @param fileName     the file name of the dimacs file to write
    * @param formula      the formula
    * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
-   *
-   * @throws IOException if there was a problem writing the file
+   * @throws IOException              if there was a problem writing the file
    * @throws IllegalArgumentException if the formula was not in CNF
    */
   public static void write(final String fileName, Formula formula, boolean writeMapping) throws IOException {
     File file = new File(fileName.endsWith(".cnf") ? fileName : fileName + ".cnf");
     SortedMap<Variable, Long> var2id = new TreeMap<>();
     long i = 1;
-    for (Variable var : formula.variables()) {
+    for (Variable var : new TreeSet<>(formula.variables())) {
       var2id.put(var, i++);
     }
     if (!formula.holds(CNF_PREDICATE)) {
       throw new IllegalArgumentException("Cannot write a non-CNF formula to dimacs.  Convert to CNF first.");
-    }
-    for (Variable adVar : formula.variables()) {
-      if (!var2id.keySet().contains(adVar)) {
-        var2id.put(adVar, i++);
-      }
     }
     List<Formula> parts = new ArrayList<>();
     if (formula.type().equals(FType.LITERAL)) {
