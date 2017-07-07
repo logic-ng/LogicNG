@@ -44,6 +44,7 @@ public class ConnectedComponentsComputation {
   /**
    * Computes the set of connected components of a graph, where each component is represented by a set of nodes.
    * @param graph the graph
+   * @param <T> the type of the graph content
    * @return the set of sets of nodes representing the connected components
    */
   public static <T> Set<Set<Node<T>>> compute(final Graph<T> graph) {

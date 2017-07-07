@@ -1190,8 +1190,8 @@ public class FormulaFactory {
     }
 
     /**
-     * Returns the number of conjunctions of a size >4 in the factory.
-     * @return the number of conjunctions of a size >4 in the factory
+     * Returns the number of conjunctions of a size &gt;4 in the factory.
+     * @return the number of conjunctions of a size &gt;4 in the factory
      */
     public int conjunctionsN() {
       return conjunctionsN;
@@ -1222,8 +1222,8 @@ public class FormulaFactory {
     }
 
     /**
-     * Returns the number of disjunctions of a size >4 in the factory.
-     * @return the number of disjunctions of a size >4 in the factory
+     * Returns the number of disjunctions of a size &gt;4 in the factory.
+     * @return the number of disjunctions of a size &gt;4 in the factory
      */
     public int disjunctionsN() {
       return disjunctionsN;

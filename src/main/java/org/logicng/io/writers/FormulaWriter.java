@@ -71,6 +71,7 @@ public final class FormulaWriter {
    * @param formula           the formula to write
    * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
    *                          written to different lines without a conjoining operator
+   * @param formatter         the formatter for the formula
    * @throws IOException if there was a problem writing the file
    */
   public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline,

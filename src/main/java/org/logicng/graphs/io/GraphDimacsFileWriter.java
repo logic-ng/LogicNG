@@ -62,6 +62,7 @@ public final class GraphDimacsFileWriter {
    * @param fileName     the file name of the dimacs file to write
    * @param g            the graph
    * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
+   * @param <T>          the type of the graph content
    * @throws IOException if there was a problem writing the file
    */
   public static <T> void write(final String fileName, Graph<T> g, boolean writeMapping) throws IOException {

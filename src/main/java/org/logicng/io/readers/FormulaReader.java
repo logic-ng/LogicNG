@@ -43,7 +43,7 @@ import java.util.LinkedHashSet;
 
 /**
  * A reader for formulas.
- * <p></p>
+ * <p>
  * Reads a formula from an input file.  If the file has more than one line, the lines will be co-joined.
  * @version 1.2
  * @since 1.2

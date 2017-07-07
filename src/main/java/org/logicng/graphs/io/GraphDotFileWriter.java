@@ -58,6 +58,7 @@ public class GraphDotFileWriter {
    * Writes a given formula's internal data structure as a dimacs file.
    * @param fileName the file name of the dimacs file to write
    * @param graph    the graph
+   * @param <T>      the type of the graph content
    * @throws IOException if there was a problem writing the file
    */
   public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
@@ -68,6 +69,7 @@ public class GraphDotFileWriter {
    * Writes a given graph's internal data structure as a dot file.
    * @param file  the file of the dot file to write
    * @param graph the graph
+   * @param <T>   the type of the graph content
    * @throws IOException if there was a problem writing the file
    */
   public static <T> void write(final File file, final Graph<T> graph) throws IOException {
