@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.1-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.2-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -47,3 +47,16 @@ final Tristate result = miniSat.sat();
 ## License & Commercial Support
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
 
+## Changelog
+### Version 1.2 (Release July 2017)
+* Introduced an extended formula factory which is able to return to a previously saved state and delete old formulas (and get them garbage collected)
+* A simple data structure for generic graphs including algorithms for connected components and maximal cliques
+* Improved IO (Writers for formulas, Dimacs CNFs, and graphs)
+* SAT solvers can now track the currently known variables
+* Updated to ANTLR 4.7
+* Various smaller bugfixes
+
+### Version 1.1 (Release August 2016)
+* Implemented cardinality constraint encodings and pseudo-Boolean constraints encodings of PBLib
+* Incremental cardinality constraints, including the possibility to add cardinaliy constraints to the solver without introducing new formula factory variables 
+* Different MUS algorithms
