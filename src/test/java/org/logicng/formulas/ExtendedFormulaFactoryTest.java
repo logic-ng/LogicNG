@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.PredicateCacheEntry;
 import org.logicng.formulas.cache.TransformationCacheEntry;
+import org.logicng.solvers.sat.PigeonHoleGenerator;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.transformations.dnf.DNFFactorization;
 
@@ -55,6 +56,7 @@ public class ExtendedFormulaFactoryTest {
   public void testLoad() {
     ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
     Variable a = eff.variable("A");
+    int preSaveFormulaAmount = eff.statistics().formulas();
     FormulaFactoryState state = eff.save();
     Variable b = eff.variable("B");
     And and = (And) eff.and(a, b);
@@ -63,10 +65,47 @@ public class ExtendedFormulaFactoryTest {
 
     eff.load(state);
 
+    softly.assertThat(eff.statistics().formulas()).isEqualTo(preSaveFormulaAmount);
     softly.assertThat(eff.posLiterals).containsValue(a);
     softly.assertThat(eff.posLiterals).doesNotContainValue(b);
     softly.assertThat(eff.negLiterals).isEmpty();
     softly.assertThat(eff.ands2).isEmpty();
+  }
+
+  @Test
+  public void testPigenholeSize() {
+    ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
+    PigeonHoleGenerator phg = new PigeonHoleGenerator(eff);
+    phg.generate(50, "a");
+    int aFormulaAmount = eff.statistics().formulas();
+    FormulaFactoryState stateA = eff.save();
+
+    phg.generate(75, "b");
+    eff.load(stateA);
+    softly.assertThat(eff.statistics().formulas()).isEqualTo(aFormulaAmount);
+
+    phg.generate(60, "c");
+    int cFormulaAmount = eff.statistics().formulas();
+    FormulaFactoryState stateC = eff.save();
+
+    phg.generate(30, "d");
+    int dFormulaAmount = eff.statistics().formulas();
+    eff.load(stateC);
+    softly.assertThat(eff.statistics().formulas()).isEqualTo(cFormulaAmount);
+
+    eff.load(stateA);
+    softly.assertThat(eff.statistics().formulas()).isEqualTo(aFormulaAmount);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalLoad() {
+    ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
+    eff.variable("A");
+    FormulaFactoryState state0 = eff.save();
+    eff.variable("B");
+    FormulaFactoryState state1 = eff.save();
+    eff.load(state0);
+    eff.load(state1);
   }
 
   @Test
@@ -96,28 +135,16 @@ public class ExtendedFormulaFactoryTest {
 
   private List<Formula> initializeFormulaFactoryWithFormulas(FormulaFactory f) {
     List<Formula> result = new ArrayList<>();
-    // Constants
-    //    result.add(f.verum());
-    //    result.add(f.falsum());
 
     // Literals
     Variable A = f.variable("a");
-    //    result.add(A);
     Variable B = f.variable("b");
-    //    result.add(B);
-    //    result.add(f.variable("c"));
     Variable X = f.variable("x");
-    //    result.add(X);
     Variable Y = f.variable("y");
-    //    result.add(Y);
     Literal NA = f.literal("a", false);
-    //    result.add(NA);
     Literal NB = f.literal("b", false);
-    //    result.add(NB);
     Literal NX = f.literal("x", false);
-    //    result.add(NX);
     Literal NY = f.literal("y", false);
-    //    result.add(NY);
 
     // Disjunctions
     Formula OR1 = f.or(X, Y);

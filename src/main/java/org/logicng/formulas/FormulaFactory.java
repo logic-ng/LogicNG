@@ -1257,7 +1257,7 @@ public class FormulaFactory {
      * Returns the number of all formulas in the factory.
      * @return the number of all formulas in the factory
      */
-    public int formuas() {
+    public int formulas() {
       return this.positiveLiterals + this.negativeLiterals + this.negations + this.implications + this.equivalences
               + this.conjunctions2 + this.conjunctions3 + this.conjunctions4 + this.conjunctionsN + this.disjunctions2
               + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN;
