@@ -234,8 +234,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     if (!ok)
       return false;
     ps.sort();
-    boolean flag = false;
 
+    boolean flag = false;
     LNGIntVector oc = null;
     if (this.config.proofGeneration) {
       oc = new LNGIntVector();
