@@ -338,7 +338,7 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  public UNSATCore unsatCore() {
+  public UNSATCore unsatCore(final boolean trace) {
     throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
   }
 

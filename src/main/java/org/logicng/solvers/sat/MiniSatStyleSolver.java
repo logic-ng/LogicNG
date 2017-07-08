@@ -117,7 +117,7 @@ public abstract class MiniSatStyleSolver {
   protected boolean canceledByHandler;
 
   // Proof generating information
-  protected LNGVector<LNGIntVector> pgOriginalClauses;
+  protected LNGVector<ProofInformation> pgOriginalClauses;
   protected LNGVector<LNGIntVector> pgProof;
 
   /**
@@ -307,21 +307,23 @@ public abstract class MiniSatStyleSolver {
 
   /**
    * Adds a unit clause to the solver.
-   * @param lit the unit clause's literal
+   * @param lit         the unit clause's literal
+   * @param proposition a proposition (if required for proof tracing)
    * @return {@code true} if the clause was added successfully, {@code false} otherwise
    */
-  public boolean addClause(int lit) {
+  public boolean addClause(int lit, final Proposition proposition) {
     final LNGIntVector unit = new LNGIntVector(1);
     unit.push(lit);
-    return this.addClause(unit);
+    return this.addClause(unit, proposition);
   }
 
   /**
    * Adds a clause to the solver.
    * @param ps          the literals of the clause
+   * @param proposition a proposition (if required for proof tracing)
    * @return {@code true} if the clause was added successfully, {@code false} otherwise
    */
-  public abstract boolean addClause(final LNGIntVector ps);
+  public abstract boolean addClause(final LNGIntVector ps, final Proposition proposition);
 
   /**
    * Solves the formula currently stored in the solver.  Returns {@link Tristate#TRUE} if the formula is satisfiable (SAT),
@@ -614,7 +616,7 @@ public abstract class MiniSatStyleSolver {
    * Returns the original clauses for proof generation.
    * @return the original clauses for proof generation
    */
-  public LNGVector<LNGIntVector> pgOriginalClauses() {
+  public LNGVector<ProofInformation> pgOriginalClauses() {
     return this.pgOriginalClauses;
   }
 
@@ -652,5 +654,39 @@ public abstract class MiniSatStyleSolver {
     sb.append("#clause lits  ").append(clausesLiterals).append("\n");
     sb.append("#learnts lits ").append(learntsLiterals).append("\n");
     return sb.toString();
+  }
+
+  /**
+   * Class containing the information required for generating a proof.
+   */
+  public static class ProofInformation {
+    private final LNGIntVector clause;
+    private final Proposition proposition;
+
+    /**
+     * Constructor.
+     * @param clause      the clause
+     * @param proposition the proposition
+     */
+    public ProofInformation(LNGIntVector clause, Proposition proposition) {
+      this.clause = clause;
+      this.proposition = proposition;
+    }
+
+    /**
+     * Returns the clause.
+     * @return the clause
+     */
+    public LNGIntVector clause() {
+      return clause;
+    }
+
+    /**
+     * Returns the proposition.
+     * @return the proposition
+     */
+    public Proposition proposition() {
+      return proposition;
+    }
   }
 }

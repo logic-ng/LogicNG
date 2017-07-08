@@ -85,11 +85,11 @@ public final class UnitPropagation implements FormulaTransformation {
         case FALSE:
         case LITERAL:
         case OR:
-          this.addClause(generateClauseVector(cnf));
+          this.addClause(generateClauseVector(cnf), null);
           break;
         case AND:
           for (Formula op : cnf)
-            this.addClause(generateClauseVector(op));
+            this.addClause(generateClauseVector(op), null);
           break;
       }
     }

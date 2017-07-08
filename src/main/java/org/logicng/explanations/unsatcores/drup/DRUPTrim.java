@@ -68,20 +68,22 @@ public final class DRUPTrim {
   private static int SAT = 1;
   private static int EXTRA = 2;
   private static int MARK = 3;
-  private static int ERROR = -1;
 
-  public LNGVector<LNGIntVector> compute(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
-    Solver s = new Solver(originalProblem, proof);
-    //    s.setTraceFile(traceFile);
-    //    s.setLemmaFile(lemmaFile);
+  public DRUPResult compute(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof,
+                            final boolean trace) {
+    final DRUPResult result = new DRUPResult();
+    Solver s = new Solver(originalProblem, proof, trace);
     boolean parseReturnValue = s.parse();
     if (!parseReturnValue) {
-      System.out.print("c trivial UNSAT\ns VERIFIED\n");
-      return new LNGVector<>();
+      result.trivialUnsat = true;
+      result.unsatCore = new LNGVector<>();
     } else {
-      System.out.print("s VERIFIED\n");
-      return s.verify();
+      result.trivialUnsat = false;
+      result.unsatCore = s.verify();
     }
+    if (trace)
+      result.tracecheck = s.traceFile.toString();
+    return result;
   }
 
   private static int getHash(int[] _marks, int mark, final LNGIntVector input) {
@@ -106,76 +108,61 @@ public final class DRUPTrim {
     private LNGVector<LNGIntVector> originalProblem;
     private LNGVector<LNGIntVector> proof;
     private LNGVector<LNGIntVector> core;
-    //    private BufferedWriter lemmaFile;
-    //    private BufferedWriter traceFile;
+    private StringBuilder traceFile;
 
-    LNGIntVector DB; // Alle Klauseln und Lemma immer mit führender Klausel ID (gerade) und endender 0
-    int nVars; // Anzahl Variablen
-    int nClauses; // Anzahl Original Klauseln
+    LNGIntVector DB;
+    int nVars;
+    int nClauses;
 
-    int[] falseStack; // Belegungen mit false
-    int[] reason; // Reasons für die Belegungen
-    int[] _false; // falsifizierte Literale
-    int forcedPtr; // pointer in falseStack
-    int processedPtr; // pointer in falseStack
-    int assignedPtr; // pointer in falseStack
+    int[] falseStack;
+    int[] reason;
+    int[] _false;
+    int forcedPtr;
+    int processedPtr;
+    int assignedPtr;
 
     LNGIntVector adlist;
-    LNGIntVector[] _wlist; // Watchlists zu jedem Literal
+    LNGIntVector[] _wlist;
 
     int mask;
     boolean delete;
 
     int count;
     int basePtr;
-    int[] delStack;
-    int delinfoPtr;
     int adlemmas;
-    int lemmas; // wo beginnen die Lemmas ind er DB?
+    int lemmas;
     int arcs;
     int time;
 
-    private Solver(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
+    private Solver(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof, final boolean trace) {
       this.originalProblem = originalProblem;
       this.proof = proof;
       this.core = new LNGVector<>();
       this.delete = true;
+      if (trace)
+        this.traceFile = new StringBuilder();
     }
 
-    //    private void setTraceFile(final File traceFile) throws IOException {
-    //      this.traceFile = new BufferedWriter(new FileWriter(traceFile));
-    //    }
-    //
-    //    private void setLemmaFile(final File lemmaFile) throws IOException {
-    //      this.lemmaFile = new BufferedWriter(new FileWriter(lemmaFile));
-    //    }
-
     private void assign(int a) {
-      //      System.out.println("ASSIGN " + a);
       this._false[index(-a)] = 1;
       this.falseStack[this.assignedPtr++] = -a;
     }
 
     private void addWatch(int cPtr, int index) {
       int lit = this.DB.get(cPtr + index);
-      //      System.out.println("addWatch=" + lit);
       this._wlist[index(lit)].push((cPtr << 1) + this.mask);
     }
 
     private void addWatchLit(int l, int m) {
-      //      System.out.println("addWatchLiteral l=" + l + " m=" + m);
       this._wlist[index(l)].push(m);
     }
 
     private void removeWatch(int cPtr, int index) {
       int lit = this.DB.get(cPtr + index);
-      //      System.out.println("removeWatch=" + lit);
-      //      System.out.println("    lit=" + lit);
       final LNGIntVector watch = this._wlist[index(lit)];
       int watchPtr = 0;
       while (true) {
         int _cPtr = watch.get(watchPtr++) >> 1;
-        //        System.out.println("    clause=" + this.DB.get(_cPtr));
         if (_cPtr == cPtr) {
           watch.set(watchPtr - 1, this._wlist[index(lit)].back());
           this._wlist[index(lit)].pop();
@@ -185,32 +172,24 @@ public final class DRUPTrim {
     }
 
     private void markWatch(int clausePtr, int index, int offset) {
-      //      System.out.println("MARK WATCH clause=" + this.DB.get(clausePtr - 1) + " index=" + index + " offset=" + offset);
       final LNGIntVector watch = this._wlist[index(this.DB.get(clausePtr + index))];
-      //      System.out.println("  markWatch=" + Arrays.toString(watch));
       int clause = this.DB.get(clausePtr - offset - 1);
       int watchPtr = 0;
       while (true) {
         int _clause = (this.DB.get((watch.get(watchPtr++) >> 1) - 1));
         if (_clause == clause) {
           watch.set(watchPtr - 1, watch.get(watchPtr - 1) | 1);
-          //          System.out.println("  -> " + Arrays.toString(watch));
           return;
         }
       }
     }
 
     private void markClause(int clausePtr, int index) {
-      //      System.out.println("markClause clause=" + this.DB.get(clausePtr - 1) + " index=" + index);
       this.arcs++;
-      //      if (this.traceFile != null)
-      //        this.traceFile.write((this.DB.get(clausePtr + index - 1) >> 1) + " ");
+      if (this.traceFile != null)
+        this.traceFile.append(this.DB.get(clausePtr + index - 1) >> 1).append(" ");
       if ((this.DB.get(clausePtr + index - 1) & 1) == 0) {
         this.DB.set(clausePtr + index - 1, this.DB.get(clausePtr + index - 1) | 1);
-        //        if (this.lemmaFile != null) {
-        //          this.delStack[this.delinfoPtr++] = this.time;
-        //          this.delStack[this.delinfoPtr++] = clausePtr + index;
-        //        }
         if (this.DB.get(clausePtr + 1 + index) == 0)
           return;
         this.markWatch(clausePtr, index, -index);
@@ -221,24 +200,20 @@ public final class DRUPTrim {
     }
 
     private void analyze(int clausePtr) {
-      //      System.out.println("ANALYZE");
       this.markClause(clausePtr, 0);
-      //      System.out.println(this.DB);
       while (this.assignedPtr > 0) {
         int lit = this.falseStack[--this.assignedPtr];
-        //        System.out.println("  analyse lit=" + lit);
         if ((this._false[index(lit)] == MARK) && this.reason[Math.abs(lit)] != 0)
           this.markClause(this.reason[Math.abs(lit)], -1);
         this._false[index(lit)] = this.assignedPtr < this.forcedPtr ? 1 : 0;
       }
-      //      if (this.traceFile != null)
-      //        this.traceFile.write("0\n");
+      if (this.traceFile != null)
+        this.traceFile.append("0\n");
       this.processedPtr = this.forcedPtr;
       this.assignedPtr = this.forcedPtr;
     }
 
     private int propagate() {
-      //      System.out.println("PROPAGATE");
       int[] start = new int[2];
       int check = 0;
       int i;
@@ -254,38 +229,24 @@ public final class DRUPTrim {
         check ^= 1;
         while (!gotoFlipCheck && start[check] < this.assignedPtr) { // While unprocessed false literals
           lit = this.falseStack[start[check]++]; // Get first unprocessed literal
-          //          System.out.println("lit=" + lit);
           watch = this._wlist[index(lit)]; // Obtain the first watch pointer
           int watchPtr = lit == _lit ? _watchPtr : 0;
 
-          //          System.out.print("watchers=");
-          //          for (int l = watchPtr; l < this._used[index(lit)]; l++)
-          //            System.out.print(watch[l] + " ");
-          //          System.out.println();
-
           while (watchPtr < watch.size()) { // While there are watched clauses (watched by lit)
-            //            System.out.println("  iteration");
             if ((watch.get(watchPtr) & 1) != check) {
-              //              System.out.println("    case 1");
               watchPtr++;
               continue;
             }
             int clausePtr = watch.get(watchPtr) / 2; // Get the clause from DB
-            //            System.out.println("    clause=" + this.DB.get(clausePtr - 1));
             if (this._false[index(-this.DB.get(clausePtr))] != 0 || this._false[index(-this.DB.get(clausePtr + 1))] != 0) {
-              //              System.out.println("    case 2");
               watchPtr++;
               continue;
             }
-            if (this.DB.get(clausePtr) == lit) {
-              //              System.out.println("    case 3");
+            if (this.DB.get(clausePtr) == lit)
               this.DB.set(clausePtr, this.DB.get(clausePtr + 1)); // Ensure that the other watched literal is in front
-            }
             boolean gotoNextClause = false;
             for (i = 2; this.DB.get(clausePtr + i) != 0; i++) { // Scan the non-watched literals
-              //              System.out.println("    investigate lit=" + this.DB.get(clausePtr + i));
               if (this._false[index(this.DB.get(clausePtr + i))] == 0) { // When clause[j] is not false, it is either true or unset
-                //                System.out.println("    case 4");
                 this.DB.set(clausePtr + 1, this.DB.get(clausePtr + i));
                 this.DB.set(clausePtr + i, lit); // Swap literals
                 this.addWatchLit(this.DB.get(clausePtr + 1), watch.get(watchPtr)); // Add the watch to the list of clause[1]
@@ -299,11 +260,9 @@ public final class DRUPTrim {
               this.DB.set(clausePtr + 1, lit);
               watchPtr++; // Set lit at clause[1] and set next watch
               if (this._false[index(this.DB.get(clausePtr))] == 0) { // If the other watched literal is falsified,
-                //                System.out.println("    case 5");
                 this.assign(this.DB.get(clausePtr)); // A unit clause is found, and the reason is set
                 this.reason[Math.abs(this.DB.get(clausePtr))] = clausePtr + 1;
                 if (check == 0) {
-                  //                  System.out.println("    case 6");
                   start[0]--;
                   _lit = lit;
                   _watchPtr = watchPtr;
@@ -343,11 +302,7 @@ public final class DRUPTrim {
           return result;
         }
       }
-      System.out.printf("c error: could not match deleted clause ");
-      for (i = 0; i < input.size(); ++i)
-        System.out.printf("%d ", input.get(i));
-      System.out.printf("\ns MATCHING ERROR\n");
-      return ERROR;
+      throw new IllegalStateException("Could not match deleted clause");
     }
 
     /**
@@ -475,36 +430,26 @@ public final class DRUPTrim {
 
       this.time = this.DB.get(lemmasPtr - 1);
 
-      //      if (this.lemmaFile != null) {
-      //        this.delStack = new int[this.count * 2];
-      //        this.delinfoPtr = 0;
-      //      }
-
-      //      if (this.traceFile != null)
-      //        this.traceFile.write(this.count + " 0 ");
+      if (this.traceFile != null)
+        this.traceFile.append(this.count).append(" 0 ");
 
       boolean gotoPostProcess = false;
       if (this.processedPtr < this.assignedPtr)
-        if (this.propagate() == UNSAT) {
-          System.out.printf("c got UNSAT propagating in the input instance\n");
+        if (this.propagate() == UNSAT)
           gotoPostProcess = true;
-        }
       this.forcedPtr = this.processedPtr;
 
       if (!gotoPostProcess) {
         boolean gotoVerification = false;
         while (!gotoVerification) {
-          //          System.out.println("ITERATION");
           flag = false;
           buffer.clear();
           this.time = this.DB.get(lemmasPtr - 1);
           clausePtr = lemmasPtr;
           do {
             ad = this.adlist.get(checked++);
-            //            System.out.println("  ad=" + ad);
             d = ad & 1;
             int cPtr = ad >> 1;
-            //            System.out.println("  c[1]=" + this.DB.get(cPtr + 1));
             if (d != 0 && this.DB.get(cPtr + 1) != 0) {
               if (this.reason[Math.abs(this.DB.get(cPtr))] - 1 == ad >> 1)
                 continue;
@@ -543,7 +488,6 @@ public final class DRUPTrim {
           if (buffer.size() == 1) {
             this.assign(buffer.get(0));
             this.reason[Math.abs(buffer.get(0))] = clausePtr + 1;
-            //            System.out.println("reason " + Math.abs(buffer[0]) + " = " + (clausePtr + 1));
             this.forcedPtr = this.processedPtr;
             if (this.propagate() == UNSAT)
               gotoVerification = true;
@@ -555,22 +499,14 @@ public final class DRUPTrim {
         if (!gotoVerification)
           throw new IllegalStateException("No conflict");
 
-        System.out.printf("c parsed formula and detected empty clause; start verification\n");
-
         this.forcedPtr = this.processedPtr;
         lemmasPtr = clausePtr - EXTRA;
-        //        System.out.println("lemmaPtr=" + this.DB.get(lemmasPtr));
 
         while (true) {
-          //          System.out.println("VERIFICATION ITERATION");
           buffer.clear();
-          //          System.out.println(this.DB);
           clausePtr = lemmasPtr + EXTRA;
-          //          System.out.println("  clausePtr=" + this.DB.get(clausePtr));
-
           do {
             ad = this.adlist.get(--checked);
-            //            System.out.println("    ad=" + ad);
             d = ad & 1;
             int cPtr = ad >> 1;
             if (d != 0 && this.DB.get(cPtr + 1) != 0) {
@@ -582,7 +518,6 @@ public final class DRUPTrim {
           } while (d != 0);
 
           this.time = this.DB.get(clausePtr - 1);
-          //          System.out.println("  time=" + this.time);
 
           if (this.DB.get(clausePtr + 1) != 0) {
             this.removeWatch(clausePtr, 0);
@@ -596,7 +531,6 @@ public final class DRUPTrim {
           if (!gotoNextLemma) {
             while (this.DB.get(clausePtr) != 0) {
               int lit = this.DB.get(clausePtr++);
-              //              System.out.println("  final analyze lit=" + lit);
               if (this._false[index(-lit)] != 0)
                 flag = true;
               if (this._false[index(lit)] == 0)
@@ -613,12 +547,12 @@ public final class DRUPTrim {
 
             if ((this.time & 1) != 0) {
               int i;
-              //              if (this.traceFile != null) {
-              //                this.traceFile.write((this.time >> 1) + " ");
-              //                for (i = 0; i < buffer.size(); i++)
-              //                  this.traceFile.write(buffer.get(i) + " ");
-              //                this.traceFile.write("0 ");
-              //              }
+              if (this.traceFile != null) {
+                this.traceFile.append(this.time >> 1).append(" ");
+                for (i = 0; i < buffer.size(); i++)
+                  this.traceFile.append(buffer.get(i)).append(" ");
+                this.traceFile.append("0 ");
+              }
               for (i = 0; i < buffer.size(); ++i) {
                 this.assign(-buffer.get(i));
                 this.reason[Math.abs(buffer.get(i))] = 0;
@@ -642,8 +576,6 @@ public final class DRUPTrim {
           count++;
         while (this.DB.get(lemmasPtr++) != 0) ;
       }
-      System.out.printf("c %d of %d clauses in core\n", count, this.nClauses);
-
       lemmasPtr = 0;
 
       while (lemmasPtr + EXTRA <= lastPtr) {
@@ -659,8 +591,6 @@ public final class DRUPTrim {
         lemmasPtr++;
       }
 
-      //      if (this.lemmaFile != null)
-      //        this.delinfoPtr -= 2;
       int lcount = 0;
       count = 0;
       while (lemmasPtr + EXTRA <= endPtr) {
@@ -670,46 +600,61 @@ public final class DRUPTrim {
         if (marked != 0)
           count++;
         while (this.DB.get(lemmasPtr) != 0) {
-          //          if (marked != 0 && this.lemmaFile != null)
-          //            this.lemmaFile.write(this.DB.get(lemmasPtr) + " ");
           lemmasPtr++;
         }
         lemmasPtr++;
-
-        //        if (this.lemmaFile == null)
-        //        continue;
-        //        if (marked != 0)
-        //          this.lemmaFile.write("0\n");
-        //        while (this.delStack[this.delinfoPtr] == this.time) {
-        //          clausePtr = this.delStack[this.delinfoPtr + 1];
-        //          this.lemmaFile.write("d ");
-        //          while (this.DB.get(clausePtr) != 0)
-        //            this.lemmaFile.write(this.DB.get(clausePtr++) + " ");
-        //          this.lemmaFile.write("0\n");
-        //          this.delinfoPtr -= 2;
-        //        }
       }
-      System.out.printf("c %d of %d lemmas in core using %d resolution steps\n", count, lcount, this.arcs);
 
-      //      if (this.traceFile != null) {
-      //        lemmasPtr = 0;
-      //        while (lemmasPtr + EXTRA <= lastPtr) {
-      //          marked = this.DB.get(lemmasPtr++) & 1;
-      //          if (marked != 0)
-      //            this.traceFile.write((this.DB.get(lemmasPtr - 1) >> 1) + " ");
-      //          while (this.DB.get(lemmasPtr) != 0) {
-      //            if (marked != 0)
-      //              this.traceFile.write(this.DB.get(lemmasPtr) + " ");
-      //            lemmasPtr++;
-      //          }
-      //          if (marked != 0)
-      //            this.traceFile.write("0 0\n");
-      //          lemmasPtr++;
-      //        }
-      //        this.traceFile.close();
-      //      }
-
+      if (this.traceFile != null) {
+        lemmasPtr = 0;
+        while (lemmasPtr + EXTRA <= lastPtr) {
+          marked = this.DB.get(lemmasPtr++) & 1;
+          if (marked != 0)
+            this.traceFile.append(this.DB.get(lemmasPtr - 1) >> 1).append(" ");
+          while (this.DB.get(lemmasPtr) != 0) {
+            if (marked != 0)
+              this.traceFile.append(this.DB.get(lemmasPtr)).append(" ");
+            lemmasPtr++;
+          }
+          if (marked != 0)
+            this.traceFile.append("0 0\n");
+          lemmasPtr++;
+        }
+      }
       return this.core;
+    }
+  }
+
+  /**
+   * The result of an DRUP execution.
+   */
+  public static class DRUPResult {
+    private boolean trivialUnsat;
+    private LNGVector<LNGIntVector> unsatCore;
+    private String tracecheck;
+
+    /**
+     * Returns {@code true} if the formula was trivially unsatisfiable.
+     * @return {@code true} if the formula was trivially unsatisfiable
+     */
+    public boolean trivialUnsat() {
+      return trivialUnsat;
+    }
+
+    /**
+     * Returns the unsat core of the formula.
+     * @return the unsat core of the formula
+     */
+    public LNGVector<LNGIntVector> unsatCore() {
+      return unsatCore;
+    }
+
+    /**
+     * Returns the proof of the unsatisfiability in the tracecheck format.
+     * @return the proof of the unsatisfiability in the tracecheck format
+     */
+    public String tracecheck() {
+      return tracecheck;
     }
   }
 }

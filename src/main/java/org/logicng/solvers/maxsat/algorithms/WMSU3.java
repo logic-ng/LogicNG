@@ -383,11 +383,11 @@ public final class WMSU3 extends MaxSAT {
             bmoEncodings.push(e);
             firstEncoding.push(true);
             for (int i = 0; i < encodingAssumptions.size(); i++)
-              this.solver.addClause(encodingAssumptions.get(i));
+              this.solver.addClause(encodingAssumptions.get(i), null);
             encodingAssumptions.clear();
             for (int i = 0; i < nSoft(); i++) {
               if (!this.activeSoft.get(i) && previousWeight == softClauses.get(i).weight())
-                this.solver.addClause(not(softClauses.get(i).assumptionVar()));
+                this.solver.addClause(not(softClauses.get(i).assumptionVar()), null);
               if (currentWeight == softClauses.get(i).weight())
                 this.assumptions.push(not(softClauses.get(i).assumptionVar()));
               if (this.activeSoft.get(i)) {
@@ -461,13 +461,13 @@ public final class WMSU3 extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     LNGIntVector clause;
     for (int i = 0; i < nSoft(); i++) {
       clause = new LNGIntVector(softClauses.get(i).clause());
       for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
         clause.push(softClauses.get(i).relaxationVars().get(j));
-      s.addClause(clause);
+      s.addClause(clause, null);
     }
     return s;
   }

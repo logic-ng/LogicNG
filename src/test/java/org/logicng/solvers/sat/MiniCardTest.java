@@ -49,10 +49,10 @@ public class MiniCardTest {
     solver.newVar(true, true);
     solver.newVar(true, true);
     solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3));
-    solver.addClause(clause(-1, -2));
-    solver.addClause(clause(-1, -3));
-    solver.addClause(clause(-2, -3));
+    solver.addClause(clause(1, 2, 3), null);
+    solver.addClause(clause(-1, -2), null);
+    solver.addClause(clause(-1, -3), null);
+    solver.addClause(clause(-2, -3), null);
     Assert.assertEquals(TRUE, solver.solve(null));
     Assert.assertEquals(FALSE, solver.solve(null, clause(1, 2)));
   }
@@ -64,7 +64,7 @@ public class MiniCardTest {
     solver.newVar(true, true);
     solver.newVar(true, true);
     solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3));
+    solver.addClause(clause(1, 2, 3), null);
     solver.addAtMost(clause(1, 2, 3), 2);
     Assert.assertEquals(TRUE, solver.solve(null));
     Assert.assertEquals(TRUE, solver.solve(null, clause(1, 2)));
@@ -90,23 +90,23 @@ public class MiniCardTest {
     solver.newVar(true, true);
     solver.newVar(true, true);
     solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3));
+    solver.addClause(clause(1, 2, 3), null);
     solver.addAtMost(clause(1, 2, 3), 2);
     Assert.assertEquals(TRUE, solver.solve(null));
     final int[] original = solver.saveState();
-    solver.addClause(clause(1));
+    solver.addClause(clause(1), null);
     Assert.assertEquals(TRUE, solver.solve(null));
-    solver.addClause(clause(2));
+    solver.addClause(clause(2), null);
     Assert.assertEquals(TRUE, solver.solve(null));
-    solver.addClause(clause(3));
+    solver.addClause(clause(3), null);
     Assert.assertEquals(FALSE, solver.solve(null));
     solver.loadState(original);
     Assert.assertEquals(TRUE, solver.solve(null));
     solver.addAtMost(clause(1, 2, 3), 1);
     Assert.assertEquals(TRUE, solver.solve(null));
-    solver.addClause(clause(2));
+    solver.addClause(clause(2), null);
     Assert.assertEquals(TRUE, solver.solve(null));
-    solver.addClause(clause(3));
+    solver.addClause(clause(3), null);
     Assert.assertEquals(FALSE, solver.solve(null));
     solver.loadState(original);
     Assert.assertEquals(TRUE, solver.solve(null));
@@ -119,7 +119,7 @@ public class MiniCardTest {
     solver.newVar(true, true);
     solver.newVar(true, true);
     solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3));
+    solver.addClause(clause(1, 2, 3), null);
     solver.addAtMost(clause(1, 2, 3), 2);
 
     String expected = "ok            true\n" +

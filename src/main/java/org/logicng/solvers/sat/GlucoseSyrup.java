@@ -82,6 +82,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.LNGBoundedIntQueue;
 import org.logicng.solvers.datastructures.LNGBoundedLongQueue;
 import org.logicng.solvers.datastructures.MSClause;
@@ -219,7 +220,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   }
 
   @Override
-  public boolean addClause(final LNGIntVector ps) {
+  public boolean addClause(final LNGIntVector ps, final Proposition proposition) {
     assert decisionLevel() == 0;
     int p;
     int i;
@@ -228,7 +229,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
       LNGIntVector vec = new LNGIntVector(ps.size());
       for (i = 0; i < ps.size(); i++)
         vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
-      this.pgOriginalClauses.push(vec);
+      this.pgOriginalClauses.push(new ProofInformation(vec, proposition));
     }
     if (!ok)
       return false;

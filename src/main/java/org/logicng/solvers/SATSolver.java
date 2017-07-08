@@ -409,9 +409,18 @@ public abstract class SATSolver {
 
   /**
    * Returns an unsat core of the current problem.  Only works if the SAT solver is configured to record the information
-   * required to generate a proof trace and an unsat core.  Currently only works in the non-incremental mode of the
-   * solver or if no state saving/loading has taken place
+   * required to generate a proof trace and an unsat core.
    * @return the unsat core
    */
-  public abstract UNSATCore unsatCore();
+  public UNSATCore unsatCore() {
+    return unsatCore(false);
+  }
+
+  /**
+   * Returns an unsat core of the current problem.  Only works if the SAT solver is configured to record the information
+   * required to generate a proof trace and an unsat core.
+   * @param trace indicates if also a resolution proof in the tracecheck format should be produced
+   * @return the unsat core
+   */
+  public abstract UNSATCore unsatCore(final boolean trace);
 }

@@ -121,7 +121,7 @@ public final class EncodingResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      this.miniSat.underlyingSolver().addClause(clauseVec);
+      this.miniSat.underlyingSolver().addClause(clauseVec, null);
       this.miniSat.setSolverToUndef();
     } else {
       for (Literal lit : literals) {
@@ -155,7 +155,7 @@ public final class EncodingResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      this.miniSat.underlyingSolver().addClause(clauseVec);
+      this.miniSat.underlyingSolver().addClause(clauseVec, null);
       this.miniSat.setSolverToUndef();
     } else {
       for (Literal lit : literals) {
