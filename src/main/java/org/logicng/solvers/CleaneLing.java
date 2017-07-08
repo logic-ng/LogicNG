@@ -34,6 +34,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.UNSATCore;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -42,6 +43,7 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.sat.CleaneLingConfig;
 import org.logicng.solvers.sat.CleaneLingMinimalisticSolver;
 import org.logicng.solvers.sat.CleaneLingSolver;
@@ -142,7 +144,7 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  public void add(final Formula formula) {
+  public void add(final Formula formula, Proposition proposition) {
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
       this.result = UNDEF;
@@ -150,9 +152,9 @@ public final class CleaneLing extends SATSolver {
         final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
         ccEncoder.encode(constraint, result);
       } else
-        this.addClauseSet(formula.cnf());
+        this.addClauseSet(formula.cnf(), proposition);
     } else
-      this.addClauseSet(formula.cnf());
+      this.addClauseSet(formula.cnf(), proposition);
   }
 
   @Override
@@ -173,7 +175,7 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  protected void addClause(final Formula formula) {
+  protected void addClause(final Formula formula, final  Proposition proposition) {
     this.result = UNDEF;
     addClause(formula.literals());
   }
@@ -333,6 +335,11 @@ public final class CleaneLing extends SATSolver {
     this.name2idx.put(varName, index);
     this.idx2name.put(index, varName);
     return varName;
+  }
+
+  @Override
+  public UNSATCore unsatCore() {
+    throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
   }
 
   @Override

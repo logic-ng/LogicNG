@@ -49,6 +49,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.LNGHeap;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
@@ -114,6 +115,10 @@ public abstract class MiniSatStyleSolver {
   // SAT handler
   protected SATHandler handler;
   protected boolean canceledByHandler;
+
+  // Proof generating information
+  protected LNGVector<LNGIntVector> pgOriginalClauses;
+  protected LNGVector<LNGIntVector> pgProof;
 
   /**
    * Constructs a new MiniSAT-style solver with a given configuration.
@@ -212,6 +217,10 @@ public abstract class MiniSatStyleSolver {
     this.name2idx = new TreeMap<>();
     this.idx2name = new TreeMap<>();
     this.canceledByHandler = false;
+    if (this.config.proofGeneration) {
+      this.pgOriginalClauses = new LNGVector<>();
+      this.pgProof = new LNGVector<>();
+    }
   }
 
   /**
@@ -309,7 +318,7 @@ public abstract class MiniSatStyleSolver {
 
   /**
    * Adds a clause to the solver.
-   * @param ps the literals of the clause
+   * @param ps          the literals of the clause
    * @return {@code true} if the clause was added successfully, {@code false} otherwise
    */
   public abstract boolean addClause(final LNGIntVector ps);
@@ -600,6 +609,22 @@ public abstract class MiniSatStyleSolver {
    * found during the simplification
    */
   protected abstract boolean simplify();
+
+  /**
+   * Returns the original clauses for proof generation.
+   * @return the original clauses for proof generation
+   */
+  public LNGVector<LNGIntVector> pgOriginalClauses() {
+    return this.pgOriginalClauses;
+  }
+
+  /**
+   * Returns the proof clauses for proof generation.
+   * @return the proof clauses for proof generation
+   */
+  public LNGVector<LNGIntVector> pgProof() {
+    return this.pgProof;
+  }
 
   @Override
   public String toString() {
