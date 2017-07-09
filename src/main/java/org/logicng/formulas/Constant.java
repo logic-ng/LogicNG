@@ -31,10 +31,7 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Super class for Boolean constants.
@@ -94,12 +91,12 @@ public abstract class Constant extends Formula {
 
   @Override
   public SortedSet<Variable> variables() {
-    return EMPTY_VARIABLE_SET;
+    return Collections.unmodifiableSortedSet(EMPTY_VARIABLE_SET);
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    return EMPTY_LITERAL_SET;
+    return Collections.unmodifiableSortedSet(EMPTY_LITERAL_SET);
   }
 
   @Override

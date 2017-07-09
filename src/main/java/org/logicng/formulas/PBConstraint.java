@@ -336,14 +336,14 @@ public final class PBConstraint extends Formula {
       for (final Literal lit : this.literals)
         this.variables.add(lit.variable());
     }
-    return this.variables;
+    return Collections.unmodifiableSortedSet(this.variables);
   }
 
   @Override
   public SortedSet<Literal> literals() {
     final SortedSet<Literal> lits = new TreeSet<>();
     Collections.addAll(lits, this.literals);
-    return lits;
+    return Collections.unmodifiableSortedSet(lits);
   }
 
   @Override
