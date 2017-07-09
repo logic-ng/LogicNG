@@ -81,8 +81,8 @@ public class Literal extends Formula implements Comparable<Literal> {
     this.name = name;
     this.phase = phase;
     this.var = phase ? (Variable) this : (Variable) this.negate();
-    this.variables = new TreeSet<>(Collections.singletonList(var));
-    this.literals = new TreeSet<>(Collections.singletonList(this));
+    this.variables = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(var)));
+    this.literals = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(this)));
   }
 
   @Override
@@ -112,12 +112,12 @@ public class Literal extends Formula implements Comparable<Literal> {
 
   @Override
   public SortedSet<Variable> variables() {
-    return Collections.unmodifiableSortedSet(this.variables);
+    return this.variables;
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    return Collections.unmodifiableSortedSet(this.literals);
+    return this.literals;
   }
 
   @Override

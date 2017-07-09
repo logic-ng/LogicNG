@@ -31,7 +31,11 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
@@ -93,8 +97,8 @@ public final class Not extends Formula {
   @Override
   public SortedSet<Variable> variables() {
     if (this.variables == null)
-      this.variables = this.operand.variables();
-    return Collections.unmodifiableSortedSet(this.variables);
+      this.variables = Collections.unmodifiableSortedSet(this.operand.variables());
+    return this.variables;
   }
 
   @Override

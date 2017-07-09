@@ -30,11 +30,15 @@ package org.logicng.formulas;
 
 import org.logicng.datastructures.Substitution;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Super class for Boolean binary operators.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public abstract class BinaryOperator extends Formula {
@@ -97,9 +101,9 @@ public abstract class BinaryOperator extends Formula {
       final SortedSet<Variable> set = new TreeSet<>();
       set.addAll(this.left.variables());
       set.addAll(this.right.variables());
-      this.variables = set;
+      this.variables = Collections.unmodifiableSortedSet(set);
     }
-    return Collections.unmodifiableSortedSet(this.variables);
+    return this.variables;
   }
 
   @Override

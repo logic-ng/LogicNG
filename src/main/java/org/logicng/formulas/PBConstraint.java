@@ -335,8 +335,9 @@ public final class PBConstraint extends Formula {
       this.variables = new TreeSet<>();
       for (final Literal lit : this.literals)
         this.variables.add(lit.variable());
+      this.variables = Collections.unmodifiableSortedSet(this.variables);
     }
-    return Collections.unmodifiableSortedSet(this.variables);
+    return this.variables;
   }
 
   @Override

@@ -119,13 +119,15 @@ public abstract class Formula implements Iterable<Formula> {
   public abstract boolean isAtomicFormula();
 
   /**
-   * Returns all variables occurring in this formula.
+   * Returns all variables occurring in this formula.  Returns an unmodifiable set, so do not try to change the variable
+   * set manually.
    * @return all variables occurring in this formula
    */
   public abstract SortedSet<Variable> variables();
 
   /**
-   * Returns all literals occurring in this formula.
+   * Returns all literals occurring in this formula.  Returns an unmodifiable set, so do not try to change the literal
+   * set manually.
    * @return all literals occurring in this formula
    */
   public abstract SortedSet<Literal> literals();

@@ -31,7 +31,11 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Super class for Boolean constants.
@@ -40,8 +44,8 @@ import java.util.*;
  */
 public abstract class Constant extends Formula {
 
-  private static final SortedSet<Variable> EMPTY_VARIABLE_SET = new TreeSet<>();
-  private static final SortedSet<Literal> EMPTY_LITERAL_SET = new TreeSet<>();
+  private static final SortedSet<Variable> EMPTY_VARIABLE_SET = Collections.unmodifiableSortedSet(new TreeSet<Variable>());
+  private static final SortedSet<Literal> EMPTY_LITERAL_SET = Collections.unmodifiableSortedSet(new TreeSet<Literal>());
 
   private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
     @Override
@@ -91,12 +95,12 @@ public abstract class Constant extends Formula {
 
   @Override
   public SortedSet<Variable> variables() {
-    return Collections.unmodifiableSortedSet(EMPTY_VARIABLE_SET);
+    return EMPTY_VARIABLE_SET;
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    return Collections.unmodifiableSortedSet(EMPTY_LITERAL_SET);
+    return EMPTY_LITERAL_SET;
   }
 
   @Override
