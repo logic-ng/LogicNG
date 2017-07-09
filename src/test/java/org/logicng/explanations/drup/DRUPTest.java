@@ -43,6 +43,7 @@ import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.SolverState;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
 
@@ -133,9 +134,67 @@ public class DRUPTest {
       final UNSATCore unsatCore = solver.unsatCore();
       assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(propositions.get(0), propositions.get(1),
               propositions.get(2), propositions.get(3), propositions.get(4), propositions.get(5));
-      System.out.println(unsatCore);
       solver.reset();
     }
+  }
+
+  @Test
+  public void testPropositionIncDec() throws ParserException {
+    final PropositionalParser p = new PropositionalParser(f);
+    SATSolver solver = this.solvers[0];
+    final StandardProposition p1 = new StandardProposition("P1", f.parse("((a & b) => c) &  ((a & b) => d)"));
+    final StandardProposition p2 = new StandardProposition("P2", f.parse("(c & d) <=> ~e"));
+    final StandardProposition p3 = new StandardProposition("P3", new ImmutableFormulaList(p.parse("~e => f | g")));
+    final StandardProposition p4 = new StandardProposition("P4", f.parse("f => ~a"), f.parse("g => ~b"), f.parse("p & q"));
+    final StandardProposition p5 = new StandardProposition("P5", f.parse("a => b"));
+    final StandardProposition p6 = new StandardProposition("P6", f.parse("a"));
+    final StandardProposition p7 = new StandardProposition("P7", f.parse("g | h"));
+    final StandardProposition p8 = new StandardProposition("P8", f.parse("x => ~y | z"), f.parse("z | w"));
+
+    final StandardProposition p9 = new StandardProposition("P9", f.parse("a"), f.parse("b"));
+
+    final StandardProposition p10 = new StandardProposition("P10", f.parse("p => q"), f.parse("p"));
+    final StandardProposition p11 = new StandardProposition("P11", f.parse("a"), f.parse("~q"));
+
+    solver.add(p1);
+    solver.add(p2);
+    solver.add(p3);
+    solver.add(p4);
+    final SolverState state1 = solver.saveState();
+    solver.add(p5);
+    solver.add(p6);
+    final SolverState state2 = solver.saveState();
+    solver.add(p7);
+    solver.add(p8);
+
+    assertThat(solver.sat()).isEqualTo(FALSE);
+    UNSATCore unsatCore = solver.unsatCore();
+    assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1, p2, p3, p4, p5, p6);
+
+    solver.loadState(state2);
+    assertThat(solver.sat()).isEqualTo(FALSE);
+    unsatCore = solver.unsatCore();
+    assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1, p2, p3, p4, p5, p6);
+
+    solver.loadState(state1);
+    solver.add(p9);
+    assertThat(solver.sat()).isEqualTo(FALSE);
+    unsatCore = solver.unsatCore();
+    assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1, p2, p3, p4, p9);
+
+    solver.loadState(state1);
+    solver.add(p5);
+    solver.add(p6);
+    assertThat(solver.sat()).isEqualTo(FALSE);
+    unsatCore = solver.unsatCore();
+    assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1, p2, p3, p4, p5, p6);
+
+    solver.loadState(state1);
+    solver.add(p10);
+    solver.add(p11);
+    assertThat(solver.sat()).isEqualTo(FALSE);
+    unsatCore = solver.unsatCore();
+    assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p4, p11);
   }
 
   /**

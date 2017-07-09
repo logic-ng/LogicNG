@@ -433,10 +433,27 @@ public final class MiniSat extends SATSolver {
     }
 
     final DRUPTrim.DRUPResult result = trimmer.compute(clauses, this.underlyingSolver().pgProof());
+    if (result.trivialUnsat())
+      return handleTrivialCase();
     final LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
     for (LNGIntVector vector : result.unsatCore())
       propositions.add(clause2proposition.get(getFormulaForVector(vector)));
     return new UNSATCore(new ArrayList<>(propositions), false);
+  }
+
+  private UNSATCore handleTrivialCase() {
+    final LNGVector<MiniSatStyleSolver.ProofInformation> clauses = this.underlyingSolver().pgOriginalClauses();
+    for (int i = 0; i < clauses.size(); i++)
+      for (int j = i + 1; j < clauses.size(); j++) {
+        if (clauses.get(i).clause().size() == 1 && clauses.get(j).clause().size() == 1
+                && clauses.get(i).clause().get(0) + clauses.get(j).clause().get(0) == 0) {
+          LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
+          propositions.add(clauses.get(i).proposition());
+          propositions.add(clauses.get(j).proposition());
+          return new UNSATCore(new ArrayList<>(propositions), false);
+        }
+      }
+    throw new IllegalStateException("Should be a trivial unsat core, but did not found one.");
   }
 
   private Formula getFormulaForVector(LNGIntVector vector) {
