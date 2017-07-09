@@ -301,11 +301,13 @@ public final class DRUPTrim {
      * @return {@code true} if further processing is required and {@code false} if the formula is trivially UNSAT
      */
     private boolean parse() {
+      //      System.out.println(this.originalProblem);
+      //      System.out.println(this.proof);
       this.nVars = 0;
       for (LNGIntVector vector : this.originalProblem)
         for (int i = 0; i < vector.size(); i++)
-          if (vector.get(i) > this.nVars)
-            this.nVars = vector.get(i);
+          if (Math.abs(vector.get(i)) > this.nVars)
+            this.nVars = Math.abs(vector.get(i));
       this.nClauses = originalProblem.size();
 
       boolean del = false;
@@ -327,7 +329,7 @@ public final class DRUPTrim {
 
       this.adlist = new LNGIntVector();
 
-      int[] _marks = new int[2 * this.nVars + 3];
+      int[] marks = new int[2 * this.nVars + 3];
       int mark = 0;
 
       final Map<Integer, LNGIntVector> hashTable = new HashMap<>();
@@ -335,9 +337,14 @@ public final class DRUPTrim {
       boolean fileSwitchFlag;
       int clauseNr = 0;
       while (true) {
+        //        System.out.println("NEW RUN nZeros=" + nZeros);
         int lit = 0;
         fileSwitchFlag = nZeros <= 0;
         LNGIntVector clause = currentVector.get(clauseNr++);
+        if (clause == null) {
+          this.lemmas = this.DB.size() + 1;
+          break;
+        }
         final List<Integer> toks = new ArrayList<>(clause.size() - 1);
         if (fileSwitchFlag && clause.get(0) == -1) {
           del = true;
@@ -346,19 +353,21 @@ public final class DRUPTrim {
           toks.add(clause.get(i));
         for (Integer l : toks)
           buffer.push(l);
+        //        System.out.println("    clauseNr = " + clauseNr);
         if (clauseNr >= currentVector.size() && !fileSwitchFlag) {
+          //          System.out.println("    Switching File");
           fileSwitchFlag = true;
           clauseNr = 0;
           currentVector = proof;
         }
-        if (clauseNr >= currentVector.size() && fileSwitchFlag)
+        if (clauseNr >= currentVector.size() && fileSwitchFlag && !currentVector.empty())
           break;
         if (Math.abs(lit) > this.nVars)
           throw new IllegalStateException(String.format("Illegal literal %d due to max var %d", lit, this.nVars));
-        int hash = getHash(_marks, ++mark, buffer);
+        int hash = getHash(marks, ++mark, buffer);
         if (del) {
           if (this.delete) {
-            int match = this.matchClause(hashTable.get(hash), _marks, mark, buffer);
+            int match = this.matchClause(hashTable.get(hash), marks, mark, buffer);
             hashTable.get(hash).pop();
             this.adlist.push((match << 1) + 1);
           }
@@ -381,6 +390,8 @@ public final class DRUPTrim {
 
         this.adlist.push(clausePtr << 1);
 
+        //        System.out.println("nZeros = " + nZeros);
+
         if (nZeros == this.nClauses)
           this.basePtr = clausePtr;
         if (nZeros == 0) {
@@ -388,6 +399,7 @@ public final class DRUPTrim {
           this.adlemmas = this.adlist.size() - 1;
         }
         if (nZeros > 0) {
+          //          System.out.println("  buffer = " + buffer);
           if (buffer.empty() || ((buffer.size() == 1) && this.internalFalse[index(this.DB.get(clausePtr))] != 0))
             return false;
           else if (buffer.size() == 1) {
@@ -396,6 +408,7 @@ public final class DRUPTrim {
               this.assign(this.DB.get(clausePtr));
             }
           } else {
+            //            System.out.println("  adding watches");
             this.addWatch(clausePtr, 0);
             this.addWatch(clausePtr, 1);
           }

@@ -688,5 +688,13 @@ public abstract class MiniSatStyleSolver {
     public Proposition proposition() {
       return proposition;
     }
+
+    @Override
+    public String toString() {
+      return "ProofInformation{" +
+              "clause=" + clause +
+              ", proposition=" + proposition +
+              '}';
+    }
   }
 }

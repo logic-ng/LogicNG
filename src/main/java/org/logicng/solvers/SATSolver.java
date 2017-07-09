@@ -92,7 +92,7 @@ public abstract class SATSolver {
    */
   public void add(final Proposition proposition) {
     for (final Formula formula : proposition.formulas())
-      this.add(formula);
+      this.add(formula, proposition);
   }
 
   /**

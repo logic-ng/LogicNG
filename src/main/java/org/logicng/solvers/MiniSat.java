@@ -422,7 +422,6 @@ public final class MiniSat extends SATSolver {
     DRUPTrim trimmer = new DRUPTrim();
 
     Map<Formula, Proposition> clause2proposition = new HashMap<>();
-
     final LNGVector<LNGIntVector> clauses = new LNGVector<>(this.underlyingSolver().pgOriginalClauses().size());
     for (MiniSatStyleSolver.ProofInformation pi : this.underlyingSolver().pgOriginalClauses()) {
       clauses.push(pi.clause());

@@ -31,14 +31,13 @@ package org.logicng.io.readers;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -62,32 +61,32 @@ public final class DimacsReader {
 
   /**
    * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas.
-   * @param fileName the file name
-   * @param f        the formula factory
+   * @param file the file
+   * @param f    the formula factory
    * @return the list of formulas (clauses)
    * @throws IOException     if there was a problem reading the file
    * @throws ParserException if there was a problem parsing the formula
    */
-  public static List<Formula> readCNF(final String fileName, final FormulaFactory f) throws IOException, ParserException {
-    return readCNF(fileName, f, "v");
+  public static List<Formula> readCNF(final File file, final FormulaFactory f) throws IOException, ParserException {
+    return readCNF(file, f, "v");
   }
 
   /**
    * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas.
-   * @param fileName the file name
-   * @param f        the formula factory
-   * @param prefix   the prefix for the variable names
+   * @param file   the file
+   * @param f      the formula factory
+   * @param prefix the prefix for the variable names
    * @return the list of formulas (clauses)
    * @throws IOException     if there was a problem reading the file
    * @throws ParserException if there was a problem parsing the formula
    */
-  public static List<Formula> readCNF(final String fileName, final FormulaFactory f, final String prefix)
+  public static List<Formula> readCNF(final File file, final FormulaFactory f, final String prefix)
           throws IOException, ParserException {
     List<Formula> result = new ArrayList<>();
-    try (final BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+    try (final BufferedReader br = new BufferedReader(new FileReader(file))) {
       while (br.ready()) {
         final String line = br.readLine();
-        if (!line.startsWith("c") && !line.startsWith("p")) {
+        if (!line.startsWith("c") && !line.startsWith("p") && !line.trim().isEmpty()) {
           String[] split = line.split("\\s+");
           if (!"0".equals(split[split.length - 1].trim()))
             throw new IllegalArgumentException("Line " + line + " did not end with 0.");
@@ -106,6 +105,33 @@ public final class DimacsReader {
       }
     }
     return result;
+  }
+
+
+  /**
+   * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas.
+   * @param fileName the file name
+   * @param f        the formula factory
+   * @return the list of formulas (clauses)
+   * @throws IOException     if there was a problem reading the file
+   * @throws ParserException if there was a problem parsing the formula
+   */
+  public static List<Formula> readCNF(final String fileName, final FormulaFactory f) throws IOException, ParserException {
+    return readCNF(new File(fileName), f, "v");
+  }
+
+  /**
+   * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas.
+   * @param fileName the file name
+   * @param f        the formula factory
+   * @param prefix   the prefix for the variable names
+   * @return the list of formulas (clauses)
+   * @throws IOException     if there was a problem reading the file
+   * @throws ParserException if there was a problem parsing the formula
+   */
+  public static List<Formula> readCNF(final String fileName, final FormulaFactory f, final String prefix)
+          throws IOException, ParserException {
+    return readCNF(new File(fileName), f, prefix);
   }
 
 
