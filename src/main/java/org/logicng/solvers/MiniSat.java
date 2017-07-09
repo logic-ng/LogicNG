@@ -409,11 +409,16 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public UNSATCore unsatCore(final boolean traceCheck) {
+  public UNSATCore unsatCore() {
     if (!this.config.proofGeneration())
       throw new IllegalStateException("Cannot generate an unsat core if proof generation is not turned on");
     if (this.result != FALSE)
       throw new IllegalStateException("A unsat core can only be generated if the formula is solved and is UNSAT");
+    if (this.underlyingSolver() instanceof MiniCard)
+      throw new IllegalStateException("Cannot compute an unsat core with MiniCard.");
+    if (this.underlyingSolver() instanceof GlucoseSyrup && this.config.incremental())
+      throw new IllegalStateException("Cannot compute an unsat core with Glucose in incremental mode.");
+
     DRUPTrim trimmer = new DRUPTrim();
 
     Map<Formula, Proposition> clause2proposition = new HashMap<>();
@@ -428,14 +433,11 @@ public final class MiniSat extends SATSolver {
       clause2proposition.put(clause, proposition);
     }
 
-    final DRUPTrim.DRUPResult result = trimmer.compute(clauses, this.underlyingSolver().pgProof(), traceCheck);
+    final DRUPTrim.DRUPResult result = trimmer.compute(clauses, this.underlyingSolver().pgProof());
     final LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
     for (LNGIntVector vector : result.unsatCore())
       propositions.add(clause2proposition.get(getFormulaForVector(vector)));
-    final UNSATCore unsatCore = new UNSATCore(new ArrayList<>(propositions), false);
-    if (traceCheck)
-      unsatCore.setTracecheck(result.tracecheck());
-    return unsatCore;
+    return new UNSATCore(new ArrayList<>(propositions), false);
   }
 
   private Formula getFormulaForVector(LNGIntVector vector) {

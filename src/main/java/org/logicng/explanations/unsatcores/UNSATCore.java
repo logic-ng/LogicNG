@@ -42,7 +42,6 @@ final public class UNSATCore {
 
   private final List<Proposition> propositions;
   private final boolean isMUS;
-  private String tracecheck;
 
   /**
    * Constructs a new unsatisfiable core.
@@ -68,22 +67,6 @@ final public class UNSATCore {
    */
   public boolean isMUS() {
     return this.isMUS;
-  }
-
-  /**
-   * Returns the proof in tracecheck format.
-   * @return the proof in tracecheck format
-   */
-  public String tracecheck() {
-    return this.tracecheck;
-  }
-
-  /**
-   * Sets the proof in tracecheck format.
-   * @param tracecheck the proof in tracecheck format
-   */
-  public void setTracecheck(String tracecheck) {
-    this.tracecheck = tracecheck;
   }
 
   @Override
