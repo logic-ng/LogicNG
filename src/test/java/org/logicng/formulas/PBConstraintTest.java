@@ -280,6 +280,30 @@ public class PBConstraintTest {
   }
 
   @Test
+  public void testRestrictInequality() {
+    final List<Literal> lits = Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"), f.variable("e"), f.literal("f", false));
+    final List<Integer> coeffs = Arrays.asList(75, 50, 201, -3, -24, 1);
+    final PBConstraint pb1 = f.pbc(CType.GE, -24, lits, coeffs);
+    final PBConstraint pb2 = f.pbc(CType.LE, 150, lits, coeffs);
+    final Assignment a1 = new Assignment();
+    a1.addLiteral(f.literal("b", false));
+    a1.addLiteral(f.variable("c"));
+    final Assignment a2 = new Assignment();
+    a2.addLiteral(f.literal("a", false));
+    a2.addLiteral(f.variable("b"));
+    a2.addLiteral(f.literal("c", false));
+    a2.addLiteral(f.variable("d"));
+    a2.addLiteral(f.variable("e"));
+    final Assignment a3 = new Assignment();
+    a3.addLiteral(f.literal("c", false));
+
+    Assert.assertEquals(f.verum(), pb1.restrict(a1));
+    Assert.assertEquals(f.falsum(), pb2.restrict(a1));
+    Assert.assertEquals(f.falsum(), pb1.restrict(a2));
+    Assert.assertEquals(f.verum(), pb2.restrict(a3));
+  }
+
+  @Test
   public void testContainsSubformula() {
     Assert.assertTrue(pb1.containsNode(f.variable("a")));
     Assert.assertFalse(pb1.containsNode(f.literal("a", false)));
