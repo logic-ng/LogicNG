@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
+import org.logicng.datastructures.Tristate;
 import org.logicng.io.parsers.ParserException;
 
 import java.util.Arrays;
@@ -492,5 +493,38 @@ public class PBConstraintTest {
     Assert.assertTrue(pb2.containsVariable(F.f.variable("b")));
     Assert.assertTrue(pb2.containsVariable(F.f.variable("c")));
     Assert.assertFalse(pb2.containsVariable(F.f.variable("x")));
+  }
+
+  @Test
+  public void testEvaluateCoeffs() {
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.EQ));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.EQ));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.EQ));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.EQ));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.EQ));
+
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.GE));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.GE));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.GE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.GE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.GE));
+
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.GT));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.GT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.GT));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.GT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.GT));
+
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.LE));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.LE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.LE));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.LE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.LE));
+
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.LT));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.LT));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.LT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.LT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.LT));
   }
 }

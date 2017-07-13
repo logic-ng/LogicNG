@@ -283,9 +283,8 @@ public final class PBConstraint extends Formula {
       changed = false;
       if (c < 0)
         return f.falsum();
-      if (sum <= c) {
+      if (sum <= c)
         return f.verum();
-      }
       assert cs.size() > 0;
       int div = c;
       for (int i = 0; i < cs.size(); i++)
@@ -375,57 +374,50 @@ public final class PBConstraint extends Formula {
         newLits.add(this.literals[i]);
         int coeff = this.coefficients[i];
         newCoeffs.add(coeff);
-        if (coeff > 0) {
+        if (coeff > 0)
           maxValue += coeff;
-        } else {
+        else
           minValue += coeff;
-        }
       } else if (restriction.type == FType.TRUE)
         lhsFixed += this.coefficients[i];
     }
 
-    if (newLits.isEmpty()) {
+    if (newLits.isEmpty())
       return this.evaluateComparator(lhsFixed) ? f.verum() : f.falsum();
-    }
 
     int newRHS = this.rhs - lhsFixed;
     if (comparator != CType.EQ) {
-      Tristate fixed = evaluateCoeffs(minValue, maxValue, newRHS);
-      if (fixed == Tristate.TRUE) {
+      Tristate fixed = evaluateCoeffs(minValue, maxValue, newRHS, this.comparator);
+      if (fixed == Tristate.TRUE)
         return f.verum();
-      } else if (fixed == Tristate.FALSE) {
+      else if (fixed == Tristate.FALSE)
         return f.falsum();
-      }
     }
-
     return f.pbc(this.comparator, newRHS, newLits, newCoeffs);
   }
 
   /**
    * Internal helper for checking if a given coefficient-sum min- and max-value can comply with a given right-hand-side
    * according to this PBConstraint's comparator.
-   * @param minValue the minimum coefficient sum
-   * @param maxValue the maximum coefficient sum
-   * @param rhs      the right-hand-side
+   * @param minValue   the minimum coefficient sum
+   * @param maxValue   the maximum coefficient sum
+   * @param rhs        the right-hand-side
+   * @param comparator the comparator
    * @return {@link Tristate#TRUE} if the constraint is true, {@link Tristate#FALSE} if it is false and
    * {@link Tristate#UNDEF} if both are still possible
    */
-  private Tristate evaluateCoeffs(int minValue, int maxValue, int rhs) {
+  static Tristate evaluateCoeffs(int minValue, int maxValue, int rhs, CType comparator) {
     int status = 0;
-    if (rhs >= minValue) {
+    if (rhs >= minValue)
       status++;
-    }
-    if (rhs > minValue) {
+    if (rhs > minValue)
       status++;
-    }
-    if (rhs >= maxValue) {
+    if (rhs >= maxValue)
       status++;
-    }
-    if (rhs > maxValue) {
+    if (rhs > maxValue)
       status++;
-    }
 
-    switch (this.comparator) {
+    switch (comparator) {
       case EQ:
         return (status == 0 || status == 4) ? Tristate.FALSE : Tristate.UNDEF;
       case LE:
