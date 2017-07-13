@@ -33,6 +33,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
+import org.logicng.datastructures.Tristate;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -366,17 +367,78 @@ public final class PBConstraint extends Formula {
     final List<Literal> newLits = new LinkedList<>();
     final List<Integer> newCoeffs = new LinkedList<>();
     int lhsFixed = 0;
+    int minValue = 0;
+    int maxValue = 0;
     for (int i = 0; i < this.literals.length; i++) {
       final Formula restriction = assignment.restrictLit(this.literals[i]);
       if (restriction == null) {
         newLits.add(this.literals[i]);
-        newCoeffs.add(this.coefficients[i]);
+        int coeff = this.coefficients[i];
+        newCoeffs.add(coeff);
+        if (coeff > 0) {
+          maxValue += coeff;
+        } else {
+          minValue += coeff;
+        }
       } else if (restriction.type == FType.TRUE)
         lhsFixed += this.coefficients[i];
     }
-    return newLits.isEmpty()
-            ? this.evaluateComparator(lhsFixed) ? f.verum() : f.falsum()
-            : f.pbc(this.comparator, this.rhs - lhsFixed, newLits, newCoeffs);
+
+    if (newLits.isEmpty()) {
+      return this.evaluateComparator(lhsFixed) ? f.verum() : f.falsum();
+    }
+
+    int newRHS = this.rhs - lhsFixed;
+    if (comparator != CType.EQ) {
+      Tristate fixed = evaluateCoeffs(minValue, maxValue, newRHS);
+      if (fixed == Tristate.TRUE) {
+        return f.verum();
+      } else if (fixed == Tristate.FALSE) {
+        return f.falsum();
+      }
+    }
+
+    return f.pbc(this.comparator, newRHS, newLits, newCoeffs);
+  }
+
+  /**
+   * Internal helper for checking if a given coefficient-sum min- and max-value can comply with a given right-hand-side
+   * according to this PBConstraint's comparator.
+   * @param minValue the minimum coefficient sum
+   * @param maxValue the maximum coefficient sum
+   * @param rhs      the right-hand-side
+   * @return {@link Tristate#TRUE} if the constraint is true, {@link Tristate#FALSE} if it is false and
+   * {@link Tristate#UNDEF} if both are still possible
+   */
+  private Tristate evaluateCoeffs(int minValue, int maxValue, int rhs) {
+    int status = 0;
+    if (rhs >= minValue) {
+      status++;
+    }
+    if (rhs > minValue) {
+      status++;
+    }
+    if (rhs >= maxValue) {
+      status++;
+    }
+    if (rhs > maxValue) {
+      status++;
+    }
+
+    switch (this.comparator) {
+      case EQ:
+        return (status == 0 || status == 4) ? Tristate.FALSE : Tristate.UNDEF;
+      case LE:
+        return status >= 3 ? Tristate.TRUE : (status < 1 ? Tristate.FALSE : Tristate.UNDEF);
+      case LT:
+        return status > 3 ? Tristate.TRUE : (status <= 1 ? Tristate.FALSE : Tristate.UNDEF);
+      case GE:
+        return status <= 1 ? Tristate.TRUE : (status > 3 ? Tristate.FALSE : Tristate.UNDEF);
+      case GT:
+        return status < 1 ? Tristate.TRUE : (status >= 3 ? Tristate.FALSE : Tristate.UNDEF);
+      default:
+        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
+    }
   }
 
   @Override
