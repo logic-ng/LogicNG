@@ -27,8 +27,37 @@
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
   <version>1.2</version>
-  <name>LogicNG</name>
   <packaging>jar</packaging>
+
+  <name>LogicNG</name>
+  <description>The Next Generation Logic Library</description>
+  <url>http://www.logicng.org</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Christoph Zengler</name>
+      <email>christoph@zengler.eu</email>
+    </developer>
+    <developer>
+      <name>Steffen Hildebrandt</name>
+    </developer>
+    <developer>
+      <name>Martin Siegmund</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com:logic-ng/LogicNG.git</connection>
+    <developerConnection>scm:git:ssh://github.com:logic-ng/LogicNG.git</developerConnection>
+    <url>https://github.com/logic-ng/LogicNG</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -105,7 +134,7 @@
                     <limit>
                       <counter>COMPLEXITY</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.5</minimum>
+                      <minimum>0.8</minimum>
                     </limit>
                   </limits>
                 </rule>
@@ -183,18 +212,6 @@
     </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>sonatype-nexus-snapshot</id>
