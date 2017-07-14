@@ -88,7 +88,7 @@ public class Substitution {
 
   @Override
   public boolean equals(final Object other) {
-    return this == other || (other instanceof Substitution && this.subst.equals(((Substitution) other).subst));
+    return other != null && (this == other || (this.getClass() == other.getClass() && this.subst.equals(((Substitution) other).subst)));
   }
 
   @Override

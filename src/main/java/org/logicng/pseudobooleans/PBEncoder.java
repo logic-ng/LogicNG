@@ -189,7 +189,7 @@ public class PBEncoder {
           this.swc = new PBSWC(this.f);
         return this.swc.encode(simplifiedLits, simplifiedCoeffs, rhs, result);
       case BINARY_MERGE:
-        new PBBinaryMerge(f, this.config()).encode(simplifiedLits, simplifiedCoeffs, rhs, result);
+        return new PBBinaryMerge(f, this.config()).encode(simplifiedLits, simplifiedCoeffs, rhs, result);
       case ADDER_NETWORKS:
         if (this.adderNetworks == null)
           this.adderNetworks = new PBAdderNetworks(f);

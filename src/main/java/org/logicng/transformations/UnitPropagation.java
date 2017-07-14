@@ -91,6 +91,8 @@ public final class UnitPropagation implements FormulaTransformation {
           for (Formula op : cnf)
             this.addClause(generateClauseVector(op));
           break;
+        default:
+          throw new IllegalStateException("Unexpected formula type in CNF: " + cnf.type());
       }
     }
 
