@@ -13,6 +13,17 @@ The most important philosophy of the library is to avoid unnecessary object crea
 
 Compared to other implementation of logic libraries on the JVM this is a huge memory and performance improvement.
 
+## Usage
+LogicNG is released in the Maven Central Repository.  To include it just add
+```xml
+<dependency>
+  <groupId>org.logicng</groupId>
+  <artifactId>logicng</artifactId>
+  <version>1.2</version>
+</dependency>
+```
+to you Maven POM.
+
 ## Development Model
 The `master` branch contains the latest release of LogicNG.  If you want a *stable* and *well tested* version you should choose this branch.  The `development` branch reflects the *current state* of the next version.  This branch will always compile, but code might not be as well tested and APIs may still change before the next release.  If you want to try *cutting edge* features, you can checkout this branch at your own risk.  It is *not recommended* to use the development version for *production* systems.  Larger features will be developed in their own branches and will be merged to the development branch when ready.
 
