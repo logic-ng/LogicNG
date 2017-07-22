@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Computes a minimal unsatisfiable subset (MUS) of a given formula with different algorithms.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public final class MUSGeneration {
@@ -59,7 +59,7 @@ public final class MUSGeneration {
    * @param f            the formula factory
    * @return the MUS
    */
-  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f) {
+  public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f) {
     return this.computeMUS(propositions, f, new MUSConfig.Builder().build());
   }
 
@@ -70,7 +70,7 @@ public final class MUSGeneration {
    * @param config       the MUS configuration
    * @return the MUS
    */
-  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f, final MUSConfig config) {
+  public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
     if (propositions.isEmpty())
       throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
     switch (config.algorithm) {

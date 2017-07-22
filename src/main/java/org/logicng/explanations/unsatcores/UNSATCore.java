@@ -35,12 +35,12 @@ import java.util.Objects;
 
 /**
  * An unsatisfiable core (can be a minimal unsatisfiable sub-formula).
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
-final public class UNSATCore {
+final public class UNSATCore<T extends Proposition> {
 
-  private final List<Proposition> propositions;
+  private final List<T> propositions;
   private final boolean isMUS;
 
   /**
@@ -48,7 +48,7 @@ final public class UNSATCore {
    * @param propositions the propositions of the core
    * @param isMUS        {@code true} if it is a MUS, {@code false} otherwise
    */
-  public UNSATCore(final List<Proposition> propositions, boolean isMUS) {
+  public UNSATCore(final List<T> propositions, boolean isMUS) {
     this.propositions = propositions;
     this.isMUS = isMUS;
   }
@@ -57,7 +57,7 @@ final public class UNSATCore {
    * Returns the propositions of this MUS.
    * @return the propositions of this MUS
    */
-  public List<Proposition> propositions() {
+  public List<T> propositions() {
     return this.propositions;
   }
 

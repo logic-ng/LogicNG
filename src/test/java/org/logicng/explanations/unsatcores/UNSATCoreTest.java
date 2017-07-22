@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 
 import java.util.ArrayList;
@@ -13,13 +12,13 @@ import java.util.List;
 
 /**
  * Unit tests for {@link UNSATCore}.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class UNSATCoreTest {
 
-  private final List<Proposition> props1;
-  private final List<Proposition> props2;
+  private final List<StandardProposition> props1;
+  private final List<StandardProposition> props2;
   private final UNSATCore core1;
   private final UNSATCore core2;
 
@@ -38,8 +37,8 @@ public class UNSATCoreTest {
     props2.add(new StandardProposition(parser.parse("a | ~b")));
     props2.add(new StandardProposition(parser.parse("~a | ~b")));
     props2.add(new StandardProposition(parser.parse("~a | ~b | c")));
-    this.core1 = new UNSATCore(props1, true);
-    this.core2 = new UNSATCore(props2, false);
+    this.core1 = new UNSATCore<>(props1, true);
+    this.core2 = new UNSATCore<>(props2, false);
   }
 
   @Test
@@ -53,16 +52,16 @@ public class UNSATCoreTest {
   @Test
   public void testHashCode() {
     Assert.assertEquals(core1.hashCode(), core1.hashCode());
-    Assert.assertEquals(core2.hashCode(), new UNSATCore(props2, false).hashCode());
+    Assert.assertEquals(core2.hashCode(), new UNSATCore<>(props2, false).hashCode());
   }
 
   @Test
   public void testEquals() {
     Assert.assertEquals(core1, core1);
-    Assert.assertEquals(core1, new UNSATCore(props1, true));
+    Assert.assertEquals(core1, new UNSATCore<>(props1, true));
     Assert.assertNotEquals(core1, core2);
-    Assert.assertNotEquals(core1, new UNSATCore(props1, false));
-    Assert.assertNotEquals(core1, new UNSATCore(props2, true));
+    Assert.assertNotEquals(core1, new UNSATCore<>(props1, false));
+    Assert.assertNotEquals(core1, new UNSATCore<>(props2, true));
     Assert.assertNotEquals(core1, null);
     Assert.assertNotEquals(core1, "String");
   }
