@@ -48,7 +48,7 @@ import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public abstract class SATSolver {
@@ -334,6 +334,14 @@ public abstract class SATSolver {
   public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables);
 
   /**
+   * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
+   * all variables are considered relevant. Additionally keeps all the additional variables TODO
+   * @param variables the set of variables
+   * @return the list of models
+   */
+  public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables);
+
+  /**
    * Enumerates all models of the current formula and passes it to a model enumeration handler.
    * @param handler the model enumeration handler
    * @return the list of models
@@ -361,6 +369,15 @@ public abstract class SATSolver {
    * @return the list of models
    */
   public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final ModelEnumerationHandler handler);
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of variables  and passes it to a model
+   * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
+   * @param variables the set of variables
+   * @param handler   the model enumeration handler TODO
+   * @return the list of models
+   */
+  public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler);
 
   /**
    * Saves the current solver state.

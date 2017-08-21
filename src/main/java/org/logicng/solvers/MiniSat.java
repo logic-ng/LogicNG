@@ -53,6 +53,7 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +67,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -286,12 +287,24 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> variables) {
+    return enumerateAllModels(variables, new HashSet<Variable>()); //TODO better empty List?
+  }
+
+  @Override
+  public List<Assignment> enumerateAllModels(Collection<Variable> variables, Collection<Variable> additionalVariables) {
     List<Assignment> models = new LinkedList<>();
     SolverState stateBeforeEnumeration = null;
     if (this.style == SolverStyle.MINISAT && incremental)
       stateBeforeEnumeration = this.saveState();
+    SortedSet<Variable> allVariables = new TreeSet<>();
+    if (variables == null) {
+      allVariables = null;
+    } else {
+      allVariables.addAll(variables);
+      allVariables.addAll(additionalVariables);
+    }
     while (this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(variables);
+      final Assignment model = this.model(allVariables);
       assert model != null;
       models.add(model);
       this.add(model.blockingClause(this.f, variables));
@@ -303,17 +316,29 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> literals, final ModelEnumerationHandler handler) {
+    return enumerateAllModels(literals, new HashSet<Variable>(), handler); //TODO
+  }
+
+  @Override
+  public List<Assignment> enumerateAllModels(Collection<Variable> variables, Collection<Variable> additionalVariables, ModelEnumerationHandler handler) {
     List<Assignment> models = new LinkedList<>();
     SolverState stateBeforeEnumeration = null;
     if (this.style == SolverStyle.MINISAT && incremental)
       stateBeforeEnumeration = this.saveState();
     boolean proceed = true;
+    SortedSet<Variable> allVariables = new TreeSet<>();
+    if (variables == null) {
+      allVariables = null;
+    } else {
+      allVariables.addAll(variables);
+      allVariables.addAll(additionalVariables);
+    }
     while (proceed && this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(literals);
+      final Assignment model = this.model(allVariables);
       assert model != null;
       models.add(model);
       proceed = handler.foundModel(model);
-      this.add(model.blockingClause(this.f, literals));
+      this.add(model.blockingClause(this.f, variables));
     }
     if (this.style == SolverStyle.MINISAT && incremental)
       this.loadState(stateBeforeEnumeration);
