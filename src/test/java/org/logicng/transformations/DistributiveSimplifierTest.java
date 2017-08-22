@@ -79,17 +79,29 @@ public class DistributiveSimplifierTest {
   }
 
   @Test
-  public void tempTest() throws ParserException {
-    UnitPropagation unitPropagation = new UnitPropagation();
+  public void testFormulaTypes() {
+    Assert.assertEquals(F.IMP1, F.IMP1.transform(distributiveSimplifier));
+    Assert.assertEquals(F.EQ1, F.EQ1.transform(distributiveSimplifier));
+    Assert.assertEquals(F.NOT1, F.NOT1.transform(distributiveSimplifier));
+  }
+
+  @Test
+  public void testComplexExamples() throws ParserException {
     final PropositionalParser p = new PropositionalParser(F.f);
-    Formula q = p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c");
-    System.out.println(q + " (" + q.numberOfAtoms() + ")");
-    for (int i = 0; i < 10; i++) {
-      q = distributiveSimplifier.apply(q, true);
-      System.out.println("D: " + q + " (" + q.numberOfAtoms() + ")");
-      q = unitPropagation.apply(q, true);
-      System.out.println("U: " + q + " (" + q.numberOfAtoms() + ")");
-      System.out.println();
-    }
+    Formula cAnd = p.parse("(a | b | ~c) & (~a | ~d) & (~c | d | b) & (~c | ~b)");
+    Formula cAndD1 = cAnd.transform(distributiveSimplifier);
+    Assert.assertEquals(p.parse("(~a | ~d) & (~c | (a | b) & (d | b) & ~b)"), cAndD1);
+    Assert.assertEquals(p.parse("(~a | ~d) & (~c | ~b & (b | a & d))"), cAndD1.transform(distributiveSimplifier));
+
+    Assert.assertEquals(F.f.not(cAndD1), F.f.not(cAnd).transform(distributiveSimplifier));
+
+    Formula cOr = p.parse("(x & y & z) | (x & y & ~z) | (x & ~y & z)");
+    Formula cOrD1 = cOr.transform(distributiveSimplifier);
+    Assert.assertEquals(p.parse("x & (y & z | y & ~z | ~y & z)"), cOrD1);
+    Assert.assertEquals(p.parse("x & (~y & z | y)"), cOrD1.transform(distributiveSimplifier));
+
+    Assert.assertEquals(F.f.equivalence(cOrD1, cAndD1), F.f.equivalence(cOr, cAnd).transform(distributiveSimplifier));
+    Assert.assertEquals(F.f.implication(cOrD1, cAndD1), F.f.implication(cOr, cAnd).transform(distributiveSimplifier));
+
   }
 }

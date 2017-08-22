@@ -335,8 +335,10 @@ public abstract class SATSolver {
 
   /**
    * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
-   * all variables are considered relevant. Additionally keeps all the additional variables TODO
-   * @param variables the set of variables
+   * all variables are considered relevant. Additionally every assignment contains literals for the given additional
+   * variables.
+   * @param variables           the set of variables
+   * @param additionalVariables the additional variables
    * @return the list of models
    */
   public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables);
@@ -372,9 +374,11 @@ public abstract class SATSolver {
 
   /**
    * Enumerates all models of the current formula wrt. a given set of variables  and passes it to a model
-   * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
-   * @param variables the set of variables
-   * @param handler   the model enumeration handler TODO
+   * enumeration handler.  If the set is {@code null}, all literals are considered relevant. Additionally every
+   * assignment contains literals for the given additional variables.
+   * @param variables           the set of variables
+   * @param additionalVariables the additional variables
+   * @param handler             the model enumeration handler
    * @return the list of models
    */
   public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler);

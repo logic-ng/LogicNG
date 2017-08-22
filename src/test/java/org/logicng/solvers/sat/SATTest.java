@@ -495,6 +495,57 @@ public class SATTest {
   }
 
   @Test
+  public void testModelEnumeration() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        Variable lit = f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(f.cc(CType.GE, 1, lits));
+
+      List<Assignment> models = s.enumerateAllModels(firstFive, lits);
+      Assert.assertEquals(32, models.size());
+      for (Assignment model : models) {
+        for (Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testModelEnumerationWithHandler() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        Variable lit = f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(f.cc(CType.GE, 1, lits));
+
+      NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
+      List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
+      Assert.assertEquals(29, modelsWithHandler.size());
+      for (Assignment model : modelsWithHandler) {
+        for (Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+    }
+  }
+
+  @Test
   public void testNumberOfModelHandler() {
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
