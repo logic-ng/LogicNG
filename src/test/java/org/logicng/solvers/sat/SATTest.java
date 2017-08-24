@@ -516,6 +516,7 @@ public class SATTest {
           Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
         }
       }
+      s.reset();
     }
   }
 
@@ -542,6 +543,19 @@ public class SATTest {
           Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
         }
       }
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testEmptyEnumeration() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      s.add(f.falsum());
+      List<Assignment> models = s.enumerateAllModels();
+      Assert.assertTrue(models.isEmpty());
+
+      s.reset();
     }
   }
 
