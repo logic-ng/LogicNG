@@ -1262,5 +1262,59 @@ public class FormulaFactory {
               + this.conjunctions2 + this.conjunctions3 + this.conjunctions4 + this.conjunctionsN + this.disjunctions2
               + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof FormulaFactoryStatistics)) return false;
+      FormulaFactoryStatistics that = (FormulaFactoryStatistics) o;
+      return positiveLiterals == that.positiveLiterals &&
+              negativeLiterals == that.negativeLiterals &&
+              negations == that.negations &&
+              implications == that.implications &&
+              equivalences == that.equivalences &&
+              conjunctions2 == that.conjunctions2 &&
+              conjunctions3 == that.conjunctions3 &&
+              conjunctions4 == that.conjunctions4 &&
+              conjunctionsN == that.conjunctionsN &&
+              disjunctions2 == that.disjunctions2 &&
+              disjunctions3 == that.disjunctions3 &&
+              disjunctions4 == that.disjunctions4 &&
+              disjunctionsN == that.disjunctionsN &&
+              ccCounter == that.ccCounter &&
+              pbCounter == that.pbCounter &&
+              cnfCounter == that.cnfCounter &&
+              Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(name, positiveLiterals, negativeLiterals, negations, implications, equivalences, conjunctions2,
+              conjunctions3, conjunctions4, conjunctionsN, disjunctions2, disjunctions3, disjunctions4, disjunctionsN,
+              ccCounter, pbCounter, cnfCounter);
+    }
+
+    @Override
+    public String toString() {
+      return "FormulaFactoryStatistics{" +
+              "name='" + name + '\'' +
+              ", positiveLiterals=" + positiveLiterals +
+              ", negativeLiterals=" + negativeLiterals +
+              ", negations=" + negations +
+              ", implications=" + implications +
+              ", equivalences=" + equivalences +
+              ", conjunctions2=" + conjunctions2 +
+              ", conjunctions3=" + conjunctions3 +
+              ", conjunctions4=" + conjunctions4 +
+              ", conjunctionsN=" + conjunctionsN +
+              ", disjunctions2=" + disjunctions2 +
+              ", disjunctions3=" + disjunctions3 +
+              ", disjunctions4=" + disjunctions4 +
+              ", disjunctionsN=" + disjunctionsN +
+              ", ccCounter=" + ccCounter +
+              ", pbCounter=" + pbCounter +
+              ", cnfCounter=" + cnfCounter +
+              '}';
+    }
   }
 }
