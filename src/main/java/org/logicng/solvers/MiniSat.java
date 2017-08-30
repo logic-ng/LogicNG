@@ -53,7 +53,7 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -287,7 +287,7 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> variables) {
-    return enumerateAllModels(variables, new HashSet<Variable>()); //TODO better empty List?
+    return enumerateAllModels(variables, Collections.<Variable>emptyList());
   }
 
   @Override
@@ -316,7 +316,7 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> literals, final ModelEnumerationHandler handler) {
-    return enumerateAllModels(literals, new HashSet<Variable>(), handler); //TODO
+    return enumerateAllModels(literals, Collections.<Variable>emptyList(), handler);
   }
 
   @Override
