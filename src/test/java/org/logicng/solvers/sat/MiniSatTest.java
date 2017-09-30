@@ -51,10 +51,10 @@ public class MiniSatTest {
     solver.newVar(true, true);
     solver.newVar(true, true);
     solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3));
-    solver.addClause(clause(-1, -2));
-    solver.addClause(clause(-1, -3));
-    solver.addClause(clause(-2, -3));
+    solver.addClause(clause(1, 2, 3), null);
+    solver.addClause(clause(-1, -2), null);
+    solver.addClause(clause(-1, -3), null);
+    solver.addClause(clause(-2, -3), null);
     Assert.assertEquals(TRUE, solver.solve(null));
     Assert.assertEquals(FALSE, solver.solve(null, clause(1, 2)));
   }

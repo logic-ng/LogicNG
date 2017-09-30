@@ -82,6 +82,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.LNGBoundedIntQueue;
 import org.logicng.solvers.datastructures.LNGBoundedLongQueue;
 import org.logicng.solvers.datastructures.MSClause;
@@ -143,7 +144,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
    * Constructs a new Glucose 2 solver with the default values for solver configuration.  By default, incremental mode
    * is activated.
    */
-  public GlucoseSyrup() {
+  GlucoseSyrup() {
     this(new MiniSatConfig.Builder().build(), new GlucoseConfig.Builder().build());
   }
 
@@ -219,14 +220,32 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
   }
 
   @Override
-  public boolean addClause(final LNGIntVector ps) {
+  public boolean addClause(final LNGIntVector ps, final Proposition proposition) {
     assert decisionLevel() == 0;
-    if (!ok)
-      return false;
-    ps.sort();
     int p;
     int i;
     int j;
+    if (this.config.proofGeneration) {
+      LNGIntVector vec = new LNGIntVector(ps.size());
+      for (i = 0; i < ps.size(); i++)
+        vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
+      this.pgOriginalClauses.push(new ProofInformation(vec, proposition));
+    }
+    if (!ok)
+      return false;
+    ps.sort();
+
+    boolean flag = false;
+    LNGIntVector oc = null;
+    if (this.config.proofGeneration) {
+      oc = new LNGIntVector();
+      for (i = 0, p = LIT_UNDEF; i < ps.size(); i++) {
+        oc.push(ps.get(i));
+        if (value(ps.get(i)) == Tristate.TRUE || ps.get(i) == not(p) || value(ps.get(i)) == Tristate.FALSE)
+          flag = true;
+      }
+    }
+
     for (i = 0, j = 0, p = LIT_UNDEF; i < ps.size(); i++)
       if (value(ps.get(i)) == Tristate.TRUE || ps.get(i) == not(p))
         return true;
@@ -235,6 +254,21 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
         ps.set(j++, p);
       }
     ps.removeElements(i - j);
+
+    if (flag) {
+      LNGIntVector vec = new LNGIntVector(ps.size() + 1);
+      vec.push(1);
+      for (i = 0; i < ps.size(); i++)
+        vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
+      this.pgProof.push(vec);
+
+      vec = new LNGIntVector(oc.size());
+      vec.push(-1);
+      for (i = 0; i < oc.size(); i++)
+        vec.push((var(oc.get(i)) + 1) * (-2 * (sign(oc.get(i)) ? 1 : 0) + 1));
+      this.pgProof.push(vec);
+    }
+
     if (ps.size() == 0) {
       ok = false;
       return false;
@@ -252,6 +286,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
 
   @Override
   public Tristate solve(final SATHandler handler) {
+    if (this.config.incremental && this.config.proofGeneration)
+      throw new IllegalStateException("Cannot use incremental and proof generation at the same time");
     this.handler = handler;
     if (this.handler != null)
       this.handler.startedSolving();
@@ -265,6 +301,12 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     Tristate status = Tristate.UNDEF;
     while (status == Tristate.UNDEF && !canceledByHandler)
       status = search();
+
+    if (this.config.proofGeneration) {
+      if (status == Tristate.FALSE)
+        this.pgProof.push(new LNGIntVector(1, 0));
+    }
+
     if (status == Tristate.TRUE) {
       model = new LNGBooleanVector(vars.size());
       for (final MSVariable v : this.vars)
@@ -341,6 +383,14 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
 
   @Override
   protected void removeClause(final MSClause c) {
+    if (this.config.proofGeneration) {
+      final LNGIntVector vec = new LNGIntVector(c.size());
+      vec.push(-1);
+      for (int i = 0; i < c.size(); i++)
+        vec.push((var(c.get(i)) + 1) * (-2 * (sign(c.get(i)) ? 1 : 0) + 1));
+      this.pgProof.push(vec);
+    }
+
     detachClause(c);
     if (locked(c))
       v(c.get(0)).setReason(null);
@@ -743,6 +793,15 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
         lbdQueue.push(analyzeLBD);
         sumLBD += analyzeLBD;
         cancelUntil(analyzeBtLevel);
+
+        if (this.config.proofGeneration) {
+          final LNGIntVector vec = new LNGIntVector(learntClause.size());
+          vec.push(1);
+          for (int i = 0; i < learntClause.size(); i++)
+            vec.push((var(learntClause.get(i)) + 1) * (-2 * (sign(learntClause.get(i)) ? 1 : 0) + 1));
+          this.pgProof.push(vec);
+        }
+
         if (learntClause.size() == 1) {
           uncheckedEnqueue(learntClause.get(0), null);
         } else {

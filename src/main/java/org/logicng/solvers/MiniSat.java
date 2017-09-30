@@ -32,9 +32,12 @@ import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
+import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.UNSATCore;
+import org.logicng.explanations.unsatcores.drup.DRUPTrim;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -44,6 +47,8 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
+import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.GlucoseSyrup;
 import org.logicng.solvers.sat.MiniCard;
@@ -51,9 +56,11 @@ import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,6 +69,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
@@ -74,6 +82,7 @@ public final class MiniSat extends SATSolver {
 
   private enum SolverStyle {MINISAT, GLUCOSE, MINICARD}
 
+  private final MiniSatConfig config;
   private final MiniSatStyleSolver solver;
   private final CCEncoder ccEncoder;
   private final SolverStyle style;
@@ -91,6 +100,7 @@ public final class MiniSat extends SATSolver {
   private MiniSat(final FormulaFactory f, final SolverStyle solverStyle, final MiniSatConfig miniSatConfig,
                   final GlucoseConfig glucoseConfig) {
     super(f);
+    this.config = miniSatConfig;
     this.style = solverStyle;
     this.initialPhase = miniSatConfig.initialPhase();
     switch (solverStyle) {
@@ -173,7 +183,7 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public void add(final Formula formula) {
+  public void add(final Formula formula, Proposition proposition) {
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
       this.result = UNDEF;
@@ -185,17 +195,17 @@ public final class MiniSat extends SATSolver {
             ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs() - 1);
           else if (constraint.comparator() == CType.EQ && constraint.rhs() == 1) {
             ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
-            this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())));
+            this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())), proposition);
           } else
-            this.addClauseSet(constraint.cnf());
+            this.addClauseSet(constraint.cnf(), proposition);
         } else {
           final EncodingResult result = EncodingResult.resultForMiniSat(this.f, this);
           ccEncoder.encode(constraint, result);
         }
       } else
-        this.addClauseSet(constraint.cnf());
+        this.addClauseSet(constraint.cnf(), proposition);
     } else
-      this.addClauseSet(formula.cnf());
+      this.addClauseSet(formula.cnf(), proposition);
   }
 
   @Override
@@ -220,9 +230,9 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  protected void addClause(final Formula formula) {
+  protected void addClause(final Formula formula, final Proposition proposition) {
     this.result = UNDEF;
-    this.solver.addClause(generateClauseVector(formula.literals()));
+    this.solver.addClause(generateClauseVector(formula.literals()), proposition);
   }
 
   @Override
@@ -230,7 +240,7 @@ public final class MiniSat extends SATSolver {
     this.result = UNDEF;
     final SortedSet<Literal> literals = new TreeSet<>(formula.literals());
     literals.add(relaxationVar);
-    this.solver.addClause(generateClauseVector(literals));
+    this.solver.addClause(generateClauseVector(literals), null);
   }
 
   @Override
@@ -421,6 +431,64 @@ public final class MiniSat extends SATSolver {
    */
   public boolean initialPhase() {
     return this.initialPhase;
+  }
+
+  @Override
+  public UNSATCore<Proposition> unsatCore() {
+    if (!this.config.proofGeneration())
+      throw new IllegalStateException("Cannot generate an unsat core if proof generation is not turned on");
+    if (this.result != FALSE)
+      throw new IllegalStateException("A unsat core can only be generated if the formula is solved and is UNSAT");
+    if (this.underlyingSolver() instanceof MiniCard)
+      throw new IllegalStateException("Cannot compute an unsat core with MiniCard.");
+    if (this.underlyingSolver() instanceof GlucoseSyrup && this.config.incremental())
+      throw new IllegalStateException("Cannot compute an unsat core with Glucose in incremental mode.");
+
+    DRUPTrim trimmer = new DRUPTrim();
+
+    Map<Formula, Proposition> clause2proposition = new HashMap<>();
+    final LNGVector<LNGIntVector> clauses = new LNGVector<>(this.underlyingSolver().pgOriginalClauses().size());
+    for (MiniSatStyleSolver.ProofInformation pi : this.underlyingSolver().pgOriginalClauses()) {
+      clauses.push(pi.clause());
+      final Formula clause = getFormulaForVector(pi.clause());
+      Proposition proposition = pi.proposition();
+      if (proposition == null)
+        proposition = new StandardProposition(clause);
+      clause2proposition.put(clause, proposition);
+    }
+
+    final DRUPTrim.DRUPResult result = trimmer.compute(clauses, this.underlyingSolver().pgProof());
+    if (result.trivialUnsat())
+      return handleTrivialCase();
+    final LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
+    for (LNGIntVector vector : result.unsatCore())
+      propositions.add(clause2proposition.get(getFormulaForVector(vector)));
+    return new UNSATCore<>(new ArrayList<>(propositions), false);
+  }
+
+  private UNSATCore<Proposition> handleTrivialCase() {
+    final LNGVector<MiniSatStyleSolver.ProofInformation> clauses = this.underlyingSolver().pgOriginalClauses();
+    for (int i = 0; i < clauses.size(); i++)
+      for (int j = i + 1; j < clauses.size(); j++) {
+        if (clauses.get(i).clause().size() == 1 && clauses.get(j).clause().size() == 1
+                && clauses.get(i).clause().get(0) + clauses.get(j).clause().get(0) == 0) {
+          LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
+          propositions.add(clauses.get(i).proposition());
+          propositions.add(clauses.get(j).proposition());
+          return new UNSATCore<>(new ArrayList<>(propositions), false);
+        }
+      }
+    throw new IllegalStateException("Should be a trivial unsat core, but did not found one.");
+  }
+
+  private Formula getFormulaForVector(LNGIntVector vector) {
+    final List<Literal> literals = new ArrayList<>(vector.size());
+    for (int i = 0; i < vector.size(); i++) {
+      int lit = vector.get(i);
+      String varName = this.underlyingSolver().nameForIdx(Math.abs(lit) - 1);
+      literals.add(f.literal(varName, lit > 0));
+    }
+    return f.or(literals);
   }
 
   @Override

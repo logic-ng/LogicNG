@@ -20,7 +20,7 @@ public class GlucoseSyrupTest {
     gs.newVar(true, true);
     gs.newVar(true, true);
     gs.newVar(true, true);
-    gs.addClause(clause(1, 2, 3));
+    gs.addClause(clause(1, 2, 3), null);
   }
 
   @Test(expected = UnsupportedOperationException.class)

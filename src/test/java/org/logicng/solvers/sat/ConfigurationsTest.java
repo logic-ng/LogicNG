@@ -68,6 +68,7 @@ public class ConfigurationsTest {
             "learntsizeInc=1.5\n" +
             "incremental=false\n" +
             "initialPhase=true\n" +
+            "proofGeneration=false\n" +
             "}\n";
     Assert.assertEquals(expected, config.toString());
   }

@@ -94,7 +94,7 @@ public abstract class Encoding {
     this.clause.push(a);
     if (blocking != LIT_UNDEF)
       this.clause.push(blocking);
-    s.addClause(this.clause);
+    s.addClause(this.clause, null);
     this.clause.clear();
   }
 
@@ -123,7 +123,7 @@ public abstract class Encoding {
     this.clause.push(b);
     if (blocking != LIT_UNDEF)
       this.clause.push(blocking);
-    s.addClause(this.clause);
+    s.addClause(this.clause, null);
     this.clause.clear();
   }
 
@@ -155,7 +155,7 @@ public abstract class Encoding {
     this.clause.push(c);
     if (blocking != LIT_UNDEF)
       this.clause.push(blocking);
-    s.addClause(this.clause);
+    s.addClause(this.clause, null);
     this.clause.clear();
   }
 
@@ -190,7 +190,7 @@ public abstract class Encoding {
     this.clause.push(d);
     if (blocking != LIT_UNDEF)
       this.clause.push(blocking);
-    s.addClause(this.clause);
+    s.addClause(this.clause, null);
     this.clause.clear();
   }
 }

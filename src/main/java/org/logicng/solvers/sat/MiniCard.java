@@ -55,6 +55,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
@@ -118,7 +119,7 @@ public final class MiniCard extends MiniSatStyleSolver {
   }
 
   @Override
-  public boolean addClause(final LNGIntVector ps) {
+  public boolean addClause(final LNGIntVector ps, final Proposition proposition) {
     assert decisionLevel() == 0;
     if (!ok)
       return false;

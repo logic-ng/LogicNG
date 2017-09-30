@@ -142,7 +142,7 @@ public class WBO extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     if (this.symmetryStrategy)
       this.symmetryBreaking();
     LNGIntVector clause = new LNGIntVector();
@@ -156,7 +156,7 @@ public class WBO extends MaxSAT {
           clause.push(softClauses.get(i).relaxationVars().get(j));
         clause.push(softClauses.get(i).assumptionVar());
 
-        s.addClause(clause);
+        s.addClause(clause, null);
       }
     }
     return s;
@@ -168,7 +168,7 @@ public class WBO extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     if (this.symmetryStrategy)
       this.symmetryBreaking();
     LNGIntVector clause;
@@ -177,7 +177,7 @@ public class WBO extends MaxSAT {
       for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
         clause.push(softClauses.get(i).relaxationVars().get(j));
       clause.push(softClauses.get(i).assumptionVar());
-      s.addClause(clause);
+      s.addClause(clause, null);
     }
     return s;
   }
@@ -187,7 +187,7 @@ public class WBO extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     return s;
   }
 

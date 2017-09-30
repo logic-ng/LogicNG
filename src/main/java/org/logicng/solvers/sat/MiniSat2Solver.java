@@ -49,6 +49,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
@@ -116,14 +117,32 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
   }
 
   @Override
-  public boolean addClause(final LNGIntVector ps) {
+  public boolean addClause(final LNGIntVector ps, final Proposition proposition) {
     assert decisionLevel() == 0;
-    if (!ok)
-      return false;
-    ps.sort();
     int p;
     int i;
     int j;
+    if (this.config.proofGeneration) {
+      LNGIntVector vec = new LNGIntVector(ps.size());
+      for (i = 0; i < ps.size(); i++)
+        vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
+      this.pgOriginalClauses.push(new ProofInformation(vec, proposition));
+    }
+    if (!ok)
+      return false;
+    ps.sort();
+
+    boolean flag = false;
+    LNGIntVector oc = null;
+    if (this.config.proofGeneration) {
+      oc = new LNGIntVector();
+      for (i = 0, p = LIT_UNDEF; i < ps.size(); i++) {
+        oc.push(ps.get(i));
+        if (value(ps.get(i)) == Tristate.TRUE || ps.get(i) == not(p) || value(ps.get(i)) == Tristate.FALSE)
+          flag = true;
+      }
+    }
+
     for (i = 0, j = 0, p = LIT_UNDEF; i < ps.size(); i++)
       if (value(ps.get(i)) == Tristate.TRUE || ps.get(i) == not(p))
         return true;
@@ -132,6 +151,21 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         ps.set(j++, p);
       }
     ps.removeElements(i - j);
+
+    if (flag) {
+      LNGIntVector vec = new LNGIntVector(ps.size() + 1);
+      vec.push(1);
+      for (i = 0; i < ps.size(); i++)
+        vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
+      this.pgProof.push(vec);
+
+      vec = new LNGIntVector(oc.size());
+      vec.push(-1);
+      for (i = 0; i < oc.size(); i++)
+        vec.push((var(oc.get(i)) + 1) * (-2 * (sign(oc.get(i)) ? 1 : 0) + 1));
+      this.pgProof.push(vec);
+    }
+
     if (ps.empty()) {
       ok = false;
       return false;
@@ -168,6 +202,12 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
       status = search((int) (restBase * restartFirst));
       currRestarts++;
     }
+
+    if (this.config.proofGeneration) {
+      if (status == Tristate.FALSE)
+        this.pgProof.push(new LNGIntVector(1, 0));
+    }
+
     if (status == Tristate.TRUE) {
       model = new LNGBooleanVector(vars.size());
       for (final MSVariable v : this.vars)
@@ -192,7 +232,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
    * Saves and returns the solver state expressed as an integer array which stores the length of the internal data
    * structures.  The array has length 5 and has the following layout:
    * <p>
-   * {@code | current solver state | #vars | #clauses | #learnt clauses | #unit clauses |}
+   * {@code | current solver state | #vars | #clauses | #learnt clauses | #unit clauses | #pg original | #pg proof}
    * @return the current solver state
    */
   @Override
@@ -200,12 +240,16 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
     if (!incremental)
       throw new IllegalStateException("Cannot save a state when the incremental mode is deactivated");
     int[] state;
-    state = new int[5];
+    state = new int[7];
     state[0] = ok ? 1 : 0;
     state[1] = vars.size();
     state[2] = clauses.size();
     state[3] = learnts.size();
     state[4] = unitClauses.size();
+    if (this.config.proofGeneration) {
+      state[5] = pgOriginalClauses.size();
+      state[6] = pgProof.size();
+    }
     return state;
   }
 
@@ -233,6 +277,12 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
     for (i = 0; this.ok && i < this.unitClauses.size(); i++) {
       uncheckedEnqueue(this.unitClauses.get(i), null);
       this.ok = propagate() == null;
+    }
+    if (this.config.proofGeneration) {
+      int newPgOriginalSize = Math.min(state[5], this.pgOriginalClauses.size());
+      this.pgOriginalClauses.shrinkTo(newPgOriginalSize);
+      int newPgProofSize = Math.min(state[6], this.pgProof.size());
+      this.pgProof.shrinkTo(newPgProofSize);
     }
   }
 
@@ -270,6 +320,14 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
 
   @Override
   protected void removeClause(final MSClause c) {
+    if (this.config.proofGeneration) {
+      final LNGIntVector vec = new LNGIntVector(c.size());
+      vec.push(-1);
+      for (int i = 0; i < c.size(); i++)
+        vec.push((var(c.get(i)) + 1) * (-2 * (sign(c.get(i)) ? 1 : 0) + 1));
+      this.pgProof.push(vec);
+    }
+
     detachClause(c);
     if (locked(c))
       v(c.get(0)).setReason(null);
@@ -430,11 +488,14 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         removeClause(cs.get(i));
       else {
         assert value(c.get(0)) == Tristate.UNDEF && value(c.get(1)) == Tristate.UNDEF;
-        for (int k = 2; k < c.size(); k++)
-          if (value(c.get(k)) == Tristate.FALSE) {
-            c.set(k--, c.get(c.size() - 1));
-            c.pop();
-          }
+        if (!this.config.proofGeneration) {
+          // This simplification does not work with proof generation
+          for (int k = 2; k < c.size(); k++)
+            if (value(c.get(k)) == Tristate.FALSE) {
+              c.set(k--, c.get(c.size() - 1));
+              c.pop();
+            }
+        }
         cs.set(j++, cs.get(i));
       }
     }
@@ -490,6 +551,15 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         LNGIntVector learntClause = new LNGIntVector();
         analyze(confl, learntClause);
         cancelUntil(analyzeBtLevel);
+
+        if (this.config.proofGeneration) {
+          final LNGIntVector vec = new LNGIntVector(learntClause.size());
+          vec.push(1);
+          for (int i = 0; i < learntClause.size(); i++)
+            vec.push((var(learntClause.get(i)) + 1) * (-2 * (sign(learntClause.get(i)) ? 1 : 0) + 1));
+          this.pgProof.push(vec);
+        }
+
         if (learntClause.size() == 1) {
           uncheckedEnqueue(learntClause.get(0), null);
           this.unitClauses.push(learntClause.get(0));
