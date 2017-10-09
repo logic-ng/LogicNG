@@ -84,6 +84,9 @@ public final class PBConstraint extends Formula {
   private int hashCode;
   private int maxWeight;
 
+  private final boolean isTrivialFalse;
+  private final boolean isTrivialTrue;
+
   /**
    * Constructs a new pseudo-Boolean constraint.
    * @param literals     the literals
@@ -117,6 +120,32 @@ public final class PBConstraint extends Formula {
     this.rhs = rhs;
     this.encoding = null;
     this.hashCode = 0;
+
+    if (literals.length == 0) {
+      switch (comparator) {
+        case EQ:
+          isTrivialTrue = rhs == 0;
+          break;
+        case LE:
+          isTrivialTrue = rhs >= 0;
+          break;
+        case LT:
+          isTrivialTrue = rhs > 0;
+          break;
+        case GE:
+          isTrivialTrue = rhs <= 0;
+          break;
+        case GT:
+          isTrivialTrue = rhs < 0;
+          break;
+        default:
+          throw new IllegalArgumentException("Unknown comperator: " + comparator);
+      }
+      isTrivialFalse = !isTrivialTrue;
+    } else {
+      isTrivialTrue = false;
+      isTrivialFalse = false;
+    }
   }
 
   /**
@@ -175,6 +204,22 @@ public final class PBConstraint extends Formula {
    */
   public int maxWeight() {
     return this.maxWeight;
+  }
+
+  /**
+   * Returns whether the constraint is trivially false (only applies for constraints with no literals).
+   * @return whether the constraint is trivially false (only applies for constraints with no literals).
+   */
+  public boolean isTrivialFalse() {
+    return this.isTrivialFalse;
+  }
+
+  /**
+   * Returns whether the constraint is trivially true (only applies for constraints with no literals).
+   * @return whether the constraint is trivially true (only applies for constraints with no literals).
+   */
+  public boolean isTrivialTrue() {
+    return this.isTrivialTrue;
   }
 
   /**
