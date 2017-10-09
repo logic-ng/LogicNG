@@ -641,24 +641,21 @@ public class FormulaFactory {
       return this.falsum();
     if (literals.size() == 1)
       return literals.iterator().next();
-    Or tempOr = null;
     Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
-    if (literals.size() > 1) {
-      switch (literals.size()) {
-        case 2:
-          opOrMap = this.ors2;
-          break;
-        case 3:
-          opOrMap = this.ors3;
-          break;
-        case 4:
-          opOrMap = this.ors4;
-          break;
-        default:
-          break;
-      }
-      tempOr = opOrMap.get(literals);
+    switch (literals.size()) {
+      case 2:
+        opOrMap = this.ors2;
+        break;
+      case 3:
+        opOrMap = this.ors3;
+        break;
+      case 4:
+        opOrMap = this.ors4;
+        break;
+      default:
+        break;
     }
+    Or tempOr = opOrMap.get(literals);
     if (tempOr != null)
       return tempOr;
     tempOr = new Or(literals, this, true);
