@@ -79,7 +79,7 @@ public class DRUPTest {
     final List<List<Formula>> cnfs = new ArrayList<>(3);
     cnfs.add(DimacsReader.readCNF("tests/drup/simple_input.cnf", f));
     cnfs.add(DimacsReader.readCNF("tests/drup/pg4_input.cnf", f));
-    cnfs.add(DimacsReader.readCNF("tests/drup/avg_input.cnf", f));
+    cnfs.add(DimacsReader.readCNF("tests/drup/avg_input.cnf", f, "var"));
 
     for (SATSolver solver : this.solvers) {
       for (List<Formula> cnf : cnfs) {

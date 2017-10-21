@@ -58,8 +58,8 @@ import java.util.Map;
 
 /**
  * Implementation of the DRUP-trim tool to check satisfiability proofs and perform trimming.
- * @version 1.2
- * @since 1.2
+ * @version 1.3
+ * @since 1.3
  */
 public final class DRUPTrim {
 

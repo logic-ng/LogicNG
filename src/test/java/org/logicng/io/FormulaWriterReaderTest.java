@@ -58,7 +58,7 @@ public class FormulaWriterReaderTest {
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
-    FormulaWriter.write(fileName, p1, false);
+    FormulaWriter.write(file, p1, false);
     final Formula p2 = FormulaReader.readPropositionalFormula(fileName, f);
     final Formula p3 = FormulaReader.readPropositionalFormula(file, f);
     Assert.assertEquals(p1, p2);
