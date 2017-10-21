@@ -97,6 +97,7 @@ public class DRUPTest {
     final File testFolder = new File("tests/sat");
     final File[] files = testFolder.listFiles();
     assert files != null;
+    int count = 0;
     for (final SATSolver solver : this.solvers) {
       for (final File file : files) {
         final String fileName = file.getName();
@@ -106,12 +107,38 @@ public class DRUPTest {
           if (solver.sat() == FALSE) {
             final UNSATCore<Proposition> unsatCore = solver.unsatCore();
             verifyCore(unsatCore, cnf);
+            count++;
           }
           solver.reset();
         }
       }
       solver.reset();
     }
+    assertThat(count).isEqualTo(11 * this.solvers.length);
+  }
+
+  @Test
+  public void testUnsatCoresAimTestset() throws IOException, ParserException {
+    final File testFolder = new File("tests/sat/unsat");
+    final File[] files = testFolder.listFiles();
+    assert files != null;
+    int count = 0;
+    for (final SATSolver solver : this.solvers) {
+      for (final File file : files) {
+        final String fileName = file.getName();
+        if (fileName.endsWith(".cnf")) {
+          List<Formula> cnf = DimacsReader.readCNF(file, f);
+          solver.add(cnf);
+          assertThat(solver.sat()).isEqualTo(Tristate.FALSE);
+          final UNSATCore<Proposition> unsatCore = solver.unsatCore();
+          verifyCore(unsatCore, cnf);
+          solver.reset();
+          count++;
+        }
+      }
+      solver.reset();
+    }
+    assertThat(count).isEqualTo(36 * this.solvers.length);
   }
 
   @Test
@@ -195,6 +222,29 @@ public class DRUPTest {
     assertThat(solver.sat()).isEqualTo(FALSE);
     unsatCore = solver.unsatCore();
     assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p4, p11);
+  }
+
+  @Test
+  public void testTrivialCasesPropositions() throws ParserException {
+    for (final SATSolver solver : this.solvers) {
+      assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
+      final StandardProposition p1 = new StandardProposition("P1", f.parse("$false"));
+      solver.add(p1);
+      assertThat(solver.sat()).isEqualTo(Tristate.FALSE);
+      UNSATCore<Proposition> unsatCore = solver.unsatCore();
+      assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1);
+
+      solver.reset();
+      assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
+      final StandardProposition p2 = new StandardProposition("P2", f.parse("a"));
+      solver.add(p2);
+      assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
+      final StandardProposition p3 = new StandardProposition("P3", f.parse("~a"));
+      solver.add(p3);
+      assertThat(solver.sat()).isEqualTo(Tristate.FALSE);
+      unsatCore = solver.unsatCore();
+      assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p2, p3);
+    }
   }
 
   /**
