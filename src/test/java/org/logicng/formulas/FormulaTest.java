@@ -46,6 +46,22 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
  */
 public class FormulaTest {
 
+  private enum MyOwnCacheKey implements CacheEntry {
+    MYKEY1("My Key 1"),
+    MYKEY2("My Key 2");
+
+    private String description;
+
+    MyOwnCacheKey(final String description) {
+      this.description = description;
+    }
+
+    @Override
+    public String description() {
+      return "MyOwnCacheKey{description=" + description + "}";
+    }
+  }
+
   @Test
   public void testStringContains() {
     final FormulaFactory f = new FormulaFactory();
@@ -99,21 +115,5 @@ public class FormulaTest {
     Assert.assertEquals(CType.LE, CType.valueOf("LE"));
     Assert.assertTrue(Arrays.asList(CType.values()).contains(CType.valueOf("GT")));
     Assert.assertEquals(5, CType.values().length);
-  }
-
-  private enum MyOwnCacheKey implements CacheEntry {
-    MYKEY1("My Key 1"),
-    MYKEY2("My Key 2");
-
-    private String description;
-
-    MyOwnCacheKey(final String description) {
-      this.description = description;
-    }
-
-    @Override
-    public String description() {
-      return "MyOwnCacheKey{description=" + description + "}";
-    }
   }
 }

@@ -19,7 +19,7 @@ LogicNG is released in the Maven Central Repository.  To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.2</version>
+  <version>1.3</version>
 </dependency>
 ```
 to you Maven POM.
@@ -59,8 +59,11 @@ final Tristate result = miniSat.sat();
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
 
 ## Changelog
-### Version 1.3 (Release xxx)
+### Version 1.3 (Release October 2017)
+* MiniSat and Glucose have a new option for proof tracing.  A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable formulas after solving them.  The new method can be found in the SAT solver class: `unsatCore()`
 * Unsat Cores are now parametrized with the proposition type
+* A new simplifier which applies the distributive law was added: `DistributiveSimplifier`
+* Some minor bug-fixes in handling corner cases of cardinality and pseudo-Boolean constraints 
 
 ### Version 1.2 (Release July 2017)
 * Introduced an extended formula factory which is able to return to a previously saved state and delete old formulas (and get them garbage collected)

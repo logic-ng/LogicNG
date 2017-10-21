@@ -284,6 +284,19 @@ public final class CleaneLing extends SATSolver {
     throw new UnsupportedOperationException("The CleaneLing solver does not support state loading/saving");
   }
 
+  @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    for (final String name : this.name2idx.keySet())
+      result.add(this.f.variable(name));
+    return result;
+  }
+
+  @Override
+  public UNSATCore<Proposition> unsatCore() {
+    throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
+  }
+
   /**
    * Adds a collection of literals to the solver.
    * @param literals the literals
@@ -358,19 +371,6 @@ public final class CleaneLing extends SATSolver {
     this.name2idx.put(varName, index);
     this.idx2name.put(index, varName);
     return varName;
-  }
-
-  @Override
-  public UNSATCore<Proposition> unsatCore() {
-    throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
-  }
-
-  @Override
-  public SortedSet<Variable> knownVariables() {
-    final SortedSet<Variable> result = new TreeSet<>();
-    for (final String name : this.name2idx.keySet())
-      result.add(this.f.variable(name));
-    return result;
   }
 
   @Override

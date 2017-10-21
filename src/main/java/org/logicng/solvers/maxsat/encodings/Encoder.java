@@ -64,15 +64,14 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.PBEncoding;
  */
 public class Encoder {
 
-  private IncrementalStrategy incrementalStrategy;
   private final CardinalityEncoding cardinalityEncoding;
-  private PBEncoding pbEncoding;
-  private AMOEncoding amoEncoding;
-
   private final Ladder ladder;
   private final ModularTotalizer mtotalizer;
   private final Totalizer totalizer;
   private final SequentialWeightCounter swc;
+  private IncrementalStrategy incrementalStrategy;
+  private PBEncoding pbEncoding;
+  private AMOEncoding amoEncoding;
 
   /**
    * Constructs a new Encoder.

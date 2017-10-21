@@ -60,12 +60,12 @@ public final class MaxSATSolver {
 
   private enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
 
+  private final MaxSATConfig configuration;
+  private final Algorithm algorithm;
   private MaxSAT.MaxSATResult result;
   private MaxSAT solver;
   private SortedMap<Variable, Integer> var2index;
   private SortedMap<Integer, Variable> index2var;
-  private final MaxSATConfig configuration;
-  private final Algorithm algorithm;
 
   /**
    * Constructs a new MaxSAT solver with a given configuration.

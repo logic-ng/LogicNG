@@ -77,8 +77,8 @@ public final class IncWBO extends WBO {
 
   private final Encoder encoder;
   private final LNGBooleanVector incSoft;
-  private boolean firstBuild;
   private final PrintStream output;
+  private boolean firstBuild;
 
   /**
    * Constructs a new solver with default values.

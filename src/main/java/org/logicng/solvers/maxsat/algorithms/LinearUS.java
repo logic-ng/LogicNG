@@ -65,11 +65,11 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
  */
 public final class LinearUS extends MaxSAT {
 
-  private MiniSatStyleSolver solver;
   private final Encoder encoder;
   private final MaxSATConfig.IncrementalStrategy incrementalStrategy;
   private final LNGIntVector objFunction;
   private final PrintStream output;
+  private MiniSatStyleSolver solver;
 
   /**
    * Constructs a new solver with default values.

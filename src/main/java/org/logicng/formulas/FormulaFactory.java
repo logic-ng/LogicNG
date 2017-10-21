@@ -88,6 +88,7 @@ public class FormulaFactory {
   private final PBEncoder pbEncoder;
   private final CNFEncoder cnfEncoder;
   private final PseudoBooleanParser parser;
+  private final boolean[] formulaAdditionResult;
   Map<String, Variable> posLiterals;
   Map<String, Literal> negLiterals;
   Set<Variable> generatedVariables;
@@ -103,11 +104,10 @@ public class FormulaFactory {
   Map<LinkedHashSet<? extends Formula>, Or> ors4;
   Map<LinkedHashSet<? extends Formula>, Or> orsN;
   Map<PBOperands, PBConstraint> pbConstraints;
-  private boolean cnfCheck;
-  private final boolean[] formulaAdditionResult;
   int ccCounter;
   int pbCounter;
   int cnfCounter;
+  private boolean cnfCheck;
 
   /**
    * Constructor for a new formula factory.
@@ -1030,26 +1030,6 @@ public class FormulaFactory {
     return statistics;
   }
 
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Name:              ").append(this.name).append("\n");
-    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
-    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
-    sb.append("Negations:         ").append(this.nots.size()).append("\n");
-    sb.append("Implications:      ").append(this.implications.size()).append("\n");
-    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
-    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
-    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
-    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
-    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
-    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
-    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
-    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
-    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
-    return sb.toString();
-  }
-
   /**
    * Helper class for the operands of a pseudo-Boolean constraint.
    */
@@ -1090,6 +1070,26 @@ public class FormulaFactory {
       }
       return false;
     }
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Name:              ").append(this.name).append("\n");
+    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
+    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
+    sb.append("Negations:         ").append(this.nots.size()).append("\n");
+    sb.append("Implications:      ").append(this.implications.size()).append("\n");
+    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
+    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
+    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
+    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
+    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
+    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
+    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
+    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
+    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
+    return sb.toString();
   }
 
   /**
@@ -1314,4 +1314,6 @@ public class FormulaFactory {
               '}';
     }
   }
+
+
 }

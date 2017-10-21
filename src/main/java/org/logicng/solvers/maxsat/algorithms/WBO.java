@@ -78,6 +78,7 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
  */
 public class WBO extends MaxSAT {
 
+  private final PrintStream output;
   protected MiniSatStyleSolver solver;
   protected int nbCurrentSoft;
   protected WeightStrategy weightStrategy;
@@ -89,7 +90,6 @@ public class WBO extends MaxSAT {
   protected LNGVector<LNGIntVector> relaxationMapping;
   protected Set<Pair<Integer, Integer>> duplicatedSymmetryClauses;
   protected int symmetryBreakingLimit;
-  private final PrintStream output;
 
   /**
    * Constructs a new solver with default values.
@@ -162,7 +162,7 @@ public class WBO extends MaxSAT {
     return s;
   }
 
-  protected MiniSatStyleSolver rebuildSolver() {
+  MiniSatStyleSolver rebuildSolver() {
     assert this.weightStrategy == WeightStrategy.NONE;
     final MiniSatStyleSolver s = newSATSolver();
     for (int i = 0; i < nVars(); i++)
@@ -191,7 +191,7 @@ public class WBO extends MaxSAT {
     return s;
   }
 
-  protected void updateCurrentWeight(final WeightStrategy strategy) {
+  void updateCurrentWeight(final WeightStrategy strategy) {
     assert strategy == WeightStrategy.NORMAL || strategy == WeightStrategy.DIVERSIFY;
     if (strategy == WeightStrategy.NORMAL)
       currentWeight = this.findNextWeight(currentWeight);
@@ -322,7 +322,7 @@ public class WBO extends MaxSAT {
     sumSizeCores += conflict.size();
   }
 
-  protected int computeCostCore(final LNGIntVector conflict) {
+  int computeCostCore(final LNGIntVector conflict) {
     assert conflict.size() != 0;
     if (problemType == ProblemType.UNWEIGHTED)
       return 1;
@@ -335,14 +335,14 @@ public class WBO extends MaxSAT {
     return coreCost;
   }
 
-  protected void initSymmetry() {
+  void initSymmetry() {
     for (int i = 0; i < nSoft(); i++) {
       this.softMapping.push(new LNGIntVector());
       this.relaxationMapping.push(new LNGIntVector());
     }
   }
 
-  protected void symmetryLog(int p) {
+  void symmetryLog(int p) {
     if (nbSymmetryClauses < this.symmetryBreakingLimit) {
       while (this.softMapping.size() <= p) {
         this.softMapping.push(new LNGIntVector());
@@ -413,7 +413,7 @@ public class WBO extends MaxSAT {
     this.indexSoftCore.clear();
   }
 
-  protected Tristate unsatSearch() {
+  Tristate unsatSearch() {
     assert this.assumptions.size() == 0;
     this.solver = this.rebuildHardSolver();
     Tristate res = searchSATSolver(this.solver, satHandler(), this.assumptions);
@@ -530,7 +530,7 @@ public class WBO extends MaxSAT {
     }
   }
 
-  protected void initAssumptions(final LNGIntVector assumps) {
+  void initAssumptions(final LNGIntVector assumps) {
     for (int i = 0; i < nbSoft; i++) {
       final int l = newLiteral(false);
       softClauses.get(i).setAssumptionVar(l);

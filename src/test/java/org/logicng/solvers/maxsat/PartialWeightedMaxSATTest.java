@@ -55,21 +55,15 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
  */
 public class PartialWeightedMaxSATTest {
 
-  private final PrintStream logStream;
-
-  private final FormulaFactory f = new FormulaFactory();
-
   private static final String[] files = new String[]{
           "8.wcsp.log.wcnf",
           "54.wcsp.log.wcnf",
           "404.wcsp.log.wcnf",
           "term1_gr_2pin_w4.shuffled.cnf"
   };
-
   private static final int[] results = new int[]{
           2, 37, 114, 0
   };
-
   private static final String[] bmoFiles = new String[]{
           "normalized-factor-size=9-P=11-Q=283.opb.wcnf",
           "normalized-factor-size=9-P=11-Q=53.opb.wcnf",
@@ -78,10 +72,11 @@ public class PartialWeightedMaxSATTest {
           "normalized-factor-size=9-P=17-Q=487.opb.wcnf",
           "normalized-factor-size=9-P=23-Q=293.opb.wcnf"
   };
-
   private static final int[] bmoResults = new int[]{
           11, 11, 13, 17, 17, 23
   };
+  private final PrintStream logStream;
+  private final FormulaFactory f = new FormulaFactory();
 
   public PartialWeightedMaxSATTest() throws FileNotFoundException {
     logStream = new PrintStream("tests/partialweightedmaxsat/log.txt");

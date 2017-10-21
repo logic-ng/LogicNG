@@ -51,8 +51,8 @@ import org.logicng.util.Pair;
 public class CCIncrementalFormulaTest {
 
   private final FormulaFactory f = new FormulaFactory();
-  private CCEncoder[] encoders;
   private final SATSolver[] solvers;
+  private CCEncoder[] encoders;
 
   public CCIncrementalFormulaTest() {
     encoders = new CCEncoder[3];

@@ -74,7 +74,7 @@ public final class CLClause {
       return Long.compare(c2.activity, c1.activity);
     }
   };
-
+  private final LNGIntVector lits;
   private int glue;
   private boolean redundant;
   private boolean remove;
@@ -83,7 +83,6 @@ public final class CLClause {
   private boolean dumped;
   private boolean satisfied;
   private long activity;
-  private final LNGIntVector lits;
 
   /**
    * Constructs a new clause with default size 2.

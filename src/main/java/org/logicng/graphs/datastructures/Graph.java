@@ -35,6 +35,7 @@ import java.util.Set;
 
 /**
  * A generic graph.  Two graphs are only equal if they really are the same object.
+ * @param <T> the element type of the graph's nodes
  * @version 1.2
  * @since 1.2
  */

@@ -86,8 +86,8 @@ public final class MiniSat extends SATSolver {
   private final CCEncoder ccEncoder;
   private final SolverStyle style;
   private final LNGIntVector validStates;
-  private boolean incremental;
   private final boolean initialPhase;
+  private boolean incremental;
   private int nextStateId;
 
   /**
@@ -374,6 +374,57 @@ public final class MiniSat extends SATSolver {
     this.result = UNDEF;
   }
 
+  @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    final int nVars = this.solver.nVars();
+    for (final Map.Entry<String, Integer> entry : this.solver.name2idx().entrySet())
+      if (entry.getValue() < nVars)
+        result.add(this.f.variable(entry.getKey()));
+    return result;
+  }
+
+  @Override
+  public UNSATCore<Proposition> unsatCore() {
+    if (!this.config.proofGeneration())
+      throw new IllegalStateException("Cannot generate an unsat core if proof generation is not turned on");
+    if (this.result == TRUE)
+      throw new IllegalStateException("An unsat core can only be generated if the formula is solved and is UNSAT");
+    if (this.result == Tristate.UNDEF) {
+      throw new IllegalStateException("Cannot generate an unsat core before the formula was solved.");
+    }
+    if (this.underlyingSolver() instanceof MiniCard)
+      throw new IllegalStateException("Cannot compute an unsat core with MiniCard.");
+    if (this.underlyingSolver() instanceof GlucoseSyrup && this.config.incremental())
+      throw new IllegalStateException("Cannot compute an unsat core with Glucose in incremental mode.");
+
+    DRUPTrim trimmer = new DRUPTrim();
+
+    Map<Formula, Proposition> clause2proposition = new HashMap<>();
+    final LNGVector<LNGIntVector> clauses = new LNGVector<>(this.underlyingSolver().pgOriginalClauses().size());
+    for (MiniSatStyleSolver.ProofInformation pi : this.underlyingSolver().pgOriginalClauses()) {
+      clauses.push(pi.clause());
+      final Formula clause = getFormulaForVector(pi.clause());
+      Proposition proposition = pi.proposition();
+      if (proposition == null)
+        proposition = new StandardProposition(clause);
+      clause2proposition.put(clause, proposition);
+    }
+
+    if (containsEmptyClause(clauses)) {
+      final Proposition emptyClause = clause2proposition.get(f.falsum());
+      return new UNSATCore<>(Collections.singletonList(emptyClause), true);
+    }
+
+    final DRUPTrim.DRUPResult result = trimmer.compute(clauses, this.underlyingSolver().pgProof());
+    if (result.trivialUnsat())
+      return handleTrivialCase();
+    final LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
+    for (LNGIntVector vector : result.unsatCore())
+      propositions.add(clause2proposition.get(getFormulaForVector(vector)));
+    return new UNSATCore<>(new ArrayList<>(propositions), false);
+  }
+
   /**
    * Generates a clause vector of a collection of literals.
    * @param literals the literals
@@ -432,47 +483,6 @@ public final class MiniSat extends SATSolver {
     return this.initialPhase;
   }
 
-  @Override
-  public UNSATCore<Proposition> unsatCore() {
-    if (!this.config.proofGeneration())
-      throw new IllegalStateException("Cannot generate an unsat core if proof generation is not turned on");
-    if (this.result == TRUE)
-      throw new IllegalStateException("An unsat core can only be generated if the formula is solved and is UNSAT");
-    if (this.result == Tristate.UNDEF) {
-      throw new IllegalStateException("Cannot generate an unsat core before the formula was solved.");
-    }
-    if (this.underlyingSolver() instanceof MiniCard)
-      throw new IllegalStateException("Cannot compute an unsat core with MiniCard.");
-    if (this.underlyingSolver() instanceof GlucoseSyrup && this.config.incremental())
-      throw new IllegalStateException("Cannot compute an unsat core with Glucose in incremental mode.");
-
-    DRUPTrim trimmer = new DRUPTrim();
-
-    Map<Formula, Proposition> clause2proposition = new HashMap<>();
-    final LNGVector<LNGIntVector> clauses = new LNGVector<>(this.underlyingSolver().pgOriginalClauses().size());
-    for (MiniSatStyleSolver.ProofInformation pi : this.underlyingSolver().pgOriginalClauses()) {
-      clauses.push(pi.clause());
-      final Formula clause = getFormulaForVector(pi.clause());
-      Proposition proposition = pi.proposition();
-      if (proposition == null)
-        proposition = new StandardProposition(clause);
-      clause2proposition.put(clause, proposition);
-    }
-
-    if (containsEmptyClause(clauses)) {
-      final Proposition emptyClause = clause2proposition.get(f.falsum());
-      return new UNSATCore<>(Collections.singletonList(emptyClause), true);
-    }
-
-    final DRUPTrim.DRUPResult result = trimmer.compute(clauses, this.underlyingSolver().pgProof());
-    if (result.trivialUnsat())
-      return handleTrivialCase();
-    final LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
-    for (LNGIntVector vector : result.unsatCore())
-      propositions.add(clause2proposition.get(getFormulaForVector(vector)));
-    return new UNSATCore<>(new ArrayList<>(propositions), false);
-  }
-
   private UNSATCore<Proposition> handleTrivialCase() {
     final LNGVector<MiniSatStyleSolver.ProofInformation> clauses = this.underlyingSolver().pgOriginalClauses();
     for (int i = 0; i < clauses.size(); i++)
@@ -503,16 +513,6 @@ public final class MiniSat extends SATSolver {
       literals.add(f.literal(varName, lit > 0));
     }
     return f.or(literals);
-  }
-
-  @Override
-  public SortedSet<Variable> knownVariables() {
-    final SortedSet<Variable> result = new TreeSet<>();
-    final int nVars = this.solver.nVars();
-    for (final Map.Entry<String, Integer> entry : this.solver.name2idx().entrySet())
-      if (entry.getValue() < nVars)
-        result.add(this.f.variable(entry.getKey()));
-    return result;
   }
 
   @Override

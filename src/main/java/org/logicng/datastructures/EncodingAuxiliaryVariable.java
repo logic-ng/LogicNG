@@ -36,6 +36,8 @@ import org.logicng.formulas.Variable;
  * <p></p>
  * This variable is used, if the result is added directly to a solver.  In this case no variable on the factory has
  * to be created.
+ * @version 1.1
+ * @since 1.1
  */
 final class EncodingAuxiliaryVariable extends Variable {
 

@@ -71,13 +71,13 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
  */
 public final class MSU3 extends MaxSAT {
 
-  private MiniSatStyleSolver solver;
   private final Encoder encoder;
   private final IncrementalStrategy incrementalStrategy;
   private final LNGIntVector objFunction;
   private final SortedMap<Integer, Integer> coreMapping;
   private final LNGBooleanVector activeSoft;
   private final PrintStream output;
+  private MiniSatStyleSolver solver;
 
   /**
    * Constructs a new solver with default values.

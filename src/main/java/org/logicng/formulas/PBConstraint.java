@@ -80,12 +80,11 @@ public final class PBConstraint extends Formula {
   private final CType comparator;
   private final int rhs;
   private final boolean isCC;
+  private final boolean isTrivialFalse;
+  private final boolean isTrivialTrue;
   private ImmutableFormulaList encoding;
   private int hashCode;
   private int maxWeight;
-
-  private final boolean isTrivialFalse;
-  private final boolean isTrivialTrue;
 
   /**
    * Constructs a new pseudo-Boolean constraint.
@@ -156,6 +155,43 @@ public final class PBConstraint extends Formula {
    */
   private static int gcd(final int small, final int big) {
     return small == 0 ? big : gcd(big % small, small);
+  }
+
+  /**
+   * Internal helper for checking if a given coefficient-sum min- and max-value can comply with a given right-hand-side
+   * according to this PBConstraint's comparator.
+   * @param minValue   the minimum coefficient sum
+   * @param maxValue   the maximum coefficient sum
+   * @param rhs        the right-hand-side
+   * @param comparator the comparator
+   * @return {@link Tristate#TRUE} if the constraint is true, {@link Tristate#FALSE} if it is false and
+   * {@link Tristate#UNDEF} if both are still possible
+   */
+  static Tristate evaluateCoeffs(final int minValue, final int maxValue, final int rhs, final CType comparator) {
+    int status = 0;
+    if (rhs >= minValue)
+      status++;
+    if (rhs > minValue)
+      status++;
+    if (rhs >= maxValue)
+      status++;
+    if (rhs > maxValue)
+      status++;
+
+    switch (comparator) {
+      case EQ:
+        return (status == 0 || status == 4) ? Tristate.FALSE : Tristate.UNDEF;
+      case LE:
+        return status >= 3 ? Tristate.TRUE : (status < 1 ? Tristate.FALSE : Tristate.UNDEF);
+      case LT:
+        return status > 3 ? Tristate.TRUE : (status <= 1 ? Tristate.FALSE : Tristate.UNDEF);
+      case GE:
+        return status <= 1 ? Tristate.TRUE : (status > 3 ? Tristate.FALSE : Tristate.UNDEF);
+      case GT:
+        return status < 1 ? Tristate.TRUE : (status >= 3 ? Tristate.FALSE : Tristate.UNDEF);
+      default:
+        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
+    }
   }
 
   /**
@@ -439,43 +475,6 @@ public final class PBConstraint extends Formula {
         return this.f.falsum();
     }
     return this.f.pbc(this.comparator, newRHS, newLits, newCoeffs);
-  }
-
-  /**
-   * Internal helper for checking if a given coefficient-sum min- and max-value can comply with a given right-hand-side
-   * according to this PBConstraint's comparator.
-   * @param minValue   the minimum coefficient sum
-   * @param maxValue   the maximum coefficient sum
-   * @param rhs        the right-hand-side
-   * @param comparator the comparator
-   * @return {@link Tristate#TRUE} if the constraint is true, {@link Tristate#FALSE} if it is false and
-   * {@link Tristate#UNDEF} if both are still possible
-   */
-  static Tristate evaluateCoeffs(final int minValue, final int maxValue, final int rhs, final CType comparator) {
-    int status = 0;
-    if (rhs >= minValue)
-      status++;
-    if (rhs > minValue)
-      status++;
-    if (rhs >= maxValue)
-      status++;
-    if (rhs > maxValue)
-      status++;
-
-    switch (comparator) {
-      case EQ:
-        return (status == 0 || status == 4) ? Tristate.FALSE : Tristate.UNDEF;
-      case LE:
-        return status >= 3 ? Tristate.TRUE : (status < 1 ? Tristate.FALSE : Tristate.UNDEF);
-      case LT:
-        return status > 3 ? Tristate.TRUE : (status <= 1 ? Tristate.FALSE : Tristate.UNDEF);
-      case GE:
-        return status <= 1 ? Tristate.TRUE : (status > 3 ? Tristate.FALSE : Tristate.UNDEF);
-      case GT:
-        return status < 1 ? Tristate.TRUE : (status >= 3 ? Tristate.FALSE : Tristate.UNDEF);
-      default:
-        throw new IllegalStateException("Unknown pseudo-Boolean comparator");
-    }
   }
 
   @Override

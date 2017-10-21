@@ -49,8 +49,52 @@ import java.util.Set;
  */
 public class ExtendedFormulaFactory extends FormulaFactory {
 
-  private int nextStateId;
   private final LNGIntVector validStates = new LNGIntVector();
+  private int nextStateId;
+
+  /**
+   * Shrinks a given map to a given size
+   * @param map     the map to be shrunk
+   * @param newSize the new size, the map shall be shrunk to
+   */
+  private static <T, U> void shrinkMap(final Map<T, U> map, int newSize) {
+    if (!(map instanceof LinkedHashMap))
+      throw new IllegalStateException("Cannot shrink a map which is not of type LinkedHashMap");
+    if (newSize > map.size())
+      throw new IllegalStateException("Cannot shrink a map of size " + map.size() + " to new size " + newSize);
+    Iterator<Map.Entry<T, U>> entryIterator = map.entrySet().iterator();
+    int count = 0;
+    while (count < newSize) {
+      entryIterator.next();
+      count++;
+    }
+    while (entryIterator.hasNext()) {
+      entryIterator.next();
+      entryIterator.remove();
+    }
+  }
+
+  /**
+   * Shrinks a given set to a given size
+   * @param set     the set to be shrunk
+   * @param newSize the new size, the set shall be shrunk to
+   */
+  private static <T> void shrinkSet(final Set<T> set, int newSize) {
+    if (!(set instanceof LinkedHashSet))
+      throw new IllegalStateException("Cannot shrink a set which is not of type LinkedHashSet");
+    if (newSize > set.size())
+      throw new IllegalStateException("Cannot shrink a set of size " + set.size() + " to new size " + newSize);
+    Iterator<T> entryIterator = set.iterator();
+    int count = 0;
+    while (count < newSize) {
+      entryIterator.next();
+      count++;
+    }
+    while (entryIterator.hasNext()) {
+      entryIterator.next();
+      entryIterator.remove();
+    }
+  }
 
   @Override
   public void clear() {
@@ -173,49 +217,5 @@ public class ExtendedFormulaFactory extends FormulaFactory {
       formula.clearCaches();
     for (Formula formula : this.pbConstraints.values())
       formula.clearCaches();
-  }
-
-  /**
-   * Shrinks a given map to a given size
-   * @param map     the map to be shrunk
-   * @param newSize the new size, the map shall be shrunk to
-   */
-  private static <T, U> void shrinkMap(final Map<T, U> map, int newSize) {
-    if (!(map instanceof LinkedHashMap))
-      throw new IllegalStateException("Cannot shrink a map which is not of type LinkedHashMap");
-    if (newSize > map.size())
-      throw new IllegalStateException("Cannot shrink a map of size " + map.size() + " to new size " + newSize);
-    Iterator<Map.Entry<T, U>> entryIterator = map.entrySet().iterator();
-    int count = 0;
-    while (count < newSize) {
-      entryIterator.next();
-      count++;
-    }
-    while (entryIterator.hasNext()) {
-      entryIterator.next();
-      entryIterator.remove();
-    }
-  }
-
-  /**
-   * Shrinks a given set to a given size
-   * @param set     the set to be shrunk
-   * @param newSize the new size, the set shall be shrunk to
-   */
-  private static <T> void shrinkSet(final Set<T> set, int newSize) {
-    if (!(set instanceof LinkedHashSet))
-      throw new IllegalStateException("Cannot shrink a set which is not of type LinkedHashSet");
-    if (newSize > set.size())
-      throw new IllegalStateException("Cannot shrink a set of size " + set.size() + " to new size " + newSize);
-    Iterator<T> entryIterator = set.iterator();
-    int count = 0;
-    while (count < newSize) {
-      entryIterator.next();
-      count++;
-    }
-    while (entryIterator.hasNext()) {
-      entryIterator.next();
-      entryIterator.remove();
-    }
   }
 }

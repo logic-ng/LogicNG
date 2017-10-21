@@ -42,6 +42,7 @@ import java.util.TreeSet;
 /**
  * This class implements the Bron-Kerbosch-Algorithm, used to compute all maximal Cliques of a Graph. Requires that the
  * ids of the nodes are comparable.
+ * @param <T> the node type of the graph
  * @version 1.2
  * @since 1.2
  */

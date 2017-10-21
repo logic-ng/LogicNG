@@ -49,8 +49,8 @@ import org.logicng.solvers.sat.MiniSatConfig;
 public class CCIncrementalSolverTest {
 
   private final FormulaFactory f = new FormulaFactory();
-  private CCConfig[] configs;
   private final SATSolver[] solvers;
+  private CCConfig[] configs;
 
   public CCIncrementalSolverTest() {
     configs = new CCConfig[3];

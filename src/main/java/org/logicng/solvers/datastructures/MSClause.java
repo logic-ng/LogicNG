@@ -86,14 +86,14 @@ public class MSClause {
   };
 
   private final LNGIntVector data;
-  private double activity;
   private final boolean learnt;
+  private final boolean isAtMost;
+  private double activity;
   private int szWithoutSelectors;
   private boolean seen;
   private long lbd;
   private boolean canBeDel;
   private boolean oneWatched;
-  private final boolean isAtMost;
   private int atMostWatchers;
 
   /**

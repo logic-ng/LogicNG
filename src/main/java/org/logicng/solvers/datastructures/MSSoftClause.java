@@ -59,9 +59,9 @@ import org.logicng.collections.LNGIntVector;
 public final class MSSoftClause {
 
   private final LNGIntVector clause;
+  private final LNGIntVector relaxationVars;
   private int weight;
   private int assumptionVar;
-  private final LNGIntVector relaxationVars;
 
   /**
    * Constructs a new soft clause.

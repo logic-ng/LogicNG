@@ -68,10 +68,10 @@ final class ModularTotalizer extends Encoding {
   private static final int LIT_ERROR = -2;
 
   private final int h0;
-  private int modulo;
-  private LNGIntVector cardinalityInlits;
   private final LNGIntVector cardinalityUpoutlits;
   private final LNGIntVector cardinalityLwoutlits;
+  private int modulo;
+  private LNGIntVector cardinalityInlits;
   private int currentCardinalityRhs;
 
   /**

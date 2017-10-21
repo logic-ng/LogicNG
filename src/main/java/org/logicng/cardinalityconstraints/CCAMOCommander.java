@@ -63,11 +63,11 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMOCommander implements CCAtMostOne {
 
-  private EncodingResult result;
   private final int k;
   private final LNGVector<Literal> literals;
   private final LNGVector<Literal> nextLiterals;
   private final LNGVector<Literal> currentLiterals;
+  private EncodingResult result;
 
   /**
    * Constructs the commander AMO encoder with a given group size.

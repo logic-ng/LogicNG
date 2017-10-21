@@ -33,6 +33,7 @@ import java.util.Set;
 
 /**
  * A generic node of a graph.
+ * @param <T> the element type of the node
  * @version 1.2
  * @since 1.2
  */
@@ -99,6 +100,13 @@ public class Node<T> {
   }
 
   @Override
+  public int hashCode() {
+    int result = graph.hashCode();
+    result = 31 * result + (content != null ? content.hashCode() : 0);
+    return result;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -106,13 +114,6 @@ public class Node<T> {
       return false;
     final Node<?> node = (Node<?>) o;
     return graph.equals(node.graph) && (content != null ? content.equals(node.content) : node.content == null);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = graph.hashCode();
-    result = 31 * result + (content != null ? content.hashCode() : 0);
-    return result;
   }
 
   @Override

@@ -35,6 +35,7 @@ import java.util.Objects;
 
 /**
  * An unsatisfiable core (can be a minimal unsatisfiable sub-formula).
+ * @param <T> the type of the core's propositions
  * @version 1.3
  * @since 1.1
  */

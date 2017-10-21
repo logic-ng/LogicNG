@@ -69,13 +69,13 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity;
  */
 public final class LinearSU extends MaxSAT {
 
-  private MiniSatStyleSolver solver;
   private final Encoder encoder;
   private final boolean bmoMode;  // Enables BMO mode.
   private final LNGIntVector objFunction; // Literals to be used in the constraint that excludes models.
   private final LNGIntVector coeffs; // Coefficients of the literals that are used in the constraint that excludes models.
-  private boolean isBmo; // Stores if the formula is BMO or not.
   private final PrintStream output;
+  private MiniSatStyleSolver solver;
+  private boolean isBmo; // Stores if the formula is BMO or not.
 
   /**
    * Constructs a new solver with default values.

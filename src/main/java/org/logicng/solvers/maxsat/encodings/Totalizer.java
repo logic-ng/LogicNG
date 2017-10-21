@@ -72,8 +72,8 @@ final class Totalizer extends Encoding {
   private final LNGVector<LNGIntVector> totalizerIterativeOutput;
   private final LNGIntVector totalizerIterativeRhs;
   private final int blocking;
-  private LNGIntVector cardinalityInlits;
   private final LNGIntVector cardinalityOutlits;
+  private LNGIntVector cardinalityInlits;
   private MaxSATConfig.IncrementalStrategy incrementalStrategy;
   private int currentCardinalityRhs;
   private boolean joinMode;

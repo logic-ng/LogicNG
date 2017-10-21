@@ -59,10 +59,6 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
  */
 public class PureMaxSATTest {
 
-  private final PrintStream logStream;
-
-  private final FormulaFactory f = new FormulaFactory();
-
   private static final String[] files = new String[]{
           "c5315-bug-gate-0.dimacs.seq.filtered.cnf",
           "c6288-bug-gate-0.dimacs.seq.filtered.cnf",
@@ -72,6 +68,8 @@ public class PureMaxSATTest {
           "mot_comb3._red-gate-0.dimacs.seq.filtered.cnf",
           "s15850-bug-onevec-gate-0.dimacs.seq.filtered.cnf"
   };
+  private final PrintStream logStream;
+  private final FormulaFactory f = new FormulaFactory();
 
   public PureMaxSATTest() throws FileNotFoundException {
     logStream = new PrintStream("tests/maxsat/log.txt");

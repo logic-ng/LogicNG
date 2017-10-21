@@ -66,10 +66,10 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 final class SequentialWeightCounter extends Encoding {
 
   private final LNGIntVector pbOutlits;
-  private int currentPbRhs;
-  private int currentLitBlocking;
   private final LNGIntVector unitLits;
   private final LNGIntVector unitCoeffs;
+  private int currentPbRhs;
+  private int currentLitBlocking;
   private LNGVector<LNGIntVector> seqAuxiliaryInc;
   private LNGIntVector litsInc;
   private LNGIntVector coeffsInc;

@@ -47,6 +47,7 @@ abstract class MUSAlgorithm {
    * @param propositions the propositions
    * @param f            the formula factory
    * @param config       the MUS configuration
+   * @param <T>          the type of the MUSes propositions
    * @return the MUS
    */
   public abstract <T extends Proposition> UNSATCore computeMUS(final List<T> propositions, final FormulaFactory f,

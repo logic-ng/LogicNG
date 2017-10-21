@@ -98,28 +98,31 @@ public abstract class MaxSAT {
     UNSATISFIABLE, OPTIMUM, UNDEF
   }
 
-  protected final LNGVector<MSSoftClause> softClauses;
-  protected final LNGVector<MSHardClause> hardClauses;
-  protected int hardWeight;
-  protected ProblemType problemType;
-  protected int nbVars;
-  protected int nbSoft;
-  protected int nbHard;
-  protected int nbInitialVariables;
   protected final LNGBooleanVector model;
-  protected int nbCores;
-  protected int nbSymmetryClauses;
-  protected long sumSizeCores;
-  protected int nbSatisfiable;
-  protected int ubCost;
-  protected int lbCost;
-  protected int currentWeight;
+  final LNGVector<MSSoftClause> softClauses;
+  final LNGVector<MSHardClause> hardClauses;
+  final LNGIntVector orderWeights;
+  final SolverType solverType;
   protected Verbosity verbosity;
-  protected final LNGIntVector orderWeights;
-  protected final SolverType solverType;
-
   protected MaxSATHandler handler;
+  int hardWeight;
+  ProblemType problemType;
+  int nbVars;
+  int nbSoft;
+  int nbHard;
+  int nbInitialVariables;
+  int nbCores;
+  int nbSymmetryClauses;
+  long sumSizeCores;
+  int nbSatisfiable;
+  int ubCost;
+  int lbCost;
+  int currentWeight;
 
+  /**
+   * Constructor.
+   * @param config the solver configuration
+   */
   protected MaxSAT(final MaxSATConfig config) {
     this.hardWeight = 0;
     this.hardClauses = new LNGVector<>();
@@ -427,15 +430,15 @@ public abstract class MaxSAT {
    * Returns the current SAT handler or {@code null} if no MaxSAT handler was given.
    * @return the current SAT handler
    */
-  protected SATHandler satHandler() {
+  SATHandler satHandler() {
     return handler == null ? null : handler.satHandler();
   }
 
-  protected boolean foundLowerBound(final int lowerBound, final Assignment model) {
+  boolean foundLowerBound(final int lowerBound, final Assignment model) {
     return handler == null || handler.foundLowerBound(lowerBound, model);
   }
 
-  protected boolean foundUpperBound(final int upperBound, final Assignment model) {
+  boolean foundUpperBound(final int upperBound, final Assignment model) {
     return handler == null || handler.foundUpperBound(upperBound, model);
   }
 

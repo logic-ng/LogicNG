@@ -69,20 +69,6 @@ public final class DRUPTrim {
   private static final int EXTRA = 2;
   private static final int MARK = 3;
 
-  public DRUPResult compute(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
-    final DRUPResult result = new DRUPResult();
-    Solver s = new Solver(originalProblem, proof);
-    boolean parseReturnValue = s.parse();
-    if (!parseReturnValue) {
-      result.trivialUnsat = true;
-      result.unsatCore = new LNGVector<>();
-    } else {
-      result.trivialUnsat = false;
-      result.unsatCore = s.verify();
-    }
-    return result;
-  }
-
   private static int getHash(int[] _marks, int mark, final LNGIntVector input) {
     int sum = 0;
     int xor = 0;
@@ -100,28 +86,43 @@ public final class DRUPTrim {
     return lit > 0 ? lit * 2 : (-lit * 2) ^ 1;
   }
 
+  /**
+   * Computes the DRUP result for a given problem in terms of original clauses and the generated proof.
+   * @param originalProblem the clauses of the original problem
+   * @param proof           the clauses of the proof
+   * @return the result of the DRUP execution from which the UNSAT core can be generated
+   */
+  public DRUPResult compute(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
+    final DRUPResult result = new DRUPResult();
+    Solver s = new Solver(originalProblem, proof);
+    boolean parseReturnValue = s.parse();
+    if (!parseReturnValue) {
+      result.trivialUnsat = true;
+      result.unsatCore = new LNGVector<>();
+    } else {
+      result.trivialUnsat = false;
+      result.unsatCore = s.verify();
+    }
+    return result;
+  }
+
   private static class Solver {
 
     private final LNGVector<LNGIntVector> originalProblem;
     private final LNGVector<LNGIntVector> proof;
     private final LNGVector<LNGIntVector> core;
-
+    private final boolean delete;
     private LNGIntVector DB;
     private int nVars;
     private int nClauses;
-
     private int[] falseStack;
     private int[] reason;
     private int[] internalFalse;
     private int forcedPtr;
     private int processedPtr;
     private int assignedPtr;
-
     private LNGIntVector adlist;
     private LNGIntVector[] wlist;
-
-    private final boolean delete;
-
     private int count;
     private int adlemmas;
     private int lemmas;

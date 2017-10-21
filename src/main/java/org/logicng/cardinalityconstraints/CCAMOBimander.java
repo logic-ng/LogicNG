@@ -63,13 +63,13 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMOBimander implements CCAtMostOne {
 
-  private EncodingResult result;
   private final LNGVector<LNGVector<Literal>> groups;
   private final LNGVector<Literal> bits;
+  private final int m;
+  private EncodingResult result;
   private int numberOfBits;
   private int twoPowNBits;
   private int k;
-  private final int m;
 
   /**
    * Constructs the bimander AMO encoder with a given number of groups.

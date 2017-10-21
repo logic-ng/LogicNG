@@ -57,6 +57,7 @@ public final class MUSGeneration {
    * Computes a MUS for the given propositions with the default algorithm and the default configuration.
    * @param propositions the propositions
    * @param f            the formula factory
+   * @param <T>          the type of the MUSes propositions
    * @return the MUS
    */
   public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f) {
@@ -68,6 +69,7 @@ public final class MUSGeneration {
    * @param propositions the propositions
    * @param f            the formula factory
    * @param config       the MUS configuration
+   * @param <T>          the type of the MUSes propositions
    * @return the MUS
    */
   public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
