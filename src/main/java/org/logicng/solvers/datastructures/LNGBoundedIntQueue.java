@@ -85,7 +85,7 @@ import org.logicng.collections.LNGIntVector;
  * @since 1.0
  */
 public final class LNGBoundedIntQueue {
-  private LNGIntVector elems;
+  private final LNGIntVector elems;
   private int first;
   private int last;
   private long sumOfQueue;

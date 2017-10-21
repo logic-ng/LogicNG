@@ -60,7 +60,9 @@ public class FormulaWriterReaderTest {
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
     FormulaWriter.write(fileName, p1, false);
     final Formula p2 = FormulaReader.readPropositionalFormula(fileName, f);
+    final Formula p3 = FormulaReader.readPropositionalFormula(file, f);
     Assert.assertEquals(p1, p2);
+    Assert.assertEquals(p1, p3);
     try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
       int count = 0;
       while (reader.ready()) {
@@ -100,7 +102,9 @@ public class FormulaWriterReaderTest {
     final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
     FormulaWriter.write(fileName, p1, false);
     final Formula p2 = FormulaReader.readPseudoBooleanFormula(fileName, f);
+    final Formula p3 = FormulaReader.readPseudoBooleanFormula(file, f);
     Assert.assertEquals(p1, p2);
+    Assert.assertEquals(p1, p3);
     try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
       int count = 0;
       while (reader.ready()) {

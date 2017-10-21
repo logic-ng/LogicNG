@@ -67,13 +67,13 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
  */
 final class Totalizer extends Encoding {
 
-  private LNGVector<LNGIntVector> totalizerIterativeLeft;
-  private LNGVector<LNGIntVector> totalizerIterativeRight;
-  private LNGVector<LNGIntVector> totalizerIterativeOutput;
-  private LNGIntVector totalizerIterativeRhs;
-  private int blocking;
+  private final LNGVector<LNGIntVector> totalizerIterativeLeft;
+  private final LNGVector<LNGIntVector> totalizerIterativeRight;
+  private final LNGVector<LNGIntVector> totalizerIterativeOutput;
+  private final LNGIntVector totalizerIterativeRhs;
+  private final int blocking;
   private LNGIntVector cardinalityInlits;
-  private LNGIntVector cardinalityOutlits;
+  private final LNGIntVector cardinalityOutlits;
   private MaxSATConfig.IncrementalStrategy incrementalStrategy;
   private int currentCardinalityRhs;
   private boolean joinMode;

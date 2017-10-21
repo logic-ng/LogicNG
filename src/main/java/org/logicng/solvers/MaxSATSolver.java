@@ -64,8 +64,8 @@ public final class MaxSATSolver {
   private MaxSAT solver;
   private SortedMap<Variable, Integer> var2index;
   private SortedMap<Integer, Variable> index2var;
-  private MaxSATConfig configuration;
-  private Algorithm algorithm;
+  private final MaxSATConfig configuration;
+  private final Algorithm algorithm;
 
   /**
    * Constructs a new MaxSAT solver with a given configuration.

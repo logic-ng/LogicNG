@@ -615,7 +615,7 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
 
   /**
    * Updates and pushes a literal as candidate to simplify.
-   * @param lit the literal
+   * @param l the literal
    */
   private void touch(int l) {
     int lit = l;

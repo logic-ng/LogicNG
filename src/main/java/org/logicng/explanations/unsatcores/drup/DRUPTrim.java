@@ -63,11 +63,11 @@ import java.util.Map;
  */
 public final class DRUPTrim {
 
-  private static int BIGINIT = 1000000;
-  private static int UNSAT = 0;
-  private static int SAT = 1;
-  private static int EXTRA = 2;
-  private static int MARK = 3;
+  private static final int BIGINIT = 1000000;
+  private static final int UNSAT = 0;
+  private static final int SAT = 1;
+  private static final int EXTRA = 2;
+  private static final int MARK = 3;
 
   public DRUPResult compute(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
     final DRUPResult result = new DRUPResult();
@@ -102,33 +102,30 @@ public final class DRUPTrim {
 
   private static class Solver {
 
-    private LNGVector<LNGIntVector> originalProblem;
-    private LNGVector<LNGIntVector> proof;
-    private LNGVector<LNGIntVector> core;
+    private final LNGVector<LNGIntVector> originalProblem;
+    private final LNGVector<LNGIntVector> proof;
+    private final LNGVector<LNGIntVector> core;
 
-    LNGIntVector DB;
-    int nVars;
-    int nClauses;
+    private LNGIntVector DB;
+    private int nVars;
+    private int nClauses;
 
-    int[] falseStack;
-    int[] reason;
-    int[] internalFalse;
-    int forcedPtr;
-    int processedPtr;
-    int assignedPtr;
+    private int[] falseStack;
+    private int[] reason;
+    private int[] internalFalse;
+    private int forcedPtr;
+    private int processedPtr;
+    private int assignedPtr;
 
-    LNGIntVector adlist;
-    LNGIntVector[] wlist;
+    private LNGIntVector adlist;
+    private LNGIntVector[] wlist;
 
-    int mask;
-    boolean delete;
+    private final boolean delete;
 
-    int count;
-    int basePtr;
-    int adlemmas;
-    int lemmas;
-    int arcs;
-    int time;
+    private int count;
+    private int adlemmas;
+    private int lemmas;
+    private int time;
 
     private Solver(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
       this.originalProblem = originalProblem;
@@ -144,7 +141,7 @@ public final class DRUPTrim {
 
     private void addWatch(int cPtr, int index) {
       int lit = this.DB.get(cPtr + index);
-      this.wlist[index(lit)].push((cPtr << 1) + this.mask);
+      this.wlist[index(lit)].push((cPtr << 1));
     }
 
     private void addWatchLit(int l, int m) {
@@ -179,7 +176,6 @@ public final class DRUPTrim {
     }
 
     private void markClause(int clausePtr, int index) {
-      this.arcs++;
       if ((this.DB.get(clausePtr + index - 1) & 1) == 0) {
         this.DB.set(clausePtr + index - 1, this.DB.get(clausePtr + index - 1) | 1);
         if (this.DB.get(clausePtr + 1 + index) == 0)
@@ -244,7 +240,7 @@ public final class DRUPTrim {
                 this.wlist[index(lit)].pop();
                 gotoNextClause = true;
                 break;
-              } // Goto the next watched clause
+              } // go to the next watched clause
             }
             if (!gotoNextClause) {
               this.DB.set(clausePtr + 1, lit);
@@ -385,8 +381,6 @@ public final class DRUPTrim {
 
         this.adlist.push(clausePtr << 1);
 
-        if (nZeros == this.nClauses)
-          this.basePtr = clausePtr;
         if (nZeros == 0) {
           this.lemmas = clausePtr;
           this.adlemmas = this.adlist.size() - 1;

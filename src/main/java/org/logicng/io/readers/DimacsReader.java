@@ -77,11 +77,9 @@ public final class DimacsReader {
    * @param f      the formula factory
    * @param prefix the prefix for the variable names
    * @return the list of formulas (clauses)
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
+   * @throws IOException if there was a problem reading the file
    */
-  public static List<Formula> readCNF(final File file, final FormulaFactory f, final String prefix)
-          throws IOException, ParserException {
+  public static List<Formula> readCNF(final File file, final FormulaFactory f, final String prefix) throws IOException {
     List<Formula> result = new ArrayList<>();
     try (final BufferedReader br = new BufferedReader(new FileReader(file))) {
       while (br.ready()) {

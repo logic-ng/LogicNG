@@ -30,6 +30,7 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -307,6 +308,36 @@ public class SATTest {
     for (SATSolver s : this.solvers) {
       s.add(one);
       s.addWithRelaxation(f.variable("d"), two);
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), new StandardProposition(two));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), new ImmutableFormulaList(two));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), Arrays.asList(two, f.verum()));
       Assert.assertEquals(Tristate.TRUE, s.sat());
       try {
         Assert.assertEquals(2, s.enumerateAllModels().size());

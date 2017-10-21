@@ -89,7 +89,7 @@ public class WBO extends MaxSAT {
   protected LNGVector<LNGIntVector> relaxationMapping;
   protected Set<Pair<Integer, Integer>> duplicatedSymmetryClauses;
   protected int symmetryBreakingLimit;
-  private PrintStream output;
+  private final PrintStream output;
 
   /**
    * Constructs a new solver with default values.

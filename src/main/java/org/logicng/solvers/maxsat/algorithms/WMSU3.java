@@ -74,17 +74,17 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
  */
 public final class WMSU3 extends MaxSAT {
 
-  boolean bmoStrategy;
+  final boolean bmoStrategy;
   boolean isBmo;
   private MiniSatStyleSolver solver;
-  private Encoder encoder;
-  private IncrementalStrategy incrementalStrategy;
-  private LNGIntVector assumptions;
-  private LNGIntVector objFunction;
-  private LNGIntVector coeffs;
-  private SortedMap<Integer, Integer> coreMapping;
-  private LNGBooleanVector activeSoft;
-  private PrintStream output;
+  final private Encoder encoder;
+  final private IncrementalStrategy incrementalStrategy;
+  final private LNGIntVector assumptions;
+  final private LNGIntVector objFunction;
+  final private LNGIntVector coeffs;
+  final private SortedMap<Integer, Integer> coreMapping;
+  final private LNGBooleanVector activeSoft;
+  final private PrintStream output;
 
   /**
    * Constructs a new solver with default values.

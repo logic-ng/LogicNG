@@ -75,10 +75,10 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
  */
 public final class IncWBO extends WBO {
 
-  private Encoder encoder;
-  private LNGBooleanVector incSoft;
+  private final Encoder encoder;
+  private final LNGBooleanVector incSoft;
   private boolean firstBuild;
-  private PrintStream output;
+  private final PrintStream output;
 
   /**
    * Constructs a new solver with default values.

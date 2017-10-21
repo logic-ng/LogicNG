@@ -38,7 +38,7 @@ public enum FunctionCacheEntry implements CacheEntry {
   VARPROFILE("variable profile"),
   LITPROFILE("literal profile");
 
-  private String description;
+  private final String description;
 
   /**
    * Constructs a new entry.

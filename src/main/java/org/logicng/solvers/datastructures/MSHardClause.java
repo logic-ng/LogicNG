@@ -58,7 +58,7 @@ import org.logicng.collections.LNGIntVector;
  */
 public final class MSHardClause {
 
-  private LNGIntVector clause;
+  private final LNGIntVector clause;
 
   /**
    * Constructs a new hard clause.

@@ -38,9 +38,9 @@ import java.util.Set;
  */
 public class Node<T> {
 
-  private Graph<T> graph;
-  private T content;
-  private Set<Node<T>> neighbours;
+  private final Graph<T> graph;
+  private final T content;
+  private final Set<Node<T>> neighbours;
 
   /**
    * Constructor.

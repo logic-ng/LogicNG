@@ -62,13 +62,13 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
  */
 public abstract class Encoding {
 
-  protected LNGIntVector clause;
-  protected boolean hasEncoding;
+  protected final LNGIntVector clause;
+  boolean hasEncoding;
 
   /**
    * Constructor.
    */
-  protected Encoding() {
+  Encoding() {
     this.clause = new LNGIntVector();
   }
 
@@ -87,7 +87,7 @@ public abstract class Encoding {
    * @param a        the unit literal
    * @param blocking the blocking literal
    */
-  void addUnitClause(final MiniSatStyleSolver s, int a, int blocking) {
+  private void addUnitClause(final MiniSatStyleSolver s, int a, int blocking) {
     assert this.clause.size() == 0;
     assert a != LIT_UNDEF;
     assert var(a) < s.nVars();

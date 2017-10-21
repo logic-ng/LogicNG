@@ -45,7 +45,7 @@ public enum FType {
   FALSE((byte) 0x08),
   NONE((byte) 0x42);
 
-  private byte precedence;
+  private final byte precedence;
 
   /**
    * Constructs a new formula type with a given precedence and syntax string

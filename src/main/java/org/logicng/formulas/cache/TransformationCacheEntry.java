@@ -46,7 +46,7 @@ public enum TransformationCacheEntry implements CacheEntry {
   UNIT_PROPAGATION("unit propagation"),
   DISTRIBUTIVE_SIMPLIFICATION("distributive simplification");
 
-  private String description;
+  private final String description;
 
   /**
    * Constructs a new entry.

@@ -87,7 +87,7 @@ public final class MiniSat extends SATSolver {
   private final SolverStyle style;
   private final LNGIntVector validStates;
   private boolean incremental;
-  private boolean initialPhase;
+  private final boolean initialPhase;
   private int nextStateId;
 
   /**

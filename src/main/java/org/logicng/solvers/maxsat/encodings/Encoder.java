@@ -65,14 +65,14 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.PBEncoding;
 public class Encoder {
 
   private IncrementalStrategy incrementalStrategy;
-  private CardinalityEncoding cardinalityEncoding;
+  private final CardinalityEncoding cardinalityEncoding;
   private PBEncoding pbEncoding;
   private AMOEncoding amoEncoding;
 
-  private Ladder ladder;
-  private ModularTotalizer mtotalizer;
-  private Totalizer totalizer;
-  private SequentialWeightCounter swc;
+  private final Ladder ladder;
+  private final ModularTotalizer mtotalizer;
+  private final Totalizer totalizer;
+  private final SequentialWeightCounter swc;
 
   /**
    * Constructs a new Encoder.
@@ -89,8 +89,8 @@ public class Encoder {
    * @param amo         the AMO constraint encoder
    * @param pb          the pseudo Boolean encoder
    */
-  Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
-          final AMOEncoding amo, final PBEncoding pb) {
+  private Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
+                  final AMOEncoding amo, final PBEncoding pb) {
     this.incrementalStrategy = incremental;
     this.cardinalityEncoding = cardinality;
     this.amoEncoding = amo;

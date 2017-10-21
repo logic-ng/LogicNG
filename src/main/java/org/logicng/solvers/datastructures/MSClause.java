@@ -85,15 +85,15 @@ public class MSClause {
     }
   };
 
-  private LNGIntVector data;
+  private final LNGIntVector data;
   private double activity;
-  private boolean learnt;
+  private final boolean learnt;
   private int szWithoutSelectors;
   private boolean seen;
   private long lbd;
   private boolean canBeDel;
   private boolean oneWatched;
-  private boolean isAtMost;
+  private final boolean isAtMost;
   private int atMostWatchers;
 
   /**

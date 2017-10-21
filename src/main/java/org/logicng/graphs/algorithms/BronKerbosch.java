@@ -47,9 +47,9 @@ import java.util.TreeSet;
  */
 public class BronKerbosch<T extends Comparable<T>> {
 
-  private Graph<T> g;
-  private Comparator<Node<T>> nodeComparator;
-  private Set<SortedSet<Node<T>>> cliques;
+  private final Graph<T> g;
+  private final Comparator<Node<T>> nodeComparator;
+  private final Set<SortedSet<Node<T>>> cliques;
 
   /**
    * Constructor.

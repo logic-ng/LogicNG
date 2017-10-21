@@ -63,7 +63,7 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMONested implements CCAtMostOne {
 
-  private int groupSize;
+  private final int groupSize;
   private EncodingResult result;
 
   /**

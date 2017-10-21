@@ -57,9 +57,9 @@ package org.logicng.collections;
  */
 public final class LNGLongPriorityQueue {
 
-  private LNGIntVector heap;
-  private LNGLongVector prior;
-  private LNGIntVector pos;
+  private final LNGIntVector heap;
+  private final LNGLongVector prior;
+  private final LNGIntVector pos;
 
   /**
    * Creates a new priority queue.

@@ -59,9 +59,9 @@ import java.util.Locale;
  */
 public final class LNGDoublePriorityQueue {
 
-  private LNGIntVector heap;
-  private LNGDoubleVector prior;
-  private LNGIntVector pos;
+  private final LNGIntVector heap;
+  private final LNGDoubleVector prior;
+  private final LNGIntVector pos;
 
   /**
    * Creates a new priority queue.

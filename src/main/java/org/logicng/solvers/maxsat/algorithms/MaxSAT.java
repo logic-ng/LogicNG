@@ -98,15 +98,15 @@ public abstract class MaxSAT {
     UNSATISFIABLE, OPTIMUM, UNDEF
   }
 
-  protected LNGVector<MSSoftClause> softClauses;
-  protected LNGVector<MSHardClause> hardClauses;
+  protected final LNGVector<MSSoftClause> softClauses;
+  protected final LNGVector<MSHardClause> hardClauses;
   protected int hardWeight;
   protected ProblemType problemType;
   protected int nbVars;
   protected int nbSoft;
   protected int nbHard;
   protected int nbInitialVariables;
-  protected LNGBooleanVector model;
+  protected final LNGBooleanVector model;
   protected int nbCores;
   protected int nbSymmetryClauses;
   protected long sumSizeCores;
@@ -115,8 +115,8 @@ public abstract class MaxSAT {
   protected int lbCost;
   protected int currentWeight;
   protected Verbosity verbosity;
-  protected LNGIntVector orderWeights;
-  protected SolverType solverType;
+  protected final LNGIntVector orderWeights;
+  protected final SolverType solverType;
 
   protected MaxSATHandler handler;
 
@@ -243,8 +243,7 @@ public abstract class MaxSAT {
    */
   public void addSoftClause(int weight, final LNGIntVector lits) {
     final LNGIntVector rVars = new LNGIntVector();
-    final int assump = LIT_UNDEF;
-    this.softClauses.push(new MSSoftClause(lits, weight, assump, rVars));
+    this.softClauses.push(new MSSoftClause(lits, weight, LIT_UNDEF, rVars));
     this.nbSoft++;
   }
 
@@ -255,8 +254,7 @@ public abstract class MaxSAT {
    * @param vars   the relaxation variables of the soft clause
    */
   public void addSoftClause(int weight, final LNGIntVector lits, final LNGIntVector vars) {
-    final int assump = LIT_UNDEF;
-    this.softClauses.push(new MSSoftClause(lits, weight, assump, vars));
+    this.softClauses.push(new MSSoftClause(lits, weight, LIT_UNDEF, vars));
     this.nbSoft++;
   }
 

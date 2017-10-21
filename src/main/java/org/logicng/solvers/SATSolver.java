@@ -147,7 +147,7 @@ public abstract class SATSolver {
    * @param relaxationVar the relaxation variable
    * @param formulas      the collection of formulas
    */
-  public void add(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
+  public void addWithRelaxation(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
     for (final Formula formula : formulas)
       this.addWithRelaxation(relaxationVar, formula);
   }

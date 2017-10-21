@@ -65,7 +65,7 @@ final class CCModularTotalizer {
   private final Variable varUndef;
   private final Variable varError;
 
-  private Variable h0;
+  private final Variable h0;
   private LNGVector<Literal> inlits;
   private LNGVector<Literal> cardinalityUpOutvars;
   private LNGVector<Literal> cardinalityLwOutvars;

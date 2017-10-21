@@ -71,11 +71,7 @@ public final class CLClause {
         return -1;
       if (c1.glue > c2.glue)
         return 1;
-      if (c1.activity < c2.activity)
-        return 1;
-      if (c1.activity > c2.activity)
-        return -1;
-      return 0;
+      return Long.compare(c2.activity, c1.activity);
     }
   };
 
@@ -87,7 +83,7 @@ public final class CLClause {
   private boolean dumped;
   private boolean satisfied;
   private long activity;
-  private LNGIntVector lits;
+  private final LNGIntVector lits;
 
   /**
    * Constructs a new clause with default size 2.

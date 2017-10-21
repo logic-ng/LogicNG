@@ -104,7 +104,7 @@ public class FormulaFactory {
   Map<LinkedHashSet<? extends Formula>, Or> orsN;
   Map<PBOperands, PBConstraint> pbConstraints;
   private boolean cnfCheck;
-  private boolean[] formulaAdditionResult;
+  private final boolean[] formulaAdditionResult;
   int ccCounter;
   int pbCounter;
   int cnfCounter;

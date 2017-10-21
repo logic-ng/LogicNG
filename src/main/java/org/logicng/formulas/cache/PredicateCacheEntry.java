@@ -40,7 +40,7 @@ public enum PredicateCacheEntry implements CacheEntry {
   IS_SAT("satisfiable"),
   IS_TAUTOLOGY("tautology");
 
-  private String description;
+  private final String description;
 
   /**
    * Constructs a new entry.
