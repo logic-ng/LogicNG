@@ -56,7 +56,7 @@ import java.util.Comparator;
 
 /**
  * A clause of the SAT solver for CleaneLing-style solvers.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class CLClause {
@@ -71,14 +71,10 @@ public final class CLClause {
         return -1;
       if (c1.glue > c2.glue)
         return 1;
-      if (c1.activity < c2.activity)
-        return 1;
-      if (c1.activity > c2.activity)
-        return -1;
-      return 0;
+      return Long.compare(c2.activity, c1.activity);
     }
   };
-
+  private final LNGIntVector lits;
   private int glue;
   private boolean redundant;
   private boolean remove;
@@ -87,7 +83,6 @@ public final class CLClause {
   private boolean dumped;
   private boolean satisfied;
   private long activity;
-  private LNGIntVector lits;
 
   /**
    * Constructs a new clause with default size 2.

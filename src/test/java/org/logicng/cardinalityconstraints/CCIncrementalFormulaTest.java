@@ -45,14 +45,14 @@ import org.logicng.util.Pair;
 
 /**
  * Tests for incremental cardinality constraints generated as formulas and {@link CCIncrementalData}.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class CCIncrementalFormulaTest {
 
   private final FormulaFactory f = new FormulaFactory();
-  private CCEncoder[] encoders;
   private final SATSolver[] solvers;
+  private CCEncoder[] encoders;
 
   public CCIncrementalFormulaTest() {
     encoders = new CCEncoder[3];

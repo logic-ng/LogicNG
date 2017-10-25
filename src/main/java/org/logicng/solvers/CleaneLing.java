@@ -34,6 +34,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.UNSATCore;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -42,12 +43,14 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.propositions.Proposition;
 import org.logicng.solvers.sat.CleaneLingConfig;
 import org.logicng.solvers.sat.CleaneLingMinimalisticSolver;
 import org.logicng.solvers.sat.CleaneLingSolver;
 import org.logicng.solvers.sat.CleaneLingStyleSolver;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
@@ -60,7 +63,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the CleaneLing-style SAT solvers.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public final class CleaneLing extends SATSolver {
@@ -142,7 +145,7 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  public void add(final Formula formula) {
+  public void add(final Formula formula, Proposition proposition) {
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
       this.result = UNDEF;
@@ -150,9 +153,9 @@ public final class CleaneLing extends SATSolver {
         final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
         ccEncoder.encode(constraint, result);
       } else
-        this.addClauseSet(formula.cnf());
+        this.addClauseSet(formula.cnf(), proposition);
     } else
-      this.addClauseSet(formula.cnf());
+      this.addClauseSet(formula.cnf(), proposition);
   }
 
   @Override
@@ -173,7 +176,7 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  protected void addClause(final Formula formula) {
+  protected void addClause(final Formula formula, final Proposition proposition) {
     this.result = UNDEF;
     addClause(formula.literals());
   }
@@ -211,7 +214,7 @@ public final class CleaneLing extends SATSolver {
   }
 
   @Override
-  public Assignment model(final Collection<Variable> variables) {
+  public Assignment model(Collection<Variable> variables) {
     if (this.result == UNDEF)
       throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
     return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
@@ -219,11 +222,23 @@ public final class CleaneLing extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> variables) {
+    return enumerateAllModels(variables, Collections.<Variable>emptyList());
+  }
+
+  @Override
+  public List<Assignment> enumerateAllModels(Collection<Variable> variables, Collection<Variable> additionalVariables) {
     if (this.solverStyle == SolverStyle.FULL && !this.plain)
       throw new UnsupportedOperationException("Model enumeration is not available if simplifications are turned on");
     List<Assignment> models = new LinkedList<>();
+    SortedSet<Variable> allVariables = new TreeSet<>();
+    if (variables == null) {
+      allVariables = null;
+    } else {
+      allVariables.addAll(variables);
+      allVariables.addAll(additionalVariables);
+    }
     while (this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(variables);
+      final Assignment model = this.model(allVariables);
       models.add(model);
       assert model != null;
       this.add(model.blockingClause(this.f, variables));
@@ -233,16 +248,28 @@ public final class CleaneLing extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> literals, final ModelEnumerationHandler handler) {
+    return enumerateAllModels(literals, Collections.<Variable>emptyList(), handler);
+  }
+
+  @Override
+  public List<Assignment> enumerateAllModels(Collection<Variable> variables, Collection<Variable> additionalVariables, ModelEnumerationHandler handler) {
     if (this.solverStyle == SolverStyle.FULL && !this.plain)
       throw new UnsupportedOperationException("Model enumeration is not available if simplifications are turned on");
     List<Assignment> models = new LinkedList<>();
     boolean proceed = true;
+    SortedSet<Variable> allVariables = new TreeSet<>();
+    if (variables == null) {
+      allVariables = null;
+    } else {
+      allVariables.addAll(variables);
+      allVariables.addAll(additionalVariables);
+    }
     while (proceed && this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(literals);
+      final Assignment model = this.model(allVariables);
       models.add(model);
       proceed = handler.foundModel(model);
       assert model != null;
-      this.add(model.blockingClause(this.f, literals));
+      this.add(model.blockingClause(this.f, variables));
     }
     return models;
   }
@@ -255,6 +282,19 @@ public final class CleaneLing extends SATSolver {
   @Override
   public void loadState(SolverState state) {
     throw new UnsupportedOperationException("The CleaneLing solver does not support state loading/saving");
+  }
+
+  @Override
+  public SortedSet<Variable> knownVariables() {
+    final SortedSet<Variable> result = new TreeSet<>();
+    for (final String name : this.name2idx.keySet())
+      result.add(this.f.variable(name));
+    return result;
+  }
+
+  @Override
+  public UNSATCore<Proposition> unsatCore() {
+    throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
   }
 
   /**
@@ -283,15 +323,13 @@ public final class CleaneLing extends SATSolver {
    */
   private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
     final Assignment model = new Assignment();
-    if (!vec.empty()) {
-      for (int i = 1; i < vec.size(); i++) {
-        final Variable var = f.variable(this.idx2name.get(i));
-        if (vec.get(i)) {
-          if (variables == null || variables.contains(var))
-            model.addLiteral(var);
-        } else if (variables == null || variables.contains(var))
-          model.addLiteral(var.negate());
-      }
+    for (int i = 1; i < vec.size(); i++) {
+      final Variable var = this.f.variable(this.idx2name.get(i));
+      if (vec.get(i)) {
+        if (variables == null || variables.contains(var))
+          model.addLiteral(var);
+      } else if (variables == null || variables.contains(var))
+        model.addLiteral(var.negate());
     }
     return model;
   }
@@ -333,14 +371,6 @@ public final class CleaneLing extends SATSolver {
     this.name2idx.put(varName, index);
     this.idx2name.put(index, varName);
     return varName;
-  }
-
-  @Override
-  public SortedSet<Variable> knownVariables() {
-    final SortedSet<Variable> result = new TreeSet<>();
-    for (final String name : this.name2idx.keySet())
-      result.add(this.f.variable(name));
-    return result;
   }
 
   @Override

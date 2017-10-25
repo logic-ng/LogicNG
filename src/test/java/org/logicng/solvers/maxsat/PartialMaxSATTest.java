@@ -50,14 +50,10 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class PartialMaxSATTest {
-
-  private final PrintStream logStream;
-
-  private final FormulaFactory f = new FormulaFactory();
 
   private static final String[] files = new String[]{
           "c1355_F176gat-1278gat@1.wcnf",
@@ -69,10 +65,11 @@ public class PartialMaxSATTest {
           "normalized-s3-3-3-3pb.wcnf",
           "term1_gr_2pin_w4.shuffled.cnf"
   };
-
   private static final int[] results = new int[]{
           13, 21, 33, 33, 36, 36, 36, 0
   };
+  private final PrintStream logStream;
+  private final FormulaFactory f = new FormulaFactory();
 
   public PartialMaxSATTest() throws FileNotFoundException {
     logStream = new PrintStream("tests/partialmaxsat/log.txt");

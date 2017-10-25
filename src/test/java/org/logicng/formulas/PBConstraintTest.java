@@ -35,6 +35,7 @@ import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
 import org.logicng.io.parsers.ParserException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +44,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link PBConstraint}.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class PBConstraintTest {
@@ -526,5 +527,70 @@ public class PBConstraintTest {
     Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.LT));
     Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.LT));
     Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.LT));
+  }
+
+  @Test
+  public void testTrivialTrue() {
+    Assert.assertTrue(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertFalse(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertTrue(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertFalse(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertTrue(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+  }
+
+  @Test
+  public void testTrivialFalse() {
+    Assert.assertFalse(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertTrue(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertFalse(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertTrue(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertFalse(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+  }
+
+  @Test
+  public void testSimplifiedToString() {
+    Assert.assertEquals(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
   }
 }

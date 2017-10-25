@@ -67,11 +67,11 @@ final class ModularTotalizer extends Encoding {
 
   private static final int LIT_ERROR = -2;
 
-  private int h0;
+  private final int h0;
+  private final LNGIntVector cardinalityUpoutlits;
+  private final LNGIntVector cardinalityLwoutlits;
   private int modulo;
   private LNGIntVector cardinalityInlits;
-  private LNGIntVector cardinalityUpoutlits;
-  private LNGIntVector cardinalityLwoutlits;
   private int currentCardinalityRhs;
 
   /**
@@ -315,7 +315,7 @@ final class ModularTotalizer extends Encoding {
               clause.push(not(b));
             clause.push(c);
             if (clause.size() > 1) {
-              s.addClause(clause);
+              s.addClause(clause, null);
             }
           }
           LNGIntVector clause = new LNGIntVector();
@@ -327,7 +327,7 @@ final class ModularTotalizer extends Encoding {
           if (d != LIT_ERROR && d != LIT_UNDEF)
             clause.push(d);
           if (clause.size() > 1) {
-            s.addClause(clause);
+            s.addClause(clause, null);
           }
         }
       }

@@ -41,9 +41,11 @@ import org.logicng.transformations.dnf.DNFFactorization;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Unit tests for the class {@link ExtendedFormulaFactory}.
- * @version 1.2
+ * @version 1.3
  * @since 1.2
  */
 public class ExtendedFormulaFactoryTest {
@@ -119,9 +121,10 @@ public class ExtendedFormulaFactoryTest {
   }
 
   private void testCacheClearance(FormulaTransformation transformation, PredicateCacheEntry predicateCacheEntry, TransformationCacheEntry transformationCacheEntry) {
-    ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
-    List<Formula> formulas = initializeFormulaFactoryWithFormulas(eff);
-    FormulaFactoryState state = eff.save();
+    final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
+    final List<Formula> formulas = initializeFormulaFactoryWithFormulas(eff);
+    final FormulaFactoryState state = eff.save();
+    assertThat(state.toString()).isEqualTo("FormulaFactoryState{id=0, state=[4, 4, 0, 5, 4, 5, 3, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0]}");
     for (Formula formula : formulas) {
       transformation.apply(formula, true);
       softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula.transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();

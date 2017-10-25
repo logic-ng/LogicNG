@@ -27,15 +27,14 @@
 ///////////////////////////////////////////////////////////////////////////
 package org.logicng.formulas;
 
-import org.logicng.io.parsers.ParserException;
-import org.logicng.io.parsers.PropositionalParser;
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 
 /**
  * Unit Tests for NNF conversion.
- *
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public class NNFTest {

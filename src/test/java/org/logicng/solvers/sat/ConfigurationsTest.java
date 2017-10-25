@@ -36,7 +36,7 @@ import java.util.Arrays;
 
 /**
  * Unit tests for the solver configurations.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class ConfigurationsTest {
@@ -68,6 +68,7 @@ public class ConfigurationsTest {
             "learntsizeInc=1.5\n" +
             "incremental=false\n" +
             "initialPhase=true\n" +
+            "proofGeneration=false\n" +
             "}\n";
     Assert.assertEquals(expected, config.toString());
   }

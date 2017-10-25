@@ -30,7 +30,7 @@ package org.logicng.formulas.cache;
 
 /**
  * The pre-defined predicate cache entries.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public enum PredicateCacheEntry implements CacheEntry {
@@ -40,7 +40,7 @@ public enum PredicateCacheEntry implements CacheEntry {
   IS_SAT("satisfiable"),
   IS_TAUTOLOGY("tautology");
 
-  private String description;
+  private final String description;
 
   /**
    * Constructs a new entry.

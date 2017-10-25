@@ -66,7 +66,7 @@ import static org.logicng.formulas.FType.TRUE;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class FormulaFactory {
@@ -88,6 +88,7 @@ public class FormulaFactory {
   private final PBEncoder pbEncoder;
   private final CNFEncoder cnfEncoder;
   private final PseudoBooleanParser parser;
+  private final boolean[] formulaAdditionResult;
   Map<String, Variable> posLiterals;
   Map<String, Literal> negLiterals;
   Set<Variable> generatedVariables;
@@ -103,11 +104,10 @@ public class FormulaFactory {
   Map<LinkedHashSet<? extends Formula>, Or> ors4;
   Map<LinkedHashSet<? extends Formula>, Or> orsN;
   Map<PBOperands, PBConstraint> pbConstraints;
-  private boolean cnfCheck;
-  private boolean[] formulaAdditionResult;
   int ccCounter;
   int pbCounter;
   int cnfCounter;
+  private boolean cnfCheck;
 
   /**
    * Constructor for a new formula factory.
@@ -641,24 +641,21 @@ public class FormulaFactory {
       return this.falsum();
     if (literals.size() == 1)
       return literals.iterator().next();
-    Or tempOr = null;
     Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
-    if (literals.size() > 1) {
-      switch (literals.size()) {
-        case 2:
-          opOrMap = this.ors2;
-          break;
-        case 3:
-          opOrMap = this.ors3;
-          break;
-        case 4:
-          opOrMap = this.ors4;
-          break;
-        default:
-          break;
-      }
-      tempOr = opOrMap.get(literals);
+    switch (literals.size()) {
+      case 2:
+        opOrMap = this.ors2;
+        break;
+      case 3:
+        opOrMap = this.ors3;
+        break;
+      case 4:
+        opOrMap = this.ors4;
+        break;
+      default:
+        break;
     }
+    Or tempOr = opOrMap.get(literals);
     if (tempOr != null)
       return tempOr;
     tempOr = new Or(literals, this, true);
@@ -1033,26 +1030,6 @@ public class FormulaFactory {
     return statistics;
   }
 
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Name:              ").append(this.name).append("\n");
-    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
-    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
-    sb.append("Negations:         ").append(this.nots.size()).append("\n");
-    sb.append("Implications:      ").append(this.implications.size()).append("\n");
-    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
-    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
-    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
-    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
-    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
-    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
-    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
-    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
-    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
-    return sb.toString();
-  }
-
   /**
    * Helper class for the operands of a pseudo-Boolean constraint.
    */
@@ -1093,6 +1070,26 @@ public class FormulaFactory {
       }
       return false;
     }
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Name:              ").append(this.name).append("\n");
+    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
+    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
+    sb.append("Negations:         ").append(this.nots.size()).append("\n");
+    sb.append("Implications:      ").append(this.implications.size()).append("\n");
+    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
+    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
+    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
+    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
+    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
+    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
+    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
+    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
+    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
+    return sb.toString();
   }
 
   /**
@@ -1262,5 +1259,61 @@ public class FormulaFactory {
               + this.conjunctions2 + this.conjunctions3 + this.conjunctions4 + this.conjunctionsN + this.disjunctions2
               + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof FormulaFactoryStatistics)) return false;
+      FormulaFactoryStatistics that = (FormulaFactoryStatistics) o;
+      return positiveLiterals == that.positiveLiterals &&
+              negativeLiterals == that.negativeLiterals &&
+              negations == that.negations &&
+              implications == that.implications &&
+              equivalences == that.equivalences &&
+              conjunctions2 == that.conjunctions2 &&
+              conjunctions3 == that.conjunctions3 &&
+              conjunctions4 == that.conjunctions4 &&
+              conjunctionsN == that.conjunctionsN &&
+              disjunctions2 == that.disjunctions2 &&
+              disjunctions3 == that.disjunctions3 &&
+              disjunctions4 == that.disjunctions4 &&
+              disjunctionsN == that.disjunctionsN &&
+              ccCounter == that.ccCounter &&
+              pbCounter == that.pbCounter &&
+              cnfCounter == that.cnfCounter &&
+              Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(name, positiveLiterals, negativeLiterals, negations, implications, equivalences, conjunctions2,
+              conjunctions3, conjunctions4, conjunctionsN, disjunctions2, disjunctions3, disjunctions4, disjunctionsN,
+              ccCounter, pbCounter, cnfCounter);
+    }
+
+    @Override
+    public String toString() {
+      return "FormulaFactoryStatistics{" +
+              "name='" + name + '\'' +
+              ", positiveLiterals=" + positiveLiterals +
+              ", negativeLiterals=" + negativeLiterals +
+              ", negations=" + negations +
+              ", implications=" + implications +
+              ", equivalences=" + equivalences +
+              ", conjunctions2=" + conjunctions2 +
+              ", conjunctions3=" + conjunctions3 +
+              ", conjunctions4=" + conjunctions4 +
+              ", conjunctionsN=" + conjunctionsN +
+              ", disjunctions2=" + disjunctions2 +
+              ", disjunctions3=" + disjunctions3 +
+              ", disjunctions4=" + disjunctions4 +
+              ", disjunctionsN=" + disjunctionsN +
+              ", ccCounter=" + ccCounter +
+              ", pbCounter=" + pbCounter +
+              ", cnfCounter=" + cnfCounter +
+              '}';
+    }
   }
+
+
 }

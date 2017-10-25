@@ -60,16 +60,16 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * Linear search solver.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class LinearUS extends MaxSAT {
 
+  private final Encoder encoder;
+  private final MaxSATConfig.IncrementalStrategy incrementalStrategy;
+  private final LNGIntVector objFunction;
+  private final PrintStream output;
   private MiniSatStyleSolver solver;
-  private Encoder encoder;
-  private MaxSATConfig.IncrementalStrategy incrementalStrategy;
-  private LNGIntVector objFunction;
-  private PrintStream output;
 
   /**
    * Constructs a new solver with default values.
@@ -213,13 +213,13 @@ public final class LinearUS extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     LNGIntVector clause;
     for (int i = 0; i < nSoft(); i++) {
       clause = new LNGIntVector(softClauses.get(i).clause());
       for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
         clause.push(softClauses.get(i).relaxationVars().get(j));
-      s.addClause(clause);
+      s.addClause(clause, null);
     }
     return s;
   }

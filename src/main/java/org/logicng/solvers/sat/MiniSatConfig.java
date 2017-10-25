@@ -35,7 +35,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.DEEP;
 
 /**
  * The configuration object for a MiniSAT-style SAT solver.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class MiniSatConfig extends Configuration {
@@ -61,6 +61,7 @@ public final class MiniSatConfig extends Configuration {
   final double learntsizeInc;
   final boolean incremental;
   final boolean initialPhase;
+  final boolean proofGeneration;
 
   /**
    * Constructs a new MiniSAT configuration from a given builder.
@@ -79,6 +80,7 @@ public final class MiniSatConfig extends Configuration {
     this.learntsizeInc = builder.learntsizeInc;
     this.incremental = builder.incremental;
     this.initialPhase = builder.initialPhase;
+    this.proofGeneration = builder.proofGeneration;
   }
 
   /**
@@ -97,6 +99,14 @@ public final class MiniSatConfig extends Configuration {
     return this.initialPhase;
   }
 
+  /**
+   * Returns whether proof generation should be performed or not.
+   * @return whether proof generation should be performed or not
+   */
+  public boolean proofGeneration() {
+    return this.proofGeneration;
+  }
+
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("MiniSatConfig{\n");
@@ -111,6 +121,7 @@ public final class MiniSatConfig extends Configuration {
     sb.append("learntsizeInc=").append(this.learntsizeInc).append("\n");
     sb.append("incremental=").append(this.incremental).append("\n");
     sb.append("initialPhase=").append(this.initialPhase).append("\n");
+    sb.append("proofGeneration=").append(this.proofGeneration).append("\n");
     sb.append("}\n");
     return sb.toString();
   }
@@ -130,6 +141,7 @@ public final class MiniSatConfig extends Configuration {
     private double learntsizeInc = 1.1;
     private boolean incremental = true;
     private boolean initialPhase = false;
+    private boolean proofGeneration = false;
 
     /**
      * Sets the variable activity decay factor to a given value. The default value is 0.95.
@@ -242,6 +254,16 @@ public final class MiniSatConfig extends Configuration {
      */
     public Builder initialPhase(boolean initialPhase) {
       this.initialPhase = initialPhase;
+      return this;
+    }
+
+    /**
+     * Sets whether the information for generating a proof with DRUP should be recorded or not.
+     * @param proofGeneration {@code true} if proof generating information should be recorded, {@code false} otherwise
+     * @return the builder
+     */
+    public Builder proofGeneration(boolean proofGeneration) {
+      this.proofGeneration = proofGeneration;
       return this;
     }
 

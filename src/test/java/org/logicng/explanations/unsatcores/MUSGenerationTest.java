@@ -34,7 +34,6 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.sat.PigeonHoleGenerator;
@@ -47,7 +46,7 @@ import java.util.List;
 
 /**
  * Unit tests for the class {@link MUSGeneration}.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class MUSGenerationTest {
@@ -55,15 +54,15 @@ public class MUSGenerationTest {
   private final FormulaFactory f = new FormulaFactory();
   private final PigeonHoleGenerator pg = new PigeonHoleGenerator(f);
 
-  private final List<Proposition> pg3;
-  private final List<Proposition> pg4;
-  private final List<Proposition> pg5;
-  private final List<Proposition> pg6;
-  private final List<Proposition> pg7;
-  private final List<Proposition> file1;
-  private final List<Proposition> file2;
-  private final List<Proposition> file3;
-  private final List<Proposition> file4;
+  private final List<StandardProposition> pg3;
+  private final List<StandardProposition> pg4;
+  private final List<StandardProposition> pg5;
+  private final List<StandardProposition> pg6;
+  private final List<StandardProposition> pg7;
+  private final List<StandardProposition> file1;
+  private final List<StandardProposition> file2;
+  private final List<StandardProposition> file3;
+  private final List<StandardProposition> file4;
 
   public MUSGenerationTest() throws IOException {
     this.pg3 = generatePGPropositions(3);
@@ -80,15 +79,15 @@ public class MUSGenerationTest {
   @Test
   public void testDeletionBasedMUS() throws IOException {
     final MUSGeneration mus = new MUSGeneration();
-    final UNSATCore mus1 = mus.computeMUS(this.pg3, this.f);
-    final UNSATCore mus2 = mus.computeMUS(this.pg4, this.f);
-    final UNSATCore mus3 = mus.computeMUS(this.pg5, this.f);
-    final UNSATCore mus4 = mus.computeMUS(this.pg6, this.f);
-    final UNSATCore mus5 = mus.computeMUS(this.pg7, this.f);
-    final UNSATCore mus6 = mus.computeMUS(this.file1, this.f);
-    final UNSATCore mus7 = mus.computeMUS(this.file2, this.f);
-    final UNSATCore mus8 = mus.computeMUS(this.file3, this.f);
-    final UNSATCore mus9 = mus.computeMUS(this.file4, this.f);
+    final UNSATCore<StandardProposition> mus1 = mus.computeMUS(this.pg3, this.f);
+    final UNSATCore<StandardProposition> mus2 = mus.computeMUS(this.pg4, this.f);
+    final UNSATCore<StandardProposition> mus3 = mus.computeMUS(this.pg5, this.f);
+    final UNSATCore<StandardProposition> mus4 = mus.computeMUS(this.pg6, this.f);
+    final UNSATCore<StandardProposition> mus5 = mus.computeMUS(this.pg7, this.f);
+    final UNSATCore<StandardProposition> mus6 = mus.computeMUS(this.file1, this.f);
+    final UNSATCore<StandardProposition> mus7 = mus.computeMUS(this.file2, this.f);
+    final UNSATCore<StandardProposition> mus8 = mus.computeMUS(this.file3, this.f);
+    final UNSATCore<StandardProposition> mus9 = mus.computeMUS(this.file4, this.f);
     testMUS(pg3, mus1);
     testMUS(pg4, mus2);
     testMUS(pg5, mus3);
@@ -104,11 +103,11 @@ public class MUSGenerationTest {
   public void testPlainInsertionBasedMUS() throws IOException {
     final MUSGeneration mus = new MUSGeneration();
     final MUSConfig config = new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.PLAIN_INSERTION).build();
-    final UNSATCore mus1 = mus.computeMUS(this.pg3, this.f, config);
-    final UNSATCore mus2 = mus.computeMUS(this.pg4, this.f, config);
-    final UNSATCore mus3 = mus.computeMUS(this.pg5, this.f, config);
-    final UNSATCore mus6 = mus.computeMUS(this.file1, this.f, config);
-    final UNSATCore mus7 = mus.computeMUS(this.file2, this.f, config);
+    final UNSATCore<StandardProposition> mus1 = mus.computeMUS(this.pg3, this.f, config);
+    final UNSATCore<StandardProposition> mus2 = mus.computeMUS(this.pg4, this.f, config);
+    final UNSATCore<StandardProposition> mus3 = mus.computeMUS(this.pg5, this.f, config);
+    final UNSATCore<StandardProposition> mus6 = mus.computeMUS(this.file1, this.f, config);
+    final UNSATCore<StandardProposition> mus7 = mus.computeMUS(this.file2, this.f, config);
     testMUS(pg3, mus1);
     testMUS(pg4, mus2);
     testMUS(pg5, mus3);
@@ -122,16 +121,16 @@ public class MUSGenerationTest {
     Assert.assertEquals("MUSGeneration", mus.toString());
   }
 
-  private List<Proposition> generatePGPropositions(int n) {
-    final List<Proposition> result = new ArrayList<>();
+  private List<StandardProposition> generatePGPropositions(int n) {
+    final List<StandardProposition> result = new ArrayList<>();
     final Formula pgf = pg.generate(n);
     for (final Formula f : pgf)
       result.add(new StandardProposition(f));
     return result;
   }
 
-  private List<Proposition> readDimacs(final String fileName) throws IOException {
-    final List<Proposition> result = new ArrayList<>();
+  private List<StandardProposition> readDimacs(final String fileName) throws IOException {
+    final List<StandardProposition> result = new ArrayList<>();
     final BufferedReader reader = new BufferedReader(new FileReader(fileName));
     while (reader.ready()) {
       final String line = reader.readLine();
@@ -148,11 +147,11 @@ public class MUSGenerationTest {
     return result;
   }
 
-  private void testMUS(final List<Proposition> original, final UNSATCore mus) {
+  private void testMUS(final List<StandardProposition> original, final UNSATCore<StandardProposition> mus) {
     Assert.assertTrue(mus.isMUS());
     Assert.assertTrue(mus.propositions().size() <= original.size());
     final MiniSat miniSat = MiniSat.miniSat(this.f);
-    for (final Proposition p : mus.propositions()) {
+    for (final StandardProposition p : mus.propositions()) {
       Assert.assertTrue(original.contains(p));
       Assert.assertEquals(Tristate.TRUE, miniSat.sat());
       miniSat.add(p);

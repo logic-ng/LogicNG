@@ -32,6 +32,7 @@ import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.unsatcores.UNSATCore;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -48,7 +49,7 @@ import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public abstract class SATSolver {
@@ -68,7 +69,16 @@ public abstract class SATSolver {
    * Adds a formula to the solver.  The formula is first converted to CNF.
    * @param formula the formula
    */
-  public abstract void add(final Formula formula);
+  public void add(final Formula formula) {
+    add(formula, null);
+  }
+
+  /**
+   * Adds a formula to the solver.  The formula is first converted to CNF.
+   * @param formula     the formula
+   * @param proposition the proposition of this formula
+   */
+  public abstract void add(final Formula formula, Proposition proposition);
 
   /**
    * Adds a formula to the solver, but sets all variables to false which are not known to the solver.
@@ -82,7 +92,7 @@ public abstract class SATSolver {
    */
   public void add(final Proposition proposition) {
     for (final Formula formula : proposition.formulas())
-      this.add(formula);
+      this.add(formula, proposition);
   }
 
   /**
@@ -137,7 +147,7 @@ public abstract class SATSolver {
    * @param relaxationVar the relaxation variable
    * @param formulas      the collection of formulas
    */
-  public void add(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
+  public void addWithRelaxation(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
     for (final Formula formula : formulas)
       this.addWithRelaxation(relaxationVar, formula);
   }
@@ -158,20 +168,21 @@ public abstract class SATSolver {
 
   /**
    * Adds a formula which is already in CNF to the solver.
-   * @param formula the formula in CNF
+   * @param proposition a proposition (if required for proof tracing)
+   * @param formula     the formula in CNF
    */
-  void addClauseSet(final Formula formula) {
+  void addClauseSet(final Formula formula, final Proposition proposition) {
     switch (formula.type()) {
       case TRUE:
         break;
       case FALSE:
       case LITERAL:
       case OR:
-        this.addClause(formula);
+        this.addClause(formula, proposition);
         break;
       case AND:
         for (Formula op : formula)
-          this.addClause(op);
+          this.addClause(op, proposition);
         break;
       default:
         throw new IllegalArgumentException("Input formula ist not a valid CNF: " + formula);
@@ -203,9 +214,10 @@ public abstract class SATSolver {
 
   /**
    * Adds a formula which must be a clause to the solver.
-   * @param formula the clause
+   * @param formula     the clause
+   * @param proposition a proposition (if required for proof tracing)
    */
-  protected abstract void addClause(final Formula formula);
+  protected abstract void addClause(final Formula formula, final Proposition proposition);
 
   /**
    * Adds a formula which must be a clause to the solver.
@@ -334,6 +346,16 @@ public abstract class SATSolver {
   public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables);
 
   /**
+   * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
+   * all variables are considered relevant. Additionally every assignment contains literals for the given additional
+   * variables.
+   * @param variables           the set of variables
+   * @param additionalVariables the additional variables
+   * @return the list of models
+   */
+  public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables);
+
+  /**
    * Enumerates all models of the current formula and passes it to a model enumeration handler.
    * @param handler the model enumeration handler
    * @return the list of models
@@ -361,6 +383,17 @@ public abstract class SATSolver {
    * @return the list of models
    */
   public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final ModelEnumerationHandler handler);
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of variables  and passes it to a model
+   * enumeration handler.  If the set is {@code null}, all literals are considered relevant. Additionally every
+   * assignment contains literals for the given additional variables.
+   * @param variables           the set of variables
+   * @param additionalVariables the additional variables
+   * @param handler             the model enumeration handler
+   * @return the list of models
+   */
+  public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler);
 
   /**
    * Saves the current solver state.
@@ -394,4 +427,11 @@ public abstract class SATSolver {
    * @return the set of variables currently known by the solver
    */
   public abstract SortedSet<Variable> knownVariables();
+
+  /**
+   * Returns an unsat core of the current problem.  Only works if the SAT solver is configured to record the information
+   * required to generate a proof trace and an unsat core.
+   * @return the unsat core
+   */
+  public abstract UNSATCore<Proposition> unsatCore();
 }

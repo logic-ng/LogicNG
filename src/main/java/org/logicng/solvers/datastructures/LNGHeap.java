@@ -49,14 +49,14 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * A minimalistic heap implementation.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class LNGHeap {
 
   private final MiniSatStyleSolver s;
-  private LNGIntVector heap;
-  private LNGIntVector indices;
+  private final LNGIntVector heap;
+  private final LNGIntVector indices;
 
   /**
    * Constructs a new heap for a given solver.  The solver is required to access it's activity information stored

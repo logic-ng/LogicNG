@@ -28,17 +28,17 @@
 
 package org.logicng.formulas;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.Arrays;
 
 /**
  * Unit tests for formula restriction.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public class RestrictionTest {

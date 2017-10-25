@@ -30,6 +30,7 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -73,7 +74,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class SATTest {
@@ -314,6 +315,36 @@ public class SATTest {
         Assert.assertTrue(e instanceof UnsupportedOperationException);
       }
       s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), new StandardProposition(two));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), new ImmutableFormulaList(two));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), Arrays.asList(two, f.verum()));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
     }
   }
 
@@ -490,6 +521,71 @@ public class SATTest {
       s.reset();
       s.add(pg.generate(7));
       Assert.assertEquals(FALSE, s.sat());
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumeration() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        Variable lit = f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(f.cc(CType.GE, 1, lits));
+
+      List<Assignment> models = s.enumerateAllModels(firstFive, lits);
+      Assert.assertEquals(32, models.size());
+      for (Assignment model : models) {
+        for (Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumerationWithHandler() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        Variable lit = f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(f.cc(CType.GE, 1, lits));
+
+      NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
+      List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
+      Assert.assertEquals(29, modelsWithHandler.size());
+      for (Assignment model : modelsWithHandler) {
+        for (Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testEmptyEnumeration() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      s.add(f.falsum());
+      List<Assignment> models = s.enumerateAllModels();
+      Assert.assertTrue(models.isEmpty());
+
       s.reset();
     }
   }

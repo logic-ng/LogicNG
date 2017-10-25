@@ -61,7 +61,7 @@ public class DNFPredicateTest {
   }
 
   @Test
-  public void testToString(){
+  public void testToString() {
     Assert.assertEquals("DNFPredicate", dnfPredicate.toString());
   }
 }

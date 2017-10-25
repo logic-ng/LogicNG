@@ -31,9 +31,6 @@ package org.logicng.io.parsers;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 /**
  * Super class for a formula parser.
  * @version 1.2

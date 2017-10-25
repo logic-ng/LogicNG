@@ -70,15 +70,15 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Incremental WBO solver.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class IncWBO extends WBO {
 
-  private Encoder encoder;
-  private LNGBooleanVector incSoft;
+  private final Encoder encoder;
+  private final LNGBooleanVector incSoft;
+  private final PrintStream output;
   private boolean firstBuild;
-  private PrintStream output;
 
   /**
    * Constructs a new solver with default values.
@@ -140,7 +140,7 @@ public final class IncWBO extends WBO {
       for (int i = 0; i < nVars(); i++)
         newSATVariable(solver);
       for (int i = 0; i < nHard(); i++)
-        solver.addClause(hardClauses.get(i).clause());
+        solver.addClause(hardClauses.get(i).clause(), null);
       if (symmetryStrategy)
         this.symmetryBreaking();
       this.firstBuild = false;
@@ -154,7 +154,7 @@ public final class IncWBO extends WBO {
         for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
           clause.push(softClauses.get(i).relaxationVars().get(j));
         clause.push(softClauses.get(i).assumptionVar());
-        solver.addClause(clause);
+        solver.addClause(clause, null);
       }
     }
   }
@@ -182,10 +182,10 @@ public final class IncWBO extends WBO {
         for (int j = 0; j < vars.size(); j++)
           clause.push(vars.get(j));
         clause.push(l);
-        solver.addClause(clause);
+        solver.addClause(clause, null);
         clause.clear();
         clause.push(softClauses.get(indexSoft).assumptionVar());
-        solver.addClause(clause);
+        solver.addClause(clause, null);
         if (symmetryStrategy) {
           softMapping.push(new LNGIntVector(softMapping.get(indexSoft)));
           softMapping.get(indexSoft).clear();
@@ -214,7 +214,7 @@ public final class IncWBO extends WBO {
         for (int j = 0; j < vars.size(); j++)
           clause.push(vars.get(j));
         clause.push(l);
-        solver.addClause(clause);
+        solver.addClause(clause, null);
         clause.clear();
         vars.clear();
         clause = new LNGIntVector(softClauses.get(indexSoft).clause());
@@ -232,10 +232,10 @@ public final class IncWBO extends WBO {
         for (int j = 0; j < vars.size(); j++)
           clause.push(vars.get(j));
         clause.push(l);
-        solver.addClause(clause);
+        solver.addClause(clause, null);
         clause.clear();
         clause.push(softClauses.get(indexSoft).assumptionVar());
-        solver.addClause(clause);
+        solver.addClause(clause, null);
         if (symmetryStrategy) {
           softMapping.push(new LNGIntVector());
           relaxationMapping.push(new LNGIntVector());
@@ -289,7 +289,7 @@ public final class IncWBO extends WBO {
                 symClause = new Pair<>(var(coreIntersectionCurrent[coreList.get(k)].get(j)), var(coreIntersection[coreList.get(k)].get(m)));
               if (!duplicatedSymmetryClauses.contains(symClause)) {
                 duplicatedSymmetryClauses.add(symClause);
-                solver.addClause(clause);
+                solver.addClause(clause, null);
                 nbSymmetryClauses++;
                 if (symmetryBreakingLimit == nbSymmetryClauses)
                   break;

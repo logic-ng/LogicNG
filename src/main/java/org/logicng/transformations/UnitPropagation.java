@@ -43,7 +43,7 @@ import java.util.List;
 
 /**
  * A formula transformation which performs unit propagation.
- * @version 1.2
+ * @version 1.3
  * @since 1.2
  */
 public final class UnitPropagation implements FormulaTransformation {
@@ -85,11 +85,11 @@ public final class UnitPropagation implements FormulaTransformation {
         case FALSE:
         case LITERAL:
         case OR:
-          this.addClause(generateClauseVector(cnf));
+          this.addClause(generateClauseVector(cnf), null);
           break;
         case AND:
           for (Formula op : cnf)
-            this.addClause(generateClauseVector(op));
+            this.addClause(generateClauseVector(op), null);
           break;
         default:
           throw new IllegalStateException("Unexpected formula type in CNF: " + cnf.type());
