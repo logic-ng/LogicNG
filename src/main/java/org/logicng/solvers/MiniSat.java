@@ -71,6 +71,7 @@ import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
@@ -312,11 +313,24 @@ public final class MiniSat extends SATSolver {
       allVariables.addAll(variables);
       allVariables.addAll(additionalVariables);
     }
+    final LNGIntVector relevantVars = variables == null ? null : new LNGIntVector(variables.size()) ;
+    if (relevantVars != null) {
+      for (Variable var : variables) {
+        relevantVars.push(this.solver.idxForName(var.name()));
+      }
+    }
     while (this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(allVariables);
+      final LNGBooleanVector modelFromSolver = this.solver.model();
+      final Assignment model = this.createAssignment(modelFromSolver, allVariables);
       assert model != null;
       models.add(model);
-      this.add(model.blockingClause(this.f, variables));
+      if (model.size() > 0) {
+        LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantVars);
+        this.solver.addClause(blockingClause, null);
+        this.result = UNDEF;
+      } else {
+        break;
+      }
     }
     if (this.style == SolverStyle.MINISAT && incremental)
       this.loadState(stateBeforeEnumeration);
@@ -342,16 +356,48 @@ public final class MiniSat extends SATSolver {
       allVariables.addAll(variables);
       allVariables.addAll(additionalVariables);
     }
+    final LNGIntVector relevantVars = variables == null ? null : new LNGIntVector(variables.size()) ;
+    if (relevantVars != null) {
+      for (Variable var : variables) {
+        relevantVars.push(this.solver.idxForName(var.name()));
+      }
+    }
     while (proceed && this.sat((SATHandler) null) == TRUE) {
-      final Assignment model = this.model(allVariables);
+      final LNGBooleanVector modelFromSolver = this.solver.model();
+      final Assignment model = this.createAssignment(modelFromSolver, allVariables);
       assert model != null;
       models.add(model);
       proceed = handler.foundModel(model);
-      this.add(model.blockingClause(this.f, variables));
+      if (model.size() > 0) {
+        LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantVars);
+        this.solver.addClause(blockingClause, null);
+        this.result = UNDEF;
+      } else {
+        break;
+      }
     }
     if (this.style == SolverStyle.MINISAT && incremental)
       this.loadState(stateBeforeEnumeration);
     return models;
+  }
+
+  private LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
+    final LNGIntVector blockingClause;
+    if (relevantVars != null) {
+      blockingClause = new LNGIntVector(relevantVars.size());
+      for (int i = 0; i < relevantVars.size(); i++) {
+        final int varIndex = relevantVars.get(i);
+        final boolean varAssignment = modelFromSolver.get(varIndex);
+        blockingClause.push(varAssignment ? (varIndex * 2) ^ 1 : varIndex * 2);
+      }
+    } else {
+      blockingClause = new LNGIntVector(modelFromSolver.size());
+      for (int i = 0; i < modelFromSolver.size(); i++) {
+        final boolean varAssignment = modelFromSolver.get(i);
+        blockingClause.push(varAssignment ? (i * 2) ^ 1 : i * 2);
+      }
+    }
+    return blockingClause;
   }
 
   @Override
