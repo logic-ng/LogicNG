@@ -71,11 +71,10 @@ import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
-import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 1.3
+ * @version 1.3.1
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -292,7 +291,13 @@ public final class MiniSat extends SATSolver {
   public Assignment model(final Collection<Variable> variables) {
     if (this.result == UNDEF)
       throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
-    return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
+    final LNGIntVector relevantIndices = variables == null ? null : new LNGIntVector(variables.size());
+    if (relevantIndices != null) {
+      for (Variable var : variables) {
+        relevantIndices.push(this.solver.idxForName(var.name()));
+      }
+    }
+    return this.result == TRUE ? this.createAssignment(this.solver.model(), relevantIndices) : null;
   }
 
   @Override
@@ -302,39 +307,7 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(Collection<Variable> variables, Collection<Variable> additionalVariables) {
-    List<Assignment> models = new LinkedList<>();
-    SolverState stateBeforeEnumeration = null;
-    if (this.style == SolverStyle.MINISAT && incremental)
-      stateBeforeEnumeration = this.saveState();
-    SortedSet<Variable> allVariables = new TreeSet<>();
-    if (variables == null) {
-      allVariables = null;
-    } else {
-      allVariables.addAll(variables);
-      allVariables.addAll(additionalVariables);
-    }
-    final LNGIntVector relevantVars = variables == null ? null : new LNGIntVector(variables.size()) ;
-    if (relevantVars != null) {
-      for (Variable var : variables) {
-        relevantVars.push(this.solver.idxForName(var.name()));
-      }
-    }
-    while (this.sat((SATHandler) null) == TRUE) {
-      final LNGBooleanVector modelFromSolver = this.solver.model();
-      final Assignment model = this.createAssignment(modelFromSolver, allVariables);
-      assert model != null;
-      models.add(model);
-      if (model.size() > 0) {
-        LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantVars);
-        this.solver.addClause(blockingClause, null);
-        this.result = UNDEF;
-      } else {
-        break;
-      }
-    }
-    if (this.style == SolverStyle.MINISAT && incremental)
-      this.loadState(stateBeforeEnumeration);
-    return models;
+    return enumerateAllModels(variables, additionalVariables, null);
   }
 
   @Override
@@ -356,20 +329,27 @@ public final class MiniSat extends SATSolver {
       allVariables.addAll(variables);
       allVariables.addAll(additionalVariables);
     }
-    final LNGIntVector relevantVars = variables == null ? null : new LNGIntVector(variables.size()) ;
-    if (relevantVars != null) {
+    final LNGIntVector relevantIndices = variables == null ? null : new LNGIntVector(variables.size());
+    LNGIntVector relevantAllIndices = null;
+    if (relevantIndices != null) {
       for (Variable var : variables) {
-        relevantVars.push(this.solver.idxForName(var.name()));
+        relevantIndices.push(this.solver.idxForName(var.name()));
+      }
+      relevantAllIndices = additionalVariables.isEmpty() ? relevantIndices : new LNGIntVector(allVariables.size());
+      if (!additionalVariables.isEmpty()) {
+        for (Variable var : allVariables) {
+          relevantAllIndices.push(this.solver.idxForName(var.name()));
+        }
       }
     }
     while (proceed && this.sat((SATHandler) null) == TRUE) {
       final LNGBooleanVector modelFromSolver = this.solver.model();
-      final Assignment model = this.createAssignment(modelFromSolver, allVariables);
+      final Assignment model = this.createAssignment(modelFromSolver, relevantAllIndices);
       assert model != null;
       models.add(model);
-      proceed = handler.foundModel(model);
+      proceed = handler == null || handler.foundModel(model);
       if (model.size() > 0) {
-        LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantVars);
+        LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantIndices);
         this.solver.addClause(blockingClause, null);
         this.result = UNDEF;
       } else {
@@ -381,6 +361,12 @@ public final class MiniSat extends SATSolver {
     return models;
   }
 
+  /**
+   * Generates a blocking clause from a given model and a set of relevant variables.
+   * @param modelFromSolver the current model for which the blocking clause should be generated
+   * @param relevantVars    the indices of the relevant variables.  If {@code null} all variables are relevant.
+   * @return the blocking clause for the given model and relevant variables
+   */
   private LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
     final LNGIntVector blockingClause;
     if (relevantVars != null) {
@@ -492,20 +478,24 @@ public final class MiniSat extends SATSolver {
 
   /**
    * Creates an assignment from a Boolean vector of the solver.
-   * @param vec       the vector of the solver
-   * @param variables the variables which should appear in the model or {@code null} if all variables should
-   *                  appear
+   * @param vec             the vector of the solver
+   * @param relevantIndices the solver's indices of the relevant variables for the model.  If {@code null}, all
+   *                        variables are relevant.
    * @return the assignment
    */
-  private Assignment createAssignment(final LNGBooleanVector vec, final Collection<Variable> variables) {
+  private Assignment createAssignment(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
     final Assignment model = new Assignment();
-    for (int i = 0; i < vec.size(); i++) {
-      final Variable var = this.f.variable(this.solver.nameForIdx(i));
-      if (vec.get(i)) {
-        if (variables == null || variables.contains(var))
-          model.addLiteral(var);
-      } else if (variables == null || variables.contains(var))
-        model.addLiteral(var.negate());
+    if (relevantIndices == null) {
+      for (int i = 0; i < vec.size(); i++) {
+        model.addLiteral(f.literal(this.solver.nameForIdx(i), vec.get(i)));
+      }
+    } else {
+      for (int i = 0; i < relevantIndices.size(); i++) {
+        final int index = relevantIndices.get(i);
+        if (index != -1) {
+          model.addLiteral(f.literal(this.solver.nameForIdx(index), vec.get(index)));
+        }
+      }
     }
     return model;
   }
