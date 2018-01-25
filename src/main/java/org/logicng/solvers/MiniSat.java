@@ -526,8 +526,10 @@ public final class MiniSat extends SATSolver {
         if (clauses.get(i).clause().size() == 1 && clauses.get(j).clause().size() == 1
                 && clauses.get(i).clause().get(0) + clauses.get(j).clause().get(0) == 0) {
           LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
-          propositions.add(clauses.get(i).proposition());
-          propositions.add(clauses.get(j).proposition());
+          final Proposition pi = clauses.get(i).proposition();
+          final Proposition pj = clauses.get(j).proposition();
+          propositions.add(pi != null ? pi : new StandardProposition(getFormulaForVector(clauses.get(i).clause())));
+          propositions.add(pj != null ? pj : new StandardProposition(getFormulaForVector(clauses.get(j).clause())));
           return new UNSATCore<>(new ArrayList<>(propositions), false);
         }
       }
