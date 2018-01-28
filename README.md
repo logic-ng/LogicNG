@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.3-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.3.1-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -19,7 +19,7 @@ LogicNG is released in the Maven Central Repository.  To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.3</version>
+  <version>1.3.1</version>
 </dependency>
 ```
 to you Maven POM.
@@ -59,6 +59,12 @@ final Tristate result = miniSat.sat();
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
 
 ## Changelog
+
+### Version 1.3.1 (Release January 2018)
+* Huge performance boost in the model enumeration of MiniSat
+* New formula transformation which imports formulas in another formula factory
+* Small bugfix for a trivial case in DRUP
+
 ### Version 1.3 (Release October 2017)
 * MiniSat and Glucose have a new option for proof tracing.  A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable formulas after solving them.  The new method can be found in the SAT solver class: `unsatCore()`
 * Unsat Cores are now parametrized with the proposition type

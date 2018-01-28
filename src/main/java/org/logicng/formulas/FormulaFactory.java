@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2017 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -36,6 +36,7 @@ import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.pseudobooleans.PBEncoder;
+import org.logicng.transformations.FormulaFactoryImporter;
 import org.logicng.transformations.cnf.CNFEncoder;
 import org.logicng.util.Pair;
 
@@ -108,6 +109,7 @@ public class FormulaFactory {
   int pbCounter;
   int cnfCounter;
   private boolean cnfCheck;
+  private FormulaFactoryImporter importer;
 
   /**
    * Constructor for a new formula factory.
@@ -975,6 +977,19 @@ public class FormulaFactory {
       formulaAdditionResult[0] = true;
       formulaAdditionResult[1] = f.type == LITERAL || f.type == OR && ((Or) f).isCNFClause();
     }
+  }
+
+  /**
+   * Imports a formula from another formula factory into this factory and returns it.  If the current factory of the
+   * formula is already this formula factory, the same instance will be returned.
+   * @param formula the formula to import
+   * @return the imported formula on this factory
+   */
+  public Formula importFormula(final Formula formula) {
+    if (this.importer == null) {
+      this.importer = new FormulaFactoryImporter(this);
+    }
+    return formula.transform(importer);
   }
 
   /**
