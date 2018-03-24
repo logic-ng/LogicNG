@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -30,6 +30,7 @@ package org.logicng.solvers.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -59,9 +60,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
@@ -71,7 +75,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class SATTest {
@@ -312,6 +316,36 @@ public class SATTest {
         Assert.assertTrue(e instanceof UnsupportedOperationException);
       }
       s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), new StandardProposition(two));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), new ImmutableFormulaList(two));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
+
+      s.add(one);
+      s.addWithRelaxation(f.variable("d"), Arrays.asList(two, f.verum()));
+      Assert.assertEquals(Tristate.TRUE, s.sat());
+      try {
+        Assert.assertEquals(2, s.enumerateAllModels().size());
+      } catch (Exception e) {
+        Assert.assertTrue(e instanceof UnsupportedOperationException);
+      }
+      s.reset();
     }
   }
 
@@ -493,6 +527,71 @@ public class SATTest {
   }
 
   @Test
+  public void testModelEnumeration() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        Variable lit = f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(f.cc(CType.GE, 1, lits));
+
+      List<Assignment> models = s.enumerateAllModels(firstFive, lits);
+      Assert.assertEquals(32, models.size());
+      for (Assignment model : models) {
+        for (Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumerationWithHandler() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        Variable lit = f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(f.cc(CType.GE, 1, lits));
+
+      NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
+      List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
+      Assert.assertEquals(29, modelsWithHandler.size());
+      for (Assignment model : modelsWithHandler) {
+        for (Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testEmptyEnumeration() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      s.add(f.falsum());
+      List<Assignment> models = s.enumerateAllModels();
+      Assert.assertTrue(models.isEmpty());
+
+      s.reset();
+    }
+  }
+
+  @Test
   public void testNumberOfModelHandler() {
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
@@ -626,6 +725,98 @@ public class SATTest {
             "trail=[]%n" +
             "frames=[]%n");
     Assert.assertEquals(expected, baos.toString());
+  }
 
+  @Test
+  public void testKnownVariables() throws ParserException {
+    final PropositionalParser parser = new PropositionalParser(f);
+    final Formula phi = parser.parse("x1 & x2 & x3 & (x4 | ~x5)");
+    final SATSolver minisat = MiniSat.miniSat(f);
+    final SATSolver minicard = MiniSat.miniCard(f);
+    final SATSolver cleaneling = CleaneLing.minimalistic(f);
+    minisat.add(phi);
+    minicard.add(phi);
+    cleaneling.add(phi);
+    final SortedSet<Variable> expected = new TreeSet<>(Arrays.asList(
+            f.variable("x1"),
+            f.variable("x2"),
+            f.variable("x3"),
+            f.variable("x4"),
+            f.variable("x5")));
+    Assert.assertEquals(expected, minisat.knownVariables());
+    Assert.assertEquals(expected, minicard.knownVariables());
+    Assert.assertEquals(expected, cleaneling.knownVariables());
+
+    final SolverState state = minisat.saveState();
+    final SolverState stateCard = minicard.saveState();
+    minisat.add(f.variable("x6"));
+    minicard.add(f.variable("x6"));
+    cleaneling.add(f.variable("x6"));
+    final SortedSet<Variable> expected2 = new TreeSet<>(Arrays.asList(
+            f.variable("x1"),
+            f.variable("x2"),
+            f.variable("x3"),
+            f.variable("x4"),
+            f.variable("x5"),
+            f.variable("x6")));
+    Assert.assertEquals(expected2, minisat.knownVariables());
+    Assert.assertEquals(expected2, minicard.knownVariables());
+    Assert.assertEquals(expected2, cleaneling.knownVariables());
+
+    // load state for minisat
+    minisat.loadState(state);
+    minicard.loadState(stateCard);
+    Assert.assertEquals(expected, minisat.knownVariables());
+    Assert.assertEquals(expected, minicard.knownVariables());
+  }
+
+  @Test
+  public void testAddWithoutUnknown() throws ParserException {
+    final PropositionalParser parser = new PropositionalParser(f);
+    final Formula phi = parser.parse("x1 & (~x2 | x3) & (x4 | ~x5)");
+    final SortedSet<Variable> phiVars = new TreeSet<>(Arrays.asList(
+            f.variable("x1"),
+            f.variable("x2"),
+            f.variable("x3"),
+            f.variable("x4"),
+            f.variable("x5")));
+    final Formula add1 = parser.parse("x1 | x6 | x7");
+    final Formula add2 = parser.parse("~x1 | ~x6 | x8");
+    final Formula add3 = parser.parse("x2 & ~x3 | x7");
+    final Formula add4 = parser.parse("x8 | x9");
+    final SATSolver minisat = MiniSat.miniSat(f);
+    final SATSolver minicard = MiniSat.miniCard(f);
+    final SATSolver cleaneling = CleaneLing.minimalistic(f);
+    final SATSolver[] solvers = new SATSolver[]{minisat, minicard, cleaneling};
+    for (final SATSolver solver : solvers) {
+      solver.add(phi);
+      solver.addWithoutUnknown(add1);
+      Assert.assertEquals(TRUE, solver.sat());
+      Assert.assertEquals(phiVars, solver.model().formula(f).variables());
+      solver.addWithoutUnknown(add2);
+      Assert.assertEquals(TRUE, solver.sat());
+      Assert.assertEquals(phiVars, solver.model().formula(f).variables());
+      if (solver instanceof MiniSat) {
+        final SolverState state = solver.saveState();
+        solver.addWithoutUnknown(add3);
+        Assert.assertEquals(FALSE, solver.sat());
+        solver.loadState(state);
+        solver.add(add1);
+        Assert.assertEquals(TRUE, solver.sat());
+        Assert.assertTrue(solver.model().formula(f).variables().containsAll(Arrays.asList(f.variable("x6"), f.variable("x7"))));
+        solver.loadState(state);
+        solver.sat();
+        Assert.assertEquals(phiVars, solver.model().formula(f).variables());
+      } else {
+        solver.add(add1);
+        Assert.assertEquals(TRUE, solver.sat());
+        Assert.assertTrue(solver.model().formula(f).variables().containsAll(Arrays.asList(f.variable("x6"), f.variable("x7"))));
+        solver.add(f.variable("x7"));
+        Assert.assertEquals(TRUE, solver.sat());
+        Assert.assertTrue(solver.model().formula(f).variables().containsAll(Arrays.asList(f.variable("x6"), f.variable("x7"))));
+        solver.addWithoutUnknown(add4);
+        Assert.assertEquals(FALSE, solver.sat());
+      }
+    }
   }
 }

@@ -7,7 +7,7 @@
 <!--                                                                       -->
 <!--               The Next Generation Logic Library                       -->
 <!--                                                                       -->
-<!--  Copyright 2015-2016 Christoph Zengler                                -->
+<!--  Copyright 2015-2018 Christoph Zengler                                -->
 <!--                                                                       -->
 <!--  Licensed under the Apache License, Version 2.0 (the "License");      -->
 <!--  you may not use this file except in compliance with the License.     -->
@@ -26,34 +26,63 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.2</version>
-  <name>LogicNG</name>
+  <version>1.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
+
+  <name>LogicNG</name>
+  <description>The Next Generation Logic Library</description>
+  <url>http://www.logicng.org</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Christoph Zengler</name>
+      <email>christoph@zengler.eu</email>
+    </developer>
+    <developer>
+      <name>Steffen Hildebrandt</name>
+    </developer>
+    <developer>
+      <name>Martin Siegmund</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com:logic-ng/LogicNG.git</connection>
+    <developerConnection>scm:git:ssh://github.com:logic-ng/LogicNG.git</developerConnection>
+    <url>https://github.com/logic-ng/LogicNG</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+
     <sonar.language>java</sonar.language>
     <sonar.exclusions>**/LogicNGPropositional*.java,**/LogicNGPseudoBoolean*.java</sonar.exclusions>
+
+    <!-- Dependency Versions -->
+    <version.antlr>4.7.1</version.antlr>
+    <version.jacoco>0.8.0</version.jacoco>
+    <version.coveralls>4.3.0-SNAPSHOT</version.coveralls>
+    <version.junit>4.12</version.junit>
+    <version.assertj>2.8.0</version.assertj>
   </properties>
 
   <build>
     <plugins>
-      <!-- Java Compiler  -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-
       <!-- ANTLR4 (Parser Generation)  -->
       <plugin>
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-maven-plugin</artifactId>
-        <version>4.5.3</version>
+        <version>${version.antlr}</version>
         <configuration>
           <sourceDirectory>src/main/resources/parser</sourceDirectory>
           <outputDirectory>target/generated-sources/antlr/org/logicng/io/parsers</outputDirectory>
@@ -71,7 +100,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
+        <version>${version.jacoco}</version>
         <configuration>
           <excludes>
             <exclude>**/LogicNGPropositional*</exclude>
@@ -101,46 +130,9 @@
               <rules>
                 <rule>
                   <element>BUNDLE</element>
-                  <limits>
-                    <limit>
-                      <counter>COMPLEXITY</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.5</minimum>
-                    </limit>
-                  </limits>
                 </rule>
               </rules>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Compile jar with sources -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Compile jar with javadocs -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
@@ -149,7 +141,7 @@
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
         <artifactId>coveralls-maven-plugin</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>${version.coveralls}</version>
         <configuration>
           <sourceDirectories>
             <sourceDirectory>target/generated-sources/antlr</sourceDirectory>
@@ -164,30 +156,25 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
-      <version>4.5.3</version>
+      <version>${version.antlr}</version>
     </dependency>
 
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>${version.junit}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${version.assertj}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>sonatype-nexus-snapshot</id>
@@ -200,4 +187,79 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <!-- Deploy to Maven Central -->
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+
+          <!-- Sign components -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Compile jar with sources -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Compile jar with javadocs -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.4</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

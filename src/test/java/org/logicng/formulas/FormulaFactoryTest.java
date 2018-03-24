@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -32,12 +32,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test some basic formula factory functionality.
@@ -144,5 +148,27 @@ public class FormulaFactoryTest {
     Formula nCnf = f.cnf(nClauses);
     Assert.assertEquals(cnf, cnf.cnf());
     Assert.assertNotEquals(nCnf, nCnf.cnf());
+  }
+
+  @Test
+  public void testImportFormula() throws ParserException {
+    final FormulaFactory f = new FormulaFactory("Factory F");
+    final FormulaFactory g = new FormulaFactory("Factory G");
+    final PropositionalParser pf = new PropositionalParser(f);
+    final String formula = "x1 & x2 & ~x3 => (x4 | (x5 <=> ~x1))";
+    final Formula ff = pf.parse(formula);
+    final Formula fg = g.importFormula(ff);
+    assertThat(fg).isEqualTo(ff);
+    assertThat(ff.factory()).isSameAs(f);
+    assertThat(fg.factory()).isSameAs(g);
+    assertThat(f.statistics()).isEqualToComparingOnlyGivenFields (g.statistics(), "positiveLiterals",
+            "negativeLiterals", "negations", "implications", "equivalences", "conjunctions2", "conjunctions3",
+            "conjunctions4", "conjunctionsN", "disjunctions2", "disjunctions3", "disjunctions4");
+    for (Literal litF : ff.literals()) {
+      assertThat(litF.factory()).isSameAs(f);
+    }
+    for (Literal litG : fg.literals()) {
+      assertThat(litG.factory()).isSameAs(g);
+    }
   }
 }

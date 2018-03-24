@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -81,8 +81,8 @@ public class Literal extends Formula implements Comparable<Literal> {
     this.name = name;
     this.phase = phase;
     this.var = phase ? (Variable) this : (Variable) this.negate();
-    this.variables = new TreeSet<>(Collections.singletonList(var));
-    this.literals = new TreeSet<>(Collections.singletonList(this));
+    this.variables = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(var)));
+    this.literals = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(this)));
   }
 
   @Override

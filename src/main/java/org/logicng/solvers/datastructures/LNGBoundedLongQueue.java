@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -81,11 +81,11 @@ import org.logicng.collections.LNGLongVector;
 
 /**
  * A bounded long queue (for Glucose)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class LNGBoundedLongQueue {
-  private LNGLongVector elems;
+  private final LNGLongVector elems;
   private int first;
   private int last;
   private long sumOfQueue;

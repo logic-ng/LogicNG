@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -49,30 +49,34 @@ public class PigeonHoleGenerator {
   }
 
   public Formula generate(int n) {
-    return f.and(placeInSomeHole(n), onlyOnePigeonInHole(n));
+    return generate(n, "v");
   }
 
-  private Formula placeInSomeHole(int n) {
+  public Formula generate(int n, String prefix) {
+    return f.and(placeInSomeHole(n, prefix), onlyOnePigeonInHole(n, prefix));
+  }
+
+  private Formula placeInSomeHole(int n, String prefix) {
     if (n == 1)
-      return f.and(f.variable("v1"), f.variable("v2"));
+      return f.and(f.variable(prefix + "1"), f.variable(prefix + "2"));
     List<Formula> ors = new LinkedList<>();
     for (int i = 1; i <= n + 1; i++) {
       List<Literal> orOps = new LinkedList<>();
       for (int j = 1; j <= n; j++)
-        orOps.add(f.variable("v" + (n * (i - 1) + j)));
+        orOps.add(f.variable(prefix + (n * (i - 1) + j)));
       ors.add(f.or(orOps));
     }
     return f.and(ors);
   }
 
-  private Formula onlyOnePigeonInHole(int n) {
+  private Formula onlyOnePigeonInHole(int n, String prefix) {
     if (n == 1)
-      return f.or(f.literal("v1", false), f.literal("v2", false));
+      return f.or(f.literal(prefix + "1", false), f.literal(prefix + "2", false));
     List<Formula> ors = new LinkedList<>();
     for (int j = 1; j <= n; j++)
       for (int i = 1; i <= n; i++)
         for (int k = i + 1; k <= n + 1; k++)
-          ors.add(f.or(f.literal("v" + (n * (i - 1) + j), false), f.literal("v" + (n * (k - 1) + j), false)));
+          ors.add(f.or(f.literal(prefix + (n * (i - 1) + j), false), f.literal(prefix + (n * (k - 1) + j), false)));
     return f.and(ors);
   }
 }

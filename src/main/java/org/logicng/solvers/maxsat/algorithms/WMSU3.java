@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -69,22 +69,22 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * The weighted MSU3 algorithm.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class WMSU3 extends MaxSAT {
 
-  boolean bmoStrategy;
+  final boolean bmoStrategy;
+  final private Encoder encoder;
+  final private IncrementalStrategy incrementalStrategy;
+  final private LNGIntVector assumptions;
+  final private LNGIntVector objFunction;
+  final private LNGIntVector coeffs;
+  final private SortedMap<Integer, Integer> coreMapping;
+  final private LNGBooleanVector activeSoft;
+  final private PrintStream output;
   boolean isBmo;
   private MiniSatStyleSolver solver;
-  private Encoder encoder;
-  private IncrementalStrategy incrementalStrategy;
-  private LNGIntVector assumptions;
-  private LNGIntVector objFunction;
-  private LNGIntVector coeffs;
-  private SortedMap<Integer, Integer> coreMapping;
-  private LNGBooleanVector activeSoft;
-  private PrintStream output;
 
   /**
    * Constructs a new solver with default values.
@@ -383,11 +383,11 @@ public final class WMSU3 extends MaxSAT {
             bmoEncodings.push(e);
             firstEncoding.push(true);
             for (int i = 0; i < encodingAssumptions.size(); i++)
-              this.solver.addClause(encodingAssumptions.get(i));
+              this.solver.addClause(encodingAssumptions.get(i), null);
             encodingAssumptions.clear();
             for (int i = 0; i < nSoft(); i++) {
               if (!this.activeSoft.get(i) && previousWeight == softClauses.get(i).weight())
-                this.solver.addClause(not(softClauses.get(i).assumptionVar()));
+                this.solver.addClause(not(softClauses.get(i).assumptionVar()), null);
               if (currentWeight == softClauses.get(i).weight())
                 this.assumptions.push(not(softClauses.get(i).assumptionVar()));
               if (this.activeSoft.get(i)) {
@@ -461,13 +461,13 @@ public final class WMSU3 extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     LNGIntVector clause;
     for (int i = 0; i < nSoft(); i++) {
       clause = new LNGIntVector(softClauses.get(i).clause());
       for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
         clause.push(softClauses.get(i).relaxationVars().get(j));
-      s.addClause(clause);
+      s.addClause(clause, null);
     }
     return s;
   }

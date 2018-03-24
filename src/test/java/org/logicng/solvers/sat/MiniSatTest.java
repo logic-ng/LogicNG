@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -39,7 +39,7 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Some MiniSat specific unit tests.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class MiniSatTest {
@@ -51,10 +51,10 @@ public class MiniSatTest {
     solver.newVar(true, true);
     solver.newVar(true, true);
     solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3));
-    solver.addClause(clause(-1, -2));
-    solver.addClause(clause(-1, -3));
-    solver.addClause(clause(-2, -3));
+    solver.addClause(clause(1, 2, 3), null);
+    solver.addClause(clause(-1, -2), null);
+    solver.addClause(clause(-1, -3), null);
+    solver.addClause(clause(-2, -3), null);
     Assert.assertEquals(TRUE, solver.solve(null));
     Assert.assertEquals(FALSE, solver.solve(null, clause(1, 2)));
   }

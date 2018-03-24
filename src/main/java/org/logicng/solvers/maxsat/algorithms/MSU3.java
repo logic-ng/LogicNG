@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -66,18 +66,18 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * Non-incremental MSU3 solver.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class MSU3 extends MaxSAT {
 
+  private final Encoder encoder;
+  private final IncrementalStrategy incrementalStrategy;
+  private final LNGIntVector objFunction;
+  private final SortedMap<Integer, Integer> coreMapping;
+  private final LNGBooleanVector activeSoft;
+  private final PrintStream output;
   private MiniSatStyleSolver solver;
-  private Encoder encoder;
-  private IncrementalStrategy incrementalStrategy;
-  private LNGIntVector objFunction;
-  private SortedMap<Integer, Integer> coreMapping;
-  private LNGBooleanVector activeSoft;
-  private PrintStream output;
 
   /**
    * Constructs a new solver with default values.
@@ -271,13 +271,13 @@ public final class MSU3 extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     LNGIntVector clause;
     for (int i = 0; i < nSoft(); i++) {
       clause = new LNGIntVector(softClauses.get(i).clause());
       for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
         clause.push(softClauses.get(i).relaxationVars().get(j));
-      s.addClause(clause);
+      s.addClause(clause, null);
     }
     return s;
   }

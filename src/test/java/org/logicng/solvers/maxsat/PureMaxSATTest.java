@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -54,14 +54,10 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class PureMaxSATTest {
-
-  private final PrintStream logStream;
-
-  private final FormulaFactory f = new FormulaFactory();
 
   private static final String[] files = new String[]{
           "c5315-bug-gate-0.dimacs.seq.filtered.cnf",
@@ -72,6 +68,8 @@ public class PureMaxSATTest {
           "mot_comb3._red-gate-0.dimacs.seq.filtered.cnf",
           "s15850-bug-onevec-gate-0.dimacs.seq.filtered.cnf"
   };
+  private final PrintStream logStream;
+  private final FormulaFactory f = new FormulaFactory();
 
   public PureMaxSATTest() throws FileNotFoundException {
     logStream = new PrintStream("tests/maxsat/log.txt");
@@ -185,9 +183,9 @@ public class PureMaxSATTest {
     Assert.assertEquals(26, stats.bestSolution());
     Assert.assertEquals(26, stats.unsatCalls());
     Assert.assertEquals(2, stats.satCalls());
-    Assert.assertEquals(22.73, stats.averageCoreSize(), 0.1);
-    Assert.assertEquals(9032, stats.symmetryClauses());
-    Assert.assertEquals("MaxSAT.Stats{best solution=26, #sat calls=2, #unsat calls=26, average core size=22.73, #symmetry clauses=9032}", stats.toString());
+    Assert.assertEquals(29.46, stats.averageCoreSize(), 0.1);
+    Assert.assertEquals(24449, stats.symmetryClauses());
+    Assert.assertEquals("MaxSAT.Stats{best solution=26, #sat calls=2, #unsat calls=26, average core size=29.46, #symmetry clauses=24449}", stats.toString());
   }
 
   @Test

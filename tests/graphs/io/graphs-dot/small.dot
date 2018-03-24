@@ -1,0 +1,4 @@
+strict graph {
+  A -- B
+  C
+}

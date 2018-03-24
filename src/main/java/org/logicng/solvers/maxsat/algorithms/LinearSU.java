@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -64,18 +64,18 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity;
 
 /**
  * Linear search solver with Boolean Multilevel Optimization (BMO)
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public final class LinearSU extends MaxSAT {
 
+  private final Encoder encoder;
+  private final boolean bmoMode;  // Enables BMO mode.
+  private final LNGIntVector objFunction; // Literals to be used in the constraint that excludes models.
+  private final LNGIntVector coeffs; // Coefficients of the literals that are used in the constraint that excludes models.
+  private final PrintStream output;
   private MiniSatStyleSolver solver;
-  private Encoder encoder;
-  private boolean bmoMode;  // Enables BMO mode.
-  private LNGIntVector objFunction; // Literals to be used in the constraint that excludes models.
-  private LNGIntVector coeffs; // Coefficients of the literals that are used in the constraint that excludes models.
   private boolean isBmo; // Stores if the formula is BMO or not.
-  private PrintStream output;
 
   /**
    * Constructs a new solver with default values.
@@ -247,14 +247,14 @@ public final class LinearSU extends MaxSAT {
     for (int i = 0; i < nVars(); i++)
       newSATVariable(s);
     for (int i = 0; i < nHard(); i++)
-      s.addClause(hardClauses.get(i).clause());
+      s.addClause(hardClauses.get(i).clause(), null);
     for (int i = 0; i < nSoft(); i++) {
       if (softClauses.get(i).weight() < minWeight)
         continue;
       final LNGIntVector clause = new LNGIntVector(softClauses.get(i).clause());
       for (int j = 0; j < softClauses.get(i).relaxationVars().size(); j++)
         clause.push(softClauses.get(i).relaxationVars().get(j));
-      s.addClause(clause);
+      s.addClause(clause, null);
     }
     return s;
   }

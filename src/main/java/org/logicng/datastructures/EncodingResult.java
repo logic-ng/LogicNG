@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -48,11 +48,11 @@ import java.util.List;
  * in the formula factory and therefore polluting the factory and the heap.  This class can be used to connect an
  * encoding directly with a SAT solver and therefore introducing the variables only on the solver - not in the factory.
  * When working with many encodings, this can be a large performance gain.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public final class EncodingResult {
-  final FormulaFactory f;
+  private final FormulaFactory f;
   private final MiniSat miniSat;
   private final CleaneLing cleaneLing;
   private List<Formula> result;
@@ -121,7 +121,7 @@ public final class EncodingResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      this.miniSat.underlyingSolver().addClause(clauseVec);
+      this.miniSat.underlyingSolver().addClause(clauseVec, null);
       this.miniSat.setSolverToUndef();
     } else {
       for (Literal lit : literals) {
@@ -155,7 +155,7 @@ public final class EncodingResult {
           litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
         clauseVec.push(litNum);
       }
-      this.miniSat.underlyingSolver().addClause(clauseVec);
+      this.miniSat.underlyingSolver().addClause(clauseVec, null);
       this.miniSat.setSolverToUndef();
     } else {
       for (Literal lit : literals) {

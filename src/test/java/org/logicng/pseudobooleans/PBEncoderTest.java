@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -178,7 +178,7 @@ public class PBEncoderTest {
     PBConstraint normCC = f.pbc(CType.LE, 2, lits, coeffs2);
     Assert.assertEquals("AND[~m | ~n]", encoders[0].encode(normCC).toString());
   }
-  
+
   @Test
   public void testConfigToString() {
     Assert.assertEquals("PBConfig{\n" +

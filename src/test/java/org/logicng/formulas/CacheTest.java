@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -39,7 +39,7 @@ import java.util.List;
 
 /**
  * Unit tests for the package formulas.cache.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class CacheTest {
@@ -64,17 +64,17 @@ public class CacheTest {
   @Test
   public void testValues() {
     List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
-    Assert.assertTrue(valuesTrans.size() == 10);
+    Assert.assertEquals(11, valuesTrans.size());
     Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF")));
     Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG")));
 
     List<PredicateCacheEntry> valuesPred = Arrays.asList(PredicateCacheEntry.values());
-    Assert.assertTrue(valuesPred.size() == 5);
+    Assert.assertEquals(5, valuesPred.size());
     Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_DNF")));
     Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_SAT")));
 
     List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
-    Assert.assertTrue(valuesFunc.size() == 3);
+    Assert.assertEquals(3, valuesFunc.size());
     Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("LITPROFILE")));
     Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("SUBFORMULAS")));
   }

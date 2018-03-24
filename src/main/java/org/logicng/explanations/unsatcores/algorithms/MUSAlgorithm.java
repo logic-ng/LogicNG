@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Abstract super class for MUS computation algorithms.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 abstract class MUSAlgorithm {
@@ -47,7 +47,9 @@ abstract class MUSAlgorithm {
    * @param propositions the propositions
    * @param f            the formula factory
    * @param config       the MUS configuration
+   * @param <T>          the type of the MUSes propositions
    * @return the MUS
    */
-  public abstract UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f, final MUSConfig config);
+  public abstract <T extends Proposition> UNSATCore computeMUS(final List<T> propositions, final FormulaFactory f,
+                                                               final MUSConfig config);
 }

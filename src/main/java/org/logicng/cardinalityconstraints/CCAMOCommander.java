@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -58,16 +58,16 @@ import org.logicng.formulas.Variable;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the commander encoding due to Klieber & Kwon.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 final class CCAMOCommander implements CCAtMostOne {
 
+  private final int k;
+  private final LNGVector<Literal> literals;
+  private final LNGVector<Literal> nextLiterals;
+  private final LNGVector<Literal> currentLiterals;
   private EncodingResult result;
-  private int k;
-  private LNGVector<Literal> literals;
-  private LNGVector<Literal> nextLiterals;
-  private LNGVector<Literal> currentLiterals;
 
   /**
    * Constructs the commander AMO encoder with a given group size.

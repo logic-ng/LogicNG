@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -88,7 +88,7 @@ public class Substitution {
 
   @Override
   public boolean equals(final Object other) {
-    return this == other || (other instanceof Substitution && this.subst.equals(((Substitution) other).subst));
+    return other != null && (this == other || (this.getClass() == other.getClass() && this.subst.equals(((Substitution) other).subst)));
   }
 
   @Override

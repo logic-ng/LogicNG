@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -34,7 +34,7 @@ import java.util.Objects;
  * Data structure for a pair.
  * @param <A> the type parameter of the first entry
  * @param <B> the type parameter of the second entry
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public class Pair<A, B> {

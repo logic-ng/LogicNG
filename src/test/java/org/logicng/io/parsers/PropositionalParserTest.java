@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -31,10 +31,6 @@ package org.logicng.io.parsers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PropositionalParser}.
@@ -214,13 +210,6 @@ public class PropositionalParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula7() throws ParserException {
     new PropositionalParser(F.f).parse("ab@cd)");
-  }
-
-  @Test(expected = ParserException.class)
-  public void testIOException() throws ParserException, IOException {
-    final InputStream invalidStream = new FileInputStream("README.md");
-    invalidStream.close();
-    new PropositionalParser(F.f).parse(invalidStream);
   }
 
   @Test

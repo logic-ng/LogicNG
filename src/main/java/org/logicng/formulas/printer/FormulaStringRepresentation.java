@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -39,7 +39,7 @@ import org.logicng.formulas.PBConstraint;
 
 /**
  * Super class for a formula string representation.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public abstract class FormulaStringRepresentation {
@@ -73,6 +73,10 @@ public abstract class FormulaStringRepresentation {
         return this.naryOperator(nary, String.format(" %s ", op));
       case PBC:
         final PBConstraint pbc = (PBConstraint) formula;
+        if (pbc.isTrivialFalse())
+          return this.falsum();
+        else if (pbc.isTrivialTrue())
+          return this.verum();
         return String.format("%s %s %d", this.pbLhs(pbc.operands(), pbc.coefficients()), this.pbComparator(pbc.comparator()), pbc.rhs());
       default:
         throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());

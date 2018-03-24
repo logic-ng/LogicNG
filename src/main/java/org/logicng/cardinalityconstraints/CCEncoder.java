@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -33,15 +33,11 @@ import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.FType;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.util.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An encoder for cardinality constraints.
@@ -55,7 +51,7 @@ import java.util.List;
  * has no associated cardinality constraint encoder configuration.  If you change the configuration in the factory,
  * all encoders constructed for this factory will be affected.</li>
  * </ol>
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class CCEncoder {
@@ -237,42 +233,41 @@ public class CCEncoder {
    * Encodes an at-most-one constraint.
    * @param result the result
    * @param vars   the variables of the constraint
-   * @return the CNF encoding of the constraint
    */
-  private List<Formula> amo(final EncodingResult result, final Variable... vars) {
+  private void amo(final EncodingResult result, final Variable... vars) {
     if (vars.length <= 1)
-      return new ArrayList<>();
+      return;
     switch (this.config().amoEncoder) {
       case PURE:
         if (this.amoPure == null)
           this.amoPure = new CCAMOPure();
         this.amoPure.build(result, vars);
-        return result.result();
+        break;
       case LADDER:
         if (this.amoLadder == null)
           this.amoLadder = new CCAMOLadder();
         this.amoLadder.build(result, vars);
-        return result.result();
+        break;
       case PRODUCT:
         if (this.amoProduct == null)
           this.amoProduct = new CCAMOProduct(this.config().productRecursiveBound);
         this.amoProduct.build(result, vars);
-        return result.result();
+        break;
       case NESTED:
         if (this.amoNested == null)
           this.amoNested = new CCAMONested(this.config().nestingGroupSize);
         this.amoNested.build(result, vars);
-        return result.result();
+        break;
       case COMMANDER:
         if (this.amoCommander == null)
           this.amoCommander = new CCAMOCommander(this.config().commanderGroupSize);
         this.amoCommander.build(result, vars);
-        return result.result();
+        break;
       case BINARY:
         if (this.amoBinary == null)
           this.amoBinary = new CCAMOBinary();
         this.amoBinary.build(result, vars);
-        return result.result();
+        break;
       case BIMANDER:
         if (this.config().bimanderGroupSize != CCConfig.BIMANDER_GROUP_SIZE.FIXED || this.amoBimander == null) {
           int groupSize;
@@ -292,10 +287,10 @@ public class CCEncoder {
           this.amoBimander = new CCAMOBimander(groupSize);
         }
         this.amoBimander.build(result, vars);
-        return result.result();
+        break;
       case BEST:
         this.bestAMO(vars.length).build(result, vars);
-        return result.result();
+        break;
       default:
         throw new IllegalStateException("Unknown at-most-one encoder: " + this.config().amoEncoder);
     }

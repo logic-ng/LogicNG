@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -52,14 +52,14 @@ package org.logicng.collections;
 
 /**
  * A simple priority queue implementation for elements with long priorities taken from CleaneLing.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class LNGLongPriorityQueue {
 
-  private LNGIntVector heap;
-  private LNGLongVector prior;
-  private LNGIntVector pos;
+  private final LNGIntVector heap;
+  private final LNGLongVector prior;
+  private final LNGIntVector pos;
 
   /**
    * Creates a new priority queue.

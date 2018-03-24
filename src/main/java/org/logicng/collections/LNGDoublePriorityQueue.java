@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -54,14 +54,14 @@ import java.util.Locale;
 
 /**
  * A simple priority queue implementation for positive integer elements with double priorities taken from CleaneLing.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class LNGDoublePriorityQueue {
 
-  private LNGIntVector heap;
-  private LNGDoubleVector prior;
-  private LNGIntVector pos;
+  private final LNGIntVector heap;
+  private final LNGDoubleVector prior;
+  private final LNGIntVector pos;
 
   /**
    * Creates a new priority queue.

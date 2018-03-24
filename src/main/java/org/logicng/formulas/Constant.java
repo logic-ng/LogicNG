@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
@@ -43,8 +44,8 @@ import java.util.TreeSet;
  */
 public abstract class Constant extends Formula {
 
-  private static final SortedSet<Variable> EMPTY_VARIABLE_SET = new TreeSet<>();
-  private static final SortedSet<Literal> EMPTY_LITERAL_SET = new TreeSet<>();
+  private static final SortedSet<Variable> EMPTY_VARIABLE_SET = Collections.unmodifiableSortedSet(new TreeSet<Variable>());
+  private static final SortedSet<Literal> EMPTY_LITERAL_SET = Collections.unmodifiableSortedSet(new TreeSet<Literal>());
 
   private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
     @Override

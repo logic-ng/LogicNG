@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -278,9 +278,11 @@ public class Assignment {
 
   @Override
   public boolean equals(final Object other) {
+    if (other == null)
+      return false;
     if (this == other)
       return true;
-    if (other instanceof Assignment) {
+    if (this.getClass() == other.getClass()) {
       final Assignment o = (Assignment) other;
       return Objects.equals(new HashSet<>(this.pos), new HashSet<>(o.pos))
               && Objects.equals(new HashSet<>(this.neg), new HashSet<>(o.neg));

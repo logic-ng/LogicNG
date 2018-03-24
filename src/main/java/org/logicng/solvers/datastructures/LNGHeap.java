@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -49,14 +49,14 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * A minimalistic heap implementation.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class LNGHeap {
 
   private final MiniSatStyleSolver s;
-  private LNGIntVector heap;
-  private LNGIntVector indices;
+  private final LNGIntVector heap;
+  private final LNGIntVector indices;
 
   /**
    * Constructs a new heap for a given solver.  The solver is required to access it's activity information stored

@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.1-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.3.1-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -12,6 +12,17 @@ The library is designed to be used in industrial systems which have to manipulat
 The most important philosophy of the library is to avoid unnecessary object creation.  Therefore formulas can only be generated via formula factories.  A formula factory assures that a formula is only created once in memory.  If another instance of the same formula is created by the user, the already existing one is returned by the factory. This leads to a small memory footprint and fast execution of algorithms.  Formulas can cache the results of algorithms executed on them and since every formula is hold only once in memory it is assured that the same algorithm on the same formula is also executed only once.
 
 Compared to other implementation of logic libraries on the JVM this is a huge memory and performance improvement.
+
+## Usage
+LogicNG is released in the Maven Central Repository.  To include it just add
+```xml
+<dependency>
+  <groupId>org.logicng</groupId>
+  <artifactId>logicng</artifactId>
+  <version>1.3.1</version>
+</dependency>
+```
+to you Maven POM.
 
 ## Development Model
 The `master` branch contains the latest release of LogicNG.  If you want a *stable* and *well tested* version you should choose this branch.  The `development` branch reflects the *current state* of the next version.  This branch will always compile, but code might not be as well tested and APIs may still change before the next release.  If you want to try *cutting edge* features, you can checkout this branch at your own risk.  It is *not recommended* to use the development version for *production* systems.  Larger features will be developed in their own branches and will be merged to the development branch when ready.
@@ -47,3 +58,28 @@ final Tristate result = miniSat.sat();
 ## License & Commercial Support
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
 
+## Changelog
+
+### Version 1.3.1 (Release January 2018)
+* Huge performance boost in the model enumeration of MiniSat
+* New formula transformation which imports formulas in another formula factory
+* Small bugfix for a trivial case in DRUP
+
+### Version 1.3 (Release October 2017)
+* MiniSat and Glucose have a new option for proof tracing.  A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable formulas after solving them.  The new method can be found in the SAT solver class: `unsatCore()`
+* Unsat Cores are now parametrized with the proposition type
+* A new simplifier which applies the distributive law was added: `DistributiveSimplifier`
+* Some minor bug-fixes in handling corner cases of cardinality and pseudo-Boolean constraints 
+
+### Version 1.2 (Release July 2017)
+* Introduced an extended formula factory which is able to return to a previously saved state and delete old formulas (and get them garbage collected)
+* A simple data structure for generic graphs including algorithms for connected components and maximal cliques
+* Improved IO (Writers for formulas, Dimacs CNFs, and graphs)
+* SAT solvers can now track the currently known variables
+* Updated to ANTLR 4.7
+* Various smaller bugfixes
+
+### Version 1.1 (Release August 2016)
+* Implemented cardinality constraint encodings and pseudo-Boolean constraints encodings of PBLib
+* Incremental cardinality constraints, including the possibility to add cardinaliy constraints to the solver without introducing new formula factory variables
+* Different MUS algorithms

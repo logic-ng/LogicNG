@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -58,10 +58,10 @@ import org.logicng.collections.LNGIntVector;
  */
 public final class MSSoftClause {
 
-  private LNGIntVector clause;
+  private final LNGIntVector clause;
+  private final LNGIntVector relaxationVars;
   private int weight;
   private int assumptionVar;
-  private LNGIntVector relaxationVars;
 
   /**
    * Constructs a new soft clause.

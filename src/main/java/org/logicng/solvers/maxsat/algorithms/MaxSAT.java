@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -79,7 +79,7 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.var;
 
 /**
  * Super class for the MaxSAT solvers.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public abstract class MaxSAT {
@@ -98,28 +98,31 @@ public abstract class MaxSAT {
     UNSATISFIABLE, OPTIMUM, UNDEF
   }
 
-  protected LNGVector<MSSoftClause> softClauses;
-  protected LNGVector<MSHardClause> hardClauses;
-  protected int hardWeight;
-  protected ProblemType problemType;
-  protected int nbVars;
-  protected int nbSoft;
-  protected int nbHard;
-  protected int nbInitialVariables;
-  protected LNGBooleanVector model;
-  protected int nbCores;
-  protected int nbSymmetryClauses;
-  protected long sumSizeCores;
-  protected int nbSatisfiable;
-  protected int ubCost;
-  protected int lbCost;
-  protected int currentWeight;
+  protected final LNGBooleanVector model;
+  final LNGVector<MSSoftClause> softClauses;
+  final LNGVector<MSHardClause> hardClauses;
+  final LNGIntVector orderWeights;
+  final SolverType solverType;
   protected Verbosity verbosity;
-  protected LNGIntVector orderWeights;
-  protected SolverType solverType;
-
   protected MaxSATHandler handler;
+  int hardWeight;
+  ProblemType problemType;
+  int nbVars;
+  int nbSoft;
+  int nbHard;
+  int nbInitialVariables;
+  int nbCores;
+  int nbSymmetryClauses;
+  long sumSizeCores;
+  int nbSatisfiable;
+  int ubCost;
+  int lbCost;
+  int currentWeight;
 
+  /**
+   * Constructor.
+   * @param config the solver configuration
+   */
   protected MaxSAT(final MaxSATConfig config) {
     this.hardWeight = 0;
     this.hardClauses = new LNGVector<>();
@@ -243,8 +246,7 @@ public abstract class MaxSAT {
    */
   public void addSoftClause(int weight, final LNGIntVector lits) {
     final LNGIntVector rVars = new LNGIntVector();
-    final int assump = LIT_UNDEF;
-    this.softClauses.push(new MSSoftClause(lits, weight, assump, rVars));
+    this.softClauses.push(new MSSoftClause(lits, weight, LIT_UNDEF, rVars));
     this.nbSoft++;
   }
 
@@ -255,8 +257,7 @@ public abstract class MaxSAT {
    * @param vars   the relaxation variables of the soft clause
    */
   public void addSoftClause(int weight, final LNGIntVector lits, final LNGIntVector vars) {
-    final int assump = LIT_UNDEF;
-    this.softClauses.push(new MSSoftClause(lits, weight, assump, vars));
+    this.softClauses.push(new MSSoftClause(lits, weight, LIT_UNDEF, vars));
     this.nbSoft++;
   }
 
@@ -429,15 +430,15 @@ public abstract class MaxSAT {
    * Returns the current SAT handler or {@code null} if no MaxSAT handler was given.
    * @return the current SAT handler
    */
-  protected SATHandler satHandler() {
+  SATHandler satHandler() {
     return handler == null ? null : handler.satHandler();
   }
 
-  protected boolean foundLowerBound(final int lowerBound, final Assignment model) {
+  boolean foundLowerBound(final int lowerBound, final Assignment model) {
     return handler == null || handler.foundLowerBound(lowerBound, model);
   }
 
-  protected boolean foundUpperBound(final int upperBound, final Assignment model) {
+  boolean foundUpperBound(final int upperBound, final Assignment model) {
     return handler == null || handler.foundUpperBound(upperBound, model);
   }
 

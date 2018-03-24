@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -53,19 +53,19 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSAT.MaxSATResult.UNSATISF
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class MaxSATSolver {
 
   private enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
 
+  private final MaxSATConfig configuration;
+  private final Algorithm algorithm;
   private MaxSAT.MaxSATResult result;
   private MaxSAT solver;
   private SortedMap<Variable, Integer> var2index;
   private SortedMap<Integer, Variable> index2var;
-  private MaxSATConfig configuration;
-  private Algorithm algorithm;
 
   /**
    * Constructs a new MaxSAT solver with a given configuration.

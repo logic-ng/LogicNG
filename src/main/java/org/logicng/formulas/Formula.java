@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -39,7 +39,7 @@ import java.util.TreeMap;
 
 /**
  * Super class for formulas.
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public abstract class Formula implements Iterable<Formula> {
@@ -119,13 +119,15 @@ public abstract class Formula implements Iterable<Formula> {
   public abstract boolean isAtomicFormula();
 
   /**
-   * Returns all variables occurring in this formula.
+   * Returns all variables occurring in this formula.  Returns an unmodifiable set, so do not try to change the variable
+   * set manually.
    * @return all variables occurring in this formula
    */
   public abstract SortedSet<Variable> variables();
 
   /**
-   * Returns all literals occurring in this formula.
+   * Returns all literals occurring in this formula.  Returns an unmodifiable set, so do not try to change the literal
+   * set manually.
    * @return all literals occurring in this formula
    */
   public abstract SortedSet<Literal> literals();
@@ -337,6 +339,14 @@ public abstract class Formula implements Iterable<Formula> {
    */
   public void setFunctionCacheEntry(final CacheEntry key, final Object value) {
     this.functionCache.put(key, value);
+  }
+
+  /**
+   * Clears the transformation and function cache of the formula.
+   */
+  public void clearCaches() {
+    transformationCache.clear();
+    functionCache.clear();
   }
 
   @Override

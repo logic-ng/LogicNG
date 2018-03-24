@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -41,29 +41,32 @@ import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Tests for the incremental/decremental interface of the SAT solvers.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public class IncDecTest {
 
   private final FormulaFactory f;
-  private final SATSolver[] solvers;
+  private final MiniSat[] solvers;
   private final PigeonHoleGenerator pg;
 
   public IncDecTest() {
     this.f = new FormulaFactory();
     this.pg = new PigeonHoleGenerator(f);
-    this.solvers = new SATSolver[2];
+    this.solvers = new MiniSat[2];
     this.solvers[0] = MiniSat.miniSat(f, new MiniSatConfig.Builder().incremental(true).build());
     this.solvers[1] = MiniSat.miniCard(f, new MiniSatConfig.Builder().incremental(true).build());
   }
 
   @Test
   public void testIncDec() {
-    for (final SATSolver s : this.solvers) {
+    for (final MiniSat s : this.solvers) {
       s.add(f.variable("a"));
       final SolverState state1 = s.saveState();
-      Assert.assertEquals("SolverState{id=0, state=[1, 1, 0, 0, 1]}", state1.toString());
+      if (s.underlyingSolver() instanceof MiniCard)
+        Assert.assertEquals("SolverState{id=0, state=[1, 1, 0, 0, 1]}", state1.toString());
+      else
+        Assert.assertEquals("SolverState{id=0, state=[1, 1, 0, 0, 1, 0, 0]}", state1.toString());
       Assert.assertEquals(TRUE, s.sat());
       s.add(pg.generate(5));
       Assert.assertEquals(FALSE, s.sat());
@@ -75,7 +78,10 @@ public class IncDecTest {
       Assert.assertEquals(TRUE, s.sat());
       s.add(pg.generate(5));
       final SolverState state2 = s.saveState();
-      Assert.assertEquals("SolverState{id=1, state=[1, 31, 81, 0, 1]}", state2.toString());
+      if (s.underlyingSolver() instanceof MiniCard)
+        Assert.assertEquals("SolverState{id=1, state=[1, 31, 81, 0, 1]}", state2.toString());
+      else
+        Assert.assertEquals("SolverState{id=1, state=[1, 31, 81, 0, 1, 0, 0]}", state2.toString());
       s.add(pg.generate(4));
       Assert.assertEquals(FALSE, s.sat());
       s.loadState(state2);

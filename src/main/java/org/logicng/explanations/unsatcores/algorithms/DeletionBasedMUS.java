@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -41,14 +41,14 @@ import java.util.List;
 
 /**
  * A naive deletion-based MUS algorithm.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public final class DeletionBasedMUS extends MUSAlgorithm {
 
   @Override
-  public UNSATCore computeMUS(List<Proposition> propositions, final FormulaFactory f, final MUSConfig config) {
-    final List<Proposition> mus = new ArrayList<>(propositions.size());
+  public <T extends Proposition> UNSATCore<T> computeMUS(List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+    final List<T> mus = new ArrayList<>(propositions.size());
     final List<SolverState> solverStates = new ArrayList<>(propositions.size());
     final MiniSat solver = MiniSat.miniSat(f);
     for (final Proposition proposition : propositions) {
@@ -64,6 +64,6 @@ public final class DeletionBasedMUS extends MUSAlgorithm {
       if (solver.sat() == Tristate.TRUE)
         mus.add(propositions.get(i));
     }
-    return new UNSATCore(mus, true);
+    return new UNSATCore<>(mus, true);
   }
 }

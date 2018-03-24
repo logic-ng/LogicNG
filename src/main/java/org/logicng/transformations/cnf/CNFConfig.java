@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -33,7 +33,7 @@ import org.logicng.configurations.ConfigurationType;
 
 /**
  * The configuration object for the CNF encoding.
- * @version 1.1
+ * @version 1.2
  * @since 1.1
  */
 public final class CNFConfig extends Configuration {

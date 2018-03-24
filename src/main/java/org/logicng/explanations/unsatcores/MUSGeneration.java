@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Computes a minimal unsatisfiable subset (MUS) of a given formula with different algorithms.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public final class MUSGeneration {
@@ -57,9 +57,10 @@ public final class MUSGeneration {
    * Computes a MUS for the given propositions with the default algorithm and the default configuration.
    * @param propositions the propositions
    * @param f            the formula factory
+   * @param <T>          the type of the MUSes propositions
    * @return the MUS
    */
-  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f) {
+  public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f) {
     return this.computeMUS(propositions, f, new MUSConfig.Builder().build());
   }
 
@@ -68,9 +69,10 @@ public final class MUSGeneration {
    * @param propositions the propositions
    * @param f            the formula factory
    * @param config       the MUS configuration
+   * @param <T>          the type of the MUSes propositions
    * @return the MUS
    */
-  public UNSATCore computeMUS(final List<Proposition> propositions, final FormulaFactory f, final MUSConfig config) {
+  public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
     if (propositions.isEmpty())
       throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
     switch (config.algorithm) {

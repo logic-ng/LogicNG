@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -30,6 +30,7 @@ package org.logicng.formulas;
 
 import org.logicng.datastructures.Substitution;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
@@ -37,7 +38,7 @@ import java.util.TreeSet;
 
 /**
  * Super class for Boolean binary operators.
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public abstract class BinaryOperator extends Formula {
@@ -100,7 +101,7 @@ public abstract class BinaryOperator extends Formula {
       final SortedSet<Variable> set = new TreeSet<>();
       set.addAll(this.left.variables());
       set.addAll(this.right.variables());
-      this.variables = set;
+      this.variables = Collections.unmodifiableSortedSet(set);
     }
     return this.variables;
   }
@@ -110,7 +111,7 @@ public abstract class BinaryOperator extends Formula {
     final SortedSet<Literal> set = new TreeSet<>();
     set.addAll(this.left.literals());
     set.addAll(this.right.literals());
-    return set;
+    return Collections.unmodifiableSortedSet(set);
   }
 
   @Override

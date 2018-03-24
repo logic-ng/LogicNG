@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -34,10 +34,6 @@ import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
@@ -267,13 +263,6 @@ public class PseudoBooleanParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalSkipPosition() throws ParserException {
     new PseudoBooleanParser(F.f).parse("- 1*x <= 3");
-  }
-
-  @Test(expected = ParserException.class)
-  public void testIOException() throws ParserException, IOException {
-    final InputStream invalidStream = new FileInputStream("README.md");
-    invalidStream.close();
-    new PseudoBooleanParser(F.f).parse(invalidStream);
   }
 
   @Test

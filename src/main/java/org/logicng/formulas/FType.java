@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -30,7 +30,7 @@ package org.logicng.formulas;
 
 /**
  * Formula types for LogicNG.
- * @version 1.0
+ * @version 1.3
  * @since 1.0
  */
 public enum FType {
@@ -45,7 +45,7 @@ public enum FType {
   FALSE((byte) 0x08),
   NONE((byte) 0x42);
 
-  private byte precedence;
+  private final byte precedence;
 
   /**
    * Constructs a new formula type with a given precedence and syntax string

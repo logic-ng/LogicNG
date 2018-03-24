@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -58,18 +58,18 @@ import org.logicng.formulas.Variable;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the bimander encoding due to Hölldobler and Nguyen.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 final class CCAMOBimander implements CCAtMostOne {
 
+  private final LNGVector<LNGVector<Literal>> groups;
+  private final LNGVector<Literal> bits;
+  private final int m;
   private EncodingResult result;
-  private LNGVector<LNGVector<Literal>> groups;
-  private LNGVector<Literal> bits;
   private int numberOfBits;
   private int twoPowNBits;
   private int k;
-  private int m;
 
   /**
    * Constructs the bimander AMO encoder with a given number of groups.

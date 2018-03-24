@@ -7,7 +7,7 @@ import org.logicng.collections.LNGIntVector;
 
 /**
  * Unit tests for the class {@link GlucoseSyrup}
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class GlucoseSyrupTest {
@@ -20,7 +20,7 @@ public class GlucoseSyrupTest {
     gs.newVar(true, true);
     gs.newVar(true, true);
     gs.newVar(true, true);
-    gs.addClause(clause(1, 2, 3));
+    gs.addClause(clause(1, 2, 3), null);
   }
 
   @Test(expected = UnsupportedOperationException.class)

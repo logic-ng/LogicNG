@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -40,20 +40,20 @@ import java.util.List;
 
 /**
  * A naive plain insertion-based MUS algorithm.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class PlainInsertionBasedMUS extends MUSAlgorithm {
 
   @Override
-  public UNSATCore computeMUS(List<Proposition> propositions, FormulaFactory f, MUSConfig config) {
-    List<Proposition> currentFormula = new ArrayList<>(propositions.size());
+  public <T extends Proposition> UNSATCore<T> computeMUS(List<T> propositions, FormulaFactory f, MUSConfig config) {
+    List<T> currentFormula = new ArrayList<>(propositions.size());
     currentFormula.addAll(propositions);
-    final List<Proposition> mus = new ArrayList<>(propositions.size());
+    final List<T> mus = new ArrayList<>(propositions.size());
     final MiniSat solver = MiniSat.miniSat(f);
     while (!currentFormula.isEmpty()) {
-      final List<Proposition> currentSubset = new ArrayList<>(propositions.size());
-      Proposition transitionProposition = null;
+      final List<T> currentSubset = new ArrayList<>(propositions.size());
+      T transitionProposition = null;
       solver.reset();
       for (final Proposition p : mus)
         solver.add(p);
@@ -61,7 +61,7 @@ public class PlainInsertionBasedMUS extends MUSAlgorithm {
       while (solver.sat() == Tristate.TRUE) {
         if (count < 0)
           throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
-        final Proposition removeProposition = currentFormula.get(--count);
+        final T removeProposition = currentFormula.get(--count);
         currentSubset.add(removeProposition);
         transitionProposition = removeProposition;
         solver.add(removeProposition);
@@ -73,6 +73,6 @@ public class PlainInsertionBasedMUS extends MUSAlgorithm {
         mus.add(transitionProposition);
       }
     }
-    return new UNSATCore(mus, true);
+    return new UNSATCore<>(mus, true);
   }
 }

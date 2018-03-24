@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -68,7 +68,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * A complete Reimplementation of the CleaneLing solver.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public final class CleaneLingSolver extends CleaneLingStyleSolver {
@@ -615,7 +615,7 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
 
   /**
    * Updates and pushes a literal as candidate to simplify.
-   * @param lit the literal
+   * @param l the literal
    */
   private void touch(int l) {
     int lit = l;

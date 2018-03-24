@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -59,20 +59,19 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.PBEncoding;
 
 /**
  * Encoders for cardinality constraints, pseudo Booleans and AMO constraints.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class Encoder {
 
+  private final CardinalityEncoding cardinalityEncoding;
+  private final Ladder ladder;
+  private final ModularTotalizer mtotalizer;
+  private final Totalizer totalizer;
+  private final SequentialWeightCounter swc;
   private IncrementalStrategy incrementalStrategy;
-  private CardinalityEncoding cardinalityEncoding;
   private PBEncoding pbEncoding;
   private AMOEncoding amoEncoding;
-
-  private Ladder ladder;
-  private ModularTotalizer mtotalizer;
-  private Totalizer totalizer;
-  private SequentialWeightCounter swc;
 
   /**
    * Constructs a new Encoder.
@@ -89,8 +88,8 @@ public class Encoder {
    * @param amo         the AMO constraint encoder
    * @param pb          the pseudo Boolean encoder
    */
-  Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
-          final AMOEncoding amo, final PBEncoding pb) {
+  private Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
+                  final AMOEncoding amo, final PBEncoding pb) {
     this.incrementalStrategy = incremental;
     this.cardinalityEncoding = cardinality;
     this.amoEncoding = amo;

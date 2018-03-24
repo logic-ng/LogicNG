@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -45,14 +45,14 @@ import org.logicng.util.Pair;
 
 /**
  * Tests for incremental cardinality constraints generated as formulas and {@link CCIncrementalData}.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 public class CCIncrementalFormulaTest {
 
   private final FormulaFactory f = new FormulaFactory();
-  private CCEncoder[] encoders;
   private final SATSolver[] solvers;
+  private CCEncoder[] encoders;
 
   public CCIncrementalFormulaTest() {
     encoders = new CCEncoder[3];

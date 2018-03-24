@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
@@ -96,7 +97,7 @@ public final class Not extends Formula {
   @Override
   public SortedSet<Variable> variables() {
     if (this.variables == null)
-      this.variables = this.operand.variables();
+      this.variables = Collections.unmodifiableSortedSet(this.operand.variables());
     return this.variables;
   }
 
@@ -187,7 +188,6 @@ public final class Not extends Formula {
 
   @Override
   public Iterator<Formula> iterator() {
-    final Formula instance = this.operand;
     return new Iterator<Formula>() {
       private boolean iterated;
 
@@ -200,7 +200,7 @@ public final class Not extends Formula {
       public Formula next() {
         if (!iterated) {
           iterated = true;
-          return instance;
+          return Not.this.operand;
         }
         throw new NoSuchElementException();
       }

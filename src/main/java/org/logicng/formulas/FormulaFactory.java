@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -36,6 +36,7 @@ import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.pseudobooleans.PBEncoder;
+import org.logicng.transformations.FormulaFactoryImporter;
 import org.logicng.transformations.cnf.CNFEncoder;
 import org.logicng.util.Pair;
 
@@ -66,10 +67,10 @@ import static org.logicng.formulas.FType.TRUE;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
-public final class FormulaFactory {
+public class FormulaFactory {
 
   public static final String CC_PREFIX = "@RESERVED_CC_";
   public static final String PB_PREFIX = "@RESERVED_PB_";
@@ -88,26 +89,27 @@ public final class FormulaFactory {
   private final PBEncoder pbEncoder;
   private final CNFEncoder cnfEncoder;
   private final PseudoBooleanParser parser;
-  private Map<String, Variable> posLiterals;
-  private Map<String, Literal> negLiterals;
-  private Set<Variable> generatedVariables;
-  private Map<Formula, Not> nots;
-  private Map<Pair<Formula, Formula>, Implication> implications;
-  private Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;
-  private Map<LinkedHashSet<? extends Formula>, And> ands2;
-  private Map<LinkedHashSet<? extends Formula>, And> ands3;
-  private Map<LinkedHashSet<? extends Formula>, And> ands4;
-  private Map<LinkedHashSet<? extends Formula>, And> andsN;
-  private Map<LinkedHashSet<? extends Formula>, Or> ors2;
-  private Map<LinkedHashSet<? extends Formula>, Or> ors3;
-  private Map<LinkedHashSet<? extends Formula>, Or> ors4;
-  private Map<LinkedHashSet<? extends Formula>, Or> orsN;
-  private Map<PBOperands, PBConstraint> pbConstraints;
+  private final boolean[] formulaAdditionResult;
+  Map<String, Variable> posLiterals;
+  Map<String, Literal> negLiterals;
+  Set<Variable> generatedVariables;
+  Map<Formula, Not> nots;
+  Map<Pair<Formula, Formula>, Implication> implications;
+  Map<LinkedHashSet<? extends Formula>, Equivalence> equivalences;
+  Map<LinkedHashSet<? extends Formula>, And> ands2;
+  Map<LinkedHashSet<? extends Formula>, And> ands3;
+  Map<LinkedHashSet<? extends Formula>, And> ands4;
+  Map<LinkedHashSet<? extends Formula>, And> andsN;
+  Map<LinkedHashSet<? extends Formula>, Or> ors2;
+  Map<LinkedHashSet<? extends Formula>, Or> ors3;
+  Map<LinkedHashSet<? extends Formula>, Or> ors4;
+  Map<LinkedHashSet<? extends Formula>, Or> orsN;
+  Map<PBOperands, PBConstraint> pbConstraints;
+  int ccCounter;
+  int pbCounter;
+  int cnfCounter;
   private boolean cnfCheck;
-  private boolean[] formulaAdditionResult;
-  private int ccCounter;
-  private int pbCounter;
-  private int cnfCounter;
+  private FormulaFactoryImporter importer;
 
   /**
    * Constructor for a new formula factory.
@@ -641,24 +643,21 @@ public final class FormulaFactory {
       return this.falsum();
     if (literals.size() == 1)
       return literals.iterator().next();
-    Or tempOr = null;
     Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
-    if (literals.size() > 1) {
-      switch (literals.size()) {
-        case 2:
-          opOrMap = this.ors2;
-          break;
-        case 3:
-          opOrMap = this.ors3;
-          break;
-        case 4:
-          opOrMap = this.ors4;
-          break;
-        default:
-          break;
-      }
-      tempOr = opOrMap.get(literals);
+    switch (literals.size()) {
+      case 2:
+        opOrMap = this.ors2;
+        break;
+      case 3:
+        opOrMap = this.ors3;
+        break;
+      case 4:
+        opOrMap = this.ors4;
+        break;
+      default:
+        break;
     }
+    Or tempOr = opOrMap.get(literals);
     if (tempOr != null)
       return tempOr;
     tempOr = new Or(literals, this, true);
@@ -981,6 +980,19 @@ public final class FormulaFactory {
   }
 
   /**
+   * Imports a formula from another formula factory into this factory and returns it.  If the current factory of the
+   * formula is already this formula factory, the same instance will be returned.
+   * @param formula the formula to import
+   * @return the imported formula on this factory
+   */
+  public Formula importFormula(final Formula formula) {
+    if (this.importer == null) {
+      this.importer = new FormulaFactoryImporter(this);
+    }
+    return formula.transform(importer);
+  }
+
+  /**
    * Returns a string representation of a formula with this factories string representation
    * @param formula the formula
    * @return the string representation
@@ -997,24 +1009,40 @@ public final class FormulaFactory {
    */
   public String string(final Formula formula, final FormulaStringRepresentation stringRepresentation) {
     return stringRepresentation.toString(formula);
-  }  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Name:              ").append(this.name).append("\n");
-    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
-    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
-    sb.append("Negations:         ").append(this.nots.size()).append("\n");
-    sb.append("Implications:      ").append(this.implications.size()).append("\n");
-    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
-    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
-    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
-    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
-    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
-    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
-    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
-    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
-    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
-    return sb.toString();
+  }
+
+  /**
+   * Returns the formula formatter of this factory.
+   * @return the formula formatter of this factory
+   */
+  public FormulaStringRepresentation stringRepresentation() {
+    return this.stringRepresentation;
+  }
+
+  /**
+   * Returns the statistics for this formula factory.
+   * @return the statistics for this formula factory
+   */
+  public FormulaFactoryStatistics statistics() {
+    FormulaFactoryStatistics statistics = new FormulaFactoryStatistics();
+    statistics.name = this.name;
+    statistics.positiveLiterals = this.posLiterals.size();
+    statistics.negativeLiterals = this.negLiterals.size();
+    statistics.negations = this.nots.size();
+    statistics.implications = this.implications.size();
+    statistics.equivalences = this.equivalences.size();
+    statistics.conjunctions2 = this.ands2.size();
+    statistics.conjunctions3 = this.ands3.size();
+    statistics.conjunctions4 = this.ands4.size();
+    statistics.conjunctionsN = this.andsN.size();
+    statistics.disjunctions2 = this.ors2.size();
+    statistics.disjunctions3 = this.ors3.size();
+    statistics.disjunctions4 = this.ors4.size();
+    statistics.disjunctionsN = this.orsN.size();
+    statistics.ccCounter = this.ccCounter;
+    statistics.pbCounter = this.pbCounter;
+    statistics.cnfCounter = this.cnfCounter;
+    return statistics;
   }
 
   /**
@@ -1059,7 +1087,248 @@ public final class FormulaFactory {
     }
   }
 
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Name:              ").append(this.name).append("\n");
+    sb.append("Positive Literals: ").append(this.posLiterals.size()).append("\n");
+    sb.append("Negative Literals: ").append(this.negLiterals.size()).append("\n");
+    sb.append("Negations:         ").append(this.nots.size()).append("\n");
+    sb.append("Implications:      ").append(this.implications.size()).append("\n");
+    sb.append("Equivalences:      ").append(this.equivalences.size()).append("\n");
+    sb.append("Conjunctions (2):  ").append(this.ands2.size()).append("\n");
+    sb.append("Conjunctions (3):  ").append(this.ands3.size()).append("\n");
+    sb.append("Conjunctions (4):  ").append(this.ands4.size()).append("\n");
+    sb.append("Conjunctions (>4): ").append(this.andsN.size()).append("\n");
+    sb.append("Disjunctions (2):  ").append(this.ors2.size()).append("\n");
+    sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
+    sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
+    sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
+    return sb.toString();
+  }
 
+  /**
+   * A class for statistics of the formula factory.
+   */
+  public static final class FormulaFactoryStatistics {
+    private String name;
+    private int positiveLiterals;
+    private int negativeLiterals;
+    private int negations;
+    private int implications;
+    private int equivalences;
+    private int conjunctions2;
+    private int conjunctions3;
+    private int conjunctions4;
+    private int conjunctionsN;
+    private int disjunctions2;
+    private int disjunctions3;
+    private int disjunctions4;
+    private int disjunctionsN;
+    private int ccCounter;
+    private int pbCounter;
+    private int cnfCounter;
+
+    /**
+     * Returns the name of the formula factory.
+     * @return the name of the formula factory
+     */
+    public String name() {
+      return name;
+    }
+
+    /**
+     * Returns the number of positive literals in the factory.
+     * @return the number of positive literals in the factory
+     */
+    public int positiveLiterals() {
+      return positiveLiterals;
+    }
+
+    /**
+     * Returns the number of negative literals in the factory.
+     * @return the number of negative literals in the factory
+     */
+    public int negativeLiterals() {
+      return negativeLiterals;
+    }
+
+    /**
+     * Returns the number of negations in the factory.
+     * @return the number of negations in the factory
+     */
+    public int negations() {
+      return negations;
+    }
+
+    /**
+     * Returns the number of implications in the factory.
+     * @return the number of implications in the factory
+     */
+    public int implications() {
+      return implications;
+    }
+
+    /**
+     * Returns the number of equivalences in the factory.
+     * @return the number of equivalences in the factory
+     */
+    public int equivalences() {
+      return equivalences;
+    }
+
+    /**
+     * Returns the number of conjunctions of size 2 in the factory.
+     * @return the number of conjunctions of size 2 in the factory
+     */
+    public int conjunctions2() {
+      return conjunctions2;
+    }
+
+    /**
+     * Returns the number of conjunctions of size 3 in the factory.
+     * @return the number of conjunctions of size 3 in the factory
+     */
+    public int conjunctions3() {
+      return conjunctions3;
+    }
+
+    /**
+     * Returns the number of conjunctions of size 4 in the factory.
+     * @return the number of conjunctions of size 4 in the factory
+     */
+    public int conjunctions4() {
+      return conjunctions4;
+    }
+
+    /**
+     * Returns the number of conjunctions of a size &gt;4 in the factory.
+     * @return the number of conjunctions of a size &gt;4 in the factory
+     */
+    public int conjunctionsN() {
+      return conjunctionsN;
+    }
+
+    /**
+     * Returns the number of disjunctions of size 2 in the factory.
+     * @return the number of disjunctions of size 2 in the factory
+     */
+    public int disjunctions2() {
+      return disjunctions2;
+    }
+
+    /**
+     * Returns the number of disjunctions of size 3 in the factory.
+     * @return the number of disjunctions of size 3 in the factory
+     */
+    public int disjunctions3() {
+      return disjunctions3;
+    }
+
+    /**
+     * Returns the number of disjunctions of size 4 in the factory.
+     * @return the number of disjunctions of size 4 in the factory
+     */
+    public int disjunctions4() {
+      return disjunctions4;
+    }
+
+    /**
+     * Returns the number of disjunctions of a size &gt;4 in the factory.
+     * @return the number of disjunctions of a size &gt;4 in the factory
+     */
+    public int disjunctionsN() {
+      return disjunctionsN;
+    }
+
+    /**
+     * Returns the number of generated cardinality constraint auxiliary variables.
+     * @return the number of generated cardinality constraint auxiliary variables
+     */
+    public int ccCounter() {
+      return ccCounter;
+    }
+
+    /**
+     * Returns the number of generated pseudo-Boolean auxiliary variables.
+     * @return the number of generated pseudo-Boolean auxiliary variables
+     */
+    public int pbCounter() {
+      return pbCounter;
+    }
+
+    /**
+     * Returns the number of generated CNF auxiliary variables.
+     * @return the number of generated CNF auxiliary variables
+     */
+    public int cnfCounter() {
+      return cnfCounter;
+    }
+
+    /**
+     * Returns the number of all formulas in the factory.
+     * @return the number of all formulas in the factory
+     */
+    public int formulas() {
+      return this.positiveLiterals + this.negativeLiterals + this.negations + this.implications + this.equivalences
+              + this.conjunctions2 + this.conjunctions3 + this.conjunctions4 + this.conjunctionsN + this.disjunctions2
+              + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof FormulaFactoryStatistics)) return false;
+      FormulaFactoryStatistics that = (FormulaFactoryStatistics) o;
+      return positiveLiterals == that.positiveLiterals &&
+              negativeLiterals == that.negativeLiterals &&
+              negations == that.negations &&
+              implications == that.implications &&
+              equivalences == that.equivalences &&
+              conjunctions2 == that.conjunctions2 &&
+              conjunctions3 == that.conjunctions3 &&
+              conjunctions4 == that.conjunctions4 &&
+              conjunctionsN == that.conjunctionsN &&
+              disjunctions2 == that.disjunctions2 &&
+              disjunctions3 == that.disjunctions3 &&
+              disjunctions4 == that.disjunctions4 &&
+              disjunctionsN == that.disjunctionsN &&
+              ccCounter == that.ccCounter &&
+              pbCounter == that.pbCounter &&
+              cnfCounter == that.cnfCounter &&
+              Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(name, positiveLiterals, negativeLiterals, negations, implications, equivalences, conjunctions2,
+              conjunctions3, conjunctions4, conjunctionsN, disjunctions2, disjunctions3, disjunctions4, disjunctionsN,
+              ccCounter, pbCounter, cnfCounter);
+    }
+
+    @Override
+    public String toString() {
+      return "FormulaFactoryStatistics{" +
+              "name='" + name + '\'' +
+              ", positiveLiterals=" + positiveLiterals +
+              ", negativeLiterals=" + negativeLiterals +
+              ", negations=" + negations +
+              ", implications=" + implications +
+              ", equivalences=" + equivalences +
+              ", conjunctions2=" + conjunctions2 +
+              ", conjunctions3=" + conjunctions3 +
+              ", conjunctions4=" + conjunctions4 +
+              ", conjunctionsN=" + conjunctionsN +
+              ", disjunctions2=" + disjunctions2 +
+              ", disjunctions3=" + disjunctions3 +
+              ", disjunctions4=" + disjunctions4 +
+              ", disjunctionsN=" + disjunctionsN +
+              ", ccCounter=" + ccCounter +
+              ", pbCounter=" + pbCounter +
+              ", cnfCounter=" + cnfCounter +
+              '}';
+    }
+  }
 
 
 }

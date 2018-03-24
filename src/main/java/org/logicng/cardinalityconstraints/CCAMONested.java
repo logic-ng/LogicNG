@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -58,12 +58,12 @@ import org.logicng.formulas.Variable;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the nested encoding.
- * @version 1.1
+ * @version 1.3
  * @since 1.1
  */
 final class CCAMONested implements CCAtMostOne {
 
-  private int groupSize;
+  private final int groupSize;
   private EncodingResult result;
 
   /**

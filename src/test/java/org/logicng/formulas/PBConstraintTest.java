@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -32,8 +32,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
+import org.logicng.datastructures.Tristate;
 import org.logicng.io.parsers.ParserException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +44,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link PBConstraint}.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 public class PBConstraintTest {
@@ -280,6 +282,30 @@ public class PBConstraintTest {
   }
 
   @Test
+  public void testRestrictInequality() {
+    final List<Literal> lits = Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"), f.variable("e"), f.literal("f", false));
+    final List<Integer> coeffs = Arrays.asList(75, 50, 201, -3, -24, 1);
+    final PBConstraint pb1 = f.pbc(CType.GE, -24, lits, coeffs);
+    final PBConstraint pb2 = f.pbc(CType.LE, 150, lits, coeffs);
+    final Assignment a1 = new Assignment();
+    a1.addLiteral(f.literal("b", false));
+    a1.addLiteral(f.variable("c"));
+    final Assignment a2 = new Assignment();
+    a2.addLiteral(f.literal("a", false));
+    a2.addLiteral(f.variable("b"));
+    a2.addLiteral(f.literal("c", false));
+    a2.addLiteral(f.variable("d"));
+    a2.addLiteral(f.variable("e"));
+    final Assignment a3 = new Assignment();
+    a3.addLiteral(f.literal("c", false));
+
+    Assert.assertEquals(f.verum(), pb1.restrict(a1));
+    Assert.assertEquals(f.falsum(), pb2.restrict(a1));
+    Assert.assertEquals(f.falsum(), pb1.restrict(a2));
+    Assert.assertEquals(f.verum(), pb2.restrict(a3));
+  }
+
+  @Test
   public void testContainsSubformula() {
     Assert.assertTrue(pb1.containsNode(f.variable("a")));
     Assert.assertFalse(pb1.containsNode(f.literal("a", false)));
@@ -468,5 +494,103 @@ public class PBConstraintTest {
     Assert.assertTrue(pb2.containsVariable(F.f.variable("b")));
     Assert.assertTrue(pb2.containsVariable(F.f.variable("c")));
     Assert.assertFalse(pb2.containsVariable(F.f.variable("x")));
+  }
+
+  @Test
+  public void testEvaluateCoeffs() {
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.EQ));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.EQ));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.EQ));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.EQ));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.EQ));
+
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.GE));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.GE));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.GE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.GE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.GE));
+
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.GT));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.GT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.GT));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.GT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.GT));
+
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.LE));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.LE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.LE));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.LE));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.LE));
+
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -3, CType.LT));
+    Assert.assertEquals(Tristate.TRUE, PBConstraint.evaluateCoeffs(-2, 2, 3, CType.LT));
+    Assert.assertEquals(Tristate.FALSE, PBConstraint.evaluateCoeffs(-2, 2, -2, CType.LT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 2, CType.LT));
+    Assert.assertEquals(Tristate.UNDEF, PBConstraint.evaluateCoeffs(-2, 2, 0, CType.LT));
+  }
+
+  @Test
+  public void testTrivialTrue() {
+    Assert.assertTrue(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertFalse(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertTrue(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertFalse(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+
+    Assert.assertTrue(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertTrue(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+    Assert.assertFalse(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialTrue());
+  }
+
+  @Test
+  public void testTrivialFalse() {
+    Assert.assertFalse(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertTrue(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertFalse(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertTrue(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+
+    Assert.assertFalse(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertFalse(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+    Assert.assertTrue(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).isTrivialFalse());
+  }
+
+  @Test
+  public void testSimplifiedToString() {
+    Assert.assertEquals(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+    Assert.assertEquals(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
+    Assert.assertEquals(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
   }
 }

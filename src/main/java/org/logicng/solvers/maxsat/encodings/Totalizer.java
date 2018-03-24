@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -62,18 +62,18 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 /**
  * Encodes that at most 'rhs' literals can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.1
+ * @version 1.3
  * @since 1.0
  */
 final class Totalizer extends Encoding {
 
-  private LNGVector<LNGIntVector> totalizerIterativeLeft;
-  private LNGVector<LNGIntVector> totalizerIterativeRight;
-  private LNGVector<LNGIntVector> totalizerIterativeOutput;
-  private LNGIntVector totalizerIterativeRhs;
-  private int blocking;
+  private final LNGVector<LNGIntVector> totalizerIterativeLeft;
+  private final LNGVector<LNGIntVector> totalizerIterativeRight;
+  private final LNGVector<LNGIntVector> totalizerIterativeOutput;
+  private final LNGIntVector totalizerIterativeRhs;
+  private final int blocking;
+  private final LNGIntVector cardinalityOutlits;
   private LNGIntVector cardinalityInlits;
-  private LNGIntVector cardinalityOutlits;
   private MaxSATConfig.IncrementalStrategy incrementalStrategy;
   private int currentCardinalityRhs;
   private boolean joinMode;

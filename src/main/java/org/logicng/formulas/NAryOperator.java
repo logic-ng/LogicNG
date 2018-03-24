@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -33,6 +33,7 @@ import org.logicng.datastructures.Substitution;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -100,7 +101,7 @@ public abstract class NAryOperator extends Formula {
       final SortedSet<Variable> set = new TreeSet<>();
       for (final Formula op : this.operands)
         set.addAll(op.variables());
-      this.variables = set;
+      this.variables = Collections.unmodifiableSortedSet(set);
     }
     return this.variables;
   }
@@ -110,7 +111,7 @@ public abstract class NAryOperator extends Formula {
     final SortedSet<Literal> set = new TreeSet<>();
     for (final Formula op : this.operands)
       set.addAll(op.literals());
-    return set;
+    return Collections.unmodifiableSortedSet(set);
   }
 
   @Override
