@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.PredicateCacheEntry;
 import org.logicng.formulas.cache.TransformationCacheEntry;
-import org.logicng.solvers.sat.PigeonHoleGenerator;
+import org.logicng.testutils.PigeonHoleGenerator;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.transformations.dnf.DNFFactorization;
 

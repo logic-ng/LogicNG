@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -42,8 +42,8 @@ import java.util.List;
 
 /**
  * Super class for simple BDD factories.
- * @version 1.2
- * @since 1.2
+ * @version 1.4
+ * @since 1.4
  */
 public abstract class BDDFactory {
 
@@ -58,7 +58,11 @@ public abstract class BDDFactory {
   }
 
   /**
-   * Builds a BDD for a given formula.
+   * Builds a BDD for a given formula.  BDDs support all Boolean formula types but not pseudo-Boolean constraints.
+   * The reason is that before converting a formula to a BDD one must specify the number of variables.  In case of
+   * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore the caller first
+   * has to transform any pseudo-Boolean constraints in their respective CNF representation before converting them
+   * to a BDD.
    * @param formula the formula
    * @return the top node of the BDD
    */
@@ -167,6 +171,6 @@ public abstract class BDDFactory {
     final List<Formula> ops = new LinkedList<>();
     for (final Assignment ass : this.enumerateAllModels(bdd))
       ops.add(ass.formula(f));
-    return f.and(ops);
+    return ops.isEmpty() ? f.falsum() : f.or(ops);
   }
 }

@@ -93,6 +93,21 @@ public class Assignment {
   }
 
   /**
+   * Constructs a new assignment for a given array of literals (without fast evaluation).
+   * @param lits a new assignment for a given array of literals
+   */
+  public Assignment(final Literal... lits) {
+    this(false);
+    for (Literal lit : lits)
+      if (lit.phase())
+        this.pos.add((Variable) lit);
+      else {
+        this.neg.add(lit);
+        this.negVars.add((Variable) lit.negate());
+      }
+  }
+
+  /**
    * Constructs a new assignment for a given collection of literals.
    * @param lits          a new assignment for a given collection of literals
    * @param fastEvaluable indicates whether this assignment should be evaluable fast.  If this parameter is set to

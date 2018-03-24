@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2016 Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -39,8 +39,8 @@ import java.util.Set;
 
 /**
  * A terminal in a BDD.
- * @version 1.2
- * @since 1.2
+ * @version 1.4
+ * @since 1.4
  */
 public final class BDDTerminalNode implements BDDNode {
 

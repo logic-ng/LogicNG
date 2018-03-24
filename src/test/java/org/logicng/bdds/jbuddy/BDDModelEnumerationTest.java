@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.bdds.BDD;
 import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
@@ -43,6 +44,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for the BDDs.
@@ -102,6 +105,47 @@ public class BDDModelEnumerationTest {
       for (final Assignment model : models)
         Assert.assertTrue(formulas.get(i).evaluate(model));
     }
+  }
+
+  @Test
+  public void testExo() {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula constraint = f.exo(generateVariables(100, f)).cnf();
+    final JBuddyFactory factory = new JBuddyFactory(100000, 1000000, f);
+    factory.setNumberOfVars(constraint.variables().size());
+    final BDD bdd = factory.build(constraint);
+    assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(100));
+    assertThat(bdd.enumerateAllModels()).hasSize(100);
+  }
+
+  @Test
+  public void testExk() {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula constraint = f.cc(CType.EQ, 8, generateVariables(15, f)).cnf();
+    final JBuddyFactory factory = new JBuddyFactory(100000, 1000000, f);
+    factory.setNumberOfVars(constraint.variables().size());
+    final BDD bdd = factory.build(constraint);
+    assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(6435));
+    assertThat(bdd.enumerateAllModels()).hasSize(6435);
+  }
+
+  @Test
+  public void testAmo() {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula constraint = f.amo(generateVariables(100, f)).cnf();
+    final JBuddyFactory factory = new JBuddyFactory(100000, 1000000, f);
+    factory.setNumberOfVars(constraint.variables().size());
+    final BDD bdd = factory.build(constraint);
+    assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(221));
+    assertThat(bdd.enumerateAllModels(generateVariables(100, f))).hasSize(101);
+  }
+
+  private List<Variable> generateVariables(int n, final FormulaFactory f) {
+    final List<Variable> result = new ArrayList<>(n);
+    for (int i = 0; i < n; i++) {
+      result.add(f.variable("v" + i));
+    }
+    return result;
   }
 
 }

@@ -69,11 +69,15 @@ import org.logicng.formulas.Not;
 import org.logicng.formulas.Variable;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -83,8 +87,8 @@ import static org.logicng.formulas.FType.AND;
 
 /**
  * The factory for the jBuddy implementation.
- * @version 1.2
- * @since 1.2
+ * @version 1.4
+ * @since 1.4
  */
 public final class JBuddyFactory extends BDDFactory {
 
@@ -248,14 +252,28 @@ public final class JBuddyFactory extends BDDFactory {
     return kernel.addRef(kernel.makeSet(varset));
   }
 
+  /**
+   * Returns the number of paths to the terminal node 'one'.
+   * @param r the BDD
+   * @return the number of paths to the terminal node 'one'
+   */
   public BigDecimal pathCountOne(int r) {
     return kernel.pathCountOne(r);
   }
 
+  /**
+   * Returns the number of paths to the terminal node 'zero'.
+   * @param r the BDD
+   * @return the number of paths to the terminal node 'zero'
+   */
   public BigDecimal pathCountZero(int r) {
     return kernel.pathCountZero(r);
   }
 
+  /**
+   * Sets the number of variables for this factory.
+   * @param num the number of variables
+   */
   public void setNumberOfVars(int num) {
     kernel.setNumberOfVars(num);
   }
@@ -321,7 +339,7 @@ public final class JBuddyFactory extends BDDFactory {
 
   @Override
   public List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Variable> variables) {
-    final List<Assignment> res = new LinkedList<>();
+    final Set<Assignment> res = new HashSet<>();
     final List<byte[]> models = kernel.allSat(bdd.index());
     SortedSet<Integer> temp;
     if (variables == null)
@@ -341,11 +359,10 @@ public final class JBuddyFactory extends BDDFactory {
       generateAllModels(allAssignments, model, relevantIndices, 0);
       res.addAll(allAssignments);
     }
-    return res;
+    return new ArrayList<>(res);
   }
 
-  private void generateAllModels(final List<Assignment> assignments, byte[] model, final int[] relevantIndices,
-                                 int position) {
+  private void generateAllModels(final List<Assignment> assignments, byte[] model, final int[] relevantIndices, int position) {
     if (position == relevantIndices.length) {
       final Assignment assignment = new Assignment();
       for (final int i : relevantIndices)
