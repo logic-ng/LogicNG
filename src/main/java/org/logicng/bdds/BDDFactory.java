@@ -28,6 +28,8 @@
 
 package org.logicng.bdds;
 
+import org.logicng.bdds.datastructures.LNGBDD;
+import org.logicng.bdds.datastructures.LNGBDDNode;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
@@ -66,21 +68,21 @@ public abstract class BDDFactory {
    * @param formula the formula
    * @return the top node of the BDD
    */
-  public abstract BDD build(final Formula formula);
+  public abstract LNGBDD build(final Formula formula);
 
   /**
    * Is BDD m a tautology.
    * @param m the BDD to test for the tautology test (index of root node)
    * @return 'true' if m is a tautology, 'false' else
    */
-  public abstract boolean isTautology(final BDD m);
+  public abstract boolean isTautology(final LNGBDD m);
 
   /**
    * Is BDD m a contradiction.
    * @param m BDD to test for the contradiction test (index of root node)
    * @return 'true' if m is a contradiction, 'false' else
    */
-  public abstract boolean isContradiction(final BDD m);
+  public abstract boolean isContradiction(final LNGBDD m);
 
   /**
    * Sets the variable order for this BDD.  This method must be called BEFORE the BDD is generated.
@@ -109,7 +111,7 @@ public abstract class BDDFactory {
    * @param bdd the BDD
    * @return the model count
    */
-  public abstract BigDecimal modelCount(final BDD bdd);
+  public abstract BigDecimal modelCount(final LNGBDD bdd);
 
   /**
    * Returns the model count of a given BDD with a given number of unimportant variables.
@@ -117,7 +119,7 @@ public abstract class BDDFactory {
    * @param unimportantVars the number of unimportant variables
    * @return the model count
    */
-  public BigDecimal modelCount(final BDD bdd, int unimportantVars) {
+  public BigDecimal modelCount(final LNGBDD bdd, int unimportantVars) {
     return modelCount(bdd).divide(BigDecimal.valueOf((int) Math.pow(2, unimportantVars)));
   }
 
@@ -126,7 +128,7 @@ public abstract class BDDFactory {
    * @param bdd the BDD
    * @return the list of all models
    */
-  public List<Assignment> enumerateAllModels(final BDD bdd) {
+  public List<Assignment> enumerateAllModels(final LNGBDD bdd) {
     return enumerateAllModels(bdd, (Collection<Variable>) null);
   }
 
@@ -136,7 +138,7 @@ public abstract class BDDFactory {
    * @param variables the variables
    * @return the list of all models
    */
-  public List<Assignment> enumerateAllModels(final BDD bdd, final Variable[] variables) {
+  public List<Assignment> enumerateAllModels(final LNGBDD bdd, final Variable[] variables) {
     return this.enumerateAllModels(bdd, Arrays.asList(variables));
   }
 
@@ -146,31 +148,46 @@ public abstract class BDDFactory {
    * @param variables the variables
    * @return the list of all models
    */
-  public abstract List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Variable> variables);
+  public abstract List<Assignment> enumerateAllModels(final LNGBDD bdd, final Collection<Variable> variables);
 
   /**
    * Returns a CNF formula for a given BDD.
    * @param bdd the node
    * @return the CNF for the formula represented by the BDD
    */
-  public abstract Formula cnf(final BDD bdd);
+  public abstract Formula cnf(final LNGBDD bdd);
 
   /**
    * Returns the number of clauses for the CNF formula of the given BDD.
    * @param bdd the node
    * @return the number of clauses for the CNF formula of the given BDD
    */
-  public abstract BigDecimal numberOfClausesCNF(final BDD bdd);
+  public abstract BigDecimal numberOfClausesCNF(final LNGBDD bdd);
 
   /**
    * Returns a DNF formula for a given BDD.
    * @param bdd the BDD
    * @return the DNF for the formula represented by the BDD
    */
-  public Formula dnf(final BDD bdd) {
+  public Formula dnf(final LNGBDD bdd) {
     final List<Formula> ops = new LinkedList<>();
     for (final Assignment ass : this.enumerateAllModels(bdd))
       ops.add(ass.formula(f));
     return ops.isEmpty() ? f.falsum() : f.or(ops);
+  }
+
+  /**
+   * Returns a LogicNG internal BDD data structure of a given BDD.
+   * @param bdd the BDD
+   * @return the BDD as LogicNG data structure
+   */
+  public abstract LNGBDDNode toLngBdd(int bdd);
+
+  /**
+   * Returns the formula factory for this BDD factory.
+   * @return the formula factory
+   */
+  public FormulaFactory getF() {
+    return this.f;
   }
 }

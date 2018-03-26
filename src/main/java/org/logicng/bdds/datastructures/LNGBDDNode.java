@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds;
+package org.logicng.bdds.datastructures;
 
 import org.logicng.formulas.Formula;
 
@@ -37,7 +37,7 @@ import java.util.Set;
  * @version 1.4
  * @since 1.4
  */
-public interface BDDNode {
+public interface LNGBDDNode {
 
   /**
    * Returns the label of the node.  This can either be a variable or a constant.
@@ -55,17 +55,17 @@ public interface BDDNode {
    * Returns the node of the low edge.
    * @return the node of the low edge
    */
-  BDDNode low();
+  LNGBDDNode low();
 
   /**
    * Returns the node of the high edge.
    * @return the node of the high edge
    */
-  BDDNode high();
+  LNGBDDNode high();
 
   /**
    * Returns all nodes of the sub-BDD starting at this node.
    * @return all nodes of the sub-BDD starting at this node
    */
-  Set<BDDNode> nodes();
+  Set<LNGBDDNode> nodes();
 }

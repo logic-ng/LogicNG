@@ -58,6 +58,7 @@ MODIFICATIONS.
 package org.logicng.bdds.jbuddy;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -554,7 +555,28 @@ final class BDDKernel {
     }
   }
 
-  // TODO
+  /**
+   * Returns all nodes for a given root node in their internal representation.  The internal representation is stored
+   * in an array: {@code [node number, variable, low, high]}
+   * @param r the BDD root node
+   * @return all Nodes in their internal representation
+   */
+  List<int[]> allNodes(int r) {
+    final List<int[]> result = new ArrayList<>();
+    if (r < 2)
+      return result;
+    mark(r);
+    for (int n = 0; n < nodesize; n++) {
+      if ((level(n) & MARKON) != 0) {
+        BddNode node = nodes[n];
+        node.level &= MARKOFF;
+        result.add(new int[]{n, level2var[node.level], node.low, node.high});
+      }
+    }
+    return result;
+  }
+
+  // TODO comment
 
   private int makeNode(int level, int low, int high) {
     BddNode node;

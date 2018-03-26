@@ -57,8 +57,11 @@ MODIFICATIONS.
 
 package org.logicng.bdds.jbuddy;
 
-import org.logicng.bdds.BDD;
 import org.logicng.bdds.BDDFactory;
+import org.logicng.bdds.datastructures.LNGBDD;
+import org.logicng.bdds.datastructures.LNGBDDConstant;
+import org.logicng.bdds.datastructures.LNGBDDInnerNode;
+import org.logicng.bdds.datastructures.LNGBDDNode;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Equivalence;
 import org.logicng.formulas.Formula;
@@ -70,8 +73,8 @@ import org.logicng.formulas.Variable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -112,8 +115,8 @@ public final class JBuddyFactory extends BDDFactory {
   }
 
   @Override
-  public BDD build(final Formula formula) {
-    return new BDD(buildRec(formula), this);
+  public LNGBDD build(final Formula formula) {
+    return new LNGBDD(buildRec(formula), this);
   }
 
   /**
@@ -279,12 +282,12 @@ public final class JBuddyFactory extends BDDFactory {
   }
 
   @Override
-  public boolean isTautology(final BDD m) {
+  public boolean isTautology(final LNGBDD m) {
     return m.index() == 1;
   }
 
   @Override
-  public boolean isContradiction(final BDD m) {
+  public boolean isContradiction(final LNGBDD m) {
     return m.index() == 0;
   }
 
@@ -297,21 +300,15 @@ public final class JBuddyFactory extends BDDFactory {
     return kernel.bddVar(root);
   }
 
-  /**
-   * Returns the false branch of the given root node.
-   * @param root the root node of the BDD
-   * @return the false branch
-   */
-  public int bddLow(int root) {
+  public Variable variableAtNode(int node) {
+    return this.idx2var.get(kernel.bddVar(node));
+  }
+
+  public int lowNode(int root) {
     return kernel.bddLow(root);
   }
 
-  /**
-   * Returns the true branch of the given root node.
-   * @param root the root node of the BDD
-   * @return the true branch
-   */
-  int bddHigh(int root) {
+  public int highNode(int root) {
     return kernel.bddHigh(root);
   }
 
@@ -326,19 +323,19 @@ public final class JBuddyFactory extends BDDFactory {
   /**
    * Increases the number of variables to use by the given number.
    * @param num the number of new variables
-   * @throws IllegalArgumentException if the number of new variables is not legel (negative or too big)
+   * @throws IllegalArgumentException if the number of new variables is not legal (negative or too big)
    */
   public void extendVarNum(int num) {
     kernel.extendVarNum(num);
   }
 
   @Override
-  public BigDecimal modelCount(final BDD bdd) {
+  public BigDecimal modelCount(final LNGBDD bdd) {
     return kernel.satCount(bdd.index());
   }
 
   @Override
-  public List<Assignment> enumerateAllModels(final BDD bdd, final Collection<Variable> variables) {
+  public List<Assignment> enumerateAllModels(final LNGBDD bdd, final Collection<Variable> variables) {
     final Set<Assignment> res = new HashSet<>();
     final List<byte[]> models = kernel.allSat(bdd.index());
     SortedSet<Integer> temp;
@@ -383,7 +380,7 @@ public final class JBuddyFactory extends BDDFactory {
   }
 
   @Override
-  public Formula cnf(final BDD bdd) {
+  public Formula cnf(final LNGBDD bdd) {
     final List<byte[]> unsatPaths = kernel.allUnsat(bdd.index());
     final List<Formula> clauses = new LinkedList<>();
     List<Formula> literals;
@@ -400,8 +397,55 @@ public final class JBuddyFactory extends BDDFactory {
   }
 
   @Override
-  public BigDecimal numberOfClausesCNF(final BDD bdd) {
+  public BigDecimal numberOfClausesCNF(final LNGBDD bdd) {
     return kernel.pathCountZero(bdd.index());
+  }
+
+  @Override
+  public LNGBDDNode toLngBdd(int bdd) {
+    final LNGBDDConstant falseNode = LNGBDDConstant.getFalsumNode(this.f);
+    final LNGBDDConstant trueNode = LNGBDDConstant.getVerumNode(this.f);
+    if (bdd == BDDKernel.BDD_FALSE)
+      return falseNode;
+    if (bdd == BDDKernel.BDD_TRUE)
+      return trueNode;
+    final List<int[]> nodes = this.kernel.allNodes(bdd);
+    final Map<Integer, LNGBDDInnerNode> innerNodes = new HashMap<>();
+    for (int[] node : nodes) {
+      final int nodenum = node[0];
+      final Variable variable = this.idx2var.get(node[1]);
+      final LNGBDDNode lowNode = getInnerNode(node[2], falseNode, trueNode, innerNodes);
+      final LNGBDDNode highNode = getInnerNode(node[3], falseNode, trueNode, innerNodes);
+      final LNGBDDInnerNode foundNode = innerNodes.get(nodenum);
+      if (foundNode == null)
+        innerNodes.put(nodenum, new LNGBDDInnerNode(variable, lowNode, highNode));
+      else {
+        if (foundNode.label() == null)
+          foundNode.setVar(variable);
+        if (foundNode.low() == null)
+          foundNode.setLow(lowNode);
+        if (foundNode.high() == null)
+          foundNode.setHigh(highNode);
+      }
+    }
+    return innerNodes.get(bdd);
+  }
+
+  private LNGBDDNode getInnerNode(int index, LNGBDDConstant falseNode, LNGBDDConstant trueNode,
+                                  final Map<Integer, LNGBDDInnerNode> innerNodes) {
+    if (index == BDDKernel.BDD_FALSE)
+      return falseNode;
+    else if (index == BDDKernel.BDD_TRUE)
+      return trueNode;
+    else {
+      final LNGBDDInnerNode innerNode = innerNodes.get(index);
+      if (innerNode == null) {
+        LNGBDDInnerNode newNode = new LNGBDDInnerNode();
+        innerNodes.put(index, newNode);
+        return newNode;
+      }
+      return innerNode;
+    }
   }
 
   /**

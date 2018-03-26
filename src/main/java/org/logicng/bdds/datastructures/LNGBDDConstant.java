@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds;
+package org.logicng.bdds.datastructures;
 
 import org.logicng.formulas.Constant;
 import org.logicng.formulas.Formula;
@@ -38,11 +38,11 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * A terminal in a BDD.
+ * A terminal node in a BDD.
  * @version 1.4
  * @since 1.4
  */
-public final class BDDTerminalNode implements BDDNode {
+public final class LNGBDDConstant implements LNGBDDNode {
 
   private final Constant value;
 
@@ -50,7 +50,7 @@ public final class BDDTerminalNode implements BDDNode {
    * Private constructor.
    * @param value the constant value
    */
-  private BDDTerminalNode(final Constant value) {
+  private LNGBDDConstant(final Constant value) {
     this.value = value;
   }
 
@@ -59,8 +59,8 @@ public final class BDDTerminalNode implements BDDNode {
    * @param f the formula factory
    * @return the terminal 0 node
    */
-  public static BDDTerminalNode getFalsumNode(final FormulaFactory f) {
-    return new BDDTerminalNode(f.falsum());
+  public static LNGBDDConstant getFalsumNode(final FormulaFactory f) {
+    return new LNGBDDConstant(f.falsum());
   }
 
   /**
@@ -68,8 +68,8 @@ public final class BDDTerminalNode implements BDDNode {
    * @param f the formula factory
    * @return the terminal 1 node
    */
-  public static BDDTerminalNode getVerumNode(final FormulaFactory f) {
-    return new BDDTerminalNode(f.verum());
+  public static LNGBDDConstant getVerumNode(final FormulaFactory f) {
+    return new LNGBDDConstant(f.verum());
   }
 
   @Override
@@ -83,18 +83,18 @@ public final class BDDTerminalNode implements BDDNode {
   }
 
   @Override
-  public BDDNode low() {
+  public LNGBDDNode low() {
     return null;
   }
 
   @Override
-  public BDDNode high() {
+  public LNGBDDNode high() {
     return null;
   }
 
   @Override
-  public Set<BDDNode> nodes() {
-    return new HashSet<BDDNode>(Collections.singletonList(this));
+  public Set<LNGBDDNode> nodes() {
+    return new HashSet<LNGBDDNode>(Collections.singletonList(this));
   }
 
   @Override
@@ -104,8 +104,8 @@ public final class BDDTerminalNode implements BDDNode {
 
   @Override
   public boolean equals(final Object other) {
-    return this == other || other instanceof BDDTerminalNode
-            && Objects.equals(this.value, ((BDDTerminalNode) other).value);
+    return this == other || other instanceof LNGBDDConstant
+            && Objects.equals(this.value, ((LNGBDDConstant) other).value);
   }
 
   @Override

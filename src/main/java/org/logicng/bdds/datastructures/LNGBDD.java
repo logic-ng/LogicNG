@@ -26,8 +26,9 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds;
+package org.logicng.bdds.datastructures;
 
+import org.logicng.bdds.BDDFactory;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
@@ -43,17 +44,18 @@ import java.util.Objects;
  * @version 1.4
  * @since 1.4
  */
-public final class BDD {
+public final class LNGBDD {
 
   private final int index;
   private final BDDFactory factory;
+  private LNGBDDNode bdd;
 
   /**
    * Constructs a new BDD with a given index.
    * @param index   the index
    * @param factory the factory of this BDD
    */
-  public BDD(int index, final BDDFactory factory) {
+  public LNGBDD(int index, final BDDFactory factory) {
     this.index = index;
     this.factory = factory;
   }
@@ -157,6 +159,14 @@ public final class BDD {
     return this.factory.dnf(this);
   }
 
+  /**
+   * Returns a LogicNG internal BDD data structure of this BDD.
+   * @return the BDD as LogicNG data structure
+   */
+  public LNGBDDNode toLngBdd() {
+    return this.factory.toLngBdd(this.index);
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(index, factory);
@@ -164,9 +174,9 @@ public final class BDD {
 
   @Override
   public boolean equals(final Object other) {
-    return this == other || other instanceof BDD
-            && this.index == ((BDD) other).index
-            && Objects.equals(this.factory, ((BDD) other).factory);
+    return this == other || other instanceof LNGBDD
+            && this.index == ((LNGBDD) other).index
+            && Objects.equals(this.factory, ((LNGBDD) other).factory);
   }
 
   @Override

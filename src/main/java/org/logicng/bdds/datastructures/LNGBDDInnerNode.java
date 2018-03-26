@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds;
+package org.logicng.bdds.datastructures;
 
 import org.logicng.formulas.Variable;
 
@@ -40,11 +40,14 @@ import java.util.Set;
  * @version 1.4
  * @since 1.4
  */
-public final class BDDInnerNode implements BDDNode {
+public final class LNGBDDInnerNode implements LNGBDDNode {
 
-  private final Variable var;
-  private final BDDNode low;
-  private final BDDNode high;
+  private Variable var;
+  private LNGBDDNode low;
+  private LNGBDDNode high;
+
+  public LNGBDDInnerNode() {
+  }
 
   /**
    * Constructor for a new inner BDD node holding a variable.
@@ -52,7 +55,7 @@ public final class BDDInnerNode implements BDDNode {
    * @param low  the low child node
    * @param high the high child node
    */
-  public BDDInnerNode(final Variable var, final BDDNode low, final BDDNode high) {
+  public LNGBDDInnerNode(final Variable var, final LNGBDDNode low, final LNGBDDNode high) {
     this.var = var;
     this.low = low;
     this.high = high;
@@ -69,18 +72,30 @@ public final class BDDInnerNode implements BDDNode {
   }
 
   @Override
-  public BDDNode low() {
+  public LNGBDDNode low() {
     return this.low;
   }
 
   @Override
-  public BDDNode high() {
+  public LNGBDDNode high() {
     return this.high;
   }
 
+  public void setVar(Variable var) {
+    this.var = var;
+  }
+
+  public void setLow(LNGBDDNode low) {
+    this.low = low;
+  }
+
+  public void setHigh(LNGBDDNode high) {
+    this.high = high;
+  }
+
   @Override
-  public Set<BDDNode> nodes() {
-    final Set<BDDNode> res = new HashSet<BDDNode>(Collections.singleton(this));
+  public Set<LNGBDDNode> nodes() {
+    final Set<LNGBDDNode> res = new HashSet<LNGBDDNode>(Collections.singleton(this));
     res.addAll(this.low.nodes());
     res.addAll(this.high.nodes());
     return res;
@@ -95,8 +110,8 @@ public final class BDDInnerNode implements BDDNode {
   public boolean equals(final Object other) {
     if (this == other)
       return true;
-    if (other instanceof BDDInnerNode) {
-      final BDDInnerNode o = (BDDInnerNode) other;
+    if (other instanceof LNGBDDInnerNode) {
+      final LNGBDDInnerNode o = (LNGBDDInnerNode) other;
       return Objects.equals(this.var, o.var)
               && Objects.equals(this.low, o.low)
               && Objects.equals(this.high, o.high);
