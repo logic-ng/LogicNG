@@ -167,6 +167,14 @@ public final class LNGBDD {
     return this.factory.toLngBdd(this.index);
   }
 
+  /**
+   * Returns the internal nodes of this BDD (e.g. for writing to a DOT file).
+   * @return the internal nodes of this BDD
+   */
+  public List<BDDFactory.InternalBDDNode> internalNodes() {
+    return this.factory.getInternalNodes(this.index);
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(index, factory);

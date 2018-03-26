@@ -431,6 +431,14 @@ public final class JBuddyFactory extends BDDFactory {
     return innerNodes.get(bdd);
   }
 
+  @Override
+  public List<InternalBDDNode> getInternalNodes(int bdd) {
+    List<InternalBDDNode> result = new ArrayList<>();
+    for (int[] node : this.kernel.allNodes(bdd))
+      result.add(new InternalBDDNode(node[0], this.idx2var.get(node[1]).name(), node[2], node[3]));
+    return result;
+  }
+
   private LNGBDDNode getInnerNode(int index, LNGBDDConstant falseNode, LNGBDDConstant trueNode,
                                   final Map<Integer, LNGBDDInnerNode> innerNodes) {
     if (index == BDDKernel.BDD_FALSE)

@@ -30,6 +30,7 @@ package org.logicng.bdds;
 
 import org.logicng.bdds.datastructures.LNGBDD;
 import org.logicng.bdds.datastructures.LNGBDDNode;
+import org.logicng.bdds.jbuddy.JBuddyFactory;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
@@ -57,6 +58,10 @@ public abstract class BDDFactory {
    */
   public BDDFactory(final FormulaFactory f) {
     this.f = f;
+  }
+
+  public static BDDFactory jBuddy(final int numNodes, final int cacheSize, final FormulaFactory f) {
+    return new JBuddyFactory(numNodes, cacheSize, f);
   }
 
   /**
@@ -183,11 +188,49 @@ public abstract class BDDFactory {
    */
   public abstract LNGBDDNode toLngBdd(int bdd);
 
+
+  /**
+   * Returns the internal nodes of a given BDD (for e.g. writing to a DOT file)
+   * @param bdd the BDD
+   * @return the internal nodes of the BDD
+   */
+  public abstract List<InternalBDDNode> getInternalNodes(int bdd);
+
   /**
    * Returns the formula factory for this BDD factory.
    * @return the formula factory
    */
   public FormulaFactory getF() {
     return this.f;
+  }
+
+  public static class InternalBDDNode {
+    private final int nodenum;
+    private final String label;
+    private final int low;
+    private final int high;
+
+    public InternalBDDNode(int nodenum, String label, int low, int high) {
+      this.nodenum = nodenum;
+      this.label = label;
+      this.low = low;
+      this.high = high;
+    }
+
+    public int getNodenum() {
+      return nodenum;
+    }
+
+    public String getLabel() {
+      return label;
+    }
+
+    public int getLow() {
+      return low;
+    }
+
+    public int getHigh() {
+      return high;
+    }
   }
 }
