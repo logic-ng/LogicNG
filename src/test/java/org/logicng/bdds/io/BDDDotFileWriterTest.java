@@ -30,8 +30,8 @@ package org.logicng.bdds.io;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.bdds.datastructures.LNGBDD;
-import org.logicng.bdds.jbuddy.JBuddyFactory;
+import org.logicng.bdds.datastructures.BDD;
+import org.logicng.bdds.BDDFactory;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -52,7 +52,7 @@ public class BDDDotFileWriterTest {
   public void testWriter() throws IOException, ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setVariableOrder(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
     testFiles("false", factory.build(p.parse("$false")));
     testFiles("true", factory.build(p.parse("$true")));
@@ -66,7 +66,7 @@ public class BDDDotFileWriterTest {
     testFiles("formula", factory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)")));
   }
 
-  private void testFiles(final String fileName, final LNGBDD bdd) throws IOException {
+  private void testFiles(final String fileName, final BDD bdd) throws IOException {
     BDDDotFileWriter.write("tests/writers/temp/" + fileName + "_bdd.dot", bdd);
     final File expectedT = new File("tests/writers/bdd/" + fileName + "_bdd.dot");
     final File tempT = new File("tests/writers/temp/" + fileName + "_bdd.dot");

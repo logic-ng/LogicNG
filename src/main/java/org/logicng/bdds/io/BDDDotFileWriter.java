@@ -29,7 +29,7 @@
 package org.logicng.bdds.io;
 
 import org.logicng.bdds.BDDFactory;
-import org.logicng.bdds.datastructures.LNGBDD;
+import org.logicng.bdds.datastructures.BDD;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -58,7 +58,7 @@ public final class BDDDotFileWriter {
    * @param bdd      the BDD
    * @throws IOException if there was a problem writing the file
    */
-  public static void write(final String fileName, final LNGBDD bdd) throws IOException {
+  public static void write(final String fileName, final BDD bdd) throws IOException {
     write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), bdd);
   }
 
@@ -68,7 +68,7 @@ public final class BDDDotFileWriter {
    * @param bdd  the BDD
    * @throws IOException if there was a problem writing the file
    */
-  public static void write(final File file, final LNGBDD bdd) throws IOException {
+  public static void write(final File file, final BDD bdd) throws IOException {
     final StringBuilder sb = new StringBuilder("digraph G {\n");
     if (!bdd.isContradiction()) {
       sb.append("  const_true [shape=box, label=\"$true\", style = bold, color = darkgreen];\n");

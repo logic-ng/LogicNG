@@ -26,11 +26,11 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.jbuddy;
+package org.logicng.bdds;
 
 import org.junit.Test;
-import org.logicng.bdds.datastructures.LNGBDD;
-import org.logicng.bdds.datastructures.LNGBDDConstant;
+import org.logicng.bdds.datastructures.BDD;
+import org.logicng.bdds.datastructures.BDDConstant;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -41,17 +41,17 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit tests for {@link JBuddyFactory}.
+ * Unit tests for {@link BDDFactory}.
  * @version 1.4
  * @since 1.4
  */
-public class SimpleJBuddyTest {
+public class SimpleBDDTest {
 
   @Test
   public void testTrue() {
     final FormulaFactory f = new FormulaFactory();
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
-    final LNGBDD bdd = factory.build(f.verum());
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDD bdd = factory.build(f.verum());
     assertThat(bdd.isTautology()).isTrue();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(f.verum());
@@ -60,14 +60,14 @@ public class SimpleJBuddyTest {
     assertThat(bdd.factory()).isSameAs(factory);
     assertThat(bdd.enumerateAllModels()).containsExactly(new Assignment());
     assertThat(bdd.numberOfClausesCNF()).isEqualTo(BigDecimal.ZERO);
-    assertThat(bdd.toLngBdd()).isEqualTo(LNGBDDConstant.getVerumNode(f));
+    assertThat(bdd.toLngBdd()).isEqualTo(BDDConstant.getVerumNode(f));
   }
 
   @Test
   public void testFalse() {
     final FormulaFactory f = new FormulaFactory();
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
-    final LNGBDD bdd = factory.build(f.falsum());
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDD bdd = factory.build(f.falsum());
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isTrue();
     assertThat(bdd.cnf()).isEqualTo(f.falsum());
@@ -76,15 +76,15 @@ public class SimpleJBuddyTest {
     assertThat(bdd.factory()).isSameAs(factory);
     assertThat(bdd.enumerateAllModels()).isEmpty();
     assertThat(bdd.numberOfClausesCNF()).isEqualTo(BigDecimal.ONE);
-    assertThat(bdd.toLngBdd()).isEqualTo(LNGBDDConstant.getFalsumNode(f));
+    assertThat(bdd.toLngBdd()).isEqualTo(BDDConstant.getFalsumNode(f));
   }
 
   @Test
   public void testPositiveLiteral() {
     final FormulaFactory f = new FormulaFactory();
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(1);
-    final LNGBDD bdd = factory.build(f.literal("A", true));
+    final BDD bdd = factory.build(f.literal("A", true));
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(f.literal("A", true));
@@ -99,9 +99,9 @@ public class SimpleJBuddyTest {
   @Test
   public void testNegativeLiteral() {
     final FormulaFactory f = new FormulaFactory();
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(1);
-    final LNGBDD bdd = factory.build(f.literal("A", false));
+    final BDD bdd = factory.build(f.literal("A", false));
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(f.literal("A", false));
@@ -117,9 +117,9 @@ public class SimpleJBuddyTest {
   public void testImplication() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(2);
-    final LNGBDD bdd = factory.build(parser.parse("A => ~B"));
+    final BDD bdd = factory.build(parser.parse("A => ~B"));
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(parser.parse("~A | ~B"));
@@ -139,9 +139,9 @@ public class SimpleJBuddyTest {
   public void testEquivalence() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(2);
-    final LNGBDD bdd = factory.build(parser.parse("A <=> ~B"));
+    final BDD bdd = factory.build(parser.parse("A <=> ~B"));
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(parser.parse("(A | B) & (~A | ~B)"));
@@ -160,9 +160,9 @@ public class SimpleJBuddyTest {
   public void testOr() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(3);
-    final LNGBDD bdd = factory.build(parser.parse("A | B | ~C"));
+    final BDD bdd = factory.build(parser.parse("A | B | ~C"));
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(parser.parse("A | B | ~C"));
@@ -186,9 +186,9 @@ public class SimpleJBuddyTest {
   public void testAnd() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    JBuddyFactory factory = new JBuddyFactory(1000, 1000, f);
+    BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(3);
-    final LNGBDD bdd = factory.build(parser.parse("A & B & ~C"));
+    final BDD bdd = factory.build(parser.parse("A & B & ~C"));
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isFalse();
     assertThat(bdd.cnf()).isEqualTo(parser.parse("A & (~A | B) & (~A | ~B | ~C)"));

@@ -28,88 +28,44 @@
 
 package org.logicng.bdds.datastructures;
 
-import org.logicng.formulas.Constant;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
- * A terminal node in a BDD.
+ * A node in a BDD.
  * @version 1.4
  * @since 1.4
  */
-public final class LNGBDDConstant implements LNGBDDNode {
-
-  private final Constant value;
+public interface BDDNode {
 
   /**
-   * Private constructor.
-   * @param value the constant value
+   * Returns the label of the node.  This can either be a variable or a constant.
+   * @return the label of the node
    */
-  private LNGBDDConstant(final Constant value) {
-    this.value = value;
-  }
+  Formula label();
 
   /**
-   * Returns the terminal 0 node.
-   * @param f the formula factory
-   * @return the terminal 0 node
+   * Returns {@code true} if this node is an inner node, {@code false} if it is a terminal node.
+   * @return {@code true} if this node is an inner node, {@code false} if it is a terminal node
    */
-  public static LNGBDDConstant getFalsumNode(final FormulaFactory f) {
-    return new LNGBDDConstant(f.falsum());
-  }
+  boolean isInnerNode();
 
   /**
-   * Returns the terminal 1 node.
-   * @param f the formula factory
-   * @return the terminal 1 node
+   * Returns the node of the low edge.
+   * @return the node of the low edge
    */
-  public static LNGBDDConstant getVerumNode(final FormulaFactory f) {
-    return new LNGBDDConstant(f.verum());
-  }
+  BDDNode low();
 
-  @Override
-  public Formula label() {
-    return value;
-  }
+  /**
+   * Returns the node of the high edge.
+   * @return the node of the high edge
+   */
+  BDDNode high();
 
-  @Override
-  public boolean isInnerNode() {
-    return false;
-  }
-
-  @Override
-  public LNGBDDNode low() {
-    return null;
-  }
-
-  @Override
-  public LNGBDDNode high() {
-    return null;
-  }
-
-  @Override
-  public Set<LNGBDDNode> nodes() {
-    return new HashSet<LNGBDDNode>(Collections.singletonList(this));
-  }
-
-  @Override
-  public int hashCode() {
-    return this.value.hashCode();
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    return this == other || other instanceof LNGBDDConstant
-            && Objects.equals(this.value, ((LNGBDDConstant) other).value);
-  }
-
-  @Override
-  public String toString() {
-    return "<" + value + ">";
-  }
+  /**
+   * Returns all nodes of the sub-BDD starting at this node.
+   * @return all nodes of the sub-BDD starting at this node
+   */
+  Set<BDDNode> nodes();
 }

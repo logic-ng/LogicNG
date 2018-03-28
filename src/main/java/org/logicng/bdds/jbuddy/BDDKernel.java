@@ -68,10 +68,10 @@ import java.util.List;
  * @version 1.4
  * @since 1.4
  */
-final class BDDKernel {
+public final class BDDKernel {
 
-  static final int BDD_TRUE = 1;
-  static final int BDD_FALSE = 0;
+  public static final int BDD_TRUE = 1;
+  public static final int BDD_FALSE = 0;
 
   private static final int MAXVAR = 0x1FFFFF;
   private static final int MAXREF = 0x3FF;
@@ -140,7 +140,7 @@ final class BDDKernel {
    * @param initialSize the initial number of nodes in the nodetable
    * @param cs          the fixed size of the internal caches
    */
-  BDDKernel(int initialSize, int cs) {
+  public BDDKernel(int initialSize, int cs) {
     this.nodesize = BDDPrime.primeGTE(initialSize);
     this.nodes = new BddNode[this.nodesize];
     this.resized = false;
@@ -175,7 +175,7 @@ final class BDDKernel {
    * to increase the number of variables.
    * @param num the number of variables to use
    */
-  void setNumberOfVars(int num) {
+  public void setNumberOfVars(int num) {
     if (num < 1 || num > MAXVAR)
       throw new IllegalArgumentException("Invalid variable number: " + num);
     if (num < varnum)
@@ -221,7 +221,7 @@ final class BDDKernel {
    * @param num the number of new variables
    * @throws IllegalArgumentException if the number of new variables is not legel (negative or too big)
    */
-  void extendVarNum(int num) {
+  public void extendVarNum(int num) {
     if (num < 0 || num > 0x3FFFFFFF)
       throw new IllegalArgumentException("illegal number of variables to extend");
     setNumberOfVars(varnum + num);
@@ -231,7 +231,7 @@ final class BDDKernel {
    * Returns the number of variables.
    * @return the number of variables
    */
-  int numberOfVars() {
+  public int numberOfVars() {
     return varnum;
   }
 
@@ -240,7 +240,7 @@ final class BDDKernel {
    * reclaimed yet by a garbage collection are counted as active.
    * @return the number of active nodes
    */
-  int numberOfNodes() {
+  public int numberOfNodes() {
     return nodesize - freenum;
   }
 
@@ -248,7 +248,7 @@ final class BDDKernel {
    * Returns the number of nodes currently allocated. This includes both dead and active nodes.
    * @return the number of nodes currently allocated
    */
-  int numberOfAllocs() {
+  public int numberOfAllocs() {
     return nodesize;
   }
 
@@ -258,7 +258,7 @@ final class BDDKernel {
    * @return the BDD representing the i-th variable
    * @throws IllegalArgumentException if the index is not within the range of variables
    */
-  int ithVar(int i) {
+  public int ithVar(int i) {
     if (i < 0 || i >= varnum)
       throw new IllegalArgumentException("Illegal variable number: " + i);
     return vars[i * 2];
@@ -270,7 +270,7 @@ final class BDDKernel {
    * @return the BDD representing the negated i-th variable
    * @throws IllegalArgumentException if the index is not within the range of variables
    */
-  int nithVar(int i) {
+  public int nithVar(int i) {
     if (i < 0 || i >= varnum)
       throw new IllegalArgumentException("Illegal variable number: " + i);
     return vars[i * 2 + 1];
@@ -281,7 +281,7 @@ final class BDDKernel {
    * @param root the root node of the BDD
    * @return the variable index
    */
-  int bddVar(int root) {
+  public int bddVar(int root) {
     if (root < 2)
       throw new IllegalArgumentException("Illegal node number: " + root);
     return (level2var[level(root)]);
@@ -292,7 +292,7 @@ final class BDDKernel {
    * @param root the root node of the BDD
    * @return the false branch
    */
-  int bddLow(int root) {
+  public int bddLow(int root) {
     if (root < 2)
       throw new IllegalArgumentException("Illegal node number: " + root);
     return (low(root));
@@ -303,7 +303,7 @@ final class BDDKernel {
    * @param root the root node of the BDD
    * @return the true branch
    */
-  int bddHigh(int root) {
+  public int bddHigh(int root) {
     if (root < 2)
       throw new IllegalArgumentException("Illegal node number: " + root);
     return (high(root));
@@ -315,7 +315,7 @@ final class BDDKernel {
    * @param r the second BDD
    * @return the conjunction of the two BDDs
    */
-  int and(int l, int r) {
+  public int and(int l, int r) {
     return apply(l, r, Operand.AND);
   }
 
@@ -325,7 +325,7 @@ final class BDDKernel {
    * @param r the second BDD
    * @return the disjunction of the two BDDs
    */
-  int or(int l, int r) {
+  public int or(int l, int r) {
     return apply(l, r, Operand.OR);
   }
 
@@ -335,7 +335,7 @@ final class BDDKernel {
    * @param r the second BDD
    * @return the implication of the two BDDs
    */
-  int implication(int l, int r) {
+  public int implication(int l, int r) {
     return apply(l, r, Operand.IMP);
   }
 
@@ -345,7 +345,7 @@ final class BDDKernel {
    * @param r the second BDD
    * @return the equivalence of the two BDDs
    */
-  int equivalence(int l, int r) {
+  public int equivalence(int l, int r) {
     return apply(l, r, Operand.EQUIV);
   }
 
@@ -430,7 +430,7 @@ final class BDDKernel {
    * @param r the BDD
    * @return the negation of the BDD
    */
-  int not(int r) {
+  public int not(int r) {
     int res;
     initRef();
     res = notRec(r);
@@ -463,7 +463,7 @@ final class BDDKernel {
    * @param root the node
    * @throws IllegalArgumentException if the root node was invalid
    */
-  int addRef(int root) {
+  public int addRef(int root) {
     if (root < 2)
       return root;
     if (root >= nodesize)
@@ -509,7 +509,7 @@ final class BDDKernel {
    * @param varset the set of variable indices
    * @return the BDD representing the variable set
    */
-  int makeSet(int[] varset) {
+  public int makeSet(int[] varset) {
     int res = 1;
     for (int v = varset.length - 1; v >= 0; v--) {
       addRef(res);
@@ -523,7 +523,7 @@ final class BDDKernel {
   /**
    * Prints the state of the kernel
    */
-  void printStats() {
+  public void printStats() {
     System.out.println("Internel state");
     System.out.println("==============");
     System.out.println(String.format("Produced nodes:     %d", produced));
@@ -538,7 +538,7 @@ final class BDDKernel {
    * Prints the node table for a given BDD root node.
    * @param r the BDD root node
    */
-  void printTable(int r) {
+  public void printTable(int r) {
     System.out.println(String.format("ROOT: %d", r));
     if (r < 2)
       return;
@@ -561,7 +561,7 @@ final class BDDKernel {
    * @param r the BDD root node
    * @return all Nodes in their internal representation
    */
-  List<int[]> allNodes(int r) {
+  public List<int[]> allNodes(int r) {
     final List<int[]> result = new ArrayList<>();
     if (r < 2)
       return result;
@@ -1013,7 +1013,7 @@ final class BDDKernel {
     }
   }
 
-  List<byte[]> allSat(int r) {
+  public List<byte[]> allSat(int r) {
     final byte[] allsatProfile = new byte[varnum];
     for (int v = level(r) - 1; v >= 0; --v)
       allsatProfile[level2var[v]] = -1;
@@ -1045,7 +1045,7 @@ final class BDDKernel {
     }
   }
 
-  BigDecimal satCount(int r) {
+  public BigDecimal satCount(int r) {
     BigDecimal size = new BigDecimal(2).pow(level(r));
     return satCountRec(r, CACHEID_SATCOU).multiply(size);
   }
@@ -1080,7 +1080,7 @@ final class BDDKernel {
     return size;
   }
 
-  BigDecimal pathCountOne(int r) {
+  public BigDecimal pathCountOne(int r) {
     return pathCountRecOne(r, CACHEID_PATHCOU);
   }
 
@@ -1100,7 +1100,7 @@ final class BDDKernel {
     return size;
   }
 
-  BigDecimal pathCountZero(int r) {
+  public BigDecimal pathCountZero(int r) {
     return pathCountRecZero(r, CACHEID_PATHCOU);
   }
 
@@ -1122,7 +1122,7 @@ final class BDDKernel {
 
   byte[] allunsatProfile;
 
-  List<byte[]> allUnsat(int r) {
+  public List<byte[]> allUnsat(int r) {
     allunsatProfile = new byte[varnum];
     for (int v = level(r) - 1; v >= 0; --v)
       allunsatProfile[level2var[v]] = -1;

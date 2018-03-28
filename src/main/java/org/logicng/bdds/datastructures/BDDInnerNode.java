@@ -40,13 +40,13 @@ import java.util.Set;
  * @version 1.4
  * @since 1.4
  */
-public final class LNGBDDInnerNode implements LNGBDDNode {
+public final class BDDInnerNode implements BDDNode {
 
   private Variable var;
-  private LNGBDDNode low;
-  private LNGBDDNode high;
+  private BDDNode low;
+  private BDDNode high;
 
-  public LNGBDDInnerNode() {
+  public BDDInnerNode() {
   }
 
   /**
@@ -55,7 +55,7 @@ public final class LNGBDDInnerNode implements LNGBDDNode {
    * @param low  the low child node
    * @param high the high child node
    */
-  public LNGBDDInnerNode(final Variable var, final LNGBDDNode low, final LNGBDDNode high) {
+  public BDDInnerNode(final Variable var, final BDDNode low, final BDDNode high) {
     this.var = var;
     this.low = low;
     this.high = high;
@@ -72,12 +72,12 @@ public final class LNGBDDInnerNode implements LNGBDDNode {
   }
 
   @Override
-  public LNGBDDNode low() {
+  public BDDNode low() {
     return this.low;
   }
 
   @Override
-  public LNGBDDNode high() {
+  public BDDNode high() {
     return this.high;
   }
 
@@ -85,17 +85,17 @@ public final class LNGBDDInnerNode implements LNGBDDNode {
     this.var = var;
   }
 
-  public void setLow(LNGBDDNode low) {
+  public void setLow(BDDNode low) {
     this.low = low;
   }
 
-  public void setHigh(LNGBDDNode high) {
+  public void setHigh(BDDNode high) {
     this.high = high;
   }
 
   @Override
-  public Set<LNGBDDNode> nodes() {
-    final Set<LNGBDDNode> res = new HashSet<LNGBDDNode>(Collections.singleton(this));
+  public Set<BDDNode> nodes() {
+    final Set<BDDNode> res = new HashSet<BDDNode>(Collections.singleton(this));
     res.addAll(this.low.nodes());
     res.addAll(this.high.nodes());
     return res;
@@ -110,8 +110,8 @@ public final class LNGBDDInnerNode implements LNGBDDNode {
   public boolean equals(final Object other) {
     if (this == other)
       return true;
-    if (other instanceof LNGBDDInnerNode) {
-      final LNGBDDInnerNode o = (LNGBDDInnerNode) other;
+    if (other instanceof BDDInnerNode) {
+      final BDDInnerNode o = (BDDInnerNode) other;
       return Objects.equals(this.var, o.var)
               && Objects.equals(this.low, o.low)
               && Objects.equals(this.high, o.high);

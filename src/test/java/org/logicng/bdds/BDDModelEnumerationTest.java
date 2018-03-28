@@ -26,11 +26,11 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.jbuddy;
+package org.logicng.bdds;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.bdds.datastructures.LNGBDD;
+import org.logicng.bdds.datastructures.BDD;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
@@ -87,9 +87,9 @@ public class BDDModelEnumerationTest {
   @Test
   public void testModelCount() {
     for (int i = 0; i < this.formulas.size(); i++) {
-      JBuddyFactory factory = new JBuddyFactory(10000, 10000, f);
+      BDDFactory factory = new BDDFactory(10000, 10000, f);
       factory.setNumberOfVars(this.variables.get(i).size());
-      final LNGBDD bdd = factory.build(this.formulas.get(i));
+      final BDD bdd = factory.build(this.formulas.get(i));
       Assert.assertEquals(this.expected[i], bdd.modelCount());
     }
   }
@@ -97,9 +97,9 @@ public class BDDModelEnumerationTest {
   @Test
   public void testModelEnumeration() {
     for (int i = 0; i < this.formulas.size(); i++) {
-      JBuddyFactory factory = new JBuddyFactory(10000, 10000, f);
+      BDDFactory factory = new BDDFactory(10000, 10000, f);
       factory.setNumberOfVars(this.variables.get(i).size());
-      final LNGBDD bdd = factory.build(this.formulas.get(i));
+      final BDD bdd = factory.build(this.formulas.get(i));
       Set<Assignment> models = new HashSet<>(bdd.enumerateAllModels());
       Assert.assertEquals(this.expected[i].intValue(), models.size());
       for (final Assignment model : models)
@@ -111,9 +111,9 @@ public class BDDModelEnumerationTest {
   public void testExo() {
     final FormulaFactory f = new FormulaFactory();
     final Formula constraint = f.exo(generateVariables(100, f)).cnf();
-    final JBuddyFactory factory = new JBuddyFactory(100000, 1000000, f);
+    final BDDFactory factory = new BDDFactory(100000, 1000000, f);
     factory.setNumberOfVars(constraint.variables().size());
-    final LNGBDD bdd = factory.build(constraint);
+    final BDD bdd = factory.build(constraint);
     assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(100));
     assertThat(bdd.enumerateAllModels()).hasSize(100);
   }
@@ -122,9 +122,9 @@ public class BDDModelEnumerationTest {
   public void testExk() {
     final FormulaFactory f = new FormulaFactory();
     final Formula constraint = f.cc(CType.EQ, 8, generateVariables(15, f)).cnf();
-    final JBuddyFactory factory = new JBuddyFactory(100000, 1000000, f);
+    final BDDFactory factory = new BDDFactory(100000, 1000000, f);
     factory.setNumberOfVars(constraint.variables().size());
-    final LNGBDD bdd = factory.build(constraint);
+    final BDD bdd = factory.build(constraint);
     assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(6435));
     assertThat(bdd.enumerateAllModels()).hasSize(6435);
   }
@@ -133,9 +133,9 @@ public class BDDModelEnumerationTest {
   public void testAmo() {
     final FormulaFactory f = new FormulaFactory();
     final Formula constraint = f.amo(generateVariables(100, f)).cnf();
-    final JBuddyFactory factory = new JBuddyFactory(100000, 1000000, f);
+    final BDDFactory factory = new BDDFactory(100000, 1000000, f);
     factory.setNumberOfVars(constraint.variables().size());
-    final LNGBDD bdd = factory.build(constraint);
+    final BDD bdd = factory.build(constraint);
     assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(221));
     assertThat(bdd.enumerateAllModels(generateVariables(100, f))).hasSize(101);
   }

@@ -44,18 +44,18 @@ import java.util.Objects;
  * @version 1.4
  * @since 1.4
  */
-public final class LNGBDD {
+public final class BDD {
 
   private final int index;
   private final BDDFactory factory;
-  private LNGBDDNode bdd;
+  private BDDNode bdd;
 
   /**
    * Constructs a new BDD with a given index.
    * @param index   the index
    * @param factory the factory of this BDD
    */
-  public LNGBDD(int index, final BDDFactory factory) {
+  public BDD(int index, final BDDFactory factory) {
     this.index = index;
     this.factory = factory;
   }
@@ -163,7 +163,7 @@ public final class LNGBDD {
    * Returns a LogicNG internal BDD data structure of this BDD.
    * @return the BDD as LogicNG data structure
    */
-  public LNGBDDNode toLngBdd() {
+  public BDDNode toLngBdd() {
     return this.factory.toLngBdd(this.index);
   }
 
@@ -182,9 +182,9 @@ public final class LNGBDD {
 
   @Override
   public boolean equals(final Object other) {
-    return this == other || other instanceof LNGBDD
-            && this.index == ((LNGBDD) other).index
-            && Objects.equals(this.factory, ((LNGBDD) other).factory);
+    return this == other || other instanceof BDD
+            && this.index == ((BDD) other).index
+            && Objects.equals(this.factory, ((BDD) other).factory);
   }
 
   @Override
