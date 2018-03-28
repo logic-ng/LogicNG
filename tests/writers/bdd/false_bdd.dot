@@ -1,0 +1,3 @@
+digraph G {
+  const_false [shape=box, label="$false", style = bold, color = red];
+}
