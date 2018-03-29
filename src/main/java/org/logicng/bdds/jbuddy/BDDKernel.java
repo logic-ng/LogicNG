@@ -936,7 +936,15 @@ public final class BDDKernel {
     }
   }
 
-  int satOneSet(final int r, final int var, final int pol) {
+  /**
+   * Returns an arbitrary model for a given BDD or {@code null} which contains at least the given variables.  If a variable
+   * is a don't care variable, it will be assigned with the given default value.
+   * @param r   the BDD root node
+   * @param var the set of variable which has to be contained in the model as a BDD
+   * @param pol the default value for don't care variables as a BDD
+   * @return an arbitrary model of this BDD
+   */
+  public int satOneSet(final int r, final int var, final int pol) {
     if (isZero(r))
       return r;
     if (!isConst(pol))

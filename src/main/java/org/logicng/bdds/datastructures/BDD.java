@@ -226,6 +226,28 @@ public final class BDD {
   }
 
   /**
+   * Returns an arbitrary model of this BDD or {@code null} which contains at least the given variables.  If a variable
+   * is a don't care variable, it will be assigned with the given default value.
+   * @param defaultValue the default value for don't care variables
+   * @param variables    the set of variable which has to be contained in the model
+   * @return an arbitrary model of this BDD
+   */
+  public Assignment model(final boolean defaultValue, final Collection<Variable> variables) {
+    return this.factory.model(this, variables, defaultValue);
+  }
+
+  /**
+   * Returns an arbitrary model of this BDD or {@code null} which contains at least the given variables.  If a variable
+   * is a don't care variable, it will be assigned with the given default value.
+   * @param defaultValue the default value for don't care variables
+   * @param variables    the set of variable which has to be contained in the model
+   * @return an arbitrary model of this BDD
+   */
+  public Assignment model(final boolean defaultValue, final Variable... variables) {
+    return this.factory.model(this, Arrays.asList(variables), defaultValue);
+  }
+
+  /**
    * Returns a LogicNG internal BDD data structure of this BDD.
    * @return the BDD as LogicNG data structure
    */

@@ -501,6 +501,31 @@ public final class BDDFactory {
    */
   public Assignment model(final BDD bdd) {
     final int modelBDD = this.kernel.satOne(bdd.index());
+    return createAssignment(modelBDD);
+  }
+
+  /**
+   * Returns an arbitrary model of a given BDD or {@code null} which contains at least the given variables.  If a variable
+   * is a don't care variable, it will be assigned with the given default value.
+   * @param bdd          the BDD
+   * @param vars         the set of variable which has to be contained in the model
+   * @param defaultValue the default value for don't care variables
+   * @return an arbitrary model of this BDD
+   */
+  public Assignment model(final BDD bdd, final Collection<Variable> vars, final boolean defaultValue) {
+    final int varBDD = build(this.f.and(vars)).index();
+    final int pol = defaultValue ? BDDKernel.BDD_TRUE : BDDKernel.BDD_FALSE;
+    final int modelBDD = this.kernel.satOneSet(bdd.index(), varBDD, pol);
+    return createAssignment(modelBDD);
+  }
+
+  /**
+   * Creates an assignment from a BDD.
+   * @param modelBDD the BDD
+   * @return the assignment
+   * @throws IllegalStateException if the BDD does not represent a unique model
+   */
+  private Assignment createAssignment(final int modelBDD) {
     if (modelBDD == BDDKernel.BDD_FALSE)
       return null;
     if (modelBDD == BDDKernel.BDD_TRUE)
