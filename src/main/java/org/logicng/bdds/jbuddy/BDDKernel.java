@@ -910,7 +910,12 @@ public final class BDDKernel {
     return res;
   }
 
-  int satOne(final int r) {
+  /**
+   * Finds one satisfying variable assignment and returns it as BDD.
+   * @param r the BDD root node
+   * @return the satisfying variable assignment of the BDD as a BDD itself
+   */
+  public int satOne(final int r) {
     if (r < 2)
       return r;
     initRef();

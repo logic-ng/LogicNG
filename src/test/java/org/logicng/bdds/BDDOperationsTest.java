@@ -31,6 +31,7 @@ package org.logicng.bdds;
 import org.junit.Before;
 import org.junit.Test;
 import org.logicng.bdds.datastructures.BDD;
+import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
@@ -151,5 +152,17 @@ public class BDDOperationsTest {
     assertThat(this.bddOr.forall(resAB)).isEqualTo(this.factory.build(this.parser.parse("~C")));
     assertThat(this.bddAnd.forall(a)).isEqualTo(this.bddFalsum);
     assertThat(this.bddAnd.forall(resAB)).isEqualTo(this.bddFalsum);
+  }
+
+  @Test
+  public void testModel() {
+    assertThat(this.bddVerum.model()).isEqualTo(new Assignment());
+    assertThat(this.bddFalsum.model()).isEqualTo(null);
+    assertThat(this.bddPosLit.model()).isEqualTo(new Assignment(this.f.literal("A", true)));
+    assertThat(this.bddNegLit.model()).isEqualTo(new Assignment(this.f.literal("A", false)));
+    assertThat(this.bddImpl.model()).isEqualTo(new Assignment(this.f.literal("A", false)));
+    assertThat(this.bddEquiv.model()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+    assertThat(this.bddOr.model()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+    assertThat(this.bddAnd.model()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
   }
 }

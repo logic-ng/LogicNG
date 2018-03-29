@@ -495,6 +495,31 @@ public final class BDDFactory {
   }
 
   /**
+   * Returns an arbitrary model for a given BDD or {@code null} if there is none.
+   * @param bdd the BDD
+   * @return an arbitrary model of the BDD
+   */
+  public Assignment model(final BDD bdd) {
+    final int modelBDD = this.kernel.satOne(bdd.index());
+    if (modelBDD == BDDKernel.BDD_FALSE)
+      return null;
+    if (modelBDD == BDDKernel.BDD_TRUE)
+      return new Assignment();
+    final List<int[]> nodes = this.kernel.allNodes(modelBDD);
+    final Assignment assignment = new Assignment();
+    for (final int[] node : nodes) {
+      final Variable variable = this.idx2var.get(node[1]);
+      if (node[2] == BDDKernel.BDD_FALSE)
+        assignment.addLiteral(variable);
+      else if (node[3] == BDDKernel.BDD_FALSE)
+        assignment.addLiteral(variable.negate());
+      else
+        throw new IllegalStateException("Expected that the model BDD has one unique path through the BDD.");
+    }
+    return assignment;
+  }
+
+  /**
    * Returns a LogicNG internal BDD data structure of a given BDD.
    * @param bdd the BDD
    * @return the BDD as LogicNG data structure

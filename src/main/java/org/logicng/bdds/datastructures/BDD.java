@@ -218,6 +218,14 @@ public final class BDD {
   }
 
   /**
+   * Returns an arbitrary model of this BDD or {@code null} if there is none.
+   * @return an arbitrary model of this BDD
+   */
+  public Assignment model() {
+    return this.factory.model(this);
+  }
+
+  /**
    * Returns a LogicNG internal BDD data structure of this BDD.
    * @return the BDD as LogicNG data structure
    */
