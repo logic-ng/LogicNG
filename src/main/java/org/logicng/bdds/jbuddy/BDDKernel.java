@@ -78,6 +78,8 @@ public final class BDDKernel {
   private static final int MARKON = 0x200000;
   private static final int MARKOFF = 0x1FFFFF;
 
+  private byte[] allunsatProfile;
+
   private enum Operand {
     AND(0, new int[]{0, 0, 0, 1}),
     XOR(1, new int[]{0, 1, 1, 0}),
@@ -457,10 +459,11 @@ public final class BDDKernel {
   }
 
   /**
-   * Adds a reference for a given node.  Reference counting is done on externaly referenced nodes only and the count for
+   * Adds a reference for a given node.  Reference counting is done on externally referenced nodes only and the count for
    * a specific node {@code r} can and must be increased using this function to avoid loosing the node in the next
    * garbage collection.
    * @param root the node
+   * @return return the node
    * @throws IllegalArgumentException if the root node was invalid
    */
   public int addRef(int root) {
@@ -475,13 +478,13 @@ public final class BDDKernel {
   }
 
   /**
-   * Delets a reference for a given node.
+   * Deletes a reference for a given node.
    * @param root the node
    * @throws IllegalArgumentException if the root node was invalid
    */
-  int delRef(int root) {
+  private void delRef(int root) {
     if (root < 2)
-      return root;
+      return;
     if (root >= this.nodesize)
       throw new IllegalStateException("Cannot dereference a variable > varnum");
     if (this.low(root) == -1)
@@ -489,7 +492,6 @@ public final class BDDKernel {
     if (!this.hasref(root))
       throw new IllegalStateException("Cannot dereference a variable which has no reference");
     this.decRef(root);
-    return root;
   }
 
   private void decRef(int n) {
@@ -520,19 +522,6 @@ public final class BDDKernel {
     return res;
   }
 
-  /**
-   * Prints the state of the kernel
-   */
-  public void printStats() {
-    System.out.println("Internel state");
-    System.out.println("==============");
-    System.out.println(String.format("Produced nodes:     %d", produced));
-    System.out.println(String.format("Allocated nodes:    %d", nodesize));
-    System.out.println(String.format("Free nodes          %d", freenum));
-    System.out.println(String.format("Variables           %d", varnum));
-    System.out.println(String.format("Cache size          %d", cachesize));
-    System.out.println(String.format("Garbage collections %d", gbcollectnum));
-  }
 
   /**
    * Prints the node table for a given BDD root node.
@@ -592,7 +581,7 @@ public final class BDDKernel {
     if (freepos == 0) {
       gbc();
       if ((freenum * 100) / nodesize <= minfreenodes) {
-        nodeResize(true);
+        nodeResize();
         hash = nodehash(level, low, high);
       }
       if (freepos == 0)
@@ -699,7 +688,7 @@ public final class BDDKernel {
     mark(high(i));
   }
 
-  private int nodeResize(boolean doRehash) {
+  private void nodeResize() {
     int oldsize = nodesize;
     int n;
     nodesize = nodesize << 1;
@@ -711,9 +700,8 @@ public final class BDDKernel {
     for (int i = oldsize; i < newnodes.length; i++)
       newnodes[i] = new BddNode();
     nodes = newnodes;
-    if (doRehash)
-      for (n = 0; n < oldsize; n++)
-        nodes[n].hash = 0;
+    for (n = 0; n < oldsize; n++)
+      nodes[n].hash = 0;
     for (n = oldsize; n < nodesize; n++) {
       BddNode nn = nodes[n];
       nn.refcou = 0;
@@ -725,10 +713,8 @@ public final class BDDKernel {
     nodes[nodesize - 1].next = freepos;
     freepos = oldsize;
     freenum += nodesize - oldsize;
-    if (doRehash)
-      gbcRehash();
+    gbcRehash();
     resized = true;
-    return 0;
   }
 
   private void initRef() {
@@ -838,7 +824,14 @@ public final class BDDKernel {
     return old;
   }
 
-  int restrict(int r, int var) {
+  /**
+   * Restricts the variables in the BDD {@code r} to constants true or false.  The restriction is submitted in the BDD
+   * {@code var}.
+   * @param r the BDD to be restricted
+   * @param var the variable mapping as a BDD
+   * @return the restricted BDD
+   */
+  public int restrict(int r, int var) {
     int res;
     if (var < 2)
       return r;
@@ -849,7 +842,7 @@ public final class BDDKernel {
     return res;
   }
 
-  int restrictRec(int r, int miscid) {
+  private int restrictRec(int r, int miscid) {
     int res;
     if (isConst(r) || level(r) > quantlast)
       return r;
@@ -906,7 +899,7 @@ public final class BDDKernel {
     return res;
   }
 
-  int quantRec(int r, Operand op, int quantid) {
+  private int quantRec(int r, Operand op, int quantid) {
     int res;
     if (r < 2 || level(r) > quantlast)
       return r;
@@ -1120,7 +1113,6 @@ public final class BDDKernel {
     return size;
   }
 
-  byte[] allunsatProfile;
 
   public List<byte[]> allUnsat(int r) {
     allunsatProfile = new byte[varnum];
@@ -1180,7 +1172,7 @@ public final class BDDKernel {
     return res;
   }
 
-  void supportRec(int r, int[] support) {
+  private void supportRec(int r, int[] support) {
     if (r < 2)
       return;
     BDDKernel.BddNode node = nodes[r];
@@ -1200,7 +1192,7 @@ public final class BDDKernel {
     resized = false;
   }
 
-  void operatorsNodeResize() {
+  private void operatorsNodeResize() {
     if (cacheratio > 0) {
       int newcachesize = nodesize / cacheratio;
       applycache.resize(newcachesize);
@@ -1286,6 +1278,20 @@ public final class BDDKernel {
 
   private boolean invarset(int a) {
     return quantvarset[a] == quantvarsetID;
+  }
+
+  /**
+   * Prints the state of the kernel
+   */
+  public void printStats() {
+    System.out.println("Internel state");
+    System.out.println("==============");
+    System.out.println(String.format("Produced nodes:     %d", produced));
+    System.out.println(String.format("Allocated nodes:    %d", nodesize));
+    System.out.println(String.format("Free nodes          %d", freenum));
+    System.out.println(String.format("Variables           %d", varnum));
+    System.out.println(String.format("Cache size          %d", cachesize));
+    System.out.println(String.format("Garbage collections %d", gbcollectnum));
   }
 
   private static final class BddNode {

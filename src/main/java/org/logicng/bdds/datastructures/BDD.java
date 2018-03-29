@@ -31,6 +31,7 @@ package org.logicng.bdds.datastructures;
 import org.logicng.bdds.BDDFactory;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 import java.math.BigDecimal;
@@ -157,6 +158,24 @@ public final class BDD {
    */
   public Formula dnf() {
     return this.factory.dnf(this);
+  }
+
+  /**
+   * Restricts the BDD.
+   * @param restriction the restriction
+   * @return the restricted BDD
+   */
+  public BDD restrict(final Collection<Literal> restriction) {
+    return this.factory.restrict(this, restriction);
+  }
+
+  /**
+   * Restricts the BDD.
+   * @param restriction the restriction
+   * @return the restricted BDD
+   */
+  public BDD restrict(final Literal... restriction) {
+    return restrict(Arrays.asList(restriction));
   }
 
   /**

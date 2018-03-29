@@ -495,6 +495,17 @@ public final class BDDFactory {
   }
 
   /**
+   * Restricts the given BDD.
+   * @param bdd the BDD
+   * @param restriction the restriction
+   * @return the restricted BDD
+   */
+  public BDD restrict(final BDD bdd, final Collection<Literal> restriction) {
+    final BDD resBDD = build(f.and(restriction));
+    return new BDD(this.kernel.restrict(bdd.index(), resBDD.index()), this);
+  }
+
+  /**
    * Returns a LogicNG internal BDD data structure of a given BDD.
    * @param bdd the BDD
    * @return the BDD as LogicNG data structure
