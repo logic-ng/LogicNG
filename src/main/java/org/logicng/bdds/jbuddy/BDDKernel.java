@@ -82,7 +82,6 @@ public final class BDDKernel {
 
   private enum Operand {
     AND(0, new int[]{0, 0, 0, 1}),
-    XOR(1, new int[]{0, 1, 1, 0}),
     OR(2, new int[]{0, 1, 1, 1}),
     IMP(5, new int[]{1, 1, 0, 1}),
     EQUIV(6, new int[]{1, 0, 0, 1}),
@@ -91,7 +90,7 @@ public final class BDDKernel {
     private final int v;
     private final int[] tt;
 
-    Operand(int value, int[] truthTable) {
+    Operand(final int value, final int[] truthTable) {
       this.v = value;
       this.tt = truthTable;
     }
@@ -101,15 +100,14 @@ public final class BDDKernel {
   private static final int CACHEID_SATCOU = 0x2;
   private static final int CACHEID_PATHCOU = 0x4;
   private static final int CACHEID_FORALL = 0x1;
-  private static final int CACHEID_UNIQUE = 0x2;
 
   private BddNode[] nodes; // All of the bdd nodes
   private int[] vars; // Set of defined BDD variables
-  private int minfreenodes; // Mininimal % of nodes that has to be left after a garbage collection
+  private final int minfreenodes; // Mininimal % of nodes that has to be left after a garbage collection
   private int gbcollectnum; // Number of garbage collections
-  private int cachesize; // Size of the operator caches
+  private final int cachesize; // Size of the operator caches
   private int nodesize; // Number of allocated nodes
-  private int maxnodeincrease; // Max. # of nodes used to inc. table
+  private final int maxnodeincrease; // Max. # of nodes used to inc. table
   private int freepos; // First free node
   private int freenum; // Number of free nodes
   private long produced; // Number of new nodes ever produced
@@ -142,7 +140,7 @@ public final class BDDKernel {
    * @param initialSize the initial number of nodes in the nodetable
    * @param cs          the fixed size of the internal caches
    */
-  public BDDKernel(int initialSize, int cs) {
+  public BDDKernel(final int initialSize, final int cs) {
     this.nodesize = BDDPrime.primeGTE(initialSize);
     this.nodes = new BddNode[this.nodesize];
     this.resized = false;
@@ -166,8 +164,8 @@ public final class BDDKernel {
     this.freepos = 2;
     this.freenum = this.nodesize - 2;
     this.varnum = 0;
-    gbcollectnum = 0;
-    cachesize = cs;
+    this.gbcollectnum = 0;
+    this.cachesize = cs;
     this.maxnodeincrease = 50000;
     //    bdd_fdd_init();
   }
@@ -177,44 +175,44 @@ public final class BDDKernel {
    * to increase the number of variables.
    * @param num the number of variables to use
    */
-  public void setNumberOfVars(int num) {
+  public void setNumberOfVars(final int num) {
     if (num < 1 || num > MAXVAR)
       throw new IllegalArgumentException("Invalid variable number: " + num);
-    if (num < varnum)
+    if (num < this.varnum)
       throw new IllegalArgumentException("Cannot decrease variable number");
-    if (num == varnum)
+    if (num == this.varnum)
       return;
-    if (vars == null) {
-      vars = new int[num * 2];
-      level2var = new int[num + 1];
-      var2level = new int[num + 1];
+    if (this.vars == null) {
+      this.vars = new int[num * 2];
+      this.level2var = new int[num + 1];
+      this.var2level = new int[num + 1];
     } else {
       int[] temp = new int[num * 2];
-      System.arraycopy(vars, 0, temp, 0, vars.length);
-      vars = temp;
+      System.arraycopy(this.vars, 0, temp, 0, this.vars.length);
+      this.vars = temp;
       temp = new int[num + 1];
-      System.arraycopy(level2var, 0, temp, 0, level2var.length);
-      level2var = temp;
+      System.arraycopy(this.level2var, 0, temp, 0, this.level2var.length);
+      this.level2var = temp;
       temp = new int[num + 1];
-      System.arraycopy(var2level, 0, temp, 0, var2level.length);
-      var2level = temp;
+      System.arraycopy(this.var2level, 0, temp, 0, this.var2level.length);
+      this.var2level = temp;
     }
-    refstack = new int[num * 2 + 4];
-    refstacktop = 0;
-    while (varnum < num) {
-      vars[varnum * 2] = pushRef(makeNode(varnum, 0, 1));
-      vars[varnum * 2 + 1] = makeNode(varnum, 1, 0);
+    this.refstack = new int[num * 2 + 4];
+    this.refstacktop = 0;
+    while (this.varnum < num) {
+      this.vars[this.varnum * 2] = pushRef(makeNode(this.varnum, 0, 1));
+      this.vars[this.varnum * 2 + 1] = makeNode(this.varnum, 1, 0);
       popref(1);
-      nodes[vars[varnum * 2]].refcou = MAXREF;
-      nodes[vars[varnum * 2 + 1]].refcou = MAXREF;
-      level2var[varnum] = varnum;
-      var2level[varnum] = varnum;
-      varnum++;
+      this.nodes[this.vars[this.varnum * 2]].refcou = MAXREF;
+      this.nodes[this.vars[this.varnum * 2 + 1]].refcou = MAXREF;
+      this.level2var[this.varnum] = this.varnum;
+      this.var2level[this.varnum] = this.varnum;
+      this.varnum++;
     }
     this.nodes[0].level = num;
     this.nodes[1].level = num;
-    var2level[num] = num;
-    level2var[num] = num;
+    this.var2level[num] = num;
+    this.level2var[num] = num;
     varResize();
   }
 
@@ -223,10 +221,10 @@ public final class BDDKernel {
    * @param num the number of new variables
    * @throws IllegalArgumentException if the number of new variables is not legel (negative or too big)
    */
-  public void extendVarNum(int num) {
+  public void extendVarNum(final int num) {
     if (num < 0 || num > 0x3FFFFFFF)
       throw new IllegalArgumentException("illegal number of variables to extend");
-    setNumberOfVars(varnum + num);
+    setNumberOfVars(this.varnum + num);
   }
 
   /**
@@ -234,7 +232,7 @@ public final class BDDKernel {
    * @return the number of variables
    */
   public int numberOfVars() {
-    return varnum;
+    return this.varnum;
   }
 
   /**
@@ -243,7 +241,7 @@ public final class BDDKernel {
    * @return the number of active nodes
    */
   public int numberOfNodes() {
-    return nodesize - freenum;
+    return this.nodesize - this.freenum;
   }
 
   /**
@@ -251,7 +249,7 @@ public final class BDDKernel {
    * @return the number of nodes currently allocated
    */
   public int numberOfAllocs() {
-    return nodesize;
+    return this.nodesize;
   }
 
   /**
@@ -260,10 +258,10 @@ public final class BDDKernel {
    * @return the BDD representing the i-th variable
    * @throws IllegalArgumentException if the index is not within the range of variables
    */
-  public int ithVar(int i) {
-    if (i < 0 || i >= varnum)
+  public int ithVar(final int i) {
+    if (i < 0 || i >= this.varnum)
       throw new IllegalArgumentException("Illegal variable number: " + i);
-    return vars[i * 2];
+    return this.vars[i * 2];
   }
 
   /**
@@ -272,10 +270,10 @@ public final class BDDKernel {
    * @return the BDD representing the negated i-th variable
    * @throws IllegalArgumentException if the index is not within the range of variables
    */
-  public int nithVar(int i) {
-    if (i < 0 || i >= varnum)
+  public int nithVar(final int i) {
+    if (i < 0 || i >= this.varnum)
       throw new IllegalArgumentException("Illegal variable number: " + i);
-    return vars[i * 2 + 1];
+    return this.vars[i * 2 + 1];
   }
 
   /**
@@ -283,10 +281,10 @@ public final class BDDKernel {
    * @param root the root node of the BDD
    * @return the variable index
    */
-  public int bddVar(int root) {
+  public int bddVar(final int root) {
     if (root < 2)
       throw new IllegalArgumentException("Illegal node number: " + root);
-    return (level2var[level(root)]);
+    return (this.level2var[level(root)]);
   }
 
   /**
@@ -294,7 +292,7 @@ public final class BDDKernel {
    * @param root the root node of the BDD
    * @return the false branch
    */
-  public int bddLow(int root) {
+  public int bddLow(final int root) {
     if (root < 2)
       throw new IllegalArgumentException("Illegal node number: " + root);
     return (low(root));
@@ -305,7 +303,7 @@ public final class BDDKernel {
    * @param root the root node of the BDD
    * @return the true branch
    */
-  public int bddHigh(int root) {
+  public int bddHigh(final int root) {
     if (root < 2)
       throw new IllegalArgumentException("Illegal node number: " + root);
     return (high(root));
@@ -317,7 +315,7 @@ public final class BDDKernel {
    * @param r the second BDD
    * @return the conjunction of the two BDDs
    */
-  public int and(int l, int r) {
+  public int and(final int l, final int r) {
     return apply(l, r, Operand.AND);
   }
 
@@ -327,7 +325,7 @@ public final class BDDKernel {
    * @param r the second BDD
    * @return the disjunction of the two BDDs
    */
-  public int or(int l, int r) {
+  public int or(final int l, final int r) {
     return apply(l, r, Operand.OR);
   }
 
@@ -337,7 +335,7 @@ public final class BDDKernel {
    * @param r the second BDD
    * @return the implication of the two BDDs
    */
-  public int implication(int l, int r) {
+  public int implication(final int l, final int r) {
     return apply(l, r, Operand.IMP);
   }
 
@@ -347,20 +345,20 @@ public final class BDDKernel {
    * @param r the second BDD
    * @return the equivalence of the two BDDs
    */
-  public int equivalence(int l, int r) {
+  public int equivalence(final int l, final int r) {
     return apply(l, r, Operand.EQUIV);
   }
 
-  private int apply(int l, int r, Operand op) {
-    int res;
+  private int apply(final int l, final int r, final Operand op) {
+    final int res;
     initRef();
     res = applyRec(l, r, op);
     checkResize();
     return res;
   }
 
-  private int applyRec(int l, int r, Operand op) {
-    int res;
+  private int applyRec(final int l, final int r, final Operand op) {
+    final int res;
     switch (op) {
       case AND:
         if (l == r)
@@ -382,14 +380,6 @@ public final class BDDKernel {
         if (isZero(r))
           return l;
         break;
-      case XOR:
-        if (l == r)
-          return 0;
-        if (isZero(l))
-          return r;
-        if (isZero(r))
-          return l;
-        break;
       case IMP:
         if (isZero(l))
           return 1;
@@ -402,7 +392,7 @@ public final class BDDKernel {
     if (isConst(l) && isConst(r))
       res = op.tt[l << 1 | r];
     else {
-      BDDCacheEntry entry = applycache.lookup(triple(l, r, op.v));
+      final BDDCacheEntry entry = this.applycache.lookup(triple(l, r, op.v));
       if (entry.a == l && entry.b == r && entry.c == op.v)
         return entry.res;
       if (level(l) == level(r)) {
@@ -432,25 +422,25 @@ public final class BDDKernel {
    * @param r the BDD
    * @return the negation of the BDD
    */
-  public int not(int r) {
-    int res;
+  public int not(final int r) {
+    final int res;
     initRef();
     res = notRec(r);
     checkResize();
     return res;
   }
 
-  private int notRec(int r) {
+  private int notRec(final int r) {
     if (isZero(r))
       return BDDKernel.BDD_TRUE;
     if (isOne(r))
       return BDDKernel.BDD_FALSE;
-    final BDDCacheEntry entry = applycache.lookup(r);
+    final BDDCacheEntry entry = this.applycache.lookup(r);
     if (entry.a == r && entry.c == Operand.NOT.v)
       return entry.res;
     pushRef(notRec(low(r)));
     pushRef(notRec(high(r)));
-    int res = makeNode(level(r), readRef(2), readRef(1));
+    final int res = makeNode(level(r), readRef(2), readRef(1));
     popref(2);
     entry.a = r;
     entry.c = Operand.NOT.v;
@@ -466,10 +456,10 @@ public final class BDDKernel {
    * @return return the node
    * @throws IllegalArgumentException if the root node was invalid
    */
-  public int addRef(int root) {
+  public int addRef(final int root) {
     if (root < 2)
       return root;
-    if (root >= nodesize)
+    if (root >= this.nodesize)
       throw new IllegalArgumentException("Not a valid BDD root node: " + root);
     if (low(root) == -1)
       throw new IllegalArgumentException("Not a valid BDD root node: " + root);
@@ -482,7 +472,7 @@ public final class BDDKernel {
    * @param root the node
    * @throws IllegalArgumentException if the root node was invalid
    */
-  private void delRef(int root) {
+  private void delRef(final int root) {
     if (root < 2)
       return;
     if (root >= this.nodesize)
@@ -494,12 +484,12 @@ public final class BDDKernel {
     this.decRef(root);
   }
 
-  private void decRef(int n) {
+  private void decRef(final int n) {
     if (this.nodes[n].refcou != MAXREF && this.nodes[n].refcou > 0)
       this.nodes[n].refcou--;
   }
 
-  private void incRef(int n) {
+  private void incRef(final int n) {
     if (this.nodes[n].refcou < MAXREF)
       this.nodes[n].refcou++;
   }
@@ -511,11 +501,11 @@ public final class BDDKernel {
    * @param varset the set of variable indices
    * @return the BDD representing the variable set
    */
-  public int makeSet(int[] varset) {
+  public int makeSet(final int[] varset) {
     int res = 1;
     for (int v = varset.length - 1; v >= 0; v--) {
       addRef(res);
-      int tmp = and(res, ithVar(varset[v]));
+      final int tmp = and(res, ithVar(varset[v]));
       delRef(res);
       res = tmp;
     }
@@ -527,17 +517,17 @@ public final class BDDKernel {
    * Prints the node table for a given BDD root node.
    * @param r the BDD root node
    */
-  public void printTable(int r) {
+  public void printTable(final int r) {
     System.out.println(String.format("ROOT: %d", r));
     if (r < 2)
       return;
     mark(r);
-    for (int n = 0; n < nodesize; n++) {
+    for (int n = 0; n < this.nodesize; n++) {
       if ((level(n) & MARKON) != 0) {
-        BddNode node = nodes[n];
+        final BddNode node = this.nodes[n];
         node.level &= MARKOFF;
         System.out.print(String.format("[%5d] ", n));
-        System.out.print(String.format("%3d", level2var[node.level]));
+        System.out.print(String.format("%3d", this.level2var[node.level]));
         System.out.print(String.format(": %3d", node.low));
         System.out.println(String.format(" %3d", node.high));
       }
@@ -550,16 +540,16 @@ public final class BDDKernel {
    * @param r the BDD root node
    * @return all Nodes in their internal representation
    */
-  public List<int[]> allNodes(int r) {
+  public List<int[]> allNodes(final int r) {
     final List<int[]> result = new ArrayList<>();
     if (r < 2)
       return result;
     mark(r);
-    for (int n = 0; n < nodesize; n++) {
+    for (int n = 0; n < this.nodesize; n++) {
       if ((level(n) & MARKON) != 0) {
-        BddNode node = nodes[n];
+        final BddNode node = this.nodes[n];
         node.level &= MARKOFF;
-        result.add(new int[]{n, level2var[node.level], node.low, node.high});
+        result.add(new int[]{n, this.level2var[node.level], node.low, node.high});
       }
     }
     return result;
@@ -567,43 +557,43 @@ public final class BDDKernel {
 
   // TODO comment
 
-  private int makeNode(int level, int low, int high) {
-    BddNode node;
+  private int makeNode(final int level, final int low, final int high) {
+    final BddNode node;
     if (low == high)
       return low;
     int hash = nodehash(level, low, high);
-    int res = nodes[hash].hash;
+    int res = this.nodes[hash].hash;
     while (res != 0) {
       if (level(res) == level && low(res) == low && high(res) == high)
         return res;
-      res = nodes[res].next;
+      res = this.nodes[res].next;
     }
-    if (freepos == 0) {
+    if (this.freepos == 0) {
       gbc();
-      if ((freenum * 100) / nodesize <= minfreenodes) {
+      if ((this.freenum * 100) / this.nodesize <= this.minfreenodes) {
         nodeResize();
         hash = nodehash(level, low, high);
       }
-      if (freepos == 0)
+      if (this.freepos == 0)
         throw new IllegalStateException("Cannot allocate more space for more nodes.");
     }
-    res = freepos;
-    freepos = nodes[freepos].next;
-    freenum--;
-    produced++;
-    node = nodes[res];
+    res = this.freepos;
+    this.freepos = this.nodes[this.freepos].next;
+    this.freenum--;
+    this.produced++;
+    node = this.nodes[res];
     node.level = level;
     node.low = low;
     node.high = high;
-    node.next = nodes[hash].hash;
-    nodes[hash].hash = res;
+    node.next = this.nodes[hash].hash;
+    this.nodes[hash].hash = res;
     return res;
   }
 
-  private void unmark(int i) {
+  private void unmark(final int i) {
     if (i < 2)
       return;
-    BddNode node = nodes[i];
+    final BddNode node = this.nodes[i];
     if (!markedNode(node) || node.low == -1)
       return;
     unmarkNode(node);
@@ -611,10 +601,10 @@ public final class BDDKernel {
     unmark(node.high);
   }
 
-  private int markCount(int i) {
+  private int markCount(final int i) {
     if (i < 2)
       return 0;
-    BddNode node = nodes[i];
+    final BddNode node = this.nodes[i];
     if (markedNode(node) || node.low == -1)
       return 0;
     setMarkNode(node);
@@ -627,138 +617,138 @@ public final class BDDKernel {
   private void gbc() {
     int r;
     BDDGBCStat s = new BDDGBCStat();
-    s.nodes = nodesize;
-    s.freenodes = freenum;
-    s.num = gbcollectnum;
-    for (r = 0; r < refstacktop; r++)
-      mark(refstack[r]);
-    for (int n = 0; n < nodesize; n++) {
-      if (nodes[n].refcou > 0)
+    s.nodes = this.nodesize;
+    s.freenodes = this.freenum;
+    s.num = this.gbcollectnum;
+    for (r = 0; r < this.refstacktop; r++)
+      mark(this.refstack[r]);
+    for (int n = 0; n < this.nodesize; n++) {
+      if (this.nodes[n].refcou > 0)
         mark(n);
-      nodes[n].hash = 0;
+      this.nodes[n].hash = 0;
     }
-    freepos = 0;
-    freenum = 0;
-    for (int n = nodesize - 1; n >= 2; n--) {
-      BddNode node = nodes[n];
+    this.freepos = 0;
+    this.freenum = 0;
+    for (int n = this.nodesize - 1; n >= 2; n--) {
+      final BddNode node = this.nodes[n];
       if ((node.level & MARKON) != 0 && node.low != -1) {
         node.level &= MARKOFF;
-        int hash = nodehash(node.level, node.low, node.high);
-        node.next = nodes[hash].hash;
-        nodes[hash].hash = n;
+        final int hash = nodehash(node.level, node.low, node.high);
+        node.next = this.nodes[hash].hash;
+        this.nodes[hash].hash = n;
       } else {
         node.low = -1;
-        node.next = freepos;
-        freepos = n;
-        freenum++;
+        node.next = this.freepos;
+        this.freepos = n;
+        this.freenum++;
       }
     }
     resetCaches();
-    gbcollectnum++;
+    this.gbcollectnum++;
     s = new BDDGBCStat();
-    s.nodes = nodesize;
-    s.freenodes = freenum;
-    s.num = gbcollectnum;
+    s.nodes = this.nodesize;
+    s.freenodes = this.freenum;
+    s.num = this.gbcollectnum;
   }
 
   private void gbcRehash() {
-    freepos = 0;
-    freenum = 0;
-    for (int n = nodesize - 1; n >= 2; n--) {
-      BddNode node = nodes[n];
+    this.freepos = 0;
+    this.freenum = 0;
+    for (int n = this.nodesize - 1; n >= 2; n--) {
+      final BddNode node = this.nodes[n];
       if (node.low != -1) {
-        int hash = nodehash(node.level, node.low, node.high);
-        node.next = nodes[hash].hash;
-        nodes[hash].hash = n;
+        final int hash = nodehash(node.level, node.low, node.high);
+        node.next = this.nodes[hash].hash;
+        this.nodes[hash].hash = n;
       } else {
-        node.next = freepos;
-        freepos = n;
-        freenum++;
+        node.next = this.freepos;
+        this.freepos = n;
+        this.freenum++;
       }
     }
   }
 
-  private void mark(int i) {
+  private void mark(final int i) {
     if (i < 2)
       return;
     if ((level(i) & MARKON) != 0 || low(i) == -1)
       return;
-    nodes[i].level |= MARKON;
+    this.nodes[i].level |= MARKON;
     mark(low(i));
     mark(high(i));
   }
 
   private void nodeResize() {
-    int oldsize = nodesize;
+    final int oldsize = this.nodesize;
     int n;
-    nodesize = nodesize << 1;
-    if (nodesize > oldsize + maxnodeincrease)
-      nodesize = oldsize + maxnodeincrease;
-    nodesize = BDDPrime.primeLTE(nodesize);
-    BddNode[] newnodes = new BddNode[nodesize];
-    System.arraycopy(nodes, 0, newnodes, 0, nodes.length);
+    this.nodesize = this.nodesize << 1;
+    if (this.nodesize > oldsize + this.maxnodeincrease)
+      this.nodesize = oldsize + this.maxnodeincrease;
+    this.nodesize = BDDPrime.primeLTE(this.nodesize);
+    final BddNode[] newnodes = new BddNode[this.nodesize];
+    System.arraycopy(this.nodes, 0, newnodes, 0, this.nodes.length);
     for (int i = oldsize; i < newnodes.length; i++)
       newnodes[i] = new BddNode();
-    nodes = newnodes;
+    this.nodes = newnodes;
     for (n = 0; n < oldsize; n++)
-      nodes[n].hash = 0;
-    for (n = oldsize; n < nodesize; n++) {
-      BddNode nn = nodes[n];
+      this.nodes[n].hash = 0;
+    for (n = oldsize; n < this.nodesize; n++) {
+      final BddNode nn = this.nodes[n];
       nn.refcou = 0;
       nn.hash = 0;
       nn.level = 0;
       nn.low = -1;
       nn.next = n + 1;
     }
-    nodes[nodesize - 1].next = freepos;
-    freepos = oldsize;
-    freenum += nodesize - oldsize;
+    this.nodes[this.nodesize - 1].next = this.freepos;
+    this.freepos = oldsize;
+    this.freenum += this.nodesize - oldsize;
     gbcRehash();
-    resized = true;
+    this.resized = true;
   }
 
   private void initRef() {
-    refstacktop = 0;
+    this.refstacktop = 0;
   }
 
-  private int pushRef(int a) {
-    refstack[refstacktop++] = a;
+  private int pushRef(final int a) {
+    this.refstack[this.refstacktop++] = a;
     return a;
   }
 
-  private int readRef(int a) {
-    return refstack[refstacktop - a];
+  private int readRef(final int a) {
+    return this.refstack[this.refstacktop - a];
   }
 
-  private void popref(int a) {
-    refstacktop -= a;
+  private void popref(final int a) {
+    this.refstacktop -= a;
   }
 
-  private boolean hasref(int n) {
+  private boolean hasref(final int n) {
     return this.nodes[n].refcou > 0;
   }
 
-  private boolean isConst(int a) {
+  private boolean isConst(final int a) {
     return a < 2;
   }
 
-  private boolean isOne(int a) {
+  private boolean isOne(final int a) {
     return a == 1;
   }
 
-  private boolean isZero(int a) {
+  private boolean isZero(final int a) {
     return a == 0;
   }
 
-  private int level(int a) {
+  private int level(final int a) {
     return this.nodes[a].level;
   }
 
-  private int low(int a) {
+  private int low(final int a) {
     return this.nodes[a].low;
   }
 
-  private int high(int a) {
+  private int high(final int a) {
     return this.nodes[a].high;
   }
 
@@ -774,19 +764,19 @@ public final class BDDKernel {
     return (p.level & MARKON) != 0;
   }
 
-  private int nodehash(int lvl, int l, int h) {
-    return Math.abs(triple(lvl, l, h) % nodesize);
+  private int nodehash(final int lvl, final int l, final int h) {
+    return Math.abs(triple(lvl, l, h) % this.nodesize);
   }
 
-  private int pair(int a, int b) {
+  private int pair(final int a, final int b) {
     return (a + b) * (a + b + 1) / 2 + a;
   }
 
-  private int triple(int a, int b, int c) {
+  private int triple(final int a, final int b, final int c) {
     return pair(c, pair(a, b));
   }
 
-  private void initOperators(int cachesize) {
+  private void initOperators(final int cachesize) {
     this.applycache = new BDDCache(cachesize);
     this.itecache = new BDDCache(cachesize);
     this.quantcache = new BDDCache(cachesize);
@@ -809,17 +799,17 @@ public final class BDDKernel {
   }
 
   private void varResize() {
-    this.quantvarset = new int[varnum];
+    this.quantvarset = new int[this.varnum];
     this.quantvarsetID = 0;
   }
 
-  int setCacheRatio(int r) {
-    int old = cacheratio;
+  int setCacheRatio(final int r) {
+    final int old = this.cacheratio;
     if (r <= 0)
       throw new IllegalArgumentException("Invalid cache ratio: " + r);
-    if (nodesize == 0)
+    if (this.nodesize == 0)
       return old;
-    cacheratio = r;
+    this.cacheratio = r;
     operatorsNodeResize();
     return old;
   }
@@ -827,12 +817,12 @@ public final class BDDKernel {
   /**
    * Restricts the variables in the BDD {@code r} to constants true or false.  The restriction is submitted in the BDD
    * {@code var}.
-   * @param r the BDD to be restricted
+   * @param r   the BDD to be restricted
    * @param var the variable mapping as a BDD
    * @return the restricted BDD
    */
-  public int restrict(int r, int var) {
-    int res;
+  public int restrict(final int r, final int var) {
+    final int res;
     if (var < 2)
       return r;
     varset2svartable(var);
@@ -842,15 +832,15 @@ public final class BDDKernel {
     return res;
   }
 
-  private int restrictRec(int r, int miscid) {
-    int res;
-    if (isConst(r) || level(r) > quantlast)
+  private int restrictRec(final int r, final int miscid) {
+    final int res;
+    if (isConst(r) || level(r) > this.quantlast)
       return r;
-    BDDCacheEntry entry = misccache.lookup(pair(r, miscid));
+    final BDDCacheEntry entry = this.misccache.lookup(pair(r, miscid));
     if (entry.a == r && entry.c == miscid)
       return entry.res;
     if (insvarset(level(r))) {
-      if (quantvarset[level(r)] > 0)
+      if (this.quantvarset[level(r)] > 0)
         res = restrictRec(high(r), miscid);
       else
         res = restrictRec(low(r), miscid);
@@ -866,8 +856,14 @@ public final class BDDKernel {
     return res;
   }
 
-  int exists(int r, int var) {
-    int res;
+  /**
+   * Existential quantifier elimination for the variables in {@code var}.
+   * @param r   the BDD root node
+   * @param var the variables to eliminate
+   * @return the BDD with the eliminated variables
+   */
+  public int exists(final int r, final int var) {
+    final int res;
     if (var < 2)
       return r;
     varset2vartable(var);
@@ -877,8 +873,14 @@ public final class BDDKernel {
     return res;
   }
 
-  int forAll(int r, int var) {
-    int res;
+  /**
+   * Universal quantifier elimination for the variables in {@code var}.
+   * @param r   the BDD root node
+   * @param var the variables to eliminate
+   * @return the BDD with the eliminated variables
+   */
+  public int forAll(final int r, final int var) {
+    final int res;
     if (var < 2)
       return r;
     varset2vartable(var);
@@ -888,22 +890,11 @@ public final class BDDKernel {
     return res;
   }
 
-  int unique(int r, int var) {
-    int res;
-    if (var < 2)
+  private int quantRec(final int r, final Operand op, final int quantid) {
+    final int res;
+    if (r < 2 || level(r) > this.quantlast)
       return r;
-    varset2vartable(var);
-    initRef();
-    res = quantRec(r, Operand.XOR, (var << 3) | CACHEID_UNIQUE);
-    checkResize();
-    return res;
-  }
-
-  private int quantRec(int r, Operand op, int quantid) {
-    int res;
-    if (r < 2 || level(r) > quantlast)
-      return r;
-    final BDDCacheEntry entry = quantcache.lookup(r);
+    final BDDCacheEntry entry = this.quantcache.lookup(r);
     if (entry.a == r && entry.c == quantid)
       return entry.res;
     pushRef(quantRec(low(r), op, quantid));
@@ -919,67 +910,67 @@ public final class BDDKernel {
     return res;
   }
 
-  int satOne(int r) {
+  int satOne(final int r) {
     if (r < 2)
       return r;
     initRef();
-    int res = satOneRec(r);
+    final int res = satOneRec(r);
     checkResize();
     return res;
   }
 
-  private int satOneRec(int r) {
+  private int satOneRec(final int r) {
     if (isConst(r))
       return r;
     if (isZero(low(r))) {
-      int res = satOneRec(high(r));
+      final int res = satOneRec(high(r));
       return pushRef(makeNode(level(r), BDDKernel.BDD_FALSE, res));
     } else {
-      int res = satOneRec(low(r));
+      final int res = satOneRec(low(r));
       return pushRef(makeNode(level(r), res, BDDKernel.BDD_FALSE));
     }
   }
 
-  int satOneSet(int r, int var, int pol) {
+  int satOneSet(final int r, final int var, final int pol) {
     if (isZero(r))
       return r;
     if (!isConst(pol))
       throw new IllegalArgumentException("polarity for satOneSet must be a constant");
     initRef();
-    int res = satOneSetRec(r, var, pol);
+    final int res = satOneSetRec(r, var, pol);
     checkResize();
     return res;
   }
 
-  private int satOneSetRec(int r, int var, int satPolarity) {
+  private int satOneSetRec(final int r, final int var, final int satPolarity) {
     if (isConst(r) && isConst(var))
       return r;
     if (level(r) < level(var)) {
       if (isZero(low(r))) {
-        int res = satOneSetRec(high(r), var, satPolarity);
+        final int res = satOneSetRec(high(r), var, satPolarity);
         return pushRef(makeNode(level(r), BDDKernel.BDD_FALSE, res));
       } else {
-        int res = satOneSetRec(low(r), var, satPolarity);
+        final int res = satOneSetRec(low(r), var, satPolarity);
         return pushRef(makeNode(level(r), res, BDDKernel.BDD_FALSE));
       }
     } else if (level(var) < level(r)) {
-      int res = satOneSetRec(r, high(var), satPolarity);
+      final int res = satOneSetRec(r, high(var), satPolarity);
       if (satPolarity == BDDKernel.BDD_TRUE)
         return pushRef(makeNode(level(var), BDDKernel.BDD_FALSE, res));
       else
         return pushRef(makeNode(level(var), res, BDDKernel.BDD_FALSE));
     } else {
       if (isZero(low(r))) {
-        int res = satOneSetRec(high(r), high(var), satPolarity);
+        final int res = satOneSetRec(high(r), high(var), satPolarity);
         return pushRef(makeNode(level(r), BDDKernel.BDD_FALSE, res));
       } else {
-        int res = satOneSetRec(low(r), high(var), satPolarity);
+        final int res = satOneSetRec(low(r), high(var), satPolarity);
         return pushRef(makeNode(level(r), res, BDDKernel.BDD_FALSE));
       }
     }
   }
 
-  int fullSatOne(int r) {
+  int fullSatOne(final int r) {
     if (r == 0)
       return 0;
     initRef();
@@ -990,7 +981,7 @@ public final class BDDKernel {
     return res;
   }
 
-  private int fullSatOneRec(int r) {
+  private int fullSatOneRec(final int r) {
     if (r < 2)
       return r;
     if (low(r) != 0) {
@@ -1006,17 +997,17 @@ public final class BDDKernel {
     }
   }
 
-  public List<byte[]> allSat(int r) {
-    final byte[] allsatProfile = new byte[varnum];
+  public List<byte[]> allSat(final int r) {
+    final byte[] allsatProfile = new byte[this.varnum];
     for (int v = level(r) - 1; v >= 0; --v)
-      allsatProfile[level2var[v]] = -1;
+      allsatProfile[this.level2var[v]] = -1;
     initRef();
     final List<byte[]> allSat = new LinkedList<>();
     allSatRec(r, allSat, allsatProfile);
     return allSat;
   }
 
-  private void allSatRec(int r, List<byte[]> models, byte[] allsatProfile) {
+  private void allSatRec(final int r, final List<byte[]> models, final byte[] allsatProfile) {
     if (isOne(r)) {
       models.add(Arrays.copyOf(allsatProfile, allsatProfile.length));
       return;
@@ -1024,28 +1015,28 @@ public final class BDDKernel {
     if (isZero(r))
       return;
     if (!isZero(low(r))) {
-      allsatProfile[level2var[level(r)]] = 0;
+      allsatProfile[this.level2var[level(r)]] = 0;
       for (int v = level(low(r)) - 1; v > level(r); --v)
-        allsatProfile[level2var[v]] = -1;
+        allsatProfile[this.level2var[v]] = -1;
       allSatRec(low(r), models, allsatProfile);
     }
     if (!isZero(high(r))) {
-      allsatProfile[level2var[level(r)]] = 1;
+      allsatProfile[this.level2var[level(r)]] = 1;
       for (int v = level(high(r)) - 1; v > level(r); --v) {
-        allsatProfile[level2var[v]] = -1;
+        allsatProfile[this.level2var[v]] = -1;
       }
       allSatRec(high(r), models, allsatProfile);
     }
   }
 
-  public BigDecimal satCount(int r) {
-    BigDecimal size = new BigDecimal(2).pow(level(r));
+  public BigDecimal satCount(final int r) {
+    final BigDecimal size = new BigDecimal(2).pow(level(r));
     return satCountRec(r, CACHEID_SATCOU).multiply(size);
   }
 
 
-  BigDecimal satCountSet(int r, int varset) {
-    int unused = varnum;
+  BigDecimal satCountSet(final int r, final int varset) {
+    int unused = this.varnum;
     if (isConst(varset) || isZero(r))
       return BigDecimal.ZERO;
     for (int n = varset; !isConst(n); n = high(n))
@@ -1053,13 +1044,13 @@ public final class BDDKernel {
     return satCount(r).divide(new BigDecimal(2).pow(unused));
   }
 
-  private BigDecimal satCountRec(int root, int miscid) {
+  private BigDecimal satCountRec(final int root, final int miscid) {
     if (root < 2)
       return new BigDecimal(root);
-    final BDDCacheEntry entry = misccache.lookup(root);
+    final BDDCacheEntry entry = this.misccache.lookup(root);
     if (entry.a == root && entry.c == miscid)
       return entry.bdres;
-    BDDKernel.BddNode node = nodes[root];
+    final BDDKernel.BddNode node = this.nodes[root];
     BigDecimal size = BigDecimal.ZERO;
     BigDecimal s = BigDecimal.ONE;
     s = s.multiply(new BigDecimal(2).pow(level(node.low) - node.level - 1));
@@ -1073,17 +1064,17 @@ public final class BDDKernel {
     return size;
   }
 
-  public BigDecimal pathCountOne(int r) {
+  public BigDecimal pathCountOne(final int r) {
     return pathCountRecOne(r, CACHEID_PATHCOU);
   }
 
-  private BigDecimal pathCountRecOne(int r, int miscid) {
-    BigDecimal size;
+  private BigDecimal pathCountRecOne(final int r, final int miscid) {
+    final BigDecimal size;
     if (isZero(r))
       return BigDecimal.ZERO;
     if (isOne(r))
       return BigDecimal.ONE;
-    BDDCacheEntry entry = misccache.lookup(r);
+    final BDDCacheEntry entry = this.misccache.lookup(r);
     if (entry.a == r && entry.c == miscid)
       return entry.bdres;
     size = pathCountRecOne(low(r), miscid).add(pathCountRecOne(high(r), miscid));
@@ -1093,17 +1084,17 @@ public final class BDDKernel {
     return size;
   }
 
-  public BigDecimal pathCountZero(int r) {
+  public BigDecimal pathCountZero(final int r) {
     return pathCountRecZero(r, CACHEID_PATHCOU);
   }
 
-  private BigDecimal pathCountRecZero(int r, int miscid) {
-    BigDecimal size;
+  private BigDecimal pathCountRecZero(final int r, final int miscid) {
+    final BigDecimal size;
     if (isZero(r))
       return BigDecimal.ONE;
     if (isOne(r))
       return BigDecimal.ZERO;
-    BDDCacheEntry entry = misccache.lookup(r);
+    final BDDCacheEntry entry = this.misccache.lookup(r);
     if (entry.a == r && entry.c == miscid)
       return entry.bdres;
     size = pathCountRecZero(low(r), miscid).add(pathCountRecZero(high(r), miscid));
@@ -1114,103 +1105,103 @@ public final class BDDKernel {
   }
 
 
-  public List<byte[]> allUnsat(int r) {
-    allunsatProfile = new byte[varnum];
+  public List<byte[]> allUnsat(final int r) {
+    this.allunsatProfile = new byte[this.varnum];
     for (int v = level(r) - 1; v >= 0; --v)
-      allunsatProfile[level2var[v]] = -1;
+      this.allunsatProfile[this.level2var[v]] = -1;
     initRef();
     final List<byte[]> allUnsat = new LinkedList<>();
     allUnsatRec(r, allUnsat);
     return allUnsat;
   }
 
-  private void allUnsatRec(int r, List<byte[]> models) {
+  private void allUnsatRec(final int r, final List<byte[]> models) {
     if (isZero(r)) {
-      models.add(Arrays.copyOf(allunsatProfile, allunsatProfile.length));
+      models.add(Arrays.copyOf(this.allunsatProfile, this.allunsatProfile.length));
       return;
     }
     if (isOne(r))
       return;
     if (!isOne(low(r))) {
-      allunsatProfile[level2var[level(r)]] = 0;
+      this.allunsatProfile[this.level2var[level(r)]] = 0;
       for (int v = level(low(r)) - 1; v > level(r); --v)
-        allunsatProfile[level2var[v]] = -1;
+        this.allunsatProfile[this.level2var[v]] = -1;
       allUnsatRec(low(r), models);
     }
     if (!isOne(high(r))) {
-      allunsatProfile[level2var[level(r)]] = 1;
+      this.allunsatProfile[this.level2var[level(r)]] = 1;
       for (int v = level(high(r)) - 1; v > level(r); --v)
-        allunsatProfile[level2var[v]] = -1;
+        this.allunsatProfile[this.level2var[v]] = -1;
       allUnsatRec(high(r), models);
     }
   }
 
-  int support(int r) {
-    int supportSize = 0;
+  int support(final int r) {
+    final int supportSize = 0;
     int res = 1;
     if (r < 2)
       return BDDKernel.BDD_FALSE;
-    if (supportSize < varnum) {
-      supportSet = new int[varnum];
-      supportID = 0;
+    if (supportSize < this.varnum) {
+      this.supportSet = new int[this.varnum];
+      this.supportID = 0;
     }
-    if (supportID == 0x0FFFFFFF)
-      supportID = 0;
-    ++supportID;
-    int supportMin = level(r);
-    supportMax = supportMin;
-    supportRec(r, supportSet);
+    if (this.supportID == 0x0FFFFFFF)
+      this.supportID = 0;
+    ++this.supportID;
+    final int supportMin = level(r);
+    this.supportMax = supportMin;
+    supportRec(r, this.supportSet);
     unmark(r);
 
-    for (int n = supportMax; n >= supportMin; --n)
-      if (supportSet[n] == supportID) {
+    for (int n = this.supportMax; n >= supportMin; --n)
+      if (this.supportSet[n] == this.supportID) {
         addRef(res);
-        int tmp = makeNode(n, 0, res);
+        final int tmp = makeNode(n, 0, res);
         delRef(res);
         res = tmp;
       }
     return res;
   }
 
-  private void supportRec(int r, int[] support) {
+  private void supportRec(final int r, final int[] support) {
     if (r < 2)
       return;
-    BDDKernel.BddNode node = nodes[r];
+    final BDDKernel.BddNode node = this.nodes[r];
     if ((node.level & BDDKernel.MARKON) != 0 || node.low == -1)
       return;
-    support[node.level] = supportID;
-    if (node.level > supportMax)
-      supportMax = node.level;
+    support[node.level] = this.supportID;
+    if (node.level > this.supportMax)
+      this.supportMax = node.level;
     node.level |= BDDKernel.MARKON;
     supportRec(node.low, support);
     supportRec(node.high, support);
   }
 
   private void checkResize() {
-    if (resized)
+    if (this.resized)
       operatorsNodeResize();
-    resized = false;
+    this.resized = false;
   }
 
   private void operatorsNodeResize() {
-    if (cacheratio > 0) {
-      int newcachesize = nodesize / cacheratio;
-      applycache.resize(newcachesize);
-      itecache.resize(newcachesize);
-      quantcache.resize(newcachesize);
-      appexcache.resize(newcachesize);
-      replacecache.resize(newcachesize);
-      misccache.resize(newcachesize);
+    if (this.cacheratio > 0) {
+      final int newcachesize = this.nodesize / this.cacheratio;
+      this.applycache.resize(newcachesize);
+      this.itecache.resize(newcachesize);
+      this.quantcache.resize(newcachesize);
+      this.appexcache.resize(newcachesize);
+      this.replacecache.resize(newcachesize);
+      this.misccache.resize(newcachesize);
     }
   }
 
-  int nodeCount(int r) {
-    int count = markCount(r);
+  int nodeCount(final int r) {
+    final int count = markCount(r);
     unmark(r);
     return count;
   }
 
-  int bdd_anodecount(int[] r, int num) {
+  int bdd_anodecount(final int[] r, final int num) {
     int count = 0;
     for (int n = 0; n < num; n++)
       count += markCount(r[n]);
@@ -1219,65 +1210,65 @@ public final class BDDKernel {
     return count;
   }
 
-  int[] varProfile(int r) {
-    int[] varprofile = new int[varnum];
+  int[] varProfile(final int r) {
+    final int[] varprofile = new int[this.varnum];
     varProfileRec(r, varprofile);
     unmark(r);
     return varprofile;
   }
 
-  private void varProfileRec(int r, int[] varprofile) {
+  private void varProfileRec(final int r, final int[] varprofile) {
     if (r < 2)
       return;
-    BDDKernel.BddNode node = nodes[r];
+    final BDDKernel.BddNode node = this.nodes[r];
     if ((node.level & BDDKernel.MARKON) != 0)
       return;
-    varprofile[level2var[node.level]]++;
+    varprofile[this.level2var[node.level]]++;
     node.level |= BDDKernel.MARKON;
     varProfileRec(node.low, varprofile);
     varProfileRec(node.high, varprofile);
   }
 
-  private void varset2svartable(int r) {
+  private void varset2svartable(final int r) {
     if (r < 2)
       throw new IllegalArgumentException("Illegal variable: " + r);
-    quantvarsetID++;
-    if (quantvarsetID == Integer.MAX_VALUE / 2) {
-      quantvarset = new int[varnum];
-      quantvarsetID = 1;
+    this.quantvarsetID++;
+    if (this.quantvarsetID == Integer.MAX_VALUE / 2) {
+      this.quantvarset = new int[this.varnum];
+      this.quantvarsetID = 1;
     }
     for (int n = r; !isConst(n); ) {
       if (isZero(low(n))) {
-        quantvarset[level(n)] = quantvarsetID;
+        this.quantvarset[level(n)] = this.quantvarsetID;
         n = high(n);
       } else {
-        quantvarset[level(n)] = -quantvarsetID;
+        this.quantvarset[level(n)] = -this.quantvarsetID;
         n = low(n);
       }
-      quantlast = level(n);
+      this.quantlast = level(n);
     }
   }
 
-  private void varset2vartable(int r) {
+  private void varset2vartable(final int r) {
     if (r < 2)
       throw new IllegalArgumentException("Illegal variable: " + r);
-    quantvarsetID++;
-    if (quantvarsetID == Integer.MAX_VALUE) {
-      quantvarset = new int[varnum];
-      quantvarsetID = 1;
+    this.quantvarsetID++;
+    if (this.quantvarsetID == Integer.MAX_VALUE) {
+      this.quantvarset = new int[this.varnum];
+      this.quantvarsetID = 1;
     }
     for (int n = r; n > 1; n = high(n)) {
-      quantvarset[level(n)] = quantvarsetID;
-      quantlast = level(n);
+      this.quantvarset[level(n)] = this.quantvarsetID;
+      this.quantlast = level(n);
     }
   }
 
-  private boolean insvarset(int a) {
-    return Math.abs(quantvarset[a]) == quantvarsetID;
+  private boolean insvarset(final int a) {
+    return Math.abs(this.quantvarset[a]) == this.quantvarsetID;
   }
 
-  private boolean invarset(int a) {
-    return quantvarset[a] == quantvarsetID;
+  private boolean invarset(final int a) {
+    return this.quantvarset[a] == this.quantvarsetID;
   }
 
   /**
@@ -1286,12 +1277,12 @@ public final class BDDKernel {
   public void printStats() {
     System.out.println("Internel state");
     System.out.println("==============");
-    System.out.println(String.format("Produced nodes:     %d", produced));
-    System.out.println(String.format("Allocated nodes:    %d", nodesize));
-    System.out.println(String.format("Free nodes          %d", freenum));
-    System.out.println(String.format("Variables           %d", varnum));
-    System.out.println(String.format("Cache size          %d", cachesize));
-    System.out.println(String.format("Garbage collections %d", gbcollectnum));
+    System.out.println(String.format("Produced nodes:     %d", this.produced));
+    System.out.println(String.format("Allocated nodes:    %d", this.nodesize));
+    System.out.println(String.format("Free nodes          %d", this.freenum));
+    System.out.println(String.format("Variables           %d", this.varnum));
+    System.out.println(String.format("Cache size          %d", this.cachesize));
+    System.out.println(String.format("Garbage collections %d", this.gbcollectnum));
   }
 
   private static final class BddNode {

@@ -56,7 +56,7 @@ public final class BDD {
    * @param index   the index
    * @param factory the factory of this BDD
    */
-  public BDD(int index, final BDDFactory factory) {
+  public BDD(final int index, final BDDFactory factory) {
     this.index = index;
     this.factory = factory;
   }
@@ -106,7 +106,7 @@ public final class BDD {
    * @param unimportantVars the number of unimportant variables
    * @return the model count
    */
-  public BigDecimal modelCount(int unimportantVars) {
+  public BigDecimal modelCount(final int unimportantVars) {
     return this.factory.modelCount(this, unimportantVars);
   }
 
@@ -166,7 +166,8 @@ public final class BDD {
    * @return the restricted BDD
    */
   public BDD restrict(final Collection<Literal> restriction) {
-    return this.factory.restrict(this, restriction);
+    final BDD resBDD = this.factory.build(this.factory.getF().and(restriction));
+    return new BDD(this.factory.underlyingKernel().restrict(index(), resBDD.index()), this.factory);
   }
 
   /**
@@ -176,6 +177,44 @@ public final class BDD {
    */
   public BDD restrict(final Literal... restriction) {
     return restrict(Arrays.asList(restriction));
+  }
+
+  /**
+   * Existential quantifier elimination for a given set of variables.
+   * @param variables the variables to eliminate
+   * @return the BDD with the eliminated variables
+   */
+  public BDD exists(final Collection<Variable> variables) {
+    final BDD resBDD = this.factory.build(this.factory.getF().and(variables));
+    return new BDD(this.factory.underlyingKernel().exists(index(), resBDD.index()), this.factory);
+  }
+
+  /**
+   * Existential quantifier elimination for a given set of variables.
+   * @param variables the variables to eliminate
+   * @return the BDD with the eliminated variables
+   */
+  public BDD exists(final Variable... variables) {
+    return exists(Arrays.asList(variables));
+  }
+
+  /**
+   * Universal quantifier elimination for a given set of variables.
+   * @param variables the variables to eliminate
+   * @return the BDD with the eliminated variables
+   */
+  public BDD forall(final Collection<Variable> variables) {
+    final BDD resBDD = this.factory.build(this.factory.getF().and(variables));
+    return new BDD(this.factory.underlyingKernel().forAll(index(), resBDD.index()), this.factory);
+  }
+
+  /**
+   * Universal quantifier elimination for a given set of variables.
+   * @param variables the variables to eliminate
+   * @return the BDD with the eliminated variables
+   */
+  public BDD forall(final Variable... variables) {
+    return forall(Arrays.asList(variables));
   }
 
   /**
@@ -196,7 +235,7 @@ public final class BDD {
 
   @Override
   public int hashCode() {
-    return Objects.hash(index, factory);
+    return Objects.hash(this.index, this.factory);
   }
 
   @Override
@@ -208,6 +247,6 @@ public final class BDD {
 
   @Override
   public String toString() {
-    return "BDD{" + index + "}";
+    return "BDD{" + this.index + "}";
   }
 }
