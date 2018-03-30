@@ -39,9 +39,11 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -248,5 +250,39 @@ public class BDDOperationsTest {
     assertThat(this.bddEquiv.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
     assertThat(this.bddOr.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
     assertThat(this.bddAnd.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
+  }
+
+  @Test
+  public void testNodeCount() {
+    assertThat(this.bddVerum.nodeCount()).isEqualTo(0);
+    assertThat(this.bddFalsum.nodeCount()).isEqualTo(0);
+    assertThat(this.bddPosLit.nodeCount()).isEqualTo(1);
+    assertThat(this.bddNegLit.nodeCount()).isEqualTo(1);
+    assertThat(this.bddImpl.nodeCount()).isEqualTo(2);
+    assertThat(this.bddEquiv.nodeCount()).isEqualTo(3);
+    assertThat(this.bddOr.nodeCount()).isEqualTo(3);
+    assertThat(this.bddAnd.nodeCount()).isEqualTo(3);
+  }
+
+  @Test
+  public void testVariableProfil() {
+    final Variable a = this.f.variable("A");
+    final Variable b = this.f.variable("B");
+    final Variable c = this.f.variable("C");
+    final Map.Entry<Variable, Integer> a0 = new AbstractMap.SimpleEntry<>(a, 0);
+    final Map.Entry<Variable, Integer> a1 = new AbstractMap.SimpleEntry<>(a, 1);
+    final Map.Entry<Variable, Integer> b0 = new AbstractMap.SimpleEntry<>(b, 0);
+    final Map.Entry<Variable, Integer> b1 = new AbstractMap.SimpleEntry<>(b, 1);
+    final Map.Entry<Variable, Integer> b2 = new AbstractMap.SimpleEntry<>(b, 2);
+    final Map.Entry<Variable, Integer> c0 = new AbstractMap.SimpleEntry<>(c, 0);
+    final Map.Entry<Variable, Integer> c1 = new AbstractMap.SimpleEntry<>(c, 1);
+    assertThat(this.bddVerum.variableProfile()).containsExactly(a0, b0, c0);
+    assertThat(this.bddFalsum.variableProfile()).containsExactly(a0, b0, c0);
+    assertThat(this.bddPosLit.variableProfile()).containsExactly(a1, b0, c0);
+    assertThat(this.bddNegLit.variableProfile()).containsExactly(a1, b0, c0);
+    assertThat(this.bddImpl.variableProfile()).containsExactly(a1, b1, c0);
+    assertThat(this.bddEquiv.variableProfile()).containsExactly(a1, b2, c0);
+    assertThat(this.bddOr.variableProfile()).containsExactly(a1, b1, c1);
+    assertThat(this.bddAnd.variableProfile()).containsExactly(a1, b1, c1);
   }
 }

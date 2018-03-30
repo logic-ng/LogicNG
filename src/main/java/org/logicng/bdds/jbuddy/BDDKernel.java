@@ -1233,22 +1233,23 @@ public final class BDDKernel {
     }
   }
 
-  int nodeCount(final int r) {
+  /**
+   * Returns the number of nodes for a given BDD.
+   * @param r the BDD root node
+   * @return the number of nodes for the BDD
+   */
+  public int nodeCount(final int r) {
     final int count = markCount(r);
     unmark(r);
     return count;
   }
 
-  int bdd_anodecount(final int[] r, final int num) {
-    int count = 0;
-    for (int n = 0; n < num; n++)
-      count += markCount(r[n]);
-    for (int n = 0; n < num; n++)
-      unmark(r[n]);
-    return count;
-  }
-
-  int[] varProfile(final int r) {
+  /**
+   * Returns how often each variable occurs in the given BDD.
+   * @param r the BDD root node
+   * @return how often each variable occurs in the BDD
+   */
+  public int[] varProfile(final int r) {
     final int[] varprofile = new int[this.varnum];
     varProfileRec(r, varprofile);
     unmark(r);
@@ -1310,17 +1311,63 @@ public final class BDDKernel {
   }
 
   /**
-   * Prints the state of the kernel
+   * Returns the statistics for this BDD Kernel.
+   * @return the statistics
    */
-  public void printStats() {
-    System.out.println("Internel state");
-    System.out.println("==============");
-    System.out.println(String.format("Produced nodes:     %d", this.produced));
-    System.out.println(String.format("Allocated nodes:    %d", this.nodesize));
-    System.out.println(String.format("Free nodes          %d", this.freenum));
-    System.out.println(String.format("Variables           %d", this.varnum));
-    System.out.println(String.format("Cache size          %d", this.cachesize));
-    System.out.println(String.format("Garbage collections %d", this.gbcollectnum));
+  public BDDStatistics statistics() {
+    final BDDStatistics statistics = new BDDStatistics();
+    statistics.produced = this.produced;
+    statistics.nodesize = this.nodesize;
+    statistics.freenum = this.freenum;
+    statistics.varnum = this.varnum;
+    statistics.cachesize = this.cachesize;
+    statistics.gbcollectnum = this.gbcollectnum;
+    return statistics;
+  }
+
+  public static final class BDDStatistics {
+    private long produced;
+    private int nodesize;
+    private int freenum;
+    private int varnum;
+    private int cachesize;
+    private int gbcollectnum;
+
+    public long produced() {
+      return this.produced;
+    }
+
+    public int nodesize() {
+      return this.nodesize;
+    }
+
+    public int freenum() {
+      return this.freenum;
+    }
+
+    public int varnum() {
+      return this.varnum;
+    }
+
+    public int cachesize() {
+      return this.cachesize;
+    }
+
+    public int gbcollectnum() {
+      return this.gbcollectnum;
+    }
+
+    @Override
+    public String toString() {
+      return "BDDStatistics{" +
+              "produced nodes=" + this.produced +
+              ", allocated nodes=" + this.nodesize +
+              ", free nodes=" + this.freenum +
+              ", variables=" + this.varnum +
+              ", cache size=" + this.cachesize +
+              ", garbage collections=" + this.gbcollectnum +
+              '}';
+    }
   }
 
   private static final class BddNode {

@@ -549,6 +549,20 @@ public final class BDDFactory {
   }
 
   /**
+   * Returns how often each variable occurs in the given BDD.
+   * @param bdd the BDD
+   * @return how often each variable occurs in the BDD
+   */
+  public SortedMap<Variable, Integer> variableProfile(final BDD bdd) {
+    final int[] varProfile = this.kernel.varProfile(bdd.index());
+    final SortedMap<Variable, Integer> profile = new TreeMap<>();
+    for (int i = 0; i < varProfile.length; i++) {
+      profile.put(this.idx2var.get(i), varProfile[i]);
+    }
+    return profile;
+  }
+
+  /**
    * Returns a LogicNG internal BDD data structure of a given BDD.
    * @param bdd the BDD
    * @return the BDD as LogicNG data structure

@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 /**
@@ -278,6 +279,22 @@ public final class BDD {
    */
   public SortedSet<Variable> support() {
     return this.factory.support(this);
+  }
+
+  /**
+   * Returns the number of distinct nodes for this BDD.
+   * @return the number of distinct nodes
+   */
+  public int nodeCount() {
+    return this.factory.underlyingKernel().nodeCount(this.index);
+  }
+
+  /**
+   * Returns how often each variable occurs in this BDD.
+   * @return how often each variable occurs in the BDD
+   */
+  public SortedMap<Variable, Integer> variableProfile() {
+    return this.factory.variableProfile(this);
   }
 
   /**
