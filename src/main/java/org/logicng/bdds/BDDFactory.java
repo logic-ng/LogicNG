@@ -520,6 +520,16 @@ public final class BDDFactory {
   }
 
   /**
+   * Returns a full model in all variables for the given BDD.
+   * @param bdd the BDD
+   * @return a full model of this BDD
+   */
+  public Assignment fullModel(final BDD bdd) {
+    final int modelBDD = this.kernel.fullSatOne(bdd.index());
+    return createAssignment(modelBDD);
+  }
+
+  /**
    * Creates an assignment from a BDD.
    * @param modelBDD the BDD
    * @return the assignment

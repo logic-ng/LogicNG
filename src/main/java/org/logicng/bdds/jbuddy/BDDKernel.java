@@ -983,7 +983,12 @@ public final class BDDKernel {
     }
   }
 
-  int fullSatOne(final int r) {
+  /**
+   * Returns a full model in all variables for the given BDD.
+   * @param r the BDD root node
+   * @return a full model of this BDD
+   */
+  public int fullSatOne(final int r) {
     if (r == 0)
       return 0;
     initRef();

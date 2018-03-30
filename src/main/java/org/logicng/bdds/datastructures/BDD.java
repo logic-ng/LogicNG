@@ -226,8 +226,8 @@ public final class BDD {
   }
 
   /**
-   * Returns an arbitrary model of this BDD or {@code null} which contains at least the given variables.  If a variable
-   * is a don't care variable, it will be assigned with the given default value.
+   * Returns an arbitrary model of this BDD which contains at least the given variables or {@code null} if there is
+   * none.  If a variable is a don't care variable, it will be assigned with the given default value.
    * @param defaultValue the default value for don't care variables
    * @param variables    the set of variable which has to be contained in the model
    * @return an arbitrary model of this BDD
@@ -237,14 +237,22 @@ public final class BDD {
   }
 
   /**
-   * Returns an arbitrary model of this BDD or {@code null} which contains at least the given variables.  If a variable
-   * is a don't care variable, it will be assigned with the given default value.
+   * Returns an arbitrary model of this BDD which contains at least the given variables or {@code null} if there is
+   * none.  If a variable is a don't care variable, it will be assigned with the given default value.
    * @param defaultValue the default value for don't care variables
    * @param variables    the set of variable which has to be contained in the model
    * @return an arbitrary model of this BDD
    */
   public Assignment model(final boolean defaultValue, final Variable... variables) {
     return this.factory.model(this, Arrays.asList(variables), defaultValue);
+  }
+
+  /**
+   * Returns a full model of this BDD or {@code null} if there is none.n the model
+   * @return an full model of this BDD
+   */
+  public Assignment fullModel() {
+    return this.factory.fullModel(this);
   }
 
   /**

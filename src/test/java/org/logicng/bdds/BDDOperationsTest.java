@@ -203,4 +203,16 @@ public class BDDOperationsTest {
     assertThat(this.bddAnd.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
     assertThat(this.bddAnd.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
   }
+
+  @Test
+  public void testFullModel() {
+    assertThat(this.bddVerum.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+    assertThat(this.bddFalsum.fullModel()).isEqualTo(null);
+    assertThat(this.bddPosLit.fullModel()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", false), this.f.literal("C", false)));
+    assertThat(this.bddNegLit.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+    assertThat(this.bddImpl.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+    assertThat(this.bddEquiv.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true), this.f.literal("C", false)));
+    assertThat(this.bddOr.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+    assertThat(this.bddAnd.fullModel()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+  }
 }
