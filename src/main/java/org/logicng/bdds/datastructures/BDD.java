@@ -256,6 +256,22 @@ public final class BDD {
   }
 
   /**
+   * Returns the number of paths leading to the terminal 'one' node.
+   * @return the number of paths leading to the terminal 'one' node
+   */
+  public BigDecimal pathCountOne() {
+    return this.factory.underlyingKernel().pathCountOne(this.index);
+  }
+
+  /**
+   * Returns the number of paths leading to the terminal 'zero' node.
+   * @return the number of paths leading to the terminal 'zero' node
+   */
+  public BigDecimal pathCountZero() {
+    return this.factory.underlyingKernel().pathCountZero(this.index);
+  }
+
+  /**
    * Returns a LogicNG internal BDD data structure of this BDD.
    * @return the BDD as LogicNG data structure
    */

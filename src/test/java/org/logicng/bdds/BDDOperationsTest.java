@@ -38,6 +38,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,8 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link BDDFactory} operations.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public class BDDOperationsTest {
 
@@ -214,5 +215,25 @@ public class BDDOperationsTest {
     assertThat(this.bddEquiv.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true), this.f.literal("C", false)));
     assertThat(this.bddOr.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
     assertThat(this.bddAnd.fullModel()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+  }
+
+  @Test
+  public void testPathCount() {
+    assertThat(this.bddVerum.pathCountOne()).isEqualTo(BigDecimal.ONE);
+    assertThat(this.bddVerum.pathCountZero()).isEqualTo(BigDecimal.ZERO);
+    assertThat(this.bddFalsum.pathCountOne()).isEqualTo(BigDecimal.ZERO);
+    assertThat(this.bddFalsum.pathCountZero()).isEqualTo(BigDecimal.ONE);
+    assertThat(this.bddPosLit.pathCountOne()).isEqualTo(BigDecimal.ONE);
+    assertThat(this.bddPosLit.pathCountZero()).isEqualTo(BigDecimal.ONE);
+    assertThat(this.bddNegLit.pathCountOne()).isEqualTo(BigDecimal.ONE);
+    assertThat(this.bddNegLit.pathCountZero()).isEqualTo(BigDecimal.ONE);
+    assertThat(this.bddImpl.pathCountOne()).isEqualTo(new BigDecimal(2));
+    assertThat(this.bddImpl.pathCountZero()).isEqualTo(new BigDecimal(1));
+    assertThat(this.bddEquiv.pathCountOne()).isEqualTo(new BigDecimal(2));
+    assertThat(this.bddEquiv.pathCountZero()).isEqualTo(new BigDecimal(2));
+    assertThat(this.bddOr.pathCountOne()).isEqualTo(new BigDecimal(3));
+    assertThat(this.bddOr.pathCountZero()).isEqualTo(new BigDecimal(1));
+    assertThat(this.bddAnd.pathCountOne()).isEqualTo(new BigDecimal(1));
+    assertThat(this.bddAnd.pathCountZero()).isEqualTo(new BigDecimal(3));
   }
 }

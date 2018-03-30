@@ -30,8 +30,8 @@ package org.logicng.bdds.io;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.bdds.datastructures.BDD;
 import org.logicng.bdds.BDDFactory;
+import org.logicng.bdds.datastructures.BDD;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -43,8 +43,8 @@ import java.io.IOException;
 
 /**
  * Unit tests for the {@link BDDDotFileWriter}.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public class BDDDotFileWriterTest {
 
@@ -52,7 +52,7 @@ public class BDDDotFileWriterTest {
   public void testWriter() throws IOException, ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setVariableOrder(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
     testFiles("false", factory.build(p.parse("$false")));
     testFiles("true", factory.build(p.parse("$true")));

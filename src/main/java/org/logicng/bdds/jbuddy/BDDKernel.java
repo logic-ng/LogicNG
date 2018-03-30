@@ -98,7 +98,8 @@ public final class BDDKernel {
 
   private static final int CACHEID_RESTRICT = 0x1;
   private static final int CACHEID_SATCOU = 0x2;
-  private static final int CACHEID_PATHCOU = 0x4;
+  private static final int CACHEID_PATHCOU_ONE = 0x4;
+  private static final int CACHEID_PATHCOU_ZERO = 0x8;
   private static final int CACHEID_FORALL = 0x1;
 
   private BddNode[] nodes; // All of the bdd nodes
@@ -1015,6 +1016,11 @@ public final class BDDKernel {
     }
   }
 
+  /**
+   * Returns all models for a given BDD.
+   * @param r the BDD root node
+   * @return all models for the BDD
+   */
   public List<byte[]> allSat(final int r) {
     final byte[] allsatProfile = new byte[this.varnum];
     for (int v = level(r) - 1; v >= 0; --v)
@@ -1047,19 +1053,14 @@ public final class BDDKernel {
     }
   }
 
+  /**
+   * Returns the model count for the given BDD.
+   * @param r the BDD root node
+   * @return the model count for the BDD
+   */
   public BigDecimal satCount(final int r) {
     final BigDecimal size = new BigDecimal(2).pow(level(r));
     return satCountRec(r, CACHEID_SATCOU).multiply(size);
-  }
-
-
-  BigDecimal satCountSet(final int r, final int varset) {
-    int unused = this.varnum;
-    if (isConst(varset) || isZero(r))
-      return BigDecimal.ZERO;
-    for (int n = varset; !isConst(n); n = high(n))
-      unused--;
-    return satCount(r).divide(new BigDecimal(2).pow(unused));
   }
 
   private BigDecimal satCountRec(final int root, final int miscid) {
@@ -1082,8 +1083,13 @@ public final class BDDKernel {
     return size;
   }
 
+  /**
+   * Returns the number of paths to the terminal node 'one'.
+   * @param r the BDD root node
+   * @return the number of paths to the terminal node 'one'
+   */
   public BigDecimal pathCountOne(final int r) {
-    return pathCountRecOne(r, CACHEID_PATHCOU);
+    return pathCountRecOne(r, CACHEID_PATHCOU_ONE);
   }
 
   private BigDecimal pathCountRecOne(final int r, final int miscid) {
@@ -1102,8 +1108,13 @@ public final class BDDKernel {
     return size;
   }
 
+  /**
+   * Returns the number of paths to the terminal node 'zero'.
+   * @param r the BDD root node
+   * @return the number of paths to the terminal node 'zero'
+   */
   public BigDecimal pathCountZero(final int r) {
-    return pathCountRecZero(r, CACHEID_PATHCOU);
+    return pathCountRecZero(r, CACHEID_PATHCOU_ZERO);
   }
 
   private BigDecimal pathCountRecZero(final int r, final int miscid) {
@@ -1122,7 +1133,11 @@ public final class BDDKernel {
     return size;
   }
 
-
+  /**
+   * Returns all unsatisfiable assignments for a given BDD.
+   * @param r the BDD root node
+   * @return all unsatisfiable assignments for the BDD
+   */
   public List<byte[]> allUnsat(final int r) {
     this.allunsatProfile = new byte[this.varnum];
     for (int v = level(r) - 1; v >= 0; --v)

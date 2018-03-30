@@ -42,15 +42,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link BDDFactory}.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public class SimpleBDDTest {
 
   @Test
   public void testTrue() {
     final FormulaFactory f = new FormulaFactory();
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     final BDD bdd = factory.build(f.verum());
     assertThat(bdd.isTautology()).isTrue();
     assertThat(bdd.isContradiction()).isFalse();
@@ -66,7 +66,7 @@ public class SimpleBDDTest {
   @Test
   public void testFalse() {
     final FormulaFactory f = new FormulaFactory();
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     final BDD bdd = factory.build(f.falsum());
     assertThat(bdd.isTautology()).isFalse();
     assertThat(bdd.isContradiction()).isTrue();
@@ -82,7 +82,7 @@ public class SimpleBDDTest {
   @Test
   public void testPositiveLiteral() {
     final FormulaFactory f = new FormulaFactory();
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(1);
     final BDD bdd = factory.build(f.literal("A", true));
     assertThat(bdd.isTautology()).isFalse();
@@ -99,7 +99,7 @@ public class SimpleBDDTest {
   @Test
   public void testNegativeLiteral() {
     final FormulaFactory f = new FormulaFactory();
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(1);
     final BDD bdd = factory.build(f.literal("A", false));
     assertThat(bdd.isTautology()).isFalse();
@@ -117,7 +117,7 @@ public class SimpleBDDTest {
   public void testImplication() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(2);
     final BDD bdd = factory.build(parser.parse("A => ~B"));
     assertThat(bdd.isTautology()).isFalse();
@@ -139,7 +139,7 @@ public class SimpleBDDTest {
   public void testEquivalence() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(2);
     final BDD bdd = factory.build(parser.parse("A <=> ~B"));
     assertThat(bdd.isTautology()).isFalse();
@@ -160,7 +160,7 @@ public class SimpleBDDTest {
   public void testOr() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(3);
     final BDD bdd = factory.build(parser.parse("A | B | ~C"));
     assertThat(bdd.isTautology()).isFalse();
@@ -186,7 +186,7 @@ public class SimpleBDDTest {
   public void testAnd() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser parser = new PropositionalParser(f);
-    BDDFactory factory = new BDDFactory(1000, 1000, f);
+    final BDDFactory factory = new BDDFactory(1000, 1000, f);
     factory.setNumberOfVars(3);
     final BDD bdd = factory.build(parser.parse("A & B & ~C"));
     assertThat(bdd.isTautology()).isFalse();

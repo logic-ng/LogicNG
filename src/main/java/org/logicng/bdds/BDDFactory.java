@@ -283,24 +283,6 @@ public final class BDDFactory {
   }
 
   /**
-   * Returns the number of paths to the terminal node 'one'.
-   * @param r the BDD
-   * @return the number of paths to the terminal node 'one'
-   */
-  public BigDecimal pathCountOne(final int r) {
-    return this.kernel.pathCountOne(r);
-  }
-
-  /**
-   * Returns the number of paths to the terminal node 'zero'.
-   * @param r the BDD
-   * @return the number of paths to the terminal node 'zero'
-   */
-  public BigDecimal pathCountZero(final int r) {
-    return this.kernel.pathCountZero(r);
-  }
-
-  /**
    * Sets the number of variables for this factory.
    * @param num the number of variables
    */

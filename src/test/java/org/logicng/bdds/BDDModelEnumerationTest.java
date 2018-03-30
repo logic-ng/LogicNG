@@ -49,8 +49,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for the BDDs.
- * @version 1.2
- * @since 1.2
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public class BDDModelEnumerationTest {
 
@@ -61,7 +61,7 @@ public class BDDModelEnumerationTest {
   private final BigDecimal[] expected;
 
   public BDDModelEnumerationTest() {
-    int[] problems = new int[]{3, 4, 5, 6, 7, 8, 9};
+    final int[] problems = new int[]{3, 4, 5, 6, 7, 8, 9};
     this.expected = new BigDecimal[]{
             BigDecimal.valueOf(0),
             BigDecimal.valueOf(2),
@@ -73,21 +73,21 @@ public class BDDModelEnumerationTest {
     };
 
     this.f = new FormulaFactory();
-    final NQueensGenerator generator = new NQueensGenerator(f);
+    final NQueensGenerator generator = new NQueensGenerator(this.f);
     this.formulas = new ArrayList<>(problems.length);
     this.variables = new ArrayList<>(problems.length);
 
     for (final int problem : problems) {
       final Formula p = generator.generate(problem);
-      formulas.add(p);
-      variables.add(p.variables());
+      this.formulas.add(p);
+      this.variables.add(p.variables());
     }
   }
 
   @Test
   public void testModelCount() {
     for (int i = 0; i < this.formulas.size(); i++) {
-      BDDFactory factory = new BDDFactory(10000, 10000, f);
+      final BDDFactory factory = new BDDFactory(10000, 10000, this.f);
       factory.setNumberOfVars(this.variables.get(i).size());
       final BDD bdd = factory.build(this.formulas.get(i));
       Assert.assertEquals(this.expected[i], bdd.modelCount());
@@ -97,13 +97,13 @@ public class BDDModelEnumerationTest {
   @Test
   public void testModelEnumeration() {
     for (int i = 0; i < this.formulas.size(); i++) {
-      BDDFactory factory = new BDDFactory(10000, 10000, f);
+      final BDDFactory factory = new BDDFactory(10000, 10000, this.f);
       factory.setNumberOfVars(this.variables.get(i).size());
       final BDD bdd = factory.build(this.formulas.get(i));
-      Set<Assignment> models = new HashSet<>(bdd.enumerateAllModels());
+      final Set<Assignment> models = new HashSet<>(bdd.enumerateAllModels());
       Assert.assertEquals(this.expected[i].intValue(), models.size());
       for (final Assignment model : models)
-        Assert.assertTrue(formulas.get(i).evaluate(model));
+        Assert.assertTrue(this.formulas.get(i).evaluate(model));
     }
   }
 
@@ -140,7 +140,7 @@ public class BDDModelEnumerationTest {
     assertThat(bdd.enumerateAllModels(generateVariables(100, f))).hasSize(101);
   }
 
-  private List<Variable> generateVariables(int n, final FormulaFactory f) {
+  private List<Variable> generateVariables(final int n, final FormulaFactory f) {
     final List<Variable> result = new ArrayList<>(n);
     for (int i = 0; i < n; i++) {
       result.add(f.variable("v" + i));
