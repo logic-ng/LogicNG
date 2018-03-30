@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
 
 /**
  * The internal representation of a BDD.
@@ -269,6 +270,14 @@ public final class BDD {
    */
   public BigDecimal pathCountZero() {
     return this.factory.underlyingKernel().pathCountZero(this.index);
+  }
+
+  /**
+   * Returns all the variables this BDD depends on.
+   * @return all the variables that this BDD depends on
+   */
+  public SortedSet<Variable> support() {
+    return this.factory.support(this);
   }
 
   /**

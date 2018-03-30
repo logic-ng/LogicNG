@@ -1169,7 +1169,12 @@ public final class BDDKernel {
     }
   }
 
-  int support(final int r) {
+  /**
+   * Returns all the variables that a given BDD depends on.
+   * @param r the BDD root node
+   * @return all the variables that the BDD depends on
+   */
+  public int support(final int r) {
     final int supportSize = 0;
     int res = 1;
     if (r < 2)

@@ -42,6 +42,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -235,5 +236,17 @@ public class BDDOperationsTest {
     assertThat(this.bddOr.pathCountZero()).isEqualTo(new BigDecimal(1));
     assertThat(this.bddAnd.pathCountOne()).isEqualTo(new BigDecimal(1));
     assertThat(this.bddAnd.pathCountZero()).isEqualTo(new BigDecimal(3));
+  }
+
+  @Test
+  public void testSupport() {
+    assertThat(this.bddVerum.support()).isEqualTo(new TreeSet<>());
+    assertThat(this.bddFalsum.support()).isEqualTo(new TreeSet<>());
+    assertThat(this.bddPosLit.support()).isEqualTo(new TreeSet<>(Collections.singletonList(this.f.variable("A"))));
+    assertThat(this.bddNegLit.support()).isEqualTo(new TreeSet<>(Collections.singletonList(this.f.variable("A"))));
+    assertThat(this.bddImpl.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
+    assertThat(this.bddEquiv.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
+    assertThat(this.bddOr.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
+    assertThat(this.bddAnd.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
   }
 }

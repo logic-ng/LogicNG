@@ -512,6 +512,18 @@ public final class BDDFactory {
   }
 
   /**
+   * Returns all the variables that a given BDD depends on.
+   * @param bdd the BDD
+   * @return all the variables that the BDD depends on
+   */
+  public SortedSet<Variable> support(final BDD bdd) {
+    final int supportBDD = this.kernel.support(bdd.index());
+    final Assignment assignment = createAssignment(supportBDD);
+    assert assignment == null || assignment.negativeLiterals().isEmpty();
+    return assignment == null ? new TreeSet<Variable>() : new TreeSet<>(assignment.positiveLiterals());
+  }
+
+  /**
    * Creates an assignment from a BDD.
    * @param modelBDD the BDD
    * @return the assignment
