@@ -39,8 +39,8 @@ import java.util.Set;
 
 /**
  * A terminal node in a BDD.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public final class BDDConstant implements BDDNode {
 
@@ -74,7 +74,7 @@ public final class BDDConstant implements BDDNode {
 
   @Override
   public Formula label() {
-    return value;
+    return this.value;
   }
 
   @Override
@@ -110,6 +110,6 @@ public final class BDDConstant implements BDDNode {
 
   @Override
   public String toString() {
-    return "<" + value + ">";
+    return "<" + this.value + ">";
   }
 }

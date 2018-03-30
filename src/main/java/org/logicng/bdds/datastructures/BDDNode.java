@@ -34,8 +34,8 @@ import java.util.Set;
 
 /**
  * A node in a BDD.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public interface BDDNode {
 

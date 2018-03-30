@@ -37,8 +37,8 @@ import java.util.Set;
 
 /**
  * A node in a BDD.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public final class BDDInnerNode implements BDDNode {
 
@@ -81,15 +81,15 @@ public final class BDDInnerNode implements BDDNode {
     return this.high;
   }
 
-  public void setVar(Variable var) {
+  public void setVar(final Variable var) {
     this.var = var;
   }
 
-  public void setLow(BDDNode low) {
+  public void setLow(final BDDNode low) {
     this.low = low;
   }
 
-  public void setHigh(BDDNode high) {
+  public void setHigh(final BDDNode high) {
     this.high = high;
   }
 

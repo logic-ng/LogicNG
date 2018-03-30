@@ -61,8 +61,8 @@ import java.math.BigDecimal;
 
 /**
  * An entry in the BDD cache.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 final class BDDCacheEntry {
   int a;

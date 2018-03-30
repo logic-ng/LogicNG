@@ -65,8 +65,8 @@ import java.util.List;
 
 /**
  * The jBuddy kernel.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public final class BDDKernel {
 

@@ -44,8 +44,8 @@ import java.util.SortedSet;
 
 /**
  * The internal representation of a BDD.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public final class BDD {
 

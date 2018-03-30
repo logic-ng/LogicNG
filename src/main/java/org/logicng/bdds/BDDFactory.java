@@ -92,8 +92,8 @@ import static org.logicng.formulas.FType.AND;
 
 /**
  * The factory for the jBuddy implementation.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public final class BDDFactory {
 

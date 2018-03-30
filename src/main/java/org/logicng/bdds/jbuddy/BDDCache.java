@@ -59,8 +59,8 @@ package org.logicng.bdds.jbuddy;
 
 /**
  * BDD Cache.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 final class BDDCache {
   private BDDCacheEntry[] table;
@@ -69,7 +69,7 @@ final class BDDCache {
    * Constructs a new BDD cache of a given size (number of entries in the cache).
    * @param cs the cache size
    */
-  BDDCache(int cs) {
+  BDDCache(final int cs) {
     resize(cs);
   }
 
@@ -77,8 +77,8 @@ final class BDDCache {
    * Resizes the cache to a new number of entries.  The old cache entries are removed in this process.
    * @param ns the new number of entries
    */
-  void resize(int ns) {
-    int size = BDDPrime.primeGTE(ns);
+  void resize(final int ns) {
+    final int size = BDDPrime.primeGTE(ns);
     this.table = new BDDCacheEntry[size];
     for (int n = 0; n < size; n++)
       this.table[n] = new BDDCacheEntry();
@@ -100,7 +100,7 @@ final class BDDCache {
    * @param hash the hash value.
    * @return the respective entry in the cache
    */
-  BDDCacheEntry lookup(int hash) {
+  BDDCacheEntry lookup(final int hash) {
     return this.table[Math.abs(hash % this.table.length)];
   }
 

@@ -40,8 +40,8 @@ import java.nio.charset.Charset;
 
 /**
  * A dot file writer for BDDs.  Writes the internal data structure of a BDD to a dot file.
- * @version 1.4
- * @since 1.4
+ * @version 1.4.0
+ * @since 1.4.0
  */
 public final class BDDDotFileWriter {
 
@@ -82,7 +82,7 @@ public final class BDDDotFileWriter {
       sb.append(String.format("  id_%d -> %s [color = darkgreen];%n", internalNode.getNodenum(), getNodeString(internalNode.getHigh())));
     }
     sb.append("}\n");
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
+    try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
       writer.append(sb);
       writer.flush();
     }
