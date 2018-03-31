@@ -42,7 +42,7 @@ public final class CNFConfig extends Configuration {
    * The algorithm for the CNF encoding.
    */
   public enum Algorithm {
-    FACTORIZATION, TSEITIN, PLAISTED_GREENBAUM, ADVANCED
+    FACTORIZATION, TSEITIN, PLAISTED_GREENBAUM, ADVANCED, BDD
   }
 
   final Algorithm algorithm;
@@ -119,7 +119,7 @@ public final class CNFConfig extends Configuration {
      * @param distributionBoundary the distribution boundary
      * @return the builder
      */
-    public Builder distributionBoundary(int distributionBoundary) {
+    public Builder distributionBoundary(final int distributionBoundary) {
       this.distributionBoundary = distributionBoundary;
       return this;
     }
@@ -130,7 +130,7 @@ public final class CNFConfig extends Configuration {
      * @param createdClauseBoundary the clause creation boundary
      * @return the builder
      */
-    public Builder createdClauseBoundary(int createdClauseBoundary) {
+    public Builder createdClauseBoundary(final int createdClauseBoundary) {
       this.createdClauseBoundary = createdClauseBoundary;
       return this;
     }
@@ -141,7 +141,7 @@ public final class CNFConfig extends Configuration {
      * @param atomBoundary the atom boundary
      * @return the builder
      */
-    public Builder atomBoundary(int atomBoundary) {
+    public Builder atomBoundary(final int atomBoundary) {
       this.atomBoundary = atomBoundary;
       return this;
     }

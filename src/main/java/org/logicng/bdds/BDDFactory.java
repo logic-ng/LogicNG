@@ -168,6 +168,8 @@ public final class BDDFactory {
                   ? this.kernel.addRef(this.kernel.and(res, buildRec(it.next())))
                   : this.kernel.addRef(this.kernel.or(res, buildRec(it.next())));
         return res;
+      case PBC:
+        return buildRec(formula.nnf());
       default:
         throw new IllegalArgumentException("Unsupported operator for BDD generation: " + formula.type());
     }
