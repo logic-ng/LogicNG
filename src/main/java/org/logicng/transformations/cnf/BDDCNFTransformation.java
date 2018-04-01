@@ -73,10 +73,10 @@ public final class BDDCNFTransformation implements FormulaTransformation {
   }
 
   /**
-   * Constructs a new BDD-based CNF transformation with 10.000 nodes and a cache size of 10.000.
+   * Constructs a new BDD-based CNF transformation and determines the node size and cache size on its own.
    */
   public BDDCNFTransformation() {
-    this(10000, 10000);
+    this(0, 0);
   }
 
   @Override
@@ -89,8 +89,11 @@ public final class BDDCNFTransformation implements FormulaTransformation {
     if (cache && cached != null)
       return cached;
     if (!this.externalFactory) {
-      this.bddFactory = new BDDFactory(this.numNodes, this.cacheSize, formula.factory());
-      this.bddFactory.setNumberOfVars(formula.variables().size());
+      final int numVars = formula.variables().size();
+      final int nodes = this.numNodes == 0 ? numVars * 30 : this.numNodes;
+      final int cacheS = this.cacheSize == 0 ? numVars * 20 : this.cacheSize;
+      this.bddFactory = new BDDFactory(nodes, cacheS, formula.factory());
+      this.bddFactory.setNumberOfVars(numVars);
     }
     final Formula cnf = this.bddFactory.build(formula).cnf().transform(this.up);
     if (cache)
