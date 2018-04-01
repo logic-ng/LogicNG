@@ -9,7 +9,7 @@ import org.logicng.io.parsers.PseudoBooleanParser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for {@link DFSOrdering}.
+ * Unit tests for {@link DFSOrdering}.
  * @version 1.4.0
  * @since 1.4.0
  */

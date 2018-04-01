@@ -9,7 +9,7 @@ import org.logicng.io.parsers.PseudoBooleanParser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for {@link BFSOrdering}.
+ * Unit tests for {@link BFSOrdering}.
  * @version 1.4.0
  * @since 1.4.0
  */
@@ -37,7 +37,7 @@ public class BFSOrderingTest {
     final FormulaFactory f = new FormulaFactory();
     final PseudoBooleanParser p = new PseudoBooleanParser(f);
     final Formula formula = p.parse("(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X) & (Y <=> (X | (W + A + F < 1)))");
-    
+
     assertThat(this.ordering.getOrder(formula)).containsExactly(
             f.variable("A"),
             f.variable("Y"),

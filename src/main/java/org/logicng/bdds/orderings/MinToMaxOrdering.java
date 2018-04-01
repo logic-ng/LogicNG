@@ -28,56 +28,58 @@
 
 package org.logicng.bdds.orderings;
 
-import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.Literal;
-import org.logicng.formulas.Not;
-import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
+import org.logicng.functions.VariableProfileFunction;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * A depth-first-search BDD variable ordering.  Traverses the formula in a DFS manner
- * and gathers all variables in the occurrence.
+ * A BDD variable ordering sorting the variables from minimal to maximal occurrence
+ * in the input formula.  If two variables have the same number of occurrences, their
+ * ordering according to their DFS ordering will be considered.
  * @version 1.4.0
  * @since 1.4.0
  */
-public class DFSOrdering implements VariableOrderingProvider {
+public class MinToMaxOrdering implements VariableOrderingProvider {
+
+  private final VariableProfileFunction profileFunction = new VariableProfileFunction();
+  private final DFSOrdering dfsOrdering = new DFSOrdering();
 
   @Override
   public List<Variable> getOrder(final Formula formula) {
-    final LinkedHashSet<Variable> order = new LinkedHashSet<>(formula.variables().size());
-    dfs(formula, order);
-    return new ArrayList<>(order);
+    final Map<Variable, Integer> profile = formula.apply(this.profileFunction);
+    final List<Variable> dfs = this.dfsOrdering.getOrder(formula);
+
+    final Comparator<Map.Entry<Variable, Integer>> comparator = new Comparator<Map.Entry<Variable, Integer>>() {
+      @Override
+      public int compare(final Map.Entry<Variable, Integer> o1, final Map.Entry<Variable, Integer> o2) {
+        final int occComp = o1.getValue().compareTo(o2.getValue());
+        if (occComp != 0)
+          return -occComp;
+        final int index1 = dfs.indexOf(o1.getKey());
+        final int index2 = dfs.indexOf(o2.getKey());
+        return index1 - index2;
+      }
+    };
+    final Map<Variable, Integer> sortedProfile = sortProfileByOccurrence(profile, comparator);
+    final List<Variable> order = new ArrayList<>(sortedProfile.size());
+    for (final Map.Entry<Variable, Integer> entry : sortedProfile.entrySet())
+      order.add(entry.getKey());
+    return order;
   }
 
-  private void dfs(final Formula formula, final LinkedHashSet<Variable> variables) {
-    switch (formula.type()) {
-      case LITERAL:
-        variables.add(((Literal) formula).variable());
-        break;
-      case NOT:
-        dfs(((Not) formula).operand(), variables);
-        break;
-      case IMPL:
-      case EQUIV:
-        final BinaryOperator op = (BinaryOperator) formula;
-        dfs(op.left(), variables);
-        dfs(op.right(), variables);
-        break;
-      case AND:
-      case OR:
-        for (final Formula operand : formula)
-          dfs(operand, variables);
-        break;
-      case PBC:
-        final PBConstraint pbc = (PBConstraint) formula;
-        for (final Literal lit : pbc.operands())
-          variables.add(lit.variable());
-        break;
-    }
+  public static Map<Variable, Integer> sortProfileByOccurrence(final Map<Variable, Integer> map, final Comparator<Map.Entry<Variable, Integer>> comparator) {
+    final List<Map.Entry<Variable, Integer>> list = new ArrayList<>(map.entrySet());
+    Collections.sort(list, comparator);
+    final Map<Variable, Integer> result = new LinkedHashMap<>();
+    for (final Map.Entry<Variable, Integer> entry : list)
+      result.put(entry.getKey(), entry.getValue());
+    return result;
   }
 }

@@ -54,15 +54,20 @@ public class FormulaBDDTest {
     final BDD bddNoOrder = formula.bdd();
     final BDD bddBfs = formula.bdd(VariableOrdering.BFS);
     final BDD bddDfs = formula.bdd(VariableOrdering.DFS);
+    final BDD bddMin2Max = formula.bdd(VariableOrdering.MIN2MAX);
+    final BDD bddMax2Min = formula.bdd(VariableOrdering.MAX2MIN);
 
     assertThat(bddNoOrder.nodeCount()).isEqualTo(13);
     assertThat(bddBfs.nodeCount()).isEqualTo(14);
     assertThat(bddDfs.nodeCount()).isEqualTo(13);
+    assertThat(bddMin2Max.nodeCount()).isEqualTo(17);
+    assertThat(bddMax2Min.nodeCount()).isEqualTo(24);
 
     final TautologyPredicate tautology = new TautologyPredicate(f);
     assertThat(f.equivalence(bddNoOrder.cnf(), formula).holds(tautology)).isTrue();
     assertThat(f.equivalence(bddBfs.cnf(), formula).holds(tautology)).isTrue();
     assertThat(f.equivalence(bddDfs.cnf(), formula).holds(tautology)).isTrue();
+    assertThat(f.equivalence(bddMin2Max.cnf(), formula).holds(tautology)).isTrue();
+    assertThat(f.equivalence(bddMax2Min.cnf(), formula).holds(tautology)).isTrue();
   }
-
 }
