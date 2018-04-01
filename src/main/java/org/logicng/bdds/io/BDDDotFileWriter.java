@@ -77,9 +77,9 @@ public final class BDDDotFileWriter {
       sb.append("  const_false [shape=box, label=\"$false\", style = bold, color = red];\n");
     }
     for (final BDDFactory.InternalBDDNode internalNode : bdd.internalNodes()) {
-      sb.append(String.format("  id_%d [shape=ellipse, label=\"%s\"];%n", internalNode.getNodenum(), internalNode.getLabel()));
-      sb.append(String.format("  id_%d -> %s [style = dotted, color = red];%n", internalNode.getNodenum(), getNodeString(internalNode.getLow())));
-      sb.append(String.format("  id_%d -> %s [color = darkgreen];%n", internalNode.getNodenum(), getNodeString(internalNode.getHigh())));
+      sb.append(String.format("  id_%d [shape=ellipse, label=\"%s\"];%n", internalNode.nodenum(), internalNode.label()));
+      sb.append(String.format("  id_%d -> %s [style = dotted, color = red];%n", internalNode.nodenum(), getNodeString(internalNode.low())));
+      sb.append(String.format("  id_%d -> %s [color = darkgreen];%n", internalNode.nodenum(), getNodeString(internalNode.high())));
     }
     sb.append("}\n");
     try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {

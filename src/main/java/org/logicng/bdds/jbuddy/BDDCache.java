@@ -77,7 +77,7 @@ final class BDDCache {
    * Resizes the cache to a new number of entries.  The old cache entries are removed in this process.
    * @param ns the new number of entries
    */
-  void resize(final int ns) {
+  private void resize(final int ns) {
     final int size = BDDPrime.primeGTE(ns);
     this.table = new BDDCacheEntry[size];
     for (int n = 0; n < size; n++)
@@ -102,13 +102,5 @@ final class BDDCache {
    */
   BDDCacheEntry lookup(final int hash) {
     return this.table[Math.abs(hash % this.table.length)];
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    for (final BDDCacheEntry e : this.table)
-      sb.append(e).append("\n");
-    return sb.toString();
   }
 }

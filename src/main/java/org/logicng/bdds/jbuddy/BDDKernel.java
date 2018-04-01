@@ -115,9 +115,7 @@ public final class BDDKernel {
   private int varnum; // Number of defined BDD variables
   private int[] refstack; // Internal node reference stack
   private int refstacktop; // Internal node reference stack top
-  private int[] var2level; // Variable -> level table
   private int[] level2var; // Level -> variable table
-  private boolean resized; // Flag indicating a resize of the nodetable
 
   private int[] quantvarset; // Current variable set for quant.
   private int quantvarsetID; // Current id used in quantvarset
@@ -132,9 +130,6 @@ public final class BDDKernel {
   private BDDCache appexcache; // Cache for appex/appall results
   private BDDCache replacecache; // Cache for replace results
   private BDDCache misccache; // Cache for other results
-  private int cacheratio;
-  //  private byte[] allsatProfile; // Variable profile for allSat()
-  //  private byte[] allunsatProfile; // Variable profile for allSat()
 
   /**
    * Constructor for the BDD kernel.
@@ -144,7 +139,6 @@ public final class BDDKernel {
   public BDDKernel(final int initialSize, final int cs) {
     this.nodesize = BDDPrime.primeGTE(initialSize);
     this.nodes = new BddNode[this.nodesize];
-    this.resized = false;
     this.minfreenodes = 20;
     for (int n = 0; n < this.nodesize; n++) {
       this.nodes[n] = new BddNode();
@@ -177,27 +171,12 @@ public final class BDDKernel {
    * @param num the number of variables to use
    */
   public void setNumberOfVars(final int num) {
+    if (this.varnum != 0)
+      throw new UnsupportedOperationException("Variable number is already set. Resetting it is not supported");
     if (num < 1 || num > MAXVAR)
       throw new IllegalArgumentException("Invalid variable number: " + num);
-    if (num < this.varnum)
-      throw new IllegalArgumentException("Cannot decrease variable number");
-    if (num == this.varnum)
-      return;
-    if (this.vars == null) {
-      this.vars = new int[num * 2];
-      this.level2var = new int[num + 1];
-      this.var2level = new int[num + 1];
-    } else {
-      int[] temp = new int[num * 2];
-      System.arraycopy(this.vars, 0, temp, 0, this.vars.length);
-      this.vars = temp;
-      temp = new int[num + 1];
-      System.arraycopy(this.level2var, 0, temp, 0, this.level2var.length);
-      this.level2var = temp;
-      temp = new int[num + 1];
-      System.arraycopy(this.var2level, 0, temp, 0, this.var2level.length);
-      this.var2level = temp;
-    }
+    this.vars = new int[num * 2];
+    this.level2var = new int[num + 1];
     this.refstack = new int[num * 2 + 4];
     this.refstacktop = 0;
     while (this.varnum < num) {
@@ -207,50 +186,12 @@ public final class BDDKernel {
       this.nodes[this.vars[this.varnum * 2]].refcou = MAXREF;
       this.nodes[this.vars[this.varnum * 2 + 1]].refcou = MAXREF;
       this.level2var[this.varnum] = this.varnum;
-      this.var2level[this.varnum] = this.varnum;
       this.varnum++;
     }
     this.nodes[0].level = num;
     this.nodes[1].level = num;
-    this.var2level[num] = num;
     this.level2var[num] = num;
     varResize();
-  }
-
-  /**
-   * Increases the number of variables to use by the given number.
-   * @param num the number of new variables
-   * @throws IllegalArgumentException if the number of new variables is not legel (negative or too big)
-   */
-  public void extendVarNum(final int num) {
-    if (num < 0 || num > 0x3FFFFFFF)
-      throw new IllegalArgumentException("illegal number of variables to extend");
-    setNumberOfVars(this.varnum + num);
-  }
-
-  /**
-   * Returns the number of variables.
-   * @return the number of variables
-   */
-  public int numberOfVars() {
-    return this.varnum;
-  }
-
-  /**
-   * Returns the number of nodes in the nodetable that are currently in use. Note that dead nodes that have not been
-   * reclaimed yet by a garbage collection are counted as active.
-   * @return the number of active nodes
-   */
-  public int numberOfNodes() {
-    return this.nodesize - this.freenum;
-  }
-
-  /**
-   * Returns the number of nodes currently allocated. This includes both dead and active nodes.
-   * @return the number of nodes currently allocated
-   */
-  public int numberOfAllocs() {
-    return this.nodesize;
   }
 
   /**
@@ -354,7 +295,6 @@ public final class BDDKernel {
     final int res;
     initRef();
     res = applyRec(l, r, op);
-    checkResize();
     return res;
   }
 
@@ -427,7 +367,6 @@ public final class BDDKernel {
     final int res;
     initRef();
     res = notRec(r);
-    checkResize();
     return res;
   }
 
@@ -496,46 +435,6 @@ public final class BDDKernel {
   }
 
   /**
-   * Returns a BDD representing a variable set.  The BDD variable set is represented as the conjunction of all the
-   * variables in their positive form and may just as well be made that way by the user. The user should keep a
-   * reference to the returned BDD instead of building it every time the set is needed.
-   * @param varset the set of variable indices
-   * @return the BDD representing the variable set
-   */
-  public int makeSet(final int[] varset) {
-    int res = 1;
-    for (int v = varset.length - 1; v >= 0; v--) {
-      addRef(res);
-      final int tmp = and(res, ithVar(varset[v]));
-      delRef(res);
-      res = tmp;
-    }
-    return res;
-  }
-
-
-  /**
-   * Prints the node table for a given BDD root node.
-   * @param r the BDD root node
-   */
-  public void printTable(final int r) {
-    System.out.println(String.format("ROOT: %d", r));
-    if (r < 2)
-      return;
-    mark(r);
-    for (int n = 0; n < this.nodesize; n++) {
-      if ((level(n) & MARKON) != 0) {
-        final BddNode node = this.nodes[n];
-        node.level &= MARKOFF;
-        System.out.print(String.format("[%5d] ", n));
-        System.out.print(String.format("%3d", this.level2var[node.level]));
-        System.out.print(String.format(": %3d", node.low));
-        System.out.println(String.format(" %3d", node.high));
-      }
-    }
-  }
-
-  /**
    * Returns all nodes for a given root node in their internal representation.  The internal representation is stored
    * in an array: {@code [node number, variable, low, high]}
    * @param r the BDD root node
@@ -555,8 +454,6 @@ public final class BDDKernel {
     }
     return result;
   }
-
-  // TODO comment
 
   private int makeNode(final int level, final int low, final int high) {
     final BddNode node;
@@ -705,7 +602,6 @@ public final class BDDKernel {
     this.freepos = oldsize;
     this.freenum += this.nodesize - oldsize;
     gbcRehash();
-    this.resized = true;
   }
 
   private void initRef() {
@@ -786,7 +682,6 @@ public final class BDDKernel {
     this.misccache = new BDDCache(cachesize);
     this.quantvarsetID = 0;
     this.quantvarset = null;
-    this.cacheratio = 0;
     this.supportSet = null;
   }
 
@@ -804,17 +699,6 @@ public final class BDDKernel {
     this.quantvarsetID = 0;
   }
 
-  int setCacheRatio(final int r) {
-    final int old = this.cacheratio;
-    if (r <= 0)
-      throw new IllegalArgumentException("Invalid cache ratio: " + r);
-    if (this.nodesize == 0)
-      return old;
-    this.cacheratio = r;
-    operatorsNodeResize();
-    return old;
-  }
-
   /**
    * Restricts the variables in the BDD {@code r} to constants true or false.  The restriction is submitted in the BDD
    * {@code var}.
@@ -829,7 +713,6 @@ public final class BDDKernel {
     varset2svartable(var);
     initRef();
     res = restrictRec(r, (var << 3) | CACHEID_RESTRICT);
-    checkResize();
     return res;
   }
 
@@ -870,7 +753,6 @@ public final class BDDKernel {
     varset2vartable(var);
     initRef();
     res = quantRec(r, Operand.OR, var << 3);
-    checkResize();
     return res;
   }
 
@@ -887,7 +769,6 @@ public final class BDDKernel {
     varset2vartable(var);
     initRef();
     res = quantRec(r, Operand.AND, (var << 3) | CACHEID_FORALL);
-    checkResize();
     return res;
   }
 
@@ -920,9 +801,7 @@ public final class BDDKernel {
     if (r < 2)
       return r;
     initRef();
-    final int res = satOneRec(r);
-    checkResize();
-    return res;
+    return satOneRec(r);
   }
 
   private int satOneRec(final int r) {
@@ -951,9 +830,7 @@ public final class BDDKernel {
     if (!isConst(pol))
       throw new IllegalArgumentException("polarity for satOneSet must be a constant");
     initRef();
-    final int res = satOneSetRec(r, var, pol);
-    checkResize();
-    return res;
+    return satOneSetRec(r, var, pol);
   }
 
   private int satOneSetRec(final int r, final int var, final int satPolarity) {
@@ -996,7 +873,6 @@ public final class BDDKernel {
     int res = fullSatOneRec(r);
     for (int v = level(r) - 1; v >= 0; v--)
       res = pushRef(makeNode(v, res, 0));
-    checkResize();
     return res;
   }
 
@@ -1215,24 +1091,6 @@ public final class BDDKernel {
     supportRec(node.high, support);
   }
 
-  private void checkResize() {
-    if (this.resized)
-      operatorsNodeResize();
-    this.resized = false;
-  }
-
-  private void operatorsNodeResize() {
-    if (this.cacheratio > 0) {
-      final int newcachesize = this.nodesize / this.cacheratio;
-      this.applycache.resize(newcachesize);
-      this.itecache.resize(newcachesize);
-      this.quantcache.resize(newcachesize);
-      this.appexcache.resize(newcachesize);
-      this.replacecache.resize(newcachesize);
-      this.misccache.resize(newcachesize);
-    }
-  }
-
   /**
    * Returns the number of nodes for a given BDD.
    * @param r the BDD root node
@@ -1325,6 +1183,9 @@ public final class BDDKernel {
     return statistics;
   }
 
+  /**
+   * A class for BDD statistics.
+   */
   public static final class BDDStatistics {
     private long produced;
     private int nodesize;
@@ -1333,26 +1194,50 @@ public final class BDDKernel {
     private int cachesize;
     private int gbcollectnum;
 
+    /**
+     * Returns the number of produced nodes.
+     * @return the number of produced nodes
+     */
     public long produced() {
       return this.produced;
     }
 
+    /**
+     * Returns the number of allocated nodes.
+     * @return the number of allocated nodes
+     */
     public int nodesize() {
       return this.nodesize;
     }
 
+    /**
+     * Returns the number of free nodes.
+     * @return the number of free nodes
+     */
     public int freenum() {
       return this.freenum;
     }
 
+    /**
+     * Returns the number of variables.
+     * @return the number of variables
+     */
     public int varnum() {
       return this.varnum;
     }
 
+    /**
+     * Returns the cache size.
+     * @return the cache size
+     */
     public int cachesize() {
       return this.cachesize;
     }
 
+    /**
+     * Returns the number of garbage collections.
+     * @return the number of garbage collections
+     */
     public int gbcollectnum() {
       return this.gbcollectnum;
     }

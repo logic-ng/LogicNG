@@ -125,7 +125,7 @@ public final class BDD {
    * @param variables the variables
    * @return the list of all models
    */
-  public List<Assignment> enumerateAllModels(final Variable[] variables) {
+  public List<Assignment> enumerateAllModels(final Variable... variables) {
     return this.enumerateAllModels(Arrays.asList(variables));
   }
 

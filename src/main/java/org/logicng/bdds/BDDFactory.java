@@ -74,7 +74,6 @@ import org.logicng.formulas.Variable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -205,86 +204,6 @@ public final class BDDFactory {
   }
 
   /**
-   * Returns a BDD representing the i-th variable (one node with the children true and false).
-   * @param i the index i
-   * @return the BDD representing the i-th variable
-   * @throws IllegalArgumentException if the index is not within the range of variables
-   */
-  public int ithVar(final int i) {
-    return this.kernel.addRef(this.kernel.ithVar(i));
-  }
-
-  /**
-   * Returns a BDD representing the negation of the i-th variable (one node with the children true and false).
-   * @param i the index i
-   * @return the BDD representing the negated i-th variable
-   * @throws IllegalArgumentException if the index is not within the range of variables
-   */
-  public int nithVar(final int i) {
-    return this.kernel.addRef(this.kernel.nithVar(i));
-  }
-
-  /**
-   * Returns the conjunction of two BDDs.
-   * @param a the first BDD
-   * @param b the second BDD
-   * @return the conjunction of the two BDDs
-   */
-  public int and(final int a, final int b) {
-    return this.kernel.addRef(this.kernel.and(a, b));
-  }
-
-  /**
-   * Returns the disjunction of two BDDs.
-   * @param a the first BDD
-   * @param b the second BDD
-   * @return the disjunction of the two BDDs
-   */
-  public int or(final int a, final int b) {
-    return this.kernel.addRef(this.kernel.or(a, b));
-  }
-
-  /**
-   * Returns the implication of two BDDs.
-   * @param a the first BDD
-   * @param b the second BDD
-   * @return the implication of the two BDDs
-   */
-  public int implication(final int a, final int b) {
-    return this.kernel.addRef(this.kernel.implication(a, b));
-  }
-
-  /**
-   * Returns the equivalence of two BDDs.
-   * @param a the first BDD
-   * @param b the second BDD
-   * @return the equivalence of the two BDDs
-   */
-  public int equivalence(final int a, final int b) {
-    return this.kernel.addRef(this.kernel.equivalence(a, b));
-  }
-
-  /**
-   * Returns the negation of a BDD.
-   * @param r the BDD
-   * @return the negation of the BDD
-   */
-  public int not(final int r) {
-    return this.kernel.addRef(this.kernel.not(r));
-  }
-
-  /**
-   * Returns a BDD representing a variable set.  The BDD variable set is represented as the conjunction of all the
-   * variables in their positive form and may just as well be made that way by the user. The user should keep a
-   * reference to the returned BDD instead of building it every time the set is needed.
-   * @param varset the set of variable indices
-   * @return the BDD representing the variable set
-   */
-  public int makeSet(final int[] varset) {
-    return this.kernel.addRef(this.kernel.makeSet(varset));
-  }
-
-  /**
    * Sets the number of variables for this factory.
    * @param num the number of variables
    */
@@ -308,44 +227,6 @@ public final class BDDFactory {
    */
   public boolean isContradiction(final BDD m) {
     return m.index() == 0;
-  }
-
-  /**
-   * Returns the variable index labeling the given root node.
-   * @param root the root node of the BDD
-   * @return the variable index
-   */
-  public int bddVar(final int root) {
-    return this.kernel.bddVar(root);
-  }
-
-  public Variable variableAtNode(final int node) {
-    return this.idx2var.get(this.kernel.bddVar(node));
-  }
-
-  public int lowNode(final int root) {
-    return this.kernel.bddLow(root);
-  }
-
-  public int highNode(final int root) {
-    return this.kernel.bddHigh(root);
-  }
-
-  /**
-   * Returns the number of variables.
-   * @return the number of variables
-   */
-  int numberOfVars() {
-    return this.kernel.numberOfVars();
-  }
-
-  /**
-   * Increases the number of variables to use by the given number.
-   * @param num the number of new variables
-   * @throws IllegalArgumentException if the number of new variables is not legal (negative or too big)
-   */
-  public void extendVarNum(final int num) {
-    this.kernel.extendVarNum(num);
   }
 
   /**
@@ -373,17 +254,7 @@ public final class BDDFactory {
    * @return the list of all models
    */
   public List<Assignment> enumerateAllModels(final BDD bdd) {
-    return enumerateAllModels(bdd, (Collection<Variable>) null);
-  }
-
-  /**
-   * Enumerates all models of a given BDD wrt. a given set of variables.
-   * @param bdd       the BDD
-   * @param variables the variables
-   * @return the list of all models
-   */
-  public List<Assignment> enumerateAllModels(final BDD bdd, final Variable[] variables) {
-    return this.enumerateAllModels(bdd, Arrays.asList(variables));
+    return enumerateAllModels(bdd, null);
   }
 
   /**
@@ -583,17 +454,8 @@ public final class BDDFactory {
       final Variable variable = this.idx2var.get(node[1]);
       final BDDNode lowNode = getInnerNode(node[2], falseNode, trueNode, innerNodes);
       final BDDNode highNode = getInnerNode(node[3], falseNode, trueNode, innerNodes);
-      final BDDInnerNode foundNode = innerNodes.get(nodenum);
-      if (foundNode == null)
+      if (innerNodes.get(nodenum) == null)
         innerNodes.put(nodenum, new BDDInnerNode(variable, lowNode, highNode));
-      else {
-        if (foundNode.label() == null)
-          foundNode.setVar(variable);
-        if (foundNode.low() == null)
-          foundNode.setLow(lowNode);
-        if (foundNode.high() == null)
-          foundNode.setHigh(highNode);
-      }
     }
     return innerNodes.get(bdd);
   }
@@ -617,16 +479,14 @@ public final class BDDFactory {
     else if (index == BDDKernel.BDD_TRUE)
       return trueNode;
     else {
-      final BDDInnerNode innerNode = innerNodes.get(index);
-      if (innerNode == null) {
-        final BDDInnerNode newNode = new BDDInnerNode();
-        innerNodes.put(index, newNode);
-        return newNode;
-      }
-      return innerNode;
+      return innerNodes.get(index);
     }
   }
 
+  /**
+   * Returns the BDD Kernel of this factory.  The Kernel should only be accessed when you know, what you are doing.
+   * @return the BDD Kernel
+   */
   public BDDKernel underlyingKernel() {
     return this.kernel;
   }
@@ -639,32 +499,58 @@ public final class BDDFactory {
     return this.f;
   }
 
+  /**
+   * A internal representation of BDD nodes.  Only for internal usage.
+   */
   public static class InternalBDDNode {
     private final int nodenum;
     private final String label;
     private final int low;
     private final int high;
 
-    public InternalBDDNode(final int nodenum, final String label, final int low, final int high) {
-      this.nodenum = nodenum;
+    /**
+     * Constructs a new internal BDD node.
+     * @param nodeNum the node number
+     * @param label   the label
+     * @param low     the low node number
+     * @param high    the high node number
+     */
+    private InternalBDDNode(final int nodeNum, final String label, final int low, final int high) {
+      this.nodenum = nodeNum;
       this.label = label;
       this.low = low;
       this.high = high;
     }
 
-    public int getNodenum() {
+    /**
+     * Returns the node number.
+     * @return the node number
+     */
+    public int nodenum() {
       return this.nodenum;
     }
 
-    public String getLabel() {
+    /**
+     * Returns the label.
+     * @return the label
+     */
+    public String label() {
       return this.label;
     }
 
-    public int getLow() {
+    /**
+     * Returns the low node number.
+     * @return the low node number
+     */
+    public int low() {
       return this.low;
     }
 
-    public int getHigh() {
+    /**
+     * Returns the high node number.
+     * @return the high node number
+     */
+    public int high() {
       return this.high;
     }
   }

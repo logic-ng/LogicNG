@@ -52,13 +52,13 @@ public interface BDDNode {
   boolean isInnerNode();
 
   /**
-   * Returns the node of the low edge.
+   * Returns the node of the low edge or {@code null} for a terminal node.
    * @return the node of the low edge
    */
   BDDNode low();
 
   /**
-   * Returns the node of the high edge.
+   * Returns the node of the high edge or {@code null} for a terminal node.
    * @return the node of the high edge
    */
   BDDNode high();

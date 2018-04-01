@@ -43,5 +43,60 @@ public class BDDLowLevelTest {
     assertThat(statistics.nodesize()).isEqualTo(1009);
     assertThat(statistics.produced()).isEqualTo(14);
     assertThat(statistics.varnum()).isEqualTo(3);
+    assertThat(statistics.toString()).isEqualTo("BDDStatistics{produced nodes=14, allocated nodes=1009, free nodes=993, variables=3, cache size=1000, garbage collections=0}");
+  }
+
+  @Test
+  public void kernelTests() {
+    final BDDKernel kernel = this.factory.underlyingKernel();
+    assertThat(kernel.ithVar(0)).isEqualTo(2);
+    assertThat(kernel.nithVar(0)).isEqualTo(3);
+    assertThat(kernel.bddVar(2)).isEqualTo(0);
+    assertThat(kernel.bddLow(2)).isEqualTo(0);
+    assertThat(kernel.bddHigh(2)).isEqualTo(1);
+
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void illegalKernel1() {
+    final BDDKernel kernel = this.factory.underlyingKernel();
+    kernel.ithVar(-1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void illegalKernel2() {
+    final BDDKernel kernel = this.factory.underlyingKernel();
+    kernel.nithVar(-1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void illegalKernel3() {
+    final BDDKernel kernel = this.factory.underlyingKernel();
+    kernel.bddVar(1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void illegalKernel4() {
+    final BDDKernel kernel = this.factory.underlyingKernel();
+    kernel.bddLow(1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void illegalKernel5() {
+    final BDDKernel kernel = this.factory.underlyingKernel();
+    kernel.bddHigh(1);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testResettingVarNum() {
+    final BDDFactory factory = new BDDFactory(100, 100, new FormulaFactory());
+    factory.setNumberOfVars(4);
+    factory.setNumberOfVars(5);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSetNegativeVarNum() {
+    final BDDFactory factory = new BDDFactory(100, 100, new FormulaFactory());
+    factory.setNumberOfVars(-4);
   }
 }

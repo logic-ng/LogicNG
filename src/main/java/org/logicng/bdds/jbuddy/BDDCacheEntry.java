@@ -84,9 +84,4 @@ final class BDDCacheEntry {
   void reset() {
     this.a = -1;
   }
-
-  @Override
-  public String toString() {
-    return String.format("[a=%d b=%d c=%d res=%d bdres=%s]", this.a, this.b, this.c, this.res, this.bdres);
-  }
 }

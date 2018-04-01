@@ -42,12 +42,9 @@ import java.util.Set;
  */
 public final class BDDInnerNode implements BDDNode {
 
-  private Variable var;
-  private BDDNode low;
-  private BDDNode high;
-
-  public BDDInnerNode() {
-  }
+  private final Variable var;
+  private final BDDNode low;
+  private final BDDNode high;
 
   /**
    * Constructor for a new inner BDD node holding a variable.
@@ -79,18 +76,6 @@ public final class BDDInnerNode implements BDDNode {
   @Override
   public BDDNode high() {
     return this.high;
-  }
-
-  public void setVar(final Variable var) {
-    this.var = var;
-  }
-
-  public void setLow(final BDDNode low) {
-    this.low = low;
-  }
-
-  public void setHigh(final BDDNode high) {
-    this.high = high;
   }
 
   @Override
