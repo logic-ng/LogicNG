@@ -46,7 +46,8 @@ public enum TransformationCacheEntry implements CacheEntry {
   BDD_DNF("disjunctive normal form via BDD"),
   AIG("and-inverter graph"),
   UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification");
+  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
+  ANONYMIZATION("anonymization");
 
   private final String description;
 

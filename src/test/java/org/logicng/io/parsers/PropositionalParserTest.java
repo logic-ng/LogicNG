@@ -32,6 +32,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Unit Tests for the class {@link PropositionalParser}.
  * @version 1.1
@@ -130,6 +132,12 @@ public class PropositionalParserTest {
     Assert.assertEquals(F.f.verum(), parser.parse(" \r\n\n  \t"));
     Assert.assertEquals(F.AND1, parser.parse("a\n&\tb"));
     Assert.assertEquals(F.IMP1, parser.parse(" a\r=>\t\tb"));
+  }
+
+  @Test
+  public void testNumericalLiteral() throws ParserException {
+    PropositionalParser parser = new PropositionalParser(F.f);
+    assertThat(parser.parse("12")).isEqualTo(F.f.variable("12"));
   }
 
   @Test(expected = ParserException.class)

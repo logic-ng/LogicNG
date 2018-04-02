@@ -55,7 +55,7 @@ public class Substitution {
    * @return the number of mappings in this substitution
    */
   public int size() {
-    return subst.size();
+    return this.subst.size();
   }
 
   /**
@@ -66,7 +66,7 @@ public class Substitution {
    * @param formula  the formula
    */
   public void addMapping(final Variable variable, final Formula formula) {
-    subst.put(variable, formula);
+    this.subst.put(variable, formula);
   }
 
   /**
@@ -75,15 +75,12 @@ public class Substitution {
    * @return an formula of {@code null}
    */
   public Formula getSubstitution(final Variable variable) {
-    Formula res = subst.get(variable);
-    if (res == null)
-      return null;
-    return res;
+    return this.subst.get(variable);
   }
 
   @Override
   public int hashCode() {
-    return subst.hashCode();
+    return this.subst.hashCode();
   }
 
   @Override
@@ -93,6 +90,6 @@ public class Substitution {
 
   @Override
   public String toString() {
-    return "Substitution" + subst;
+    return "Substitution" + this.subst;
   }
 }
