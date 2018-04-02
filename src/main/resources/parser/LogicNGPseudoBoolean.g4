@@ -28,25 +28,27 @@
 
 grammar LogicNGPseudoBoolean;
 
+options {
+  superClass = ParserWithFormula;
+}
+
 @parser::header {
-package org.logicng.io.parsers;
+  package org.logicng.io.parsers;
 
-import java.util.LinkedHashSet;
-import org.logicng.formulas.*;
+  import java.util.LinkedHashSet;
+  import org.logicng.formulas.*;
 }
 
-@members {
-private FormulaFactory f;
-
-public void setFormulaFactory(final FormulaFactory f) {
-  this.f = f;
-}
+@parser::members {
+  public Formula getParsedFormula() {
+    return formula().f;
+  }
 }
 
 @lexer::header {
-package org.logicng.io.parsers;
+  package org.logicng.io.parsers;
 
-import org.logicng.formulas.FormulaFactory;
+  import org.logicng.formulas.FormulaFactory;
 }
 
 formula returns [Formula f]
@@ -65,7 +67,8 @@ comparison returns [Formula f]
   | e = add GT n = NUMBER  {$f = f.pbc(CType.GT, Integer.parseInt($n.text), $e.literals, $e.coeffs);};
 
 simp returns [Formula f]
-  :	LITERAL       {$f = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true));}
+  :	NUMBER        {$f = ($NUMBER.text.startsWith("~") ? f.literal($NUMBER.text.substring(1, $NUMBER.text.length()), false) : f.literal($NUMBER.text, true));}
+  |	LITERAL       {$f = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true));}
   |	constant      {$f = $constant.f;}
   | comparison    {$f = $comparison.f;}
   | LBR equiv RBR {$f = $equiv.f;};
@@ -92,7 +95,9 @@ equiv returns [Formula f]
 
 mul returns [Literal l, int c]
   : LITERAL {$l = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true)); $c = 1;}
-  | NUMBER MUL LITERAL {$l = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true)); $c = Integer.parseInt($NUMBER.text);};
+  | NUMBER  {$l = f.literal($NUMBER.text, true); $c = 1;}
+  | NUMBER MUL LITERAL {$l = ($LITERAL.text.startsWith("~") ? f.literal($LITERAL.text.substring(1, $LITERAL.text.length()), false) : f.literal($LITERAL.text, true)); $c = Integer.parseInt($NUMBER.text);}
+  | num = NUMBER MUL lt = NUMBER {$l = f.literal($lt.text, true); $c = Integer.parseInt($num.text);};
 
 add returns [List<Literal> literals, List<Integer> coeffs]
 @init{$literals = new ArrayList<>(); $coeffs = new ArrayList<>();}
@@ -100,7 +105,7 @@ add returns [List<Literal> literals, List<Integer> coeffs]
 
 
 NUMBER   : [\-]?[0-9]+;
-LITERAL  : [~]?[A-Za-z_@][A-Za-z0-9_]*;
+LITERAL  : [~]?[A-Za-z0-9_@][A-Za-z0-9_]*;
 TRUE     : '$true';
 FALSE    : '$false';
 LBR      : '(';
