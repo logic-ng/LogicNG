@@ -32,6 +32,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -43,22 +47,22 @@ public class PropositionalParserTest {
 
   @Test
   public void testExceptions() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(""));
-    String s = null;
+    final String s = null;
     Assert.assertEquals(F.f.verum(), parser.parse(s));
   }
 
   @Test
   public void testParseConstants() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse("$true"));
     Assert.assertEquals(F.f.falsum(), parser.parse("$false"));
   }
 
   @Test
   public void testParseLiterals() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.variable("A"), parser.parse("A"));
     Assert.assertEquals(F.f.variable("a"), parser.parse("a"));
     Assert.assertEquals(F.f.variable("a1"), parser.parse("a1"));
@@ -72,7 +76,7 @@ public class PropositionalParserTest {
 
   @Test
   public void testParseOperators() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.not(F.f.variable("a")), parser.parse("~a"));
     Assert.assertEquals(F.f.not(F.f.variable("Var")), parser.parse("~Var"));
     Assert.assertEquals(F.f.and(F.f.variable("a"), F.f.variable("b")), parser.parse("a & b"));
@@ -89,7 +93,7 @@ public class PropositionalParserTest {
 
   @Test
   public void testParsePrecedences() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.or(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x | y & z"));
     Assert.assertEquals(F.f.or(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y | z"));
     Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => y & z"));
@@ -117,14 +121,22 @@ public class PropositionalParserTest {
   }
 
   @Test
+  public void parseInputStream() throws ParserException {
+    final PropositionalParser parser = new PropositionalParser(F.f);
+    final String string = "A & B => D | ~C";
+    final InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+    assertThat(parser.parse(stream)).isEqualTo(parser.parse(string));
+  }
+
+  @Test
   public void parseEmptyString() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(""));
   }
 
   @Test
   public void testSkipSymbols() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(" "));
     Assert.assertEquals(F.f.verum(), parser.parse("\t"));
     Assert.assertEquals(F.f.verum(), parser.parse("\n"));
@@ -136,7 +148,7 @@ public class PropositionalParserTest {
 
   @Test
   public void testNumericalLiteral() throws ParserException {
-    PropositionalParser parser = new PropositionalParser(F.f);
+    final PropositionalParser parser = new PropositionalParser(F.f);
     assertThat(parser.parse("12")).isEqualTo(F.f.variable("12"));
   }
 
