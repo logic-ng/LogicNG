@@ -74,7 +74,7 @@ public class MinToMaxOrdering implements VariableOrderingProvider {
     return order;
   }
 
-  public static Map<Variable, Integer> sortProfileByOccurrence(final Map<Variable, Integer> map, final Comparator<Map.Entry<Variable, Integer>> comparator) {
+  static Map<Variable, Integer> sortProfileByOccurrence(final Map<Variable, Integer> map, final Comparator<Map.Entry<Variable, Integer>> comparator) {
     final List<Map.Entry<Variable, Integer>> list = new ArrayList<>(map.entrySet());
     Collections.sort(list, comparator);
     final Map<Variable, Integer> result = new LinkedHashMap<>();

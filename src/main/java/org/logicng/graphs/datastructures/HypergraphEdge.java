@@ -26,37 +26,75 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.orderings;
+package org.logicng.graphs.datastructures;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * An enumeration for the different BDD variable orderings.  A variable ordering is associated
- * with its own provider which can generate orderings for this ordering.
+ * An edge in a hypergraph.
+ * @param <T> the content type of the graph's nodes
  * @version 1.4.0
  * @since 1.4.0
  */
-public enum VariableOrdering {
+public class HypergraphEdge<T> {
 
-  DFS(DFSOrdering.class),
-  BFS(BFSOrdering.class),
-  MIN2MAX(MinToMaxOrdering.class),
-  MAX2MIN(MaxToMinOrdering.class),
-  FORCE(ForceOrdering.class);
-
-  private final Class<? extends VariableOrderingProvider> provider;
+  private final Set<HypergraphNode<T>> nodes;
 
   /**
-   * Constructs a new variable ordering with a given provider.
-   * @param provider the provider
+   * Constructs a new edge for a given set of nodes.
+   * @param nodes the nodes connected by this edge
    */
-  VariableOrdering(final Class<? extends VariableOrderingProvider> provider) {
-    this.provider = provider;
+  public HypergraphEdge(final Collection<HypergraphNode<T>> nodes) {
+    this.nodes = new HashSet<>(nodes);
+    for (final HypergraphNode<T> node : nodes)
+      node.addEdge(this);
   }
 
   /**
-   * Returns the provider for this variable ordering.
-   * @return the provider for this variable ordering
+   * Returns the nodes connected by this edge.
+   * @return the nodes connected by this edge
    */
-  public Class<? extends VariableOrderingProvider> provider() {
-    return this.provider;
+  public Set<HypergraphNode<T>> nodes() {
+    return this.nodes;
+  }
+
+  /**
+   * Computes the center of gravity for this edge (see Aloul, Markov, and Sakallah).
+   * @param nodeOrdering the node ordering for which the COG is computed
+   * @return the center of gravity for this edge
+   */
+  public double centerOfGravity(final Map<HypergraphNode<T>, Integer> nodeOrdering) {
+    int cog = 0;
+    for (final HypergraphNode<T> node : this.nodes) {
+      final Integer level = nodeOrdering.get(node);
+      if (level == null)
+        throw new IllegalStateException("Could not find node " + node + " in the node ordering.");
+      cog += level;
+    }
+    return (double) cog / this.nodes.size();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    final HypergraphEdge<?> that = (HypergraphEdge<?>) o;
+    return Objects.equals(this.nodes, that.nodes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.nodes);
+  }
+
+  @Override
+  public String toString() {
+    return "HypergraphEdge{" +
+            "nodes=" + this.nodes +
+            '}';
   }
 }

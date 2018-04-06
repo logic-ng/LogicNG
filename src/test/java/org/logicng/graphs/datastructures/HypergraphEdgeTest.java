@@ -26,37 +26,48 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.bdds.orderings;
+package org.logicng.graphs.datastructures;
+
+import org.assertj.core.data.Offset;
+import org.junit.Test;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
+import org.logicng.graphs.generators.HypergraphGenerator;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * An enumeration for the different BDD variable orderings.  A variable ordering is associated
- * with its own provider which can generate orderings for this ordering.
+ * Unit tests for {@link HypergraphEdge}.
  * @version 1.4.0
  * @since 1.4.0
  */
-public enum VariableOrdering {
+public class HypergraphEdgeTest {
 
-  DFS(DFSOrdering.class),
-  BFS(BFSOrdering.class),
-  MIN2MAX(MinToMaxOrdering.class),
-  MAX2MIN(MaxToMinOrdering.class),
-  FORCE(ForceOrdering.class);
+  private final Offset<Double> offset = Offset.offset(0.000001);
 
-  private final Class<? extends VariableOrderingProvider> provider;
-
-  /**
-   * Constructs a new variable ordering with a given provider.
-   * @param provider the provider
-   */
-  VariableOrdering(final Class<? extends VariableOrderingProvider> provider) {
-    this.provider = provider;
+  @Test
+  public void testCenterOfGravity() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Hypergraph<Variable> hypergraph = HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
+    final HypergraphEdge<Variable> edge = hypergraph.edges().iterator().next();
+    final Map<HypergraphNode<Variable>, Integer> ordering = new HashMap<>();
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("A")), 1);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("B")), 2);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("C")), 3);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("D")), 4);
+    assertThat(edge.centerOfGravity(ordering)).isCloseTo(2.5, this.offset);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("A")), 2);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("B")), 4);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("C")), 6);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("D")), 8);
+    assertThat(edge.centerOfGravity(ordering)).isCloseTo(5, this.offset);
   }
 
-  /**
-   * Returns the provider for this variable ordering.
-   * @return the provider for this variable ordering
-   */
-  public Class<? extends VariableOrderingProvider> provider() {
-    return this.provider;
-  }
 }
