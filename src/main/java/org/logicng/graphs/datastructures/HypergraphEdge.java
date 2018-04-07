@@ -29,7 +29,7 @@
 package org.logicng.graphs.datastructures;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -42,14 +42,14 @@ import java.util.Set;
  */
 public class HypergraphEdge<T> {
 
-  private final Set<HypergraphNode<T>> nodes;
+  private final LinkedHashSet<HypergraphNode<T>> nodes;
 
   /**
    * Constructs a new edge for a given set of nodes.
    * @param nodes the nodes connected by this edge
    */
   public HypergraphEdge(final Collection<HypergraphNode<T>> nodes) {
-    this.nodes = new HashSet<>(nodes);
+    this.nodes = new LinkedHashSet<>(nodes);
     for (final HypergraphNode<T> node : nodes)
       node.addEdge(this);
   }

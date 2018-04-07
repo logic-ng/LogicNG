@@ -28,10 +28,10 @@
 
 package org.logicng.graphs.datastructures;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A node in an hypergraph.
@@ -43,7 +43,7 @@ public class HypergraphNode<T> {
 
   private final Hypergraph<T> graph;
   private final T content;
-  private final List<HypergraphEdge<T>> edges;
+  private final LinkedHashSet<HypergraphEdge<T>> edges;
 
   /**
    * Constructs a new hypergraph node for a given graph and content.
@@ -53,7 +53,7 @@ public class HypergraphNode<T> {
   public HypergraphNode(final Hypergraph<T> graph, final T content) {
     this.graph = graph;
     this.content = content;
-    this.edges = new ArrayList<>();
+    this.edges = new LinkedHashSet<>();
   }
 
   /**
@@ -76,7 +76,7 @@ public class HypergraphNode<T> {
    * Returns the edges which are connected with this node.
    * @return the edges which are connected with this node
    */
-  public List<HypergraphEdge<T>> edges() {
+  public Set<HypergraphEdge<T>> edges() {
     return this.edges;
   }
 

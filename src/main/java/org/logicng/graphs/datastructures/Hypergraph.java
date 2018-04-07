@@ -30,7 +30,7 @@ package org.logicng.graphs.datastructures;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -41,15 +41,15 @@ import java.util.Set;
  */
 public class Hypergraph<T> {
 
-  private final Set<HypergraphNode<T>> nodes;
-  private final Set<HypergraphEdge<T>> edges;
+  private final LinkedHashSet<HypergraphNode<T>> nodes;
+  private final LinkedHashSet<HypergraphEdge<T>> edges;
 
   /**
    * Constructs a new hypergraph.
    */
   public Hypergraph() {
-    this.nodes = new HashSet<>();
-    this.edges = new HashSet<>();
+    this.nodes = new LinkedHashSet<>();
+    this.edges = new LinkedHashSet<>();
   }
 
   /**
