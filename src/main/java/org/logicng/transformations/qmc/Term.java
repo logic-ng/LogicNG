@@ -30,6 +30,9 @@ package org.logicng.transformations.qmc;
 
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,6 +122,16 @@ class Term {
     final List<Formula> newMinterms = new ArrayList<>(this.minterms);
     newMinterms.addAll(other.minterms);
     return new Term(newBits, newMinterms);
+  }
+
+  Formula translateToFormula(final List<Variable> varOrder) {
+    final FormulaFactory f = varOrder.get(0).factory();
+    assert this.bits.length == varOrder.size();
+    final List<Literal> operands = new ArrayList<>(varOrder.size());
+    for (int i = 0; i < this.bits.length; i++)
+      if (this.bits[i] != Tristate.UNDEF)
+        operands.add(this.bits[i] == Tristate.TRUE ? varOrder.get(i) : varOrder.get(i).negate());
+    return f.and(operands);
   }
 
   @Override

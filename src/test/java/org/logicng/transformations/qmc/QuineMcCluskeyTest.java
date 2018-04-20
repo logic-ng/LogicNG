@@ -28,12 +28,16 @@
 
 package org.logicng.transformations.qmc;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.predicates.DNFPredicate;
+import org.logicng.predicates.satisfiability.TautologyPredicate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,17 +47,50 @@ import java.util.List;
 import java.util.SortedMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.transformations.qmc.QuineMcCluskey.computePrimeImplicants;
-import static org.logicng.transformations.qmc.QuineMcCluskey.convertToTerm;
-import static org.logicng.transformations.qmc.QuineMcCluskey.generateInitialTermClasses;
-import static org.logicng.transformations.qmc.QuineMcCluskey.uniteInTermClasses;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.chooseSatBased;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.computePrimeImplicants;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.convertToTerm;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.generateInitialTermClasses;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.uniteInTermClasses;
 
 /**
- * Unit tests for {@link QuineMcCluskey}.
+ * Unit tests for {@link QuineMcCluskeyAlgorithm}.
  * @version 1.4.0
  * @since 1.4.0
  */
 public class QuineMcCluskeyTest {
+
+  @Test
+  public void testSimple1() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula formula = p.parse("(~a & ~b & ~c) | (~a & ~b & c) | (~a & b & ~c) | (a & ~b & c) | (a & b & ~c) | (a & b & c)");
+    final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
+    assertThat(dnf.holds(new DNFPredicate())).isTrue();
+    assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
+  }
+
+  @Test
+  public void testSimple2() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula formula = p.parse("(~a & ~b & ~c) | (~a & b & ~c) | (a & ~b & c) | (a & b & c)");
+    final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
+    assertThat(dnf.holds(new DNFPredicate())).isTrue();
+    assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
+  }
+
+  @Ignore
+  @Test
+  public void testSimple3() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula formula = p.parse("A => B & C & ~((D | E | F | G | H | I | J) & ~K) & L");
+    final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
+    assertThat(dnf.holds(new DNFPredicate())).isTrue();
+    assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
+    System.out.println(dnf);
+  }
 
   @Test
   public void testConvertToTerm() throws ParserException {
@@ -221,7 +258,22 @@ public class QuineMcCluskeyTest {
 
   }
 
-  private Term getTerm(final String string, final FormulaFactory f) throws ParserException {
+  @Test
+  public void testSatBasedSelection() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final Term m0 = getTerm("~a ~b ~c", f);
+    final Term m1 = getTerm("~a ~b c", f);
+    final Term m2 = getTerm("~a b ~c", f);
+    final Term m3 = getTerm("a ~b c", f);
+    final Term m4 = getTerm("a b ~c", f);
+    final Term m5 = getTerm("a b c", f);
+    final LinkedHashSet<Term> primeImplicants = computePrimeImplicants(Arrays.asList(m0, m1, m2, m3, m4, m5));
+    final TermTable table = new TermTable(primeImplicants);
+    final List<Term> terms = chooseSatBased(table, f);
+    assertThat(terms).hasSize(3);
+  }
+
+  static Term getTerm(final String string, final FormulaFactory f) throws ParserException {
     final List<Literal> literals = new ArrayList<>();
     final PropositionalParser p = new PropositionalParser(f);
     for (final String var : string.split(" "))
