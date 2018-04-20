@@ -48,7 +48,6 @@ public class Term {
   private final Tristate[] bits;
   private final List<Formula> minterms;
   private final int termClass;
-  private boolean used;
 
   /**
    * Constructs a new term with a given set of bits and the related minterms.
@@ -84,14 +83,6 @@ public class Term {
 
   public int termClass() {
     return this.termClass;
-  }
-
-  public boolean isUsed() {
-    return this.used;
-  }
-
-  public void setUsed(final boolean used) {
-    this.used = used;
   }
 
   /**
