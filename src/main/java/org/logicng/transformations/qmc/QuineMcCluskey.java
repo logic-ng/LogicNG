@@ -25,16 +25,16 @@
 //  permissions and limitations under the License.                       //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
-
 package org.logicng.transformations.qmc;
 
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -45,16 +45,59 @@ import java.util.TreeMap;
  */
 public class QuineMcCluskey {
 
-  void computePrimeImplicants(final List<Term> terms) {
-    final SortedMap<Integer, List<Term>> termsInClasses = generateInitialTermClasses(terms);
+  static LinkedHashSet<Term> computePrimeImplicants(final List<Term> terms) {
+    SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = generateInitialTermClasses(terms);
+    SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = uniteInTermClasses(termsInClasses);
+    final LinkedHashSet<Term> primeImplicants = getUnusedTerms(termsInClasses);
+    while (!newTermsInClasses.isEmpty()) {
+      termsInClasses = newTermsInClasses;
+      newTermsInClasses = uniteInTermClasses(termsInClasses);
+      primeImplicants.addAll(getUnusedTerms(termsInClasses));
+    }
+    return primeImplicants;
   }
 
-  static SortedMap<Integer, List<Term>> generateInitialTermClasses(final List<Term> terms) {
-    final SortedMap<Integer, List<Term>> termsInClasses = new TreeMap<>();
+  static SortedMap<Integer, LinkedHashSet<Term>> uniteInTermClasses(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
+    final SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = new TreeMap<>();
+    for (int i = 0; i < termsInClasses.lastKey(); i++) {
+      final LinkedHashSet<Term> thisClass = termsInClasses.get(i);
+      final LinkedHashSet<Term> otherClass = termsInClasses.get(i + 1);
+      if (thisClass != null && otherClass != null) {
+        for (final Term thisTerm : thisClass) {
+          for (final Term otherTerm : otherClass) {
+            final Term unite = thisTerm.unite(otherTerm);
+            if (unite != null) {
+              thisTerm.setUsed(true);
+              otherTerm.setUsed(true);
+              LinkedHashSet<Term> foundTerms = newTermsInClasses.get(unite.termClass());
+              if (foundTerms == null) {
+                foundTerms = new LinkedHashSet<>();
+                newTermsInClasses.put(unite.termClass(), foundTerms);
+              }
+              foundTerms.add(unite);
+            }
+          }
+        }
+      }
+    }
+    return newTermsInClasses;
+  }
+
+  private static LinkedHashSet<Term> getUnusedTerms(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
+    final LinkedHashSet<Term> unusedTerms = new LinkedHashSet<>();
+    for (final Map.Entry<Integer, LinkedHashSet<Term>> entry : termsInClasses.entrySet())
+      for (final Term term : entry.getValue())
+        if (!term.isUsed())
+          unusedTerms.add(term);
+    return unusedTerms;
+  }
+
+  static SortedMap<Integer, LinkedHashSet<Term>> generateInitialTermClasses(final List<Term> terms) {
+    final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = new TreeMap<>();
     for (final Term term : terms) {
-      List<Term> presentTerms = termsInClasses.get(term.termClass());
+      LinkedHashSet<Term> presentTerms = termsInClasses.get(term.termClass());
       if (presentTerms == null) {
-        presentTerms = new ArrayList<>();
+        presentTerms = new LinkedHashSet<>();
         termsInClasses.put(term.termClass(), presentTerms);
       }
       presentTerms.add(term);

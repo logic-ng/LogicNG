@@ -34,20 +34,21 @@ import org.logicng.formulas.Formula;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A term in the Quine–McCluskey algorithm.  A term represents a set of
  * minterms of a canonical DNF and has its own representation as a vector
- * of tristates.
+ * of tristates.  Two minterms are considered equals if their bit representation
+ * is equals (independent of their associated minterms)
  * @version 1.4.0
  * @since 1.4.0
  */
-public class Term {
+class Term {
 
   private final Tristate[] bits;
   private final List<Formula> minterms;
   private final int termClass;
+  private boolean used;
 
   /**
    * Constructs a new term with a given set of bits and the related minterms.
@@ -73,16 +74,24 @@ public class Term {
     return result;
   }
 
-  public Tristate[] bits() {
+  Tristate[] bits() {
     return this.bits;
   }
 
-  public List<Formula> minterms() {
+  List<Formula> minterms() {
     return this.minterms;
   }
 
-  public int termClass() {
+  int termClass() {
     return this.termClass;
+  }
+
+  boolean isUsed() {
+    return this.used;
+  }
+
+  void setUsed(final boolean used) {
+    this.used = used;
   }
 
   /**
@@ -117,13 +126,12 @@ public class Term {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     final Term term = (Term) o;
-    return Arrays.equals(this.bits, term.bits) &&
-            Objects.equals(this.minterms, term.minterms);
+    return Arrays.equals(this.bits, term.bits);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.bits, this.minterms);
+    return Arrays.hashCode(this.bits);
   }
 
   @Override
