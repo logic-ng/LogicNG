@@ -71,23 +71,11 @@ public class QuineMcCluskeyAlgorithm {
     final List<Variable> varOrder = new ArrayList<>(models.get(0).positiveLiterals());
     varOrder.addAll(models.get(0).negativeVariables());
     Collections.sort(varOrder);
-    final long t1 = System.currentTimeMillis();
     final List<Term> terms = transformModels2Terms(models, varOrder, f);
-    final long t2 = System.currentTimeMillis();
     final LinkedHashSet<Term> primeImplicants = computePrimeImplicants(terms);
-    final long t3 = System.currentTimeMillis();
     final TermTable primeTermTable = new TermTable(primeImplicants);
-    final long t4 = System.currentTimeMillis();
     primeTermTable.simplifyTableByDominance();
-    final long t5 = System.currentTimeMillis();
     final List<Term> chosenTerms = chooseSatBased(primeTermTable, f);
-    final long t6 = System.currentTimeMillis();
-
-    System.out.println("Time 1: " + (t2 - t1) + " ms.");
-    System.out.println("Time 2: " + (t3 - t2) + " ms.");
-    System.out.println("Time 3: " + (t4 - t3) + " ms.");
-    System.out.println("Time 4: " + (t5 - t4) + " ms.");
-    System.out.println("Time 5: " + (t6 - t5) + " ms.");
     return computeFormula(chosenTerms, varOrder);
   }
 

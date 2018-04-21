@@ -28,7 +28,6 @@
 
 package org.logicng.transformations.qmc;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
@@ -80,16 +79,14 @@ public class QuineMcCluskeyTest {
     assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
   }
 
-  @Ignore
   @Test
-  public void testSimple3() throws ParserException {
+  public void testLong1() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
     final Formula formula = p.parse("A => B & C & ~((D | E | F | G | H | I | J) & ~K) & L");
     final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
     assertThat(dnf.holds(new DNFPredicate())).isTrue();
     assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
-    System.out.println(dnf);
   }
 
   @Test

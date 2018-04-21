@@ -47,7 +47,7 @@ public class TermTest {
     final Term term4 = new Term(bits4, formulas4);
     final Term term5 = new Term(bits5, formulas5);
     final Term term6 = new Term(bits6, formulas6);
-
+    
     assertThat(term1.unite(term2)).isEqualTo(new Term(new Tristate[]{TRUE, UNDEF, TRUE, TRUE}, Arrays.<Formula>asList(f.variable("f1"), f.variable("f2"))));
     assertThat(term1.unite(term3)).isEqualTo(new Term(new Tristate[]{TRUE, TRUE, UNDEF, TRUE}, Arrays.<Formula>asList(f.variable("f1"), f.variable("f3"))));
     assertThat(term2.unite(term3)).isNull();

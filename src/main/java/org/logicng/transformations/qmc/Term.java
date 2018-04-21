@@ -52,6 +52,7 @@ class Term {
   private final List<Formula> minterms;
   private final int termClass;
   private boolean used;
+  private final long undefNum;
 
   /**
    * Constructs a new term with a given set of bits and the related minterms.
@@ -62,6 +63,7 @@ class Term {
     this.bits = bits;
     this.minterms = minterms;
     this.termClass = countNonNegativeBits(bits);
+    this.undefNum = computeUndefNum(bits);
   }
 
   /**
@@ -75,6 +77,14 @@ class Term {
       if (bit != Tristate.FALSE)
         result++;
     return result;
+  }
+
+  private long computeUndefNum(final Tristate[] bits) {
+    long sum = 0;
+    for (int i = bits.length - 1; i >= 0; i--)
+      if (bits[i] == Tristate.UNDEF)
+        sum += Math.pow(2, bits.length - 1 - i);
+    return sum;
   }
 
   Tristate[] bits() {
@@ -106,6 +116,8 @@ class Term {
    */
   Term unite(final Term other) {
     if (this.bits.length != other.bits.length)
+      return null;
+    if (this.undefNum != other.undefNum)
       return null;
     int diffPosition = -1;
     for (int i = 0; i < this.bits.length; i++)
