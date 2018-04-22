@@ -29,15 +29,20 @@
 package org.logicng.transformations.qmc;
 
 import org.junit.Test;
+import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.io.readers.FormulaReader;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,13 +85,69 @@ public class QuineMcCluskeyTest {
   }
 
   @Test
-  public void testLong1() throws ParserException {
+  public void testLarge1() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
-    final Formula formula = p.parse("A => B & C & ~((D | E | F | G | H | I | J) & ~K) & L");
+    final Formula formula = p.parse("A => B & ~((D | E | I | J) & ~K) & L");
     final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
     assertThat(dnf.holds(new DNFPredicate())).isTrue();
     assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
+  }
+
+  @Test
+  public void testLarge2() throws ParserException, IOException {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula formula = FormulaReader.readPseudoBooleanFormula("tests/formulas/large_formula.txt", f);
+    final SATSolver solver = MiniSat.miniSat(f);
+    solver.add(formula);
+    final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
+            f.variable("v111"),
+            f.variable("v410"),
+            f.variable("v434"),
+            f.variable("v35"),
+            f.variable("v36"),
+            f.variable("v78"),
+            f.variable("v125"),
+            f.variable("v125"),
+            f.variable("v58"),
+            f.variable("v61")));
+    final List<Formula> operands = new ArrayList<>(models.size());
+    for (final Assignment model : models)
+      operands.add(model.formula(f));
+    final Formula canonicalDNF = f.or(operands);
+    final Formula dnf = QuineMcCluskeyAlgorithm.compute(models, f);
+    assertThat(dnf.holds(new DNFPredicate())).isTrue();
+    assertThat(f.equivalence(canonicalDNF, dnf).holds(new TautologyPredicate(f))).isTrue();
+  }
+
+  @Test
+  public void testLarge3() throws ParserException, IOException {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula formula = FormulaReader.readPseudoBooleanFormula("tests/formulas/large_formula.txt", f);
+    final SATSolver solver = MiniSat.miniSat(f);
+    solver.add(formula);
+    final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
+            f.variable("v111"),
+            f.variable("v410"),
+            f.variable("v434"),
+            f.variable("v35"),
+            f.variable("v36"),
+            f.variable("v78"),
+            f.variable("v125"),
+            f.variable("v125"),
+            f.variable("v58"),
+            f.variable("v27"),
+            f.variable("v462"),
+            f.variable("v463"),
+            f.variable("v280"),
+            f.variable("v61")));
+    final List<Formula> operands = new ArrayList<>(models.size());
+    for (final Assignment model : models)
+      operands.add(model.formula(f));
+    final Formula canonicalDNF = f.or(operands);
+    final Formula dnf = QuineMcCluskeyAlgorithm.compute(models, f);
+    assertThat(dnf.holds(new DNFPredicate())).isTrue();
+    assertThat(f.equivalence(canonicalDNF, dnf).holds(new TautologyPredicate(f))).isTrue();
   }
 
   @Test
