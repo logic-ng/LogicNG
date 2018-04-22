@@ -50,6 +50,10 @@ class TermTable {
   private final Vector<Vector<Boolean>> matrixLines;
   private final Vector<Vector<Boolean>> matrixColumns;
 
+  /**
+   * Constructs a prime term table from a given list of terms.
+   * @param terms the terms
+   */
   TermTable(final LinkedHashSet<Term> terms) {
     this.lineHeaders = new Vector<>(terms.size());
     this.columnHeaders = initializeColumnHeaders(terms);
@@ -77,6 +81,11 @@ class TermTable {
     }
   }
 
+  /**
+   * Initialize the column headers with the minterms
+   * @param terms the terms
+   * @return the column headers
+   */
   private Vector<Formula> initializeColumnHeaders(final LinkedHashSet<Term> terms) {
     final LinkedHashSet<Formula> header = new LinkedHashSet<>();
     for (final Term term : terms)
@@ -84,6 +93,9 @@ class TermTable {
     return new Vector<>(header);
   }
 
+  /**
+   * Simplifies this table by using column and line dominance.
+   */
   void simplifyTableByDominance() {
     boolean changed;
     do {
@@ -93,6 +105,10 @@ class TermTable {
     } while (changed);
   }
 
+  /**
+   * Performs elimination of columns by dominance.
+   * @return {@code true} if a elimination was performed, {@code false} otherwise
+   */
   private boolean eliminateColumnDominance() {
     final SortedSet<Integer> toEliminate = new TreeSet<>();
     for (int i = 0; i < this.matrixColumns.size(); i++)
@@ -108,6 +124,10 @@ class TermTable {
     return !toEliminate.isEmpty();
   }
 
+  /**
+   * Performs elimination of lines by dominance.
+   * @return {@code true} if a elimination was performed, {@code false} otherwise
+   */
   private boolean eliminateLineDominance() {
     final SortedSet<Integer> toEliminate = new TreeSet<>();
     for (int i = 0; i < this.matrixLines.size(); i++)
@@ -123,6 +143,12 @@ class TermTable {
     return !toEliminate.isEmpty();
   }
 
+  /**
+   * Returns whether vec1 is a subset of vec2.
+   * @param vec1 the first vector
+   * @param vec2 the second vector
+   * @return {@code true} if vec1 is a subset of vec2, {@code false} otherwise
+   */
   static boolean isSubsetOf(final Vector<Boolean> vec1, final Vector<Boolean> vec2) {
     for (int i = 0; i < vec1.size(); i++)
       if (vec1.get(i) && !vec2.get(i))
@@ -130,6 +156,10 @@ class TermTable {
     return true;
   }
 
+  /**
+   * Deletes a column at a given index.
+   * @param colIndex the index
+   */
   private void deleteColumn(final int colIndex) {
     this.columnHeaders.removeElementAt(colIndex);
     this.matrixColumns.removeElementAt(colIndex);
@@ -137,6 +167,10 @@ class TermTable {
       line.removeElementAt(colIndex);
   }
 
+  /**
+   * Deletes a line at a given index.
+   * @param lineIndex the index
+   */
   private void deleteLine(final int lineIndex) {
     this.lineHeaders.removeElementAt(lineIndex);
     this.matrixLines.removeElementAt(lineIndex);
@@ -144,18 +178,34 @@ class TermTable {
       column.removeElementAt(lineIndex);
   }
 
+  /**
+   * Returns the lines of this table.
+   * @return the lines of this table
+   */
   Vector<Vector<Boolean>> lines() {
     return this.matrixLines;
   }
 
+  /**
+   * Returns the columns of this table.
+   * @return the columns of this table
+   */
   Vector<Vector<Boolean>> columns() {
     return this.matrixColumns;
   }
 
+  /**
+   * Returns the column headers of this table.
+   * @return the column headers of this table
+   */
   Vector<Formula> columnHeaders() {
     return this.columnHeaders;
   }
 
+  /**
+   * Returns the line headers of this table.
+   * @return the line headers of this table
+   */
   Vector<Term> lineHeaders() {
     return this.lineHeaders;
   }

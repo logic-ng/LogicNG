@@ -34,6 +34,7 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.readers.FormulaReader;
@@ -42,6 +43,8 @@ import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,10 +55,10 @@ import java.util.SortedMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.chooseSatBased;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.combineInTermClasses;
 import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.computePrimeImplicants;
 import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.convertToTerm;
 import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.generateInitialTermClasses;
-import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.uniteInTermClasses;
 
 /**
  * Unit tests for {@link QuineMcCluskeyAlgorithm}.
@@ -218,13 +221,13 @@ public class QuineMcCluskeyTest {
     final Term minterm6 = getTerm("~A ~B C", f);
     final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = generateInitialTermClasses(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
 
-    final SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = uniteInTermClasses(termsInClasses);
+    final SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = combineInTermClasses(termsInClasses);
     assertThat(newTermsInClasses).isNotNull();
     assertThat(newTermsInClasses).isNotEmpty();
     assertThat(newTermsInClasses.get(0)).isNull();
-    assertThat(newTermsInClasses.get(1)).containsExactly(minterm3.unite(minterm6));
-    assertThat(newTermsInClasses.get(2)).containsExactly(minterm6.unite(minterm2), minterm6.unite(minterm5));
-    assertThat(newTermsInClasses.get(3)).containsExactly(minterm2.unite(minterm1), minterm4.unite(minterm1), minterm5.unite(minterm1));
+    assertThat(newTermsInClasses.get(1)).containsExactly(minterm3.combine(minterm6));
+    assertThat(newTermsInClasses.get(2)).containsExactly(minterm6.combine(minterm2), minterm6.combine(minterm5));
+    assertThat(newTermsInClasses.get(3)).containsExactly(minterm2.combine(minterm1), minterm4.combine(minterm1), minterm5.combine(minterm1));
 
     assertThat(minterm1.isUsed()).isTrue();
     assertThat(minterm2.isUsed()).isTrue();
@@ -275,9 +278,9 @@ public class QuineMcCluskeyTest {
     assertThat(primeImplicants).isNotNull();
     assertThat(primeImplicants).isNotEmpty();
     assertThat(primeImplicants).containsExactly(
-            minterm3.unite(minterm6),
-            minterm4.unite(minterm1),
-            minterm6.unite(minterm2).unite(minterm5.unite(minterm1))
+            minterm3.combine(minterm6),
+            minterm4.combine(minterm1),
+            minterm6.combine(minterm2).combine(minterm5.combine(minterm1))
     );
   }
 
@@ -306,12 +309,12 @@ public class QuineMcCluskeyTest {
     assertThat(primeImplicants).isNotNull();
     assertThat(primeImplicants).isNotEmpty();
     assertThat(primeImplicants).containsExactly(
-            m9.unite(m11),
-            m7.unite(m15),
-            m11.unite(m15),
-            m0.unite(m1).unite(m4.unite(m5)),
-            m0.unite(m1).unite(m8.unite(m9)),
-            m4.unite(m6).unite(m5.unite(m7))
+            m9.combine(m11),
+            m7.combine(m15),
+            m11.combine(m15),
+            m0.combine(m1).combine(m4.combine(m5)),
+            m0.combine(m1).combine(m8.combine(m9)),
+            m4.combine(m6).combine(m5.combine(m7))
     );
 
   }
@@ -329,6 +332,43 @@ public class QuineMcCluskeyTest {
     final TermTable table = new TermTable(primeImplicants);
     final List<Term> terms = chooseSatBased(table, f);
     assertThat(terms).hasSize(3);
+  }
+
+  @Test
+  public void testSmallFormulas() throws IOException, ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final BufferedReader reader = new BufferedReader(new FileReader("tests/formulas/small_formulas.txt"));
+    while (reader.ready()) {
+      final Formula formula = p.parse(reader.readLine());
+      final List<Variable> variables = new ArrayList<>(formula.variables());
+      final List<Variable> projectedVars = variables.subList(0, Math.min(6, variables.size()));
+
+      final SATSolver solver = MiniSat.miniSat(f);
+      solver.add(formula);
+      final List<Assignment> models = solver.enumerateAllModels(projectedVars);
+      final List<Formula> operands = new ArrayList<>(models.size());
+      for (final Assignment model : models)
+        operands.add(model.formula(f));
+      final Formula canonicalDNF = f.or(operands);
+
+      final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula, projectedVars);
+      assertThat(dnf.holds(new DNFPredicate())).isTrue();
+      assertThat(f.equivalence(canonicalDNF, dnf).holds(new TautologyPredicate(f))).isTrue();
+    }
+  }
+
+  @Test
+  public void testTrivialCases() {
+    final FormulaFactory f = new FormulaFactory();
+    final Formula verumDNF = QuineMcCluskeyAlgorithm.compute(f.verum());
+    final Formula falsumDNF = QuineMcCluskeyAlgorithm.compute(f.falsum());
+    final Formula aDNF = QuineMcCluskeyAlgorithm.compute(f.variable("a"));
+    final Formula notADNF = QuineMcCluskeyAlgorithm.compute(f.literal("a", false));
+    assertThat(verumDNF).isEqualTo(f.verum());
+    assertThat(falsumDNF).isEqualTo(f.falsum());
+    assertThat(aDNF).isEqualTo(f.variable("a"));
+    assertThat(notADNF).isEqualTo(f.literal("a", false));
   }
 
   static Term getTerm(final String string, final FormulaFactory f) throws ParserException {

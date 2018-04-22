@@ -49,21 +49,49 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * An implementation of the Quine-McCluskey algorithm for minimizing canonical DNFs.
+ * An implementation of the Quine-McCluskey algorithm for minimizing canonical DNFs.  This implementation is fairly
+ * efficient but keep in mind that Quine-McCluskey can be a very expensive procedure for large canonical DNFs.  So we
+ * would not recommend using this implementation for super large DNFs.
  * @version 1.4.0
  * @since 1.4.0
  */
 public class QuineMcCluskeyAlgorithm {
 
-  static Formula compute(final Formula formula) {
+  /**
+   * Computes a minimized DNF for a given formula projected to a given set of variables.  First a projected canonical
+   * DNF of the formula is computed for the given variables.  Then for this canonical DNF the Quine-McCluskey algorithm
+   * is computed.
+   * @param formula           the formula
+   * @param relevantVariables the relevant formulas for the projected canonical DNF
+   * @return the minimized DNF due to Quine-McCluskey
+   */
+  public static Formula compute(final Formula formula, final Collection<Variable> relevantVariables) {
     final FormulaFactory f = formula.factory();
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(formula);
-    final List<Assignment> models = solver.enumerateAllModels();
+    final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels() : solver.enumerateAllModels(relevantVariables);
     return compute(models, f);
   }
 
-  static Formula compute(final List<Assignment> models, final FormulaFactory f) {
+  /**
+   * Computes a minimized DNF for a given formula.  First the canonical DNF of the formula is computed.  Then for
+   * this canonical DNF the Quine-McCluskey algorithm is computed.
+   * @param formula the formula
+   * @return the minimized DNF due to Quine-McCluskey
+   */
+  public static Formula compute(final Formula formula) {
+    return compute(formula, null);
+  }
+
+  /**
+   * Computes a minimized DNF for a given set of models.  These models have to represent a canonical DNF of a formula
+   * as computed e.g. by the projected model enumeration of a SAT solver {@link SATSolver#enumerateAllModels(Variable[])}
+   * or by the transformation {@link org.logicng.transformations.dnf.CanonicalDNFEnumeration}.
+   * @param models the models of the formula
+   * @param f      the formula factory
+   * @return the minimized DNF due to Quine-McCluskey
+   */
+  public static Formula compute(final List<Assignment> models, final FormulaFactory f) {
     if (models.isEmpty())
       return f.falsum();
     if (models.size() == 1)
@@ -79,11 +107,16 @@ public class QuineMcCluskeyAlgorithm {
     return computeFormula(chosenTerms, varOrder);
   }
 
+  /**
+   * Transforms a given list of models to a term list as used in the QMC implementation.
+   * @param models   the models
+   * @param varOrder the variable ordering
+   * @param f        the formula factory
+   * @return the list of terms
+   */
   private static List<Term> transformModels2Terms(final List<Assignment> models, final List<Variable> varOrder,
                                                   final FormulaFactory f) {
     final List<Term> terms = new ArrayList<>(models.size());
-    if (models.isEmpty())
-      return terms;
     for (final Assignment model : models) {
       final List<Literal> minterm = new ArrayList<>();
       for (final Variable variable : varOrder)
@@ -93,19 +126,29 @@ public class QuineMcCluskeyAlgorithm {
     return terms;
   }
 
+  /**
+   * Computes the list of all prime implicants for a given set of terms.
+   * @param terms the terms
+   * @return all prime implicants for the given terms
+   */
   static LinkedHashSet<Term> computePrimeImplicants(final List<Term> terms) {
     SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = generateInitialTermClasses(terms);
-    SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = uniteInTermClasses(termsInClasses);
+    SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = combineInTermClasses(termsInClasses);
     final LinkedHashSet<Term> primeImplicants = getUnusedTerms(termsInClasses);
     while (!newTermsInClasses.isEmpty()) {
       termsInClasses = newTermsInClasses;
-      newTermsInClasses = uniteInTermClasses(termsInClasses);
+      newTermsInClasses = combineInTermClasses(termsInClasses);
       primeImplicants.addAll(getUnusedTerms(termsInClasses));
     }
     return primeImplicants;
   }
 
-  static SortedMap<Integer, LinkedHashSet<Term>> uniteInTermClasses(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
+  /**
+   * Computes the combination of all terms in two adjacent classes.
+   * @param termsInClasses the terms sorted in term classes
+   * @return the combined terms
+   */
+  static SortedMap<Integer, LinkedHashSet<Term>> combineInTermClasses(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
     final SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = new TreeMap<>();
     for (int i = 0; i < termsInClasses.lastKey(); i++) {
       final LinkedHashSet<Term> thisClass = termsInClasses.get(i);
@@ -113,16 +156,16 @@ public class QuineMcCluskeyAlgorithm {
       if (thisClass != null && otherClass != null) {
         for (final Term thisTerm : thisClass) {
           for (final Term otherTerm : otherClass) {
-            final Term unite = thisTerm.unite(otherTerm);
-            if (unite != null) {
+            final Term combined = thisTerm.combine(otherTerm);
+            if (combined != null) {
               thisTerm.setUsed(true);
               otherTerm.setUsed(true);
-              LinkedHashSet<Term> foundTerms = newTermsInClasses.get(unite.termClass());
+              LinkedHashSet<Term> foundTerms = newTermsInClasses.get(combined.termClass());
               if (foundTerms == null) {
                 foundTerms = new LinkedHashSet<>();
-                newTermsInClasses.put(unite.termClass(), foundTerms);
+                newTermsInClasses.put(combined.termClass(), foundTerms);
               }
-              foundTerms.add(unite);
+              foundTerms.add(combined);
             }
           }
         }
@@ -131,6 +174,11 @@ public class QuineMcCluskeyAlgorithm {
     return newTermsInClasses;
   }
 
+  /**
+   * Computes the unused terms in set of terms.  These terms are the prime implicants in the QMC.
+   * @param termsInClasses the terms sorted in term classes
+   * @return the unused terms in the given set of terms
+   */
   private static LinkedHashSet<Term> getUnusedTerms(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
     final LinkedHashSet<Term> unusedTerms = new LinkedHashSet<>();
     for (final Map.Entry<Integer, LinkedHashSet<Term>> entry : termsInClasses.entrySet())
@@ -140,6 +188,11 @@ public class QuineMcCluskeyAlgorithm {
     return unusedTerms;
   }
 
+  /**
+   * Computes and returns the initial term classes for a given list of terms.
+   * @param terms the terms
+   * @return the terms sorted in term classes
+   */
   static SortedMap<Integer, LinkedHashSet<Term>> generateInitialTermClasses(final List<Term> terms) {
     final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = new TreeMap<>();
     for (final Term term : terms) {
@@ -153,6 +206,12 @@ public class QuineMcCluskeyAlgorithm {
     return termsInClasses;
   }
 
+  /**
+   * Computes the formula for a given list of chosen terms and a variable order.
+   * @param chosenTerms the chosen terms
+   * @param varOrder    the variable order
+   * @return the formula for this term list and variable ordering
+   */
   private static Formula computeFormula(final List<Term> chosenTerms, final List<Variable> varOrder) {
     final FormulaFactory f = varOrder.get(0).factory();
     final List<Formula> operands = new ArrayList<>(chosenTerms.size());
@@ -161,6 +220,12 @@ public class QuineMcCluskeyAlgorithm {
     return f.or(operands);
   }
 
+  /**
+   * Converts a given minterm to a QMC internal term.
+   * @param minterm the minterm as list of literals
+   * @param f       the formula factory
+   * @return the term for this minterm
+   */
   static Term convertToTerm(final List<Literal> minterm, final FormulaFactory f) {
     final Tristate[] bits = new Tristate[minterm.size()];
     for (int i = 0; i < minterm.size(); i++)
@@ -168,6 +233,14 @@ public class QuineMcCluskeyAlgorithm {
     return new Term(bits, Collections.singletonList(f.and(minterm)));
   }
 
+  /**
+   * Choose a minimal set of prime implicants from the final prime implicant table of QMC.  This implementation uses
+   * a MaxSAT formulation for this variant of the SET COVER problem which should be more efficient than e.g. Petrick's
+   * method for all cases in which this Quine-McCluskey implementation yields a result in reasonable time.
+   * @param table the final prime term table
+   * @param f     the formula factory
+   * @return the list of chosen prime implicants which are minimal wrt. to their number
+   */
   static List<Term> chooseSatBased(final TermTable table, final FormulaFactory f) {
     final LinkedHashMap<Variable, Term> var2Term = new LinkedHashMap<>();
     final LinkedHashMap<Formula, Variable> formula2VarMapping = new LinkedHashMap<>();
@@ -177,6 +250,14 @@ public class QuineMcCluskeyAlgorithm {
     return minimize(satSolver, var2Term, f);
   }
 
+  /**
+   * Initializes the SAT solver for the SET COVER problem formulation.
+   * @param table              the prime implicant table
+   * @param f                  the formula factory
+   * @param var2Term           a mapping from selector variable to prime implicant
+   * @param formula2VarMapping a mapping form minterm to variable
+   * @return the initialized SAT solver
+   */
   private static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term, final LinkedHashMap<Formula, Variable> formula2VarMapping) {
     final LinkedHashMap<Variable, List<Variable>> minterm2Variants = new LinkedHashMap<>();
     int count = 0;
@@ -222,6 +303,13 @@ public class QuineMcCluskeyAlgorithm {
     return solver;
   }
 
+  /**
+   * Performs the minimization via incremental cardinality constraints.
+   * @param satSolver the SAT solver
+   * @param var2Term  a mapping from selector variable to prime implicant
+   * @param f         the formula factory
+   * @return a minimal set of prime implicants to cover all minterms
+   */
   private static List<Term> minimize(final SATSolver satSolver, final LinkedHashMap<Variable, Term> var2Term, final FormulaFactory f) {
     final Assignment initialModel = satSolver.model();
     List<Variable> currentTermVars = computeCurrentTermVars(initialModel, var2Term.keySet());
@@ -239,6 +327,12 @@ public class QuineMcCluskeyAlgorithm {
     return computeTerms(currentTermVars, var2Term);
   }
 
+  /**
+   * Computes the terms from a given list of selector variables
+   * @param currentTermVars the list of selector variables
+   * @param var2Term        a mapping from selector variable to prime implicant
+   * @return the terms for the given list
+   */
   private static List<Term> computeTerms(final List<Variable> currentTermVars, final LinkedHashMap<Variable, Term> var2Term) {
     final List<Term> terms = new ArrayList<>(currentTermVars.size());
     for (final Variable currentTermVar : currentTermVars)
@@ -246,6 +340,12 @@ public class QuineMcCluskeyAlgorithm {
     return terms;
   }
 
+  /**
+   * Computes the prime implicant selector variables for a given model.
+   * @param model the model
+   * @param vars  the list of selector variables
+   * @return the selector variables in the given model
+   */
   private static List<Variable> computeCurrentTermVars(final Assignment model, final Collection<Variable> vars) {
     final List<Variable> result = new ArrayList<>();
     for (final Variable var : vars)

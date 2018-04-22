@@ -73,5 +73,6 @@ public class TermTableTest {
     assertThat(table.columnHeaders()).hasSize(3);
     assertThat(table.lineHeaders()).hasSize(3);
     assertThat(table.columns()).hasSize(3);
+    assertThat(table.lines()).hasSize(3);
   }
 }

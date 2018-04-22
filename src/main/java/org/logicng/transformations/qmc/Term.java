@@ -79,6 +79,11 @@ class Term {
     return result;
   }
 
+  /**
+   * Computes a number representing the number and position of the UNDEF states in the bit array.
+   * @param bits the bit array
+   * @return the computed number
+   */
   private long computeUndefNum(final Tristate[] bits) {
     long sum = 0;
     for (int i = bits.length - 1; i >= 0; i--)
@@ -87,34 +92,54 @@ class Term {
     return sum;
   }
 
+  /**
+   * Returns the bit array of this term.
+   * @return the bit array of this term
+   */
   Tristate[] bits() {
     return this.bits;
   }
 
+  /**
+   * Returns the associated minterms for this term.
+   * @return the associated minterms for this term
+   */
   List<Formula> minterms() {
     return this.minterms;
   }
 
+  /**
+   * Returns the term class of this term.  The term class is the number of non-negative bits in the bit array.
+   * @return the term class of this term
+   */
   int termClass() {
     return this.termClass;
   }
 
+  /**
+   * Returns whether this term was used in the combination step of QMC or not.
+   * @return whether this term was used
+   */
   boolean isUsed() {
     return this.used;
   }
 
+  /**
+   * Sets whether this term was used in the combination step of QMC or not.
+   * @param used whether this term was used
+   */
   void setUsed(final boolean used) {
     this.used = used;
   }
 
   /**
-   * Units this term with another term if possible.  This is only possible if their bit vectors
+   * Combines this term with another term if possible.  This is only possible if their bit vectors
    * differ in exactly one position.  In this case a new term with the new bit vector and the
-   * united minterms is returned.  If no union is possible, {@code null} is returned.
+   * combined minterms is returned.  If no union is possible, {@code null} is returned.
    * @param other the other term
-   * @return a new united term or {@code null} if not possible
+   * @return a new combined term or {@code null} if not possible
    */
-  Term unite(final Term other) {
+  Term combine(final Term other) {
     if (this.bits.length != other.bits.length)
       return null;
     if (this.undefNum != other.undefNum)
@@ -136,6 +161,11 @@ class Term {
     return new Term(newBits, newMinterms);
   }
 
+  /**
+   * Translates this term to a formula for a given variable ordering
+   * @param varOrder the variable ordering
+   * @return the translation of this term to a formula
+   */
   Formula translateToFormula(final List<Variable> varOrder) {
     final FormulaFactory f = varOrder.get(0).factory();
     assert this.bits.length == varOrder.size();
