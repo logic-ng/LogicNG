@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2018 Christoph Zengler                                //
+//  Copyright 2015-2016 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -26,41 +26,37 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.bdds.orderings;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * An enumeration for the different BDD variable orderings.  A variable ordering is associated
+ * with its own provider which can generate orderings for this ordering.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
+public enum VariableOrdering {
 
-  private final String description;
+  DFS(DFSOrdering.class),
+  BFS(BFSOrdering.class),
+  MIN2MAX(MinToMaxOrdering.class),
+  MAX2MIN(MaxToMinOrdering.class),
+  FORCE(ForceOrdering.class);
+
+  private final Class<? extends VariableOrderingProvider> provider;
 
   /**
-   * Constructs a new entry.
-   * @param description the description of this entry
+   * Constructs a new variable ordering with a given provider.
+   * @param provider the provider
    */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
+  VariableOrdering(final Class<? extends VariableOrderingProvider> provider) {
+    this.provider = provider;
   }
 
-  @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
+  /**
+   * Returns the provider for this variable ordering.
+   * @return the provider for this variable ordering
+   */
+  public Class<? extends VariableOrderingProvider> provider() {
+    return this.provider;
   }
 }

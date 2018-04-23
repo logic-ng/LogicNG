@@ -36,7 +36,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.sat.PigeonHoleGenerator;
+import org.logicng.testutils.PigeonHoleGenerator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

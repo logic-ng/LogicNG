@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2018 Christoph Zengler                                //
+//  Copyright 2015-2016 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -26,41 +26,51 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.bdds.orderings;
+
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Variable;
+import org.logicng.functions.VariableProfileFunction;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import static org.logicng.bdds.orderings.MinToMaxOrdering.sortProfileByOccurrence;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * A BDD variable ordering sorting the variables from maximal to minimal occurrence
+ * in the input formula.  If two variables have the same number of occurrences, their
+ * ordering according to their DFS ordering will be considered.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
+public class MaxToMinOrdering implements VariableOrderingProvider {
 
-  private final String description;
-
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
-  }
+  private final VariableProfileFunction profileFunction = new VariableProfileFunction();
+  private final DFSOrdering dfsOrdering = new DFSOrdering();
 
   @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
+  public List<Variable> getOrder(final Formula formula) {
+    final Map<Variable, Integer> profile = formula.apply(this.profileFunction);
+    final List<Variable> dfs = this.dfsOrdering.getOrder(formula);
+
+    final Comparator<Map.Entry<Variable, Integer>> comparator = new Comparator<Map.Entry<Variable, Integer>>() {
+      @Override
+      public int compare(final Map.Entry<Variable, Integer> o1, final Map.Entry<Variable, Integer> o2) {
+        final int occComp = o1.getValue().compareTo(o2.getValue());
+        if (occComp != 0)
+          return occComp;
+        final int index1 = dfs.indexOf(o1.getKey());
+        final int index2 = dfs.indexOf(o2.getKey());
+        return index1 - index2;
+      }
+    };
+    final Map<Variable, Integer> sortedProfile = sortProfileByOccurrence(profile, comparator);
+    final List<Variable> order = new ArrayList<>(sortedProfile.size());
+    for (final Map.Entry<Variable, Integer> entry : sortedProfile.entrySet())
+      order.add(entry.getKey());
+    return order;
   }
 }

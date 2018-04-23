@@ -26,41 +26,46 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.bdds.datastructures;
+
+import org.logicng.formulas.Formula;
+
+import java.util.Set;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * A node in a BDD.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
-
-  private final String description;
+public interface BDDNode {
 
   /**
-   * Constructs a new entry.
-   * @param description the description of this entry
+   * Returns the label of the node.  This can either be a variable or a constant.
+   * @return the label of the node
    */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
-  }
+  Formula label();
 
-  @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
-  }
+  /**
+   * Returns {@code true} if this node is an inner node, {@code false} if it is a terminal node.
+   * @return {@code true} if this node is an inner node, {@code false} if it is a terminal node
+   */
+  boolean isInnerNode();
+
+  /**
+   * Returns the node of the low edge or {@code null} for a terminal node.
+   * @return the node of the low edge
+   */
+  BDDNode low();
+
+  /**
+   * Returns the node of the high edge or {@code null} for a terminal node.
+   * @return the node of the high edge
+   */
+  BDDNode high();
+
+  /**
+   * Returns all nodes of the sub-BDD starting at this node.
+   * @return all nodes of the sub-BDD starting at this node
+   */
+  Set<BDDNode> nodes();
 }

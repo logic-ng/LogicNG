@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2018 Christoph Zengler                                //
+//  Copyright 2015-2016 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -26,41 +26,25 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.bdds.orderings;
+
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Variable;
+
+import java.util.List;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * An interface for variable ordering providers for BDDs.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
-
-  private final String description;
+public interface VariableOrderingProvider {
 
   /**
-   * Constructs a new entry.
-   * @param description the description of this entry
+   * Generates a variable ordering for a given formula.  Such a variable ordering can then be
+   * used in the {@link org.logicng.bdds.BDDFactory#setVariableOrder(List)} method.
+   * @param formula the formula
+   * @return the variable ordering
    */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
-  }
-
-  @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
-  }
+  List<Variable> getOrder(final Formula formula);
 }

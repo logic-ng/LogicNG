@@ -1,0 +1,25 @@
+digraph G {
+  const_true [shape=box, label="$true", style = bold, color = darkgreen];
+  const_false [shape=box, label="$false", style = bold, color = red];
+  id_8 [shape=ellipse, label="D"];
+  id_8 -> const_false [style = dotted, color = red];
+  id_8 -> const_true [color = darkgreen];
+  id_9 [shape=ellipse, label="D"];
+  id_9 -> const_true [style = dotted, color = red];
+  id_9 -> const_false [color = darkgreen];
+  id_21 [shape=ellipse, label="C"];
+  id_21 -> const_false [style = dotted, color = red];
+  id_21 -> id_8 [color = darkgreen];
+  id_26 [shape=ellipse, label="B"];
+  id_26 -> id_9 [style = dotted, color = red];
+  id_26 -> const_false [color = darkgreen];
+  id_27 [shape=ellipse, label="C"];
+  id_27 -> id_8 [style = dotted, color = red];
+  id_27 -> const_false [color = darkgreen];
+  id_28 [shape=ellipse, label="B"];
+  id_28 -> id_27 [style = dotted, color = red];
+  id_28 -> id_21 [color = darkgreen];
+  id_29 [shape=ellipse, label="A"];
+  id_29 -> id_26 [style = dotted, color = red];
+  id_29 -> id_28 [color = darkgreen];
+}

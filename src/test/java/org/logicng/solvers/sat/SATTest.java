@@ -50,6 +50,7 @@ import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
+import org.logicng.testutils.PigeonHoleGenerator;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

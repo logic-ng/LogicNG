@@ -38,7 +38,7 @@ import org.logicng.formulas.FormulaPredicate;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.sat.PigeonHoleGenerator;
+import org.logicng.testutils.PigeonHoleGenerator;
 
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_TAUTOLOGY;

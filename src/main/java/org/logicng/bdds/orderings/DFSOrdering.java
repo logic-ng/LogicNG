@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2018 Christoph Zengler                                //
+//  Copyright 2015-2016 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -26,41 +26,58 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.bdds.orderings;
+
+import org.logicng.formulas.BinaryOperator;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
+import org.logicng.formulas.Not;
+import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * A depth-first-search BDD variable ordering.  Traverses the formula in a DFS manner
+ * and gathers all variables in the occurrence.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
-
-  private final String description;
-
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
-  }
+public class DFSOrdering implements VariableOrderingProvider {
 
   @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
+  public List<Variable> getOrder(final Formula formula) {
+    final LinkedHashSet<Variable> order = new LinkedHashSet<>(formula.variables().size());
+    dfs(formula, order);
+    return new ArrayList<>(order);
+  }
+
+  private void dfs(final Formula formula, final LinkedHashSet<Variable> variables) {
+    switch (formula.type()) {
+      case LITERAL:
+        variables.add(((Literal) formula).variable());
+        break;
+      case NOT:
+        dfs(((Not) formula).operand(), variables);
+        break;
+      case IMPL:
+      case EQUIV:
+        final BinaryOperator op = (BinaryOperator) formula;
+        dfs(op.left(), variables);
+        dfs(op.right(), variables);
+        break;
+      case AND:
+      case OR:
+        for (final Formula operand : formula)
+          dfs(operand, variables);
+        break;
+      case PBC:
+        final PBConstraint pbc = (PBConstraint) formula;
+        for (final Literal lit : pbc.operands())
+          variables.add(lit.variable());
+        break;
+    }
   }
 }

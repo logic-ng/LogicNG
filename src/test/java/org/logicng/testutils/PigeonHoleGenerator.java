@@ -26,41 +26,57 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.testutils;
+
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
+ * A generator for pigeon hole formulas.
+ * @version 1.0
  * @since 1.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
+public class PigeonHoleGenerator {
 
-  private final String description;
+  private final FormulaFactory f;
 
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
+  public PigeonHoleGenerator(final FormulaFactory f) {
+    this.f = f;
   }
 
-  @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
+  public Formula generate(int n) {
+    return generate(n, "v");
+  }
+
+  public Formula generate(int n, String prefix) {
+    return f.and(placeInSomeHole(n, prefix), onlyOnePigeonInHole(n, prefix));
+  }
+
+  private Formula placeInSomeHole(int n, String prefix) {
+    if (n == 1)
+      return f.and(f.variable(prefix + "1"), f.variable(prefix + "2"));
+    List<Formula> ors = new LinkedList<>();
+    for (int i = 1; i <= n + 1; i++) {
+      List<Literal> orOps = new LinkedList<>();
+      for (int j = 1; j <= n; j++)
+        orOps.add(f.variable(prefix + (n * (i - 1) + j)));
+      ors.add(f.or(orOps));
+    }
+    return f.and(ors);
+  }
+
+  private Formula onlyOnePigeonInHole(int n, String prefix) {
+    if (n == 1)
+      return f.or(f.literal(prefix + "1", false), f.literal(prefix + "2", false));
+    List<Formula> ors = new LinkedList<>();
+    for (int j = 1; j <= n; j++)
+      for (int i = 1; i <= n; i++)
+        for (int k = i + 1; k <= n + 1; k++)
+          ors.add(f.or(f.literal(prefix + (n * (i - 1) + j), false), f.literal(prefix + (n * (k - 1) + j), false)));
+    return f.and(ors);
   }
 }

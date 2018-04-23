@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2018 Christoph Zengler                                //
+//  Copyright 2015-2016 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -26,41 +26,75 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.graphs.datastructures;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * An edge in a hypergraph.
+ * @param <T> the content type of the graph's nodes
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
+public class HypergraphEdge<T> {
 
-  private final String description;
+  private final LinkedHashSet<HypergraphNode<T>> nodes;
 
   /**
-   * Constructs a new entry.
-   * @param description the description of this entry
+   * Constructs a new edge for a given set of nodes.
+   * @param nodes the nodes connected by this edge
    */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
+  public HypergraphEdge(final Collection<HypergraphNode<T>> nodes) {
+    this.nodes = new LinkedHashSet<>(nodes);
+    for (final HypergraphNode<T> node : nodes)
+      node.addEdge(this);
+  }
+
+  /**
+   * Returns the nodes connected by this edge.
+   * @return the nodes connected by this edge
+   */
+  public Set<HypergraphNode<T>> nodes() {
+    return this.nodes;
+  }
+
+  /**
+   * Computes the center of gravity for this edge (see Aloul, Markov, and Sakallah).
+   * @param nodeOrdering the node ordering for which the COG is computed
+   * @return the center of gravity for this edge
+   */
+  public double centerOfGravity(final Map<HypergraphNode<T>, Integer> nodeOrdering) {
+    int cog = 0;
+    for (final HypergraphNode<T> node : this.nodes) {
+      final Integer level = nodeOrdering.get(node);
+      if (level == null)
+        throw new IllegalStateException("Could not find node " + node + " in the node ordering.");
+      cog += level;
+    }
+    return (double) cog / this.nodes.size();
   }
 
   @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
+  public boolean equals(final Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    final HypergraphEdge<?> that = (HypergraphEdge<?>) o;
+    return Objects.equals(this.nodes, that.nodes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.nodes);
+  }
+
+  @Override
+  public String toString() {
+    return "HypergraphEdge{" +
+            "nodes=" + this.nodes +
+            '}';
   }
 }

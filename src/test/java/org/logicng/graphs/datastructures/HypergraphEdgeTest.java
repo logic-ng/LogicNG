@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-2018 Christoph Zengler                                //
+//  Copyright 2015-2016 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -26,41 +26,48 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.graphs.datastructures;
+
+import org.assertj.core.data.Offset;
+import org.junit.Test;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
+import org.logicng.graphs.generators.HypergraphGenerator;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * The pre-defined transformation cache entries.
- * @version 1.3
- * @since 1.0
+ * Unit tests for {@link HypergraphEdge}.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public enum TransformationCacheEntry implements CacheEntry {
-  NNF("negation normal form"),
-  PLAISTED_GREENBAUM_POS("Plaisted & Greenbaum conjunctive normal form (positive polarity)"),
-  PLAISTED_GREENBAUM_NEG("Plaisted & Greenbaum conjunctive normal form (negative polarity)"),
-  PLAISTED_GREENBAUM_VARIABLE("Plaisted & Greenbaum variable"),
-  TSEITIN("Tseitin conjunctive normal form"),
-  TSEITIN_VARIABLE("Tseitin variable"),
-  FACTORIZED_CNF("factorized conjunctive normal form"),
-  BDD_CNF("conjunctive normal form via BDD"),
-  FACTORIZED_DNF("factorized disjunctive normal form"),
-  BDD_DNF("disjunctive normal form via BDD"),
-  AIG("and-inverter graph"),
-  UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
-  ANONYMIZATION("anonymization");
+public class HypergraphEdgeTest {
 
-  private final String description;
+  private final Offset<Double> offset = Offset.offset(0.000001);
 
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  TransformationCacheEntry(final String description) {
-    this.description = description;
+  @Test
+  public void testCenterOfGravity() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Hypergraph<Variable> hypergraph = HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
+    final HypergraphEdge<Variable> edge = hypergraph.edges().iterator().next();
+    final Map<HypergraphNode<Variable>, Integer> ordering = new HashMap<>();
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("A")), 1);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("B")), 2);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("C")), 3);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("D")), 4);
+    assertThat(edge.centerOfGravity(ordering)).isCloseTo(2.5, this.offset);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("A")), 2);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("B")), 4);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("C")), 6);
+    ordering.put(new HypergraphNode<>(hypergraph, f.variable("D")), 8);
+    assertThat(edge.centerOfGravity(ordering)).isCloseTo(5, this.offset);
   }
 
-  @Override
-  public String description() {
-    return "TransformationCacheEntry{description=" + this.description + "}";
-  }
 }
