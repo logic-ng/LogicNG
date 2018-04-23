@@ -52,6 +52,15 @@ public class HypergraphEdgeTest {
   private final Offset<Double> offset = Offset.offset(0.000001);
 
   @Test
+  public void testSimpleMethods() {
+    final Hypergraph<String> hypergraph = new Hypergraph<>();
+    final HypergraphNode<String> node1 = new HypergraphNode<>(hypergraph, "A");
+    final HypergraphNode<String> node2 = new HypergraphNode<>(hypergraph, "B");
+    final HypergraphEdge<String> edge1 = new HypergraphEdge<>(node1, node2);
+    assertThat(edge1.nodes()).containsExactlyInAnyOrder(node1, node2);
+  }
+
+  @Test
   public void testCenterOfGravity() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
@@ -68,6 +77,15 @@ public class HypergraphEdgeTest {
     ordering.put(new HypergraphNode<>(hypergraph, f.variable("C")), 6);
     ordering.put(new HypergraphNode<>(hypergraph, f.variable("D")), 8);
     assertThat(edge.centerOfGravity(ordering)).isCloseTo(5, this.offset);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testIllegalCenterOfGravity() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Hypergraph<Variable> hypergraph = HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
+    final HypergraphEdge<Variable> edge = hypergraph.edges().iterator().next();
+    edge.centerOfGravity(new HashMap<HypergraphNode<Variable>, Integer>());
   }
 
 }

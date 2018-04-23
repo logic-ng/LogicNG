@@ -54,6 +54,7 @@ public class HypergraphNode<T> {
     this.graph = graph;
     this.content = content;
     this.edges = new LinkedHashSet<>();
+    this.graph.addNode(this);
   }
 
   /**

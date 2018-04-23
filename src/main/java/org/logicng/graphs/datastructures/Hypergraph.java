@@ -72,16 +72,8 @@ public class Hypergraph<T> {
    * Adds a node to the hypergraph.
    * @param node the node
    */
-  public void addNode(final HypergraphNode<T> node) {
+  void addNode(final HypergraphNode<T> node) {
     this.nodes.add(node);
-  }
-
-  /**
-   * Adds a set of nodes to the hypergraph.
-   * @param nodes the nodes
-   */
-  public void addNodes(final Collection<HypergraphNode<T>> nodes) {
-    this.nodes.addAll(nodes);
   }
 
   /**
