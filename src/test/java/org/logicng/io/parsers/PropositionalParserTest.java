@@ -126,12 +126,20 @@ public class PropositionalParserTest {
     final String string = "A & B => D | ~C";
     final InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
     assertThat(parser.parse(stream)).isEqualTo(parser.parse(string));
+    assertThat(parser.parse((InputStream) null)).isEqualTo(F.f.verum());
   }
 
   @Test
   public void parseEmptyString() throws ParserException {
     final PropositionalParser parser = new PropositionalParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(""));
+    Assert.assertEquals(F.f.verum(), parser.parse((String) null));
+  }
+
+  @Test
+  public void testFormulaFactory() {
+    final PropositionalParser parser = new PropositionalParser(F.f);
+    assertThat(parser.factory()).isEqualTo(F.f);
   }
 
   @Test
@@ -230,6 +238,20 @@ public class PropositionalParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula7() throws ParserException {
     new PropositionalParser(F.f).parse("ab@cd)");
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula8() throws ParserException {
+    final String string = "A & B => D | ~";
+    final InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+    new PropositionalParser(F.f).parse(stream);
+  }
+
+  @Test(expected = ParserException.class)
+  public void testIllegalFormula9() throws ParserException {
+    final String string = "#";
+    final InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+    new PropositionalParser(F.f).parse(stream);
   }
 
   @Test

@@ -60,7 +60,15 @@ The library is released under the Apache License and therefore is free to use in
 
 ## Changelog
 
-### Version 1.4.0 (Release xxx 2018)
+### Version 1.4.0 (Release May 2018)
+* BDD package (based on Buddy) for creating, manipulating, and writing BDDs
+  * Creation of BDDs from LogicNG formulas
+  * CNF, DNF transformation of BDDs
+  * Restriction, existential & universal quantifier elimination
+  * Model counting & enumeration
+  * Different static variable ordering heuristics (FORCE, DFS, BFS, MinMax)
+  * Writing BDDs in the GraphViz .dot format
+* Quine-McCluskey Implementation for minimizing canonical DNFs
 * New formula transformation for anonymizing formulas
 * Internal parser and IO improvements.  Variables can now start with a digit.
 
