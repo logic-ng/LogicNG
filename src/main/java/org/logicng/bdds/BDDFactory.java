@@ -179,7 +179,7 @@ public final class BDDFactory {
    * @param varOrder the variable order
    */
   public void setVariableOrder(final List<Variable> varOrder) {
-    this.setVariableOrder(varOrder.toArray(new Variable[varOrder.size()]));
+    this.setVariableOrder(varOrder.toArray(new Variable[0]));
   }
 
   /**

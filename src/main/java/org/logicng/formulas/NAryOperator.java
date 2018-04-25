@@ -61,7 +61,7 @@ public abstract class NAryOperator extends Formula {
    */
   NAryOperator(final FType type, final Collection<? extends Formula> operands, final FormulaFactory f) {
     super(type, f);
-    this.operands = operands.toArray(new Formula[operands.size()]);
+    this.operands = operands.toArray(new Formula[0]);
     this.hashCode = 0;
   }
 
@@ -87,7 +87,7 @@ public abstract class NAryOperator extends Formula {
 
   @Override
   public int numberOfOperands() {
-    return operands.length;
+    return this.operands.length;
   }
 
   @Override
@@ -127,7 +127,7 @@ public abstract class NAryOperator extends Formula {
     final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
     for (final Formula op : this.operands)
       nops.add(op.restrict(assignment));
-    return f.naryOperator(type, nops);
+    return this.f.naryOperator(this.type, nops);
   }
 
   @Override
@@ -143,7 +143,7 @@ public abstract class NAryOperator extends Formula {
     final List<Formula> fOps = new ArrayList<>(formula.numberOfOperands());
     for (final Formula op : formula)
       fOps.add(op);
-    for (Formula op : this.operands) {
+    for (final Formula op : this.operands) {
       fOps.remove(op);
       if (op.containsNode(formula))
         return true;
@@ -156,12 +156,12 @@ public abstract class NAryOperator extends Formula {
     final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
     for (final Formula op : this.operands)
       nops.add(op.substitute(substitution));
-    return f.naryOperator(type, nops);
+    return this.f.naryOperator(this.type, nops);
   }
 
   @Override
   public Formula negate() {
-    return f.not(this);
+    return this.f.not(this);
   }
 
   @Override
@@ -171,7 +171,7 @@ public abstract class NAryOperator extends Formula {
       final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
       for (final Formula op : this.operands)
         nops.add(op.nnf());
-      nnf = f.naryOperator(type, nops);
+      nnf = this.f.naryOperator(this.type, nops);
       this.transformationCache.put(NNF, nnf);
     }
     return nnf;
@@ -182,10 +182,10 @@ public abstract class NAryOperator extends Formula {
    * @param shift shift value
    * @return hashcode
    */
-  protected int hashCode(int shift) {
+  protected int hashCode(final int shift) {
     if (this.hashCode == 0) {
       int temp = 1;
-      for (Formula formula : this.operands)
+      for (final Formula formula : this.operands)
         temp += formula.hashCode();
       temp *= shift;
       this.hashCode = temp;
@@ -200,14 +200,14 @@ public abstract class NAryOperator extends Formula {
 
       @Override
       public boolean hasNext() {
-        return i < operands.length;
+        return this.i < NAryOperator.this.operands.length;
       }
 
       @Override
       public Formula next() {
-        if (i == operands.length)
+        if (this.i == NAryOperator.this.operands.length)
           throw new NoSuchElementException();
-        return operands[i++];
+        return NAryOperator.this.operands[this.i++];
       }
 
       @Override

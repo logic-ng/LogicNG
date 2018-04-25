@@ -164,7 +164,7 @@ public class FormulaFactory {
    * @param f        the formula
    * @return {@code true} if a given list of formulas contains a given formula, {@code false} otherwise
    */
-  private static boolean containsComplement(final LinkedHashSet<Formula> formulas, Formula f) {
+  private static boolean containsComplement(final LinkedHashSet<Formula> formulas, final Formula f) {
     return formulas.contains(f.negate());
   }
 
@@ -356,7 +356,7 @@ public class FormulaFactory {
    * @throws IllegalArgumentException if a wrong formula type is passed
    */
   public Formula naryOperator(final FType type, final Collection<? extends Formula> operands) {
-    return this.naryOperator(type, operands.toArray(new Formula[operands.size()]));
+    return this.naryOperator(type, operands.toArray(new Formula[0]));
   }
 
   /**
@@ -426,7 +426,7 @@ public class FormulaFactory {
     }
     if (tempAnd != null)
       return tempAnd;
-    LinkedHashSet<? extends Formula> condensedOperands = operands.size() < 2
+    final LinkedHashSet<? extends Formula> condensedOperands = operands.size() < 2
             ? operands
             : this.condenseOperandsAnd(operands);
     if (condensedOperands == null)
@@ -435,7 +435,7 @@ public class FormulaFactory {
       return this.verum();
     if (condensedOperands.size() == 1)
       return condensedOperands.iterator().next();
-    And and;
+    final And and;
     Map<LinkedHashSet<? extends Formula>, And> condAndMap = this.andsN;
     switch (condensedOperands.size()) {
       case 2:
@@ -571,7 +571,7 @@ public class FormulaFactory {
     }
     if (tempOr != null)
       return tempOr;
-    LinkedHashSet<? extends Formula> condensedOperands = operands.size() < 2
+    final LinkedHashSet<? extends Formula> condensedOperands = operands.size() < 2
             ? operands
             : this.condenseOperandsOr(operands);
     if (condensedOperands == null)
@@ -580,7 +580,7 @@ public class FormulaFactory {
       return this.falsum();
     if (condensedOperands.size() == 1)
       return condensedOperands.iterator().next();
-    Or or;
+    final Or or;
     Map<LinkedHashSet<? extends Formula>, Or> condOrMap = this.orsN;
     switch (condensedOperands.size()) {
       case 2:
@@ -673,7 +673,7 @@ public class FormulaFactory {
    * @param phase the literal phase
    * @return a new literal with the given name and phase
    */
-  public Literal literal(final String name, boolean phase) {
+  public Literal literal(final String name, final boolean phase) {
     if (phase)
       return this.variable(name);
     else {
@@ -709,11 +709,11 @@ public class FormulaFactory {
    * @return the pseudo-Boolean constraint
    * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
    */
-  public PBConstraint pbc(final CType comparator, int rhs, final List<? extends Literal> literals, final List<Integer> coefficients) {
-    int[] cfs = new int[coefficients.size()];
+  public PBConstraint pbc(final CType comparator, final int rhs, final List<? extends Literal> literals, final List<Integer> coefficients) {
+    final int[] cfs = new int[coefficients.size()];
     for (int i = 0; i < coefficients.size(); i++)
       cfs[i] = coefficients.get(i);
-    return this.constructPBC(comparator, rhs, literals.toArray(new Literal[literals.size()]), cfs);
+    return this.constructPBC(comparator, rhs, literals.toArray(new Literal[0]), cfs);
   }
 
   /**
@@ -725,11 +725,11 @@ public class FormulaFactory {
    * @return the pseudo-Boolean constraint
    * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
    */
-  public PBConstraint pbc(final CType comparator, int rhs, final Literal[] literals, final int[] coefficients) {
+  public PBConstraint pbc(final CType comparator, final int rhs, final Literal[] literals, final int[] coefficients) {
     return constructPBC(comparator, rhs, Arrays.copyOf(literals, literals.length), Arrays.copyOf(coefficients, coefficients.length));
   }
 
-  private PBConstraint constructPBC(final CType comparator, int rhs, final Literal[] literals, final int[] coefficients) {
+  private PBConstraint constructPBC(final CType comparator, final int rhs, final Literal[] literals, final int[] coefficients) {
     final PBOperands operands = new PBOperands(literals, coefficients, comparator, rhs);
     PBConstraint constraint = this.pbConstraints.get(operands);
     if (constraint == null) {
@@ -747,7 +747,7 @@ public class FormulaFactory {
    * @return the cardinality constraint
    * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint cc(final CType comparator, int rhs, final Collection<Variable> variables) {
+  public PBConstraint cc(final CType comparator, final int rhs, final Collection<Variable> variables) {
     final int[] coefficients = new int[variables.size()];
     Arrays.fill(coefficients, 1);
     final Variable[] vars = new Variable[variables.size()];
@@ -765,7 +765,7 @@ public class FormulaFactory {
    * @return the cardinality constraint
    * @throws IllegalArgumentException if there are negative variables
    */
-  public PBConstraint cc(final CType comparator, int rhs, final Variable... variables) {
+  public PBConstraint cc(final CType comparator, final int rhs, final Variable... variables) {
     final int[] coefficients = new int[variables.length];
     Arrays.fill(coefficients, 1);
     final Variable[] vars = new Variable[variables.length];
@@ -856,23 +856,23 @@ public class FormulaFactory {
    * @param operands the formulas
    * @return a condensed array of operands
    */
-  private LinkedHashSet<Formula> condenseOperandsOr(Collection<? extends Formula> operands) {
+  private LinkedHashSet<Formula> condenseOperandsOr(final Collection<? extends Formula> operands) {
     final LinkedHashSet<Formula> ops = new LinkedHashSet<>();
     this.cnfCheck = true;
-    for (Formula form : operands)
+    for (final Formula form : operands)
       if (form.type() == OR) {
-        for (Formula f : ((NAryOperator) form).operands) {
+        for (final Formula f : ((NAryOperator) form).operands) {
           this.addFormulaOr(ops, f);
-          if (!formulaAdditionResult[0])
+          if (!this.formulaAdditionResult[0])
             return null;
-          if (!formulaAdditionResult[1])
+          if (!this.formulaAdditionResult[1])
             this.cnfCheck = false;
         }
       } else {
         this.addFormulaOr(ops, form);
-        if (!formulaAdditionResult[0])
+        if (!this.formulaAdditionResult[0])
           return null;
-        if (!formulaAdditionResult[1])
+        if (!this.formulaAdditionResult[1])
           this.cnfCheck = false;
       }
     return ops;
@@ -883,23 +883,23 @@ public class FormulaFactory {
    * @param operands the formulas
    * @return a condensed array of operands
    */
-  private LinkedHashSet<Formula> condenseOperandsAnd(Collection<? extends Formula> operands) {
+  private LinkedHashSet<Formula> condenseOperandsAnd(final Collection<? extends Formula> operands) {
     final LinkedHashSet<Formula> ops = new LinkedHashSet<>();
     this.cnfCheck = true;
-    for (Formula form : operands)
+    for (final Formula form : operands)
       if (form.type() == AND) {
-        for (Formula f : ((NAryOperator) form).operands) {
+        for (final Formula f : ((NAryOperator) form).operands) {
           this.addFormulaAnd(ops, f);
-          if (!formulaAdditionResult[0])
+          if (!this.formulaAdditionResult[0])
             return null;
-          if (!formulaAdditionResult[1])
+          if (!this.formulaAdditionResult[1])
             this.cnfCheck = false;
         }
       } else {
         this.addFormulaAnd(ops, form);
-        if (!formulaAdditionResult[0])
+        if (!this.formulaAdditionResult[0])
           return null;
-        if (!formulaAdditionResult[1])
+        if (!this.formulaAdditionResult[1])
           this.cnfCheck = false;
       }
     return ops;
@@ -930,7 +930,7 @@ public class FormulaFactory {
    * @throws ParserException if the parser throws an exception
    */
   public Formula parse(final String string) throws ParserException {
-    return parser.parse(string);
+    return this.parser.parse(string);
   }
 
   /**
@@ -944,15 +944,15 @@ public class FormulaFactory {
    */
   private void addFormulaOr(final LinkedHashSet<Formula> ops, final Formula f) {
     if (f.type == FALSE) {
-      formulaAdditionResult[0] = true;
-      formulaAdditionResult[1] = true;
+      this.formulaAdditionResult[0] = true;
+      this.formulaAdditionResult[1] = true;
     } else if (f.type == TRUE || containsComplement(ops, f)) {
-      formulaAdditionResult[0] = false;
-      formulaAdditionResult[1] = false;
+      this.formulaAdditionResult[0] = false;
+      this.formulaAdditionResult[1] = false;
     } else {
       ops.add(f);
-      formulaAdditionResult[0] = true;
-      formulaAdditionResult[1] = f.type == LITERAL;
+      this.formulaAdditionResult[0] = true;
+      this.formulaAdditionResult[1] = f.type == LITERAL;
     }
   }
 
@@ -967,15 +967,15 @@ public class FormulaFactory {
    */
   private void addFormulaAnd(final LinkedHashSet<Formula> ops, final Formula f) {
     if (f.type() == TRUE) {
-      formulaAdditionResult[0] = true;
-      formulaAdditionResult[1] = true;
+      this.formulaAdditionResult[0] = true;
+      this.formulaAdditionResult[1] = true;
     } else if (f.type == FALSE || containsComplement(ops, f)) {
-      formulaAdditionResult[0] = false;
-      formulaAdditionResult[1] = false;
+      this.formulaAdditionResult[0] = false;
+      this.formulaAdditionResult[1] = false;
     } else {
       ops.add(f);
-      formulaAdditionResult[0] = true;
-      formulaAdditionResult[1] = f.type == LITERAL || f.type == OR && ((Or) f).isCNFClause();
+      this.formulaAdditionResult[0] = true;
+      this.formulaAdditionResult[1] = f.type == LITERAL || f.type == OR && ((Or) f).isCNFClause();
     }
   }
 
@@ -989,7 +989,7 @@ public class FormulaFactory {
     if (this.importer == null) {
       this.importer = new FormulaFactoryImporter(this);
     }
-    return formula.transform(importer);
+    return formula.transform(this.importer);
   }
 
   /**
@@ -1024,7 +1024,7 @@ public class FormulaFactory {
    * @return the statistics for this formula factory
    */
   public FormulaFactoryStatistics statistics() {
-    FormulaFactoryStatistics statistics = new FormulaFactoryStatistics();
+    final FormulaFactoryStatistics statistics = new FormulaFactoryStatistics();
     statistics.name = this.name;
     statistics.positiveLiterals = this.posLiterals.size();
     statistics.negativeLiterals = this.negLiterals.size();
@@ -1061,7 +1061,7 @@ public class FormulaFactory {
      * @param comparator   the comparator of the constraint
      * @param rhs          the right-hand side of the constraint
      */
-    public PBOperands(final Literal[] literals, final int[] coefficients, final CType comparator, int rhs) {
+    public PBOperands(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs) {
       this.literals = literals;
       this.coefficients = coefficients;
       this.comparator = comparator;
@@ -1070,7 +1070,7 @@ public class FormulaFactory {
 
     @Override
     public int hashCode() {
-      return Objects.hash(this.rhs, this.comparator, Arrays.hashCode(coefficients), Arrays.hashCode(literals));
+      return Objects.hash(this.rhs, this.comparator, Arrays.hashCode(this.coefficients), Arrays.hashCode(this.literals));
     }
 
     @Override
@@ -1134,7 +1134,7 @@ public class FormulaFactory {
      * @return the name of the formula factory
      */
     public String name() {
-      return name;
+      return this.name;
     }
 
     /**
@@ -1142,7 +1142,7 @@ public class FormulaFactory {
      * @return the number of positive literals in the factory
      */
     public int positiveLiterals() {
-      return positiveLiterals;
+      return this.positiveLiterals;
     }
 
     /**
@@ -1150,7 +1150,7 @@ public class FormulaFactory {
      * @return the number of negative literals in the factory
      */
     public int negativeLiterals() {
-      return negativeLiterals;
+      return this.negativeLiterals;
     }
 
     /**
@@ -1158,7 +1158,7 @@ public class FormulaFactory {
      * @return the number of negations in the factory
      */
     public int negations() {
-      return negations;
+      return this.negations;
     }
 
     /**
@@ -1166,7 +1166,7 @@ public class FormulaFactory {
      * @return the number of implications in the factory
      */
     public int implications() {
-      return implications;
+      return this.implications;
     }
 
     /**
@@ -1174,7 +1174,7 @@ public class FormulaFactory {
      * @return the number of equivalences in the factory
      */
     public int equivalences() {
-      return equivalences;
+      return this.equivalences;
     }
 
     /**
@@ -1182,7 +1182,7 @@ public class FormulaFactory {
      * @return the number of conjunctions of size 2 in the factory
      */
     public int conjunctions2() {
-      return conjunctions2;
+      return this.conjunctions2;
     }
 
     /**
@@ -1190,7 +1190,7 @@ public class FormulaFactory {
      * @return the number of conjunctions of size 3 in the factory
      */
     public int conjunctions3() {
-      return conjunctions3;
+      return this.conjunctions3;
     }
 
     /**
@@ -1198,7 +1198,7 @@ public class FormulaFactory {
      * @return the number of conjunctions of size 4 in the factory
      */
     public int conjunctions4() {
-      return conjunctions4;
+      return this.conjunctions4;
     }
 
     /**
@@ -1206,7 +1206,7 @@ public class FormulaFactory {
      * @return the number of conjunctions of a size &gt;4 in the factory
      */
     public int conjunctionsN() {
-      return conjunctionsN;
+      return this.conjunctionsN;
     }
 
     /**
@@ -1214,7 +1214,7 @@ public class FormulaFactory {
      * @return the number of disjunctions of size 2 in the factory
      */
     public int disjunctions2() {
-      return disjunctions2;
+      return this.disjunctions2;
     }
 
     /**
@@ -1222,7 +1222,7 @@ public class FormulaFactory {
      * @return the number of disjunctions of size 3 in the factory
      */
     public int disjunctions3() {
-      return disjunctions3;
+      return this.disjunctions3;
     }
 
     /**
@@ -1230,7 +1230,7 @@ public class FormulaFactory {
      * @return the number of disjunctions of size 4 in the factory
      */
     public int disjunctions4() {
-      return disjunctions4;
+      return this.disjunctions4;
     }
 
     /**
@@ -1238,7 +1238,7 @@ public class FormulaFactory {
      * @return the number of disjunctions of a size &gt;4 in the factory
      */
     public int disjunctionsN() {
-      return disjunctionsN;
+      return this.disjunctionsN;
     }
 
     /**
@@ -1246,7 +1246,7 @@ public class FormulaFactory {
      * @return the number of generated cardinality constraint auxiliary variables
      */
     public int ccCounter() {
-      return ccCounter;
+      return this.ccCounter;
     }
 
     /**
@@ -1254,7 +1254,7 @@ public class FormulaFactory {
      * @return the number of generated pseudo-Boolean auxiliary variables
      */
     public int pbCounter() {
-      return pbCounter;
+      return this.pbCounter;
     }
 
     /**
@@ -1262,7 +1262,7 @@ public class FormulaFactory {
      * @return the number of generated CNF auxiliary variables
      */
     public int cnfCounter() {
-      return cnfCounter;
+      return this.cnfCounter;
     }
 
     /**
@@ -1276,56 +1276,56 @@ public class FormulaFactory {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
       if (this == o) return true;
       if (!(o instanceof FormulaFactoryStatistics)) return false;
-      FormulaFactoryStatistics that = (FormulaFactoryStatistics) o;
-      return positiveLiterals == that.positiveLiterals &&
-              negativeLiterals == that.negativeLiterals &&
-              negations == that.negations &&
-              implications == that.implications &&
-              equivalences == that.equivalences &&
-              conjunctions2 == that.conjunctions2 &&
-              conjunctions3 == that.conjunctions3 &&
-              conjunctions4 == that.conjunctions4 &&
-              conjunctionsN == that.conjunctionsN &&
-              disjunctions2 == that.disjunctions2 &&
-              disjunctions3 == that.disjunctions3 &&
-              disjunctions4 == that.disjunctions4 &&
-              disjunctionsN == that.disjunctionsN &&
-              ccCounter == that.ccCounter &&
-              pbCounter == that.pbCounter &&
-              cnfCounter == that.cnfCounter &&
-              Objects.equals(name, that.name);
+      final FormulaFactoryStatistics that = (FormulaFactoryStatistics) o;
+      return this.positiveLiterals == that.positiveLiterals &&
+              this.negativeLiterals == that.negativeLiterals &&
+              this.negations == that.negations &&
+              this.implications == that.implications &&
+              this.equivalences == that.equivalences &&
+              this.conjunctions2 == that.conjunctions2 &&
+              this.conjunctions3 == that.conjunctions3 &&
+              this.conjunctions4 == that.conjunctions4 &&
+              this.conjunctionsN == that.conjunctionsN &&
+              this.disjunctions2 == that.disjunctions2 &&
+              this.disjunctions3 == that.disjunctions3 &&
+              this.disjunctions4 == that.disjunctions4 &&
+              this.disjunctionsN == that.disjunctionsN &&
+              this.ccCounter == that.ccCounter &&
+              this.pbCounter == that.pbCounter &&
+              this.cnfCounter == that.cnfCounter &&
+              Objects.equals(this.name, that.name);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(name, positiveLiterals, negativeLiterals, negations, implications, equivalences, conjunctions2,
-              conjunctions3, conjunctions4, conjunctionsN, disjunctions2, disjunctions3, disjunctions4, disjunctionsN,
-              ccCounter, pbCounter, cnfCounter);
+      return Objects.hash(this.name, this.positiveLiterals, this.negativeLiterals, this.negations, this.implications, this.equivalences, this.conjunctions2,
+              this.conjunctions3, this.conjunctions4, this.conjunctionsN, this.disjunctions2, this.disjunctions3, this.disjunctions4, this.disjunctionsN,
+              this.ccCounter, this.pbCounter, this.cnfCounter);
     }
 
     @Override
     public String toString() {
       return "FormulaFactoryStatistics{" +
-              "name='" + name + '\'' +
-              ", positiveLiterals=" + positiveLiterals +
-              ", negativeLiterals=" + negativeLiterals +
-              ", negations=" + negations +
-              ", implications=" + implications +
-              ", equivalences=" + equivalences +
-              ", conjunctions2=" + conjunctions2 +
-              ", conjunctions3=" + conjunctions3 +
-              ", conjunctions4=" + conjunctions4 +
-              ", conjunctionsN=" + conjunctionsN +
-              ", disjunctions2=" + disjunctions2 +
-              ", disjunctions3=" + disjunctions3 +
-              ", disjunctions4=" + disjunctions4 +
-              ", disjunctionsN=" + disjunctionsN +
-              ", ccCounter=" + ccCounter +
-              ", pbCounter=" + pbCounter +
-              ", cnfCounter=" + cnfCounter +
+              "name='" + this.name + '\'' +
+              ", positiveLiterals=" + this.positiveLiterals +
+              ", negativeLiterals=" + this.negativeLiterals +
+              ", negations=" + this.negations +
+              ", implications=" + this.implications +
+              ", equivalences=" + this.equivalences +
+              ", conjunctions2=" + this.conjunctions2 +
+              ", conjunctions3=" + this.conjunctions3 +
+              ", conjunctions4=" + this.conjunctions4 +
+              ", conjunctionsN=" + this.conjunctionsN +
+              ", disjunctions2=" + this.disjunctions2 +
+              ", disjunctions3=" + this.disjunctions3 +
+              ", disjunctions4=" + this.disjunctions4 +
+              ", disjunctionsN=" + this.disjunctionsN +
+              ", ccCounter=" + this.ccCounter +
+              ", pbCounter=" + this.pbCounter +
+              ", cnfCounter=" + this.cnfCounter +
               '}';
     }
   }

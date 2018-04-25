@@ -51,7 +51,6 @@ public final class BDD {
 
   private final int index;
   private final BDDFactory factory;
-  private BDDNode bdd;
 
   /**
    * Constructs a new BDD with a given index.

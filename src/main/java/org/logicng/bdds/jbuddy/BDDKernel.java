@@ -104,7 +104,7 @@ public final class BDDKernel {
 
   private BddNode[] nodes; // All of the bdd nodes
   private int[] vars; // Set of defined BDD variables
-  private final int minfreenodes; // Mininimal % of nodes that has to be left after a garbage collection
+  private final int minfreenodes; // Minimal % of nodes that has to be left after a garbage collection
   private int gbcollectnum; // Number of garbage collections
   private final int cachesize; // Size of the operator caches
   private int nodesize; // Number of allocated nodes
@@ -195,7 +195,7 @@ public final class BDDKernel {
   }
 
   /**
-   * Returns a BDD representing the i-th variable (one node with the childs true and false).
+   * Returns a BDD representing the i-th variable (one node with the children true and false).
    * @param i the index i
    * @return the BDD representing the i-th variable
    * @throws IllegalArgumentException if the index is not within the range of variables
@@ -207,7 +207,7 @@ public final class BDDKernel {
   }
 
   /**
-   * Returns a BDD representing the negation of the i-th variable (one node with the childs true and false).
+   * Returns a BDD representing the negation of the i-th variable (one node with the children true and false).
    * @param i the index i
    * @return the BDD representing the negated i-th variable
    * @throws IllegalArgumentException if the index is not within the range of variables
@@ -514,10 +514,6 @@ public final class BDDKernel {
 
   private void gbc() {
     int r;
-    BDDGBCStat s = new BDDGBCStat();
-    s.nodes = this.nodesize;
-    s.freenodes = this.freenum;
-    s.num = this.gbcollectnum;
     for (r = 0; r < this.refstacktop; r++)
       mark(this.refstack[r]);
     for (int n = 0; n < this.nodesize; n++) {
@@ -543,10 +539,6 @@ public final class BDDKernel {
     }
     resetCaches();
     this.gbcollectnum++;
-    s = new BDDGBCStat();
-    s.nodes = this.nodesize;
-    s.freenodes = this.freenum;
-    s.num = this.gbcollectnum;
   }
 
   private void gbcRehash() {
@@ -1262,11 +1254,5 @@ public final class BDDKernel {
     int high;
     int hash;
     int next;
-  }
-
-  private static final class BDDGBCStat {
-    int nodes;
-    int freenodes;
-    int num;
   }
 }

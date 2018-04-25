@@ -63,14 +63,14 @@ public final class UniversalQuantifierElimination implements FormulaTransformati
    * @param variables the collection of variables
    */
   public UniversalQuantifierElimination(final Collection<Variable> variables) {
-    this.elimination = variables.toArray(new Variable[variables.size()]);
+    this.elimination = variables.toArray(new Variable[0]);
   }
 
   @Override
-  public Formula apply(final Formula formula, boolean cache) {
+  public Formula apply(final Formula formula, final boolean cache) {
     Formula result = formula;
     final FormulaFactory f = formula.factory();
-    for (final Variable var : elimination)
+    for (final Variable var : this.elimination)
       result = f.and(result.restrict(new Assignment(var)), result.restrict(new Assignment(var.negate())));
     return result;
   }
