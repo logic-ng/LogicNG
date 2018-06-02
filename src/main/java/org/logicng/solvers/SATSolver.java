@@ -87,6 +87,24 @@ public abstract class SATSolver {
   public abstract void addWithoutUnknown(final Formula formula);
 
   /**
+   * Adds a given set of propositions to the solver.
+   * @param propositions the set of propositions
+   */
+  public void addPropositions(final Collection<Proposition> propositions) {
+    for (final Proposition proposition : propositions)
+      add(proposition);
+  }
+
+  /**
+   * Adds a given set of propositions to the solver.
+   * @param propositions the set of propositions
+   */
+  public void addPropositions(final Proposition... propositions) {
+    for (final Proposition proposition : propositions)
+      add(proposition);
+  }
+
+  /**
    * Adds a proposition to the solver.  The formulas of the proposition are first converted to CNF.
    * @param proposition the proposition
    */
@@ -181,7 +199,7 @@ public abstract class SATSolver {
         this.addClause(formula, proposition);
         break;
       case AND:
-        for (Formula op : formula)
+        for (final Formula op : formula)
           this.addClause(op, proposition);
         break;
       default:
@@ -204,7 +222,7 @@ public abstract class SATSolver {
         this.addClauseWithRelaxation(relaxationVar, formula);
         break;
       case AND:
-        for (Formula op : formula)
+        for (final Formula op : formula)
           this.addClauseWithRelaxation(relaxationVar, op);
         break;
       default:
