@@ -28,25 +28,27 @@
 
 grammar LogicNGPropositional;
 
+options {
+  superClass = ParserWithFormula;
+}
+
 @parser::header {
-package org.logicng.io.parsers;
+  package org.logicng.io.parsers;
 
-import java.util.LinkedHashSet;
-import org.logicng.formulas.*;
+  import java.util.LinkedHashSet;
+  import org.logicng.formulas.*;
 }
 
-@members {
-private FormulaFactory f;
-
-public void setFormulaFactory(final FormulaFactory f) {
-  this.f = f;
-}
+@parser::members {
+  public Formula getParsedFormula() {
+    return formula().f;
+  }
 }
 
 @lexer::header {
-package org.logicng.io.parsers;
+  package org.logicng.io.parsers;
 
-import org.logicng.formulas.FormulaFactory;
+  import org.logicng.formulas.FormulaFactory;
 }
 
 formula returns [Formula f]
@@ -82,7 +84,7 @@ equiv returns [Formula f]
 @init{Formula[] operands = new Formula[2];}
   :	a = impl {operands[0] =$a.f;} (EQUIV b = equiv {operands[1] = $b.f;})? {$f = operands[1] == null ? operands[0] : f.equivalence(operands[0], operands[1]);};
 
-VARIABLE : [A-Za-z_@][A-Za-z0-9_]*;
+VARIABLE : [A-Za-z0-9_@][A-Za-z0-9_]*;
 TRUE     : '$true';
 FALSE    : '$false';
 LBR      : '(';

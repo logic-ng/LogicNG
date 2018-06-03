@@ -111,7 +111,7 @@ public class FormulaFactoryImporter implements FormulaTransformation {
    * @return the applied operands of the given operator
    */
   private LinkedHashSet<Formula> gatherAppliedOperands(final NAryOperator operator) {
-    final LinkedHashSet<Formula> applied = new LinkedHashSet<Formula>();
+    final LinkedHashSet<Formula> applied = new LinkedHashSet<>();
     for (final Formula operand : operator) {
       applied.add(apply(operand, false));
     }

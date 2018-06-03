@@ -63,17 +63,17 @@ public class CacheTest {
 
   @Test
   public void testValues() {
-    List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
-    Assert.assertEquals(11, valuesTrans.size());
+    final List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
+    Assert.assertEquals(13, valuesTrans.size());
     Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF")));
     Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG")));
 
-    List<PredicateCacheEntry> valuesPred = Arrays.asList(PredicateCacheEntry.values());
+    final List<PredicateCacheEntry> valuesPred = Arrays.asList(PredicateCacheEntry.values());
     Assert.assertEquals(5, valuesPred.size());
     Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_DNF")));
     Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_SAT")));
 
-    List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
+    final List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
     Assert.assertEquals(3, valuesFunc.size());
     Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("LITPROFILE")));
     Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("SUBFORMULAS")));

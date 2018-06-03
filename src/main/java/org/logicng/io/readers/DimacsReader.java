@@ -31,7 +31,6 @@ package org.logicng.io.readers;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.io.parsers.ParserException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,10 +63,9 @@ public final class DimacsReader {
    * @param file the file
    * @param f    the formula factory
    * @return the list of formulas (clauses)
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
+   * @throws IOException if there was a problem reading the file
    */
-  public static List<Formula> readCNF(final File file, final FormulaFactory f) throws IOException, ParserException {
+  public static List<Formula> readCNF(final File file, final FormulaFactory f) throws IOException {
     return readCNF(file, f, "v");
   }
 
@@ -80,17 +78,17 @@ public final class DimacsReader {
    * @throws IOException if there was a problem reading the file
    */
   public static List<Formula> readCNF(final File file, final FormulaFactory f, final String prefix) throws IOException {
-    List<Formula> result = new ArrayList<>();
+    final List<Formula> result = new ArrayList<>();
     try (final BufferedReader br = new BufferedReader(new FileReader(file))) {
       while (br.ready()) {
         final String line = br.readLine();
         if (!line.startsWith("c") && !line.startsWith("p") && !line.trim().isEmpty()) {
-          String[] split = line.split("\\s+");
+          final String[] split = line.split("\\s+");
           if (!"0".equals(split[split.length - 1].trim()))
             throw new IllegalArgumentException("Line " + line + " did not end with 0.");
-          LinkedHashSet<Literal> vars = new LinkedHashSet<>(split.length - 1);
+          final LinkedHashSet<Literal> vars = new LinkedHashSet<>(split.length - 1);
           for (int i = 0; i < split.length - 1; i++) {
-            String lit = split[i].trim();
+            final String lit = split[i].trim();
             if (!lit.isEmpty()) {
               if (lit.startsWith("-"))
                 vars.add(f.literal(prefix + split[i].trim().substring(1), false));
@@ -111,10 +109,9 @@ public final class DimacsReader {
    * @param fileName the file name
    * @param f        the formula factory
    * @return the list of formulas (clauses)
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
+   * @throws IOException if there was a problem reading the file
    */
-  public static List<Formula> readCNF(final String fileName, final FormulaFactory f) throws IOException, ParserException {
+  public static List<Formula> readCNF(final String fileName, final FormulaFactory f) throws IOException {
     return readCNF(new File(fileName), f, "v");
   }
 
@@ -124,11 +121,9 @@ public final class DimacsReader {
    * @param f        the formula factory
    * @param prefix   the prefix for the variable names
    * @return the list of formulas (clauses)
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
+   * @throws IOException if there was a problem reading the file
    */
-  public static List<Formula> readCNF(final String fileName, final FormulaFactory f, final String prefix)
-          throws IOException, ParserException {
+  public static List<Formula> readCNF(final String fileName, final FormulaFactory f, final String prefix) throws IOException {
     return readCNF(new File(fileName), f, prefix);
   }
 

@@ -1,0 +1,7 @@
+digraph G {
+  const_true [shape=box, label="$true", style = bold, color = darkgreen];
+  const_false [shape=box, label="$false", style = bold, color = red];
+  id_2 [shape=ellipse, label="A"];
+  id_2 -> const_false [style = dotted, color = red];
+  id_2 -> const_true [color = darkgreen];
+}

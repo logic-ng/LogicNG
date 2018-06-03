@@ -33,7 +33,10 @@ import org.junit.Test;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
@@ -44,21 +47,21 @@ public class PseudoBooleanParserTest {
 
   @Test
   public void testExceptions() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(""));
     Assert.assertEquals(F.f.verum(), parser.parse((String) null));
   }
 
   @Test
   public void testParseConstants() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse("$true"));
     Assert.assertEquals(F.f.falsum(), parser.parse("$false"));
   }
 
   @Test
   public void testParseLiterals() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.variable("A"), parser.parse("A"));
     Assert.assertEquals(F.f.variable("a"), parser.parse("a"));
     Assert.assertEquals(F.f.variable("a1"), parser.parse("a1"));
@@ -70,7 +73,7 @@ public class PseudoBooleanParserTest {
 
   @Test
   public void testParseOperators() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.not(F.f.variable("a")), parser.parse("~a"));
     Assert.assertEquals(F.f.not(F.f.variable("Var")), parser.parse("~Var"));
     Assert.assertEquals(F.f.and(F.f.variable("a"), F.f.variable("b")), parser.parse("a & b"));
@@ -87,7 +90,7 @@ public class PseudoBooleanParserTest {
 
   @Test
   public void testParseMultiplication() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.pbc(CType.EQ, 4, new Literal[]{F.f.variable("abc")}, new int[]{13}), parser.parse("13 * abc = 4"));
     Assert.assertEquals(F.f.pbc(CType.EQ, 4, new Literal[]{F.f.variable("a")}, new int[]{-13}), parser.parse("-13 * a = 4"));
     Assert.assertEquals(F.f.pbc(CType.EQ, -442, new Literal[]{F.f.literal("abc", false)}, new int[]{13}), parser.parse("13 * ~abc = -442"));
@@ -101,7 +104,7 @@ public class PseudoBooleanParserTest {
 
   @Test
   public void testParseAddition() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.pbc(CType.LT, -4, new Literal[]{F.f.variable("c"), F.f.literal("d", false)}, new int[]{4, -4}), parser.parse("4 * c + -4 * ~d < -4"));
     Assert.assertEquals(F.f.pbc(CType.GE, -5, new Literal[]{F.f.variable("c"), F.f.literal("c", false)}, new int[]{5, -5}), parser.parse("5 * c + -5 * ~c >= -5"));
     Assert.assertEquals(F.f.pbc(CType.GT, -6, new Literal[]{F.f.variable("a"), F.f.literal("b", false), F.f.literal("c", false)}, new int[]{6, -6, 12}), parser.parse("6 * a + -6 * ~b + 12 * ~c > -6"));
@@ -115,15 +118,15 @@ public class PseudoBooleanParserTest {
 
   @Test
   public void testCombination() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
-    Formula pbc = F.f.pbc(CType.GT, -6, new Literal[]{F.f.variable("a"), F.f.literal("b", false), F.f.literal("c", false)}, new int[]{6, -6, 12});
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final Formula pbc = F.f.pbc(CType.GT, -6, new Literal[]{F.f.variable("a"), F.f.literal("b", false), F.f.literal("c", false)}, new int[]{6, -6, 12});
     Assert.assertEquals(F.f.and(F.f.implication(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), pbc), parser.parse("(x => y & z) & (6 * a + -6 * ~b + 12 * ~c > -6)"));
     Assert.assertEquals(F.f.not(pbc), parser.parse("~(6 * a - 6 * ~b - -12 * ~c > -6)"));
   }
 
   @Test
   public void testParsePrecedences() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.or(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x | y & z"));
     Assert.assertEquals(F.f.or(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y | z"));
     Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => y & z"));
@@ -152,13 +155,13 @@ public class PseudoBooleanParserTest {
 
   @Test
   public void parseEmptyString() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(""));
   }
 
   @Test
   public void testSkipSymbols() throws ParserException {
-    PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
+    final PseudoBooleanParser parser = new PseudoBooleanParser(F.f);
     Assert.assertEquals(F.f.verum(), parser.parse(" "));
     Assert.assertEquals(F.f.verum(), parser.parse("\t"));
     Assert.assertEquals(F.f.verum(), parser.parse("\n"));
@@ -170,6 +173,16 @@ public class PseudoBooleanParserTest {
   }
 
   @Test
+  public void testNumberLiterals() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PseudoBooleanParser parser = new PseudoBooleanParser(f);
+    assertThat(parser.parse("12 & A")).isEqualTo(f.and(f.variable("12"), f.variable("A")));
+    assertThat(parser.parse("~12 & A")).isEqualTo(f.and(f.literal("12", false), f.variable("A")));
+    assertThat(parser.parse("12 * 12 + 13 * A + 10 * B <= 25")).isEqualTo(f.pbc(CType.LE, 25, new Literal[]{f.variable("12"), f.variable("A"), f.variable("B")}, new int[]{12, 13, 10}));
+    assertThat(parser.parse("-12 * ~12 + 13 * A + 10 * B <= 25")).isEqualTo(f.pbc(CType.LE, 25, new Literal[]{f.literal("12", false), f.variable("A"), f.variable("B")}, new int[]{-12, 13, 10}));
+  }
+
+  @Test
   public void testFormulaFactoryParser() throws ParserException {
     Assert.assertEquals(F.f.and(F.f.variable("a"), F.f.variable("b")), F.f.parse("a & b"));
     Assert.assertEquals(F.PBC1, F.f.parse("2*a + -4*b + 3*x = 2"));
@@ -178,11 +191,6 @@ public class PseudoBooleanParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalVariable1() throws ParserException {
     new PseudoBooleanParser(F.f).parse("$$%");
-  }
-
-  @Test(expected = ParserException.class)
-  public void testIllegalVariable2() throws ParserException {
-    new PseudoBooleanParser(F.f).parse("-1");
   }
 
   @Test(expected = ParserException.class)
@@ -248,11 +256,6 @@ public class PseudoBooleanParserTest {
   @Test(expected = ParserException.class)
   public void testIllegalFormula5() throws ParserException {
     new PseudoBooleanParser(F.f).parse("A & ~B)");
-  }
-
-  @Test(expected = ParserException.class)
-  public void testIllegalFormula6() throws ParserException {
-    new PseudoBooleanParser(F.f).parse("12a");
   }
 
   @Test(expected = ParserException.class)

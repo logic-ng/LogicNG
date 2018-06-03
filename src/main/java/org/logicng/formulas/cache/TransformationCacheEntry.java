@@ -41,10 +41,12 @@ public enum TransformationCacheEntry implements CacheEntry {
   TSEITIN("Tseitin conjunctive normal form"),
   TSEITIN_VARIABLE("Tseitin variable"),
   FACTORIZED_CNF("factorized conjunctive normal form"),
+  BDD_CNF("conjunctive normal form via BDD"),
   FACTORIZED_DNF("factorized disjunctive normal form"),
   AIG("and-inverter graph"),
   UNIT_PROPAGATION("unit propagation"),
-  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification");
+  DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
+  ANONYMIZATION("anonymization");
 
   private final String description;
 
@@ -58,6 +60,6 @@ public enum TransformationCacheEntry implements CacheEntry {
 
   @Override
   public String description() {
-    return "TransformationCacheEntry{description=" + description + "}";
+    return "TransformationCacheEntry{description=" + this.description + "}";
   }
 }

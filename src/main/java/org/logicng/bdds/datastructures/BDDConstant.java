@@ -26,57 +26,90 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.solvers.sat;
+package org.logicng.bdds.datastructures;
 
+import org.logicng.formulas.Constant;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * A generator for pigeon hole formulas.
- * @version 1.0
- * @since 1.0
+ * A terminal node in a BDD.
+ * @version 1.4.0
+ * @since 1.4.0
  */
-public class PigeonHoleGenerator {
+public final class BDDConstant implements BDDNode {
 
-  private final FormulaFactory f;
+  private final Constant value;
 
-  public PigeonHoleGenerator(final FormulaFactory f) {
-    this.f = f;
+  /**
+   * Private constructor.
+   * @param value the constant value
+   */
+  private BDDConstant(final Constant value) {
+    this.value = value;
   }
 
-  public Formula generate(int n) {
-    return generate(n, "v");
+  /**
+   * Returns the terminal 0 node.
+   * @param f the formula factory
+   * @return the terminal 0 node
+   */
+  public static BDDConstant getFalsumNode(final FormulaFactory f) {
+    return new BDDConstant(f.falsum());
   }
 
-  public Formula generate(int n, String prefix) {
-    return f.and(placeInSomeHole(n, prefix), onlyOnePigeonInHole(n, prefix));
+  /**
+   * Returns the terminal 1 node.
+   * @param f the formula factory
+   * @return the terminal 1 node
+   */
+  public static BDDConstant getVerumNode(final FormulaFactory f) {
+    return new BDDConstant(f.verum());
   }
 
-  private Formula placeInSomeHole(int n, String prefix) {
-    if (n == 1)
-      return f.and(f.variable(prefix + "1"), f.variable(prefix + "2"));
-    List<Formula> ors = new LinkedList<>();
-    for (int i = 1; i <= n + 1; i++) {
-      List<Literal> orOps = new LinkedList<>();
-      for (int j = 1; j <= n; j++)
-        orOps.add(f.variable(prefix + (n * (i - 1) + j)));
-      ors.add(f.or(orOps));
-    }
-    return f.and(ors);
+  @Override
+  public Formula label() {
+    return this.value;
   }
 
-  private Formula onlyOnePigeonInHole(int n, String prefix) {
-    if (n == 1)
-      return f.or(f.literal(prefix + "1", false), f.literal(prefix + "2", false));
-    List<Formula> ors = new LinkedList<>();
-    for (int j = 1; j <= n; j++)
-      for (int i = 1; i <= n; i++)
-        for (int k = i + 1; k <= n + 1; k++)
-          ors.add(f.or(f.literal(prefix + (n * (i - 1) + j), false), f.literal(prefix + (n * (k - 1) + j), false)));
-    return f.and(ors);
+  @Override
+  public boolean isInnerNode() {
+    return false;
+  }
+
+  @Override
+  public BDDNode low() {
+    return null;
+  }
+
+  @Override
+  public BDDNode high() {
+    return null;
+  }
+
+  @Override
+  public Set<BDDNode> nodes() {
+    return new HashSet<BDDNode>(Collections.singletonList(this));
+  }
+
+  @Override
+  public int hashCode() {
+    return this.value.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    return this == other || other instanceof BDDConstant
+            && Objects.equals(this.value, ((BDDConstant) other).value);
+  }
+
+  @Override
+  public String toString() {
+    return "<" + this.value + ">";
   }
 }

@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.3.1</version>
+  <version>1.4.0</version>
   <packaging>jar</packaging>
 
   <name>LogicNG</name>
@@ -43,10 +43,11 @@
   <developers>
     <developer>
       <name>Christoph Zengler</name>
-      <email>christoph@zengler.eu</email>
+      <email>christoph@logicng.org</email>
     </developer>
     <developer>
       <name>Steffen Hildebrandt</name>
+      <email>steffen@logicng.org</email>
     </developer>
     <developer>
       <name>Martin Siegmund</name>
@@ -69,9 +70,9 @@
     <sonar.exclusions>**/LogicNGPropositional*.java,**/LogicNGPseudoBoolean*.java</sonar.exclusions>
 
     <!-- Dependency Versions -->
-    <version.antlr>4.7</version.antlr>
-    <version.jacoco>0.7.9</version.jacoco>
-    <version.coveralls>4.3.0-SNAPSHOT</version.coveralls>
+    <version.antlr>4.7.1</version.antlr>
+    <version.jacoco>0.8.0</version.jacoco>
+    <version.coveralls>4.3.0</version.coveralls>
     <version.junit>4.12</version.junit>
     <version.assertj>2.8.0</version.assertj>
   </properties>
@@ -255,11 +256,4 @@
       </build>
     </profile>
   </profiles>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>

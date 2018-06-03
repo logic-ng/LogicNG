@@ -28,6 +28,10 @@
 
 package org.logicng.formulas;
 
+import org.logicng.bdds.BDDFactory;
+import org.logicng.bdds.datastructures.BDD;
+import org.logicng.bdds.orderings.VariableOrdering;
+import org.logicng.bdds.orderings.VariableOrderingProvider;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
@@ -109,7 +113,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @return the number of internal nodes of this formula.
    */
   public long numberOfInternalNodes() {
-    return f.numberOfNodes(this);
+    return this.f.numberOfNodes(this);
   }
 
   /**
@@ -179,7 +183,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @return a new substituted formula
    */
   public Formula substitute(final Variable variable, final Formula formula) {
-    Substitution subst = new Substitution();
+    final Substitution subst = new Substitution();
     subst.addMapping(variable, formula);
     return this.substitute(subst);
   }
@@ -216,6 +220,40 @@ public abstract class Formula implements Iterable<Formula> {
   }
 
   /**
+   * Generates a BDD from this formula with a given variable ordering.  This is done by generating a new BDD factory,
+   * generating the variable order for this formula, and building a new BDD.  If more sophisticated operations should
+   * be performed on the BDD or more than one formula should be constructed on the BDD, an own instance of
+   * {@link BDDFactory} should be created and used.
+   * @param variableOrdering the variable ordering
+   * @return the BDD for this formula with the given ordering
+   */
+  public BDD bdd(final VariableOrdering variableOrdering) {
+    final int varNum = this.variables().size();
+    final BDDFactory factory = new BDDFactory(varNum * 30, varNum * 20, this.factory());
+    if (variableOrdering == null)
+      factory.setNumberOfVars(varNum);
+    else {
+      try {
+        final VariableOrderingProvider provider = variableOrdering.provider().newInstance();
+        factory.setVariableOrder(provider.getOrder(this));
+      } catch (final InstantiationException | IllegalAccessException e) {
+        throw new IllegalStateException("Could not generate the BDD variable ordering provider", e);
+      }
+    }
+    return factory.build(this);
+  }
+
+  /**
+   * Generates a BDD from this formula with no given variable ordering.  This is done by generating a new BDD factory
+   * and building a new BDD.  If more sophisticated operations should be performed on the BDD or more than one
+   * formula should be constructed on the BDD, an own instance of * {@link BDDFactory} should be created and used.
+   * @return the BDD for this formula
+   */
+  public BDD bdd() {
+    return bdd(null);
+  }
+
+  /**
    * Transforms this formula with a given formula transformator and caches the result.
    * @param transformation the formula transformator
    * @return the transformed formula
@@ -230,7 +268,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param cache          indicates whether the result (and associated predicates) should be cached in this formula's cache.
    * @return the transformed formula
    */
-  public Formula transform(final FormulaTransformation transformation, boolean cache) {
+  public Formula transform(final FormulaTransformation transformation, final boolean cache) {
     return transformation.apply(this, cache);
   }
 
@@ -250,7 +288,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param cache     indicates whether the result should be cached in this formula's cache
    * @return {@code true} if the predicate holds, {@code false} otherwise
    */
-  public boolean holds(final FormulaPredicate predicate, boolean cache) {
+  public boolean holds(final FormulaPredicate predicate, final boolean cache) {
     return predicate.test(this, cache);
   }
 
@@ -261,7 +299,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param <T>      the result type of the function
    * @return the result of the function application
    */
-  public <T> T apply(final FormulaFunction<T> function, boolean cache) {
+  public <T> T apply(final FormulaFunction<T> function, final boolean cache) {
     return function.apply(this, cache);
   }
 
@@ -310,7 +348,7 @@ public abstract class Formula implements Iterable<Formula> {
    * @param key   the cache key
    * @param value the cache value
    */
-  public void setPredicateCacheEntry(final CacheEntry key, boolean value) {
+  public void setPredicateCacheEntry(final CacheEntry key, final boolean value) {
     this.predicateCache.put(key, Tristate.fromBool(value));
   }
 
@@ -345,12 +383,12 @@ public abstract class Formula implements Iterable<Formula> {
    * Clears the transformation and function cache of the formula.
    */
   public void clearCaches() {
-    transformationCache.clear();
-    functionCache.clear();
+    this.transformationCache.clear();
+    this.functionCache.clear();
   }
 
   @Override
   public String toString() {
-    return f.string(this);
+    return this.f.string(this);
   }
 }
