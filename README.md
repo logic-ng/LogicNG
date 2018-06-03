@@ -56,11 +56,11 @@ final Tristate result = miniSat.sat();
 ```
 
 ## License & Commercial Support
-The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at logicng@escsol.com for further details.
+The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at christoph@logicng.org for further details.
 
 ## Changelog
 
-### Version 1.4.0 (Release May 2018)
+### Version 1.4.0 (Release June 2018)
 * BDD package (based on Buddy) for creating, manipulating, and writing BDDs
   * Creation of BDDs from LogicNG formulas
   * CNF, DNF transformation of BDDs
