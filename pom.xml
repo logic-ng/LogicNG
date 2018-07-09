@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.4.0</version>
+  <version>1.4.1</version>
   <packaging>jar</packaging>
 
   <name>LogicNG</name>
@@ -43,14 +43,11 @@
   <developers>
     <developer>
       <name>Christoph Zengler</name>
-      <email>christoph@logicng.org</email>
+      <email>christoph.zengler@booleworks.com</email>
     </developer>
     <developer>
       <name>Steffen Hildebrandt</name>
-      <email>steffen@logicng.org</email>
-    </developer>
-    <developer>
-      <name>Martin Siegmund</name>
+      <email>steffen.hildebrandt@booleworks.com</email>
     </developer>
   </developers>
 
