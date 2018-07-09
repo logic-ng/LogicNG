@@ -90,7 +90,7 @@ public abstract class SATSolver {
    * Adds a given set of propositions to the solver.
    * @param propositions the set of propositions
    */
-  public void addPropositions(final Collection<Proposition> propositions) {
+  public void addPropositions(final Collection<? extends Proposition> propositions) {
     for (final Proposition proposition : propositions)
       add(proposition);
   }
