@@ -70,7 +70,8 @@ public class FormulaFactoryTest {
             "Disjunctions (2):  0\n" +
             "Disjunctions (3):  0\n" +
             "Disjunctions (4):  1\n" +
-            "Disjunctions (>4): 0\n";
+            "Disjunctions (>4): 0\n" +
+            "Pseudo Booleans:   0\n";
     Assert.assertEquals(expected, f.toString());
   }
 
@@ -126,26 +127,26 @@ public class FormulaFactoryTest {
 
   @Test
   public void testCNF() {
-    FormulaFactory f = new FormulaFactory();
-    Variable a = f.variable("A");
-    Variable b = f.variable("B");
-    Variable c = f.variable("C");
-    Variable d = f.variable("D");
-    Formula clause1 = f.or(a, b);
-    Formula clause2 = f.or(c, d.negate());
-    Formula nClause1 = f.implication(a, c);
+    final FormulaFactory f = new FormulaFactory();
+    final Variable a = f.variable("A");
+    final Variable b = f.variable("B");
+    final Variable c = f.variable("C");
+    final Variable d = f.variable("D");
+    final Formula clause1 = f.or(a, b);
+    final Formula clause2 = f.or(c, d.negate());
+    final Formula nClause1 = f.implication(a, c);
 
-    List<Formula> clauses = new ArrayList<>();
+    final List<Formula> clauses = new ArrayList<>();
     clauses.add(clause1);
     clauses.add(clause2);
 
-    List<Formula> nClauses = new ArrayList<>();
+    final List<Formula> nClauses = new ArrayList<>();
     nClauses.add(clause1);
     nClauses.add(clause2);
     nClauses.add(nClause1);
 
-    Formula cnf = f.cnf(clauses);
-    Formula nCnf = f.cnf(nClauses);
+    final Formula cnf = f.cnf(clauses);
+    final Formula nCnf = f.cnf(nClauses);
     Assert.assertEquals(cnf, cnf.cnf());
     Assert.assertNotEquals(nCnf, nCnf.cnf());
   }
@@ -164,10 +165,10 @@ public class FormulaFactoryTest {
     assertThat(f.statistics()).isEqualToComparingOnlyGivenFields (g.statistics(), "positiveLiterals",
             "negativeLiterals", "negations", "implications", "equivalences", "conjunctions2", "conjunctions3",
             "conjunctions4", "conjunctionsN", "disjunctions2", "disjunctions3", "disjunctions4");
-    for (Literal litF : ff.literals()) {
+    for (final Literal litF : ff.literals()) {
       assertThat(litF.factory()).isSameAs(f);
     }
-    for (Literal litG : fg.literals()) {
+    for (final Literal litG : fg.literals()) {
       assertThat(litG.factory()).isSameAs(g);
     }
   }

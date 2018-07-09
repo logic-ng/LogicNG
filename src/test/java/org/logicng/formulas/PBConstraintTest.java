@@ -34,6 +34,7 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PseudoBooleanParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit Tests for the class {@link PBConstraint}.
@@ -52,15 +55,15 @@ public class PBConstraintTest {
   private static final FormulaFactory f = new FormulaFactory();
   private static final FormulaFactory f2 = new FormulaFactory();
 
-  private PBConstraint pb1;
-  private PBConstraint pb2;
-  private PBConstraint pb22;
-  private PBConstraint cc1;
-  private PBConstraint cc2;
-  private PBConstraint amo1;
-  private PBConstraint amo2;
-  private PBConstraint exo1;
-  private PBConstraint exo2;
+  private final PBConstraint pb1;
+  private final PBConstraint pb2;
+  private final PBConstraint pb22;
+  private final PBConstraint cc1;
+  private final PBConstraint cc2;
+  private final PBConstraint amo1;
+  private final PBConstraint amo2;
+  private final PBConstraint exo1;
+  private final PBConstraint exo2;
 
   public PBConstraintTest() {
     final Variable[] lits1 = new Variable[]{f.variable("a")};
@@ -109,97 +112,97 @@ public class PBConstraintTest {
     final int[] coeffsCC1 = new int[]{1};
     final int[] coeffsCC2 = new int[]{1, 1, 1};
 
-    Assert.assertArrayEquals(lits1, pb1.operands());
-    Assert.assertArrayEquals(coeffs1, pb1.coefficients());
-    Assert.assertEquals(CType.LE, pb1.comparator());
-    Assert.assertEquals(2, pb1.rhs());
-    Assert.assertFalse(pb1.isCC());
-    Assert.assertEquals(3, pb1.maxWeight());
+    Assert.assertArrayEquals(lits1, this.pb1.operands());
+    Assert.assertArrayEquals(coeffs1, this.pb1.coefficients());
+    Assert.assertEquals(CType.LE, this.pb1.comparator());
+    Assert.assertEquals(2, this.pb1.rhs());
+    Assert.assertFalse(this.pb1.isCC());
+    Assert.assertEquals(3, this.pb1.maxWeight());
 
-    Assert.assertArrayEquals(lits2, pb2.operands());
-    Assert.assertArrayEquals(coeffs2, pb2.coefficients());
-    Assert.assertEquals(CType.LE, pb2.comparator());
-    Assert.assertEquals(8, pb2.rhs());
-    Assert.assertFalse(pb2.isCC());
-    Assert.assertEquals(7, pb2.maxWeight());
+    Assert.assertArrayEquals(lits2, this.pb2.operands());
+    Assert.assertArrayEquals(coeffs2, this.pb2.coefficients());
+    Assert.assertEquals(CType.LE, this.pb2.comparator());
+    Assert.assertEquals(8, this.pb2.rhs());
+    Assert.assertFalse(this.pb2.isCC());
+    Assert.assertEquals(7, this.pb2.maxWeight());
 
-    Assert.assertArrayEquals(lits1, cc1.operands());
-    Assert.assertArrayEquals(coeffsCC1, cc1.coefficients());
-    Assert.assertEquals(CType.LT, cc1.comparator());
-    Assert.assertEquals(1, cc1.rhs());
-    Assert.assertTrue(cc1.isCC());
-    Assert.assertEquals(1, cc1.maxWeight());
+    Assert.assertArrayEquals(lits1, this.cc1.operands());
+    Assert.assertArrayEquals(coeffsCC1, this.cc1.coefficients());
+    Assert.assertEquals(CType.LT, this.cc1.comparator());
+    Assert.assertEquals(1, this.cc1.rhs());
+    Assert.assertTrue(this.cc1.isCC());
+    Assert.assertEquals(1, this.cc1.maxWeight());
 
-    Assert.assertArrayEquals(litsCC2, cc2.operands());
-    Assert.assertArrayEquals(coeffsCC2, cc2.coefficients());
-    Assert.assertEquals(CType.GE, cc2.comparator());
-    Assert.assertEquals(2, cc2.rhs());
-    Assert.assertTrue(cc2.isCC());
+    Assert.assertArrayEquals(litsCC2, this.cc2.operands());
+    Assert.assertArrayEquals(coeffsCC2, this.cc2.coefficients());
+    Assert.assertEquals(CType.GE, this.cc2.comparator());
+    Assert.assertEquals(2, this.cc2.rhs());
+    Assert.assertTrue(this.cc2.isCC());
 
-    Assert.assertArrayEquals(lits1, amo1.operands());
-    Assert.assertArrayEquals(coeffsCC1, amo1.coefficients());
-    Assert.assertEquals(CType.LE, amo1.comparator());
-    Assert.assertEquals(1, amo1.rhs());
-    Assert.assertTrue(amo1.isCC());
+    Assert.assertArrayEquals(lits1, this.amo1.operands());
+    Assert.assertArrayEquals(coeffsCC1, this.amo1.coefficients());
+    Assert.assertEquals(CType.LE, this.amo1.comparator());
+    Assert.assertEquals(1, this.amo1.rhs());
+    Assert.assertTrue(this.amo1.isCC());
 
-    Assert.assertArrayEquals(litsCC2, amo2.operands());
-    Assert.assertArrayEquals(coeffsCC2, amo2.coefficients());
-    Assert.assertEquals(CType.LE, amo2.comparator());
-    Assert.assertEquals(1, amo2.rhs());
-    Assert.assertTrue(amo2.isCC());
+    Assert.assertArrayEquals(litsCC2, this.amo2.operands());
+    Assert.assertArrayEquals(coeffsCC2, this.amo2.coefficients());
+    Assert.assertEquals(CType.LE, this.amo2.comparator());
+    Assert.assertEquals(1, this.amo2.rhs());
+    Assert.assertTrue(this.amo2.isCC());
 
-    Assert.assertArrayEquals(lits1, exo1.operands());
-    Assert.assertArrayEquals(coeffsCC1, exo1.coefficients());
-    Assert.assertEquals(CType.EQ, exo1.comparator());
-    Assert.assertEquals(1, exo1.rhs());
-    Assert.assertTrue(exo1.isCC());
+    Assert.assertArrayEquals(lits1, this.exo1.operands());
+    Assert.assertArrayEquals(coeffsCC1, this.exo1.coefficients());
+    Assert.assertEquals(CType.EQ, this.exo1.comparator());
+    Assert.assertEquals(1, this.exo1.rhs());
+    Assert.assertTrue(this.exo1.isCC());
 
-    Assert.assertArrayEquals(litsCC2, exo2.operands());
-    Assert.assertArrayEquals(coeffsCC2, exo2.coefficients());
-    Assert.assertEquals(CType.EQ, exo2.comparator());
-    Assert.assertEquals(1, exo2.rhs());
-    Assert.assertTrue(exo2.isCC());
+    Assert.assertArrayEquals(litsCC2, this.exo2.operands());
+    Assert.assertArrayEquals(coeffsCC2, this.exo2.coefficients());
+    Assert.assertEquals(CType.EQ, this.exo2.comparator());
+    Assert.assertEquals(1, this.exo2.rhs());
+    Assert.assertTrue(this.exo2.isCC());
   }
 
   @Test
   public void testNumberOfAtoms() {
-    Assert.assertEquals(1, pb1.numberOfAtoms());
-    Assert.assertEquals(1, pb2.numberOfAtoms());
-    Assert.assertEquals(1, cc1.numberOfAtoms());
-    Assert.assertEquals(1, cc2.numberOfAtoms());
-    Assert.assertEquals(1, amo1.numberOfAtoms());
-    Assert.assertEquals(1, amo2.numberOfAtoms());
-    Assert.assertEquals(1, exo1.numberOfAtoms());
-    Assert.assertEquals(1, exo2.numberOfAtoms());
-    Assert.assertEquals(1, exo2.numberOfAtoms());
+    Assert.assertEquals(1, this.pb1.numberOfAtoms());
+    Assert.assertEquals(1, this.pb2.numberOfAtoms());
+    Assert.assertEquals(1, this.cc1.numberOfAtoms());
+    Assert.assertEquals(1, this.cc2.numberOfAtoms());
+    Assert.assertEquals(1, this.amo1.numberOfAtoms());
+    Assert.assertEquals(1, this.amo2.numberOfAtoms());
+    Assert.assertEquals(1, this.exo1.numberOfAtoms());
+    Assert.assertEquals(1, this.exo2.numberOfAtoms());
+    Assert.assertEquals(1, this.exo2.numberOfAtoms());
   }
 
   @Test
   public void testNumberOfNodes() {
-    Assert.assertEquals(2, pb1.numberOfNodes());
-    Assert.assertEquals(4, pb2.numberOfNodes());
-    Assert.assertEquals(2, cc1.numberOfNodes());
-    Assert.assertEquals(4, cc2.numberOfNodes());
-    Assert.assertEquals(2, amo1.numberOfNodes());
-    Assert.assertEquals(4, amo2.numberOfNodes());
-    Assert.assertEquals(2, exo1.numberOfNodes());
-    Assert.assertEquals(4, exo2.numberOfNodes());
-    Assert.assertEquals(4, exo2.numberOfNodes());
+    Assert.assertEquals(2, this.pb1.numberOfNodes());
+    Assert.assertEquals(4, this.pb2.numberOfNodes());
+    Assert.assertEquals(2, this.cc1.numberOfNodes());
+    Assert.assertEquals(4, this.cc2.numberOfNodes());
+    Assert.assertEquals(2, this.amo1.numberOfNodes());
+    Assert.assertEquals(4, this.amo2.numberOfNodes());
+    Assert.assertEquals(2, this.exo1.numberOfNodes());
+    Assert.assertEquals(4, this.exo2.numberOfNodes());
+    Assert.assertEquals(4, this.exo2.numberOfNodes());
   }
 
   @Test
   public void testVariables() {
     final SortedSet<Variable> lits1 = new TreeSet<>(Collections.singletonList(f.variable("a")));
     final SortedSet<Variable> lits2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
-    Assert.assertEquals(lits1, pb1.variables());
-    Assert.assertEquals(lits1, pb1.variables());
-    Assert.assertEquals(lits2, pb2.variables());
-    Assert.assertEquals(lits1, cc1.variables());
-    Assert.assertEquals(lits2, cc2.variables());
-    Assert.assertEquals(lits1, amo1.variables());
-    Assert.assertEquals(lits2, amo2.variables());
-    Assert.assertEquals(lits1, exo1.variables());
-    Assert.assertEquals(lits2, exo2.variables());
+    Assert.assertEquals(lits1, this.pb1.variables());
+    Assert.assertEquals(lits1, this.pb1.variables());
+    Assert.assertEquals(lits2, this.pb2.variables());
+    Assert.assertEquals(lits1, this.cc1.variables());
+    Assert.assertEquals(lits2, this.cc2.variables());
+    Assert.assertEquals(lits1, this.amo1.variables());
+    Assert.assertEquals(lits2, this.amo2.variables());
+    Assert.assertEquals(lits1, this.exo1.variables());
+    Assert.assertEquals(lits2, this.exo2.variables());
   }
 
   @Test
@@ -207,21 +210,21 @@ public class PBConstraintTest {
     final SortedSet<Variable> lits1 = new TreeSet<>(Collections.singletonList(f.variable("a")));
     final SortedSet<Literal> lits2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c")));
     final SortedSet<Variable> litsCC2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
-    Assert.assertEquals(lits1, pb1.literals());
-    Assert.assertEquals(lits2, pb2.literals());
-    Assert.assertEquals(lits1, cc1.literals());
-    Assert.assertEquals(litsCC2, cc2.literals());
-    Assert.assertEquals(lits1, amo1.literals());
-    Assert.assertEquals(litsCC2, amo2.literals());
-    Assert.assertEquals(lits1, exo1.literals());
-    Assert.assertEquals(litsCC2, exo2.literals());
+    Assert.assertEquals(lits1, this.pb1.literals());
+    Assert.assertEquals(lits2, this.pb2.literals());
+    Assert.assertEquals(lits1, this.cc1.literals());
+    Assert.assertEquals(litsCC2, this.cc2.literals());
+    Assert.assertEquals(lits1, this.amo1.literals());
+    Assert.assertEquals(litsCC2, this.amo2.literals());
+    Assert.assertEquals(lits1, this.exo1.literals());
+    Assert.assertEquals(litsCC2, this.exo2.literals());
   }
 
   @Test
   public void testConstains() {
-    Assert.assertTrue(pb1.containsVariable(f.variable("a")));
-    Assert.assertTrue(pb2.containsVariable(f.variable("b")));
-    Assert.assertFalse(pb2.containsVariable(f.variable("d")));
+    Assert.assertTrue(this.pb1.containsVariable(f.variable("a")));
+    Assert.assertTrue(this.pb2.containsVariable(f.variable("b")));
+    Assert.assertFalse(this.pb2.containsVariable(f.variable("d")));
   }
 
   @Test
@@ -307,14 +310,14 @@ public class PBConstraintTest {
 
   @Test
   public void testContainsSubformula() {
-    Assert.assertTrue(pb1.containsNode(f.variable("a")));
-    Assert.assertFalse(pb1.containsNode(f.literal("a", false)));
-    Assert.assertTrue(pb2.containsNode(f.literal("b", false)));
-    Assert.assertTrue(pb2.containsNode(f.variable("b")));
-    Assert.assertFalse(pb2.containsNode(f.variable("d")));
-    Assert.assertTrue(pb1.containsNode(pb1));
-    Assert.assertTrue(pb2.containsNode(pb2));
-    Assert.assertTrue(pb2.containsNode(pb22));
+    Assert.assertTrue(this.pb1.containsNode(f.variable("a")));
+    Assert.assertFalse(this.pb1.containsNode(f.literal("a", false)));
+    Assert.assertTrue(this.pb2.containsNode(f.literal("b", false)));
+    Assert.assertTrue(this.pb2.containsNode(f.variable("b")));
+    Assert.assertFalse(this.pb2.containsNode(f.variable("d")));
+    Assert.assertTrue(this.pb1.containsNode(this.pb1));
+    Assert.assertTrue(this.pb2.containsNode(this.pb2));
+    Assert.assertTrue(this.pb2.containsNode(this.pb22));
   }
 
   @Test
@@ -353,9 +356,9 @@ public class PBConstraintTest {
     Assert.assertEquals(f.pbc(CType.EQ, 0, litsS1, coeffS1), pb1.substitute(s1));
     Assert.assertEquals(f.pbc(CType.EQ, 2, litsS2, coeffS2), pb1.substitute(s2));
     Assert.assertEquals(f.falsum(), pb1.substitute(s3));
-    Assert.assertEquals(f.verum(), pb2.substitute(s3));
+    Assert.assertEquals(f.verum(), this.pb2.substitute(s3));
     Assert.assertEquals(f.falsum(), pb1.substitute(s4));
-    Assert.assertEquals(f.verum(), pb2.substitute(s4));
+    Assert.assertEquals(f.verum(), this.pb2.substitute(s4));
     Assert.assertEquals(f.pbc(CType.EQ, 2, litsS5, coeffs), pb1.substitute(s5));
     Assert.assertEquals(f.pbc(CType.EQ, 4, litsS6, coeffS6), pb1.substitute(s6));
   }
@@ -378,10 +381,10 @@ public class PBConstraintTest {
 
   @Test
   public void testNNF() {
-    Assert.assertEquals(f.literal("a", false), pb1.nnf());
-    Assert.assertEquals(f.literal("a", false), cc1.nnf());
-    Assert.assertEquals(f.verum(), amo1.nnf());
-    Assert.assertEquals(f.variable("a"), exo1.nnf());
+    Assert.assertEquals(f.literal("a", false), this.pb1.nnf());
+    Assert.assertEquals(f.literal("a", false), this.cc1.nnf());
+    Assert.assertEquals(f.verum(), this.amo1.nnf());
+    Assert.assertEquals(f.variable("a"), this.exo1.nnf());
   }
 
   @Test
@@ -450,50 +453,50 @@ public class PBConstraintTest {
     final List<Integer> coeffs2alt1 = Arrays.asList(3, -2);
     final List<Variable> lits2alt2 = Arrays.asList(f2.variable("a"), f.variable("b"), f.variable("c"));
     final List<Integer> coeffs2alt2 = Arrays.asList(3, -2, 8);
-    Assert.assertEquals(pb1, pb1);
-    Assert.assertEquals(pb2, pb22);
-    Assert.assertEquals(pb2, f.pbc(CType.LE, 8, lits2, coeffs2));
-    Assert.assertNotEquals(cc1, cc2);
-    Assert.assertNotEquals(cc1, null);
-    Assert.assertNotEquals(null, cc1);
-    Assert.assertNotEquals("String", cc2);
-    Assert.assertNotEquals(cc2, "String");
-    Assert.assertNotEquals(pb2, f.pbc(CType.LE, 8, lits2alt1, coeffs2alt1));
-    Assert.assertNotEquals(pb2, f.pbc(CType.LE, 8, lits2alt2, coeffs2));
-    Assert.assertNotEquals(pb2, f.pbc(CType.LE, 8, lits2, coeffs2alt2));
-    Assert.assertNotEquals(pb2, f.pbc(CType.LT, 8, lits2, coeffs2));
-    Assert.assertNotEquals(pb2, f.pbc(CType.LE, 7, lits2, coeffs2));
+    Assert.assertEquals(this.pb1, this.pb1);
+    Assert.assertEquals(this.pb2, this.pb22);
+    Assert.assertEquals(this.pb2, f.pbc(CType.LE, 8, lits2, coeffs2));
+    Assert.assertNotEquals(this.cc1, this.cc2);
+    Assert.assertNotEquals(this.cc1, null);
+    Assert.assertNotEquals(null, this.cc1);
+    Assert.assertNotEquals("String", this.cc2);
+    Assert.assertNotEquals(this.cc2, "String");
+    Assert.assertNotEquals(this.pb2, f.pbc(CType.LE, 8, lits2alt1, coeffs2alt1));
+    Assert.assertNotEquals(this.pb2, f.pbc(CType.LE, 8, lits2alt2, coeffs2));
+    Assert.assertNotEquals(this.pb2, f.pbc(CType.LE, 8, lits2, coeffs2alt2));
+    Assert.assertNotEquals(this.pb2, f.pbc(CType.LT, 8, lits2, coeffs2));
+    Assert.assertNotEquals(this.pb2, f.pbc(CType.LE, 7, lits2, coeffs2));
   }
 
   @Test
   public void testHash() {
-    Assert.assertEquals(pb1.hashCode(), pb1.hashCode());
-    Assert.assertEquals(pb2.hashCode(), pb2.hashCode());
-    Assert.assertEquals(pb2.hashCode(), pb22.hashCode());
+    Assert.assertEquals(this.pb1.hashCode(), this.pb1.hashCode());
+    Assert.assertEquals(this.pb2.hashCode(), this.pb2.hashCode());
+    Assert.assertEquals(this.pb2.hashCode(), this.pb22.hashCode());
   }
 
   @Test
-  public void testNumberOfInternalNodes() throws ParserException {
-    Assert.assertEquals(1, pb2.numberOfInternalNodes());
+  public void testNumberOfInternalNodes() {
+    Assert.assertEquals(1, this.pb2.numberOfInternalNodes());
   }
 
   @Test
   public void testNumberOfOperands() {
-    Assert.assertEquals(0, pb1.numberOfOperands());
-    Assert.assertEquals(0, pb2.numberOfOperands());
+    Assert.assertEquals(0, this.pb1.numberOfOperands());
+    Assert.assertEquals(0, this.pb2.numberOfOperands());
   }
 
   @Test
   public void testAtomicFormula() {
-    Assert.assertTrue(pb2.isAtomicFormula());
+    Assert.assertTrue(this.pb2.isAtomicFormula());
   }
 
   @Test
   public void testContains() {
-    Assert.assertTrue(pb2.containsVariable(F.f.variable("a")));
-    Assert.assertTrue(pb2.containsVariable(F.f.variable("b")));
-    Assert.assertTrue(pb2.containsVariable(F.f.variable("c")));
-    Assert.assertFalse(pb2.containsVariable(F.f.variable("x")));
+    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("a")));
+    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("b")));
+    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("c")));
+    Assert.assertFalse(this.pb2.containsVariable(F.f.variable("x")));
   }
 
   @Test
@@ -592,5 +595,73 @@ public class PBConstraintTest {
     Assert.assertEquals(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
     Assert.assertEquals(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$true");
     Assert.assertEquals(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).toString(), "$false");
+  }
+
+  @Test
+  public void testSimplifiedCompareToConstant1() {
+    Assert.assertEquals(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+    Assert.assertEquals(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.verum());
+    Assert.assertEquals(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()), f.falsum());
+  }
+
+  @Test
+  public void testSimplifiedCompareToConstant2() {
+    Assert.assertEquals(f.verum(), f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.verum(), f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.verum(), f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.verum(), f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.verum(), f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.verum(), f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.verum(), f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+    Assert.assertEquals(f.falsum(), f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()));
+  }
+
+  @Test
+  public void testSimplifiedType() {
+    Assert.assertEquals(f.pbc(CType.EQ, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.EQ, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.EQ, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.GT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.GT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.GT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.GE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.GE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.GE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.LT, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.LT, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.LT, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+    Assert.assertEquals(f.pbc(CType.LE, 0, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.LE, 1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.TRUE);
+    Assert.assertEquals(f.pbc(CType.LE, -1, new ArrayList<Literal>(), new ArrayList<Integer>()).type(), FType.FALSE);
+  }
+
+  @Test
+  public void testCommutativeLaw() throws ParserException {
+    final FormulaFactory ff = new FormulaFactory();
+    final PseudoBooleanParser p = new PseudoBooleanParser(ff);
+    final Formula parse = p.parse("2*a + 3*c + -4*b + -12*~d + 3*e <= 6");
+    assertThat(parse.toString()).isEqualTo("2*a + 3*c + -4*b + -12*~d + 3*e <= 6");
+    assertThat(p.parse("-4*b + 2*a + 3*e + 3*c + -12*~d <= 6").toString()).isEqualTo("2*a + 3*c + -4*b + -12*~d + 3*e <= 6");
+    assertThat(p.parse("3*e + -12*~d + -4*b + 3*c + 2*a <= 6").toString()).isEqualTo("2*a + 3*c + -4*b + -12*~d + 3*e <= 6");
+    assertThat(ff.statistics().pbcs()).isEqualTo(1);
   }
 }

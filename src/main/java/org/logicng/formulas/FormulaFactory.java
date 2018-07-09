@@ -1039,6 +1039,7 @@ public class FormulaFactory {
     statistics.disjunctions3 = this.ors3.size();
     statistics.disjunctions4 = this.ors4.size();
     statistics.disjunctionsN = this.orsN.size();
+    statistics.pbcs = this.pbConstraints.size();
     statistics.ccCounter = this.ccCounter;
     statistics.pbCounter = this.pbCounter;
     statistics.cnfCounter = this.cnfCounter;
@@ -1048,7 +1049,7 @@ public class FormulaFactory {
   /**
    * Helper class for the operands of a pseudo-Boolean constraint.
    */
-  private static final class PBOperands {
+  static final class PBOperands {
     private final Literal[] literals;
     private final int[] coefficients;
     private final CType comparator;
@@ -1061,11 +1062,32 @@ public class FormulaFactory {
      * @param comparator   the comparator of the constraint
      * @param rhs          the right-hand side of the constraint
      */
-    public PBOperands(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs) {
-      this.literals = literals;
-      this.coefficients = coefficients;
+    PBOperands(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs) {
+      this.literals = Arrays.copyOf(literals, literals.length);
+      this.coefficients = Arrays.copyOf(coefficients, coefficients.length);
       this.comparator = comparator;
       this.rhs = rhs;
+      sortArrays(this.literals, this.coefficients);
+    }
+
+    static void sortArrays(final Literal[] literals, final int[] coefficients) {
+      for (int i = 0; i < literals.length; i++)
+        for (int j = i; j > 0 && (literals[j - 1]).compareTo(literals[j]) > 0; j--) {
+          swapLiteral(literals, j, j - 1);
+          swapInt(coefficients, j, j - 1);
+        }
+    }
+
+    private static void swapLiteral(final Literal[] x, final int a, final int b) {
+      final Literal t = x[a];
+      x[a] = x[b];
+      x[b] = t;
+    }
+
+    private static void swapInt(final int[] x, final int a, final int b) {
+      final int t = x[a];
+      x[a] = x[b];
+      x[b] = t;
     }
 
     @Override
@@ -1104,6 +1126,7 @@ public class FormulaFactory {
     sb.append("Disjunctions (3):  ").append(this.ors3.size()).append("\n");
     sb.append("Disjunctions (4):  ").append(this.ors4.size()).append("\n");
     sb.append("Disjunctions (>4): ").append(this.orsN.size()).append("\n");
+    sb.append("Pseudo Booleans:   ").append(this.pbConstraints.size()).append("\n");
     return sb.toString();
   }
 
@@ -1125,6 +1148,7 @@ public class FormulaFactory {
     private int disjunctions3;
     private int disjunctions4;
     private int disjunctionsN;
+    private int pbcs;
     private int ccCounter;
     private int pbCounter;
     private int cnfCounter;
@@ -1242,6 +1266,14 @@ public class FormulaFactory {
     }
 
     /**
+     * Returns the number of pseudo-Boolean constraints in the factory.
+     * @return the number of pseudo-Boolean constraints in the factory
+     */
+    public int pbcs() {
+      return this.pbcs;
+    }
+
+    /**
      * Returns the number of generated cardinality constraint auxiliary variables.
      * @return the number of generated cardinality constraint auxiliary variables
      */
@@ -1272,7 +1304,7 @@ public class FormulaFactory {
     public int formulas() {
       return this.positiveLiterals + this.negativeLiterals + this.negations + this.implications + this.equivalences
               + this.conjunctions2 + this.conjunctions3 + this.conjunctions4 + this.conjunctionsN + this.disjunctions2
-              + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN;
+              + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN + this.pbcs;
     }
 
     @Override
@@ -1293,6 +1325,7 @@ public class FormulaFactory {
               this.disjunctions3 == that.disjunctions3 &&
               this.disjunctions4 == that.disjunctions4 &&
               this.disjunctionsN == that.disjunctionsN &&
+              this.pbcs == that.pbcs &&
               this.ccCounter == that.ccCounter &&
               this.pbCounter == that.pbCounter &&
               this.cnfCounter == that.cnfCounter &&
@@ -1303,7 +1336,7 @@ public class FormulaFactory {
     public int hashCode() {
       return Objects.hash(this.name, this.positiveLiterals, this.negativeLiterals, this.negations, this.implications, this.equivalences, this.conjunctions2,
               this.conjunctions3, this.conjunctions4, this.conjunctionsN, this.disjunctions2, this.disjunctions3, this.disjunctions4, this.disjunctionsN,
-              this.ccCounter, this.pbCounter, this.cnfCounter);
+              this.pbcs, this.ccCounter, this.pbCounter, this.cnfCounter);
     }
 
     @Override
@@ -1323,12 +1356,11 @@ public class FormulaFactory {
               ", disjunctions3=" + this.disjunctions3 +
               ", disjunctions4=" + this.disjunctions4 +
               ", disjunctionsN=" + this.disjunctionsN +
+              ", pbcs=" + this.pbcs +
               ", ccCounter=" + this.ccCounter +
               ", pbCounter=" + this.pbCounter +
               ", cnfCounter=" + this.cnfCounter +
               '}';
     }
   }
-
-
 }

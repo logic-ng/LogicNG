@@ -123,28 +123,37 @@ public final class PBConstraint extends Formula {
     if (literals.length == 0) {
       switch (comparator) {
         case EQ:
-          isTrivialTrue = rhs == 0;
+          this.isTrivialTrue = rhs == 0;
           break;
         case LE:
-          isTrivialTrue = rhs >= 0;
+          this.isTrivialTrue = rhs >= 0;
           break;
         case LT:
-          isTrivialTrue = rhs > 0;
+          this.isTrivialTrue = rhs > 0;
           break;
         case GE:
-          isTrivialTrue = rhs <= 0;
+          this.isTrivialTrue = rhs <= 0;
           break;
         case GT:
-          isTrivialTrue = rhs < 0;
+          this.isTrivialTrue = rhs < 0;
           break;
         default:
           throw new IllegalArgumentException("Unknown comperator: " + comparator);
       }
-      isTrivialFalse = !isTrivialTrue;
+      this.isTrivialFalse = !this.isTrivialTrue;
     } else {
-      isTrivialTrue = false;
-      isTrivialFalse = false;
+      this.isTrivialTrue = false;
+      this.isTrivialFalse = false;
     }
+  }
+
+  @Override
+  public FType type() {
+    if (this.isTrivialFalse)
+      return FType.FALSE;
+    if (this.isTrivialTrue)
+      return FType.TRUE;
+    return FType.PBC;
   }
 
   /**
@@ -602,12 +611,18 @@ public final class PBConstraint extends Formula {
   @Override
   public int hashCode() {
     if (this.hashCode == 0) {
-      int temp = this.comparator.hashCode() + this.rhs;
-      for (int i = 0; i < this.literals.length; i++) {
-        temp += 11 * this.literals[i].hashCode();
-        temp += 13 * this.coefficients[i];
+      if (this.isTrivialFalse)
+        this.hashCode = this.f.falsum().hashCode();
+      else if (this.isTrivialTrue)
+        this.hashCode = this.f.verum().hashCode();
+      else {
+        int temp = this.comparator.hashCode() + this.rhs;
+        for (int i = 0; i < this.literals.length; i++) {
+          temp += 11 * this.literals[i].hashCode();
+          temp += 13 * this.coefficients[i];
+        }
+        this.hashCode = temp;
       }
-      this.hashCode = temp;
     }
     return this.hashCode;
   }
@@ -615,6 +630,8 @@ public final class PBConstraint extends Formula {
   @Override
   public boolean equals(final Object other) {
     if (this == other)
+      return true;
+    if (this.isTrivialTrue && other instanceof CTrue || this.isTrivialFalse && other instanceof CFalse)
       return true;
     if (other instanceof Formula && this.f == ((Formula) other).f)
       return false;
