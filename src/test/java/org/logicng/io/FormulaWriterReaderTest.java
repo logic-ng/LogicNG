@@ -41,8 +41,11 @@ import org.logicng.io.writers.FormulaWriter;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
@@ -143,7 +146,7 @@ public class FormulaWriterReaderTest {
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
     FormulaWriter.write(fileName, p1, false, new UTF8StringRepresentation());
-    try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
       Assert.assertEquals("A ∧ B ∧ ¬(C ∨ (D ⇒ ¬E))", reader.readLine());
     }
     Files.deleteIfExists(file.toPath());
@@ -156,7 +159,7 @@ public class FormulaWriterReaderTest {
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
     FormulaWriter.write(fileName, p1, true, new UTF8StringRepresentation());
-    try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
       Assert.assertEquals("A", reader.readLine());
       Assert.assertEquals("B", reader.readLine());
       Assert.assertEquals("¬(C ∨ (D ⇒ ¬E))", reader.readLine());
