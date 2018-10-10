@@ -349,6 +349,15 @@ public class FormulaFactory {
   }
 
   /**
+   * Returns the constant "True" or "False" depending on the given value.
+   * @param value the given value
+   * @return the constant
+   */
+  public Constant constant(final boolean value) {
+    return value ? cTrue : cFalse;
+  }
+
+  /**
    * Creates a new n-ary operator with a given type and a list of operands.
    * @param type     the type of the formula
    * @param operands the list of operands
