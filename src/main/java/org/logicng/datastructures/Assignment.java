@@ -252,10 +252,10 @@ public class Assignment {
     final FormulaFactory f = lit.factory();
     Literal searchLit = lit.variable();
     if (this.pos.contains(searchLit))
-      return lit.phase() ? f.verum() : f.falsum();
+      return f.constant(lit.phase());
     searchLit = lit.negative();
     if (this.neg.contains(searchLit))
-      return !lit.phase() ? f.verum() : f.falsum();
+      return f.constant(!lit.phase());
     return null;
   }
 

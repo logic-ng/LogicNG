@@ -51,6 +51,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FormulaFactoryTest {
 
   @Test
+  public void testConstant() {
+    final FormulaFactory f = new FormulaFactory();
+    Assert.assertEquals(f.verum(), f.constant(true));
+    Assert.assertEquals(f.falsum(), f.constant(false));
+  }
+
+  @Test
   public void testToString() {
     final FormulaFactory f = new FormulaFactory("MyFormulaFactory");
     f.variable("a");
