@@ -285,7 +285,7 @@ public class QuineMcCluskeyTest {
   }
 
   /**
-   * The example from {@link https://de.wikipedia.org/wiki/Verfahren_nach_Quine_und_McCluskey}
+   * The example from <a href="https://de.wikipedia.org/wiki/Verfahren_nach_Quine_und_McCluskey">Quine-McCluskey</a>
    */
   @Test
   public void testComputePrimeImplicantsWiki() throws ParserException {
