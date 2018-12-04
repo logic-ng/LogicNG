@@ -64,20 +64,21 @@ public class FormulaFactoryTest {
     f.literal("b", false);
     f.and(f.variable("a"), f.literal("b", false));
     f.or(f.variable("a"), f.literal("b", false), f.variable("x"), f.implication(f.variable("a"), f.variable("x")));
-    final String expected = "Name:              MyFormulaFactory\n" +
-            "Positive Literals: 3\n" +
-            "Negative Literals: 3\n" +
-            "Negations:         1\n" +
-            "Implications:      1\n" +
-            "Equivalences:      0\n" +
-            "Conjunctions (2):  1\n" +
-            "Conjunctions (3):  0\n" +
-            "Conjunctions (4):  0\n" +
-            "Conjunctions (>4): 0\n" +
-            "Disjunctions (2):  0\n" +
-            "Disjunctions (3):  0\n" +
-            "Disjunctions (4):  1\n" +
-            "Disjunctions (>4): 0\n";
+    final String expected = String.format("Name:              MyFormulaFactory%n" +
+            "Positive Literals: 3%n" +
+            "Negative Literals: 3%n" +
+            "Negations:         1%n" +
+            "Implications:      1%n" +
+            "Equivalences:      0%n" +
+            "Conjunctions (2):  1%n" +
+            "Conjunctions (3):  0%n" +
+            "Conjunctions (4):  0%n" +
+            "Conjunctions (>4): 0%n" +
+            "Disjunctions (2):  0%n" +
+            "Disjunctions (3):  0%n" +
+            "Disjunctions (4):  1%n" +
+            "Disjunctions (>4): 0%n" +
+            "Pseudo Booleans:   0%n");
     Assert.assertEquals(expected, f.toString());
   }
 
@@ -168,7 +169,7 @@ public class FormulaFactoryTest {
     assertThat(fg).isEqualTo(ff);
     assertThat(ff.factory()).isSameAs(f);
     assertThat(fg.factory()).isSameAs(g);
-    assertThat(f.statistics()).isEqualToComparingOnlyGivenFields (g.statistics(), "positiveLiterals",
+    assertThat(f.statistics()).isEqualToComparingOnlyGivenFields(g.statistics(), "positiveLiterals",
             "negativeLiterals", "negations", "implications", "equivalences", "conjunctions2", "conjunctions3",
             "conjunctions4", "conjunctionsN", "disjunctions2", "disjunctions3", "disjunctions4");
     for (Literal litF : ff.literals()) {

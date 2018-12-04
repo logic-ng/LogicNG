@@ -91,16 +91,16 @@ public final class FormulaDimacsFileWriter {
     }
     StringBuilder sb = new StringBuilder("p cnf ");
     int partsSize = formula.type().equals(FType.FALSE) ? 1 : parts.size();
-    sb.append(var2id.size()).append(" ").append(partsSize).append("\n");
+    sb.append(var2id.size()).append(" ").append(partsSize).append(System.lineSeparator());
 
     for (Formula part : parts) {
       for (Literal lit : part.literals()) {
         sb.append(lit.phase() ? "" : "-").append(var2id.get(lit.variable())).append(" ");
       }
-      sb.append(" 0\n");
+      sb.append(String.format(" 0%n"));
     }
     if (formula.type().equals(FType.FALSE)) {
-      sb.append("0\n");
+      sb.append(String.format("0%n"));
     }
     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
       writer.append(sb);
@@ -115,7 +115,7 @@ public final class FormulaDimacsFileWriter {
   private static void writeMapping(File mappingFile, SortedMap<Variable, Long> var2id) throws IOException {
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<Variable, Long> entry : var2id.entrySet()) {
-      sb.append(entry.getKey()).append(";").append(entry.getValue()).append("\n");
+      sb.append(entry.getKey()).append(";").append(entry.getValue()).append(System.lineSeparator());
     }
     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), Charset.forName("UTF-8")))) {
       writer.append(sb);

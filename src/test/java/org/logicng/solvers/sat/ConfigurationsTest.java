@@ -56,20 +56,20 @@ public class ConfigurationsTest {
             .incremental(false)
             .initialPhase(true)
             .build();
-    final String expected = "MiniSatConfig{\n" +
-            "varDecay=1.2\n" +
-            "varInc=1.3\n" +
-            "clauseMin=BASIC\n" +
-            "restartFirst=200\n" +
-            "restartInc=0.8\n" +
-            "clauseDecay=0.92\n" +
-            "removeSatisfied=true\n" +
-            "learntsizeFactor=1.4\n" +
-            "learntsizeInc=1.5\n" +
-            "incremental=false\n" +
-            "initialPhase=true\n" +
-            "proofGeneration=false\n" +
-            "}\n";
+    final String expected = String.format("MiniSatConfig{%n" +
+            "varDecay=1.2%n" +
+            "varInc=1.3%n" +
+            "clauseMin=BASIC%n" +
+            "restartFirst=200%n" +
+            "restartInc=0.8%n" +
+            "clauseDecay=0.92%n" +
+            "removeSatisfied=true%n" +
+            "learntsizeFactor=1.4%n" +
+            "learntsizeInc=1.5%n" +
+            "incremental=false%n" +
+            "initialPhase=true%n" +
+            "proofGeneration=false%n" +
+            "}%n");
     Assert.assertEquals(expected, config.toString());
   }
 
@@ -90,21 +90,21 @@ public class ConfigurationsTest {
             .reduceOnSizeSize(10)
             .maxVarDecay(0.99)
             .build();
-    final String expected = "GlucoseConfig{\n" +
-            "lbLBDMinimizingClause=3\n" +
-            "lbLBDFrozenClause=25\n" +
-            "lbSizeMinimizingClause=24\n" +
-            "firstReduceDB=1999\n" +
-            "specialIncReduceDB=999\n" +
-            "incReduceDB=299\n" +
-            "factorK=0.7\n" +
-            "factorR=1.3\n" +
-            "sizeLBDQueue=45\n" +
-            "sizeTrailQueue=4999\n" +
-            "reduceOnSize=true\n" +
-            "reduceOnSizeSize=10\n" +
-            "maxVarDecay=0.99\n" +
-            "}\n";
+    final String expected = String.format("GlucoseConfig{%n" +
+            "lbLBDMinimizingClause=3%n" +
+            "lbLBDFrozenClause=25%n" +
+            "lbSizeMinimizingClause=24%n" +
+            "firstReduceDB=1999%n" +
+            "specialIncReduceDB=999%n" +
+            "incReduceDB=299%n" +
+            "factorK=0.7%n" +
+            "factorR=1.3%n" +
+            "sizeLBDQueue=45%n" +
+            "sizeTrailQueue=4999%n" +
+            "reduceOnSize=true%n" +
+            "reduceOnSizeSize=10%n" +
+            "maxVarDecay=0.99%n" +
+            "}%n");
     Assert.assertEquals(expected, config.toString());
   }
 
@@ -144,40 +144,40 @@ public class ConfigurationsTest {
             .scoreIncrementFactor(1049)
             .stepsLim(999999)
             .build();
-    final String expected = "CleaneLingConfig{\n" +
-            "blockedClauseElimination=false\n" +
-            "blockedClauseEliminationWait=2\n" +
-            "blockedClauseEliminationRTC=1\n" +
-            "boost=11\n" +
-            "bwClauseLim=9999\n" +
-            "bwOccurrenceLim=9998\n" +
-            "clauseBumping=AVG\n" +
-            "distillation=false\n" +
-            "bvElim=false\n" +
-            "bvElimRTC=3\n" +
-            "bvElimOccurrenceLim=9997\n" +
-            "bvElimPivotOccurrenceLimOneSided=99\n" +
-            "bvElimPivotOccurrenceLimTwoSided=7\n" +
-            "bvElimClauseLim=999\n" +
-            "gluered=false\n" +
-            "glueKeep=4\n" +
-            "glueUpdate=true\n" +
-            "iterationSimplificationDelay=9\n" +
-            "plain=true\n" +
-            "restart=false\n" +
-            "restartInterval=98\n" +
-            "reductionInterval=998\n" +
-            "reductionIntervalInc=1999\n" +
-            "reuseTrail=false\n" +
-            "simpSteps=99999\n" +
-            "simpGeomIncrease=false\n" +
-            "sizePenalty=-1\n" +
-            "sizeMaxPenalty=6\n" +
-            "searchInterval=4999\n" +
-            "searchFirst=true\n" +
-            "scoreIncrementFactor=1049\n" +
-            "stepsLim=999999\n" +
-            "}\n";
+    final String expected = String.format("CleaneLingConfig{%n" +
+            "blockedClauseElimination=false%n" +
+            "blockedClauseEliminationWait=2%n" +
+            "blockedClauseEliminationRTC=1%n" +
+            "boost=11%n" +
+            "bwClauseLim=9999%n" +
+            "bwOccurrenceLim=9998%n" +
+            "clauseBumping=AVG%n" +
+            "distillation=false%n" +
+            "bvElim=false%n" +
+            "bvElimRTC=3%n" +
+            "bvElimOccurrenceLim=9997%n" +
+            "bvElimPivotOccurrenceLimOneSided=99%n" +
+            "bvElimPivotOccurrenceLimTwoSided=7%n" +
+            "bvElimClauseLim=999%n" +
+            "gluered=false%n" +
+            "glueKeep=4%n" +
+            "glueUpdate=true%n" +
+            "iterationSimplificationDelay=9%n" +
+            "plain=true%n" +
+            "restart=false%n" +
+            "restartInterval=98%n" +
+            "reductionInterval=998%n" +
+            "reductionIntervalInc=1999%n" +
+            "reuseTrail=false%n" +
+            "simpSteps=99999%n" +
+            "simpGeomIncrease=false%n" +
+            "sizePenalty=-1%n" +
+            "sizeMaxPenalty=6%n" +
+            "searchInterval=4999%n" +
+            "searchFirst=true%n" +
+            "scoreIncrementFactor=1049%n" +
+            "stepsLim=999999%n" +
+            "}%n");
     Assert.assertEquals(expected, config.toString());
   }
 
@@ -199,17 +199,18 @@ public class ConfigurationsTest {
             .limit(1000)
             .bmo(false)
             .build();
-    final String expected = "MaxSATConfig{incrementalStrategy=ITERATIVE\n" +
-            "pbEncoding=LADDER\n" +
-            "pbEncoding=SWC\n" +
-            "cardinalityEncoding=MTOTALIZER\n" +
-            "weightStrategy=DIVERSIFY\n" +
-            "solverType=MINISAT\n" +
-            "verbosity=SOME\n" +
-            "symmetry=false\n" +
-            "limit=1000\n" +
-            "bmo=false\n" +
-            "}\n";
+    final String expected = String.format("MaxSATConfig{%n" +
+            "incrementalStrategy=ITERATIVE%n" +
+            "pbEncoding=LADDER%n" +
+            "pbEncoding=SWC%n" +
+            "cardinalityEncoding=MTOTALIZER%n" +
+            "weightStrategy=DIVERSIFY%n" +
+            "solverType=MINISAT%n" +
+            "verbosity=SOME%n" +
+            "symmetry=false%n" +
+            "limit=1000%n" +
+            "bmo=false%n" +
+            "}%n");
     Assert.assertEquals(expected, config.toString());
   }
 

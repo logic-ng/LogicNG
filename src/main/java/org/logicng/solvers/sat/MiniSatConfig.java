@@ -109,20 +109,20 @@ public final class MiniSatConfig extends Configuration {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("MiniSatConfig{\n");
-    sb.append("varDecay=").append(this.varDecay).append("\n");
-    sb.append("varInc=").append(this.varInc).append("\n");
-    sb.append("clauseMin=").append(this.clauseMin).append("\n");
-    sb.append("restartFirst=").append(this.restartFirst).append("\n");
-    sb.append("restartInc=").append(this.restartInc).append("\n");
-    sb.append("clauseDecay=").append(this.clauseDecay).append("\n");
-    sb.append("removeSatisfied=").append(this.removeSatisfied).append("\n");
-    sb.append("learntsizeFactor=").append(this.learntsizeFactor).append("\n");
-    sb.append("learntsizeInc=").append(this.learntsizeInc).append("\n");
-    sb.append("incremental=").append(this.incremental).append("\n");
-    sb.append("initialPhase=").append(this.initialPhase).append("\n");
-    sb.append("proofGeneration=").append(this.proofGeneration).append("\n");
-    sb.append("}\n");
+    final StringBuilder sb = new StringBuilder("MiniSatConfig{").append(System.lineSeparator());
+    sb.append("varDecay=").append(this.varDecay).append(System.lineSeparator());
+    sb.append("varInc=").append(this.varInc).append(System.lineSeparator());
+    sb.append("clauseMin=").append(this.clauseMin).append(System.lineSeparator());
+    sb.append("restartFirst=").append(this.restartFirst).append(System.lineSeparator());
+    sb.append("restartInc=").append(this.restartInc).append(System.lineSeparator());
+    sb.append("clauseDecay=").append(this.clauseDecay).append(System.lineSeparator());
+    sb.append("removeSatisfied=").append(this.removeSatisfied).append(System.lineSeparator());
+    sb.append("learntsizeFactor=").append(this.learntsizeFactor).append(System.lineSeparator());
+    sb.append("learntsizeInc=").append(this.learntsizeInc).append(System.lineSeparator());
+    sb.append("incremental=").append(this.incremental).append(System.lineSeparator());
+    sb.append("initialPhase=").append(this.initialPhase).append(System.lineSeparator());
+    sb.append("proofGeneration=").append(this.proofGeneration).append(System.lineSeparator());
+    sb.append("}").append(System.lineSeparator());
     return sb.toString();
   }
 

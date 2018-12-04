@@ -105,7 +105,7 @@ public final class FormulaWriter {
     final StringBuilder sb = new StringBuilder();
     if (splitAndMultiline && formula.type() == FType.AND)
       for (final Formula f : formula)
-        sb.append(formatter.toString(f)).append("\n");
+        sb.append(formatter.toString(f)).append(System.lineSeparator());
     else
       sb.append(formatter.toString(formula));
     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
