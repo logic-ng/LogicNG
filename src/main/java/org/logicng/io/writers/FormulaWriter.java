@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A writer for formulas.
@@ -108,7 +109,7 @@ public final class FormulaWriter {
         sb.append(formatter.toString(f)).append(System.lineSeparator());
     else
       sb.append(formatter.toString(formula));
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
+    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
       writer.append(sb);
       writer.flush();
     }
