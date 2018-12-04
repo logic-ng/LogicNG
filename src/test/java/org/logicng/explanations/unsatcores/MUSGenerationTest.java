@@ -77,7 +77,7 @@ public class MUSGenerationTest {
   }
 
   @Test
-  public void testDeletionBasedMUS() throws IOException {
+  public void testDeletionBasedMUS() {
     final MUSGeneration mus = new MUSGeneration();
     final UNSATCore<StandardProposition> mus1 = mus.computeMUS(this.pg3, this.f);
     final UNSATCore<StandardProposition> mus2 = mus.computeMUS(this.pg4, this.f);
@@ -100,7 +100,7 @@ public class MUSGenerationTest {
   }
 
   @Test
-  public void testPlainInsertionBasedMUS() throws IOException {
+  public void testPlainInsertionBasedMUS() {
     final MUSGeneration mus = new MUSGeneration();
     final MUSConfig config = new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.PLAIN_INSERTION).build();
     final UNSATCore<StandardProposition> mus1 = mus.computeMUS(this.pg3, this.f, config);

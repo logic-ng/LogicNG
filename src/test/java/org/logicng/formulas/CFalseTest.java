@@ -93,7 +93,7 @@ public class CFalseTest {
   }
 
   @Test
-  public void testNumberOfInternalNodes() throws ParserException {
+  public void testNumberOfInternalNodes() {
     Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
   }
 

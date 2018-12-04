@@ -67,7 +67,7 @@ public class TseitinTest {
   }
 
   @Test
-  public void testBinaryOperators() throws ParserException {
+  public void testBinaryOperators() {
     Assert.assertTrue(F.IMP1.transform(ts).holds(cnfPredicate));
     Assert.assertTrue(equivalentModels(F.IMP1, F.IMP1.transform(ts), F.IMP1.variables()));
     Assert.assertTrue(F.IMP2.transform(ts).holds(cnfPredicate));

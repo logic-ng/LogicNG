@@ -48,53 +48,53 @@ public class FormulaIteratorTest {
   private final PropositionalParser p = new PropositionalParser(f);
 
   @Test
-  public void testTrue() throws ParserException {
+  public void testTrue() {
     Iterator<Formula> it = f.verum().iterator();
     Assert.assertFalse(it.hasNext());
     Assert.assertFalse(it.hasNext());
   }
 
   @Test(expected = NoSuchElementException.class)
-  public void testTrueNSE() throws ParserException {
+  public void testTrueNSE() {
     f.verum().iterator().next();
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testTrueUSO() throws ParserException {
+  public void testTrueUSO() {
     f.verum().iterator().remove();
   }
 
   @Test
-  public void testFalse() throws ParserException {
+  public void testFalse() {
     Iterator<Formula> it = f.falsum().iterator();
     Assert.assertFalse(it.hasNext());
     Assert.assertFalse(it.hasNext());
   }
 
   @Test(expected = NoSuchElementException.class)
-  public void testFalseNSE() throws ParserException {
+  public void testFalseNSE() {
     f.falsum().iterator().next();
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testFalseUSO() throws ParserException {
+  public void testFalseUSO() {
     f.falsum().iterator().remove();
   }
 
   @Test
-  public void testLiteral() throws ParserException {
+  public void testLiteral() {
     Iterator<Formula> it = f.variable("a").iterator();
     Assert.assertFalse(it.hasNext());
     Assert.assertFalse(it.hasNext());
   }
 
   @Test(expected = NoSuchElementException.class)
-  public void testLiteralNSE() throws ParserException {
+  public void testLiteralNSE() {
     f.variable("a").iterator().next();
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testLiteralUSO() throws ParserException {
+  public void testLiteralUSO() {
     f.variable("a").iterator().remove();
   }
 

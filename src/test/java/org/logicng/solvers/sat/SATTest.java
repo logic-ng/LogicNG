@@ -228,7 +228,7 @@ public class SATTest {
   }
 
   @Test
-  public void testCC1() throws InterruptedException {
+  public void testCC1() {
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final Variable[] lits = new Variable[100];
@@ -447,7 +447,7 @@ public class SATTest {
   }
 
   @Test
-  public void testTimeoutSATHandler() throws IOException {
+  public void testTimeoutSATHandler() {
     for (final SATSolver s : this.solvers) {
       s.add(pg.generate(10));
       final Tristate result = s.sat(new TimeoutSATHandler(1000));
@@ -707,7 +707,7 @@ public class SATTest {
   }
 
   @Test
-  public void testPrintMinimalisticCleaneLing() throws FileNotFoundException {
+  public void testPrintMinimalisticCleaneLing() {
     CleaneLingMinimalisticSolver clms = new CleaneLingMinimalisticSolver(new CleaneLingConfig.Builder().build());
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(baos);
