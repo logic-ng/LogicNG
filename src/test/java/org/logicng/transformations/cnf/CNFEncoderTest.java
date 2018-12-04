@@ -156,13 +156,13 @@ public class CNFEncoderTest {
 
   @Test
   public void testStrings() {
-    String expected = "CNFConfig{\n" +
-            "algorithm=TSEITIN\n" +
-            "fallbackAlgorithmForAdvancedEncoding=PLAISTED_GREENBAUM\n" +
-            "distributedBoundary=-1\n" +
-            "createdClauseBoundary=1000\n" +
-            "atomBoundary=12\n" +
-            "}\n";
+    String expected = String.format("CNFConfig{%n" +
+            "algorithm=TSEITIN%n" +
+            "fallbackAlgorithmForAdvancedEncoding=PLAISTED_GREENBAUM%n" +
+            "distributedBoundary=-1%n" +
+            "createdClauseBoundary=1000%n" +
+            "atomBoundary=12%n" +
+            "}%n");
     FormulaFactory f = new FormulaFactory();
     CNFConfig config = new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.TSEITIN).fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build();
     CNFEncoder encoder = new CNFEncoder(f, config);

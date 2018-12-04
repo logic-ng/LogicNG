@@ -122,18 +122,18 @@ public final class MaxSATConfig extends Configuration {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("MaxSATConfig{");
-    sb.append("incrementalStrategy=").append(this.incrementalStrategy).append("\n");
-    sb.append("pbEncoding=").append(this.amoEncoding).append("\n");
-    sb.append("pbEncoding=").append(this.pbEncoding).append("\n");
-    sb.append("cardinalityEncoding=").append(this.cardinalityEncoding).append("\n");
-    sb.append("weightStrategy=").append(this.weightStrategy).append("\n");
-    sb.append("solverType=").append(this.solverType).append("\n");
-    sb.append("verbosity=").append(this.verbosity).append("\n");
-    sb.append("symmetry=").append(this.symmetry).append("\n");
-    sb.append("limit=").append(this.limit).append("\n");
-    sb.append("bmo=").append(this.bmo).append("\n");
-    sb.append("}\n");
+    final StringBuilder sb = new StringBuilder("MaxSATConfig{").append(System.lineSeparator());
+    sb.append("incrementalStrategy=").append(this.incrementalStrategy).append(System.lineSeparator());
+    sb.append("pbEncoding=").append(this.amoEncoding).append(System.lineSeparator());
+    sb.append("pbEncoding=").append(this.pbEncoding).append(System.lineSeparator());
+    sb.append("cardinalityEncoding=").append(this.cardinalityEncoding).append(System.lineSeparator());
+    sb.append("weightStrategy=").append(this.weightStrategy).append(System.lineSeparator());
+    sb.append("solverType=").append(this.solverType).append(System.lineSeparator());
+    sb.append("verbosity=").append(this.verbosity).append(System.lineSeparator());
+    sb.append("symmetry=").append(this.symmetry).append(System.lineSeparator());
+    sb.append("limit=").append(this.limit).append(System.lineSeparator());
+    sb.append("bmo=").append(this.bmo).append(System.lineSeparator());
+    sb.append("}").append(System.lineSeparator());
     return sb.toString();
   }
 

@@ -42,13 +42,13 @@ public class TermTableTest {
   @Test
   public void testToString() {
     final TermTable table = new TermTable(this.primeImplicants);
-    assertThat(table.toString()).isEqualTo("             | m0 | m1 | m2 | m3 | m4 | m5 | m6 | m7 | m8 | m9 | \n" +
-            "[1, 0, -, 1] | X  | X  |    |    |    |    |    |    |    |    | \n" +
-            "[-, 1, 1, 1] |    |    | X  | X  |    |    |    |    |    |    | \n" +
-            "[1, -, 1, 1] |    | X  |    | X  |    |    |    |    |    |    | \n" +
-            "[0, -, 0, -] |    |    |    |    | X  | X  | X  | X  |    |    | \n" +
-            "[-, 0, 0, -] | X  |    |    |    | X  | X  |    |    | X  |    | \n" +
-            "[0, 1, -, -] |    |    | X  |    |    |    | X  | X  |    | X  | \n");
+    assertThat(table.toString()).isEqualTo(String.format("             | m0 | m1 | m2 | m3 | m4 | m5 | m6 | m7 | m8 | m9 | %n" +
+            "[1, 0, -, 1] | X  | X  |    |    |    |    |    |    |    |    | %n" +
+            "[-, 1, 1, 1] |    |    | X  | X  |    |    |    |    |    |    | %n" +
+            "[1, -, 1, 1] |    | X  |    | X  |    |    |    |    |    |    | %n" +
+            "[0, -, 0, -] |    |    |    |    | X  | X  | X  | X  |    |    | %n" +
+            "[-, 0, 0, -] | X  |    |    |    | X  | X  |    |    | X  |    | %n" +
+            "[0, 1, -, -] |    |    | X  |    |    |    | X  | X  |    | X  | %n"));
   }
 
   @Test

@@ -58,9 +58,9 @@ public final class MUSConfig extends Configuration {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("MUSConfig{\n");
-    sb.append("algorithm=").append(this.algorithm).append("\n");
-    sb.append("}\n");
+    final StringBuilder sb = new StringBuilder("MUSConfig{").append(System.lineSeparator());
+    sb.append("algorithm=").append(this.algorithm).append(System.lineSeparator());
+    sb.append("}").append(System.lineSeparator());
     return sb.toString();
   }
 

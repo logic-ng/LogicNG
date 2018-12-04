@@ -75,21 +75,21 @@ public final class GlucoseConfig extends Configuration {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("GlucoseConfig{\n");
-    sb.append("lbLBDMinimizingClause=").append(this.lbLBDMinimizingClause).append("\n");
-    sb.append("lbLBDFrozenClause=").append(this.lbLBDFrozenClause).append("\n");
-    sb.append("lbSizeMinimizingClause=").append(this.lbSizeMinimizingClause).append("\n");
-    sb.append("firstReduceDB=").append(this.firstReduceDB).append("\n");
-    sb.append("specialIncReduceDB=").append(this.specialIncReduceDB).append("\n");
-    sb.append("incReduceDB=").append(this.incReduceDB).append("\n");
-    sb.append("factorK=").append(this.factorK).append("\n");
-    sb.append("factorR=").append(this.factorR).append("\n");
-    sb.append("sizeLBDQueue=").append(this.sizeLBDQueue).append("\n");
-    sb.append("sizeTrailQueue=").append(this.sizeTrailQueue).append("\n");
-    sb.append("reduceOnSize=").append(this.reduceOnSize).append("\n");
-    sb.append("reduceOnSizeSize=").append(this.reduceOnSizeSize).append("\n");
-    sb.append("maxVarDecay=").append(this.maxVarDecay).append("\n");
-    sb.append("}\n");
+    final StringBuilder sb = new StringBuilder("GlucoseConfig{").append(System.lineSeparator());
+    sb.append("lbLBDMinimizingClause=").append(this.lbLBDMinimizingClause).append(System.lineSeparator());
+    sb.append("lbLBDFrozenClause=").append(this.lbLBDFrozenClause).append(System.lineSeparator());
+    sb.append("lbSizeMinimizingClause=").append(this.lbSizeMinimizingClause).append(System.lineSeparator());
+    sb.append("firstReduceDB=").append(this.firstReduceDB).append(System.lineSeparator());
+    sb.append("specialIncReduceDB=").append(this.specialIncReduceDB).append(System.lineSeparator());
+    sb.append("incReduceDB=").append(this.incReduceDB).append(System.lineSeparator());
+    sb.append("factorK=").append(this.factorK).append(System.lineSeparator());
+    sb.append("factorR=").append(this.factorR).append(System.lineSeparator());
+    sb.append("sizeLBDQueue=").append(this.sizeLBDQueue).append(System.lineSeparator());
+    sb.append("sizeTrailQueue=").append(this.sizeTrailQueue).append(System.lineSeparator());
+    sb.append("reduceOnSize=").append(this.reduceOnSize).append(System.lineSeparator());
+    sb.append("reduceOnSizeSize=").append(this.reduceOnSizeSize).append(System.lineSeparator());
+    sb.append("maxVarDecay=").append(this.maxVarDecay).append(System.lineSeparator());
+    sb.append("}").append(System.lineSeparator());
     return sb.toString();
   }
 

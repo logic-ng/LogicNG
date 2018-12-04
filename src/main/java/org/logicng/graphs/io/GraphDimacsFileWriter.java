@@ -84,10 +84,10 @@ public final class GraphDimacsFileWriter {
       }
       doneNodes.add(d);
     }
-    sb.append(node2id.size()).append(" ").append(edges.size()).append("\n");
+    sb.append(node2id.size()).append(" ").append(edges.size()).append(System.lineSeparator());
 
     for (Pair<Node<T>, Node<T>> edge : edges) {
-      sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second())).append("\n");
+      sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second())).append(System.lineSeparator());
     }
 
     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
@@ -103,7 +103,7 @@ public final class GraphDimacsFileWriter {
   private static <T> void writeMapping(File mappingFile, Map<Node<T>, Long> node2id) throws IOException {
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<Node<T>, Long> entry : node2id.entrySet()) {
-      sb.append(entry.getKey().content()).append(";").append(entry.getValue()).append("\n");
+      sb.append(entry.getKey().content()).append(";").append(entry.getValue()).append(System.lineSeparator());
     }
     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), Charset.forName("UTF-8")))) {
       writer.append(sb);

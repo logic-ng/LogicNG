@@ -181,12 +181,12 @@ public class PBEncoderTest {
 
   @Test
   public void testConfigToString() {
-    Assert.assertEquals("PBConfig{\n" +
-            "pbEncoder=SWC\n" +
-            "binaryMergeUseGAC=true\n" +
-            "binaryMergeNoSupportForSingleBit=false\n" +
-            "binaryMergeUseWatchDog=true\n" +
-            "}\n", encoders[0].config().toString());
+    Assert.assertEquals(String.format("PBConfig{%n" +
+            "pbEncoder=SWC%n" +
+            "binaryMergeUseGAC=true%n" +
+            "binaryMergeNoSupportForSingleBit=false%n" +
+            "binaryMergeUseWatchDog=true%n" +
+            "}%n"), encoders[0].config().toString());
     Assert.assertTrue(encoders[0].config().toString().contains("pbEncoder=" + PBConfig.PB_ENCODER.valueOf("SWC")));
     Assert.assertEquals(ConfigurationType.PB_ENCODER, encoders[0].config().type());
     Assert.assertEquals("PBSWC", new PBSWC(f).toString());

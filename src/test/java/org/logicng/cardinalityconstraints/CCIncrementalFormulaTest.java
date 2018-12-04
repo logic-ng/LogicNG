@@ -259,17 +259,17 @@ public class CCIncrementalFormulaTest {
 
   @Test
   public void testToString() {
-    String expected = "CCConfig{\n" +
-            "amoEncoder=BEST\n" +
-            "amkEncoder=TOTALIZER\n" +
-            "alkEncoder=TOTALIZER\n" +
-            "exkEncoder=BEST\n" +
-            "bimanderGroupSize=SQRT\n" +
-            "bimanderFixedGroupSize=3\n" +
-            "nestingGroupSize=4\n" +
-            "productRecursiveBound=20\n" +
-            "commanderGroupSize=3\n" +
-            "}\n";
+    String expected = String.format("CCConfig{%n" +
+            "amoEncoder=BEST%n" +
+            "amkEncoder=TOTALIZER%n" +
+            "alkEncoder=TOTALIZER%n" +
+            "exkEncoder=BEST%n" +
+            "bimanderGroupSize=SQRT%n" +
+            "bimanderFixedGroupSize=3%n" +
+            "nestingGroupSize=4%n" +
+            "productRecursiveBound=20%n" +
+            "commanderGroupSize=3%n" +
+            "}%n");
     Assert.assertEquals(expected, encoders[0].config().toString());
     Assert.assertEquals(expected, encoders[0].toString());
   }

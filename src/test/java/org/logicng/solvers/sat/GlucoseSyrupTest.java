@@ -35,26 +35,26 @@ public class GlucoseSyrupTest {
 
   @Test
   public void testToString() {
-    String expected = "ok            true\n" +
-            "qhead         0\n" +
-            "#clauses      1\n" +
-            "#learnts      0\n" +
-            "#watches      8\n" +
-            "#vars         4\n" +
-            "#orderheap    4\n" +
-            "#trail        0\n" +
-            "#trailLim     0\n" +
-            "model         []\n" +
-            "conflict      []\n" +
-            "assumptions   []\n" +
-            "#seen         4\n" +
-            "#stack        0\n" +
-            "#toclear      0\n" +
-            "claInc        1.0\n" +
-            "simpDBAssigns -1\n" +
-            "simpDBProps   0\n" +
-            "#clause lits  3\n" +
-            "#learnts lits 0\n";
+    String expected = String.format("ok            true%n" +
+            "qhead         0%n" +
+            "#clauses      1%n" +
+            "#learnts      0%n" +
+            "#watches      8%n" +
+            "#vars         4%n" +
+            "#orderheap    4%n" +
+            "#trail        0%n" +
+            "#trailLim     0%n" +
+            "model         []%n" +
+            "conflict      []%n" +
+            "assumptions   []%n" +
+            "#seen         4%n" +
+            "#stack        0%n" +
+            "#toclear      0%n" +
+            "claInc        1.0%n" +
+            "simpDBAssigns -1%n" +
+            "simpDBProps   0%n" +
+            "#clause lits  3%n" +
+            "#learnts lits 0%n");
     Assert.assertEquals(expected, gs.toString());
   }
 

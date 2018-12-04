@@ -73,18 +73,18 @@ public class GraphDotFileWriter {
    * @throws IOException if there was a problem writing the file
    */
   public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-    final StringBuilder sb = new StringBuilder("strict graph {\n");
+    final StringBuilder sb = new StringBuilder(String.format("strict graph {%n"));
 
     Set<Node<T>> doneNodes = new LinkedHashSet<>();
     for (Node<T> d : graph.nodes()) {
       for (Node<T> n : d.neighbours())
         if (!doneNodes.contains(n))
-          sb.append("  ").append(d.content()).append(" -- ").append(n.content()).append("\n");
+          sb.append("  ").append(d.content()).append(" -- ").append(n.content()).append(System.lineSeparator());
       doneNodes.add(d);
     }
     for (Node<T> d : graph.nodes()) {
       if (d.neighbours().isEmpty()) {
-        sb.append("  ").append(d.content()).append("\n");
+        sb.append("  ").append(d.content()).append(System.lineSeparator());
       }
     }
     sb.append("}");

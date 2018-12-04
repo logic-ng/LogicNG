@@ -631,28 +631,28 @@ public abstract class MiniSatStyleSolver {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    sb.append("ok            ").append(ok).append("\n");
-    sb.append("qhead         ").append(qhead).append("\n");
-    sb.append("#clauses      ").append(clauses.size()).append("\n");
-    sb.append("#learnts      ").append(learnts.size()).append("\n");
-    sb.append("#watches      ").append(watches.size()).append("\n");
-    sb.append("#vars         ").append(vars.size()).append("\n");
-    sb.append("#orderheap    ").append(orderHeap.size()).append("\n");
-    sb.append("#trail        ").append(trail.size()).append("\n");
-    sb.append("#trailLim     ").append(trailLim.size()).append("\n");
+    sb.append("ok            ").append(ok).append(System.lineSeparator());
+    sb.append("qhead         ").append(qhead).append(System.lineSeparator());
+    sb.append("#clauses      ").append(clauses.size()).append(System.lineSeparator());
+    sb.append("#learnts      ").append(learnts.size()).append(System.lineSeparator());
+    sb.append("#watches      ").append(watches.size()).append(System.lineSeparator());
+    sb.append("#vars         ").append(vars.size()).append(System.lineSeparator());
+    sb.append("#orderheap    ").append(orderHeap.size()).append(System.lineSeparator());
+    sb.append("#trail        ").append(trail.size()).append(System.lineSeparator());
+    sb.append("#trailLim     ").append(trailLim.size()).append(System.lineSeparator());
 
-    sb.append("model         ").append(model).append("\n");
-    sb.append("conflict      ").append(conflict).append("\n");
-    sb.append("assumptions   ").append(assumptions).append("\n");
-    sb.append("#seen         ").append(seen.size()).append("\n");
-    sb.append("#stack        ").append(analyzeStack.size()).append("\n");
-    sb.append("#toclear      ").append(analyzeToClear.size()).append("\n");
+    sb.append("model         ").append(model).append(System.lineSeparator());
+    sb.append("conflict      ").append(conflict).append(System.lineSeparator());
+    sb.append("assumptions   ").append(assumptions).append(System.lineSeparator());
+    sb.append("#seen         ").append(seen.size()).append(System.lineSeparator());
+    sb.append("#stack        ").append(analyzeStack.size()).append(System.lineSeparator());
+    sb.append("#toclear      ").append(analyzeToClear.size()).append(System.lineSeparator());
 
-    sb.append("claInc        ").append(claInc).append("\n");
-    sb.append("simpDBAssigns ").append(simpDBAssigns).append("\n");
-    sb.append("simpDBProps   ").append(simpDBProps).append("\n");
-    sb.append("#clause lits  ").append(clausesLiterals).append("\n");
-    sb.append("#learnts lits ").append(learntsLiterals).append("\n");
+    sb.append("claInc        ").append(claInc).append(System.lineSeparator());
+    sb.append("simpDBAssigns ").append(simpDBAssigns).append(System.lineSeparator());
+    sb.append("simpDBProps   ").append(simpDBProps).append(System.lineSeparator());
+    sb.append("#clause lits  ").append(clausesLiterals).append(System.lineSeparator());
+    sb.append("#learnts lits ").append(learntsLiterals).append(System.lineSeparator());
     return sb.toString();
   }
 
