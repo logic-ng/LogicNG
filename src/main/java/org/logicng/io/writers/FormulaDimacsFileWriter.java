@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public final class FormulaDimacsFileWriter {
     if (formula.type().equals(FType.FALSE)) {
       sb.append(String.format("0%n"));
     }
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")))) {
+    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
       writer.append(sb);
       writer.flush();
     }
@@ -117,7 +118,7 @@ public final class FormulaDimacsFileWriter {
     for (Map.Entry<Variable, Long> entry : var2id.entrySet()) {
       sb.append(entry.getKey()).append(";").append(entry.getValue()).append(System.lineSeparator());
     }
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), Charset.forName("UTF-8")))) {
+    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
       writer.append(sb);
       writer.flush();
     }
