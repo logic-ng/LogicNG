@@ -68,7 +68,7 @@ public class PlaistedGreenbaumTest {
   }
 
   @Test
-  public void testBinaryOperators() throws ParserException {
+  public void testBinaryOperators() {
     Assert.assertTrue(F.IMP1.transform(pg).holds(cnfPredicate));
     Assert.assertTrue(equivalentModels(F.IMP1, F.IMP1.transform(pg), F.IMP1.variables()));
     Assert.assertTrue(F.IMP2.transform(pg).holds(cnfPredicate));

@@ -94,7 +94,7 @@ public class CTrueTest {
   }
 
   @Test
-  public void testNumberOfInternalNodes() throws ParserException {
+  public void testNumberOfInternalNodes() {
     Assert.assertEquals(1, F.TRUE.numberOfInternalNodes());
   }
 

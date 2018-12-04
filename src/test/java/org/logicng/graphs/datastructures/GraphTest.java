@@ -61,7 +61,7 @@ public class GraphTest {
 
   @Test
   public void testLongGraph() {
-    Graph<Long> g = new Graph<Long>("Graph with Long nodes.");
+    Graph<Long> g = new Graph<>("Graph with Long nodes.");
 
     Node<Long> a = g.node(1L);
     Node<Long> b = g.node(2L);

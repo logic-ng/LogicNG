@@ -75,7 +75,7 @@ public class DRUPTest {
   }
 
   @Test
-  public void testUnsatCoresFromDimacs() throws IOException, ParserException {
+  public void testUnsatCoresFromDimacs() throws IOException {
     final List<List<Formula>> cnfs = new ArrayList<>(3);
     cnfs.add(DimacsReader.readCNF("tests/drup/simple_input.cnf", f));
     cnfs.add(DimacsReader.readCNF("tests/drup/pg4_input.cnf", f));
@@ -93,7 +93,7 @@ public class DRUPTest {
   }
 
   @Test
-  public void testUnsatCoresFromLargeTestset() throws IOException, ParserException {
+  public void testUnsatCoresFromLargeTestset() throws IOException {
     final File testFolder = new File("tests/sat");
     final File[] files = testFolder.listFiles();
     assert files != null;
@@ -118,7 +118,7 @@ public class DRUPTest {
   }
 
   @Test
-  public void testUnsatCoresAimTestset() throws IOException, ParserException {
+  public void testUnsatCoresAimTestset() throws IOException {
     final File testFolder = new File("tests/sat/unsat");
     final File[] files = testFolder.listFiles();
     assert files != null;
