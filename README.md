@@ -19,10 +19,10 @@ LogicNG is released in the Maven Central Repository.  To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.4.0</version>
+  <version>1.4.1</version>
 </dependency>
 ```
-to you Maven POM.
+to your Maven POM.
 
 ## Development Model
 The `master` branch contains the latest release of LogicNG.  If you want a *stable* and *well tested* version you should choose this branch.  The `development` branch reflects the *current state* of the next version.  This branch will always compile, but code might not be as well tested and APIs may still change before the next release.  If you want to try *cutting edge* features, you can checkout this branch at your own risk.  It is *not recommended* to use the development version for *production* systems.  Larger features will be developed in their own branches and will be merged to the development branch when ready.
@@ -59,6 +59,11 @@ final Tristate result = miniSat.sat();
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available.  Please contact Christoph Zengler at christoph@logicng.org for further details.
 
 ## Changelog
+
+### Version 1.4.1 (Release December 2018)
+* Some refactorings for unit tests on Windows regarding encodings
+* The Quine-McCluskey implemntation does not yield CNF auxiliary variables anymore
+* Fixed a minor bug in the generation of incremental cardinality constraints
 
 ### Version 1.4.0 (Release June 2018)
 * BDD package (based on Buddy) for creating, manipulating, and writing BDDs
