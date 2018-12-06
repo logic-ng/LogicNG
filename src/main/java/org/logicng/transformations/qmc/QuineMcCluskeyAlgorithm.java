@@ -69,7 +69,7 @@ public class QuineMcCluskeyAlgorithm {
     final FormulaFactory f = formula.factory();
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(formula);
-    final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels() : solver.enumerateAllModels(relevantVariables);
+    final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
     return compute(models, f);
   }
 
@@ -80,7 +80,7 @@ public class QuineMcCluskeyAlgorithm {
    * @return the minimized DNF due to Quine-McCluskey
    */
   public static Formula compute(final Formula formula) {
-    return compute(formula, null);
+    return compute(formula, formula.variables());
   }
 
   /**
