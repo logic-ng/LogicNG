@@ -150,6 +150,15 @@
           </sourceDirectories>
         </configuration>
       </plugin>
+
+      <!-- Necessary for Wercker toolchain -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
