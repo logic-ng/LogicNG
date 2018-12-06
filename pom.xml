@@ -49,6 +49,10 @@
       <name>Steffen Hildebrandt</name>
       <email>steffen.hildebrandt@booleworks.com</email>
     </developer>
+    <developer>
+      <name>Rouven Walter</name>
+      <email>rouven.walter@booleworks.com</email>
+    </developer>
   </developers>
 
   <scm>
