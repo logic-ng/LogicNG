@@ -62,7 +62,7 @@ The library is released under the Apache License and therefore is free to use in
 
 ### Version 1.4.1 (Release December 2018)
 * Some refactorings for unit tests on Windows regarding encodings
-* The Quine-McCluskey implemntation does not yield CNF auxiliary variables anymore
+* The Quine-McCluskey implementation does not yield CNF auxiliary variables anymore
 * Fixed a minor bug in the generation of incremental cardinality constraints
 
 ### Version 1.4.0 (Release June 2018)
