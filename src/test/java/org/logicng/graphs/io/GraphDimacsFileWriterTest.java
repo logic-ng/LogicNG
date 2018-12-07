@@ -80,14 +80,14 @@ public class GraphDimacsFileWriterTest {
   }
 
   private <T> void testFiles(final String fileName, final Graph<T> g) throws IOException {
-    GraphDimacsFileWriter.write("tests/graphs/io/temp/" + fileName + "_t.col", g, true);
-    GraphDimacsFileWriter.write("tests/graphs/io/temp/" + fileName + "_f", g, false);
-    final File expectedT = new File("tests/graphs/io/graphs-dimacs/" + fileName + "_t.col");
-    final File expectedF = new File("tests/graphs/io/graphs-dimacs/" + fileName + "_f.col");
-    final File tempT = new File("tests/graphs/io/temp/" + fileName + "_t.col");
-    final File tempF = new File("tests/graphs/io/temp/" + fileName + "_f.col");
-    final File expectedMap = new File("tests/graphs/io/graphs-dimacs/" + fileName + "_t.map");
-    final File tempMap = new File("tests/graphs/io/temp/" + fileName + "_t.map");
+    GraphDimacsFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + "_t.col", g, true);
+    GraphDimacsFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + "_f", g, false);
+    final File expectedT = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_t.col");
+    final File expectedF = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_f.col");
+    final File tempT = new File("src/test/resources/graphs/io/temp/" + fileName + "_t.col");
+    final File tempF = new File("src/test/resources/graphs/io/temp/" + fileName + "_f.col");
+    final File expectedMap = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_t.map");
+    final File tempMap = new File("src/test/resources/graphs/io/temp/" + fileName + "_t.map");
     assertFilesEqual(expectedT, tempT);
     assertFilesEqual(expectedF, tempF);
     assertMapFilesEqual(expectedMap, tempMap);

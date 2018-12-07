@@ -72,7 +72,7 @@ public class PartialMaxSATTest {
   private final FormulaFactory f = new FormulaFactory();
 
   public PartialMaxSATTest() throws FileNotFoundException {
-    logStream = new PrintStream("tests/partialmaxsat/log.txt");
+    logStream = new PrintStream("src/test/resources/partialmaxsat/log.txt");
   }
 
   @Test
@@ -82,7 +82,7 @@ public class PartialMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.wbo(config);
-        readCNF(solver, "tests/partialmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -96,7 +96,7 @@ public class PartialMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.incWBO(config);
-        readCNF(solver, "tests/partialmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -113,7 +113,7 @@ public class PartialMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.linearSU(config);
-        readCNF(solver, "tests/partialmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -129,7 +129,7 @@ public class PartialMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.linearUS(config);
-        readCNF(solver, "tests/partialmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -145,7 +145,7 @@ public class PartialMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.msu3(config);
-        readCNF(solver, "tests/partialmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -155,13 +155,13 @@ public class PartialMaxSATTest {
   @Test
   public void testTimeoutHandler() throws IOException {
     MaxSATSolver solver = MaxSATSolver.wbo(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
-    readCNF(solver, "tests/partialmaxsat/c1355_F176gat-1278gat@1.wcnf");
+    readCNF(solver, "src/test/resources/partialmaxsat/c1355_F176gat-1278gat@1.wcnf");
     MaxSATHandler handler = new TimeoutMaxSATHandler(1000);
     Assert.assertEquals(MaxSAT.MaxSATResult.UNDEF, solver.solve(handler));
     Assert.assertTrue(handler.lowerBoundApproximation() < 13);
 
     solver = MaxSATSolver.wbo(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
-    readCNF(solver, "tests/partialmaxsat/c1355_F1229gat@1.wcnf");
+    readCNF(solver, "src/test/resources/partialmaxsat/c1355_F1229gat@1.wcnf");
     handler = new TimeoutMaxSATHandler(5000);
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
   }
@@ -169,7 +169,7 @@ public class PartialMaxSATTest {
   @Test
   public void testTimeoutHandlerUB() throws IOException {
     MaxSATSolver solver = MaxSATSolver.linearSU(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
-    readCNF(solver, "tests/partialmaxsat/c1355_F1229gat@1.wcnf");
+    readCNF(solver, "src/test/resources/partialmaxsat/c1355_F1229gat@1.wcnf");
     MaxSATHandler handler = new TimeoutMaxSATHandler(5000);
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
     Assert.assertEquals(solver.result(), handler.upperBoundApproximation());

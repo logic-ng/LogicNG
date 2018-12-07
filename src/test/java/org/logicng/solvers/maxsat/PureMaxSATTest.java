@@ -72,7 +72,7 @@ public class PureMaxSATTest {
   private final FormulaFactory f = new FormulaFactory();
 
   public PureMaxSATTest() throws FileNotFoundException {
-    logStream = new PrintStream("tests/maxsat/log.txt");
+    logStream = new PrintStream("src/test/resources/maxsat/log.txt");
   }
 
   @Test
@@ -83,12 +83,12 @@ public class PureMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (final String file : files) {
         final MaxSATSolver solver = MaxSATSolver.wbo(config);
-        readCNF(solver, "tests/maxsat/" + file);
+        readCNF(solver, "src/test/resources/maxsat/" + file);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(1, solver.result());
       }
       final MaxSATSolver solver = MaxSATSolver.wbo(config);
-      readCNF(solver, "tests/sat/9symml_gr_rcs_w6.shuffled.cnf");
+      readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
       Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
       Assert.assertEquals(0, solver.result());
     }
@@ -102,12 +102,12 @@ public class PureMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (final String file : files) {
         final MaxSATSolver solver = MaxSATSolver.incWBO(config);
-        readCNF(solver, "tests/maxsat/" + file);
+        readCNF(solver, "src/test/resources/maxsat/" + file);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(1, solver.result());
       }
       final MaxSATSolver solver = MaxSATSolver.wbo(config);
-      readCNF(solver, "tests/sat/9symml_gr_rcs_w6.shuffled.cnf");
+      readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
       Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
       Assert.assertEquals(0, solver.result());
     }
@@ -121,12 +121,12 @@ public class PureMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (final String file : files) {
         final MaxSATSolver solver = MaxSATSolver.linearSU(config);
-        readCNF(solver, "tests/maxsat/" + file);
+        readCNF(solver, "src/test/resources/maxsat/" + file);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(1, solver.result());
       }
       final MaxSATSolver solver = MaxSATSolver.wbo(config);
-      readCNF(solver, "tests/sat/9symml_gr_rcs_w6.shuffled.cnf");
+      readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
       Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
       Assert.assertEquals(0, solver.result());
     }
@@ -141,12 +141,12 @@ public class PureMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (final String file : files) {
         final MaxSATSolver solver = MaxSATSolver.linearUS(config);
-        readCNF(solver, "tests/maxsat/" + file);
+        readCNF(solver, "src/test/resources/maxsat/" + file);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(1, solver.result());
       }
       final MaxSATSolver solver = MaxSATSolver.wbo(config);
-      readCNF(solver, "tests/sat/9symml_gr_rcs_w6.shuffled.cnf");
+      readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
       Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
       Assert.assertEquals(0, solver.result());
     }
@@ -161,12 +161,12 @@ public class PureMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (final String file : files) {
         final MaxSATSolver solver = MaxSATSolver.msu3(config);
-        readCNF(solver, "tests/maxsat/" + file);
+        readCNF(solver, "src/test/resources/maxsat/" + file);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(1, solver.result());
       }
       final MaxSATSolver solver = MaxSATSolver.wbo(config);
-      readCNF(solver, "tests/sat/9symml_gr_rcs_w6.shuffled.cnf");
+      readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
       Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
       Assert.assertEquals(0, solver.result());
     }
@@ -176,7 +176,7 @@ public class PureMaxSATTest {
   public void testSingle() throws IOException {
     final MaxSATSolver solver = MaxSATSolver.incWBO(new MaxSATConfig.Builder().cardinality(CardinalityEncoding.MTOTALIZER)
             .solver(MaxSATConfig.SolverType.GLUCOSE).verbosity(SOME).output(logStream).build());
-    readCNF(solver, "tests/maxsat/c-fat200-2.clq.cnf");
+    readCNF(solver, "src/test/resources/maxsat/c-fat200-2.clq.cnf");
     Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
     Assert.assertEquals(26, solver.result());
     final MaxSAT.Stats stats = solver.stats();

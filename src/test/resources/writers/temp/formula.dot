@@ -1,0 +1,18 @@
+digraph G {
+{ rank = same;
+  id0 [shape=box, label="A"];
+  id1 [shape=box, label="B"];
+  id2 [shape=box, label="¬C"];
+  id3 [shape=box, label="D"];
+}
+  id4 [label="∨"];
+  id4 -> id1;
+  id4 -> id2;
+  id5 [label="⇒"];
+  id5 -> id4 [label="l"];
+  id5 -> id3 [label="r"];
+  id6 [label="∧"];
+  id6 -> id0;
+  id6 -> id4;
+  id6 -> id5;
+}

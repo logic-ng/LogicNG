@@ -459,12 +459,12 @@ public class SATTest {
   @Test
   public void testDimacsFiles() throws IOException {
     final Map<String, Boolean> expectedResults = new HashMap<>();
-    final BufferedReader reader = new BufferedReader(new FileReader("tests/sat/results.txt"));
+    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
     while (reader.ready()) {
       final String[] tokens = reader.readLine().split(";");
       expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
     }
-    final File testFolder = new File("tests/sat");
+    final File testFolder = new File("src/test/resources/sat");
     final File[] files = testFolder.listFiles();
     assert files != null;
     for (final SATSolver solver : this.solvers) {

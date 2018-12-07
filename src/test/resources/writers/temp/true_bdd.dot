@@ -1,0 +1,3 @@
+digraph G {
+  const_true [shape=box, label="$true", style = bold, color = darkgreen];
+}

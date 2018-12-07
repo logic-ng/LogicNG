@@ -81,9 +81,9 @@ public class GraphDotFileWriterTest {
 
 
   private <T> void testFiles(final String fileName, final Graph<T> g) throws IOException {
-    GraphDotFileWriter.write("tests/graphs/io/temp/" + fileName + ".dot", g);
-    final File expected = new File("tests/graphs/io/graphs-dot/" + fileName + ".dot");
-    final File temp = new File("tests/graphs/io/temp/" + fileName + ".dot");
+    GraphDotFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + ".dot", g);
+    final File expected = new File("src/test/resources/graphs/io/graphs-dot/" + fileName + ".dot");
+    final File temp = new File("src/test/resources/graphs/io/temp/" + fileName + ".dot");
     assertFilesEqual(expected, temp);
   }
 

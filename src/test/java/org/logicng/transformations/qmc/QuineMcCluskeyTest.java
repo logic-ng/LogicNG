@@ -116,7 +116,7 @@ public class QuineMcCluskeyTest {
   @Test
   public void testLarge2() throws ParserException, IOException {
     final FormulaFactory f = new FormulaFactory();
-    final Formula formula = FormulaReader.readPseudoBooleanFormula("tests/formulas/large_formula.txt", f);
+    final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(formula);
     final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
@@ -142,7 +142,7 @@ public class QuineMcCluskeyTest {
   @Test
   public void testLarge3() throws ParserException, IOException {
     final FormulaFactory f = new FormulaFactory();
-    final Formula formula = FormulaReader.readPseudoBooleanFormula("tests/formulas/large_formula.txt", f);
+    final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(formula);
     final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
@@ -354,7 +354,7 @@ public class QuineMcCluskeyTest {
   public void testSmallFormulas() throws IOException, ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
-    final BufferedReader reader = new BufferedReader(new FileReader("tests/formulas/small_formulas.txt"));
+    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/formulas/small_formulas.txt"));
     while (reader.ready()) {
       final Formula formula = p.parse(reader.readLine());
       final List<Variable> variables = new ArrayList<>(formula.variables());
