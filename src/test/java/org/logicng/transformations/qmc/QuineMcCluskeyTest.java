@@ -87,6 +87,22 @@ public class QuineMcCluskeyTest {
     assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
   }
 
+  /**
+   * Example from <a href="https://github.com/logic-ng/LogicNG/issues/15">issue 15</a>.
+   * Ensure only original formula variables are returned, i.e., no auxiliary variables are returned.
+   * @throws ParserException if any malformed formula is encountered
+   */
+  @Test
+  public void testSimple3() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula formula = p.parse("~5 & ~4 & 3 & 2 & 1 | ~3 & ~7 & ~2 & 1 | ~6 & 1 & ~3 & 2 | ~9 & 6 & 8 & ~1 | 3 & 4 & 2 & 1 | ~2 & 7 & 1 | ~10 & ~8 & ~1");
+    final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
+    assertThat(dnf.holds(new DNFPredicate())).isTrue();
+    assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
+    assertThat(formula.variables()).containsAll(dnf.variables());
+  }
+
   @Test
   public void testLarge1() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
