@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.4.0-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.4.1-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -54,6 +54,9 @@ final SATSolver miniSat = MiniSat.miniSat(f);
 miniSat.add(formula);
 final Tristate result = miniSat.sat();
 ```
+
+### Frequently Asked Questions
+We recently started a Wiki section for a [FAQ](https://github.com/logic-ng/LogicNG/wiki/FAQ). 
 
 ## License & Commercial Support
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available through the German company [BooleWorks GmbH](http://www.booleworks.com) - the company behind LogicNG.  Please contact Christoph Zengler at christoph@logicng.org for further details.
