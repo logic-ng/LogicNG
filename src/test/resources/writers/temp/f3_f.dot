@@ -1,0 +1,17 @@
+digraph G {
+  id0 [shape=box, label="a"];
+  id1 [shape=box, label="b"];
+  id2 [shape=box, label="¬c"];
+  id3 [label="∧"];
+  id3 -> id0;
+  id3 -> id1;
+  id4 [label="∨"];
+  id4 -> id0;
+  id4 -> id1;
+  id5 [label="⇒"];
+  id5 -> id2 [label="l"];
+  id5 -> id4 [label="r"];
+  id6 [label="⇔"];
+  id6 -> id3 [label="l"];
+  id6 -> id5 [label="r"];
+}

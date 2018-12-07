@@ -48,7 +48,7 @@ public class GraphTest {
   public static Graph<Long> getLongGraph(String id) throws IOException {
     Graph<Long> g = new Graph<>(id + "-Long");
 
-    final BufferedReader reader = new BufferedReader(new FileReader("tests/graphs/graph" + id + ".txt"));
+    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/graphs/graph" + id + ".txt"));
 
     while (reader.ready()) {
       final String line = reader.readLine().trim();

@@ -67,9 +67,9 @@ public class BDDDotFileWriterTest {
   }
 
   private void testFiles(final String fileName, final BDD bdd) throws IOException {
-    BDDDotFileWriter.write("tests/writers/temp/" + fileName + "_bdd.dot", bdd);
-    final File expectedT = new File("tests/writers/bdd/" + fileName + "_bdd.dot");
-    final File tempT = new File("tests/writers/temp/" + fileName + "_bdd.dot");
+    BDDDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_bdd.dot", bdd);
+    final File expectedT = new File("src/test/resources/writers/bdd/" + fileName + "_bdd.dot");
+    final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_bdd.dot");
     assertFilesEqual(expectedT, tempT);
   }
 

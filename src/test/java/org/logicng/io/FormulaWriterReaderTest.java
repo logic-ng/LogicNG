@@ -57,7 +57,7 @@ public class FormulaWriterReaderTest {
 
   @Test
   public void testSimpleFormulaOneLine() throws ParserException, IOException {
-    final String fileName = "tests/writers/temp/simple_formula1.txt";
+    final String fileName = "src/test/resources/writers/temp/simple_formula1.txt";
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
@@ -79,7 +79,7 @@ public class FormulaWriterReaderTest {
 
   @Test
   public void testSimpleFormulaMultiLine() throws ParserException, IOException {
-    final String fileName = "tests/writers/temp/simple_formula2.txt";
+    final String fileName = "src/test/resources/writers/temp/simple_formula2.txt";
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
@@ -99,7 +99,7 @@ public class FormulaWriterReaderTest {
 
   @Test
   public void testPBFormulaOneLine() throws ParserException, IOException {
-    final String fileName = "tests/writers/temp/simple_formula3.txt";
+    final String fileName = "src/test/resources/writers/temp/simple_formula3.txt";
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
@@ -121,7 +121,7 @@ public class FormulaWriterReaderTest {
 
   @Test
   public void testPBFormulaMultiLine() throws ParserException, IOException {
-    final String fileName = "tests/writers/temp/simple_formula4.txt";
+    final String fileName = "src/test/resources/writers/temp/simple_formula4.txt";
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
@@ -141,7 +141,7 @@ public class FormulaWriterReaderTest {
 
   @Test
   public void testSimpleFormulaOneLineFormatter() throws ParserException, IOException {
-    final String fileName = "tests/writers/temp/simple_formula5.txt";
+    final String fileName = "src/test/resources/writers/temp/simple_formula5.txt";
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
@@ -154,7 +154,7 @@ public class FormulaWriterReaderTest {
 
   @Test
   public void testSimpleFormulaMultiLineFormatter() throws ParserException, IOException {
-    final String fileName = "tests/writers/temp/simple_formula6.txt";
+    final String fileName = "src/test/resources/writers/temp/simple_formula6.txt";
     final File file = new File(fileName);
     final FormulaFactory f = new FormulaFactory();
     final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");

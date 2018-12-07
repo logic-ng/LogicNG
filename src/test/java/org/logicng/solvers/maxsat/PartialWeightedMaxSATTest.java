@@ -79,7 +79,7 @@ public class PartialWeightedMaxSATTest {
   private final FormulaFactory f = new FormulaFactory();
 
   public PartialWeightedMaxSATTest() throws FileNotFoundException {
-    logStream = new PrintStream("tests/partialweightedmaxsat/log.txt");
+    logStream = new PrintStream("src/test/resources/partialweightedmaxsat/log.txt");
   }
 
   @Test
@@ -91,7 +91,7 @@ public class PartialWeightedMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.wbo(config);
-        readCNF(solver, "tests/partialweightedmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -107,7 +107,7 @@ public class PartialWeightedMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.incWBO(config);
-        readCNF(solver, "tests/partialweightedmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -122,7 +122,7 @@ public class PartialWeightedMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.linearSU(config);
-        readCNF(solver, "tests/partialweightedmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -138,7 +138,7 @@ public class PartialWeightedMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < files.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.wmsu3(config);
-        readCNF(solver, "tests/partialweightedmaxsat/" + files[i]);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(results[i], solver.result());
       }
@@ -152,7 +152,7 @@ public class PartialWeightedMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < bmoFiles.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.wmsu3(config);
-        readCNF(solver, "tests/partialweightedmaxsat/bmo/" + bmoFiles[i]);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(bmoResults[i], solver.result());
       }
@@ -167,7 +167,7 @@ public class PartialWeightedMaxSATTest {
     for (final MaxSATConfig config : configs) {
       for (int i = 0; i < bmoFiles.length; i++) {
         final MaxSATSolver solver = MaxSATSolver.linearSU(config);
-        readCNF(solver, "tests/partialweightedmaxsat/bmo/" + bmoFiles[i]);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
         Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve());
         Assert.assertEquals(bmoResults[i], solver.result());
       }

@@ -77,9 +77,9 @@ public class DRUPTest {
   @Test
   public void testUnsatCoresFromDimacs() throws IOException {
     final List<List<Formula>> cnfs = new ArrayList<>(3);
-    cnfs.add(DimacsReader.readCNF("tests/drup/simple_input.cnf", f));
-    cnfs.add(DimacsReader.readCNF("tests/drup/pg4_input.cnf", f));
-    cnfs.add(DimacsReader.readCNF("tests/drup/avg_input.cnf", f, "var"));
+    cnfs.add(DimacsReader.readCNF("src/test/resources/drup/simple_input.cnf", f));
+    cnfs.add(DimacsReader.readCNF("src/test/resources/drup/pg4_input.cnf", f));
+    cnfs.add(DimacsReader.readCNF("src/test/resources/drup/avg_input.cnf", f, "var"));
 
     for (SATSolver solver : this.solvers) {
       for (List<Formula> cnf : cnfs) {
@@ -94,7 +94,7 @@ public class DRUPTest {
 
   @Test
   public void testUnsatCoresFromLargeTestset() throws IOException {
-    final File testFolder = new File("tests/sat");
+    final File testFolder = new File("src/test/resources/sat");
     final File[] files = testFolder.listFiles();
     assert files != null;
     int count = 0;
@@ -119,7 +119,7 @@ public class DRUPTest {
 
   @Test
   public void testUnsatCoresAimTestset() throws IOException {
-    final File testFolder = new File("tests/sat/unsat");
+    final File testFolder = new File("src/test/resources/sat/unsat");
     final File[] files = testFolder.listFiles();
     assert files != null;
     int count = 0;

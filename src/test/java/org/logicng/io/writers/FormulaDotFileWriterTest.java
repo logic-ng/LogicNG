@@ -87,12 +87,12 @@ public class FormulaDotFileWriterTest {
   }
 
   private void testFiles(final String fileName, final Formula formula) throws IOException {
-    FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_t.dot", formula, true);
-    FormulaDotFileWriter.write("tests/writers/temp/" + fileName + "_f", formula, false);
-    final File expectedT = new File("tests/writers/formulas-dot/" + fileName + "_t.dot");
-    final File expectedF = new File("tests/writers/formulas-dot/" + fileName + "_f.dot");
-    final File tempT = new File("tests/writers/temp/" + fileName + "_t.dot");
-    final File tempF = new File("tests/writers/temp/" + fileName + "_f.dot");
+    FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.dot", formula, true);
+    FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
+    final File expectedT = new File("src/test/resources/writers/formulas-dot/" + fileName + "_t.dot");
+    final File expectedF = new File("src/test/resources/writers/formulas-dot/" + fileName + "_f.dot");
+    final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_t.dot");
+    final File tempF = new File("src/test/resources/writers/temp/" + fileName + "_f.dot");
     assertFilesEqual(expectedT, tempT);
     assertFilesEqual(expectedF, tempF);
   }
