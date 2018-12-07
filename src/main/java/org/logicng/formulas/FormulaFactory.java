@@ -998,7 +998,32 @@ public class FormulaFactory {
     if (this.importer == null) {
       this.importer = new FormulaFactoryImporter(this);
     }
-    return formula.transform(this.importer);
+    final Formula imported = formula.transform(this.importer);
+    adjustCounters(imported);
+    return imported;
+  }
+
+  private void adjustCounters(Formula formula) {
+    for (Variable variable : formula.variables()) {
+      if (variable.name().startsWith(CC_PREFIX)) {
+        String[] tokens = variable.name().split("_");
+        int counter = Integer.parseInt(tokens[tokens.length - 1]);
+        if (this.ccCounter < counter)
+          this.ccCounter = counter + 1;
+      }
+      if (variable.name().startsWith(CNF_PREFIX)) {
+        String[] tokens = variable.name().split("_");
+        int counter = Integer.parseInt(tokens[tokens.length - 1]);
+        if (this.cnfCounter < counter)
+          this.cnfCounter = counter + 1;
+      }
+      if (variable.name().startsWith(PB_PREFIX)) {
+        String[] tokens = variable.name().split("_");
+        int counter = Integer.parseInt(tokens[tokens.length - 1]);
+        if (this.pbCounter < counter)
+          this.pbCounter = counter + 1;
+      }
+    }
   }
 
   /**
