@@ -33,6 +33,9 @@ import org.junit.Test;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PseudoBooleanParser;
+import org.logicng.transformations.cnf.TseitinTransformation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.formulas.F.*;
@@ -213,6 +216,31 @@ public class FormulaFactoryImporterTest {
     assertThat(this.g.statistics().negations()).isEqualTo(0);
     assertThat(this.g.statistics().implications()).isEqualTo(0);
     assertThat(this.g.statistics().equivalences()).isEqualTo(0);
+  }
+
+  @Test
+  public void testAdjustCounters() throws ParserException {
+    final FormulaFactory f = new FormulaFactory("Factory");
+    final PseudoBooleanParser p = new PseudoBooleanParser(f);
+    final Formula cc = p.parse("A + B + C + D + E <= 2").cnf();
+    final Formula pbc = p.parse("2*A + -2*B + 3*C + D + 2*E <= 3").cnf();
+    final Formula cnf = p.parse("A & B & C | C & D & ~A").transform(new TseitinTransformation(0));
+
+    final FormulaFactory g = new FormulaFactory();
+    g.newCNFVariable();
+    g.newCNFVariable();
+    g.newCCVariable();
+    g.newCCVariable();
+    g.newCCVariable();
+    g.newPBVariable();
+    g.newPBVariable();
+    g.newPBVariable();
+    g.importFormula(cc);
+    g.importFormula(pbc);
+    g.importFormula(cnf);
+    assertThat(g.statistics().cnfCounter()).isEqualTo(2);
+    assertThat(g.statistics().ccCounter()).isEqualTo(13);
+    assertThat(g.statistics().pbCounter()).isEqualTo(25);
   }
 
   /**
