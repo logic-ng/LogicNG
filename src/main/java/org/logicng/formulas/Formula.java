@@ -211,6 +211,15 @@ public abstract class Formula implements Iterable<Formula> {
    * Returns a copy of this formula which is in CNF.  The algorithm which is used for the default CNF transformation
    * can be configured in the {@link FormulaFactory}.
    * <p>
+   * Be aware that the default algorithm for the CNF transformation may result in a CNF containing additional auxiliary
+   * variables with prefix {@value FormulaFactory#CNF_PREFIX}.  Also, the result may not be a semantically equivalent CNF
+   * but an equisatisfiable CNF.
+   * <p>
+   * If the introduction of auxiliary variables is unwanted, you can choose one of the algorithms
+   * {@link org.logicng.transformations.cnf.CNFConfig.Algorithm#FACTORIZATION} and
+   * {@link org.logicng.transformations.cnf.CNFConfig.Algorithm#BDD}.  Both algorithms provide CNF conversions without
+   * the introduction of auxiliary variables and the result is a semantically equivalent CNF.
+   * <p>
    * Since CNF is the input for the SAT or MaxSAT solvers, it has a special treatment here.  For other conversions, use
    * the according formula functions.
    * @return a copy of this formula which is in CNF
