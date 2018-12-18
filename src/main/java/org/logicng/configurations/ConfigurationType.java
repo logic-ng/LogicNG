@@ -34,12 +34,13 @@ package org.logicng.configurations;
  * @since 1.1
  */
 public enum ConfigurationType {
-  CNF,
-  MINISAT,
-  GLUCOSE,
-  CLEANELING,
-  MAXSAT,
-  MUS,
-  CC_ENCODER,
-  PB_ENCODER
+    CNF,
+    MINISAT,
+    GLUCOSE,
+    CLEANELING,
+    MAXSAT,
+    MUS,
+    CC_ENCODER,
+    PB_ENCODER,
+    BACKBONE
 }
