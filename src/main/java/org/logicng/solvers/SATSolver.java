@@ -452,4 +452,13 @@ public abstract class SATSolver {
    * @return the unsat core
    */
   public abstract UNSATCore<Proposition> unsatCore();
+
+  /**
+   * Returns the formula factory for this solver.
+   * @return the formula factory
+   */
+  public FormulaFactory factory() {
+    return this.f;
+  }
+
 }
