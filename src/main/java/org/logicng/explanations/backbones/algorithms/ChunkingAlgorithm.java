@@ -23,10 +23,10 @@ public class ChunkingAlgorithm implements BackboneAlgorithm {
 
     @Override
     public Backbone computeBackbone(SATSolver solver, Collection<Variable> variables) {
-        int chunksize = 42; // TODO find out which chunk size to use
         FormulaFactory f = solver.factory();
         solver.sat();
-        SortedSet<Literal> implicant = solver.model().literals();
+        SortedSet<Literal> implicant = solver.model(variables).literals();
+        int chunksize = implicant.size(); // TODO find out which chunk size to use
         Backbone backbone = new Backbone();
 
         while(!implicant.isEmpty()) {
@@ -49,7 +49,7 @@ public class ChunkingAlgorithm implements BackboneAlgorithm {
                 solver.loadState(before);
                 solver.add(f.or(negatedChunkSet));
             } else {
-                implicant.retainAll(solver.model().literals());
+                implicant.retainAll(solver.model(variables).literals());
                 solver.loadState(before);
             }
         }

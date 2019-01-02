@@ -46,7 +46,8 @@ public class BackboneGeneration {
     public BackboneGeneration(final BackboneConfig configuration) {
         // TODO catch if config does not have proof generation turned on when algorithm uses cores
         this.configuration = configuration == null ? new BackboneConfig.Builder().build() : configuration;
-        this.useCore = this.configuration.algorithm == BackboneConfig.Algorithm.CORE;
+        this.useCore = this.configuration.algorithm == BackboneConfig.Algorithm.CORE ||
+                this.configuration.algorithm == BackboneConfig.Algorithm.CORE_CHUNKING;
     }
 
     /**

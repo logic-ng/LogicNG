@@ -28,7 +28,7 @@ public class EnumerationAlgorithm implements BackboneAlgorithm {
         }
 
         while ((!literals.isEmpty()) && solver.sat() == Tristate.TRUE) {
-            Assignment model = solver.model();
+            Assignment model = solver.model(variables);
             literals.retainAll(model.literals());
             solver.add(model.blockingClause(solver.factory(), null));
         }

@@ -24,7 +24,7 @@ public class CoreAlgorithm implements BackboneAlgorithm {
     @Override
     public Backbone computeBackbone(SATSolver solver, Collection<Variable> variables) {
         solver.sat();
-        SortedSet<Literal> implicant = solver.model().literals();
+        SortedSet<Literal> implicant = solver.model(variables).literals();
         SolverState originalState = solver.saveState();
         Backbone backbone = new Backbone();
 
@@ -37,7 +37,7 @@ public class CoreAlgorithm implements BackboneAlgorithm {
                 SolverState before = solver.saveState();
                 solver.add(flipped);
                 if (solver.sat() == Tristate.TRUE) {
-                    implicant.retainAll(solver.model().literals());
+                    implicant.retainAll(solver.model(variables).literals());
                     solver.loadState(before);
                     break;
                 }
@@ -58,7 +58,7 @@ public class CoreAlgorithm implements BackboneAlgorithm {
                 flipped.removeAll(coreLiterals);
                 if (flipped.isEmpty()) {
                     // TODO decide how to handle fall back algorithm and test only _remaining_ variables
-                    final BackboneConfig config = new BackboneConfig.Builder().algorithm(BackboneConfig.Algorithm.ENUMERATION).build();
+                    final BackboneConfig config = new BackboneConfig.Builder().algorithm(BackboneConfig.Algorithm.ITERATIVE_PLAIN).build();
                     final BackboneGeneration backboneGeneration = new BackboneGeneration(config);
                     return backboneGeneration.computeBackbone(solver, variables);
                 }

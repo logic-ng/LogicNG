@@ -22,7 +22,7 @@ public class IterativeOneTestAlgorithm implements BackboneAlgorithm {
     public Backbone computeBackbone(SATSolver solver, Collection<Variable> variables) {
         Backbone backbone = new Backbone();
         solver.sat(); 
-        SortedSet<Literal> implicant = solver.model().literals();
+        SortedSet<Literal> implicant = solver.model(variables).literals();
 
         while(!implicant.isEmpty()) {
             Literal l = implicant.first();
@@ -32,7 +32,7 @@ public class IterativeOneTestAlgorithm implements BackboneAlgorithm {
                 implicant.remove(l);
                 solver.add(l);
             } else {
-                implicant.retainAll(solver.model().literals());
+                implicant.retainAll(solver.model(variables).literals());
             }
         }
 

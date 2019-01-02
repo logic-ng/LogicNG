@@ -21,13 +21,13 @@ public class IterativePlainAlgorithm implements BackboneAlgorithm {
         Backbone backbone = new Backbone();
         for (Variable v : variables) {
             Tristate posTest = solver.sat(v);
-            Tristate negTest = solver.sat(v.negative());
+            Tristate negTest = solver.sat(v.negate());
             if (posTest == Tristate.FALSE && negTest == Tristate.FALSE) {
                 return new Backbone();
             }
             if (posTest == Tristate.FALSE) {
-                backbone.add(v.negative());
-                solver.add(v.negative());
+                backbone.add(v.negate());
+                solver.add(v.negate());
             }
             if (negTest == Tristate.FALSE) {
                 backbone.add(v);

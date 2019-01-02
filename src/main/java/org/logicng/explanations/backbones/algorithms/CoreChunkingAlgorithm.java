@@ -24,9 +24,9 @@ public class CoreChunkingAlgorithm implements BackboneAlgorithm {
 
     @Override
     public Backbone computeBackbone(SATSolver solver, Collection<Variable> variables) {
-        int chunksize = 42; // TODO find out which chunk size to use
         solver.sat();
-        SortedSet<Literal> implicant = solver.model().literals();
+        SortedSet<Literal> implicant = solver.model(variables).literals();
+        int chunksize = implicant.size(); // TODO find out which chunk size to use
         SolverState originalState = solver.saveState();
         Backbone backbone = new Backbone();
 
@@ -45,7 +45,7 @@ public class CoreChunkingAlgorithm implements BackboneAlgorithm {
                 SolverState before = solver.saveState();
                 solver.add(flipped);
                 if (solver.sat() == Tristate.TRUE) {
-                    implicant.retainAll(solver.model().literals());
+                    implicant.retainAll(solver.model(variables).literals());
                     solver.loadState(before);
                     break;
                 }
@@ -66,7 +66,7 @@ public class CoreChunkingAlgorithm implements BackboneAlgorithm {
                 flipped.removeAll(coreLiterals);
                 if (flipped.isEmpty()) {
                     // TODO decide how to handle fall back algorithm and test only _remaining_ literals
-                    final BackboneConfig config = new BackboneConfig.Builder().algorithm(BackboneConfig.Algorithm.ENUMERATION).build();
+                    final BackboneConfig config = new BackboneConfig.Builder().algorithm(BackboneConfig.Algorithm.ITERATIVE_PLAIN).build();
                     final BackboneGeneration backboneGeneration = new BackboneGeneration(config);
                     backbone.add(backboneGeneration.computeBackbone(solver, variables).getCompleteBackbone());
                     implicant.removeAll(chunk);

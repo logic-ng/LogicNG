@@ -27,7 +27,7 @@ public class IterativePlusAlgorithm implements BackboneAlgorithm {
     @Override
     public Backbone computeBackbone(SATSolver solver, Collection<Variable> variables) {
         solver.sat();
-        Collection<Literal> backboneLiterals = solver.model().literals();
+        Collection<Literal> backboneLiterals = solver.model(variables).literals();
         FormulaFactory f = solver.factory();
         
         while(!backboneLiterals.isEmpty()) {
@@ -40,7 +40,7 @@ public class IterativePlusAlgorithm implements BackboneAlgorithm {
             if(solver.sat() == Tristate.FALSE) {
                 break;
             }
-            backboneLiterals.retainAll(solver.model().literals());
+            backboneLiterals.retainAll(solver.model(variables).literals());
             solver.loadState(before);
         }
 

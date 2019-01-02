@@ -18,7 +18,7 @@ public class Backbone {
     private SortedSet<Variable> negativeBackbone;
 
     /**
-     * Constructs a new Backbone.
+     * Constructs a new empty Backbone.
      */
     public Backbone() {
         this.positiveBackbone = new TreeSet<>();
@@ -26,16 +26,25 @@ public class Backbone {
     }
 
     /**
-     * Returns the positive literals of the Backbone.
-     * @return the set of positive Backbone literals
+     * Constructs a new Backbone that contains the given literals.
+     */
+    public Backbone(Collection<Literal> literals) {
+        this.positiveBackbone = new TreeSet<>();
+        this.negativeBackbone = new TreeSet<>();
+        this.add(literals);
+    }
+
+    /**
+     * Returns the positive variables of the Backbone.
+     * @return the set of positive Backbone variables
      */
     public SortedSet<Variable> getPositiveBackbone() {
         return positiveBackbone;
     }
 
     /**
-     * Returns the negative literals of the Backbone.
-     * @return the set of negative Backbone literals
+     * Returns the negative variables of the Backbone.
+     * @return the set of negative Backbone variables
      */
     public SortedSet<Variable> getNegativeBackbone() {
         return negativeBackbone;
