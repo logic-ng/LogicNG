@@ -1,5 +1,6 @@
 package org.logicng.explanations.backbones;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
@@ -15,7 +16,6 @@ import org.logicng.solvers.SolverState;
 import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -68,8 +68,8 @@ public class BackboneGenerationTest {
     @Test
     public void testBackboneConfig() {
         BackboneConfig config = new BackboneConfig.Builder().build();
-        assertThat(config.algorithm == BackboneConfig.Algorithm.ENUMERATION).isTrue();
-        assertThat(config.toString()).isEqualTo("BackboneConfig{\nalgorithm=ENUMERATION\n}\n");
+        assertThat(config.algorithm == BackboneConfig.Algorithm.ITERATIVE_PLAIN).isTrue();
+        assertThat(config.toString()).isEqualTo("BackboneConfig{\nalgorithm=ITERATIVE_PLAIN\n}\n");
 
         config = new BackboneConfig.Builder().algorithm(BackboneConfig.Algorithm.CORE).build();
         assertThat(config.algorithm == BackboneConfig.Algorithm.CORE).isTrue();
@@ -234,10 +234,71 @@ public class BackboneGenerationTest {
     }
 
 
-//    Performance Tests
+    @Test
+    public void testEqualResultsOfDifferentAlgorithms() throws IOException, ParserException {
+        List<BackboneConfig.Algorithm> algorithms = new ArrayList<>(Arrays.asList(
+                BackboneConfig.Algorithm.ENUMERATION,
+                BackboneConfig.Algorithm.ITERATIVE_PLUS,
+                BackboneConfig.Algorithm.CHUNKING,
+                BackboneConfig.Algorithm.ITERATIVE_PLAIN,
+                BackboneConfig.Algorithm.ITERATIVE_ONE_TEST,
+                BackboneConfig.Algorithm.CORE,
+                BackboneConfig.Algorithm.CORE_CHUNKING
+        ));
+
+        final FormulaFactory f = new FormulaFactory();
+
+        Literal x = f.literal("x", true);
+        Literal y = f.literal("y", true);
+        Literal z = f.literal("z", true);
+        Literal u = f.literal("u", true);
+        Literal v = f.literal("v", true);
+
+        List<Formula> formulas = new ArrayList<>(Arrays.asList(
+                f.verum(),
+                x,
+                f.and(x, y),
+                f.or(x, y),
+                x.negate(),
+                f.or(f.and(x, y, z), f.and(x, y, u), f.and(x, u, z)),
+                f.and(f.or(x, y, z), f.or(x, y, u), f.or(x, u, z)),
+                f.and(f.or(x.negate(), y), x),
+                f.and(f.or(x, y), f.or(x.negate(), y)),
+                f.and(f.and(f.or(x.negate(), y), x.negate()), f.and(z, f.or(x, y))),
+                f.and(f.or(x, y), f.or(u, v), z)
+//                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f)
+        ));
+
+//        List<Formula> formulas = new ArrayList<>();
+//        final PropositionalParser p = new PropositionalParser(f);
+//        final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/formulas/small_formulas.txt"));
+//        while (reader.ready()) {
+//            formulas.add(p.parse(reader.readLine()));
+//        }
+
+        for (Formula formula : formulas) {
+            List<Backbone> backbones = new ArrayList<>();
+            for (BackboneConfig.Algorithm algorithm : algorithms) {
+                final BackboneConfig config = new BackboneConfig.Builder().algorithm(algorithm).build();
+                final BackboneGeneration backboneGeneration = new BackboneGeneration(config);
+                backbones.add(backboneGeneration.computeBackbone(formula));
+            }
+            Backbone backbone1 = backbones.get(0);
+            SortedSet<Literal> completeBackbone1 = backbone1.getCompleteBackbone();
+            for (Backbone backbone : backbones) {
+                if (backbone != backbone1) {
+                    assertThat(backbone.getCompleteBackbone()).containsExactlyElementsOf(completeBackbone1);
+                }
+            }
+        }
+    }
 
 
-//    @Test -- takes quite long, do not include in regular tests
+//    First Profiling Tests
+
+
+    @Ignore
+    @Test
     public void testLargeFormula() throws IOException, ParserException {
         List<BackboneConfig.Algorithm> algorithms = new ArrayList<>(Arrays.asList(
 //                BackboneConfig.Algorithm.ENUMERATION -- takes too long, leave out.
@@ -253,7 +314,7 @@ public class BackboneGenerationTest {
             final long start = System.nanoTime();
             testLargeFormulaHelper(algorithm);
             final long end = System.nanoTime();
-            System.out.printf("%s took %d ms\n", algorithm, (end-start)/100000);
+            System.out.printf("%s took %d ms\n", algorithm, (end-start)/1000000);
         }
     }
 
@@ -266,7 +327,8 @@ public class BackboneGenerationTest {
     }
 
 
-//    @Test -- takes quite long, do not include in regular tests
+    @Ignore
+    @Test
     public void testSmallFormulas() throws IOException, ParserException {
         List<BackboneConfig.Algorithm> algorithms = new ArrayList<>(Arrays.asList(
 //                BackboneConfig.Algorithm.ENUMERATION -- takes too long, leave out.
@@ -282,7 +344,7 @@ public class BackboneGenerationTest {
             final long start = System.nanoTime();
             testSmallFormulasHelper(algorithm);
             final long end = System.nanoTime();
-            System.out.printf("%s took %d ms\n", algorithm, (end-start)/100000);
+            System.out.printf("%s took %d ms\n", algorithm, (end-start)/1000000);
         }
     }
 
@@ -325,8 +387,4 @@ public class BackboneGenerationTest {
         return true;
     }
 
-
-    @Test
-    public void testEqualResultsOfDifferentAlgorithms() {
-    }
 }

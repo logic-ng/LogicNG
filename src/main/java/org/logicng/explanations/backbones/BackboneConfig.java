@@ -42,7 +42,7 @@ public class BackboneConfig extends Configuration {
     public static class Builder {
 
         // TODO Change to default algorithm depending on which algorithm is the most efficient!
-        private Algorithm algorithm = Algorithm.ENUMERATION;
+        private Algorithm algorithm = Algorithm.ITERATIVE_PLAIN;
 
         /**
          * Sets the algorithm for the Backbone generation. The default value is {@code TODO}.

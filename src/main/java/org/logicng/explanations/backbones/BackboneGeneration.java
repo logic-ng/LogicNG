@@ -135,7 +135,7 @@ public class BackboneGeneration {
                 backbone = new CoreChunkingAlgorithm().computeBackbone(solver, variables);
                 break;
             default:
-                backbone = null;
+                backbone = new IterativePlainAlgorithm().computeBackbone(solver, variables);
         }
         solver.loadState(originalState);
         return backbone;
