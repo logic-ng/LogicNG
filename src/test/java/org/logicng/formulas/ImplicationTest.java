@@ -76,7 +76,7 @@ public class ImplicationTest {
     SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, F.IMP3.variables());
 
-    Formula imp = F.f.implication(F.AND1, F.AND2);
+    final Formula imp = F.f.implication(F.AND1, F.AND2);
     Assert.assertEquals(2, imp.variables().size());
     lits = new TreeSet<>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, imp.variables());
@@ -137,7 +137,7 @@ public class ImplicationTest {
 
   @Test
   public void testHash() {
-    Formula imp = F.f.implication(F.NA, F.NB);
+    final Formula imp = F.f.implication(F.NA, F.NB);
     Assert.assertEquals(F.IMP2.hashCode(), imp.hashCode());
     Assert.assertEquals(F.IMP2.hashCode(), imp.hashCode());
     Assert.assertEquals(F.IMP3.hashCode(), F.f.implication(F.AND1, F.OR1).hashCode());
@@ -169,6 +169,14 @@ public class ImplicationTest {
     Assert.assertEquals(2, F.IMP1.numberOfOperands());
     Assert.assertEquals(2, F.IMP3.numberOfOperands());
     Assert.assertEquals(2, F.IMP4.numberOfOperands());
+  }
+
+  @Test
+  public void testIsConstantFormula() {
+    Assert.assertFalse(F.IMP1.isConstantFormula());
+    Assert.assertFalse(F.IMP2.isConstantFormula());
+    Assert.assertFalse(F.IMP3.isConstantFormula());
+    Assert.assertFalse(F.IMP4.isConstantFormula());
   }
 
   @Test

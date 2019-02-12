@@ -75,7 +75,7 @@ public class EquivalenceTest {
     SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, F.IMP3.variables());
 
-    Formula equiv = F.f.equivalence(F.AND1, F.AND2);
+    final Formula equiv = F.f.equivalence(F.AND1, F.AND2);
     Assert.assertEquals(2, equiv.variables().size());
     lits = new TreeSet<>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, equiv.variables());
@@ -137,7 +137,7 @@ public class EquivalenceTest {
 
   @Test
   public void testHash() {
-    Formula eq = F.f.equivalence(F.IMP1, F.IMP2);
+    final Formula eq = F.f.equivalence(F.IMP1, F.IMP2);
     Assert.assertEquals(F.EQ4.hashCode(), eq.hashCode());
     Assert.assertEquals(F.EQ4.hashCode(), eq.hashCode());
     Assert.assertEquals(F.EQ3.hashCode(), F.f.equivalence(F.AND1, F.OR1).hashCode());
@@ -169,6 +169,14 @@ public class EquivalenceTest {
     Assert.assertEquals(2, F.EQ1.numberOfOperands());
     Assert.assertEquals(2, F.EQ3.numberOfOperands());
     Assert.assertEquals(2, F.EQ4.numberOfOperands());
+  }
+
+  @Test
+  public void testIsConstantFormula() {
+    Assert.assertFalse(F.EQ1.isConstantFormula());
+    Assert.assertFalse(F.EQ2.isConstantFormula());
+    Assert.assertFalse(F.EQ3.isConstantFormula());
+    Assert.assertFalse(F.EQ4.isConstantFormula());
   }
 
   @Test

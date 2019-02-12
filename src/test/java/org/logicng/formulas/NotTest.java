@@ -82,7 +82,7 @@ public class NotTest {
     SortedSet<? extends Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
     Assert.assertEquals(lits, F.NOT1.literals());
 
-    Formula not = F.f.not(F.f.and(F.A, F.NB, F.f.implication(F.B, F.NA)));
+    final Formula not = F.f.not(F.f.and(F.A, F.NB, F.f.implication(F.B, F.NA)));
     Assert.assertEquals(4, not.literals().size());
     lits = new TreeSet<>(Arrays.asList(F.A, F.NA, F.B, F.NB));
     Assert.assertEquals(lits, not.literals());
@@ -114,7 +114,7 @@ public class NotTest {
 
   @Test
   public void testHash() {
-    Formula not = F.f.not(F.AND1);
+    final Formula not = F.f.not(F.AND1);
     Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());
     Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());
     Assert.assertEquals(F.NOT2.hashCode(), F.f.not(F.OR1).hashCode());
@@ -146,6 +146,12 @@ public class NotTest {
   public void testNumberOfOperands() {
     Assert.assertEquals(1, F.NOT1.numberOfOperands());
     Assert.assertEquals(1, F.f.not(F.EQ1).numberOfOperands());
+  }
+
+  @Test
+  public void testIsConstantFormula() {
+    Assert.assertFalse(F.NOT1.isConstantFormula());
+    Assert.assertFalse(F.NOT2.isConstantFormula());
   }
 
   @Test

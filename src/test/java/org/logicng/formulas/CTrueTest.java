@@ -30,7 +30,6 @@ package org.logicng.formulas;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.logicng.io.parsers.ParserException;
 
 /**
  * Unit Tests for the class {@link CTrue}.
@@ -101,6 +100,11 @@ public class CTrueTest {
   @Test
   public void testNumberOfOperands() {
     Assert.assertEquals(0, F.TRUE.numberOfOperands());
+  }
+
+  @Test
+  public void testIsConstantFormula() {
+    Assert.assertTrue(F.TRUE.isConstantFormula());
   }
 
   @Test

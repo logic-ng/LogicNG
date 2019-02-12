@@ -65,7 +65,7 @@ public class OrTest {
     Assert.assertEquals(F.NA, F.f.or(F.NA, F.NA, F.NA));
     Assert.assertEquals(F.NA, F.f.or(F.NA, F.NA, F.FALSE, F.FALSE));
     Assert.assertEquals(F.TRUE, F.f.or(F.NA, F.NA, F.TRUE, F.FALSE));
-    List<Literal> lits = new LinkedList<>();
+    final List<Literal> lits = new LinkedList<>();
     lits.add(F.X);
     lits.add(F.Y);
     Assert.assertEquals(F.OR1, F.f.or(lits));
@@ -89,7 +89,7 @@ public class OrTest {
     SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.X, F.Y));
     Assert.assertEquals(lits, F.OR2.variables());
 
-    Formula or = F.f.or(F.A, F.A, F.B, F.IMP3);
+    final Formula or = F.f.or(F.A, F.A, F.B, F.IMP3);
     Assert.assertEquals(4, or.variables().size());
     lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
     Assert.assertEquals(lits, or.variables());
@@ -101,7 +101,7 @@ public class OrTest {
     SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.NX, F.NY));
     Assert.assertEquals(lits, F.OR2.literals());
 
-    Formula or = F.f.or(F.A, F.A, F.B, F.f.implication(F.NB, F.NA));
+    final Formula or = F.f.or(F.A, F.A, F.B, F.f.implication(F.NB, F.NA));
     Assert.assertEquals(4, or.literals().size());
     lits = new TreeSet<>(Arrays.asList(F.A, F.NA, F.B, F.NB));
     Assert.assertEquals(lits, or.literals());
@@ -145,7 +145,7 @@ public class OrTest {
 
   @Test
   public void testHash() {
-    Formula or = F.f.or(F.AND1, F.AND2);
+    final Formula or = F.f.or(F.AND1, F.AND2);
     Assert.assertEquals(F.OR3.hashCode(), or.hashCode());
     Assert.assertEquals(F.OR3.hashCode(), or.hashCode());
     Assert.assertEquals(F.OR2.hashCode(), F.f.or(F.NX, F.NY).hashCode());
@@ -182,6 +182,12 @@ public class OrTest {
   }
 
   @Test
+  public void testIsConstantFormula() {
+    Assert.assertFalse(F.OR1.isConstantFormula());
+    Assert.assertFalse(F.OR2.isConstantFormula());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertFalse(F.OR1.isAtomicFormula());
   }
@@ -190,8 +196,8 @@ public class OrTest {
   public void testContains() throws ParserException {
     Assert.assertTrue(F.OR1.containsVariable(F.f.variable("x")));
     Assert.assertFalse(F.OR1.containsVariable(F.f.variable("a")));
-    PropositionalParser parser = new PropositionalParser(F.f);
-    Formula contAnd = parser.parse("a | b | (c & (d | e))");
+    final PropositionalParser parser = new PropositionalParser(F.f);
+    final Formula contAnd = parser.parse("a | b | (c & (d | e))");
     Assert.assertTrue(contAnd.containsNode(parser.parse("d | e")));
   }
 }

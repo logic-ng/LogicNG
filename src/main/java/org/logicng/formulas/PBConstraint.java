@@ -97,23 +97,27 @@ public final class PBConstraint extends Formula {
    */
   PBConstraint(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs, final FormulaFactory f) {
     super(FType.PBC, f);
-    if (literals.length != coefficients.length)
+    if (literals.length != coefficients.length) {
       throw new IllegalArgumentException("Cannot generate a pseudo-Boolean constraint with literals.length != coefficients.length");
+    }
     this.literals = literals;
     this.coefficients = coefficients;
     boolean cc = true;
     this.maxWeight = Integer.MIN_VALUE;
     for (final int c : coefficients) {
-      if (c > this.maxWeight)
+      if (c > this.maxWeight) {
         this.maxWeight = c;
-      if (c != 1)
+      }
+      if (c != 1) {
         cc = false;
+      }
     }
-    for (final Literal lit : literals)
+    for (final Literal lit : literals) {
       if (!lit.phase()) {
         cc = false;
         break;
       }
+    }
     this.isCC = cc;
     this.comparator = comparator;
     this.rhs = rhs;
@@ -149,10 +153,12 @@ public final class PBConstraint extends Formula {
 
   @Override
   public FType type() {
-    if (this.isTrivialFalse)
+    if (this.isTrivialFalse) {
       return FType.FALSE;
-    if (this.isTrivialTrue)
+    }
+    if (this.isTrivialTrue) {
       return FType.TRUE;
+    }
     return FType.PBC;
   }
 
@@ -178,14 +184,18 @@ public final class PBConstraint extends Formula {
    */
   static Tristate evaluateCoeffs(final int minValue, final int maxValue, final int rhs, final CType comparator) {
     int status = 0;
-    if (rhs >= minValue)
+    if (rhs >= minValue) {
       status++;
-    if (rhs > minValue)
+    }
+    if (rhs > minValue) {
       status++;
-    if (rhs >= maxValue)
+    }
+    if (rhs >= maxValue) {
       status++;
-    if (rhs > maxValue)
+    }
+    if (rhs > maxValue) {
       status++;
+    }
 
     switch (comparator) {
       case EQ:
@@ -337,12 +347,14 @@ public final class PBConstraint extends Formula {
     for (int i = 0; i < ps.size(); i++) {
       final Variable x = ps.get(i).variable();
       Pair<Integer, Integer> consts = var2consts.get(x);
-      if (consts == null)
+      if (consts == null) {
         consts = new Pair<>(0, 0);
-      if (!ps.get(i).phase())
+      }
+      if (!ps.get(i).phase()) {
         var2consts.put(x, new Pair<>(consts.first() + cs.get(i), consts.second()));
-      else
+      } else {
         var2consts.put(x, new Pair<>(consts.first(), consts.second() + cs.get(i)));
+      }
     }
     final LNGVector<Pair<Integer, Literal>> csps = new LNGVector<>(var2consts.size());
     for (final Map.Entry<Literal, Pair<Integer, Integer>> all : var2consts.entrySet()) {
@@ -363,36 +375,44 @@ public final class PBConstraint extends Formula {
         cs.push(pair.first());
         ps.push(pair.second());
         sum += cs.back();
-      } else
+      } else {
         zeros++;
+      }
     }
     ps.removeElements(ps.size() - csps.size() - zeros);
     cs.removeElements(cs.size() - csps.size() - zeros);
     boolean changed;
     do {
       changed = false;
-      if (c < 0)
+      if (c < 0) {
         return this.f.falsum();
-      if (sum <= c)
+      }
+      if (sum <= c) {
         return this.f.verum();
+      }
       assert cs.size() > 0;
       int div = c;
-      for (int i = 0; i < cs.size(); i++)
+      for (int i = 0; i < cs.size(); i++) {
         div = gcd(div, cs.get(i));
+      }
       if (div != 0 && div != 1) {
-        for (int i = 0; i < cs.size(); i++)
+        for (int i = 0; i < cs.size(); i++) {
           cs.set(i, cs.get(i) / div);
+        }
         c = c / div;
       }
-      if (div != 1 && div != 0)
+      if (div != 1 && div != 0) {
         changed = true;
+      }
     } while (changed);
     final Literal[] lits = new Literal[ps.size()];
-    for (int i = 0; i < lits.length; i++)
+    for (int i = 0; i < lits.length; i++) {
       lits[i] = ps.get(i);
+    }
     final int[] coeffs = new int[cs.size()];
-    for (int i = 0; i < coeffs.length; i++)
+    for (int i = 0; i < coeffs.length; i++) {
       coeffs[i] = cs.get(i);
+    }
     return this.f.pbc(CType.LE, c, lits, coeffs);
   }
 
@@ -403,8 +423,9 @@ public final class PBConstraint extends Formula {
 
   @Override
   public long numberOfNodes() {
-    if (this.numberOfNodes != -1)
+    if (this.numberOfNodes != -1) {
       return this.numberOfNodes;
+    }
     this.numberOfNodes = 1L + this.literals.length;
     return this.numberOfNodes;
   }
@@ -412,6 +433,11 @@ public final class PBConstraint extends Formula {
   @Override
   public int numberOfOperands() {
     return 0;
+  }
+
+  @Override
+  public boolean isConstantFormula() {
+    return false;
   }
 
   @Override
@@ -423,8 +449,9 @@ public final class PBConstraint extends Formula {
   public SortedSet<Variable> variables() {
     if (this.variables == null) {
       this.variables = new TreeSet<>();
-      for (final Literal lit : this.literals)
+      for (final Literal lit : this.literals) {
         this.variables.add(lit.variable());
+      }
       this.variables = Collections.unmodifiableSortedSet(this.variables);
     }
     return this.variables;
@@ -439,9 +466,11 @@ public final class PBConstraint extends Formula {
 
   @Override
   public boolean containsVariable(final Variable variable) {
-    for (final Literal lit : this.literals)
-      if (lit.containsVariable(variable))
+    for (final Literal lit : this.literals) {
+      if (lit.containsVariable(variable)) {
         return true;
+      }
+    }
     return false;
   }
 
@@ -464,36 +493,43 @@ public final class PBConstraint extends Formula {
         newLits.add(this.literals[i]);
         final int coeff = this.coefficients[i];
         newCoeffs.add(coeff);
-        if (coeff > 0)
+        if (coeff > 0) {
           maxValue += coeff;
-        else
+        } else {
           minValue += coeff;
-      } else if (restriction.type == FType.TRUE)
+        }
+      } else if (restriction.type == FType.TRUE) {
         lhsFixed += this.coefficients[i];
+      }
     }
 
-    if (newLits.isEmpty())
-      return f.constant(this.evaluateComparator(lhsFixed));
+    if (newLits.isEmpty()) {
+      return this.f.constant(this.evaluateComparator(lhsFixed));
+    }
 
     final int newRHS = this.rhs - lhsFixed;
     if (this.comparator != CType.EQ) {
       final Tristate fixed = evaluateCoeffs(minValue, maxValue, newRHS, this.comparator);
-      if (fixed == Tristate.TRUE)
+      if (fixed == Tristate.TRUE) {
         return this.f.verum();
-      else if (fixed == Tristate.FALSE)
+      } else if (fixed == Tristate.FALSE) {
         return this.f.falsum();
+      }
     }
     return this.f.pbc(this.comparator, newRHS, newLits, newCoeffs);
   }
 
   @Override
   public boolean containsNode(final Formula formula) {
-    if (this == formula || this.equals(formula))
+    if (this == formula || this.equals(formula)) {
       return true;
+    }
     if (formula.type == FType.LITERAL) {
-      for (final Literal lit : this.literals)
-        if (lit.equals(formula) || lit.variable().equals(formula))
+      for (final Literal lit : this.literals) {
+        if (lit.equals(formula) || lit.variable().equals(formula)) {
           return true;
+        }
+      }
       return false;
     }
     return false;
@@ -512,12 +548,14 @@ public final class PBConstraint extends Formula {
       } else {
         switch (subst.type) {
           case TRUE:
-            if (this.literals[i].phase())
+            if (this.literals[i].phase()) {
               lhsFixed += this.coefficients[i];
+            }
             break;
           case FALSE:
-            if (!this.literals[i].phase())
+            if (!this.literals[i].phase()) {
               lhsFixed += this.coefficients[i];
+            }
             break;
           case LITERAL:
             newLits.add(this.literals[i].phase() ? (Literal) subst : ((Literal) subst).negate());
@@ -529,7 +567,7 @@ public final class PBConstraint extends Formula {
       }
     }
     return newLits.isEmpty()
-            ? f.constant(this.evaluateComparator(lhsFixed))
+            ? this.f.constant(this.evaluateComparator(lhsFixed))
             : this.f.pbc(this.comparator, this.rhs - lhsFixed, newLits, newCoeffs);
   }
 
@@ -537,10 +575,11 @@ public final class PBConstraint extends Formula {
   public Formula negate() {
     switch (this.comparator) {
       case EQ:
-        if (this.rhs > 0)
+        if (this.rhs > 0) {
           return this.f.or(this.f.pbc(CType.LT, this.rhs, this.literals, this.coefficients), this.f.pbc(CType.GT, this.rhs, this.literals, this.coefficients));
-        else
+        } else {
           return this.f.pbc(CType.GT, this.rhs, this.literals, this.coefficients);
+        }
       case LE:
         return this.f.pbc(CType.GT, this.rhs, this.literals, this.coefficients);
       case LT:
@@ -558,8 +597,9 @@ public final class PBConstraint extends Formula {
   public Formula nnf() {
     Formula nnf = this.transformationCache.get(NNF);
     if (nnf == null) {
-      if (this.encoding == null)
+      if (this.encoding == null) {
         this.encode();
+      }
       nnf = this.f.and(this.encoding.formula(this.f));
       this.setTransformationCacheEntry(NNF, nnf);
     }
@@ -573,9 +613,11 @@ public final class PBConstraint extends Formula {
    */
   private int evaluateLHS(final Assignment assignment) {
     int lhs = 0;
-    for (int i = 0; i < this.literals.length; i++)
-      if (this.literals[i].evaluate(assignment))
+    for (int i = 0; i < this.literals.length; i++) {
+      if (this.literals[i].evaluate(assignment)) {
         lhs += this.coefficients[i];
+      }
+    }
     return lhs;
   }
 
@@ -611,11 +653,11 @@ public final class PBConstraint extends Formula {
   @Override
   public int hashCode() {
     if (this.hashCode == 0) {
-      if (this.isTrivialFalse)
+      if (this.isTrivialFalse) {
         this.hashCode = this.f.falsum().hashCode();
-      else if (this.isTrivialTrue)
+      } else if (this.isTrivialTrue) {
         this.hashCode = this.f.verum().hashCode();
-      else {
+      } else {
         int temp = this.comparator.hashCode() + this.rhs;
         for (int i = 0; i < this.literals.length; i++) {
           temp += 11 * this.literals[i].hashCode();
@@ -629,12 +671,15 @@ public final class PBConstraint extends Formula {
 
   @Override
   public boolean equals(final Object other) {
-    if (this == other)
+    if (this == other) {
       return true;
-    if (this.isTrivialTrue && other instanceof CTrue || this.isTrivialFalse && other instanceof CFalse)
+    }
+    if (this.isTrivialTrue && other instanceof CTrue || this.isTrivialFalse && other instanceof CFalse) {
       return true;
-    if (other instanceof Formula && this.f == ((Formula) other).f)
+    }
+    if (other instanceof Formula && this.f == ((Formula) other).f) {
       return false;
+    }
     if (other instanceof PBConstraint) {
       final PBConstraint o = (PBConstraint) other;
       return this.rhs == o.rhs && this.comparator == o.comparator

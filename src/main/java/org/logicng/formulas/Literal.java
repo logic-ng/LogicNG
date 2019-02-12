@@ -76,12 +76,12 @@ public class Literal extends Formula implements Comparable<Literal> {
    * @param phase the phase of the literal
    * @param f     the factory which created this literal
    */
-  Literal(final String name, boolean phase, final FormulaFactory f) {
+  Literal(final String name, final boolean phase, final FormulaFactory f) {
     super(FType.LITERAL, f);
     this.name = name;
     this.phase = phase;
     this.var = phase ? (Variable) this : (Variable) this.negate();
-    this.variables = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(var)));
+    this.variables = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(this.var)));
     this.literals = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(this)));
   }
 
@@ -103,6 +103,11 @@ public class Literal extends Formula implements Comparable<Literal> {
   @Override
   public int numberOfOperands() {
     return 0;
+  }
+
+  @Override
+  public boolean isConstantFormula() {
+    return false;
   }
 
   @Override
@@ -144,14 +149,15 @@ public class Literal extends Formula implements Comparable<Literal> {
   @Override
   public Formula substitute(final Substitution substitution) {
     final Formula subst = substitution.getSubstitution(this.variable());
-    return subst == null ? this : (phase ? subst : subst.negate());
+    return subst == null ? this : (this.phase ? subst : subst.negate());
   }
 
   @Override
   public Literal negate() {
-    if (this.negated != null)
-      return negated;
-    this.negated = f.literal(this.name, !this.phase);
+    if (this.negated != null) {
+      return this.negated;
+    }
+    this.negated = this.f.literal(this.name, !this.phase);
     return this.negated;
   }
 
@@ -195,19 +201,22 @@ public class Literal extends Formula implements Comparable<Literal> {
   @Override
   public int hashCode() {
     final int result = this.hashCode;
-    if (result == 0)
+    if (result == 0) {
       this.hashCode = this.name.hashCode() ^ (this.phase ? 1 : 0);
+    }
     return this.hashCode;
   }
 
   @Override
   public boolean equals(final Object other) {
-    if (other == this)
+    if (other == this) {
       return true;
-    if (other instanceof Formula && this.f == ((Formula) other).f)
+    }
+    if (other instanceof Formula && this.f == ((Formula) other).f) {
       return false; // the same formula factory would have produced a == object
+    }
     if (other instanceof Literal) {
-      Literal otherLit = (Literal) other;
+      final Literal otherLit = (Literal) other;
       return this.phase == otherLit.phase && this.name.equals(otherLit.name);
     }
     return false;
@@ -215,11 +224,13 @@ public class Literal extends Formula implements Comparable<Literal> {
 
   @Override
   public int compareTo(final Literal lit) {
-    if (this == lit)
+    if (this == lit) {
       return 0;
-    int res = this.name.compareTo(lit.name);
-    if (res == 0 && this.phase != lit.phase)
+    }
+    final int res = this.name.compareTo(lit.name);
+    if (res == 0 && this.phase != lit.phase) {
       return this.phase ? -1 : 1;
+    }
     return res;
   }
 

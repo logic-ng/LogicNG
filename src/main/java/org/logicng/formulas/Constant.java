@@ -89,6 +89,11 @@ public abstract class Constant extends Formula {
   }
 
   @Override
+  public boolean isConstantFormula() {
+    return true;
+  }
+
+  @Override
   public boolean isAtomicFormula() {
     return true;
   }

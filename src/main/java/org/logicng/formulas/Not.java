@@ -70,16 +70,18 @@ public final class Not extends Formula {
 
   @Override
   public long numberOfAtoms() {
-    if (this.numberOfAtoms != -1)
+    if (this.numberOfAtoms != -1) {
       return this.numberOfAtoms;
+    }
     this.numberOfAtoms = this.operand.numberOfAtoms();
     return this.numberOfAtoms;
   }
 
   @Override
   public long numberOfNodes() {
-    if (this.numberOfNodes != -1)
+    if (this.numberOfNodes != -1) {
       return this.numberOfNodes;
+    }
     this.numberOfNodes = this.operand.numberOfNodes() + 1;
     return this.numberOfNodes;
   }
@@ -90,14 +92,20 @@ public final class Not extends Formula {
   }
 
   @Override
+  public boolean isConstantFormula() {
+    return false;
+  }
+
+  @Override
   public boolean isAtomicFormula() {
     return false;
   }
 
   @Override
   public SortedSet<Variable> variables() {
-    if (this.variables == null)
+    if (this.variables == null) {
       this.variables = Collections.unmodifiableSortedSet(this.operand.variables());
+    }
     return this.variables;
   }
 
@@ -118,7 +126,7 @@ public final class Not extends Formula {
 
   @Override
   public Formula restrict(final Assignment assignment) {
-    return f.not(this.operand.restrict(assignment));
+    return this.f.not(this.operand.restrict(assignment));
   }
 
   @Override
@@ -128,7 +136,7 @@ public final class Not extends Formula {
 
   @Override
   public Formula substitute(final Substitution substitution) {
-    return f.not(this.operand.substitute(substitution));
+    return this.f.not(this.operand.substitute(substitution));
   }
 
   @Override
@@ -144,16 +152,17 @@ public final class Not extends Formula {
         case AND:
         case OR:
           final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-          for (final Formula op : this.operand)
+          for (final Formula op : this.operand) {
             nops.add(op.negate().nnf());
-          nnf = f.naryOperator(this.operand.type == FType.AND ? FType.OR : FType.AND, nops);
+          }
+          nnf = this.f.naryOperator(this.operand.type == FType.AND ? FType.OR : FType.AND, nops);
           break;
         case IMPL:
-          nnf = f.and(((BinaryOperator) this.operand).left, ((BinaryOperator) this.operand).right.negate()).nnf();
+          nnf = this.f.and(((BinaryOperator) this.operand).left, ((BinaryOperator) this.operand).right.negate()).nnf();
           break;
         case EQUIV:
-          nnf = f.and(f.or(((BinaryOperator) this.operand).left.negate().nnf(), ((BinaryOperator) this.operand).right.negate().nnf()),
-                  f.or(((BinaryOperator) this.operand).left.nnf(), ((BinaryOperator) this.operand).right.nnf()));
+          nnf = this.f.and(this.f.or(((BinaryOperator) this.operand).left.negate().nnf(), ((BinaryOperator) this.operand).right.negate().nnf()),
+                  this.f.or(((BinaryOperator) this.operand).left.nnf(), ((BinaryOperator) this.operand).right.nnf()));
           break;
         case PBC:
           nnf = this.operand.negate().nnf();
@@ -168,19 +177,22 @@ public final class Not extends Formula {
 
   @Override
   public int hashCode() {
-    if (this.hashCode == 0)
+    if (this.hashCode == 0) {
       this.hashCode = 29 * this.operand.hashCode();
+    }
     return this.hashCode;
   }
 
   @Override
   public boolean equals(final Object other) {
-    if (other == this)
+    if (other == this) {
       return true;
-    if (other instanceof Formula && this.f == ((Formula) other).f)
+    }
+    if (other instanceof Formula && this.f == ((Formula) other).f) {
       return false; // the same formula factory would have produced a == object
+    }
     if (other instanceof Not) {
-      Not otherNot = (Not) other;
+      final Not otherNot = (Not) other;
       return this.operand.equals(otherNot.operand);
     }
     return false;
@@ -193,13 +205,13 @@ public final class Not extends Formula {
 
       @Override
       public boolean hasNext() {
-        return !iterated;
+        return !this.iterated;
       }
 
       @Override
       public Formula next() {
-        if (!iterated) {
-          iterated = true;
+        if (!this.iterated) {
+          this.iterated = true;
           return Not.this.operand;
         }
         throw new NoSuchElementException();

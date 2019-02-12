@@ -487,6 +487,19 @@ public class PBConstraintTest {
   }
 
   @Test
+  public void testIsConstantFormula() {
+    Assert.assertFalse(this.pb1.isConstantFormula());
+    Assert.assertFalse(this.pb2.isConstantFormula());
+    Assert.assertFalse(this.pb22.isConstantFormula());
+    Assert.assertFalse(this.cc1.isConstantFormula());
+    Assert.assertFalse(this.cc2.isConstantFormula());
+    Assert.assertFalse(this.amo1.isConstantFormula());
+    Assert.assertFalse(this.amo2.isConstantFormula());
+    Assert.assertFalse(this.exo1.isConstantFormula());
+    Assert.assertFalse(this.exo2.isConstantFormula());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertTrue(this.pb2.isAtomicFormula());
   }

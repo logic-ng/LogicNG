@@ -159,6 +159,12 @@ public class LiteralTest {
   }
 
   @Test
+  public void testIsConstantFormula() {
+    Assert.assertFalse(F.A.isConstantFormula());
+    Assert.assertFalse(F.NA.isConstantFormula());
+  }
+
+  @Test
   public void testAtomicFormula() {
     Assert.assertTrue(F.A.isAtomicFormula());
     Assert.assertTrue(F.NA.isAtomicFormula());

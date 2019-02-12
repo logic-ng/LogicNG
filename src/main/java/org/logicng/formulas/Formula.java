@@ -117,6 +117,12 @@ public abstract class Formula implements Iterable<Formula> {
   }
 
   /**
+   * Returns whether this formula is a constant formula ("True" or "False").
+   * @return {@code true} if this formula is a constant formula, {@code false} otherwise
+   */
+  public abstract boolean isConstantFormula();
+
+  /**
    * Returns whether this formula is an atomic formula (constant, literal, pseudo Boolean constraint), or not.
    * @return {@code true} if this formula is an atomic formula, {@code false} otherwise
    */
@@ -239,9 +245,9 @@ public abstract class Formula implements Iterable<Formula> {
   public BDD bdd(final VariableOrdering variableOrdering) {
     final int varNum = this.variables().size();
     final BDDFactory factory = new BDDFactory(varNum * 30, varNum * 20, this.factory());
-    if (variableOrdering == null)
+    if (variableOrdering == null) {
       factory.setNumberOfVars(varNum);
-    else {
+    } else {
       try {
         final VariableOrderingProvider provider = variableOrdering.provider().newInstance();
         factory.setVariableOrder(provider.getOrder(this));
@@ -347,8 +353,9 @@ public abstract class Formula implements Iterable<Formula> {
    */
   public Tristate predicateCacheEntry(final CacheEntry key) {
     final Tristate tristate = this.predicateCache.get(key);
-    if (tristate == null)
+    if (tristate == null) {
       return Tristate.UNDEF;
+    }
     return tristate;
   }
 
