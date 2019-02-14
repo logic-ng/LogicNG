@@ -14,9 +14,9 @@ target/
 .sonar/
 
 # test logs
-tests/maxsat/log.txt
-tests/partialmaxsat/log.txt
-tests/partialweightedmaxsat/log.txt
+src/test/resources/maxsat/log.txt
+src/test/resources/partialmaxsat/log.txt
+src/test/resources/partialweightedmaxsat/log.txt
 
 # test temporary files
-tests/writers/temp/*.dot
+src/test/resources/writers/temp/*.dot
