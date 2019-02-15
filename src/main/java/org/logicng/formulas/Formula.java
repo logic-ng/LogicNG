@@ -183,7 +183,7 @@ public abstract class Formula implements Iterable<Formula> {
   public abstract boolean containsNode(final Formula formula);
 
   /**
-   * Performs a substitution on this formula given a single mapping from variable to formula.
+   * Performs a simultaneous substitution on this formula given a single mapping from variable to formula.
    * @param variable the variable
    * @param formula  the formula
    * @return a new substituted formula

@@ -69,6 +69,14 @@ public abstract class BinaryOperator extends Formula {
     return this.left;
   }
 
+  /**
+   * Returns the right-hand side operator.
+   * @return the right-hand side operator
+   */
+  public Formula right() {
+    return this.right;
+  }
+
   @Override
   public long numberOfAtoms() {
     if (this.numberOfAtoms != -1) {
@@ -139,14 +147,6 @@ public abstract class BinaryOperator extends Formula {
   @Override
   public Formula negate() {
     return this.f.not(this);
-  }
-
-  /**
-   * Returns the right-hand side operator.
-   * @return the right-hand side operator
-   */
-  public Formula right() {
-    return this.right;
   }
 
   @Override

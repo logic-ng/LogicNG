@@ -100,10 +100,10 @@ public class Assignment {
     this(false);
     for (Literal lit : lits)
       if (lit.phase())
-        this.pos.add((Variable) lit);
+        this.pos.add(lit.variable());
       else {
         this.neg.add(lit);
-        this.negVars.add((Variable) lit.negate());
+        this.negVars.add(lit.variable());
       }
   }
 
@@ -118,10 +118,10 @@ public class Assignment {
     this(fastEvaluable);
     for (Literal lit : lits)
       if (lit.phase())
-        this.pos.add((Variable) lit);
+        this.pos.add(lit.variable());
       else {
         this.neg.add(lit);
-        this.negVars.add((Variable) lit.negate());
+        this.negVars.add(lit.variable());
       }
   }
 
@@ -143,10 +143,10 @@ public class Assignment {
   public Assignment(final Literal lit, final boolean fastEvaluable) {
     this(fastEvaluable);
     if (lit.phase())
-      this.pos.add((Variable) lit);
+      this.pos.add(lit.variable());
     else {
       this.neg.add(lit);
-      this.negVars.add((Variable) lit.negate());
+      this.negVars.add(lit.variable());
     }
   }
 
@@ -224,21 +224,22 @@ public class Assignment {
    */
   public void addLiteral(final Literal lit) {
     if (lit.phase())
-      this.pos.add((Variable) lit);
+      this.pos.add(lit.variable());
     else {
       this.neg.add(lit);
-      this.negVars.add((Variable) lit.negate());
+      this.negVars.add(lit.variable());
     }
   }
 
   /**
-   * Evaluates a given literal.  Will be {@code false} if the literal is unknown.
+   * Evaluates a given literal.  A literal not covered by the assignment evaluates
+   * to {@code false} if it is positive, otherwise it evaluates to {@code true}.
    * @param lit the literal
-   * @return the evaluation of the literal or {@code false} if unknown
+   * @return the evaluation of the literal
    */
   public boolean evaluateLit(final Literal lit) {
     if (lit.phase())
-      return this.pos.contains(lit);
+      return this.pos.contains(lit.variable());
     else
       return this.neg.contains(lit) || !this.pos.contains(lit.variable());
   }

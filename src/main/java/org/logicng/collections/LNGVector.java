@@ -124,7 +124,6 @@ public final class LNGVector<T> implements Iterable<T> {
    * Pushes an element at the end of the vector.
    * @param element the element
    */
-  @SuppressWarnings("unchecked")
   public void push(final T element) {
     int newSize = this.size + 1;
     this.ensure(newSize);
