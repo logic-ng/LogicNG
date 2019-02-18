@@ -98,13 +98,9 @@ public class Assignment {
    */
   public Assignment(final Literal... lits) {
     this(false);
-    for (Literal lit : lits)
-      if (lit.phase())
-        this.pos.add(lit.variable());
-      else {
-        this.neg.add(lit);
-        this.negVars.add(lit.variable());
-      }
+    for (Literal lit : lits) {
+      addLiteral(lit);
+    }
   }
 
   /**
@@ -116,13 +112,9 @@ public class Assignment {
    */
   public Assignment(final Collection<? extends Literal> lits, final boolean fastEvaluable) {
     this(fastEvaluable);
-    for (Literal lit : lits)
-      if (lit.phase())
-        this.pos.add(lit.variable());
-      else {
-        this.neg.add(lit);
-        this.negVars.add(lit.variable());
-      }
+    for (Literal lit : lits) {
+      addLiteral(lit);
+    }
   }
 
   /**
@@ -142,12 +134,7 @@ public class Assignment {
    */
   public Assignment(final Literal lit, final boolean fastEvaluable) {
     this(fastEvaluable);
-    if (lit.phase())
-      this.pos.add(lit.variable());
-    else {
-      this.neg.add(lit);
-      this.negVars.add(lit.variable());
-    }
+    addLiteral(lit);
   }
 
   /**
