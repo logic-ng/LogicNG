@@ -137,8 +137,7 @@ public class Literal extends Formula implements Comparable<Literal> {
 
   @Override
   public Formula restrict(final Assignment assignment) {
-    final Formula res = assignment.restrictLit(this);
-    return res != null ? res : this;
+    return assignment.restrictLit(this);
   }
 
   @Override

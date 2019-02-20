@@ -232,19 +232,18 @@ public class Assignment {
   }
 
   /**
-   * Restricts a given literal to a constant.  Returns {@code null}, if the literal's variable is not known.
+   * Restricts a given literal to a constant.  Returns the literal itself, if the literal's variable is not known.
    * @param lit the literal
-   * @return the restriction of the literal or {@code null}, if the literal's variable is not known
+   * @return the restriction of the literal or the literal itself, if the literal's variable is not known
    */
   public Formula restrictLit(final Literal lit) {
     final FormulaFactory f = lit.factory();
-    Literal searchLit = lit.variable();
-    if (this.pos.contains(searchLit))
+    if (this.pos.contains(lit.variable()))
       return f.constant(lit.phase());
-    searchLit = lit.negative();
-    if (this.neg.contains(searchLit))
+    Literal negativeLit = lit.negative();
+    if (this.neg.contains(negativeLit))
       return f.constant(!lit.phase());
-    return null;
+    return lit;
   }
 
   /**

@@ -489,7 +489,7 @@ public final class PBConstraint extends Formula {
     int maxValue = 0;
     for (int i = 0; i < this.literals.length; i++) {
       final Formula restriction = assignment.restrictLit(this.literals[i]);
-      if (restriction == null) {
+      if (restriction.type == FType.LITERAL) {
         newLits.add(this.literals[i]);
         final int coeff = this.coefficients[i];
         newCoeffs.add(coeff);

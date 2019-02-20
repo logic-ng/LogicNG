@@ -123,8 +123,8 @@ public class AssignmentTest {
     Assert.assertEquals(F.TRUE, ass.restrictLit(F.NX));
     Assert.assertEquals(F.FALSE, ass.restrictLit(F.NA));
     Assert.assertEquals(F.FALSE, ass.restrictLit(F.X));
-    Assert.assertEquals(null, ass.restrictLit(F.B));
-    Assert.assertEquals(null, ass.restrictLit(F.NB));
+    Assert.assertEquals(F.B, ass.restrictLit(F.B));
+    Assert.assertEquals(F.NB, ass.restrictLit(F.NB));
   }
 
   @Test
@@ -154,7 +154,7 @@ public class AssignmentTest {
     Assert.assertFalse(ass.evaluateLit(F.B));
     Assert.assertEquals(F.TRUE, ass.restrictLit(F.NB));
     Assert.assertEquals(F.FALSE, ass.restrictLit(F.X));
-    Assert.assertEquals(null, ass.restrictLit(F.C));
+    Assert.assertEquals(F.C, ass.restrictLit(F.C));
     Assert.assertEquals(F.f.and(F.A, F.NX, F.NB, F.Y), ass.formula(F.f));
     ass = new Assignment(Arrays.asList(F.A, F.NX), true);
     Assert.assertTrue(ass.fastEvaluable());
