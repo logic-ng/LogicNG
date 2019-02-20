@@ -46,7 +46,7 @@ public class LNGLongPriorityQueueTest {
   }
 
   @Test
-  public void testPushPopAndContaints() {
+  public void testPushPopAndContains() {
     LNGLongPriorityQueue q1 = new LNGLongPriorityQueue();
     q1.push(0);
     q1.push(1);

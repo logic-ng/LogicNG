@@ -136,7 +136,7 @@ public class LNGVectorTest {
   }
 
   @Test
-  public void testGettinSettingAndPopping() {
+  public void testGettingSettingAndPopping() {
     LNGVector<String> v1 = new LNGVector<>();
     for (int i = 0; i < 1000; i++)
       v1.push("s" + i);

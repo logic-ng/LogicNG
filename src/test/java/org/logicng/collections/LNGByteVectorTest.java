@@ -101,7 +101,7 @@ public class LNGByteVectorTest {
   }
 
   @Test
-  public void testGettinSettingAndPopping() {
+  public void testGettingSettingAndPopping() {
     LNGByteVector v1 = new LNGByteVector();
     for (int i = 0; i < 100; i++)
       v1.push((byte) i);

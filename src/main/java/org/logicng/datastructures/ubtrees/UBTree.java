@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * A data structure for storing sets with performant sub- and superset queries.
+ * A data structure for storing sets with efficient sub- and superset queries.
  * C.f. `A New Method to Index and Query Sets`, Hoffmann and Koehler, 1999
  * @param <T> the type of the elements (must be comparable)
  * @version 1.5.0

@@ -142,7 +142,7 @@ public final class PBConstraint extends Formula {
           this.isTrivialTrue = rhs < 0;
           break;
         default:
-          throw new IllegalArgumentException("Unknown comperator: " + comparator);
+          throw new IllegalArgumentException("Unknown comparator: " + comparator);
       }
       this.isTrivialFalse = !this.isTrivialTrue;
     } else {

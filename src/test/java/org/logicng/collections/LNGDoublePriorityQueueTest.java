@@ -46,7 +46,7 @@ public class LNGDoublePriorityQueueTest {
   }
 
   @Test
-  public void testPushPopAndContaints() {
+  public void testPushPopAndContains() {
     LNGDoublePriorityQueue q1 = new LNGDoublePriorityQueue();
     q1.push(0);
     q1.push(1);

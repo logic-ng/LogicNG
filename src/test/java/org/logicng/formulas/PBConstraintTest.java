@@ -221,10 +221,12 @@ public class PBConstraintTest {
   }
 
   @Test
-  public void testConstains() {
-    Assert.assertTrue(this.pb1.containsVariable(f.variable("a")));
-    Assert.assertTrue(this.pb2.containsVariable(f.variable("b")));
-    Assert.assertFalse(this.pb2.containsVariable(f.variable("d")));
+  public void testContains() {
+    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("a")));
+    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("b")));
+    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("c")));
+    Assert.assertFalse(this.pb2.containsVariable(F.f.variable("d")));
+    Assert.assertFalse(this.pb2.containsVariable(F.f.variable("x")));
   }
 
   @Test
@@ -502,14 +504,6 @@ public class PBConstraintTest {
   @Test
   public void testAtomicFormula() {
     Assert.assertTrue(this.pb2.isAtomicFormula());
-  }
-
-  @Test
-  public void testContains() {
-    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("a")));
-    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("b")));
-    Assert.assertTrue(this.pb2.containsVariable(F.f.variable("c")));
-    Assert.assertFalse(this.pb2.containsVariable(F.f.variable("x")));
   }
 
   @Test

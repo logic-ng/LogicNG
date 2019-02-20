@@ -265,7 +265,7 @@ public class BDDOperationsTest {
   }
 
   @Test
-  public void testVariableProfil() {
+  public void testVariableProfile() {
     final Variable a = this.f.variable("A");
     final Variable b = this.f.variable("B");
     final Variable c = this.f.variable("C");

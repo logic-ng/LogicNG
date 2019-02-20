@@ -101,7 +101,7 @@ public class LNGLongVectorTest {
   }
 
   @Test
-  public void testGettinSettingAndPopping() {
+  public void testGettingSettingAndPopping() {
     LNGLongVector v1 = new LNGLongVector();
     for (int i = 0; i < 1000; i++)
       v1.push(i);

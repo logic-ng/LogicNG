@@ -104,7 +104,7 @@ public class LNGBooleanVectorTest {
   }
 
   @Test
-  public void testGettinSettingAndPopping() {
+  public void testGettingSettingAndPopping() {
     LNGBooleanVector v1 = new LNGBooleanVector();
     for (int i = 0; i < 1000; i++)
       v1.push(i % 2 == 0);

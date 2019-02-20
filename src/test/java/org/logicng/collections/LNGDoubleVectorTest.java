@@ -101,7 +101,7 @@ public class LNGDoubleVectorTest {
   }
 
   @Test
-  public void testGettinSettingAndPopping() {
+  public void testGettingSettingAndPopping() {
     LNGDoubleVector v1 = new LNGDoubleVector();
     for (int i = 0; i < 1000; i++)
       v1.push(i);

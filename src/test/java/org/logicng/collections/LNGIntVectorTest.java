@@ -101,7 +101,7 @@ public class LNGIntVectorTest {
   }
 
   @Test
-  public void testGettinSettingAndPopping() {
+  public void testGettingSettingAndPopping() {
     LNGIntVector v1 = new LNGIntVector();
     for (int i = 0; i < 1000; i++)
       v1.push(i);
