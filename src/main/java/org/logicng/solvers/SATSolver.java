@@ -456,7 +456,7 @@ public abstract class SATSolver {
   /**
    * Returns all unit propagated literals on level 0 of the current formula on the solver.
    * If the formula is UNSAT, {@code null} will be returned.
-   * @return all unit propagated literals on level 0
+   * @return all unit propagated literals on level 0, or {@code null} if the formula is unsatisfiable
    */
   public abstract SortedSet<Literal> upZeroLiterals();
 

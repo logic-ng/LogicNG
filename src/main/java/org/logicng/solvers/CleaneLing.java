@@ -60,6 +60,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
@@ -388,6 +389,9 @@ public final class CleaneLing extends SATSolver {
   public SortedSet<Literal> upZeroLiterals() {
     if (this.result == UNDEF) {
       throw new IllegalStateException("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
+    }
+    if (this.result == FALSE) {
+      return null;
     }
     final LNGIntVector literals = this.solver.upZeroLiterals();
     final SortedSet<Literal> upZeroLiterals = new TreeSet<>();
