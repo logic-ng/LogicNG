@@ -823,6 +823,18 @@ public class SATTest {
   }
 
   @Test
+  public void testUPZeroLiteralsUNSAT() throws ParserException {
+    Formula formula = parser.parse("a & (a => b) & (b => c) & (c => ~a)");
+    for (final SATSolver solver : this.solvers) {
+      solver.reset();
+      solver.add(formula);
+      solver.sat();
+      final SortedSet<Literal> upLiterals = solver.upZeroLiterals();
+      assertThat(upLiterals).isNull();
+    }
+  }
+
+  @Test
   public void testUPZeroLiterals() throws ParserException {
     // Note: The complete unit propagated set of literals on level 0 depends on each solver's added learned clauses during the solving process
     final Map<Formula, SortedSet<Literal>> expectedSubsets = new HashMap<>();
