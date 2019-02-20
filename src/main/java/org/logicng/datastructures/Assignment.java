@@ -256,6 +256,20 @@ public class Assignment {
   }
 
   /**
+   * Creates the blocking clause for this assignment.
+   * @param f the formula factory
+   * @return the blocking clause for this assignment
+   */
+  public Formula blockingClause(final FormulaFactory f) {
+    final List<Literal> ops = new LinkedList<>();
+    for (final Literal lit : this.pos)
+      ops.add(lit.negate());
+    for (final Literal lit : this.neg)
+      ops.add(lit.negate());
+    return f.or(ops);
+  }
+
+  /**
    * Creates the blocking clause for this assignment wrt. a given set of literals.  If the set is {@code null},
    * all literals are considered relevant.
    * @param f        the formula factory
@@ -263,15 +277,20 @@ public class Assignment {
    * @return the blocking clause for this assignment
    */
   public Formula blockingClause(final FormulaFactory f, final Collection<? extends Literal> literals) {
+    if (literals == null)
+      return blockingClause(f);
     final List<Literal> ops = new LinkedList<>();
-    for (final Literal l : this.pos)
-      if (literals == null || literals.contains(l))
-        ops.add(l.negate());
-    for (final Literal l : this.neg)
-      if (literals == null || literals.contains(l.variable()))
-        ops.add(l.negate());
+    for (Literal lit : literals) {
+      Variable var = lit.variable();
+      Literal negatedVar = var.negate();
+      if (pos.contains(var))
+        ops.add(negatedVar);
+      else if (neg.contains(negatedVar))
+        ops.add(var);
+    }
     return f.or(ops);
   }
+
 
   @Override
   public int hashCode() {

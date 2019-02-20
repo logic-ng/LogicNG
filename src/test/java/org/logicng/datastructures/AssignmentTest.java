@@ -201,13 +201,19 @@ public class AssignmentTest {
     ass.addLiteral(F.B);
     ass.addLiteral(F.NX);
     ass.addLiteral(F.NY);
+    Formula bc01 = ass.blockingClause(F.f);
+    Assert.assertFalse(bc01.containsVariable(F.C));
+    Assert.assertEquals("~a | ~b | x | y", bc01.toString());
+    Formula bc02 = ass.blockingClause(F.f, null);
+    Assert.assertFalse(bc02.containsVariable(F.C));
+    Assert.assertEquals("~a | ~b | x | y", bc02.toString());
     List<Literal> lits = new ArrayList<>();
     lits.add(F.A);
     lits.add(F.X);
     lits.add(F.C);
-    Formula bc = ass.blockingClause(F.f, lits);
-    Assert.assertTrue(!bc.containsVariable(F.C));
-    Assert.assertEquals("~a | x", bc.toString());
+    Formula bcProjected = ass.blockingClause(F.f, lits);
+    Assert.assertFalse(bcProjected.containsVariable(F.C));
+    Assert.assertEquals("~a | x", bcProjected.toString());
   }
 
   @Test
