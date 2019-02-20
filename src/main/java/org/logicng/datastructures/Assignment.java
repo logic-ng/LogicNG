@@ -238,10 +238,10 @@ public class Assignment {
    */
   public Formula restrictLit(final Literal lit) {
     final FormulaFactory f = lit.factory();
-    if (this.pos.contains(lit.variable()))
+    Variable var = lit.variable();
+    if (this.pos.contains(var))
       return f.constant(lit.phase());
-    Literal negativeLit = lit.negative();
-    if (this.neg.contains(negativeLit))
+    if (this.neg.contains(var.negate()))
       return f.constant(!lit.phase());
     return lit;
   }
