@@ -62,10 +62,10 @@ public abstract class Formula implements Iterable<Formula> {
    * @param type the type of the formula
    * @param f    the factory which created this formula
    */
-  protected Formula(final FType type, final FormulaFactory f) {
+  Formula(final FType type, final FormulaFactory f) {
     this.type = type;
     this.f = f;
-    this.transformationCache = new TreeMap<>();
+    this.transformationCache = new TreeMap<>(); // TODO non comparable type?!
     this.predicateCache = new TreeMap<>();
     this.functionCache = new TreeMap<>();
     this.variables = null;

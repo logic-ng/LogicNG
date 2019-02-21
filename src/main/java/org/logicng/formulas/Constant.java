@@ -69,7 +69,7 @@ public abstract class Constant extends Formula {
    * @param type    the constant type
    * @param factory the factory which created this instance
    */
-  protected Constant(final FType type, final FormulaFactory factory) {
+  Constant(final FType type, final FormulaFactory factory) {
     super(type, factory);
   }
 
