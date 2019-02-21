@@ -28,6 +28,7 @@
 
 package org.logicng.functions;
 
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFunction;
 import org.logicng.formulas.Literal;
@@ -70,14 +71,14 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
    * @param map     the literal profile
    */
   private static void nonCachingRecursion(final Formula formula, final Map<Literal, Integer> map) {
-    if (formula instanceof Literal) {
+    if (formula.type() == FType.LITERAL) {
       final Literal lit = (Literal) formula;
       final Integer currentCount = map.get(lit);
       if (currentCount == null)
         map.put(lit, 1);
       else
         map.put(lit, currentCount + 1);
-    } else if (formula instanceof PBConstraint)
+    } else if (formula.type() == FType.PBC)
       for (final Literal l : formula.literals())
         nonCachingRecursion(l, map);
     else
@@ -97,9 +98,9 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
     if (cached != null)
       return (Map<Literal, Integer>) cached;
     Map<Literal, Integer> result = new HashMap<>();
-    if (formula instanceof Literal)
+    if (formula.type() == FType.LITERAL)
       result.put((Literal) formula, 1);
-    else if (formula instanceof PBConstraint)
+    else if (formula.type() == FType.PBC)
       for (final Literal l : formula.literals())
         result.put(l, 1);
     else
