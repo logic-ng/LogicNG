@@ -158,11 +158,13 @@ public final class Not extends Formula {
           nnf = this.f.naryOperator(this.operand.type == FType.AND ? FType.OR : FType.AND, nops);
           break;
         case IMPL:
-          nnf = this.f.and(((BinaryOperator) this.operand).left, ((BinaryOperator) this.operand).right.negate()).nnf();
+          BinaryOperator binary = (BinaryOperator) this.operand;
+          nnf = this.f.and(binary.left.nnf(), binary.right.negate().nnf());
           break;
         case EQUIV:
-          nnf = this.f.and(this.f.or(((BinaryOperator) this.operand).left.negate().nnf(), ((BinaryOperator) this.operand).right.negate().nnf()),
-                  this.f.or(((BinaryOperator) this.operand).left.nnf(), ((BinaryOperator) this.operand).right.nnf()));
+          binary = (BinaryOperator) this.operand;
+          nnf = this.f.and(this.f.or(binary.left.negate().nnf(), binary.right.negate().nnf()),
+                  this.f.or(binary.left.nnf(), binary.right.nnf()));
           break;
         case PBC:
           nnf = this.operand.negate().nnf();
