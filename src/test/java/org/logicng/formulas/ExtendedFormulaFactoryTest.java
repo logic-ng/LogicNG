@@ -124,7 +124,7 @@ public class ExtendedFormulaFactoryTest {
     final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
     final List<Formula> formulas = initializeFormulaFactoryWithFormulas(eff);
     final FormulaFactoryState state = eff.save();
-    assertThat(state.toString()).isEqualTo("FormulaFactoryState{id=0, state=[4, 4, 0, 5, 4, 5, 3, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0]}");
+    assertThat(state.toString()).isEqualTo("FormulaFactoryState{id=0, state=[4, 4, 0, 6, 4, 5, 3, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0]}");
     for (Formula formula : formulas) {
       transformation.apply(formula, true);
       softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula.transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();

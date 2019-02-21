@@ -112,7 +112,9 @@ public class FormulaFactory {
   private FormulaFactoryImporter importer;
 
   /**
-   * Constructor for a new formula factory.
+   * Constructor for a new formula factory with a given name. This name is included in generated variables.
+   * If you intent to mix formulas from different factories, you have to choose different names for the factories
+   * to avoid name clashing of generated variables.
    * @param name                 the name of the factory
    * @param stringRepresentation the string representation of the formulas
    */
@@ -276,6 +278,8 @@ public class FormulaFactory {
       return this.not(left);
     if (left.equals(right))
       return this.verum();
+    if (left.negate().equals(right))
+      return left.negate();
     final Pair<Formula, Formula> key = new Pair<>(left, right);
     Implication implication = this.implications.get(key);
     if (implication == null) {

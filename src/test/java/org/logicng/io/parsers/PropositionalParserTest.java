@@ -97,6 +97,8 @@ public class PropositionalParserTest {
     Assert.assertEquals(F.f.or(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x | y & z"));
     Assert.assertEquals(F.f.or(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y | z"));
     Assert.assertEquals(F.f.implication(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x => y & z"));
+    Assert.assertEquals(F.f.not(F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("y & z => ~(y & z)"));
+    Assert.assertEquals(F.f.and(F.f.variable("y"), F.f.variable("z")), parser.parse("~(y & z) => y & z"));
     Assert.assertEquals(F.f.implication(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y => z"));
     Assert.assertEquals(F.f.equivalence(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z"))), parser.parse("x <=> y & z"));
     Assert.assertEquals(F.f.equivalence(F.f.and(F.f.variable("x"), F.f.variable("y")), F.f.variable("z")), parser.parse("x & y <=> z"));

@@ -124,7 +124,7 @@ public class FormulaFactoryImporterTest {
     assertThat(this.g.statistics().negativeLiterals()).isEqualTo(4);
     assertThat(this.g.statistics().conjunctions2()).isEqualTo(1);
     assertThat(this.g.statistics().disjunctions2()).isEqualTo(1);
-    assertThat(this.g.statistics().negations()).isEqualTo(0);
+    assertThat(this.g.statistics().negations()).isEqualTo(2);
     assertThat(this.g.statistics().implications()).isEqualTo(4);
     assertThat(this.g.statistics().equivalences()).isEqualTo(2);
   }

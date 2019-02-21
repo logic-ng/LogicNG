@@ -56,6 +56,8 @@ public class ImplicationTest {
     Assert.assertEquals(F.A, F.f.implication(F.TRUE, F.A));
     Assert.assertEquals(F.NA, F.f.implication(F.A, F.FALSE));
     Assert.assertEquals(F.TRUE, F.f.implication(F.A, F.A));
+    Assert.assertEquals(F.A, F.f.implication(F.NA, F.A));
+    Assert.assertEquals(F.NA, F.f.implication(F.A, F.NA));
     Assert.assertEquals(F.IMP3, F.f.binaryOperator(FType.IMPL, F.AND1, F.OR1));
   }
 
