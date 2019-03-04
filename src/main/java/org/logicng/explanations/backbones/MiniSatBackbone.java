@@ -25,10 +25,18 @@ public class MiniSatBackbone extends MiniSat2Solver {
   // TODO experimental backbone solver and not extensively tested yet!
 
   private final FormulaFactory f;
+  private final MiniSatBackboneConfig config;
+
+  private Stack<Integer> candidates;
   private List<Integer> backbone;
 
-  public MiniSatBackbone(FormulaFactory f) {
+  public MiniSatBackbone(FormulaFactory f, MiniSatBackboneConfig config) {
     this.f = f;
+    this.config = config;
+  }
+
+  public MiniSatBackbone(FormulaFactory f) {
+    this(f, new MiniSatBackboneConfig.Builder().build());
   }
 
   /**
@@ -97,6 +105,11 @@ public class MiniSatBackbone extends MiniSat2Solver {
     return varIndices;
   }
 
+  private void init() {
+    this.candidates = new Stack<>();
+    this.backbone = new ArrayList<>();
+  }
+
   private boolean isUPZeroLit(final int var) {
     return this.vars.get(var).level() == 0;
   }
@@ -130,22 +143,36 @@ public class MiniSatBackbone extends MiniSat2Solver {
     addClause(backbonelit, null);
   }
 
-  private void compute(final List<Integer> relevantVariables) {
-    backbone = new ArrayList<>();
-    final Stack<Integer> candidates = new Stack<>();
+  private Stack<Integer> createInitialCandidates(List<Integer> relevantVariables) {
     for (final Integer var : relevantVariables) {
-      if (isUPZeroLit(var)) {
-        // Refine lower bound
+      if (config.isInitialLBCheckForUPZeroLiterals() && isUPZeroLit(var)) {
         backbone.add(mkLit(var, !this.model.get(var)));
       } else {
-        // Refine upper bound
         final int lit = mkLit(var, !this.model.get(var));
-        //        if (!isRotatable(lit)) {
-        candidates.add(lit);
-        //        }
+        if (!config.isInitialUBCheckForRotatableLiterals() || !isRotatable(lit)) {
+          candidates.add(lit);
+        }
       }
     }
+    return candidates;
+  }
 
+  private void refineUpperBound() {
+    for (final Integer candidateLit : new ArrayList<>(candidates)) {
+      if (config.isCheckForUPZeroLiterals() && isUPZeroLit(var(candidateLit))) {
+        candidates.remove(candidateLit);
+        addBackboneLiteral(candidateLit);
+      } else if (config.isCheckForComplementModelLiterals() && this.model.get(var(candidateLit)) == sign(candidateLit)) {
+        candidates.remove(candidateLit);
+      } else if (config.isCheckForRotatableLiterals() && isRotatable(candidateLit)) {
+        candidates.remove(candidateLit);
+      }
+    }
+  }
+
+  private void compute(final List<Integer> relevantVariables) {
+    init();
+    final Stack<Integer> candidates = createInitialCandidates(relevantVariables);
     while (candidates.size() > 0) {
       final int lit = candidates.pop();
       final LNGIntVector assumptions = new LNGIntVector(1);
@@ -154,18 +181,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
       if (!sat) {
         addBackboneLiteral(lit);
       } else {
-        // Use model to refine upper bound
-        for (final Integer candidateLit : new ArrayList<>(candidates)) {
-          if (isUPZeroLit(var(candidateLit))) {
-            candidates.remove(candidateLit);
-            addBackboneLiteral(candidateLit);
-          } else if (this.model.get(var(candidateLit)) == sign(candidateLit)) {
-            candidates.remove(candidateLit);
-          }
-          //        }else if (isRotatable(candidateLit)) {
-          //            candidates.remove(candidateLit);
-          //          }
-        }
+        refineUpperBound();
       }
     }
   }
