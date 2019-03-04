@@ -22,9 +22,10 @@ import java.util.TreeSet;
  */
 public class MiniSatBackbone extends MiniSat2Solver {
 
-  // TODO experimetnal backbone solver and not extensively tested, yet!
+  // TODO experimental backbone solver and not extensively tested yet!
 
   private final FormulaFactory f;
+  private List<Integer> backbone;
 
   public MiniSatBackbone(FormulaFactory f) {
     this.f = f;
@@ -70,14 +71,14 @@ public class MiniSatBackbone extends MiniSat2Solver {
       loadState(state);
       return null;
     }
-    final List<Integer> backboneSolverLiterals = compute(toVarIndices(relevantVariables));
-    if (backboneSolverLiterals == null) {
+    compute(toVarIndices(relevantVariables));
+    if (backbone == null) {
       loadState(state);
       return null;
     } else {
-      final SortedSet<Literal> backboneLiterals = new TreeSet<Literal>();
-      for (final Integer lit : backboneSolverLiterals) {
-        backboneLiterals.add(solverLiteralToFormula(lit));
+      final SortedSet<Literal> backboneLiterals = new TreeSet<>();
+      for (final Integer lit : backbone) {
+        backboneLiterals.add(intLiteralToLiteral(lit));
       }
       loadState(state);
       return backboneLiterals;
@@ -85,7 +86,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
   }
 
   private List<Integer> toVarIndices(final Collection<Variable> variables) {
-    final List<Integer> varIndices = new ArrayList<Integer>(variables.size());
+    final List<Integer> varIndices = new ArrayList<>(variables.size());
     for (final Variable v : variables) {
       // TODO removal of unknown variables may lead to buggy result
       Integer idx = name2idx.get(v.name());
@@ -94,6 +95,10 @@ public class MiniSatBackbone extends MiniSat2Solver {
       }
     }
     return varIndices;
+  }
+
+  private boolean isUPZeroLit(final int var) {
+    return this.vars.get(var).level() == 0;
   }
 
   private boolean isUnit(final int lit, final MSClause clause) {
@@ -120,20 +125,24 @@ public class MiniSatBackbone extends MiniSat2Solver {
     return true;
   }
 
-  private List<Integer> compute(final List<Integer> relevantVariables) {
-    final List<Integer> backboneLiterals = new ArrayList<Integer>();
-    final Stack<Integer> candidates = new Stack<Integer>();
+  private void addBackboneLiteral(final int backbonelit) {
+    backbone.add(backbonelit);
+    addClause(backbonelit, null);
+  }
+
+  private void compute(final List<Integer> relevantVariables) {
+    backbone = new ArrayList<>();
+    final Stack<Integer> candidates = new Stack<>();
     for (final Integer var : relevantVariables) {
-      if (this.vars.get(var).level() == 0) {
-        // Use UP zero literal to refine lower bound
-        backboneLiterals.add(mkLit(var, !this.model.get(var)));
+      if (isUPZeroLit(var)) {
+        // Refine lower bound
+        backbone.add(mkLit(var, !this.model.get(var)));
       } else {
-        // Use initial model to refine upper bound
-        // If literal is rotatable skip it
+        // Refine upper bound
         final int lit = mkLit(var, !this.model.get(var));
-        //if (!isRotatable(lit)) {
+        //        if (!isRotatable(lit)) {
         candidates.add(lit);
-        //}
+        //        }
       }
     }
 
@@ -143,27 +152,30 @@ public class MiniSatBackbone extends MiniSat2Solver {
       assumptions.push(not(lit));
       final boolean sat = solve(null, assumptions) == Tristate.TRUE;
       if (!sat) {
-        backboneLiterals.add(lit);
-        addClause(lit, null);
+        addBackboneLiteral(lit);
       } else {
         // Use model to refine upper bound
-        for (final Integer candidateLit : new ArrayList<Integer>(candidates)) {
-          if (this.model.get(var(candidateLit)) == sign(candidateLit)) {
-            // || isRotatable(candidateLit)) {
+        for (final Integer candidateLit : new ArrayList<>(candidates)) {
+          if (isUPZeroLit(var(candidateLit))) {
+            candidates.remove(candidateLit);
+            addBackboneLiteral(candidateLit);
+          } else if (this.model.get(var(candidateLit)) == sign(candidateLit)) {
             candidates.remove(candidateLit);
           }
+          //        }else if (isRotatable(candidateLit)) {
+          //            candidates.remove(candidateLit);
+          //          }
         }
       }
     }
-    return backboneLiterals;
   }
 
   /**
-   * Transforms an solver literal into the corresponding formula literal.
+   * Transforms a solver integer literal to the corresponding formula literal.
    * @param lit the solver literal
    * @return the formula literal
    */
-  private Literal solverLiteralToFormula(final int lit) {
+  private Literal intLiteralToLiteral(final int lit) {
     return f.literal(this.nameForIdx(var(lit)), !sign(lit));
   }
 
