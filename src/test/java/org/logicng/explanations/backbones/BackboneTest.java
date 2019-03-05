@@ -3,6 +3,7 @@ package org.logicng.explanations.backbones;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.backbones.algorithms.MiniSatBackbone;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -11,17 +12,18 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.FormulaReader;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+
 import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MiniSatBackboneTest {
+public class BackboneTest {
 
     @Test
-    public void testMiniSatBackboneConfig() {
-        MiniSatBackboneConfig config = new MiniSatBackboneConfig.Builder().build();
-        assertThat(config.toString()).isEqualTo("MiniSatBackboneConfig{\n" +
+    public void testBackboneConfig() {
+        BackboneConfig config = new BackboneConfig.Builder().build();
+        assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
                 "initialLBCheckForUPZeroLiterals=true\n" +
                 "initialUBCheckForRotatableLiterals=true\n" +
                 "checkForUPZeroLiterals=true\n" +
@@ -29,9 +31,9 @@ public class MiniSatBackboneTest {
                 "checkForRotatableLiterals=true\n" +
                 "}\n");
 
-        config = new MiniSatBackboneConfig.Builder().checkForComplementModelLiterals(false)
+        config = new BackboneConfig.Builder().checkForComplementModelLiterals(false)
                 .checkForRotatableLiterals(false).initialUBCheckForRotatableLiterals(false).build();
-        assertThat(config.toString()).isEqualTo("MiniSatBackboneConfig{\n" +
+        assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
                 "initialLBCheckForUPZeroLiterals=true\n" +
                 "initialUBCheckForRotatableLiterals=false\n" +
                 "checkForUPZeroLiterals=true\n" +
@@ -39,8 +41,8 @@ public class MiniSatBackboneTest {
                 "checkForRotatableLiterals=false\n" +
                 "}\n");
 
-        config = new MiniSatBackboneConfig.Builder().checkForComplementModelLiterals(true).build();
-        assertThat(config.toString()).isEqualTo("MiniSatBackboneConfig{\n" +
+        config = new BackboneConfig.Builder().checkForComplementModelLiterals(true).build();
+        assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
                 "initialLBCheckForUPZeroLiterals=true\n" +
                 "initialUBCheckForRotatableLiterals=true\n" +
                 "checkForUPZeroLiterals=true\n" +
@@ -67,7 +69,7 @@ public class MiniSatBackboneTest {
         Formula formula = f.verum();
         int[] before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), Collections.<Variable>emptyList())).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), Collections.<Variable>emptyList()).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -75,7 +77,7 @@ public class MiniSatBackboneTest {
         formula = x;
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singletonList(x))
         );
         solver.loadState(before);
@@ -83,7 +85,7 @@ public class MiniSatBackboneTest {
         formula = f.and(x, y);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x, y))
         );
         solver.loadState(before);
@@ -91,7 +93,7 @@ public class MiniSatBackboneTest {
         formula = f.or(x, y);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -99,7 +101,7 @@ public class MiniSatBackboneTest {
         formula = x.negate();
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(x.negate()))
         );
         solver.loadState(before);
@@ -107,7 +109,7 @@ public class MiniSatBackboneTest {
         formula = f.or(f.and(x, y, z), f.and(x, y, u), f.and(x, u, z));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(x))
         );
         solver.loadState(before);
@@ -115,7 +117,7 @@ public class MiniSatBackboneTest {
         formula = f.and(f.or(x, y, z), f.or(x, y, u), f.or(x, u, z));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -123,7 +125,7 @@ public class MiniSatBackboneTest {
         formula = f.and(f.or(x.negate(), y), x);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x, y))
         );
         solver.loadState(before);
@@ -131,7 +133,7 @@ public class MiniSatBackboneTest {
         formula = f.and(f.or(x, y), f.or(x.negate(), y));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(y))
         );
         solver.loadState(before);
@@ -139,14 +141,14 @@ public class MiniSatBackboneTest {
         formula = f.and(f.and(f.or(x.negate(), y), x.negate()), f.and(z, f.or(x, y)));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x.negate(), y, z))
         );
         solver.loadState(before);
 
         formula = f.and(f.or(x, y), f.or(u, v), z);
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Formula>emptyList(), variables)).isEqualTo(
+        assertThat(solver.compute(Collections.<Formula>emptyList(), variables).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(z))
         );
     }
@@ -157,7 +159,7 @@ public class MiniSatBackboneTest {
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
         MiniSatBackbone backboneSolver = new MiniSatBackbone(f);
         backboneSolver.add(formula);
-        SortedSet<Literal> backbone = backboneSolver.compute(Collections.<Formula>emptyList(), formula.variables());
+        Backbone backbone = backboneSolver.compute(Collections.<Formula>emptyList(), formula.variables());
         assertThat(verifyBackbone(backbone, formula, formula.variables())).isTrue();
     }
 
@@ -167,21 +169,25 @@ public class MiniSatBackboneTest {
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         MiniSatBackbone backboneSolver = new MiniSatBackbone(f);
         backboneSolver.add(formula);
-        SortedSet<Literal> backbone = backboneSolver.compute(Collections.<Formula>emptyList(), formula.variables());
+        Backbone backbone = backboneSolver.compute(Collections.<Formula>emptyList(), formula.variables());
         assertThat(verifyBackbone(backbone, formula, formula.variables())).isTrue();
     }
 
-    private boolean verifyBackbone(final Set<Literal> backbone, final Formula formula, final Collection<Variable> variables) {
+    private boolean verifyBackbone(final Backbone backbone, final Formula formula, final Collection<Variable> variables) {
         final SATSolver solver = MiniSat.miniSat(formula.factory());
         solver.add(formula);
-        for (final Literal bbVar : backbone) {
+        for (final Variable bbVar : backbone.getPositiveBackbone()) {
             if (solver.sat(bbVar.negate()) == Tristate.TRUE) {
                 return false;
             }
         }
+        for (final Variable bbVar : backbone.getNegativeBackbone()) {
+            if (solver.sat(bbVar) == Tristate.TRUE) {
+                return false;
+            }
+        }
         for (final Variable variable : variables) {
-            if (!backbone.contains(formula.factory().literal(variable.name(), true)) &&
-                !backbone.contains(formula.factory().literal(variable.name(), false))) {
+            if (!backbone.getPositiveBackbone().contains(variable) && !backbone.getNegativeBackbone().contains(variable)) {
                 if (solver.sat(variable) == Tristate.FALSE) {
                     return false;
                 }
@@ -193,13 +199,17 @@ public class MiniSatBackboneTest {
         return true;
     }
 
+
+    // TODO: write testBackboneGeneration()
+
+
     @Ignore
     @Test
     public void benchmarkLargeFormula() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
 
-        MiniSatBackboneConfig config = new MiniSatBackboneConfig.Builder().checkForComplementModelLiterals(false).build();
+        BackboneConfig config = new BackboneConfig.Builder().checkForComplementModelLiterals(false).build();
         MiniSatBackbone backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         long start = System.currentTimeMillis();
@@ -208,7 +218,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nlarge formula with checkForComplementModelLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().checkForRotatableLiterals(false).build();
+        config = new BackboneConfig.Builder().checkForRotatableLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -217,7 +227,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nlarge formula with checkForRotatables disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build();
+        config = new BackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -226,7 +236,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nlarge formula with initialUBCheckForRotatableLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().checkForUPZeroLiterals(false).build();
+        config = new BackboneConfig.Builder().checkForUPZeroLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -235,7 +245,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nlarge formula with checkForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build();
+        config = new BackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -244,7 +254,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nlarge formula with initialLBCheckForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().build();
+        config = new BackboneConfig.Builder().build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -261,7 +271,7 @@ public class MiniSatBackboneTest {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
 
-        MiniSatBackboneConfig config = new MiniSatBackboneConfig.Builder().checkForComplementModelLiterals(false).build();
+        BackboneConfig config = new BackboneConfig.Builder().checkForComplementModelLiterals(false).build();
         MiniSatBackbone backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         long start = System.currentTimeMillis();
@@ -270,7 +280,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nsmall formulas with checkForComplementModelLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().checkForRotatableLiterals(false).build();
+        config = new BackboneConfig.Builder().checkForRotatableLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -279,7 +289,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nsmall formulas with checkForRotatables disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build();
+        config = new BackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -288,7 +298,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nsmall formulas with initialUBCheckForRotatableLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().checkForUPZeroLiterals(false).build();
+        config = new BackboneConfig.Builder().checkForUPZeroLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -297,7 +307,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nsmall formulas with checkForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build();
+        config = new BackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
@@ -306,7 +316,7 @@ public class MiniSatBackboneTest {
         System.out.println("\nsmall formulas with initialLBCheckForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new MiniSatBackboneConfig.Builder().build();
+        config = new BackboneConfig.Builder().build();
         backboneSolver = new MiniSatBackbone(f, config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();

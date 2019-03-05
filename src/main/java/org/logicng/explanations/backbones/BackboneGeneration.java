@@ -22,7 +22,7 @@ import java.util.TreeSet;
 public class BackboneGeneration {
 
     private final BackboneConfig configuration;
-    private final boolean useCore;
+//    private final boolean useCore;
 
     /**
      * Constructs a new Backbone generator.
@@ -46,8 +46,8 @@ public class BackboneGeneration {
     public BackboneGeneration(final BackboneConfig configuration) {
         // TODO catch if config does not have proof generation turned on when algorithm uses cores
         this.configuration = configuration == null ? new BackboneConfig.Builder().build() : configuration;
-        this.useCore = this.configuration.algorithm == BackboneConfig.Algorithm.CORE ||
-                this.configuration.algorithm == BackboneConfig.Algorithm.CORE_CHUNKING;
+//        this.useCore = this.configuration.algorithm == BackboneConfig.Algorithm.CORE ||
+//                this.configuration.algorithm == BackboneConfig.Algorithm.CORE_CHUNKING;
     }
 
     /**
@@ -66,7 +66,8 @@ public class BackboneGeneration {
      * @return the Backbone of the given formula under consideration of only the given variables
      */
     public Backbone computeBackbone(final Formula formula, final Collection<Variable> variables) {
-        final MiniSatConfig config = this.useCore ? new MiniSatConfig.Builder().proofGeneration(true).build() : new MiniSatConfig.Builder().build();
+//        final MiniSatConfig config = this.useCore ? new MiniSatConfig.Builder().proofGeneration(true).build() : new MiniSatConfig.Builder().build();
+        final MiniSatConfig config = new MiniSatConfig.Builder().build();
         final SATSolver solver = MiniSat.miniSat(formula.factory(), config);
         solver.add(formula);
         return computeBackbone(solver, variables);
@@ -96,7 +97,8 @@ public class BackboneGeneration {
             return new Backbone();
         }
         final FormulaFactory f = formulas.iterator().next().factory();
-        final MiniSatConfig config = this.useCore ? new MiniSatConfig.Builder().proofGeneration(true).build() : new MiniSatConfig.Builder().build();
+//        final MiniSatConfig config = this.useCore ? new MiniSatConfig.Builder().proofGeneration(true).build() : new MiniSatConfig.Builder().build();
+        final MiniSatConfig config = new MiniSatConfig.Builder().build();
         final SATSolver solver = MiniSat.miniSat(f, config);
         solver.add(formulas);
         return computeBackbone(solver, variables);
@@ -110,34 +112,35 @@ public class BackboneGeneration {
      * @return the Backbone of the formulas on the SAT solver under consideration of only the given variables
      */
     public Backbone computeBackbone(final SATSolver solver, final Collection<Variable> variables) {
-        final SolverState originalState = solver.saveState();
-        final Backbone backbone;
-        switch (this.configuration.algorithm) {
-            case ENUMERATION:
-                backbone = new EnumerationAlgorithm().computeBackbone(solver, variables); // TODO initialize EnumerationAlgorithm() already in constructor?!
-                break;
-            case ITERATIVE_PLAIN:
-                backbone = new IterativePlainAlgorithm().computeBackbone(solver, variables);
-                break;
-            case ITERATIVE_ONE_TEST:
-                backbone = new IterativeOneTestAlgorithm().computeBackbone(solver, variables);
-                break;
-            case ITERATIVE_PLUS:
-                backbone = new IterativePlusAlgorithm().computeBackbone(solver, variables);
-                break;
-            case CHUNKING:
-                backbone = new ChunkingAlgorithm().computeBackbone(solver, variables);
-                break;
-            case CORE:
-                backbone = new CoreAlgorithm().computeBackbone(solver, variables);
-                break;
-            case CORE_CHUNKING:
-                backbone = new CoreChunkingAlgorithm().computeBackbone(solver, variables);
-                break;
-            default:
-                backbone = new IterativePlainAlgorithm().computeBackbone(solver, variables);
-        }
-        solver.loadState(originalState);
-        return backbone;
+//        final SolverState originalState = solver.saveState();
+//        final Backbone backbone;
+//        switch (this.configuration.algorithm) {
+//            case ENUMERATION:
+//                backbone = new EnumerationAlgorithm().computeBackbone(solver, variables); // TODO initialize EnumerationAlgorithm() already in constructor?!
+//                break;
+//            case ITERATIVE_PLAIN:
+//                backbone = new IterativePlainAlgorithm().computeBackbone(solver, variables);
+//                break;
+//            case ITERATIVE_ONE_TEST:
+//                backbone = new IterativeOneTestAlgorithm().computeBackbone(solver, variables);
+//                break;
+//            case ITERATIVE_PLUS:
+//                backbone = new IterativePlusAlgorithm().computeBackbone(solver, variables);
+//                break;
+//            case CHUNKING:
+//                backbone = new ChunkingAlgorithm().computeBackbone(solver, variables);
+//                break;
+//            case CORE:
+//                backbone = new CoreAlgorithm().computeBackbone(solver, variables);
+//                break;
+//            case CORE_CHUNKING:
+//                backbone = new CoreChunkingAlgorithm().computeBackbone(solver, variables);
+//                break;
+//            default:
+//                backbone = new IterativePlainAlgorithm().computeBackbone(solver, variables);
+//        }
+//        solver.loadState(originalState);
+//        return backbone;
+        return new Backbone();
     }
 }
