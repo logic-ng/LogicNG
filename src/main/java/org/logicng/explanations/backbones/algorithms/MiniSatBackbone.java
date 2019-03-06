@@ -12,20 +12,15 @@ import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSWatcher;
 import org.logicng.solvers.sat.MiniSat2Solver;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * An extension of MiniSat to compute the backbone of a formula.
- *
+ * <p>
  * The algorithm iteratively checks each variable of an initial model (candidates) whether the variable
  * is a backbone variable. For each check the SAT solving procedure is called. Thus, at the number of SAT calls is at
  * most the number of variables.
- *
+ * <p>
  * Reference: Algorithm 3 in M. Janota, I. Lynce, J. Marques-Silva, Algorithms for Computing Backbones of Propositional
  * Formulae, AI Communications, Volume 28(2), 161-177, 2015.
  */
@@ -105,28 +100,24 @@ public class MiniSatBackbone extends MiniSat2Solver {
                 backboneLiteralsNeg.add(intLiteralToVariable(lit));
             }
             loadState(state);
-            return new Backbone(backboneLiteralsPos, backboneLiteralsNeg, computeOptionalVariables(new TreeSet<>(relevantVariables), backboneLiteralsPos, backboneLiteralsNeg));
+            return new Backbone(backboneLiteralsPos, backboneLiteralsNeg, computeOptionalVariables(relevantVariables, backboneLiteralsPos, backboneLiteralsNeg));
         }
     }
 
     /**
      * Computes the variables from the formula that are satisfiable but not in the backbone.
-     * @param relevantVariablesCopy the relevant variables for the backbone computation
+     *
+     * @param relevantVariables   the relevant variables for the backbone computation
      * @param backboneLiteralsPos the computed positive backbone literals
      * @param backboneLiteralsNeg the computed negative backbone literals
      * @return the difference between the two input sets which are the variables that are satisfiable but not in the
      * backbone
      */
-    private Collection<Variable> computeOptionalVariables(final Collection<Variable> relevantVariablesCopy, final SortedSet<Variable> backboneLiteralsPos, final SortedSet<Variable> backboneLiteralsNeg) {
-        final Collection<Variable> backboneVariables = new TreeSet<>();
-        for (final Literal backboneLiteral : backboneLiteralsPos) {
-            backboneVariables.add(backboneLiteral.variable());
-        }
-        for (final Literal backboneLiteral : backboneLiteralsNeg) {
-            backboneVariables.add(backboneLiteral.variable());
-        }
-        relevantVariablesCopy.removeAll(backboneVariables);
-        return relevantVariablesCopy;
+    private SortedSet<Variable> computeOptionalVariables(final Collection<Variable> relevantVariables, final SortedSet<Variable> backboneLiteralsPos, final SortedSet<Variable> backboneLiteralsNeg) {
+        final SortedSet<Variable> optionalVariables = new TreeSet<>(relevantVariables);
+        optionalVariables.removeAll(backboneLiteralsPos);
+        optionalVariables.removeAll(backboneLiteralsNeg);
+        return optionalVariables;
     }
 
     private List<Integer> toVarIndices(final Collection<Variable> variables) {

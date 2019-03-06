@@ -6,22 +6,19 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * A backbone (the set of literals of a formula that need to be assigned true in order for the formula to be
  * satisfied).
+ *
  * @version 1.5
  * @since 1.5
  */
 public class Backbone {
     private final SortedSet<Variable> positiveBackbone;
     private final SortedSet<Variable> negativeBackbone;
-    private SortedSet<Variable> optionalVariables;
+    private final SortedSet<Variable> optionalVariables;
 
     /**
      * Constructs a new empty Backbone.
@@ -33,7 +30,9 @@ public class Backbone {
     }
 
     /**
-     * Constructs a new Backbone that contains the variables of the given literals.
+     * Constructs a new Backbone that contains the variables of the given literals and no optional variables.
+     *
+     * @param literals the given backbone literals which are split into positive and negative variables.
      */
     public Backbone(final Collection<Literal> literals) {
         this.positiveBackbone = new TreeSet<>();
@@ -44,25 +43,33 @@ public class Backbone {
 
     /**
      * Constructs a new Backbone that contains the variables from the given literals and the given optional literals.
+     *
+     * @param backboneLiterals  the given backbone literals which are split in positive and negative variables
+     * @param optionalVariables the optional variables
      */
-    public Backbone(final Collection<Literal> backboneLiterals, final Collection<Variable> optionalVariables) {
+    public Backbone(final Collection<Literal> backboneLiterals, final SortedSet<Variable> optionalVariables) {
         this.positiveBackbone = new TreeSet<>();
         this.negativeBackbone = new TreeSet<>();
-        this.optionalVariables = (SortedSet<Variable>) optionalVariables;
+        this.optionalVariables = optionalVariables;
         this.addBackboneLiterals(backboneLiterals);
     }
 
     /**
      * Constructs a new Backbone that contains the given variables and the given optional variables.
+     *
+     * @param backboneLiteralsPos the given positive variables
+     * @param backboneLiteralsNeg the given negative variables
+     * @param optionalVariables   the given optional variables
      */
-    public Backbone(final Collection<Variable> backboneLiteralsPos, final Collection<Variable> backboneLiteralsNeg, final Collection<Variable> optionalVariables) {
-        this.positiveBackbone = (SortedSet<Variable>) backboneLiteralsPos;
-        this.negativeBackbone = (SortedSet<Variable>) backboneLiteralsNeg;
-        this.optionalVariables = (SortedSet<Variable>) optionalVariables;
+    public Backbone(final SortedSet<Variable> backboneLiteralsPos, final SortedSet<Variable> backboneLiteralsNeg, final SortedSet<Variable> optionalVariables) {
+        this.positiveBackbone = backboneLiteralsPos;
+        this.negativeBackbone = backboneLiteralsNeg;
+        this.optionalVariables = optionalVariables;
     }
 
     /**
      * Returns the positive variables of the Backbone.
+     *
      * @return the set of positive Backbone variables
      */
     public SortedSet<Variable> getPositiveBackbone() {
@@ -71,6 +78,7 @@ public class Backbone {
 
     /**
      * Returns the negative variables of the Backbone.
+     *
      * @return the set of negative Backbone variables
      */
     public SortedSet<Variable> getNegativeBackbone() {
@@ -79,6 +87,7 @@ public class Backbone {
 
     /**
      * Returns the variables of the formula that are optionally but not necessarily satisfiable (e.g. not in the backbone).
+     *
      * @return the set of satisfiable non-backbone variables
      */
     public SortedSet<Variable> getOptionalVariables() {
@@ -86,15 +95,8 @@ public class Backbone {
     }
 
     /**
-     * Sets the variables of the formula that are optionally but not necessarily satisfiable (e.g. not in the backbone).
-     * @param variables the set of satisfiable non-backbone variables
-     */
-    public void setOptionalVariables(final Collection<Variable> variables) {
-        this.optionalVariables = (SortedSet<Variable>) variables;
-    }
-
-    /**
      * Returns all literals of the Backbone.
+     *
      * @return the set of both positive and negative Backbone literals
      */
     public SortedSet<Literal> getCompleteBackbone() {
@@ -106,15 +108,26 @@ public class Backbone {
         return completeBackbone;
     }
 
-    public Formula toFormula() {
-        final FormulaFactory f = getFormulaFactory();
+    /**
+     * Returns the backbone as a conjunction of literals.
+     *
+     * @param f the formula factory needed for construction the backbone formula.
+     * @return the backbone formula
+     */
+    public Formula toFormula(final FormulaFactory f) {
         return f.and(this.getCompleteBackbone());
     }
 
+    /**
+     * Returns the backbone as map from variables to tri-states. A positive variable is mapped to {@code Tristate.TRUE},
+     * a negative variable to {@code Tristate.FALSE} and the optional variables to {@code Tristate.UNDEF}.
+     *
+     * @return the mapping of the backbone
+     */
     public Map<Variable, Tristate> toMap() {
         final Map<Variable, Tristate> map = new HashMap<>();
         for (final Variable var : this.positiveBackbone) {
-           map.put(var, Tristate.TRUE);
+            map.put(var, Tristate.TRUE);
         }
         for (final Variable var : this.negativeBackbone) {
             map.put(var, Tristate.FALSE);
@@ -125,23 +138,10 @@ public class Backbone {
         return map;
     }
 
-    private FormulaFactory getFormulaFactory() {
-        final FormulaFactory f;
-        if (!this.positiveBackbone.isEmpty()) {
-            f = this.positiveBackbone.first().factory();
-        } else if (!this.negativeBackbone.isEmpty()) {
-            f = this.negativeBackbone.first().factory();
-        } else if (!this.optionalVariables.isEmpty()) {
-            f = this.optionalVariables.first().factory();
-        } else {
-            f = new FormulaFactory();
-        }
-        return f;
-    }
-
     /**
      * Adds a given set of literals to each either the positive or negative set of backbone literals.
-     * @param literals  the set of literals to be added
+     *
+     * @param literals the set of literals to be added
      */
     public void addBackboneLiterals(final Collection<Literal> literals) {
         for (final Literal literal : literals) {
@@ -155,7 +155,8 @@ public class Backbone {
 
     /**
      * Checks whether this backbone contains no literals.
-     * @return  {@code true} if this Backbone is empty, {@code false} otherwise
+     *
+     * @return {@code true} if this Backbone is empty, {@code false} otherwise
      */
     public Boolean isEmpty() {
         return this.positiveBackbone.isEmpty() && this.negativeBackbone.isEmpty();
