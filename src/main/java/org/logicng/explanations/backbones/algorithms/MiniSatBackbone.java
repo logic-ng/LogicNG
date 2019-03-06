@@ -44,6 +44,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
      */
     private Stack<Integer> candidates;
 
+    private LNGIntVector assumptions;
     private HashMap<Integer, Tristate> backboneMap;
 
     /**
@@ -91,16 +92,16 @@ public class MiniSatBackbone extends MiniSat2Solver {
      * @return list of relevant variable indices
      */
     private List<Integer> getRelevantVarIndices(final Collection<Variable> variables) {
-        final List<Integer> varIndices = new ArrayList<>(variables.size());
+        final List<Integer> relevantVarIndices = new ArrayList<>(variables.size());
         for (final Variable var : variables) {
             final Integer idx = this.name2idx.get(var.name());
             // Note: Unknown variables are variables added to the solver yet. Thus, these are optional variables and can
             // be left out for the backbone computation.
             if (idx != null) {
-                varIndices.add(idx);
+                relevantVarIndices.add(idx);
             }
         }
-        return varIndices;
+        return relevantVarIndices;
     }
 
     /**
@@ -136,16 +137,13 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     // TODO BackboneType
-    // TODO description
-    // TODO not state but assumptions list??
 
     /**
-     * Computes the backbone.
-     * @param variables relevant variables
+     * Computes the backbone of the given variables with respect to the formulas added to the solver.
+     * @param variables variables to test
      * @return the backbone projected to the relevant variables or {@code null} if the formula on the solver with the restrictions are not satisfiable
      */
     public Backbone compute(final Collection<Variable> variables) {
-        final int[] state = this.saveState();
         final boolean sat = solve(null) == Tristate.TRUE;
         Backbone backbone = null;
         if (sat) {
@@ -153,7 +151,6 @@ public class MiniSatBackbone extends MiniSat2Solver {
             compute(relevantVarIndices);
             backbone = buildBackbone(variables);
         }
-        loadState(state);
         return backbone;
     }
 
@@ -206,27 +203,23 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Adds the given literal to the backbone result and optionally adds the literal to the solver.
-     * @param lit         literal to add
-     * @param addToSolver {@code true} if the literal should be added to the solver, otherwise {@code false}
+     * @param lit literal to add
      */
-    private void addBackboneLiteral(final int lit, final boolean addToSolver) {
-        final int var = var(lit);
-        this.backboneMap.put(var, sign(lit) ? Tristate.FALSE : Tristate.TRUE);
-        if (addToSolver) {
-            addClause(lit, null);
-        }
+    private void addBackboneLiteral(final int lit) {
+        this.backboneMap.put(var(lit), sign(lit) ? Tristate.FALSE : Tristate.TRUE);
+        this.assumptions.push(lit);
     }
 
     /**
      * Creates the initial candidate literals for the backbone computation.
-     * @param relevantVariables relevant variables.
+     * @param variables variables to test
      * @return initial candidates
      */
-    private Stack<Integer> createInitialCandidates(final List<Integer> relevantVariables) {
-        for (final Integer var : relevantVariables) {
+    private Stack<Integer> createInitialCandidates(final List<Integer> variables) {
+        for (final Integer var : variables) {
             if (this.config.isInitialLBCheckForUPZeroLiterals() && isUPZeroLit(var)) {
                 final int backboneLit = mkLit(var, !this.model.get(var));
-                addBackboneLiteral(backboneLit, false);
+                addBackboneLiteral(backboneLit);
             } else {
                 final int lit = mkLit(var, !this.model.get(var));
                 if (!this.config.isInitialUBCheckForRotatableLiterals() || !isRotatable(lit)) {
@@ -245,7 +238,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
             final int var = var(lit);
             if (this.config.isCheckForUPZeroLiterals() && isUPZeroLit(var)) {
                 this.candidates.remove(lit);
-                addBackboneLiteral(lit, true);
+                addBackboneLiteral(lit);
             } else if (this.config.isCheckForComplementModelLiterals() && this.model.get(var) == sign(lit)) {
                 this.candidates.remove(lit);
             } else if (this.config.isCheckForRotatableLiterals() && isRotatable(lit)) {
@@ -260,35 +253,38 @@ public class MiniSatBackbone extends MiniSat2Solver {
      * @return {@code true} if satisfiable, otherwise {@code false}
      */
     private boolean solve(final int lit) {
-        final LNGIntVector assumptions = new LNGIntVector(1);
-        assumptions.push(not(lit));
-        return solve(null, assumptions) == Tristate.TRUE;
+        this.assumptions.push(not(lit));
+        final boolean sat = solve(null, this.assumptions) == Tristate.TRUE;
+        this.assumptions.pop();
+        return sat;
     }
 
     /**
      * Initializes the internal solver state.
+     * @param variables to test
      */
-    private void init(final List<Integer> relevantVariables) {
+    private void init(final List<Integer> variables) {
         this.candidates = new Stack<>();
+        this.assumptions = new LNGIntVector(variables.size());
         this.backboneMap = new HashMap<>();
-        for (final Integer var : relevantVariables) {
+        for (final Integer var : variables) {
             this.backboneMap.put(var, Tristate.UNDEF);
         }
     }
 
     /**
-     * Computes the backbone for the given relevant variables.
-     * @param relevantVariables variables to test
+     * Computes the backbone for the given variables.
+     * @param variables variables to test
      */
-    private void compute(final List<Integer> relevantVariables) {
-        init(relevantVariables);
-        final Stack<Integer> candidates = createInitialCandidates(relevantVariables);
+    private void compute(final List<Integer> variables) {
+        init(variables);
+        final Stack<Integer> candidates = createInitialCandidates(variables);
         while (candidates.size() > 0) {
             final int lit = candidates.pop();
             if (solve(lit)) {
                 refineUpperBound();
             } else {
-                addBackboneLiteral(lit, true);
+                addBackboneLiteral(lit);
             }
         }
     }
