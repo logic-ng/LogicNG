@@ -37,7 +37,8 @@ public class MiniSatBackbone extends MiniSat2Solver {
     private final BackboneConfig config;
 
     private Stack<Integer> candidates;
-    private List<Integer> backbone;
+    private List<Integer> positiveBackbone;
+    private List<Integer> negativeBackbone;
 
     public MiniSatBackbone(FormulaFactory f, BackboneConfig config) {
         this.f = f;
@@ -91,29 +92,37 @@ public class MiniSatBackbone extends MiniSat2Solver {
             return null;
         }
         compute(toVarIndices(relevantVariables));
-        if (backbone == null) {
+        if (positiveBackbone == null && negativeBackbone == null) {
             loadState(state);
             return null;
         } else {
-            final SortedSet<Literal> backboneLiterals = new TreeSet<>();
-            for (final Integer lit : backbone) {
-                backboneLiterals.add(intLiteralToLiteral(lit));
+            final SortedSet<Variable> backboneLiteralsPos = new TreeSet<>();
+            final SortedSet<Variable> backboneLiteralsNeg = new TreeSet<>();
+            for (final Integer lit : positiveBackbone) {
+                backboneLiteralsPos.add(intLiteralToVariable(lit));
+            }
+            for (final Integer lit : negativeBackbone) {
+                backboneLiteralsNeg.add(intLiteralToVariable(lit));
             }
             loadState(state);
-            return new Backbone(backboneLiterals, computeSatisfiableVariables(new TreeSet<>(relevantVariables), backboneLiterals));
+            return new Backbone(backboneLiteralsPos, backboneLiteralsNeg, computeOptionalVariables(new TreeSet<>(relevantVariables), backboneLiteralsPos, backboneLiteralsNeg));
         }
     }
 
     /**
      * Computes the variables from the formula that are satisfiable but not in the backbone.
      * @param relevantVariablesCopy the relevant variables for the backbone computation
-     * @param backboneLiterals the computed backbone literals
+     * @param backboneLiteralsPos the computed positive backbone literals
+     * @param backboneLiteralsNeg the computed negative backbone literals
      * @return the difference between the two input sets which are the variables that are satisfiable but not in the
      * backbone
      */
-    private Collection<Variable> computeSatisfiableVariables(Collection<Variable> relevantVariablesCopy, SortedSet<Literal> backboneLiterals) {
+    private Collection<Variable> computeOptionalVariables(Collection<Variable> relevantVariablesCopy, SortedSet<Variable> backboneLiteralsPos, SortedSet<Variable> backboneLiteralsNeg) {
         Collection<Variable> backboneVariables = new TreeSet<>();
-        for (Literal backboneLiteral : backboneLiterals) {
+        for (Literal backboneLiteral : backboneLiteralsPos) {
+            backboneVariables.add(backboneLiteral.variable());
+        }
+        for (Literal backboneLiteral : backboneLiteralsNeg) {
             backboneVariables.add(backboneLiteral.variable());
         }
         relevantVariablesCopy.removeAll(backboneVariables);
@@ -134,7 +143,8 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     private void init() {
         this.candidates = new Stack<>();
-        this.backbone = new ArrayList<>();
+        this.positiveBackbone = new ArrayList<>();
+        this.negativeBackbone = new ArrayList<>();
     }
 
     private boolean isUPZeroLit(final int var) {
@@ -166,14 +176,23 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     private void addBackboneLiteral(final int backbonelit) {
-        backbone.add(backbonelit);
+        if (sign(backbonelit)) {
+            negativeBackbone.add(backbonelit);
+        } else {
+            positiveBackbone.add(backbonelit);
+        }
         addClause(backbonelit, null);
     }
 
     private Stack<Integer> createInitialCandidates(List<Integer> relevantVariables) {
         for (final Integer var : relevantVariables) {
             if (config.isInitialLBCheckForUPZeroLiterals() && isUPZeroLit(var)) {
-                backbone.add(mkLit(var, !this.model.get(var)));
+                int backboneLit = mkLit(var, !this.model.get(var));
+                if (sign(backboneLit)) {
+                    negativeBackbone.add(backboneLit);
+                } else {
+                    positiveBackbone.add(backboneLit);
+                }
             } else {
                 final int lit = mkLit(var, !this.model.get(var));
                 if (!config.isInitialUBCheckForRotatableLiterals() || !isRotatable(lit)) {
@@ -219,8 +238,8 @@ public class MiniSatBackbone extends MiniSat2Solver {
      * @param lit the solver literal
      * @return the formula literal
      */
-    private Literal intLiteralToLiteral(final int lit) {
-        return f.literal(this.nameForIdx(var(lit)), !sign(lit));
+    private Variable intLiteralToVariable(final int lit) {
+        return f.variable(this.nameForIdx(var(lit)));
     }
 
     /**
