@@ -46,23 +46,23 @@ public class BackboneConfig extends Configuration {
     }
 
     public boolean isInitialLBCheckForUPZeroLiterals() {
-        return initialLBCheckForUPZeroLiterals;
+        return this.initialLBCheckForUPZeroLiterals;
     }
 
     public boolean isInitialUBCheckForRotatableLiterals() {
-        return initialUBCheckForRotatableLiterals;
+        return this.initialUBCheckForRotatableLiterals;
     }
 
     public boolean isCheckForUPZeroLiterals() {
-        return checkForUPZeroLiterals;
+        return this.checkForUPZeroLiterals;
     }
 
     public boolean isCheckForComplementModelLiterals() {
-        return checkForComplementModelLiterals;
+        return this.checkForComplementModelLiterals;
     }
 
     public boolean isCheckForRotatableLiterals() {
-        return checkForRotatableLiterals;
+        return this.checkForRotatableLiterals;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class BackboneConfig extends Configuration {
          *                                  rotatables or {@code false} otherwise.
          * @return the builder
          */
-        public BackboneConfig.Builder checkForRotatableLiterals(boolean checkForRotatableLiterals) {
+        public BackboneConfig.Builder checkForRotatableLiterals(final boolean checkForRotatableLiterals) {
             this.checkForRotatableLiterals = checkForRotatableLiterals;
             return this;
         }
@@ -120,7 +120,7 @@ public class BackboneConfig extends Configuration {
          *                                           check for rotatables or {@code false} otherwise.
          * @return the builder
          */
-        public BackboneConfig.Builder initialUBCheckForRotatableLiterals(boolean initialUBCheckForRotatableLiterals) {
+        public BackboneConfig.Builder initialUBCheckForRotatableLiterals(final boolean initialUBCheckForRotatableLiterals) {
             this.initialUBCheckForRotatableLiterals = initialUBCheckForRotatableLiterals;
             return this;
         }
@@ -132,7 +132,7 @@ public class BackboneConfig extends Configuration {
          *                                  zero literals or {@code false} otherwise.
          * @return the builder
          */
-        public BackboneConfig.Builder checkForUPZeroLiterals(boolean checkForUPZeroLiterals) {
+        public BackboneConfig.Builder checkForUPZeroLiterals(final boolean checkForUPZeroLiterals) {
             this.checkForUPZeroLiterals = checkForUPZeroLiterals;
             return this;
         }
@@ -143,7 +143,7 @@ public class BackboneConfig extends Configuration {
          *                                  zero or {@code false} otherwise.
          * @return the builder
          */
-        public BackboneConfig.Builder initialLBCheckForUPZeroLiterals(boolean initialLBCheckForUPZeroLiterals) {
+        public BackboneConfig.Builder initialLBCheckForUPZeroLiterals(final boolean initialLBCheckForUPZeroLiterals) {
             this.initialLBCheckForUPZeroLiterals = initialLBCheckForUPZeroLiterals;
             return this;
         }
@@ -154,7 +154,7 @@ public class BackboneConfig extends Configuration {
          *                                  complement literals or {@code false} otherwise.
          * @return the builder
          */
-        public BackboneConfig.Builder checkForComplementModelLiterals(boolean checkForComplementModelLiterals) {
+        public BackboneConfig.Builder checkForComplementModelLiterals(final boolean checkForComplementModelLiterals) {
             this.checkForComplementModelLiterals = checkForComplementModelLiterals;
             return this;
         }

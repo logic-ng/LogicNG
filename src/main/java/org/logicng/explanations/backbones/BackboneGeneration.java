@@ -1,13 +1,11 @@
 package org.logicng.explanations.backbones;
 
 import org.logicng.configurations.ConfigurationType;
-import org.logicng.explanations.backbones.algorithms.*;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.SolverState;
 import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.util.Collection;
