@@ -34,6 +34,7 @@ import java.util.TreeSet;
 public class MiniSatBackbone extends MiniSat2Solver {
 
     // TODO experimental backbone solver and not extensively tested yet!
+    // TODO BackboneType
 
     private final BackboneConfig config;
 
@@ -44,7 +45,18 @@ public class MiniSatBackbone extends MiniSat2Solver {
      */
     private Stack<Integer> candidates;
 
+    /**
+     * Assumptions used to call the solver with, filled by identified backbone literals.
+     */
     private LNGIntVector assumptions;
+
+    /**
+     * Backbone map: integer literal -> Tristate.
+     *
+     * {@link Tristate#TRUE} is a positive backbone variable.
+     * {@link Tristate#FALSE} is a negative backbone variable.
+     * {@link Tristate#UNDEF} is an optional variable.
+     */
     private HashMap<Integer, Tristate> backboneMap;
 
     /**
@@ -135,8 +147,6 @@ public class MiniSatBackbone extends MiniSat2Solver {
         }
         return new Backbone(posBackboneVars, negBackboneVars, optionalVars);
     }
-
-    // TODO BackboneType
 
     /**
      * Computes the backbone of the given variables with respect to the formulas added to the solver.
