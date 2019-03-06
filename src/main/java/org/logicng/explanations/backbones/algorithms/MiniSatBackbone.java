@@ -21,6 +21,13 @@ import java.util.TreeSet;
 
 /**
  * An extension of MiniSat to compute the backbone of a formula.
+ *
+ * The algorithm iteratively checks each variable of an initial model (candidates) whether the variable
+ * is a backbone variable. For each check the SAT solving procedure is called. Thus, at the number of SAT calls is at
+ * most the number of variables.
+ *
+ * Reference: Algorithm 3 in M. Janota, I. Lynce, J. Marques-Silva, Algorithms for Computing Backbones of Propositional
+ * Formulae, AI Communications, Volume 28(2), 161-177, 2015.
  */
 public class MiniSatBackbone extends MiniSat2Solver {
 
