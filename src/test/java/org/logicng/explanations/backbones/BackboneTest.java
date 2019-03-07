@@ -14,11 +14,7 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -203,6 +199,33 @@ public class BackboneTest {
         return true;
     }
 
+
+    @Test
+    public void testDifferentConfigurations() throws IOException, ParserException {
+        final List<BackboneConfig> configs = new ArrayList<>();
+        configs.add(new BackboneConfig.Builder().checkForComplementModelLiterals(false).build());
+        configs.add(new BackboneConfig.Builder().checkForRotatableLiterals(false).build());
+        configs.add(new BackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build());
+        configs.add(new BackboneConfig.Builder().checkForUPZeroLiterals(false).build());
+        configs.add(new BackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build());
+
+        final FormulaFactory f = new FormulaFactory();
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
+        MiniSatBackbone backboneSolver = new MiniSatBackbone(new BackboneConfig.Builder().build());
+        backboneSolver.add(formula);
+        final Backbone backbone = backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+
+        for (final BackboneConfig config : configs) {
+            backboneSolver = new MiniSatBackbone(config);
+            backboneSolver.add(formula);
+            assertThat(backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE)).isEqualTo(backbone);
+        }
+    }
+
+    @Test
+    public void testBackboneType() {
+
+    }
 
     // TODO: write testBackboneGeneration()
 

@@ -161,4 +161,15 @@ public class Backbone {
     public Boolean isEmpty() {
         return this.positiveBackbone.isEmpty() && this.negativeBackbone.isEmpty();
     }
+
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof Backbone) {
+            final Backbone other = (Backbone) o;
+            return this.getCompleteBackbone().equals(other.getCompleteBackbone())
+                    && this.getOptionalVariables().equals(other.getOptionalVariables());
+        }
+        return false;
+    }
 }
