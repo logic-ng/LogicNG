@@ -261,7 +261,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
      */
     private Stack<Integer> createInitialCandidates(final List<Integer> variables) {
         for (final Integer var : variables) {
-            if (this.config.isInitialLBCheckForUPZeroLiterals() && isUPZeroLit(var)) {
+            if (isUPZeroLit(var)) {
                 final int backboneLit = mkLit(var, !this.model.get(var));
                 addBackboneLiteral(backboneLit);
             } else {
@@ -285,7 +285,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
     private void refineUpperBound() {
         for (final Integer lit : new ArrayList<>(this.candidates)) {
             final int var = var(lit);
-            if (this.config.isCheckForUPZeroLiterals() && isUPZeroLit(var)) {
+            if (isUPZeroLit(var)) {
                 this.candidates.remove(lit);
                 addBackboneLiteral(lit);
             } else if (this.config.isCheckForComplementModelLiterals() && this.model.get(var) == sign(lit)) {

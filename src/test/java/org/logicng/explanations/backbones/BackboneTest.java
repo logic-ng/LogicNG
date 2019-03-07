@@ -14,7 +14,12 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -206,8 +211,6 @@ public class BackboneTest {
         configs.add(new BackboneConfig.Builder().checkForComplementModelLiterals(false).build());
         configs.add(new BackboneConfig.Builder().checkForRotatableLiterals(false).build());
         configs.add(new BackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build());
-        configs.add(new BackboneConfig.Builder().checkForUPZeroLiterals(false).build());
-        configs.add(new BackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build());
 
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
@@ -263,24 +266,6 @@ public class BackboneTest {
         System.out.println("\nlarge formula with initialUBCheckForRotatableLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
-        config = new BackboneConfig.Builder().checkForUPZeroLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nlarge formula with checkForUPZeroLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nlarge formula with initialLBCheckForUPZeroLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
         config = new BackboneConfig.Builder().build();
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
@@ -323,24 +308,6 @@ public class BackboneTest {
         backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with initialUBCheckForRotatableLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().checkForUPZeroLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nsmall formulas with checkForUPZeroLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().initialLBCheckForUPZeroLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nsmall formulas with initialLBCheckForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
 
         config = new BackboneConfig.Builder().build();

@@ -16,18 +16,17 @@ public class BackboneConfig extends Configuration {
     public enum Algorithm {
         MINI_SAT_BACKBONE
     }
+
     final Algorithm algorithm;
 
     /**
      * Creation of initial candidate literals
      */
-    private final boolean initialLBCheckForUPZeroLiterals;
     private final boolean initialUBCheckForRotatableLiterals;
 
     /**
      * Reductions during search
      */
-    private final boolean checkForUPZeroLiterals;
     private final boolean checkForComplementModelLiterals;
     private final boolean checkForRotatableLiterals;
 
@@ -38,23 +37,13 @@ public class BackboneConfig extends Configuration {
     public BackboneConfig(final Builder builder) {
         super(ConfigurationType.BACKBONE);
         this.algorithm = builder.algorithm;
-        this.initialLBCheckForUPZeroLiterals = builder.initialLBCheckForUPZeroLiterals;
         this.initialUBCheckForRotatableLiterals = builder.initialUBCheckForRotatableLiterals;
-        this.checkForUPZeroLiterals = builder.checkForUPZeroLiterals;
         this.checkForComplementModelLiterals = builder.checkForComplementModelLiterals;
         this.checkForRotatableLiterals = builder.checkForRotatableLiterals;
     }
 
-    public boolean isInitialLBCheckForUPZeroLiterals() {
-        return this.initialLBCheckForUPZeroLiterals;
-    }
-
     public boolean isInitialUBCheckForRotatableLiterals() {
         return this.initialUBCheckForRotatableLiterals;
-    }
-
-    public boolean isCheckForUPZeroLiterals() {
-        return this.checkForUPZeroLiterals;
     }
 
     public boolean isCheckForComplementModelLiterals() {
@@ -68,9 +57,7 @@ public class BackboneConfig extends Configuration {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BackboneConfig{").append(System.lineSeparator());
-        sb.append("initialLBCheckForUPZeroLiterals=").append(this.initialLBCheckForUPZeroLiterals).append(System.lineSeparator());
         sb.append("initialUBCheckForRotatableLiterals=").append(this.initialUBCheckForRotatableLiterals).append(System.lineSeparator());
-        sb.append("checkForUPZeroLiterals=").append(this.checkForUPZeroLiterals).append(System.lineSeparator());
         sb.append("checkForComplementModelLiterals=").append(this.checkForComplementModelLiterals).append(System.lineSeparator());
         sb.append("checkForRotatableLiterals=").append(this.checkForRotatableLiterals).append(System.lineSeparator());
         sb.append("}").append(System.lineSeparator());
@@ -86,9 +73,7 @@ public class BackboneConfig extends Configuration {
          * Default configurations
          */
         private Algorithm algorithm = Algorithm.MINI_SAT_BACKBONE;
-        private boolean initialLBCheckForUPZeroLiterals = true;
         private boolean initialUBCheckForRotatableLiterals = true;
-        private boolean checkForUPZeroLiterals = true;
         private boolean checkForComplementModelLiterals = true;
         private boolean checkForRotatableLiterals = true;
 
@@ -126,32 +111,9 @@ public class BackboneConfig extends Configuration {
         }
 
         /**
-         * Sets whether the algorithm should check for zero literals in the unit propagation. The default value is
-         * {@code true}.
-         * @param checkForUPZeroLiterals the boolean value that is {@code true} if the algorithm should check for
-         *                                  zero literals or {@code false} otherwise.
-         * @return the builder
-         */
-        public BackboneConfig.Builder checkForUPZeroLiterals(final boolean checkForUPZeroLiterals) {
-            this.checkForUPZeroLiterals = checkForUPZeroLiterals;
-            return this;
-        }
-
-        /**
-         * Sets whether the algorithm should check for zero literals. The default value is {@code true}.
-         * @param initialLBCheckForUPZeroLiterals the boolean value that is {@code true} if the algorithm should check for
-         *                                  zero or {@code false} otherwise.
-         * @return the builder
-         */
-        public BackboneConfig.Builder initialLBCheckForUPZeroLiterals(final boolean initialLBCheckForUPZeroLiterals) {
-            this.initialLBCheckForUPZeroLiterals = initialLBCheckForUPZeroLiterals;
-            return this;
-        }
-
-        /**
          * Sets whether the algorithm should check for complement model literals. The default value is {@code true}.
          * @param checkForComplementModelLiterals the boolean value that is {@code true} if the algorithm should check for
-         *                                  complement literals or {@code false} otherwise.
+         *                                        complement literals or {@code false} otherwise.
          * @return the builder
          */
         public BackboneConfig.Builder checkForComplementModelLiterals(final boolean checkForComplementModelLiterals) {
