@@ -8,6 +8,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.datastructures.MSClause;
+import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
 import org.logicng.solvers.sat.MiniSat2Solver;
 
@@ -185,7 +186,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
         for (int i = 0; i < clause.size(); ++i) {
             final int clauseLit = clause.get(i);
             // TODO this unit check can surely be improved
-            if (lit != clauseLit && this.model.get((var(clauseLit))) != sign(clauseLit)) {
+            if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
                 return false;
             }
         }
@@ -282,6 +283,22 @@ public class MiniSatBackbone extends MiniSat2Solver {
         }
     }
 
+    @Override
+    protected void cancelUntil(final int level) {
+        if (decisionLevel() > level) {
+            for (int c = this.trail.size() - 1; c >= this.trailLim.get(level); c--) {
+                final int x = var(this.trail.get(c));
+                final MSVariable v = this.vars.get(x);
+                v.assign(Tristate.UNDEF);
+                v.setPolarity(false);
+                insertVarOrder(x);
+            }
+            this.qhead = this.trailLim.get(level);
+            this.trail.removeElements(this.trail.size() - this.trailLim.get(level));
+            this.trailLim.removeElements(this.trailLim.size() - level);
+        }
+    }
+
     /**
      * Computes the backbone for the given variables.
      * @param variables variables to test
@@ -309,7 +326,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
         for (final Literal lit : clause.literals()) {
             int index = this.idxForName(lit.name());
             if (index == -1) {
-                index = this.newVar(true, true);
+                index = this.newVar(false, true);
                 this.addName(lit.name(), index);
             }
             final int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
