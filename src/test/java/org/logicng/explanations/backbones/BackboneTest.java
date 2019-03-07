@@ -73,7 +73,7 @@ public class BackboneTest {
         Formula formula = f.verum();
         int[] before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(Collections.<Variable>emptyList()).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(Collections.<Variable>emptyList(), BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -81,7 +81,7 @@ public class BackboneTest {
         formula = x;
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singletonList(x))
         );
         solver.loadState(before);
@@ -89,7 +89,7 @@ public class BackboneTest {
         formula = f.and(x, y);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x, y))
         );
         solver.loadState(before);
@@ -97,7 +97,7 @@ public class BackboneTest {
         formula = f.or(x, y);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -105,7 +105,7 @@ public class BackboneTest {
         formula = x.negate();
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(x.negate()))
         );
         solver.loadState(before);
@@ -113,7 +113,7 @@ public class BackboneTest {
         formula = f.or(f.and(x, y, z), f.and(x, y, u), f.and(x, u, z));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(x))
         );
         solver.loadState(before);
@@ -121,7 +121,7 @@ public class BackboneTest {
         formula = f.and(f.or(x, y, z), f.or(x, y, u), f.or(x, u, z));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -129,7 +129,7 @@ public class BackboneTest {
         formula = f.and(f.or(x.negate(), y), x);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x, y))
         );
         solver.loadState(before);
@@ -137,7 +137,7 @@ public class BackboneTest {
         formula = f.and(f.or(x, y), f.or(x.negate(), y));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(y))
         );
         solver.loadState(before);
@@ -145,14 +145,14 @@ public class BackboneTest {
         formula = f.and(f.and(f.or(x.negate(), y), x.negate()), f.and(z, f.or(x, y)));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x.negate(), y, z))
         );
         solver.loadState(before);
 
         formula = f.and(f.or(x, y), f.or(u, v), z);
         solver.add(formula);
-        assertThat(solver.compute(variables).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.compute(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(z))
         );
     }
@@ -163,7 +163,7 @@ public class BackboneTest {
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
         final MiniSatBackbone backboneSolver = new MiniSatBackbone();
         backboneSolver.add(formula);
-        final Backbone backbone = backboneSolver.compute(formula.variables());
+        final Backbone backbone = backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         assertThat(verifyBackbone(backbone, formula, formula.variables())).isTrue();
     }
 
@@ -173,7 +173,7 @@ public class BackboneTest {
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final MiniSatBackbone backboneSolver = new MiniSatBackbone();
         backboneSolver.add(formula);
-        final Backbone backbone = backboneSolver.compute(formula.variables());
+        final Backbone backbone = backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         assertThat(verifyBackbone(backbone, formula, formula.variables())).isTrue();
     }
 
@@ -217,7 +217,7 @@ public class BackboneTest {
         MiniSatBackbone backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         long start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         long end = System.currentTimeMillis();
         System.out.println("\nlarge formula with checkForComplementModelLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -226,7 +226,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nlarge formula with checkForRotatables disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -235,7 +235,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nlarge formula with initialUBCheckForRotatableLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -244,7 +244,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nlarge formula with checkForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -253,7 +253,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nlarge formula with initialLBCheckForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -262,7 +262,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nlarge formula with all options enabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -279,7 +279,7 @@ public class BackboneTest {
         MiniSatBackbone backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         long start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         long end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with checkForComplementModelLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -288,7 +288,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with checkForRotatables disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -297,7 +297,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with initialUBCheckForRotatableLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -306,7 +306,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with checkForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -315,7 +315,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with initialLBCheckForUPZeroLiterals disabled:");
         System.out.println("running time : " + (end - start) + " ms");
@@ -324,7 +324,7 @@ public class BackboneTest {
         backboneSolver = new MiniSatBackbone(config);
         backboneSolver.add(formula);
         start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables());
+        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         end = System.currentTimeMillis();
         System.out.println("\nsmall formulas with all options enabled:");
         System.out.println("running time : " + (end - start) + " ms");

@@ -4,6 +4,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.explanations.backbones.Backbone;
 import org.logicng.explanations.backbones.BackboneConfig;
+import org.logicng.explanations.backbones.BackboneType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
@@ -38,6 +39,15 @@ public class MiniSatBackbone extends MiniSat2Solver {
     // TODO BackboneType
 
     private final BackboneConfig config;
+
+    /**
+     * Type of the backbone computation.
+     *
+     * {@link BackboneType#ONLY_POSITIVE}: Only positive backbone variables are computed.
+     * {@link BackboneType#ONLY_NEGATIVE}: Only negative backbone variables are computed.
+     * {@link BackboneType#POSITIVE_AND_NEGATIVE}: Both, positive and negative backbone variables are computed.
+     */
+    private BackboneType type;
 
     /**
      * Candidates to test for backbone.
@@ -118,6 +128,21 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     /**
+     * Initializes the internal solver state.
+     * @param type      backbone type
+     * @param variables to test
+     */
+    private void init(final List<Integer> variables, final BackboneType type) {
+        this.type = type;
+        this.candidates = new Stack<>();
+        this.assumptions = new LNGIntVector(variables.size());
+        this.backboneMap = new HashMap<>();
+        for (final Integer var : variables) {
+            this.backboneMap.put(var, Tristate.UNDEF);
+        }
+    }
+
+    /**
      * Builds the backbone object from the computed backbone literals.
      * @param variables relevant variables
      * @return backbone
@@ -133,13 +158,19 @@ public class MiniSatBackbone extends MiniSat2Solver {
             } else {
                 switch (this.backboneMap.get(idx)) {
                     case TRUE:
-                        posBackboneVars.add(var);
+                        if (this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_POSITIVE) {
+                            posBackboneVars.add(var);
+                        }
                         break;
                     case FALSE:
-                        negBackboneVars.add(var);
+                        if (this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_NEGATIVE) {
+                            negBackboneVars.add(var);
+                        }
                         break;
                     case UNDEF:
-                        optionalVars.add(var);
+                        if (this.type == BackboneType.POSITIVE_AND_NEGATIVE) {
+                            optionalVars.add(var);
+                        }
                         break;
                     default:
                         throw new IllegalStateException("Unknown tristate: " + this.backboneMap.get(idx));
@@ -152,13 +183,15 @@ public class MiniSatBackbone extends MiniSat2Solver {
     /**
      * Computes the backbone of the given variables with respect to the formulas added to the solver.
      * @param variables variables to test
+     * @param type      backbone type
      * @return the backbone projected to the relevant variables or {@code null} if the formula on the solver with the restrictions are not satisfiable
      */
-    public Backbone compute(final Collection<Variable> variables) {
+    public Backbone compute(final Collection<Variable> variables, final BackboneType type) {
         final boolean sat = solve(null) == Tristate.TRUE;
         Backbone backbone = null;
         if (sat) {
             final List<Integer> relevantVarIndices = getRelevantVarIndices(variables);
+            init(relevantVarIndices, type);
             compute(relevantVarIndices);
             backbone = buildBackbone(variables);
         }
@@ -232,9 +265,14 @@ public class MiniSatBackbone extends MiniSat2Solver {
                 final int backboneLit = mkLit(var, !this.model.get(var));
                 addBackboneLiteral(backboneLit);
             } else {
-                final int lit = mkLit(var, !this.model.get(var));
-                if (!this.config.isInitialUBCheckForRotatableLiterals() || !isRotatable(lit)) {
-                    this.candidates.add(lit);
+                final boolean modelPhase = this.model.get(var);
+                if (this.type == BackboneType.POSITIVE_AND_NEGATIVE
+                        || this.type == BackboneType.ONLY_NEGATIVE && !modelPhase
+                        || this.type == BackboneType.ONLY_POSITIVE && modelPhase) {
+                    final int lit = mkLit(var, !modelPhase);
+                    if (!this.config.isInitialUBCheckForRotatableLiterals() || !isRotatable(lit)) {
+                        this.candidates.add(lit);
+                    }
                 }
             }
         }
@@ -270,19 +308,6 @@ public class MiniSatBackbone extends MiniSat2Solver {
         return sat;
     }
 
-    /**
-     * Initializes the internal solver state.
-     * @param variables to test
-     */
-    private void init(final List<Integer> variables) {
-        this.candidates = new Stack<>();
-        this.assumptions = new LNGIntVector(variables.size());
-        this.backboneMap = new HashMap<>();
-        for (final Integer var : variables) {
-            this.backboneMap.put(var, Tristate.UNDEF);
-        }
-    }
-
     @Override
     protected void cancelUntil(final int level) {
         if (decisionLevel() > level) {
@@ -304,7 +329,6 @@ public class MiniSatBackbone extends MiniSat2Solver {
      * @param variables variables to test
      */
     private void compute(final List<Integer> variables) {
-        init(variables);
         final Stack<Integer> candidates = createInitialCandidates(variables);
         while (candidates.size() > 0) {
             final int lit = candidates.pop();
