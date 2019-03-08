@@ -143,18 +143,25 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     /**
-     * Returns {@code true} if the backbone type
-     *
-     * @return
+     * Tests if positive backbone literals should be computed.
+     * @return {@code true} if positive backbone literals should be computed, otherwise {@code false}
      */
     private boolean isBothOrPositiveType() {
         return this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_POSITIVE;
     }
 
+    /**
+     * Tests if negative backbone literals should be computed.
+     * @return {@code true} if negative backbone literals should be computed, otherwise {@code false}
+     */
     private boolean isBothOrNegativeType() {
         return this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_NEGATIVE;
     }
 
+    /**
+     * Tests if positive and negative backbone literals should be computed.
+     * @return {@code true} if positive and negative backbone literals should be computed, otherwise {@code false}
+     */
     private boolean isBothType() {
         return this.type == BackboneType.POSITIVE_AND_NEGATIVE;
     }
