@@ -143,32 +143,51 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     /**
+     * Returns {@code true} if the backbone type
+     *
+     * @return
+     */
+    private boolean isBothOrPositiveType() {
+        return this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_POSITIVE;
+    }
+
+    private boolean isBothOrNegativeType() {
+        return this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_NEGATIVE;
+    }
+
+    private boolean isBothType() {
+        return this.type == BackboneType.POSITIVE_AND_NEGATIVE;
+    }
+
+    /**
      * Builds the backbone object from the computed backbone literals.
      * @param variables relevant variables
      * @return backbone
      */
     private Backbone buildBackbone(final Collection<Variable> variables) {
-        final SortedSet<Variable> posBackboneVars = new TreeSet<>();
-        final SortedSet<Variable> negBackboneVars = new TreeSet<>();
-        final SortedSet<Variable> optionalVars = new TreeSet<>();
+        final SortedSet<Variable> posBackboneVars = isBothOrPositiveType() ? new TreeSet<Variable>() : null;
+        final SortedSet<Variable> negBackboneVars = isBothOrNegativeType() ? new TreeSet<Variable>() : null;
+        final SortedSet<Variable> optionalVars = isBothType() ? new TreeSet<Variable>() : null;
         for (final Variable var : variables) {
             final Integer idx = this.name2idx.get(var.name());
             if (idx == null) {
-                optionalVars.add(var);
+                if (isBothType()) {
+                    optionalVars.add(var);
+                }
             } else {
                 switch (this.backboneMap.get(idx)) {
                     case TRUE:
-                        if (this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_POSITIVE) {
+                        if (isBothOrPositiveType()) {
                             posBackboneVars.add(var);
                         }
                         break;
                     case FALSE:
-                        if (this.type == BackboneType.POSITIVE_AND_NEGATIVE || this.type == BackboneType.ONLY_NEGATIVE) {
+                        if (isBothOrNegativeType()) {
                             negBackboneVars.add(var);
                         }
                         break;
                     case UNDEF:
-                        if (this.type == BackboneType.POSITIVE_AND_NEGATIVE) {
+                        if (isBothType()) {
                             optionalVars.add(var);
                         }
                         break;
@@ -266,9 +285,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
                 addBackboneLiteral(backboneLit);
             } else {
                 final boolean modelPhase = this.model.get(var);
-                if (this.type == BackboneType.POSITIVE_AND_NEGATIVE
-                        || this.type == BackboneType.ONLY_NEGATIVE && !modelPhase
-                        || this.type == BackboneType.ONLY_POSITIVE && modelPhase) {
+                if (isBothOrNegativeType() && !modelPhase || isBothOrPositiveType() && modelPhase) {
                     final int lit = mkLit(var, !modelPhase);
                     if (!this.config.isInitialUBCheckForRotatableLiterals() || !isRotatable(lit)) {
                         this.candidates.add(lit);
