@@ -10,13 +10,7 @@ import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
 import org.logicng.solvers.sat.MiniSat2Solver;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * An extension of MiniSat to compute the backbone of a formula.
@@ -27,18 +21,17 @@ import java.util.TreeSet;
  * <p>
  * Reference: Algorithm 3 in M. Janota, I. Lynce, J. Marques-Silva, Algorithms for Computing Backbones of Propositional
  * Formulae, AI Communications, Volume 28(2), 161-177, 2015.
+ *
  * @version 1.5
  * @since 1.5
  */
 public class MiniSatBackbone extends MiniSat2Solver {
 
-    // TODO experimental backbone solver and not extensively tested yet!
-
-    private final BackboneConfig config;
+    private BackboneConfig config;
 
     /**
      * Type of the backbone computation.
-     *
+     * <p>
      * {@link BackboneType#ONLY_POSITIVE}: Only positive backbone variables are computed.
      * {@link BackboneType#ONLY_NEGATIVE}: Only negative backbone variables are computed.
      * {@link BackboneType#POSITIVE_AND_NEGATIVE}: Both, positive and negative backbone variables are computed.
@@ -47,7 +40,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Candidates to test for backbone.
-     *
+     * <p>
      * The integers are solver internal literal integers.
      */
     private Stack<Integer> candidates;
@@ -59,7 +52,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Backbone map: integer literal -> Tristate.
-     *
+     * <p>
      * {@link Tristate#TRUE} is a positive backbone variable.
      * {@link Tristate#FALSE} is a negative backbone variable.
      * {@link Tristate#UNDEF} is an optional variable.
@@ -68,6 +61,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Creates a new backbone solver using the given configuration.
+     *
      * @param config configuration
      */
     public MiniSatBackbone(final BackboneConfig config) {
@@ -82,7 +76,17 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     /**
+     * Sets a new backbone configuration.
+     *
+     * @param newConfig the new {@link BackboneConfig}
+     */
+    public void setConfig(final BackboneConfig newConfig) {
+        this.config = newConfig;
+    }
+
+    /**
      * Adds an arbitrary formula to the solver.
+     *
      * @param formula the formula
      */
     public void add(final Formula formula) {
@@ -107,6 +111,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Adds the given arbitrary formulas to the solver.
+     *
      * @param formulas the formulas
      */
     public void add(final Collection<Formula> formulas) {
@@ -117,6 +122,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Returns a list of relevant variable indices. A relevant variable is known by the solver.
+     *
      * @param variables variables to convert and filter
      * @return list of relevant variable indices
      */
@@ -135,6 +141,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Initializes the internal solver state.
+     *
      * @param type      backbone type
      * @param variables to test
      */
@@ -150,6 +157,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests if positive backbone literals should be computed.
+     *
      * @return {@code true} if positive backbone literals should be computed, otherwise {@code false}
      */
     private boolean isBothOrPositiveType() {
@@ -158,6 +166,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests if negative backbone literals should be computed.
+     *
      * @return {@code true} if negative backbone literals should be computed, otherwise {@code false}
      */
     private boolean isBothOrNegativeType() {
@@ -166,6 +175,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests if positive and negative backbone literals should be computed.
+     *
      * @return {@code true} if positive and negative backbone literals should be computed, otherwise {@code false}
      */
     private boolean isBothType() {
@@ -174,6 +184,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Builds the backbone object from the computed backbone literals.
+     *
      * @param variables relevant variables
      * @return backbone
      */
@@ -214,6 +225,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Computes the backbone of the given variables with respect to the formulas added to the solver.
+     *
      * @param variables variables to test
      * @param type      backbone type
      * @return the backbone projected to the relevant variables or {@code null} if the formula on the solver with the restrictions are not satisfiable
@@ -232,8 +244,9 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests the given variable whether it is a unit propagated literal on level 0.
-     *
+     * <p>
      * Assumption: The formula on the solver has successfully been tested to be satisfiable before.
+     *
      * @param var variable index to test
      * @return {@code true} if the variable is a unit propagated literal on level 0, otherwise {@code false}
      */
@@ -243,6 +256,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests the given literal whether it is unit in the given clause.
+     *
      * @param lit    literal to test
      * @param clause clause containing the literal
      * @return {@code true} if the literal is unit, {@code false} otherwise
@@ -250,7 +264,6 @@ public class MiniSatBackbone extends MiniSat2Solver {
     private boolean isUnit(final int lit, final MSClause clause) {
         for (int i = 0; i < clause.size(); ++i) {
             final int clauseLit = clause.get(i);
-            // TODO this unit check can surely be improved
             if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
                 return false;
             }
@@ -260,6 +273,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests the given literal whether it is rotatable in the current model.
+     *
      * @param lit literal to test
      * @return {@code true} if the literal is rotatable, otherwise {@code false}
      */
@@ -279,6 +293,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Adds the given literal to the backbone result and optionally adds the literal to the solver.
+     *
      * @param lit literal to add
      */
     private void addBackboneLiteral(final int lit) {
@@ -288,6 +303,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Creates the initial candidate literals for the backbone computation.
+     *
      * @param variables variables to test
      * @return initial candidates
      */
@@ -328,6 +344,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Tests the given literal with the formula on the solver for satisfiability.
+     *
      * @param lit literal to test
      * @return {@code true} if satisfiable, otherwise {@code false}
      */
@@ -356,6 +373,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Computes the backbone for the given variables.
+     *
      * @param variables variables to test
      */
     private void compute(final List<Integer> variables) {
@@ -372,6 +390,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
 
     /**
      * Generates a solver vector of a clause.
+     *
      * @param clause the clause
      * @return the solver vector
      */

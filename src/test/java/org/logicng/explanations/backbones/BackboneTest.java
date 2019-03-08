@@ -18,11 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BackboneTest {
 
-    // TODO
-    @Test
-    public void testBackboneGeneration() {
-    }
-
     @Test
     public void testBackboneConfig() {
         BackboneConfig config = new BackboneConfig.Builder().build();
@@ -46,6 +41,42 @@ public class BackboneTest {
                 "checkForComplementModelLiterals=true\n" +
                 "checkForRotatableLiterals=true\n" +
                 "}\n");
+    }
+
+    @Test
+    public void testBackboneGeneration() {
+        final FormulaFactory f = new FormulaFactory();
+
+        final Variable x = f.variable("x");
+        final Variable y = f.variable("y");
+        final Variable z = f.variable("z");
+
+        final Formula formula1 = f.and(x.negate(), y);
+        final Formula formula2 = f.or(x, z.negate());
+        final Collection<Formula> collection = new ArrayList<>(Arrays.asList(formula1, formula2));
+
+        assertThat(BackboneGeneration.compute(formula1).getCompleteBackbone()).containsExactly(x.negate(), y);
+        assertThat(BackboneGeneration.compute(formula1, BackboneType.ONLY_NEGATIVE).getCompleteBackbone()).containsExactly(x.negate());
+        assertThat(BackboneGeneration.compute(formula1, new ArrayList<>(Arrays.asList(x, z))).getCompleteBackbone()).containsExactly(x.negate());
+        assertThat(BackboneGeneration.compute(formula1, new ArrayList<>(Arrays.asList(x, z)), BackboneType.ONLY_NEGATIVE).getCompleteBackbone()).containsExactly(x.negate());
+        assertThat(BackboneGeneration.compute(collection).getCompleteBackbone()).containsExactly(x.negate(), y, z.negate());
+        assertThat(BackboneGeneration.compute(collection, BackboneType.ONLY_NEGATIVE).getCompleteBackbone()).containsExactly(x.negate(), z.negate());
+        assertThat(BackboneGeneration.compute(collection, new ArrayList<>(Arrays.asList(x, y))).getCompleteBackbone()).containsExactly(x.negate(), y);
+        assertThat(BackboneGeneration.compute(collection, new ArrayList<>(Arrays.asList(x, y)), BackboneType.ONLY_NEGATIVE).getCompleteBackbone()).containsExactly(x.negate());
+
+        assertThat(BackboneGeneration.computePositive(formula1).getCompleteBackbone()).containsExactly(y);
+        assertThat(BackboneGeneration.computePositive(formula1, new ArrayList<>(Arrays.asList(x, z))).getCompleteBackbone()).isEmpty();
+        assertThat(BackboneGeneration.computePositive(collection).getCompleteBackbone()).containsExactly(y);
+        assertThat(BackboneGeneration.computePositive(collection, new ArrayList<>(Arrays.asList(x, y))).getCompleteBackbone()).containsExactly(y);
+
+        assertThat(BackboneGeneration.computeNegative(formula1).getCompleteBackbone()).containsExactly(x.negate());
+        assertThat(BackboneGeneration.computeNegative(formula1, new ArrayList<>(Arrays.asList(x, z))).getCompleteBackbone()).containsExactly(x.negate());
+        assertThat(BackboneGeneration.computeNegative(collection).getCompleteBackbone()).containsExactly(x.negate(), z.negate());
+        assertThat(BackboneGeneration.computeNegative(collection, new ArrayList<>(Arrays.asList(x, y))).getCompleteBackbone()).containsExactly(x.negate());
+
+        final BackboneConfig config = new BackboneConfig.Builder().checkForRotatableLiterals(false).build();
+        BackboneGeneration.setConfig(config);
+        assertThat(BackboneGeneration.compute(formula1).getCompleteBackbone()).containsExactly(x.negate(), y);
     }
 
 
@@ -204,8 +235,6 @@ public class BackboneTest {
         final Literal x = f.literal("x", true);
         final Literal y = f.literal("y", true);
         final Literal z = f.literal("z", true);
-        final Literal u = f.literal("u", true);
-        final Literal v = f.literal("v", true);
 
         Formula formula = f.not(x);
         int[] before = solver.saveState();
