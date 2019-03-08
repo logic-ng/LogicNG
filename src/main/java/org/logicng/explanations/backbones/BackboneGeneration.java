@@ -36,37 +36,37 @@ public class BackboneGeneration {
         return variables;
     }
 
-    public Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
+    public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
         solver.reset();
         solver.add(formulas);
         return solver.compute(variables, type);
     }
 
-    public Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables) {
+    public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables) {
         return compute(formulas, variables, BackboneType.POSITIVE_AND_NEGATIVE);
     }
 
-    public Backbone compute(final Collection<Formula> formulas, final BackboneType type) {
+    public static Backbone compute(final Collection<Formula> formulas, final BackboneType type) {
         return compute(formulas, variables(formulas), type);
     }
 
-    public Backbone compute(final Collection<Formula> formulas) {
+    public static Backbone compute(final Collection<Formula> formulas) {
         return compute(formulas, variables(formulas), BackboneType.POSITIVE_AND_NEGATIVE);
     }
 
-    public Backbone compute(final Formula formula, final Collection<Variable> variables, final BackboneType type) {
+    public static Backbone compute(final Formula formula, final Collection<Variable> variables, final BackboneType type) {
         return compute(Collections.singletonList(formula), variables, type);
     }
 
-    public Backbone compute(final Formula formula, final Collection<Variable> variables) {
+    public static Backbone compute(final Formula formula, final Collection<Variable> variables) {
         return compute(formula, variables, BackboneType.POSITIVE_AND_NEGATIVE);
     }
 
-    public Backbone compute(final Formula formula, final BackboneType type) {
+    public static Backbone compute(final Formula formula, final BackboneType type) {
         return compute(formula, formula.variables(), type);
     }
 
-    public Backbone compute(final Formula formula) {
+    public static Backbone compute(final Formula formula) {
         return compute(formula, formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
     }
 }
