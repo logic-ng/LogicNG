@@ -1,6 +1,5 @@
 package org.logicng.explanations.backbones;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
@@ -13,24 +12,22 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BackboneTest {
 
+    // TODO
+    @Test
+    public void testBackboneGeneration() {
+    }
+
     @Test
     public void testBackboneConfig() {
         BackboneConfig config = new BackboneConfig.Builder().build();
         assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
-                "initialLBCheckForUPZeroLiterals=true\n" +
                 "initialUBCheckForRotatableLiterals=true\n" +
-                "checkForUPZeroLiterals=true\n" +
                 "checkForComplementModelLiterals=true\n" +
                 "checkForRotatableLiterals=true\n" +
                 "}\n");
@@ -38,18 +35,14 @@ public class BackboneTest {
         config = new BackboneConfig.Builder().checkForComplementModelLiterals(false)
                 .checkForRotatableLiterals(false).initialUBCheckForRotatableLiterals(false).build();
         assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
-                "initialLBCheckForUPZeroLiterals=true\n" +
                 "initialUBCheckForRotatableLiterals=false\n" +
-                "checkForUPZeroLiterals=true\n" +
                 "checkForComplementModelLiterals=false\n" +
                 "checkForRotatableLiterals=false\n" +
                 "}\n");
 
         config = new BackboneConfig.Builder().checkForComplementModelLiterals(true).build();
         assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
-                "initialLBCheckForUPZeroLiterals=true\n" +
                 "initialUBCheckForRotatableLiterals=true\n" +
-                "checkForUPZeroLiterals=true\n" +
                 "checkForComplementModelLiterals=true\n" +
                 "checkForRotatableLiterals=true\n" +
                 "}\n");
@@ -158,7 +151,7 @@ public class BackboneTest {
     }
 
     @Test
-    public void testSmallFormula() throws IOException, ParserException {
+    public void testSmallFormulas() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
         final MiniSatBackbone backboneSolver = new MiniSatBackbone();
@@ -203,6 +196,73 @@ public class BackboneTest {
         return true;
     }
 
+    @Test
+    public void testBackboneType() {
+        final FormulaFactory f = new FormulaFactory();
+        final MiniSatBackbone solver = new MiniSatBackbone();
+
+        final Literal x = f.literal("x", true);
+        final Literal y = f.literal("y", true);
+        final Literal z = f.literal("z", true);
+        final Literal u = f.literal("u", true);
+        final Literal v = f.literal("v", true);
+
+        Formula formula = f.not(x);
+        int[] before = solver.saveState();
+        solver.add(formula);
+        Backbone backbone = solver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        Backbone backbonePositive = solver.compute(formula.variables(), BackboneType.ONLY_POSITIVE);
+        Backbone backboneNegative = solver.compute(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        assertThat(backbone.getCompleteBackbone()).containsExactly(x.negate());
+        assertThat(backbonePositive.getCompleteBackbone()).isEmpty();
+        assertThat(backboneNegative.getCompleteBackbone()).containsExactly(x.negate());
+        SortedSet<Literal> combinedPosNegBackbone = new TreeSet<>(backbonePositive.getCompleteBackbone());
+        combinedPosNegBackbone.addAll(backboneNegative.getCompleteBackbone());
+        assertThat(backbone.getCompleteBackbone()).isEqualTo(combinedPosNegBackbone);
+        solver.loadState(before);
+
+        formula = f.and(f.or(x, y.negate()), x.negate());
+        before = solver.saveState();
+        solver.add(formula);
+        backbone = solver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        backbonePositive = solver.compute(formula.variables(), BackboneType.ONLY_POSITIVE);
+        backboneNegative = solver.compute(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        assertThat(backbone.getCompleteBackbone()).containsExactly(x.negate(), y.negate());
+        assertThat(backbonePositive.getCompleteBackbone()).isEmpty();
+        assertThat(backboneNegative.getCompleteBackbone()).containsExactly(x.negate(), y.negate());
+        combinedPosNegBackbone = new TreeSet<>(backbonePositive.getCompleteBackbone());
+        combinedPosNegBackbone.addAll(backboneNegative.getCompleteBackbone());
+        assertThat(backbone.getCompleteBackbone()).isEqualTo(combinedPosNegBackbone);
+        solver.loadState(before);
+
+        formula = f.and(f.or(x, y), f.or(x.negate(), y));
+        before = solver.saveState();
+        solver.add(formula);
+        backbone = solver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        backbonePositive = solver.compute(formula.variables(), BackboneType.ONLY_POSITIVE);
+        backboneNegative = solver.compute(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        assertThat(backbone.getCompleteBackbone()).containsExactly(y);
+        assertThat(backbonePositive.getCompleteBackbone()).containsExactly(y);
+        assertThat(backboneNegative.getCompleteBackbone()).isEmpty();
+        combinedPosNegBackbone = new TreeSet<>(backbonePositive.getCompleteBackbone());
+        combinedPosNegBackbone.addAll(backboneNegative.getCompleteBackbone());
+        assertThat(backbone.getCompleteBackbone()).isEqualTo(combinedPosNegBackbone);
+        solver.loadState(before);
+
+        formula = f.and(f.and(f.or(x.negate(), y), x.negate()), f.and(z, f.or(x, y)));
+        before = solver.saveState();
+        solver.add(formula);
+        backbone = solver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        backbonePositive = solver.compute(formula.variables(), BackboneType.ONLY_POSITIVE);
+        backboneNegative = solver.compute(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        assertThat(backbone.getCompleteBackbone()).containsExactly(x.negate(), y, z);
+        assertThat(backbonePositive.getCompleteBackbone()).containsExactly(y, z);
+        assertThat(backboneNegative.getCompleteBackbone()).containsExactly(x.negate());
+        combinedPosNegBackbone = new TreeSet<>(backbonePositive.getCompleteBackbone());
+        combinedPosNegBackbone.addAll(backboneNegative.getCompleteBackbone());
+        assertThat(backbone.getCompleteBackbone()).isEqualTo(combinedPosNegBackbone);
+        solver.loadState(before);
+    }
 
     @Test
     public void testDifferentConfigurations() throws IOException, ParserException {
@@ -222,100 +282,5 @@ public class BackboneTest {
             backboneSolver.add(formula);
             assertThat(backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE)).isEqualTo(backbone);
         }
-    }
-
-    @Test
-    public void testBackboneType() {
-
-    }
-
-    // TODO: write testBackboneGeneration()
-
-
-    @Ignore
-    @Test
-    public void benchmarkLargeFormula() throws IOException, ParserException {
-        final FormulaFactory f = new FormulaFactory();
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
-
-        BackboneConfig config = new BackboneConfig.Builder().checkForComplementModelLiterals(false).build();
-        MiniSatBackbone backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        long start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        long end = System.currentTimeMillis();
-        System.out.println("\nlarge formula with checkForComplementModelLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().checkForRotatableLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nlarge formula with checkForRotatables disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nlarge formula with initialUBCheckForRotatableLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nlarge formula with all options enabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-    }
-
-    @Ignore
-    @Test
-    public void benchmarkSmallFormulas() throws IOException, ParserException {
-        final FormulaFactory f = new FormulaFactory();
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
-
-        BackboneConfig config = new BackboneConfig.Builder().checkForComplementModelLiterals(false).build();
-        MiniSatBackbone backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        long start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        long end = System.currentTimeMillis();
-        System.out.println("\nsmall formulas with checkForComplementModelLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().checkForRotatableLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nsmall formulas with checkForRotatables disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().initialUBCheckForRotatableLiterals(false).build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nsmall formulas with initialUBCheckForRotatableLiterals disabled:");
-        System.out.println("running time : " + (end - start) + " ms");
-
-        config = new BackboneConfig.Builder().build();
-        backboneSolver = new MiniSatBackbone(config);
-        backboneSolver.add(formula);
-        start = System.currentTimeMillis();
-        backboneSolver.compute(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        end = System.currentTimeMillis();
-        System.out.println("\nsmall formulas with all options enabled:");
-        System.out.println("running time : " + (end - start) + " ms");
     }
 }
