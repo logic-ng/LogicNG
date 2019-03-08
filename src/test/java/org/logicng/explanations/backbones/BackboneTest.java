@@ -3,7 +3,6 @@ package org.logicng.explanations.backbones;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
-import org.logicng.explanations.backbones.algorithms.MiniSatBackbone;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;

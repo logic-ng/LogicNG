@@ -1,10 +1,7 @@
-package org.logicng.explanations.backbones.algorithms;
+package org.logicng.explanations.backbones;
 
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
-import org.logicng.explanations.backbones.Backbone;
-import org.logicng.explanations.backbones.BackboneConfig;
-import org.logicng.explanations.backbones.BackboneType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
@@ -36,7 +33,6 @@ import java.util.TreeSet;
 public class MiniSatBackbone extends MiniSat2Solver {
 
     // TODO experimental backbone solver and not extensively tested yet!
-    // TODO BackboneType
 
     private final BackboneConfig config;
 
@@ -86,7 +82,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
 
     /**
-     * Adds an arbitrary formula to the propagator.
+     * Adds an arbitrary formula to the solver.
      * @param formula the formula
      */
     public void add(final Formula formula) {
@@ -106,6 +102,16 @@ public class MiniSatBackbone extends MiniSat2Solver {
                 break;
             default:
                 throw new IllegalStateException("Unexpected formula type in CNF: " + cnf.type());
+        }
+    }
+
+    /**
+     * Adds the given arbitrary formulas to the solver.
+     * @param formulas the formulas
+     */
+    public void add(final Collection<Formula> formulas) {
+        for (final Formula formula : formulas) {
+            add(formula);
         }
     }
 
