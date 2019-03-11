@@ -1,7 +1,5 @@
 package org.logicng.backbones;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
@@ -22,6 +20,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Unit tests for {@link BackboneGeneration}.
  * @version 1.5.0
@@ -32,28 +32,28 @@ public class BackboneGenerationTest {
     @Test
     public void testBackboneConfig() {
         BackboneConfig config = new BackboneConfig.Builder().build();
-        assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
-                "initialUBCheckForRotatableLiterals=true\n" +
-                "checkForComplementModelLiterals=true\n" +
-                "checkForRotatableLiterals=true\n" +
-                "}\n");
+        assertThat(config.toString()).isEqualTo(String.format("BackboneConfig{%n" +
+                "initialUBCheckForRotatableLiterals=true%n" +
+                "checkForComplementModelLiterals=true%n" +
+                "checkForRotatableLiterals=true%n" +
+                "}%n"));
 
         config = new BackboneConfig.Builder()
                 .checkForComplementModelLiterals(false)
                 .checkForRotatableLiterals(false)
                 .initialUBCheckForRotatableLiterals(false).build();
-        assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
-                "initialUBCheckForRotatableLiterals=false\n" +
-                "checkForComplementModelLiterals=false\n" +
-                "checkForRotatableLiterals=false\n" +
-                "}\n");
+        assertThat(config.toString()).isEqualTo(String.format("BackboneConfig{%n" +
+                "initialUBCheckForRotatableLiterals=false%n" +
+                "checkForComplementModelLiterals=false%n" +
+                "checkForRotatableLiterals=false%n" +
+                "}%n"));
 
         config = new BackboneConfig.Builder().checkForComplementModelLiterals(true).build();
-        assertThat(config.toString()).isEqualTo("BackboneConfig{\n" +
-                "initialUBCheckForRotatableLiterals=true\n" +
-                "checkForComplementModelLiterals=true\n" +
-                "checkForRotatableLiterals=true\n" +
-                "}\n");
+        assertThat(config.toString()).isEqualTo(String.format("BackboneConfig{%n" +
+                "initialUBCheckForRotatableLiterals=true%n" +
+                "checkForComplementModelLiterals=true%n" +
+                "checkForRotatableLiterals=true%n" +
+                "}%n"));
     }
 
     @Test
