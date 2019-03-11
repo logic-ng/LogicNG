@@ -15,8 +15,8 @@ import java.util.SortedSet;
 /**
  * This transformation performs subsumption on a given DNF and returns a new DNF.
  * I.e. performs as many subsumptions as possible.  A subsumption in a DNF means,
- * that e.g. a minterm {@code A & B & C} is subsumed by another clause {@code A & B}
- * and can therefore be deleted for an equivalent CNF.
+ * that e.g. a minterm {@code A & B & C} is subsumed by another minterm {@code A & B}
+ * and can therefore be deleted for an equivalent DNF.
  * @version 1.5.0
  * @since 1.5.0
  */
