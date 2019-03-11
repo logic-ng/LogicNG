@@ -5,36 +5,33 @@ import org.logicng.configurations.ConfigurationType;
 
 /**
  * The configuration object for the Backbone generation.
- * @version 1.5
- * @since 1.5
+ * @version 1.5.0
+ * @since 1.5.0
  */
 public class BackboneConfig extends Configuration {
 
     /**
-     * The algorithm for the Backbone generation.
+     * The algorithm for the Backbone generation.  Currently there is only
+     * one implemented algorithm:
+     * <ul>
+     *     <li>{@code MINI_SAT_BACKBONE}: Backbone computation with a special extended
+     *     version of MiniSat
+     * </ul>
      */
     public enum Algorithm {
         MINI_SAT_BACKBONE
     }
 
-    final Algorithm algorithm;
-
-    /**
-     * Creation of initial candidate literals
-     */
+    private final Algorithm algorithm;
     private final boolean initialUBCheckForRotatableLiterals;
-
-    /**
-     * Reductions during search
-     */
     private final boolean checkForComplementModelLiterals;
     private final boolean checkForRotatableLiterals;
 
     /**
-     * Constructs a new configuration with a given type.
+     * Constructs a new backbone configuration from a given builder.
      * @param builder the builder
      */
-    public BackboneConfig(final Builder builder) {
+    private BackboneConfig(final Builder builder) {
         super(ConfigurationType.BACKBONE);
         this.algorithm = builder.algorithm;
         this.initialUBCheckForRotatableLiterals = builder.initialUBCheckForRotatableLiterals;
@@ -42,14 +39,34 @@ public class BackboneConfig extends Configuration {
         this.checkForRotatableLiterals = builder.checkForRotatableLiterals;
     }
 
+    /**
+     * Returns the algorithm for the backbone generation.
+     * @return the algorithm for the backbone generation
+     */
+    public Algorithm getAlgorithm() {
+        return algorithm;
+    }
+
+    /**
+     * Returns whether the algorithm should check for rotatable literals during initial unit propagation.
+     * @return whether the algorithm should check for rotatable literals during initial unit propagation
+     */
     public boolean isInitialUBCheckForRotatableLiterals() {
         return this.initialUBCheckForRotatableLiterals;
     }
 
+    /**
+     * Returns whether the algorithm should check for complement model literals.
+     * @return whether the algorithm should check for complement model literals
+     */
     public boolean isCheckForComplementModelLiterals() {
         return this.checkForComplementModelLiterals;
     }
 
+    /**
+     * Returns whether the algorithm should check for rotatable literals.
+     * @return whether the algorithm should check for rotatable literals
+     */
     public boolean isCheckForRotatableLiterals() {
         return this.checkForRotatableLiterals;
     }
@@ -69,9 +86,6 @@ public class BackboneConfig extends Configuration {
      */
     public static class Builder {
 
-        /**
-         * Default configurations
-         */
         private Algorithm algorithm = Algorithm.MINI_SAT_BACKBONE;
         private boolean initialUBCheckForRotatableLiterals = true;
         private boolean checkForComplementModelLiterals = true;

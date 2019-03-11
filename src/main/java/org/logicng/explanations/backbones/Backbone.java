@@ -10,14 +10,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * A backbone (the set of literals of a formula that need to be assigned true in order for the formula to be
- * satisfied).
- * @version 1.5
- * @since 1.5
+ * This class represents a backbone.  A backbone of a formula is a set of literals (positive and/or negative) which
+ * are present in their respective polarity in every model of the given formula.  Therefore the literals must be set
+ * accordingly in order for the formula to evaluate to true.
+ * <p>
+ * A backbone of a formula has up to three sets of variables
+ * <ol>
+ *     <li>Positive backbone variables: Variables that occur positive in each model of the formula
+ *     <li>Negative backbone variables: Variables that occur negative in each model of the formula
+ *     <li>Optional variables: Variables that are neither in the positive nor in the negative backbone.
+ *     Therefore these variables can be assigned to true or false.
+ * </ol>
+ * If only the positive or negative backbone is computed, the optional variables are {@code null}.
+ * Also the variable set which was not computed is {@code null}.  You can use the methods
+ * {@link #hasPositiveBackboneResult()}, {@link #hasNegativeBackboneResult()}, and
+ * {@link #hasOptionalVariablesResult()} to check if a certain result set was computed and is present
+ * in the backbone object.
+ * @version 1.5.0
+ * @since 1.5.0
  */
 public class Backbone {
     private final SortedSet<Variable> positiveBackbone;
@@ -77,7 +93,7 @@ public class Backbone {
     }
 
     /**
-     * Returns the variables of the formula that are optional, i.e. not in the backbone.
+     * Returns the variables of the formula that are optional, i.e. not in the positive or negative backbone.
      * @return the set of non-backbone variables
      */
     public SortedSet<Variable> getOptionalVariables() {
@@ -85,8 +101,9 @@ public class Backbone {
     }
 
     /**
-     * Returns all literals of the backbone.
-     * @return the set of both positive and negative backbone literals
+     * Returns all literals of the backbone.  Positive backbone variables have positive polarity, negative
+     * backbone variables have negative polarity.
+     * @return the set of both positive and negative backbone variables as literals
      */
     public SortedSet<Literal> getCompleteBackbone() {
         final SortedSet<Literal> completeBackbone = new TreeSet<>();
@@ -102,7 +119,7 @@ public class Backbone {
     }
 
     /**
-     * Returns the backbone as a conjunction of literals.
+     * Returns the positive and negative backbone as a conjunction of literals.
      * @param f the formula factory needed for construction the backbone formula.
      * @return the backbone formula
      */
@@ -115,8 +132,8 @@ public class Backbone {
      * a negative variable to {@code Tristate.FALSE} and the optional variables to {@code Tristate.UNDEF}.
      * @return the mapping of the backbone
      */
-    public Map<Variable, Tristate> toMap() {
-        final Map<Variable, Tristate> map = new HashMap<>();
+    public SortedMap<Variable, Tristate> toMap() {
+        final SortedMap<Variable, Tristate> map = new TreeMap<>();
         if (hasPositiveBackboneResult()) {
             for (final Variable var : this.positiveBackbone) {
                 map.put(var, Tristate.TRUE);
@@ -132,7 +149,7 @@ public class Backbone {
                 map.put(var, Tristate.UNDEF);
             }
         }
-        return Collections.unmodifiableMap(map);
+        return Collections.unmodifiableSortedMap(map);
     }
 
     @Override
@@ -155,5 +172,14 @@ public class Backbone {
     @Override
     public int hashCode() {
         return Objects.hash(this.positiveBackbone, this.negativeBackbone, this.optionalVariables);
+    }
+
+    @Override
+    public String toString() {
+        return "Backbone{" +
+                "positiveBackbone=" + positiveBackbone +
+                ", negativeBackbone=" + negativeBackbone +
+                ", optionalVariables=" + optionalVariables +
+                '}';
     }
 }

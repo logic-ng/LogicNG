@@ -1,25 +1,30 @@
 package org.logicng.explanations.backbones;
 
 /**
- * An enumeration which type of backbone should be computed: only variables which have to be
- * positive (necessary), only variables which have to be negative (forbidden), or both of
- * them.
- * @version 1.5
- * @since 1.5
+ * An enumeration which type of backbone should be computed:
+ * <ul>
+ *     <li> {@code ONLY_POSITIVE}: only variables which occur positive in every model
+ *     <li> {@code ONLY_NEGATIVE}: only variables which occur negative in every model
+ *     <li> {@code POSITIVE_AND_NEGATIVE}: variables which occur positive in every model,
+ *     variables which occur negative in every model and optional variables (neither in the
+ *     positive nor negative backbone)
+ * </ul>
+ * @version 1.5.0
+ * @since 1.5.0
  */
 public enum BackboneType {
     /**
-     * Only positive (necessary) variables
+     * Only variables in the positive backbone
      */
     ONLY_POSITIVE,
 
     /**
-     * Only negative (forbidden) variables
+     * Only variables in the negative backbone
      */
     ONLY_NEGATIVE,
 
     /**
-     * Both, positive and negative variables
+     * Variables in the positive backbone, in the negative backbone and optional
      */
     POSITIVE_AND_NEGATIVE
 }

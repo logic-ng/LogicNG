@@ -9,14 +9,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Convenient methods for backbone computation.
+ * Main entry point for backbone computations.
  * <p>
- * Note: For more control over the backbone solver create an instance of {@link MiniSatBackbone} directly.
- * E.g., with an instance of {@link MiniSatBackbone} the already loaded formulas can be re-used for multiple
- * backbone computations.
- *
- * @version 1.5
- * @since 1.5
+ * This class provides convenient methods for backbone computation for many use cases.
+ * For more control over the backbone solver you can create an instance of
+ * {@link MiniSatBackbone} directly.  E.g., with an instance of {@link MiniSatBackbone}
+ * the already loaded formulas can be re-used for multiple backbone computations.
+ * @version 1.5.0
+ * @since 1.5.0
  */
 public class BackboneGeneration {
 
@@ -29,7 +29,7 @@ public class BackboneGeneration {
         // Intentionally left empty.
     }
 
-    private static SortedSet<Variable> variables(final Collection<Formula> formulas) {
+    private static SortedSet<Variable> allVariablesInFormulas(final Collection<Formula> formulas) {
         final SortedSet<Variable> variables = new TreeSet<>();
         for (final Formula formula : formulas) {
             variables.addAll(formula.variables());
@@ -38,8 +38,7 @@ public class BackboneGeneration {
     }
 
     /**
-     * Sets a new backbone configuration
-     *
+     * Sets a new backbone configuration.
      * @param config the new backbone configuration
      */
     public static void setConfig(final BackboneConfig config) {
@@ -48,13 +47,9 @@ public class BackboneGeneration {
 
     /**
      * Computes the backbone for a given collection of formulas w.r.t. a collection of variables and a backbone type.
-     *
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
-     * @param type      the type of backbone variables that should be computed:
-     *                  {@link BackboneType#ONLY_POSITIVE}: Only positive backbone variables are computed
-     *                  {@link BackboneType#ONLY_NEGATIVE}: Only negative backbone variables are computed
-     *                  {@link BackboneType#POSITIVE_AND_NEGATIVE}: Both, positive and negative backbone variables are computed
+     * @param type      the type of backbone variables that should be computed
      * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
@@ -65,7 +60,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the complete backbone for a given collection of formulas w.r.t. a collection of variables and a backbone type.
-     *
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
      * @return the backbone
@@ -76,37 +70,28 @@ public class BackboneGeneration {
 
     /**
      * Computes the backbone for a given collection of formulas w.r.t. a given backbone type.
-     *
      * @param formulas the given collection of formulas
-     * @param type     the type of backbone variables that should be computed:
-     *                 {@link BackboneType#ONLY_POSITIVE}: Only positive backbone variables are computed
-     *                 {@link BackboneType#ONLY_NEGATIVE}: Only negative backbone variables are computed
-     *                 {@link BackboneType#POSITIVE_AND_NEGATIVE}: Both, positive and negative backbone variables are computed
+     * @param type     the type of backbone variables that should be computed
      * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas, final BackboneType type) {
-        return compute(formulas, variables(formulas), type);
+        return compute(formulas, allVariablesInFormulas(formulas), type);
     }
 
     /**
      * Computes the complete backbone for a given collection of formulas.
-     *
      * @param formulas the given collection of formulas
      * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas) {
-        return compute(formulas, variables(formulas), BackboneType.POSITIVE_AND_NEGATIVE);
+        return compute(formulas, allVariablesInFormulas(formulas), BackboneType.POSITIVE_AND_NEGATIVE);
     }
 
     /**
      * Computes the backbone for a given formula w.r.t. a collection of variables and a backbone type.
-     *
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
-     * @param type      the type of backbone variables that should be computed:
-     *                  {@link BackboneType#ONLY_POSITIVE}: Only positive backbone variables are computed
-     *                  {@link BackboneType#ONLY_NEGATIVE}: Only negative backbone variables are computed
-     *                  {@link BackboneType#POSITIVE_AND_NEGATIVE}: Both, positive and negative backbone variables are computed
+     * @param type      the type of backbone variables that should be computed
      * @return the backbone
      */
     public static Backbone compute(final Formula formula, final Collection<Variable> variables, final BackboneType type) {
@@ -115,7 +100,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the complete backbone for a given formula w.r.t. a collection of variables and a backbone type.
-     *
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
      * @return the backbone
@@ -126,12 +110,8 @@ public class BackboneGeneration {
 
     /**
      * Computes the backbone for a given formula w.r.t. a given backbone type.
-     *
      * @param formula the given formula
-     * @param type    the type of backbone variables that should be computed:
-     *                {@link BackboneType#ONLY_POSITIVE}: Only positive backbone variables are computed
-     *                {@link BackboneType#ONLY_NEGATIVE}: Only negative backbone variables are computed
-     *                {@link BackboneType#POSITIVE_AND_NEGATIVE}: Both, positive and negative backbone variables are computed
+     * @param type    the type of backbone variables that should be computed
      * @return the backbone
      */
     public static Backbone compute(final Formula formula, final BackboneType type) {
@@ -140,7 +120,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the complete backbone for a given formula.
-     *
      * @param formula the given formula
      * @return the backbone
      */
@@ -150,7 +129,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the positive backbone variables for a given collection of formulas w.r.t. a collection of variables.
-     *
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
      * @return the positive backbone
@@ -161,17 +139,15 @@ public class BackboneGeneration {
 
     /**
      * Computes the positive backbone variables for a given collection of formulas.
-     *
      * @param formulas the given collection of formulas
      * @return the positive backbone
      */
     public static Backbone computePositive(final Collection<Formula> formulas) {
-        return compute(formulas, variables(formulas), BackboneType.ONLY_POSITIVE);
+        return compute(formulas, allVariablesInFormulas(formulas), BackboneType.ONLY_POSITIVE);
     }
 
     /**
-     * Computes the positive backbone variables for a given formula w.r.t. a collection of variables.
-     *
+     * Computes the positive backbone allVariablesInFormulas for a given formula w.r.t. a collection of variables.
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
      * @return the positive backbone
@@ -182,7 +158,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the positive backbone variables for a given formula.
-     *
      * @param formula the given formula
      * @return the positive backbone
      */
@@ -192,7 +167,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the negative backbone variables for a given collection of formulas w.r.t. a collection of variables.
-     *
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
      * @return the negative backbone
@@ -203,17 +177,15 @@ public class BackboneGeneration {
 
     /**
      * Computes the negative backbone variables for a given collection of formulas.
-     *
      * @param formulas the given collection of formulas
      * @return the negative backbone
      */
     public static Backbone computeNegative(final Collection<Formula> formulas) {
-        return compute(formulas, variables(formulas), BackboneType.ONLY_NEGATIVE);
+        return compute(formulas, allVariablesInFormulas(formulas), BackboneType.ONLY_NEGATIVE);
     }
 
     /**
      * Computes the negative backbone variables for a given formula w.r.t. a collection of variables.
-     *
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
      * @return the negative backbone
@@ -224,7 +196,6 @@ public class BackboneGeneration {
 
     /**
      * Computes the negative backbone variables for a given formula.
-     *
      * @param formula the given formula
      * @return the negative backbone
      */
