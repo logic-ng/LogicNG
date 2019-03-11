@@ -10,19 +10,6 @@ import org.logicng.configurations.ConfigurationType;
  */
 public class BackboneConfig extends Configuration {
 
-    /**
-     * The algorithm for the Backbone generation.  Currently there is only
-     * one implemented algorithm:
-     * <ul>
-     *     <li>{@code MINI_SAT_BACKBONE}: Backbone computation with a special extended
-     *     version of MiniSat
-     * </ul>
-     */
-    public enum Algorithm {
-        MINI_SAT_BACKBONE
-    }
-
-    private final Algorithm algorithm;
     private final boolean initialUBCheckForRotatableLiterals;
     private final boolean checkForComplementModelLiterals;
     private final boolean checkForRotatableLiterals;
@@ -33,18 +20,9 @@ public class BackboneConfig extends Configuration {
      */
     private BackboneConfig(final Builder builder) {
         super(ConfigurationType.BACKBONE);
-        this.algorithm = builder.algorithm;
         this.initialUBCheckForRotatableLiterals = builder.initialUBCheckForRotatableLiterals;
         this.checkForComplementModelLiterals = builder.checkForComplementModelLiterals;
         this.checkForRotatableLiterals = builder.checkForRotatableLiterals;
-    }
-
-    /**
-     * Returns the algorithm for the backbone generation.
-     * @return the algorithm for the backbone generation
-     */
-    public Algorithm getAlgorithm() {
-        return algorithm;
     }
 
     /**
@@ -85,21 +63,9 @@ public class BackboneConfig extends Configuration {
      * The builder for a Backbone configuration.
      */
     public static class Builder {
-
-        private Algorithm algorithm = Algorithm.MINI_SAT_BACKBONE;
         private boolean initialUBCheckForRotatableLiterals = true;
         private boolean checkForComplementModelLiterals = true;
         private boolean checkForRotatableLiterals = true;
-
-        /**
-         * Sets the algorithm for the Backbone generation. The default value is {@code MINI_SAT_BACKBONE}.
-         * @param algorithm the algorithm for the Backbone generation
-         * @return the builder
-         */
-        public Builder algorithm(final Algorithm algorithm) {
-            this.algorithm = algorithm;
-            return this;
-        }
 
         /**
          * Sets whether the algorithm should check for rotatable literals. The default value is {@code true}.

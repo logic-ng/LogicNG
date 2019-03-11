@@ -39,7 +39,6 @@ public class BackboneGenerationTest {
                 "}\n");
 
         config = new BackboneConfig.Builder()
-                .algorithm(BackboneConfig.Algorithm.MINI_SAT_BACKBONE)
                 .checkForComplementModelLiterals(false)
                 .checkForRotatableLiterals(false)
                 .initialUBCheckForRotatableLiterals(false).build();
@@ -55,7 +54,6 @@ public class BackboneGenerationTest {
                 "checkForComplementModelLiterals=true\n" +
                 "checkForRotatableLiterals=true\n" +
                 "}\n");
-        assertThat(config.getAlgorithm()).isEqualTo(BackboneConfig.Algorithm.MINI_SAT_BACKBONE);
     }
 
     @Test
