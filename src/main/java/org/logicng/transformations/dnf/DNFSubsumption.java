@@ -17,6 +17,7 @@ import java.util.SortedSet;
  * I.e. performs as many subsumptions as possible.  A subsumption in a DNF means,
  * that e.g. a minterm {@code A & B & C} is subsumed by another minterm {@code A & B}
  * and can therefore be deleted for an equivalent DNF.
+ *
  * @version 1.5.0
  * @since 1.5.0
  */
@@ -34,7 +35,7 @@ public class DNFSubsumption extends Subsumption implements FormulaTransformation
         final UBTree<Literal> ubTree = generateSubsumedUBTree(formula);
         final List<Formula> minterms = new LinkedList<>();
         for (final SortedSet<Literal> literals : ubTree.allSets()) {
-            minterms.add(formula.factory().clause(literals));
+            minterms.add(formula.factory().and(literals));
         }
         return formula.factory().or(minterms);
     }
