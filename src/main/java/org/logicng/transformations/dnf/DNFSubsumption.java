@@ -27,7 +27,7 @@ public class DNFSubsumption extends Subsumption implements FormulaTransformation
         if (!formula.holds(new DNFPredicate())) {
             throw new IllegalArgumentException("DNF subsumption can only be applied to formulas in DNF");
         }
-        if (formula.type().precedence() >= FType.LITERAL.precedence() || formula.type() == FType.OR) {
+        if (formula.type().precedence() >= FType.LITERAL.precedence() || formula.type() == FType.AND) {
             return formula;
         }
         assert formula.type() == FType.OR;
