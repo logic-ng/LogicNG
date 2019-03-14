@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-20xx Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -86,37 +86,37 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
 
   @Override
   protected String implication() {
-    return "\\rightarrow";
+    return " \\rightarrow ";
   }
 
   @Override
   protected String equivalence() {
-    return "\\leftrightarrow";
+    return " \\leftrightarrow ";
   }
 
   @Override
   protected String and() {
-    return "\\land";
+    return " \\land ";
   }
 
   @Override
   protected String or() {
-    return "\\lor";
+    return " \\lor ";
   }
 
   @Override
   protected String pbComparator(CType comparator) {
     switch (comparator) {
       case EQ:
-        return "=";
+        return " = ";
       case LE:
-        return "\\leq";
+        return " \\leq ";
       case LT:
-        return "<";
+        return " < ";
       case GE:
-        return "\\geq";
+        return " \\geq ";
       case GT:
-        return ">";
+        return " > ";
       default:
         throw new IllegalArgumentException("Unknown pseudo-Boolean comparison: " + comparator);
     }
@@ -129,7 +129,7 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
 
   @Override
   protected String pbAdd() {
-    return "+";
+    return " + ";
   }
 
   @Override

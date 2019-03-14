@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-20xx Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -32,86 +32,87 @@ import org.logicng.formulas.CType;
 
 /**
  * The default string representation for formulas.
+ *
  * @version 1.0
  * @since 1.0
  */
-public final class DefaultStringRepresentation extends FormulaStringRepresentation {
+public class DefaultStringRepresentation extends FormulaStringRepresentation {
 
-  @Override
-  protected String falsum() {
-    return "$false";
-  }
-
-  @Override
-  protected String verum() {
-    return "$true";
-  }
-
-  @Override
-  protected String negation() {
-    return "~";
-  }
-
-  @Override
-  protected String implication() {
-    return "=>";
-  }
-
-  @Override
-  protected String equivalence() {
-    return "<=>";
-  }
-
-  @Override
-  protected String and() {
-    return "&";
-  }
-
-  @Override
-  protected String or() {
-    return "|";
-  }
-
-  @Override
-  protected String pbComparator(final CType comparator) {
-    switch (comparator) {
-      case EQ:
-        return "=";
-      case LE:
-        return "<=";
-      case LT:
-        return "<";
-      case GE:
-        return ">=";
-      case GT:
-        return ">";
-      default:
-        throw new IllegalArgumentException("Unknown pseudo-Boolean comparison: " + comparator);
+    @Override
+    protected String falsum() {
+        return "$false";
     }
-  }
 
-  @Override
-  protected String pbMul() {
-    return "*";
-  }
+    @Override
+    protected String verum() {
+        return "$true";
+    }
 
-  @Override
-  protected String pbAdd() {
-    return "+";
-  }
+    @Override
+    protected String negation() {
+        return "~";
+    }
 
-  @Override
-  protected String lbr() {
-    return "(";
-  }
+    @Override
+    protected String implication() {
+        return " => ";
+    }
 
-  @Override
-  protected String rbr() {
-    return ")";
-  }
+    @Override
+    protected String equivalence() {
+        return " <=> ";
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    protected String and() {
+        return " & ";
+    }
+
+    @Override
+    protected String or() {
+        return " | ";
+    }
+
+    @Override
+    protected String pbComparator(final CType comparator) {
+        switch (comparator) {
+            case EQ:
+                return " = ";
+            case LE:
+                return " <= ";
+            case LT:
+                return " < ";
+            case GE:
+                return " >= ";
+            case GT:
+                return " > ";
+            default:
+                throw new IllegalArgumentException("Unknown pseudo-Boolean comparison: " + comparator);
+        }
+    }
+
+    @Override
+    protected String pbMul() {
+        return "*";
+    }
+
+    @Override
+    protected String pbAdd() {
+        return " + ";
+    }
+
+    @Override
+    protected String lbr() {
+        return "(";
+    }
+
+    @Override
+    protected String rbr() {
+        return ")";
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

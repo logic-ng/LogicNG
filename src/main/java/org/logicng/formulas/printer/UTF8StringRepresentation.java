@@ -10,7 +10,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-//  Copyright 2015-20xx Christoph Zengler                                //
+//  Copyright 2015-2018 Christoph Zengler                                //
 //                                                                       //
 //  Licensed under the Apache License, Version 2.0 (the "License");      //
 //  you may not use this file except in compliance with the License.     //
@@ -126,37 +126,37 @@ public final class UTF8StringRepresentation extends FormulaStringRepresentation 
 
   @Override
   protected String implication() {
-    return "⇒";
+    return " ⇒ ";
   }
 
   @Override
   protected String equivalence() {
-    return "⇔";
+    return " ⇔ ";
   }
 
   @Override
   protected String and() {
-    return "∧";
+    return " ∧ ";
   }
 
   @Override
   protected String or() {
-    return "∨";
+    return " ∨ ";
   }
 
   @Override
   protected String pbComparator(CType comparator) {
     switch (comparator) {
       case EQ:
-        return "=";
+        return " = ";
       case LE:
-        return "≤";
+        return " ≤ ";
       case LT:
-        return "<";
+        return " < ";
       case GE:
-        return "≥";
+        return " ≥ ";
       case GT:
-        return ">";
+        return " > ";
       default:
         throw new IllegalArgumentException("Unknown pseudo-Boolean comparison: " + comparator);
     }
@@ -169,7 +169,7 @@ public final class UTF8StringRepresentation extends FormulaStringRepresentation 
 
   @Override
   protected String pbAdd() {
-    return "+";
+    return " + ";
   }
 
   @Override
