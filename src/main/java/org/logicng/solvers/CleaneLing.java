@@ -31,6 +31,7 @@ package org.logicng.solvers;
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
+import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.datastructures.Tristate;
@@ -48,6 +49,7 @@ import org.logicng.solvers.sat.CleaneLingConfig;
 import org.logicng.solvers.sat.CleaneLingMinimalisticSolver;
 import org.logicng.solvers.sat.CleaneLingSolver;
 import org.logicng.solvers.sat.CleaneLingStyleSolver;
+import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -376,5 +378,22 @@ public final class CleaneLing extends SATSolver {
   @Override
   public String toString() {
     return String.format("CleaneLing{result=%s, idx2name=%s}", this.result, this.idx2name);
+  }
+
+  private Literal getLiteralFromIntLiteral(final int lit) {
+    return this.f.literal(this.idx2name.get(Math.abs(lit)), CleaneLingStyleSolver.sign(lit) == (byte) 1);
+  }
+
+  @Override
+  public SortedSet<Literal> upZeroLiterals() {
+    if (this.result == UNDEF) {
+      throw new IllegalStateException("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
+    }
+    final LNGIntVector literals = this.solver.upZeroLiterals();
+    final SortedSet<Literal> upZeroLiterals = new TreeSet<>();
+    for (int i = 0; i < literals.size(); ++i) {
+      upZeroLiterals.add(getLiteralFromIntLiteral(literals.get(i)));
+    }
+    return upZeroLiterals;
   }
 }

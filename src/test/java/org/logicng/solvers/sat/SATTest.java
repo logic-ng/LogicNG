@@ -61,12 +61,14 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
@@ -817,6 +819,57 @@ public class SATTest {
         solver.addWithoutUnknown(add4);
         Assert.assertEquals(FALSE, solver.sat());
       }
+    }
+  }
+
+  @Test
+  public void testUPZeroLiterals() throws ParserException {
+    // Note: The complete unit propagated set of literals on level 0 depends on each solver's added learned clauses during the solving process
+    final Map<Formula, SortedSet<Literal>> expectedSubsets = new HashMap<>();
+    expectedSubsets.put(this.f.verum(), new TreeSet<Literal>());
+    expectedSubsets.put(this.parser.parse("a"), new TreeSet<>(Collections.singletonList(this.f.literal("a", true))));
+    expectedSubsets.put(this.parser.parse("a | b"), new TreeSet<Literal>());
+    expectedSubsets.put(this.parser.parse("a & b"), new TreeSet<>(Arrays.asList(this.f.literal("a", true), this.f.literal("b", true))));
+    expectedSubsets.put(this.parser.parse("a & ~b"), new TreeSet<>(Arrays.asList(this.f.literal("a", true), this.f.literal("b", false))));
+    expectedSubsets.put(this.parser.parse("(a | c) & ~b"), new TreeSet<>(Collections.singletonList(this.f.literal("b", false))));
+    expectedSubsets.put(this.parser.parse("(b | c) & ~b & (~c | d)"), new TreeSet<>(Arrays.asList(
+            this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", true))));
+    for (final SATSolver solver : this.solvers) {
+      for (final Formula formula : expectedSubsets.keySet()) {
+        solver.reset();
+        solver.add(formula);
+        final boolean res = solver.sat() == TRUE;
+        assertThat(res).isTrue();
+        final SortedSet<Literal> upLiterals = solver.upZeroLiterals();
+        assertThat(upLiterals).containsAll(expectedSubsets.get(formula));
+      }
+    }
+  }
+
+  @Test
+  public void testUPZeroLiteralsDimacsFiles() throws IOException {
+    final File testFolder = new File("src/test/resources/sat");
+    final File[] files = testFolder.listFiles();
+    assert files != null;
+    for (final SATSolver solver : this.solvers) {
+      for (final File file : files) {
+        final String fileName = file.getName();
+        if (fileName.endsWith(".cnf")) {
+          readCNF(solver, file);
+          final boolean res = solver.sat() == TRUE;
+          if (res) {
+            final SortedSet<Literal> upZeroLiterals = solver.upZeroLiterals();
+            final List<Literal> negations = new ArrayList<>(upZeroLiterals.size());
+            for (final Literal lit : upZeroLiterals) {
+              negations.add(lit.negate());
+            }
+            solver.add(this.f.or(negations));
+            // Test if CNF implies identified unit propagated literals on level zero, i.e., each literal is a backbone literal
+            assertThat(solver.sat()).isEqualTo(FALSE);
+          }
+        }
+      }
+      solver.reset();
     }
   }
 }

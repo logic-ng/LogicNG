@@ -110,7 +110,7 @@ public abstract class CleaneLingStyleSolver {
    * @param lit the literal
    * @return -1 for a negative literal, 1 for a positive literal
    */
-  protected static byte sign(int lit) {
+  public static byte sign(int lit) {
     return lit < 0 ? (byte) -1 : (byte) 1;
   }
 
@@ -691,5 +691,22 @@ public abstract class CleaneLingStyleSolver {
     int varsEliminated;
     int litsLearned;
     int litsMinimized;
+  }
+
+  /**
+   * Returns the unit propagated literals on level zero.
+   * @return unit propagated literal on level zero
+   */
+  public LNGIntVector upZeroLiterals() {
+    final LNGIntVector upZeroLiterals = new LNGIntVector();
+    for (int i = 0; i < this.trail.size(); ++i) {
+      final int lit = this.trail.get(i);
+      if (var(lit).level() > 0) {
+        break;
+      } else {
+        upZeroLiterals.push(lit);
+      }
+    }
+    return upZeroLiterals;
   }
 }

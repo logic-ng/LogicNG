@@ -559,4 +559,21 @@ public final class MiniSat extends SATSolver {
   public String toString() {
     return String.format("MiniSat{result=%s, incremental=%s}", this.result, this.incremental);
   }
+
+  private Literal getLiteralFromIntLiteral(final int lit) {
+    return this.f.literal(this.solver.nameForIdx(MiniSatStyleSolver.var(lit)), !MiniSatStyleSolver.sign(lit));
+  }
+
+  @Override
+  public SortedSet<Literal> upZeroLiterals() {
+    if (this.result == UNDEF) {
+      throw new IllegalStateException("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
+    }
+    final LNGIntVector literals = this.solver.upZeroLiterals();
+    final SortedSet<Literal> upZeroLiterals = new TreeSet<>();
+    for (int i = 0; i < literals.size(); ++i) {
+      upZeroLiterals.add(getLiteralFromIntLiteral(literals.get(i)));
+    }
+    return upZeroLiterals;
+  }
 }

@@ -697,4 +697,21 @@ public abstract class MiniSatStyleSolver {
               '}';
     }
   }
+
+  /**
+   * Returns the unit propagated literals on level zero.
+   * @return unit propagated literal on level zero
+   */
+  public LNGIntVector upZeroLiterals() {
+    final LNGIntVector upZeroLiterals = new LNGIntVector();
+    for (int i = 0; i < this.trail.size(); ++i) {
+      final int lit = this.trail.get(i);
+      if (v(lit).level() > 0) {
+        break;
+      } else {
+        upZeroLiterals.push(lit);
+      }
+    }
+    return upZeroLiterals;
+  }
 }
