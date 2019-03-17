@@ -1083,7 +1083,7 @@ public class FormulaFactory {
   /**
    * Helper class for the operands of a pseudo-Boolean constraint.
    */
-  static final class PBOperands {
+  private static final class PBOperands {
     private final Literal[] literals;
     private final int[] coefficients;
     private final CType comparator;
@@ -1096,32 +1096,11 @@ public class FormulaFactory {
      * @param comparator   the comparator of the constraint
      * @param rhs          the right-hand side of the constraint
      */
-    PBOperands(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs) {
-      this.literals = Arrays.copyOf(literals, literals.length);
-      this.coefficients = Arrays.copyOf(coefficients, coefficients.length);
+    public PBOperands(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs) {
+      this.literals = literals;
+      this.coefficients = coefficients;
       this.comparator = comparator;
       this.rhs = rhs;
-      sortArrays(this.literals, this.coefficients);
-    }
-
-    static void sortArrays(final Literal[] literals, final int[] coefficients) {
-      for (int i = 0; i < literals.length; i++)
-        for (int j = i; j > 0 && (literals[j - 1]).compareTo(literals[j]) > 0; j--) {
-          swapLiteral(literals, j, j - 1);
-          swapInt(coefficients, j, j - 1);
-        }
-    }
-
-    private static void swapLiteral(final Literal[] x, final int a, final int b) {
-      final Literal t = x[a];
-      x[a] = x[b];
-      x[b] = t;
-    }
-
-    private static void swapInt(final int[] x, final int a, final int b) {
-      final int t = x[a];
-      x[a] = x[b];
-      x[b] = t;
     }
 
     @Override

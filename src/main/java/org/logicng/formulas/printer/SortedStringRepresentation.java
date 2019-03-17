@@ -122,6 +122,10 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
                 return naryOperator(nary, String.format("%s", op));
             case PBC:
                 final PBConstraint pbc = (PBConstraint) formula;
+                if (pbc.isTrivialFalse())
+                    return this.falsum();
+                else if (pbc.isTrivialTrue())
+                    return this.verum();
                 return String.format("%s%s%d", pbLhs(pbc.operands(), pbc.coefficients()), pbComparator(pbc.comparator()), pbc.rhs());
             default:
                 throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());

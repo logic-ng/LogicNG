@@ -52,7 +52,7 @@ public final class CFalse extends Constant {
 
   @Override
   public Constant negate() {
-    return this.f.verum();
+    return f.verum();
   }
 
   @Override
@@ -62,6 +62,6 @@ public final class CFalse extends Constant {
 
   @Override
   public boolean equals(final Object other) {
-    return other instanceof CFalse || other instanceof PBConstraint && ((PBConstraint) other).isTrivialFalse();
+    return other instanceof CFalse;
   }
 }
