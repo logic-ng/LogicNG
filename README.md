@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.4.1-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.5.0-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -19,7 +19,7 @@ LogicNG is released in the Maven Central Repository.  To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.4.1</version>
+  <version>1.5.0</version>
 </dependency>
 ```
 to your Maven POM.
@@ -62,6 +62,15 @@ We recently started a Wiki section for a [FAQ](https://github.com/logic-ng/Logic
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available through the German company [BooleWorks GmbH](http://www.booleworks.com) - the company behind LogicNG.  Please contact Christoph Zengler at christoph@logicng.org for further details.
 
 ## Changelog
+
+### Version 1.5.0 (Release March 2019)
+* Algorithm & data structures for efficiently computing backbones of formulas
+* Data structures for UBTrees in order to efficiently identify sub- and supersets
+* CNF and DNF subsumption as formula transformations
+* Backbone simplifier (compute and propagate the backbone of a formula)
+* A new sorted formula formatter which respects a given variable ordering when printing formulas
+* Minor code refactorings and improvements
+* Deprecation of CleaneLing - this solver will be removed in future versions.
 
 ### Version 1.4.1 (Release December 2018)
 * Some refactorings for unit tests on Windows regarding encodings
