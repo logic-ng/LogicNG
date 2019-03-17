@@ -47,8 +47,8 @@ import java.util.*;
  * - If all variables of the ordering have been in both f1 and f2, the two formulas can be ordered arbitrarily.
  * <p>
  * Example 1:
- * Given the variable ordering [a, b, c, d], the sorted string representation for a simple conjunction b & d & ~a & ~c
- * would be ~a & b & ~c & d.
+ * Given the variable ordering [a, b, c, d], the sorted string representation for a simple conjunction b &amp; d &amp; ~a &amp; ~c
+ * would be ~a &amp; b &amp; ~c &amp; d.
  * <p>
  * It is important to note that the first variable that appear in only one of the compared sub-formulas decides their
  * ordering. Hence, apart from the deciding variable, the other variables of the sub-formulas might suggest a different
@@ -57,19 +57,19 @@ import java.util.*;
  * <p>
  * Example 2:
  * Given the variable ordering [a, b, c, d, e, f], the sorted string representation for the formula
- * b | c | d <=> a | e | f would be a | e | f <=> b | c | d.
+ * b | c | d &lt;=&gt; a | e | f would be a | e | f &lt;=&gt; b | c | d.
  * <p>
  * Furthermore, the fact that implications cannot be ordered should also be kept in mind.
  * <p>
  * Example 3:
- * Given the variable ordering [a, b], the sorted string representation for the formula b => a stays b => a.
+ * Given the variable ordering [a, b], the sorted string representation for the formula b =&gt; a stays b =&gt; a.
  * <p>
  * Finally, the user should be aware that any variables of a formula that do not appear in the given ordering will be
  * sorted after the variables that do appear in the ordering.
  * <p>
  * Example 4:
- * Given the variable ordering [b, c, d], the sorted string representation for the formula a & (c | (d => b)) would be
- * ((d => b) | c) & a.
+ * Given the variable ordering [b, c, d], the sorted string representation for the formula a &amp; (c | (d =&gt; b)) would be
+ * ((d =&gt; b) | c) &amp; a.
  *
  * @version 1.5.0
  * @since 1.5.0
@@ -244,9 +244,9 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
          *
          * @param formula1 the first formula
          * @param formula2 the second formula
-         * @return -1 iff formula1 < formula2 (when for the first time a variable of the ordering appears in formula1 but not formula2)
+         * @return -1 iff formula1 &lt; formula2 (when for the first time a variable of the ordering appears in formula1 but not formula2)
          * 0 iff formula1 = formula2 (when all variables of the ordering appear (or not appear) in both formula1 and formula2)
-         * 1 iff formula1 > formula2 (when for the first time a variable of the ordering appears in formula2 but not formula1)
+         * 1 iff formula1 &gt; formula2 (when for the first time a variable of the ordering appears in formula2 but not formula1)
          */
         @Override
         public int compare(final Formula formula1, final Formula formula2) {
