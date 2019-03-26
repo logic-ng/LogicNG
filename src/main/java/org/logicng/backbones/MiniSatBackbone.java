@@ -294,8 +294,8 @@ public class MiniSatBackbone extends MiniSat2Solver {
      * @return {@code true} if the literal is rotatable, otherwise {@code false}
      */
     private boolean isRotatable(final int lit) {
-        // Unit propagated literals cannot be rotatable
-        if (v(var(lit)).reason() != null) {
+        // A rotatable literal MUST NOT be a unit propagated literal
+        if (v(lit).reason() != null) {
             return false;
         }
         // A rotatable literal MUST NOT be unit
