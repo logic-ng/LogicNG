@@ -34,6 +34,7 @@ import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
+import org.logicng.util.FormulaHelper;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -418,19 +419,14 @@ public final class PBConstraint extends Formula {
   @Override
   public SortedSet<Variable> variables() {
     if (this.variables == null) {
-      this.variables = new TreeSet<>();
-      for (final Literal lit : this.literals)
-        this.variables.add(lit.variable());
-      this.variables = Collections.unmodifiableSortedSet(this.variables);
+      this.variables = Collections.unmodifiableSortedSet(FormulaHelper.variables(literals));
     }
     return this.variables;
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    final SortedSet<Literal> lits = new TreeSet<>();
-    Collections.addAll(lits, this.literals);
-    return Collections.unmodifiableSortedSet(lits);
+    return Collections.unmodifiableSortedSet(FormulaHelper.literals(literals));
   }
 
   @Override

@@ -30,6 +30,7 @@ package org.logicng.backbones;
 
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
+import org.logicng.util.FormulaHelper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -55,14 +56,6 @@ public class BackboneGeneration {
      */
     private BackboneGeneration() {
         // Intentionally left empty.
-    }
-
-    private static SortedSet<Variable> allVariablesInFormulas(final Collection<Formula> formulas) {
-        final SortedSet<Variable> variables = new TreeSet<>();
-        for (final Formula formula : formulas) {
-            variables.addAll(formula.variables());
-        }
-        return variables;
     }
 
     /**
@@ -103,7 +96,7 @@ public class BackboneGeneration {
      * @return the backbone or {@code null} if the formula is UNSAT
      */
     public static Backbone compute(final Collection<Formula> formulas, final BackboneType type) {
-        return compute(formulas, allVariablesInFormulas(formulas), type);
+        return compute(formulas, FormulaHelper.variables(formulas), type);
     }
 
     /**
@@ -112,7 +105,7 @@ public class BackboneGeneration {
      * @return the backbone or {@code null} if the formula is UNSAT
      */
     public static Backbone compute(final Collection<Formula> formulas) {
-        return compute(formulas, allVariablesInFormulas(formulas), BackboneType.POSITIVE_AND_NEGATIVE);
+        return compute(formulas, FormulaHelper.variables(formulas), BackboneType.POSITIVE_AND_NEGATIVE);
     }
 
     /**
@@ -171,7 +164,7 @@ public class BackboneGeneration {
      * @return the positive backbone or {@code null} if the formula is UNSAT
      */
     public static Backbone computePositive(final Collection<Formula> formulas) {
-        return compute(formulas, allVariablesInFormulas(formulas), BackboneType.ONLY_POSITIVE);
+        return compute(formulas, FormulaHelper.variables(formulas), BackboneType.ONLY_POSITIVE);
     }
 
     /**
@@ -209,7 +202,7 @@ public class BackboneGeneration {
      * @return the negative backbone or {@code null} if the formula is UNSAT
      */
     public static Backbone computeNegative(final Collection<Formula> formulas) {
-        return compute(formulas, allVariablesInFormulas(formulas), BackboneType.ONLY_NEGATIVE);
+        return compute(formulas, FormulaHelper.variables(formulas), BackboneType.ONLY_NEGATIVE);
     }
 
     /**

@@ -30,6 +30,7 @@ package org.logicng.formulas;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
+import org.logicng.util.FormulaHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,22 +108,14 @@ public abstract class NAryOperator extends Formula {
   @Override
   public SortedSet<Variable> variables() {
     if (this.variables == null) {
-      final SortedSet<Variable> set = new TreeSet<>();
-      for (final Formula op : this.operands) {
-        set.addAll(op.variables());
-      }
-      this.variables = Collections.unmodifiableSortedSet(set);
+      this.variables = Collections.unmodifiableSortedSet(FormulaHelper.variables(operands));
     }
     return this.variables;
   }
 
   @Override
   public SortedSet<Literal> literals() {
-    final SortedSet<Literal> set = new TreeSet<>();
-    for (final Formula op : this.operands) {
-      set.addAll(op.literals());
-    }
-    return Collections.unmodifiableSortedSet(set);
+    return Collections.unmodifiableSortedSet(FormulaHelper.literals(operands));
   }
 
   @Override

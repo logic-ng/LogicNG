@@ -36,6 +36,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.functions.LiteralProfileFunction;
 import org.logicng.functions.VariableProfileFunction;
+import org.logicng.util.FormulaHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -211,9 +212,7 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
    */
   public SortedSet<Variable> variables() {
     if (this.variables == null) {
-      this.variables = new TreeSet<>();
-      for (final Formula f : this.formulas)
-        this.variables.addAll(f.variables());
+      this.variables = FormulaHelper.variables(formulas);
     }
     return this.variables;
   }
@@ -223,10 +222,7 @@ public final class ImmutableFormulaList implements Iterable<Formula> {
    * @return all literals occurring in this formula list
    */
   public SortedSet<Literal> literals() {
-    final SortedSet<Literal> literals = new TreeSet<>();
-    for (final Formula f : this.formulas)
-      literals.addAll(f.literals());
-    return literals;
+    return FormulaHelper.literals(formulas);
   }
 
   /**
