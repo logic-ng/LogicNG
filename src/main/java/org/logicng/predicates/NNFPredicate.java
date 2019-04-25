@@ -26,33 +26,59 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.predicates;
+
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaPredicate;
+
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_NNF;
 
 /**
- * The pre-defined predicate cache entries.
- * @version 1.3
- * @since 1.0
+ * NNF predicate.  Indicates whether a formula is in NNF or not.
+ * @version 1.6.0
+ * @since 1.6.0
  */
-public enum PredicateCacheEntry implements CacheEntry {
-  IS_NNF("negation normal form"),
-  IS_CNF("conjunctive normal form"),
-  IS_DNF("disjunctive normal form"),
-  IS_AIG("and-inverter graph"),
-  IS_SAT("satisfiable"),
-  IS_TAUTOLOGY("tautology");
+public final class NNFPredicate implements FormulaPredicate {
+    @Override
+    public boolean test(final Formula formula, boolean cache) {
+        final Tristate cached = formula.predicateCacheEntry(IS_NNF);
+        if (cached != Tristate.UNDEF)
+            return cached == Tristate.TRUE;
+        boolean result;
+        switch (formula.type()) {
+            case FALSE:
+            case TRUE:
+            case LITERAL:
+                result = true;
+                break;
+            case AND:
+            case OR:
+                result = true;
+                for (final Formula op : formula)
+                    if (!test(op, cache)) {
+                        result = false;
+                        break;
+                    }
+                break;
+            case NOT:
+            case IMPL:
+            case EQUIV:
+            case PBC:
+                result = false;
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot compute NNF predicate on " + formula.type());
+        }
+        if (cache)
+            formula.setPredicateCacheEntry(IS_NNF, result);
+        return result;
+    }
 
-  private final String description;
-
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  PredicateCacheEntry(final String description) {
-    this.description = description;
-  }
-
-  @Override
-  public String description() {
-    return "PredicateCacheEntry{description=" + description + "}";
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

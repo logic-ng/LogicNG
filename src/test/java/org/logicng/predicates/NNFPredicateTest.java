@@ -26,33 +26,46 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.formulas.cache;
+package org.logicng.predicates;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.logicng.formulas.F;
 
 /**
- * The pre-defined predicate cache entries.
- * @version 1.3
- * @since 1.0
+ * Unit tests for the nnf predicate.
+ * @version 1.6.0
+ * @since 1.6.0
  */
-public enum PredicateCacheEntry implements CacheEntry {
-  IS_NNF("negation normal form"),
-  IS_CNF("conjunctive normal form"),
-  IS_DNF("disjunctive normal form"),
-  IS_AIG("and-inverter graph"),
-  IS_SAT("satisfiable"),
-  IS_TAUTOLOGY("tautology");
+public class NNFPredicateTest {
 
-  private final String description;
+    private final NNFPredicate nnfPredicate = new NNFPredicate();
 
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  PredicateCacheEntry(final String description) {
-    this.description = description;
-  }
+    @Test
+    public void test() {
+        Assert.assertTrue(F.f.verum().holds(nnfPredicate));
+        Assert.assertTrue(F.f.falsum().holds(nnfPredicate));
+        Assert.assertTrue(F.A.holds(nnfPredicate));
+        Assert.assertTrue(F.NA.holds(nnfPredicate));
+        Assert.assertTrue(F.OR1.holds(nnfPredicate));
+        Assert.assertTrue(F.AND1.holds(nnfPredicate));
+        Assert.assertTrue(F.AND3.holds(nnfPredicate));
+        Assert.assertTrue(F.f.and(F.OR1, F.OR2, F.A, F.NY).holds(nnfPredicate));
+        Assert.assertTrue(F.f.and(F.OR1, F.OR2, F.AND1, F.AND2, F.AND3, F.A, F.NY).holds(nnfPredicate));
+        Assert.assertTrue(F.OR3.holds(nnfPredicate));
+        Assert.assertFalse(F.PBC1.holds(nnfPredicate));
+        Assert.assertFalse(F.IMP1.holds(nnfPredicate));
+        Assert.assertFalse(F.EQ1.holds(nnfPredicate));
+        Assert.assertFalse(F.NOT1.holds(nnfPredicate));
+        Assert.assertFalse(F.NOT2.holds(nnfPredicate));
+        Assert.assertFalse(F.f.and(F.OR1, F.f.not(F.OR2), F.A, F.NY).holds(nnfPredicate));
+        Assert.assertFalse(F.f.and(F.OR1, F.EQ1).holds(nnfPredicate));
+        Assert.assertFalse(F.f.and(F.OR1, F.IMP1, F.AND1).holds(nnfPredicate));
+        Assert.assertFalse(F.f.and(F.OR1, F.PBC1, F.AND1).holds(nnfPredicate));
+    }
 
-  @Override
-  public String description() {
-    return "PredicateCacheEntry{description=" + description + "}";
-  }
+    @Test
+    public void testToString() {
+        Assert.assertEquals("NNFPredicate", nnfPredicate.toString());
+    }
 }
