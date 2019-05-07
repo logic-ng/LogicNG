@@ -36,18 +36,19 @@ import org.logicng.formulas.FormulaPredicate;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.SolverState;
 
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
 
 /**
  * A SAT solver based SAT predicate.  Indicates whether a formula is satisfiable or not.
- * @version 1.1
+ * @version 1.5.1
  * @since 1.0
  */
 public final class SATPredicate implements FormulaPredicate {
 
-  private final DNFPredicate dnfPredicate = new DNFPredicate();
   private final SATSolver solver;
+  private final SolverState externalSolverState;
 
   /**
    * Constructs a new SAT predicate with a given formula factory.
@@ -55,32 +56,37 @@ public final class SATPredicate implements FormulaPredicate {
    */
   public SATPredicate(final FormulaFactory f) {
     this.solver = MiniSat.miniSat(f);
+    this.externalSolverState = null;
   }
 
   /**
-   * Constructs a new SAT predicate with a given SAT solver.
+   * Constructs a new SAT predicate with a given SAT solver.  If there are already formulas on the solver,
+   * these formulas are kept and the satisfiability is checked against these formulas.  The solver state
+   * is not changed.
    * @param solver the SAT solver
    */
   public SATPredicate(final SATSolver solver) {
     this.solver = solver;
+    this.externalSolverState = solver.saveState();
   }
 
   @Override
   public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.predicateCacheEntry(IS_SAT);
+    final Tristate cached = externalSolverState != null ? Tristate.UNDEF : formula.predicateCacheEntry(IS_SAT);
     if (cached != Tristate.UNDEF)
       return cached == Tristate.TRUE;
     boolean result;
     if (formula.type() == FType.FALSE)
       result = false;
-    else if (formula.type() == FType.TRUE || formula.type() == FType.LITERAL || formula.holds(dnfPredicate))
-      result = true;
     else {
       this.solver.add(formula);
       result = solver.sat() == Tristate.TRUE;
-      solver.reset();
+      if (externalSolverState != null)
+        this.solver.loadState(externalSolverState);
+      else
+        solver.reset();
     }
-    if (cache)
+    if (cache && externalSolverState == null)
       formula.setPredicateCacheEntry(IS_SAT, result);
     return result;
   }
