@@ -176,11 +176,7 @@ public class PBEncoder {
         simplifiedCoeffs.push(coeffs[i]);
       } else
         result.add(lits[i].negate());
-    if (simplifiedLits.size() == 1) {
-      result.add(simplifiedLits.get(0).negate());
-      return result;
-    }
-    if (simplifiedLits.size() == 0)
+    if (simplifiedLits.size() <= 1)
       return result;
     switch (this.config().pbEncoder) {
       case SWC:
