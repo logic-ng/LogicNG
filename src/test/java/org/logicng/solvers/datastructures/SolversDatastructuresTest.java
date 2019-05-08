@@ -33,73 +33,12 @@ import org.junit.Test;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 
-import java.util.Arrays;
-
 /**
  * Unit tests for the toString() methods of the solver data structures.
  * @version 1.1
  * @since 1.0
  */
 public class SolversDatastructuresTest {
-
-    @Test
-    public void testCLClause() {
-        final CLClause clause = new CLClause();
-        clause.lits().push(1);
-        clause.lits().push(2);
-        clause.lits().push(3);
-        clause.setActivity(42);
-        clause.setRedundant(true);
-        clause.setImportant(true);
-        clause.setGlue(12);
-        final String expected = "CLClause{glue=12, redundant=true, remove=false, important=true, forcing=false, dumped=false, satisfied=false, activity=42, lits=[1, 2, 3]}";
-        Assert.assertEquals(expected, clause.toString());
-    }
-
-    @Test
-    public void testCLFrame() {
-        final CLFrame frame = new CLFrame(10, 12, 2);
-        frame.setMark(true);
-        final String expected = "CLFrame{decision=10, level=12, trail=2, mark=true}";
-        Assert.assertEquals(expected, frame.toString());
-    }
-
-    @Test
-    public void testCLOccs() {
-        final CLClause clause1 = new CLClause();
-        clause1.lits().push(1);
-        clause1.lits().push(2);
-        clause1.lits().push(3);
-        final CLClause clause2 = new CLClause();
-        clause2.lits().push(4);
-        clause2.lits().push(5);
-        final CLOccs occs = new CLOccs();
-        occs.add(clause1);
-        occs.add(clause2);
-        final String expected = "CLOccs{count=2, clauses=[CLClause{glue=0, redundant=false, remove=false, important=false, forcing=false, dumped=false, satisfied=false, activity=0, lits=[1, 2, 3]}, CLClause{glue=0, redundant=false, remove=false, important=false, forcing=false, dumped=false, satisfied=false, activity=0, lits=[4, 5]}]}";
-        Assert.assertEquals(expected, occs.toString());
-    }
-
-    @Test
-    public void testCLVar() {
-        final CLVar var = new CLVar();
-        var.setLevel(12);
-        var.setMark(1);
-        var.setReason(null);
-        var.setState(CLVar.State.ELIMINATED);
-        final String expected = "CLVar{state=ELIMINATED, level=12, mark=1, reason=null}";
-        Assert.assertEquals(expected, var.toString());
-    }
-
-    @Test
-    public void testCLWatch() {
-        final CLClause clause = new CLClause();
-        clause.lits().push(1);
-        clause.lits().push(2);
-        final CLWatch watch = new CLWatch(12, true, clause);
-        final String expected = "CLWatch{blit=12, binary=true, clause=CLClause{glue=0, redundant=false, remove=false, important=false, forcing=false, dumped=false, satisfied=false, activity=0, lits=[1, 2]}}";
-        Assert.assertEquals(expected, watch.toString());
-    }
 
     @Test
     public void testLNGBoundedIntQueue() {
@@ -187,11 +126,4 @@ public class SolversDatastructuresTest {
         Assert.assertEquals(expected, watcher.toString());
         Assert.assertEquals(watcher.hashCode(), watcher.hashCode());
     }
-
-    @Test
-    public void testCLVarState() {
-        Assert.assertEquals(CLVar.State.ELIMINATED, CLVar.State.valueOf("ELIMINATED"));
-        Assert.assertTrue(Arrays.asList(CLVar.State.values()).contains(CLVar.State.valueOf("FREE")));
-    }
-
 }

@@ -32,8 +32,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
-import java.util.Arrays;
-
 /**
  * Unit tests for the solver configurations.
  * @version 1.3
@@ -106,84 +104,6 @@ public class ConfigurationsTest {
                 "maxVarDecay=0.99%n" +
                 "}%n");
         Assert.assertEquals(expected, config.toString());
-    }
-
-    @Test
-    public void testCleaneLingConfigToString() {
-        final CleaneLingConfig config = new CleaneLingConfig.Builder()
-                .blockedClauseElimination(false)
-                .blockedClauseEliminationWait(2)
-                .blockedClauseEliminationRTC(1)
-                .boost(11)
-                .bwClauseLim(9999)
-                .bwOccurrenceLim(9998)
-                .clauseBumping(CleaneLingConfig.ClauseBumping.AVG)
-                .distillation(false)
-                .bvElim(false)
-                .bvElimRTC(3)
-                .bvElimOccurrenceLim(9997)
-                .bvElimPivotOccurrenceLimOneSided(99)
-                .bvElimPivotOccurrenceLimTwoSided(7)
-                .bvElimClauseLim(999)
-                .gluered(false)
-                .glueKeep(4)
-                .glueUpdate(true)
-                .iterationSimplificationDelay(9)
-                .plain(true)
-                .restart(false)
-                .restartInterval(98)
-                .reductionInterval(998)
-                .reductionIntervalInc(1999)
-                .reuseTrail(false)
-                .simpSteps(99999)
-                .simpGeomIncrease(false)
-                .sizePenalty(-1)
-                .sizeMaxPenalty(6)
-                .searchInterval(4999)
-                .searchFirst(true)
-                .scoreIncrementFactor(1049)
-                .stepsLim(999999)
-                .build();
-        final String expected = String.format("CleaneLingConfig{%n" +
-                "blockedClauseElimination=false%n" +
-                "blockedClauseEliminationWait=2%n" +
-                "blockedClauseEliminationRTC=1%n" +
-                "boost=11%n" +
-                "bwClauseLim=9999%n" +
-                "bwOccurrenceLim=9998%n" +
-                "clauseBumping=AVG%n" +
-                "distillation=false%n" +
-                "bvElim=false%n" +
-                "bvElimRTC=3%n" +
-                "bvElimOccurrenceLim=9997%n" +
-                "bvElimPivotOccurrenceLimOneSided=99%n" +
-                "bvElimPivotOccurrenceLimTwoSided=7%n" +
-                "bvElimClauseLim=999%n" +
-                "gluered=false%n" +
-                "glueKeep=4%n" +
-                "glueUpdate=true%n" +
-                "iterationSimplificationDelay=9%n" +
-                "plain=true%n" +
-                "restart=false%n" +
-                "restartInterval=98%n" +
-                "reductionInterval=998%n" +
-                "reductionIntervalInc=1999%n" +
-                "reuseTrail=false%n" +
-                "simpSteps=99999%n" +
-                "simpGeomIncrease=false%n" +
-                "sizePenalty=-1%n" +
-                "sizeMaxPenalty=6%n" +
-                "searchInterval=4999%n" +
-                "searchFirst=true%n" +
-                "scoreIncrementFactor=1049%n" +
-                "stepsLim=999999%n" +
-                "}%n");
-        Assert.assertEquals(expected, config.toString());
-    }
-
-    @Test
-    public void testClauseBumping() {
-        Assert.assertTrue(Arrays.asList(CleaneLingConfig.ClauseBumping.values()).contains(CleaneLingConfig.ClauseBumping.valueOf("AVG")));
     }
 
     @Test
