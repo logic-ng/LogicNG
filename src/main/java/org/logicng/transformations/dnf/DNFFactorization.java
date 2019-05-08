@@ -87,7 +87,7 @@ public final class DNFFactorization implements FormulaTransformation {
                 cached = apply(formula.nnf(), cache);
                 break;
             case OR:
-                final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
+                LinkedHashSet<Formula> nops = new LinkedHashSet<>();
                 for (final Formula op : formula) {
                     final Formula apply = this.apply(op, cache);
                     if (!this.proceed) {
