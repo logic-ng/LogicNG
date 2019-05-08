@@ -47,14 +47,13 @@ import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @version 1.3
+ * @version 1.5.1
  * @since 1.0
  */
 public final class PBConstraint extends Formula {

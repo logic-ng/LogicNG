@@ -48,7 +48,7 @@ import java.util.List;
 
 /**
  * An encoder for pseudo-Boolean constraints.
- * @version 1.1
+ * @version 1.5.1
  * @since 1.0
  */
 public class PBEncoder {

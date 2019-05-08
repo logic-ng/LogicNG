@@ -30,7 +30,7 @@ package org.logicng.formulas.cache;
 
 /**
  * The pre-defined predicate cache entries.
- * @version 1.3
+ * @version 1.5.1
  * @since 1.0
  */
 public enum PredicateCacheEntry implements CacheEntry {

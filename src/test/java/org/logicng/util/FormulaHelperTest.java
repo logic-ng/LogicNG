@@ -39,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link FormulaHelper}.
+ * @version 1.5.1
+ * @since 1.5.1
  */
 public class FormulaHelperTest {
 

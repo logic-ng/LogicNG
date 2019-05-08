@@ -32,14 +32,12 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
 
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_NNF;
 
 /**
  * NNF predicate.  Indicates whether a formula is in NNF or not.
- * @version 1.6.0
- * @since 1.6.0
+ * @version 1.5.1
+ * @since 1.5.1
  */
 public final class NNFPredicate implements FormulaPredicate {
     @Override

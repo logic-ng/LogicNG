@@ -34,8 +34,8 @@ import org.logicng.formulas.F;
 
 /**
  * Unit tests for the nnf predicate.
- * @version 1.6.0
- * @since 1.6.0
+ * @version 1.5.1
+ * @since 1.5.1
  */
 public class NNFPredicateTest {
 

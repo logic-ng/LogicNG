@@ -55,7 +55,7 @@ import java.util.TreeSet;
  * <p>
  * Reference: Algorithm 3 in M. Janota, I. Lynce, J. Marques-Silva, Algorithms for Computing Backbones of Propositional
  * Formulae, AI Communications, Volume 28(2), 161-177, 2015.
- * @version 1.5.0
+ * @version 1.5.1
  * @since 1.5.0
  */
 public class MiniSatBackbone extends MiniSat2Solver {

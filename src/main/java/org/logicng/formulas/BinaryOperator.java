@@ -35,11 +35,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Super class for Boolean binary operators.
- * @version 1.2
+ * @version 1.5.1
  * @since 1.0
  */
 public abstract class BinaryOperator extends Formula {

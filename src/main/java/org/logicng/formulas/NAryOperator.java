@@ -40,13 +40,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Super class for Boolean n-ary operators.
- * @version 1.1
+ * @version 1.5.1
  * @since 1.0
  */
 public abstract class NAryOperator extends Formula {

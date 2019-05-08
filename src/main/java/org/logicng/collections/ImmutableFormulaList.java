@@ -48,11 +48,10 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * A list of formulas.  This can represent the operands of an n-ary operator, a CNF, a DNF, a constraint, etc.
- * @version 1.0
+ * @version 1.5.1
  * @since 1.0
  */
 public final class ImmutableFormulaList implements Iterable<Formula> {

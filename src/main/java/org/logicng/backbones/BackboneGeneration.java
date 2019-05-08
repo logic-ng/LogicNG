@@ -34,8 +34,6 @@ import org.logicng.util.FormulaHelper;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Main entry point for backbone computations.
@@ -44,7 +42,7 @@ import java.util.TreeSet;
  * For more control over the backbone solver you can create an instance of
  * {@link MiniSatBackbone} directly.  E.g., with an instance of {@link MiniSatBackbone}
  * the already loaded formulas can be re-used for multiple backbone computations.
- * @version 1.5.0
+ * @version 1.5.1
  * @since 1.5.0
  */
 public class BackboneGeneration {

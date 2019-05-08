@@ -10,6 +10,8 @@ import java.util.TreeSet;
 
 /**
  * A class which contains utility methods for {@link Formula} objects.
+ * @version 1.5.1
+ * @since 1.5.1
  */
 public class FormulaHelper {
 
