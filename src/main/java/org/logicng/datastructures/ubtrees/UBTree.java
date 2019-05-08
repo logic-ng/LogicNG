@@ -146,7 +146,7 @@ public class UBTree<T extends Comparable<T>> {
                     if (node.isEndOfPath()) {
                         allEndOfPathNodes.add(node);
                     }
-                    for (UBNode<T> endOfPathNode :allEndOfPathNodes) {
+                    for (UBNode<T> endOfPathNode : allEndOfPathNodes) {
                         supersets.add(endOfPathNode.set());
                     }
                 }

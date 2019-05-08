@@ -38,82 +38,81 @@ import org.junit.Test;
  */
 public class CFalseTest {
 
-  @Test
-  public void testType() {
-    Assert.assertEquals(FType.FALSE, F.FALSE.type());
-  }
+    @Test
+    public void testType() {
+        Assert.assertEquals(FType.FALSE, F.FALSE.type());
+    }
 
-  @Test
-  public void testNumberOfAtoms() {
-    Assert.assertEquals(1, F.FALSE.numberOfAtoms());
-  }
+    @Test
+    public void testNumberOfAtoms() {
+        Assert.assertEquals(1, F.FALSE.numberOfAtoms());
+    }
 
-  @Test
-  public void testNegation() {
-    Assert.assertEquals(F.TRUE, F.FALSE.negate());
-  }
+    @Test
+    public void testNegation() {
+        Assert.assertEquals(F.TRUE, F.FALSE.negate());
+    }
 
-  @Test
-  public void testVariables() {
-    Assert.assertEquals(0, F.FALSE.variables().size());
-  }
+    @Test
+    public void testVariables() {
+        Assert.assertEquals(0, F.FALSE.variables().size());
+    }
 
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(0, F.FALSE.literals().size());
-  }
+    @Test
+    public void testLiterals() {
+        Assert.assertEquals(0, F.FALSE.literals().size());
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("$false", F.FALSE.toString());
-  }
+    @Test
+    public void testToString() {
+        Assert.assertEquals("$false", F.FALSE.toString());
+    }
 
-  @Test
-  public void testEquals() {
-    Assert.assertEquals(F.FALSE, F.f.falsum());
-    Assert.assertNotEquals(F.FALSE, null);
-    Assert.assertNotEquals(F.FALSE, F.f.verum());
-  }
+    @Test
+    public void testEquals() {
+        Assert.assertEquals(F.FALSE, F.f.falsum());
+        Assert.assertNotEquals(F.FALSE, null);
+        Assert.assertNotEquals(F.FALSE, F.f.verum());
+    }
 
-  @Test
-  public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.FALSE, F.g.falsum());
-    Assert.assertNotEquals(F.FALSE, F.g.verum());
-  }
+    @Test
+    public void testEqualsDifferentFormulaFactory() {
+        Assert.assertEquals(F.FALSE, F.g.falsum());
+        Assert.assertNotEquals(F.FALSE, F.g.verum());
+    }
 
-  @Test
-  public void testHash() {
-    Assert.assertEquals(F.f.falsum().hashCode(), F.FALSE.hashCode());
-  }
+    @Test
+    public void testHash() {
+        Assert.assertEquals(F.f.falsum().hashCode(), F.FALSE.hashCode());
+    }
 
-  @Test
-  public void testNumberOfNodes() {
-    Assert.assertEquals(1, F.FALSE.numberOfNodes());
-  }
+    @Test
+    public void testNumberOfNodes() {
+        Assert.assertEquals(1, F.FALSE.numberOfNodes());
+    }
 
-  @Test
-  public void testNumberOfInternalNodes() {
-    Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
-  }
+    @Test
+    public void testNumberOfInternalNodes() {
+        Assert.assertEquals(1, F.FALSE.numberOfInternalNodes());
+    }
 
-  @Test
-  public void testNumberOfOperands() {
-    Assert.assertEquals(0, F.FALSE.numberOfOperands());
-  }
+    @Test
+    public void testNumberOfOperands() {
+        Assert.assertEquals(0, F.FALSE.numberOfOperands());
+    }
 
+    @Test
+    public void testIsConstantFormula() {
+        Assert.assertTrue(F.FALSE.isConstantFormula());
+    }
 
-  @Test
-  public void testIsConstantFormula() {
-    Assert.assertTrue(F.FALSE.isConstantFormula());
-  }
+    @Test
+    public void testAtomicFormula() {
+        Assert.assertTrue(F.FALSE.isAtomicFormula());
+    }
 
-  @Test
-  public void testAtomicFormula() {
-    Assert.assertTrue(F.FALSE.isAtomicFormula());
-  }
-
-  @Test
-  public void testContains() {
-    Assert.assertFalse(F.FALSE.containsVariable(F.f.variable("a")));
-  }
+    @Test
+    public void testContains() {
+        Assert.assertFalse(F.FALSE.containsVariable(F.f.variable("a")));
+    }
 }

@@ -55,277 +55,284 @@ import java.util.Comparator;
  */
 public class MSClause {
 
-  /**
-   * A comparator for clauses based on LBD and activity (used for the Glucose solver).
-   */
-  public static final Comparator<MSClause> glucoseComparator = new Comparator<MSClause>() {
+    /**
+     * A comparator for clauses based on LBD and activity (used for the Glucose solver).
+     */
+    public static final Comparator<MSClause> glucoseComparator = new Comparator<MSClause>() {
+        @Override
+        public int compare(final MSClause x, final MSClause y) {
+            if (x.size() > 2 && y.size() == 2) {
+                return -1;
+            }
+            if (y.size() > 2 && x.size() == 2) {
+                return 1;
+            }
+            if (x.size() == 2 && y.size() == 2) {
+                return 1;
+            }
+            if (x.lbd() > y.lbd()) {
+                return -1;
+            }
+            if (x.lbd() < y.lbd()) {
+                return 1;
+            }
+            return x.activity() < y.activity() ? -1 : 1;
+        }
+    };
+
+    /**
+     * A comparator for clauses based on activity (used for the MiniSAT solver).
+     */
+    public static final Comparator<MSClause> minisatComparator = new Comparator<MSClause>() {
+        @Override
+        public int compare(final MSClause x, final MSClause y) {
+            return x.size() > 2 && (y.size() == 2 || x.activity() < y.activity()) ? -1 : 1;
+        }
+    };
+
+    private final LNGIntVector data;
+    private final boolean learnt;
+    private final boolean isAtMost;
+    private double activity;
+    private int szWithoutSelectors;
+    private boolean seen;
+    private long lbd;
+    private boolean canBeDel;
+    private boolean oneWatched;
+    private int atMostWatchers;
+
+    /**
+     * Constructs a new clause
+     * @param ps     the vector of literals
+     * @param learnt {@code true} if it is a learnt clause, {@code false} otherwise
+     */
+    public MSClause(final LNGIntVector ps, boolean learnt) {
+        this(ps, learnt, false);
+    }
+
+    /**
+     * Constructs a new clause
+     * @param ps       the vector of literals
+     * @param learnt   {@code true} if it is a learnt clause, {@code false} otherwise
+     * @param isAtMost {@code true} if it is an at-most clause, {@code false} otherwise
+     */
+    public MSClause(final LNGIntVector ps, boolean learnt, boolean isAtMost) {
+        this.data = new LNGIntVector(ps.size());
+        for (int i = 0; i < ps.size(); i++) {
+            this.data.unsafePush(ps.get(i));
+        }
+        this.learnt = learnt;
+        this.szWithoutSelectors = 0;
+        this.seen = false;
+        this.lbd = 0;
+        this.canBeDel = true;
+        this.oneWatched = false;
+        this.isAtMost = isAtMost;
+        this.atMostWatchers = -1;
+    }
+
+    /**
+     * Returns the size (number of literals) of this clause.
+     * @return the size
+     */
+    public int size() {
+        return this.data.size();
+    }
+
+    /**
+     * Returns the literal at index {@code i}.
+     * @param i the index
+     * @return the literal at index {@code i}
+     */
+    public int get(int i) {
+        return this.data.get(i);
+    }
+
+    /**
+     * Sets the literal at index {@code i}.
+     * @param i   the index
+     * @param lit the literal
+     */
+    public void set(int i, int lit) {
+        this.data.set(i, lit);
+    }
+
+    /**
+     * Returns the activity of this clause.
+     * @return the activity of this clause
+     */
+    public double activity() {
+        return this.activity;
+    }
+
+    /**
+     * Increments this clause's activity by a given value
+     * @param inc the increment value
+     */
+    public void incrementActivity(double inc) {
+        this.activity += inc;
+    }
+
+    /**
+     * Rescales this clause's activity
+     */
+    public void rescaleActivity() {
+        this.activity *= 1e-20;
+    }
+
+    /**
+     * Returns {@code true} if this clause is learnt, {@code false} otherwise.
+     * @return {@code true} if this clause is learnt
+     */
+    public boolean learnt() {
+        return this.learnt;
+    }
+
+    /**
+     * Returns the size of this clause without selector variables.
+     * @return the size of this clause without selector variables
+     */
+    public int sizeWithoutSelectors() {
+        return this.szWithoutSelectors;
+    }
+
+    /**
+     * Sets the size of this clause without selector variables.
+     * @param szWithoutSelectors the size of this clause without selector variables
+     */
+    public void setSizeWithoutSelectors(int szWithoutSelectors) {
+        this.szWithoutSelectors = szWithoutSelectors;
+    }
+
+    /**
+     * Returns {@code true} if this clause is marked 'seen', {@code false} otherwise.
+     * @return {@code true} if this clause is marked 'seen'
+     */
+    public boolean seen() {
+        return this.seen;
+    }
+
+    /**
+     * Marks this clause with the given 'seen' flag.
+     * @param seen the 'seen' flag
+     */
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
+
+    /**
+     * Returns the LBD of this clause.
+     * @return the LBD of this clause
+     */
+    public long lbd() {
+        return this.lbd;
+    }
+
+    /**
+     * Sets the LBD of this clause.
+     * @param lbd the LBD of this clause
+     */
+    public void setLBD(long lbd) {
+        this.lbd = lbd;
+    }
+
+    /**
+     * Returns {@code true} if this clause can be deleted, {@code false} otherwise.
+     * @return {@code true} if this clause can be deleted
+     */
+    public boolean canBeDel() {
+        return this.canBeDel;
+    }
+
+    /**
+     * Sets whether this clause can be deleted or not.
+     * @param canBeDel {@code true} if it can be deleted, {@code false} otherwise
+     */
+    public void setCanBeDel(boolean canBeDel) {
+        this.canBeDel = canBeDel;
+    }
+
+    /**
+     * Returns {@code true} if this clause is a one literal watched clause, {@code false} otherwise
+     * @return {@code true} if this clause is a one literal watched clause
+     */
+    public boolean oneWatched() {
+        return this.oneWatched;
+    }
+
+    /**
+     * Sets whether this clause is a one literal watched clause or not.
+     * @param oneWatched {@code true} if it is a one literal watched clause, {@code false} otherwise
+     */
+    public void setOneWatched(boolean oneWatched) {
+        this.oneWatched = oneWatched;
+    }
+
+    /**
+     * Returns {@code true} if this is an at-most clause, {@code false} otherwise.
+     * @return {@code true} if this is an at-most clause
+     */
+    public boolean isAtMost() {
+        return this.isAtMost;
+    }
+
+    /**
+     * Returns the number of watchers if this is an at-most clause.
+     * @return the number of watchers
+     */
+    public int atMostWatchers() {
+        assert this.isAtMost;
+        return this.atMostWatchers;
+    }
+
+    /**
+     * Sets the number of watchers for this at-most clause.
+     * @param atMostWatchers the number of watchers
+     */
+    public void setAtMostWatchers(int atMostWatchers) {
+        assert this.isAtMost;
+        this.atMostWatchers = atMostWatchers;
+    }
+
+    /**
+     * Pops (removes) the last literal of this clause.
+     */
+    public void pop() {
+        this.data.pop();
+    }
+
     @Override
-    public int compare(final MSClause x, final MSClause y) {
-      if (x.size() > 2 && y.size() == 2)
-        return -1;
-      if (y.size() > 2 && x.size() == 2)
-        return 1;
-      if (x.size() == 2 && y.size() == 2)
-        return 1;
-      if (x.lbd() > y.lbd())
-        return -1;
-      if (x.lbd() < y.lbd())
-        return 1;
-      return x.activity() < y.activity() ? -1 : 1;
+    public int hashCode() {
+        return this.data.hashCode();
     }
-  };
 
-  /**
-   * A comparator for clauses based on activity (used for the MiniSAT solver).
-   */
-  public static final Comparator<MSClause> minisatComparator = new Comparator<MSClause>() {
     @Override
-    public int compare(final MSClause x, final MSClause y) {
-      return x.size() > 2 && (y.size() == 2 || x.activity() < y.activity()) ? -1 : 1;
+    public boolean equals(Object o) {
+        return this == o;
     }
-  };
 
-  private final LNGIntVector data;
-  private final boolean learnt;
-  private final boolean isAtMost;
-  private double activity;
-  private int szWithoutSelectors;
-  private boolean seen;
-  private long lbd;
-  private boolean canBeDel;
-  private boolean oneWatched;
-  private int atMostWatchers;
-
-  /**
-   * Constructs a new clause
-   * @param ps     the vector of literals
-   * @param learnt {@code true} if it is a learnt clause, {@code false} otherwise
-   */
-  public MSClause(final LNGIntVector ps, boolean learnt) {
-    this(ps, learnt, false);
-  }
-
-  /**
-   * Constructs a new clause
-   * @param ps       the vector of literals
-   * @param learnt   {@code true} if it is a learnt clause, {@code false} otherwise
-   * @param isAtMost {@code true} if it is an at-most clause, {@code false} otherwise
-   */
-  public MSClause(final LNGIntVector ps, boolean learnt, boolean isAtMost) {
-    this.data = new LNGIntVector(ps.size());
-    for (int i = 0; i < ps.size(); i++)
-      this.data.unsafePush(ps.get(i));
-    this.learnt = learnt;
-    this.szWithoutSelectors = 0;
-    this.seen = false;
-    this.lbd = 0;
-    this.canBeDel = true;
-    this.oneWatched = false;
-    this.isAtMost = isAtMost;
-    this.atMostWatchers = -1;
-  }
-
-  /**
-   * Returns the size (number of literals) of this clause.
-   * @return the size
-   */
-  public int size() {
-    return this.data.size();
-  }
-
-  /**
-   * Returns the literal at index {@code i}.
-   * @param i the index
-   * @return the literal at index {@code i}
-   */
-  public int get(int i) {
-    return this.data.get(i);
-  }
-
-  /**
-   * Sets the literal at index {@code i}.
-   * @param i   the index
-   * @param lit the literal
-   */
-  public void set(int i, int lit) {
-    this.data.set(i, lit);
-  }
-
-  /**
-   * Returns the activity of this clause.
-   * @return the activity of this clause
-   */
-  public double activity() {
-    return this.activity;
-  }
-
-  /**
-   * Increments this clause's activity by a given value
-   * @param inc the increment value
-   */
-  public void incrementActivity(double inc) {
-    this.activity += inc;
-  }
-
-  /**
-   * Rescales this clause's activity
-   */
-  public void rescaleActivity() {
-    this.activity *= 1e-20;
-  }
-
-  /**
-   * Returns {@code true} if this clause is learnt, {@code false} otherwise.
-   * @return {@code true} if this clause is learnt
-   */
-  public boolean learnt() {
-    return this.learnt;
-  }
-
-  /**
-   * Returns the size of this clause without selector variables.
-   * @return the size of this clause without selector variables
-   */
-  public int sizeWithoutSelectors() {
-    return this.szWithoutSelectors;
-  }
-
-  /**
-   * Sets the size of this clause without selector variables.
-   * @param szWithoutSelectors the size of this clause without selector variables
-   */
-  public void setSizeWithoutSelectors(int szWithoutSelectors) {
-    this.szWithoutSelectors = szWithoutSelectors;
-  }
-
-  /**
-   * Returns {@code true} if this clause is marked 'seen', {@code false} otherwise.
-   * @return {@code true} if this clause is marked 'seen'
-   */
-  public boolean seen() {
-    return this.seen;
-  }
-
-  /**
-   * Marks this clause with the given 'seen' flag.
-   * @param seen the 'seen' flag
-   */
-  public void setSeen(boolean seen) {
-    this.seen = seen;
-  }
-
-  /**
-   * Returns the LBD of this clause.
-   * @return the LBD of this clause
-   */
-  public long lbd() {
-    return this.lbd;
-  }
-
-  /**
-   * Sets the LBD of this clause.
-   * @param lbd the LBD of this clause
-   */
-  public void setLBD(long lbd) {
-    this.lbd = lbd;
-  }
-
-  /**
-   * Returns {@code true} if this clause can be deleted, {@code false} otherwise.
-   * @return {@code true} if this clause can be deleted
-   */
-  public boolean canBeDel() {
-    return this.canBeDel;
-  }
-
-  /**
-   * Sets whether this clause can be deleted or not.
-   * @param canBeDel {@code true} if it can be deleted, {@code false} otherwise
-   */
-  public void setCanBeDel(boolean canBeDel) {
-    this.canBeDel = canBeDel;
-  }
-
-  /**
-   * Returns {@code true} if this clause is a one literal watched clause, {@code false} otherwise
-   * @return {@code true} if this clause is a one literal watched clause
-   */
-  public boolean oneWatched() {
-    return this.oneWatched;
-  }
-
-  /**
-   * Sets whether this clause is a one literal watched clause or not.
-   * @param oneWatched {@code true} if it is a one literal watched clause, {@code false} otherwise
-   */
-  public void setOneWatched(boolean oneWatched) {
-    this.oneWatched = oneWatched;
-  }
-
-  /**
-   * Returns {@code true} if this is an at-most clause, {@code false} otherwise.
-   * @return {@code true} if this is an at-most clause
-   */
-  public boolean isAtMost() {
-    return this.isAtMost;
-  }
-
-  /**
-   * Returns the number of watchers if this is an at-most clause.
-   * @return the number of watchers
-   */
-  public int atMostWatchers() {
-    assert this.isAtMost;
-    return this.atMostWatchers;
-  }
-
-  /**
-   * Sets the number of watchers for this at-most clause.
-   * @param atMostWatchers the number of watchers
-   */
-  public void setAtMostWatchers(int atMostWatchers) {
-    assert this.isAtMost;
-    this.atMostWatchers = atMostWatchers;
-  }
-
-  /**
-   * Pops (removes) the last literal of this clause.
-   */
-  public void pop() {
-    this.data.pop();
-  }
-
-  @Override
-  public int hashCode() {
-    return this.data.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    return this == o;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("MSClause{");
-    sb.append("activity=").append(this.activity).append(", ");
-    sb.append("learnt=").append(this.learnt).append(", ");
-    sb.append("szWithoutSelectors=").append(this.szWithoutSelectors).append(", ");
-    sb.append("seen=").append(this.seen).append(", ");
-    sb.append("lbd=").append(this.lbd).append(", ");
-    sb.append("canBeDel=").append(this.canBeDel).append(", ");
-    sb.append("oneWatched=").append(this.oneWatched).append(", ");
-    sb.append("isAtMost=").append(this.isAtMost).append(", ");
-    sb.append("atMostWatchers=").append(this.atMostWatchers).append(", ");
-    sb.append("lits=[");
-    for (int i = 0; i < this.data.size(); i++) {
-      int lit = this.data.get(i);
-      sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
-      if (i != this.data.size() - 1)
-        sb.append(", ");
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MSClause{");
+        sb.append("activity=").append(this.activity).append(", ");
+        sb.append("learnt=").append(this.learnt).append(", ");
+        sb.append("szWithoutSelectors=").append(this.szWithoutSelectors).append(", ");
+        sb.append("seen=").append(this.seen).append(", ");
+        sb.append("lbd=").append(this.lbd).append(", ");
+        sb.append("canBeDel=").append(this.canBeDel).append(", ");
+        sb.append("oneWatched=").append(this.oneWatched).append(", ");
+        sb.append("isAtMost=").append(this.isAtMost).append(", ");
+        sb.append("atMostWatchers=").append(this.atMostWatchers).append(", ");
+        sb.append("lits=[");
+        for (int i = 0; i < this.data.size(); i++) {
+            int lit = this.data.get(i);
+            sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
+            if (i != this.data.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]}");
+        return sb.toString();
     }
-    sb.append("]}");
-    return sb.toString();
-  }
 
 }

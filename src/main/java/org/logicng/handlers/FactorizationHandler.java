@@ -37,17 +37,17 @@ import org.logicng.formulas.Formula;
  */
 public interface FactorizationHandler {
 
-  /**
-   * This method is called every time a distribution is performed.
-   * @return whether the factorization should be continued or not
-   */
-  boolean performedDistribution();
+    /**
+     * This method is called every time a distribution is performed.
+     * @return whether the factorization should be continued or not
+     */
+    boolean performedDistribution();
 
-  /**
-   * This method is called every time a new clause is created.
-   * @param clause the clause
-   * @return whether the factorization should be continued or not
-   */
-  boolean createdClause(final Formula clause);
+    /**
+     * This method is called every time a new clause is created.
+     * @param clause the clause
+     * @return whether the factorization should be continued or not
+     */
+    boolean createdClause(final Formula clause);
 
 }

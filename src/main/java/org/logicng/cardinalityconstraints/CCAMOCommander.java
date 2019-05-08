@@ -28,7 +28,7 @@
 
 /**
  * PBLib       -- Copyright (c) 2012-2013  Peter Steinke
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -36,10 +36,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -63,76 +63,83 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMOCommander implements CCAtMostOne {
 
-  private final int k;
-  private final LNGVector<Literal> literals;
-  private final LNGVector<Literal> nextLiterals;
-  private final LNGVector<Literal> currentLiterals;
-  private EncodingResult result;
+    private final int k;
+    private final LNGVector<Literal> literals;
+    private final LNGVector<Literal> nextLiterals;
+    private final LNGVector<Literal> currentLiterals;
+    private EncodingResult result;
 
-  /**
-   * Constructs the commander AMO encoder with a given group size.
-   * @param k the group size for the encoding
-   */
-  CCAMOCommander(int k) {
-    this.k = k;
-    this.literals = new LNGVector<>();
-    this.nextLiterals = new LNGVector<>();
-    this.currentLiterals = new LNGVector<>();
-  }
-
-  @Override
-  public void build(final EncodingResult result, final Variable... vars) {
-    result.reset();
-    this.result = result;
-    this.currentLiterals.clear();
-    this.nextLiterals.clear();
-    for (final Variable var : vars)
-      this.currentLiterals.push(var);
-    this.encodeRecursive();
-  }
-
-  /**
-   * Internal recursive encoding.
-   */
-  private void encodeRecursive() {
-    boolean isExactlyOne = false;
-    while (this.currentLiterals.size() > this.k) {
-      this.literals.clear();
-      this.nextLiterals.clear();
-      for (int i = 0; i < this.currentLiterals.size(); i++) {
-        this.literals.push(this.currentLiterals.get(i));
-        if (i % this.k == this.k - 1 || i == this.currentLiterals.size() - 1) {
-          this.encodeNonRecursive(this.literals);
-          this.literals.push(this.result.newVariable());
-          this.nextLiterals.push(this.literals.back().negate());
-          if (isExactlyOne && this.literals.size() > 0)
-            this.result.addClause(this.literals);
-          for (int j = 0; j < this.literals.size() - 1; j++)
-            this.result.addClause(this.literals.back().negate(), this.literals.get(j).negate());
-          this.literals.clear();
-        }
-      }
-      this.currentLiterals.replaceInplace(this.nextLiterals);
-      isExactlyOne = true;
+    /**
+     * Constructs the commander AMO encoder with a given group size.
+     * @param k the group size for the encoding
+     */
+    CCAMOCommander(int k) {
+        this.k = k;
+        this.literals = new LNGVector<>();
+        this.nextLiterals = new LNGVector<>();
+        this.currentLiterals = new LNGVector<>();
     }
-    this.encodeNonRecursive(this.currentLiterals);
-    if (isExactlyOne && this.currentLiterals.size() > 0)
-      this.result.addClause(this.currentLiterals);
-  }
 
-  /**
-   * Internal non recursive encoding.
-   * @param literals the current literals
-   */
-  private void encodeNonRecursive(final LNGVector<Literal> literals) {
-    if (literals.size() > 1)
-      for (int i = 0; i < literals.size(); i++)
-        for (int j = i + 1; j < literals.size(); j++)
-          this.result.addClause(literals.get(i).negate(), literals.get(j).negate());
-  }
+    @Override
+    public void build(final EncodingResult result, final Variable... vars) {
+        result.reset();
+        this.result = result;
+        this.currentLiterals.clear();
+        this.nextLiterals.clear();
+        for (final Variable var : vars) {
+            this.currentLiterals.push(var);
+        }
+        this.encodeRecursive();
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    /**
+     * Internal recursive encoding.
+     */
+    private void encodeRecursive() {
+        boolean isExactlyOne = false;
+        while (this.currentLiterals.size() > this.k) {
+            this.literals.clear();
+            this.nextLiterals.clear();
+            for (int i = 0; i < this.currentLiterals.size(); i++) {
+                this.literals.push(this.currentLiterals.get(i));
+                if (i % this.k == this.k - 1 || i == this.currentLiterals.size() - 1) {
+                    this.encodeNonRecursive(this.literals);
+                    this.literals.push(this.result.newVariable());
+                    this.nextLiterals.push(this.literals.back().negate());
+                    if (isExactlyOne && this.literals.size() > 0) {
+                        this.result.addClause(this.literals);
+                    }
+                    for (int j = 0; j < this.literals.size() - 1; j++) {
+                        this.result.addClause(this.literals.back().negate(), this.literals.get(j).negate());
+                    }
+                    this.literals.clear();
+                }
+            }
+            this.currentLiterals.replaceInplace(this.nextLiterals);
+            isExactlyOne = true;
+        }
+        this.encodeNonRecursive(this.currentLiterals);
+        if (isExactlyOne && this.currentLiterals.size() > 0) {
+            this.result.addClause(this.currentLiterals);
+        }
+    }
+
+    /**
+     * Internal non recursive encoding.
+     * @param literals the current literals
+     */
+    private void encodeNonRecursive(final LNGVector<Literal> literals) {
+        if (literals.size() > 1) {
+            for (int i = 0; i < literals.size(); i++) {
+                for (int j = i + 1; j < literals.size(); j++) {
+                    this.result.addClause(literals.get(i).negate(), literals.get(j).negate());
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

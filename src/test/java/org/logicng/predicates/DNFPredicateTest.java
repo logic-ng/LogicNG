@@ -39,29 +39,29 @@ import org.logicng.formulas.F;
  */
 public class DNFPredicateTest {
 
-  private final DNFPredicate dnfPredicate = new DNFPredicate();
+    private final DNFPredicate dnfPredicate = new DNFPredicate();
 
-  @Test
-  public void test() {
-    Assert.assertTrue(F.f.verum().holds(dnfPredicate));
-    Assert.assertTrue(F.f.falsum().holds(dnfPredicate));
-    Assert.assertTrue(F.A.holds(dnfPredicate));
-    Assert.assertTrue(F.NA.holds(dnfPredicate));
-    Assert.assertTrue(F.AND1.holds(dnfPredicate));
-    Assert.assertTrue(F.OR1.holds(dnfPredicate));
-    Assert.assertTrue(F.OR3.holds(dnfPredicate));
-    Assert.assertTrue(F.f.or(F.AND1, F.AND2, F.A, F.NY).holds(dnfPredicate));
-    Assert.assertFalse(F.PBC1.holds(dnfPredicate));
-    Assert.assertFalse(F.AND3.holds(dnfPredicate));
-    Assert.assertFalse(F.IMP1.holds(dnfPredicate));
-    Assert.assertFalse(F.EQ1.holds(dnfPredicate));
-    Assert.assertFalse(F.NOT1.holds(dnfPredicate));
-    Assert.assertFalse(F.NOT2.holds(dnfPredicate));
-    Assert.assertFalse(F.f.or(F.AND1, F.EQ1).holds(dnfPredicate));
-  }
+    @Test
+    public void test() {
+        Assert.assertTrue(F.f.verum().holds(dnfPredicate));
+        Assert.assertTrue(F.f.falsum().holds(dnfPredicate));
+        Assert.assertTrue(F.A.holds(dnfPredicate));
+        Assert.assertTrue(F.NA.holds(dnfPredicate));
+        Assert.assertTrue(F.AND1.holds(dnfPredicate));
+        Assert.assertTrue(F.OR1.holds(dnfPredicate));
+        Assert.assertTrue(F.OR3.holds(dnfPredicate));
+        Assert.assertTrue(F.f.or(F.AND1, F.AND2, F.A, F.NY).holds(dnfPredicate));
+        Assert.assertFalse(F.PBC1.holds(dnfPredicate));
+        Assert.assertFalse(F.AND3.holds(dnfPredicate));
+        Assert.assertFalse(F.IMP1.holds(dnfPredicate));
+        Assert.assertFalse(F.EQ1.holds(dnfPredicate));
+        Assert.assertFalse(F.NOT1.holds(dnfPredicate));
+        Assert.assertFalse(F.NOT2.holds(dnfPredicate));
+        Assert.assertFalse(F.f.or(F.AND1, F.EQ1).holds(dnfPredicate));
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("DNFPredicate", dnfPredicate.toString());
-  }
+    @Test
+    public void testToString() {
+        Assert.assertEquals("DNFPredicate", dnfPredicate.toString());
+    }
 }

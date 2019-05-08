@@ -34,9 +34,9 @@ package org.logicng.formulas;
  * @since 1.0
  */
 public enum CType {
-  EQ,
-  GT,
-  GE,
-  LT,
-  LE
+    EQ,
+    GT,
+    GE,
+    LT,
+    LE
 }

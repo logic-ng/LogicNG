@@ -49,74 +49,80 @@ import java.util.Set;
  */
 public class DistributiveSimplifier implements FormulaTransformation {
 
-  @Override
-  public Formula apply(final Formula formula, boolean cache) {
-    FormulaFactory f = formula.factory();
-    final Formula result;
-    switch (formula.type()) {
-      case EQUIV:
-        Equivalence equiv = (Equivalence) formula;
-        result = f.equivalence(this.apply(equiv.left(), cache), this.apply(equiv.right(), cache));
-        break;
-      case IMPL:
-        Implication impl = (Implication) formula;
-        result = f.implication(this.apply(impl.left(), cache), this.apply(impl.right(), cache));
-        break;
-      case NOT:
-        Not not = (Not) formula;
-        result = f.not(this.apply(not.operand(), cache));
-        break;
-      case OR:
-      case AND:
-        result = distributeNAry(formula, cache, f);
-        break;
-      default:
-        result = formula;
-    }
-    if (cache)
-      formula.setTransformationCacheEntry(TransformationCacheEntry.DISTRIBUTIVE_SIMPLIFICATION, result);
-    return result;
-  }
-
-  private Formula distributeNAry(final Formula formula, boolean cache, final FormulaFactory f) {
-    final Formula result;
-    final FType outerType = formula.type();
-    final FType innerType = outerType == FType.OR ? FType.AND : FType.OR;
-    final Set<Formula> operands = new LinkedHashSet<>();
-    for (Formula op : formula)
-      operands.add(this.apply(op, cache));
-    final Map<Formula, Set<Formula>> part2Operands = new LinkedHashMap<>();
-    Formula mostCommon = null;
-    int mostCommonAmount = 0;
-    for (Formula op : operands)
-      if (op.type() == innerType)
-        for (Formula part : op) {
-          Set<Formula> partOperands = part2Operands.get(part);
-          if (partOperands == null) {
-            partOperands = new LinkedHashSet<>();
-            part2Operands.put(part, partOperands);
-          }
-          partOperands.add(op);
-          if (partOperands.size() > mostCommonAmount) {
-            mostCommon = part;
-            mostCommonAmount = partOperands.size();
-          }
+    @Override
+    public Formula apply(final Formula formula, boolean cache) {
+        FormulaFactory f = formula.factory();
+        final Formula result;
+        switch (formula.type()) {
+            case EQUIV:
+                Equivalence equiv = (Equivalence) formula;
+                result = f.equivalence(this.apply(equiv.left(), cache), this.apply(equiv.right(), cache));
+                break;
+            case IMPL:
+                Implication impl = (Implication) formula;
+                result = f.implication(this.apply(impl.left(), cache), this.apply(impl.right(), cache));
+                break;
+            case NOT:
+                Not not = (Not) formula;
+                result = f.not(this.apply(not.operand(), cache));
+                break;
+            case OR:
+            case AND:
+                result = distributeNAry(formula, cache, f);
+                break;
+            default:
+                result = formula;
         }
-    if (mostCommon == null || mostCommonAmount == 1) {
-      result = f.naryOperator(outerType, operands);
-      return result;
+        if (cache) {
+            formula.setTransformationCacheEntry(TransformationCacheEntry.DISTRIBUTIVE_SIMPLIFICATION, result);
+        }
+        return result;
     }
-    operands.removeAll(part2Operands.get(mostCommon));
-    final Set<Formula> relevantFormulas = new LinkedHashSet<>();
-    for (Formula preRelevantFormula : part2Operands.get(mostCommon)) {
-      final Set<Formula> relevantParts = new LinkedHashSet<>();
-      for (Formula part : preRelevantFormula)
-        if (!part.equals(mostCommon))
-          relevantParts.add(part);
-      relevantFormulas.add(f.naryOperator(innerType, relevantParts));
+
+    private Formula distributeNAry(final Formula formula, boolean cache, final FormulaFactory f) {
+        final Formula result;
+        final FType outerType = formula.type();
+        final FType innerType = outerType == FType.OR ? FType.AND : FType.OR;
+        final Set<Formula> operands = new LinkedHashSet<>();
+        for (Formula op : formula) {
+            operands.add(this.apply(op, cache));
+        }
+        final Map<Formula, Set<Formula>> part2Operands = new LinkedHashMap<>();
+        Formula mostCommon = null;
+        int mostCommonAmount = 0;
+        for (Formula op : operands) {
+            if (op.type() == innerType) {
+                for (Formula part : op) {
+                    Set<Formula> partOperands = part2Operands.get(part);
+                    if (partOperands == null) {
+                        partOperands = new LinkedHashSet<>();
+                        part2Operands.put(part, partOperands);
+                    }
+                    partOperands.add(op);
+                    if (partOperands.size() > mostCommonAmount) {
+                        mostCommon = part;
+                        mostCommonAmount = partOperands.size();
+                    }
+                }
+            }
+        }
+        if (mostCommon == null || mostCommonAmount == 1) {
+            result = f.naryOperator(outerType, operands);
+            return result;
+        }
+        operands.removeAll(part2Operands.get(mostCommon));
+        final Set<Formula> relevantFormulas = new LinkedHashSet<>();
+        for (Formula preRelevantFormula : part2Operands.get(mostCommon)) {
+            final Set<Formula> relevantParts = new LinkedHashSet<>();
+            for (Formula part : preRelevantFormula) {
+                if (!part.equals(mostCommon)) {
+                    relevantParts.add(part);
+                }
+            }
+            relevantFormulas.add(f.naryOperator(innerType, relevantParts));
+        }
+        operands.add(f.naryOperator(innerType, mostCommon, f.naryOperator(outerType, relevantFormulas)));
+        result = f.naryOperator(outerType, operands);
+        return result;
     }
-    operands.add(f.naryOperator(innerType, mostCommon, f.naryOperator(outerType, relevantFormulas)));
-    result = f.naryOperator(outerType, operands);
-    return result;
-  }
 }

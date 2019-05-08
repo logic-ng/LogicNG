@@ -43,57 +43,57 @@ import java.util.Arrays;
  */
 public class RestrictionTest {
 
-  private Assignment ass = new Assignment(Arrays.asList(F.A, F.NB, F.NX));
+    private Assignment ass = new Assignment(Arrays.asList(F.A, F.NB, F.NX));
 
-  @Test
-  public void testConstantRestrict() {
-    Assert.assertEquals(F.TRUE, F.TRUE.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.FALSE.restrict(ass));
-  }
+    @Test
+    public void testConstantRestrict() {
+        Assert.assertEquals(F.TRUE, F.TRUE.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.FALSE.restrict(ass));
+    }
 
-  @Test
-  public void testLiteralRestrict() {
-    Assert.assertEquals(F.TRUE, F.A.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.NA.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.X.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.NX.restrict(ass));
-    Assert.assertEquals(F.C, F.C.restrict(ass));
-    Assert.assertEquals(F.NY, F.NY.restrict(ass));
-  }
+    @Test
+    public void testLiteralRestrict() {
+        Assert.assertEquals(F.TRUE, F.A.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.NA.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.X.restrict(ass));
+        Assert.assertEquals(F.TRUE, F.NX.restrict(ass));
+        Assert.assertEquals(F.C, F.C.restrict(ass));
+        Assert.assertEquals(F.NY, F.NY.restrict(ass));
+    }
 
-  @Test
-  public void testNotRestrict() {
-    Assert.assertEquals(F.TRUE, F.NOT1.restrict(ass));
-    Assert.assertEquals(F.NY, F.NOT2.restrict(ass));
-  }
+    @Test
+    public void testNotRestrict() {
+        Assert.assertEquals(F.TRUE, F.NOT1.restrict(ass));
+        Assert.assertEquals(F.NY, F.NOT2.restrict(ass));
+    }
 
-  @Test
-  public void testBinaryRestrict() {
-    Assert.assertEquals(F.FALSE, F.IMP1.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.IMP2.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.f.implication(F.NA, F.C).restrict(ass));
-    Assert.assertEquals(F.TRUE, F.IMP3.restrict(ass));
-    Assert.assertEquals(F.C, F.f.implication(F.A, F.C).restrict(ass));
+    @Test
+    public void testBinaryRestrict() {
+        Assert.assertEquals(F.FALSE, F.IMP1.restrict(ass));
+        Assert.assertEquals(F.TRUE, F.IMP2.restrict(ass));
+        Assert.assertEquals(F.TRUE, F.f.implication(F.NA, F.C).restrict(ass));
+        Assert.assertEquals(F.TRUE, F.IMP3.restrict(ass));
+        Assert.assertEquals(F.C, F.f.implication(F.A, F.C).restrict(ass));
 
-    Assert.assertEquals(F.FALSE, F.EQ1.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.EQ2.restrict(ass));
-    Assert.assertEquals(F.NY, F.EQ3.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.EQ4.restrict(ass));
-  }
+        Assert.assertEquals(F.FALSE, F.EQ1.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.EQ2.restrict(ass));
+        Assert.assertEquals(F.NY, F.EQ3.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.EQ4.restrict(ass));
+    }
 
-  @Test
-  public void testNAryRestrict() throws ParserException {
-    PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertEquals(F.Y, F.OR1.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.OR2.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.OR3.restrict(ass));
-    Assert.assertEquals(p.parse("~c | y"), p.parse("~a | b | ~c | x | y").restrict(ass));
-    Assert.assertEquals(F.TRUE, p.parse("~a | b | ~c | ~x | ~y").restrict(ass));
+    @Test
+    public void testNAryRestrict() throws ParserException {
+        PropositionalParser p = new PropositionalParser(F.f);
+        Assert.assertEquals(F.Y, F.OR1.restrict(ass));
+        Assert.assertEquals(F.TRUE, F.OR2.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.OR3.restrict(ass));
+        Assert.assertEquals(p.parse("~c | y"), p.parse("~a | b | ~c | x | y").restrict(ass));
+        Assert.assertEquals(F.TRUE, p.parse("~a | b | ~c | ~x | ~y").restrict(ass));
 
-    Assert.assertEquals(F.FALSE, F.AND1.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.AND2.restrict(ass));
-    Assert.assertEquals(F.Y, F.AND3.restrict(ass));
-    Assert.assertEquals(p.parse("c & ~y"), p.parse("a & ~b & c & ~x & ~y").restrict(ass));
-    Assert.assertEquals(F.FALSE, p.parse("a & b & c & ~x & y").restrict(ass));
-  }
+        Assert.assertEquals(F.FALSE, F.AND1.restrict(ass));
+        Assert.assertEquals(F.FALSE, F.AND2.restrict(ass));
+        Assert.assertEquals(F.Y, F.AND3.restrict(ass));
+        Assert.assertEquals(p.parse("c & ~y"), p.parse("a & ~b & c & ~x & ~y").restrict(ass));
+        Assert.assertEquals(F.FALSE, p.parse("a & b & c & ~x & y").restrict(ass));
+    }
 }

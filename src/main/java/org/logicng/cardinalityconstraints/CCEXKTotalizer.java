@@ -39,28 +39,27 @@ import org.logicng.formulas.Variable;
  */
 final class CCEXKTotalizer implements CCExactlyK {
 
-  private final CCTotalizer totalizer;
+    private final CCTotalizer totalizer;
 
-  /**
-   * Constructs a new totalizer.
-   */
-  CCEXKTotalizer() {
-    this.totalizer = new CCTotalizer();
-  }
+    /**
+     * Constructs a new totalizer.
+     */
+    CCEXKTotalizer() {
+        this.totalizer = new CCTotalizer();
+    }
 
+    @Override
+    public void build(final EncodingResult result, final Variable[] vars, int rhs) {
+        this.totalizer.buildEXK(result, vars, rhs);
+    }
 
-  @Override
-  public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-    this.totalizer.buildEXK(result, vars, rhs);
-  }
+    @Override
+    public CCIncrementalData incrementalData() {
+        return this.totalizer.incrementalData();
+    }
 
-  @Override
-  public CCIncrementalData incrementalData() {
-    return this.totalizer.incrementalData();
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

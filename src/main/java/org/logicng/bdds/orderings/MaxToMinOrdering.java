@@ -28,6 +28,8 @@
 
 package org.logicng.bdds.orderings;
 
+import static org.logicng.bdds.orderings.MinToMaxOrdering.sortProfileByOccurrence;
+
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.functions.VariableProfileFunction;
@@ -36,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
-import static org.logicng.bdds.orderings.MinToMaxOrdering.sortProfileByOccurrence;
 
 /**
  * A BDD variable ordering sorting the variables from maximal to minimal occurrence
@@ -48,29 +48,31 @@ import static org.logicng.bdds.orderings.MinToMaxOrdering.sortProfileByOccurrenc
  */
 public class MaxToMinOrdering implements VariableOrderingProvider {
 
-  private final VariableProfileFunction profileFunction = new VariableProfileFunction();
-  private final DFSOrdering dfsOrdering = new DFSOrdering();
+    private final VariableProfileFunction profileFunction = new VariableProfileFunction();
+    private final DFSOrdering dfsOrdering = new DFSOrdering();
 
-  @Override
-  public List<Variable> getOrder(final Formula formula) {
-    final Map<Variable, Integer> profile = formula.apply(this.profileFunction);
-    final List<Variable> dfs = this.dfsOrdering.getOrder(formula);
+    @Override
+    public List<Variable> getOrder(final Formula formula) {
+        final Map<Variable, Integer> profile = formula.apply(this.profileFunction);
+        final List<Variable> dfs = this.dfsOrdering.getOrder(formula);
 
-    final Comparator<Map.Entry<Variable, Integer>> comparator = new Comparator<Map.Entry<Variable, Integer>>() {
-      @Override
-      public int compare(final Map.Entry<Variable, Integer> o1, final Map.Entry<Variable, Integer> o2) {
-        final int occComp = o1.getValue().compareTo(o2.getValue());
-        if (occComp != 0)
-          return occComp;
-        final int index1 = dfs.indexOf(o1.getKey());
-        final int index2 = dfs.indexOf(o2.getKey());
-        return index1 - index2;
-      }
-    };
-    final Map<Variable, Integer> sortedProfile = sortProfileByOccurrence(profile, comparator);
-    final List<Variable> order = new ArrayList<>(sortedProfile.size());
-    for (final Map.Entry<Variable, Integer> entry : sortedProfile.entrySet())
-      order.add(entry.getKey());
-    return order;
-  }
+        final Comparator<Map.Entry<Variable, Integer>> comparator = new Comparator<Map.Entry<Variable, Integer>>() {
+            @Override
+            public int compare(final Map.Entry<Variable, Integer> o1, final Map.Entry<Variable, Integer> o2) {
+                final int occComp = o1.getValue().compareTo(o2.getValue());
+                if (occComp != 0) {
+                    return occComp;
+                }
+                final int index1 = dfs.indexOf(o1.getKey());
+                final int index2 = dfs.indexOf(o2.getKey());
+                return index1 - index2;
+            }
+        };
+        final Map<Variable, Integer> sortedProfile = sortProfileByOccurrence(profile, comparator);
+        final List<Variable> order = new ArrayList<>(sortedProfile.size());
+        for (final Map.Entry<Variable, Integer> entry : sortedProfile.entrySet()) {
+            order.add(entry.getKey());
+        }
+        return order;
+    }
 }

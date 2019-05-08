@@ -34,21 +34,21 @@ package org.logicng.configurations;
  * @since 1.0
  */
 public abstract class Configuration {
-  protected final ConfigurationType type;
+    protected final ConfigurationType type;
 
-  /**
-   * Constructs a new configuration with a given type.
-   * @param type the configuration type
-   */
-  protected Configuration(final ConfigurationType type) {
-    this.type = type;
-  }
+    /**
+     * Constructs a new configuration with a given type.
+     * @param type the configuration type
+     */
+    protected Configuration(final ConfigurationType type) {
+        this.type = type;
+    }
 
-  /**
-   * Returns the type of this configuration.
-   * @return the type of this configuration
-   */
-  public ConfigurationType type() {
-    return this.type;
-  }
+    /**
+     * Returns the type of this configuration.
+     * @return the type of this configuration
+     */
+    public ConfigurationType type() {
+        return this.type;
+    }
 }

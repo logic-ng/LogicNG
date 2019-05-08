@@ -45,88 +45,88 @@ import java.io.IOException;
  */
 public class GraphTest {
 
-  public static Graph<Long> getLongGraph(String id) throws IOException {
-    Graph<Long> g = new Graph<>(id + "-Long");
+    public static Graph<Long> getLongGraph(String id) throws IOException {
+        Graph<Long> g = new Graph<>(id + "-Long");
 
-    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/graphs/graph" + id + ".txt"));
+        final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/graphs/graph" + id + ".txt"));
 
-    while (reader.ready()) {
-      final String line = reader.readLine().trim();
-      String[] nodePair = line.split(":");
-      g.connect(g.node(Long.valueOf(nodePair[0])), g.node(Long.valueOf(nodePair[1])));
+        while (reader.ready()) {
+            final String line = reader.readLine().trim();
+            String[] nodePair = line.split(":");
+            g.connect(g.node(Long.valueOf(nodePair[0])), g.node(Long.valueOf(nodePair[1])));
+        }
+
+        return g;
     }
 
-    return g;
-  }
+    @Test
+    public void testLongGraph() {
+        Graph<Long> g = new Graph<>("Graph with Long nodes.");
 
-  @Test
-  public void testLongGraph() {
-    Graph<Long> g = new Graph<>("Graph with Long nodes.");
+        Node<Long> a = g.node(1L);
+        Node<Long> b = g.node(2L);
+        Node<Long> c = g.node(3L);
+        Node<Long> d = g.node(4L);
+        Node<Long> d2 = g.node(4L);
 
-    Node<Long> a = g.node(1L);
-    Node<Long> b = g.node(2L);
-    Node<Long> c = g.node(3L);
-    Node<Long> d = g.node(4L);
-    Node<Long> d2 = g.node(4L);
+        g.connect(d, d2);
+        Assert.assertFalse(d.neighbours().contains(d2));
 
-    g.connect(d, d2);
-    Assert.assertFalse(d.neighbours().contains(d2));
+        g.connect(a, b);
+        g.connect(a, c);
+        g.connect(a, d);
+        g.connect(b, c);
 
-    g.connect(a, b);
-    g.connect(a, c);
-    g.connect(a, d);
-    g.connect(b, c);
+        d.connectTo(d2);
+        Assert.assertFalse(d2.neighbours().contains(d));
 
-    d.connectTo(d2);
-    Assert.assertFalse(d2.neighbours().contains(d));
+        Assert.assertEquals(3, a.neighbours().size());
+        Assert.assertTrue(c.neighbours().contains(a));
+        Assert.assertTrue(c.neighbours().contains(b));
 
-    Assert.assertEquals(3, a.neighbours().size());
-    Assert.assertTrue(c.neighbours().contains(a));
-    Assert.assertTrue(c.neighbours().contains(b));
+        Assert.assertEquals("Node{content=1, neighbours:2,3,4}", a.toString());
+    }
 
-    Assert.assertEquals("Node{content=1, neighbours:2,3,4}", a.toString());
-  }
+    @Test
+    public void testFormulaGraph() {
+        FormulaFactory f = new FormulaFactory();
+        Graph<Formula> g = new Graph<>("Graph with Formula nodes.");
 
-  @Test
-  public void testFormulaGraph() {
-    FormulaFactory f = new FormulaFactory();
-    Graph<Formula> g = new Graph<>("Graph with Formula nodes.");
+        Variable a = f.variable("A");
+        Node<Formula> an = g.node(a);
+        Variable b = f.variable("B");
+        Node<Formula> bn = g.node(b);
 
-    Variable a = f.variable("A");
-    Node<Formula> an = g.node(a);
-    Variable b = f.variable("B");
-    Node<Formula> bn = g.node(b);
+        Formula aNb = f.and(a, b);
+        Node<Formula> aNbn = g.node(aNb);
+        g.connect(aNbn, an);
+        g.connect(aNbn, bn);
 
-    Formula aNb = f.and(a, b);
-    Node<Formula> aNbn = g.node(aNb);
-    g.connect(aNbn, an);
-    g.connect(aNbn, bn);
+        Assert.assertEquals(2, aNbn.neighbours().size());
+        Assert.assertTrue(an.neighbours().contains(aNbn));
+        Assert.assertTrue(bn.neighbours().contains(aNbn));
 
-    Assert.assertEquals(2, aNbn.neighbours().size());
-    Assert.assertTrue(an.neighbours().contains(aNbn));
-    Assert.assertTrue(bn.neighbours().contains(aNbn));
+        Assert.assertEquals(g.name(), an.graph().name());
 
-    Assert.assertEquals(g.name(), an.graph().name());
+        g.disconnect(aNbn, an);
 
-    g.disconnect(aNbn, an);
+        Assert.assertTrue(an.neighbours().isEmpty());
 
-    Assert.assertTrue(an.neighbours().isEmpty());
+        Assert.assertEquals(3, g.nodes().size());
+    }
 
-    Assert.assertEquals(3, g.nodes().size());
-  }
+    @Test(expected = IllegalArgumentException.class)
+    public void testTwoGraphs() {
+        Graph<String> g1 = new Graph<>("G1");
+        Graph<String> g2 = new Graph<>("G2");
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testTwoGraphs() {
-    Graph<String> g1 = new Graph<>("G1");
-    Graph<String> g2 = new Graph<>("G2");
+        Node<String> a = g1.node("A");
+        Node<String> b = g2.node("B");
 
-    Node<String> a = g1.node("A");
-    Node<String> b = g2.node("B");
+        g1.disconnect(a, b);
+        Assert.assertTrue(a.neighbours().isEmpty());
 
-    g1.disconnect(a, b);
-    Assert.assertTrue(a.neighbours().isEmpty());
-
-    g1.connect(a, b);
-  }
+        g1.connect(a, b);
+    }
 
 }

@@ -45,57 +45,57 @@ import java.nio.charset.StandardCharsets;
  */
 public final class BDDDotFileWriter {
 
-  /**
-   * Private constructor.
-   */
-  private BDDDotFileWriter() {
-    // Intentionally left empty.
-  }
+    /**
+     * Private constructor.
+     */
+    private BDDDotFileWriter() {
+        // Intentionally left empty.
+    }
 
-  /**
-   * Writes a given BDD as a dot file.
-   * @param fileName the file name of the dot file to write
-   * @param bdd      the BDD
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final String fileName, final BDD bdd) throws IOException {
-    write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), bdd);
-  }
+    /**
+     * Writes a given BDD as a dot file.
+     * @param fileName the file name of the dot file to write
+     * @param bdd      the BDD
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final String fileName, final BDD bdd) throws IOException {
+        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), bdd);
+    }
 
-  /**
-   * Writes a given formula's internal data structure as a dot file.
-   * @param file the file of the dot file to write
-   * @param bdd  the BDD
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final File file, final BDD bdd) throws IOException {
-    final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
-    if (!bdd.isContradiction()) {
-      sb.append(String.format("  const_true [shape=box, label=\"$true\", style = bold, color = darkgreen];%n"));
+    /**
+     * Writes a given formula's internal data structure as a dot file.
+     * @param file the file of the dot file to write
+     * @param bdd  the BDD
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final File file, final BDD bdd) throws IOException {
+        final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
+        if (!bdd.isContradiction()) {
+            sb.append(String.format("  const_true [shape=box, label=\"$true\", style = bold, color = darkgreen];%n"));
+        }
+        if (!bdd.isTautology()) {
+            sb.append(String.format("  const_false [shape=box, label=\"$false\", style = bold, color = red];%n"));
+        }
+        for (final BDDFactory.InternalBDDNode internalNode : bdd.internalNodes()) {
+            sb.append(String.format("  id_%d [shape=ellipse, label=\"%s\"];%n", internalNode.nodenum(), internalNode.label()));
+            sb.append(String.format("  id_%d -> %s [style = dotted, color = red];%n", internalNode.nodenum(), getNodeString(internalNode.low())));
+            sb.append(String.format("  id_%d -> %s [color = darkgreen];%n", internalNode.nodenum(), getNodeString(internalNode.high())));
+        }
+        sb.append("}").append(System.lineSeparator());
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
     }
-    if (!bdd.isTautology()) {
-      sb.append(String.format("  const_false [shape=box, label=\"$false\", style = bold, color = red];%n"));
-    }
-    for (final BDDFactory.InternalBDDNode internalNode : bdd.internalNodes()) {
-      sb.append(String.format("  id_%d [shape=ellipse, label=\"%s\"];%n", internalNode.nodenum(), internalNode.label()));
-      sb.append(String.format("  id_%d -> %s [style = dotted, color = red];%n", internalNode.nodenum(), getNodeString(internalNode.low())));
-      sb.append(String.format("  id_%d -> %s [color = darkgreen];%n", internalNode.nodenum(), getNodeString(internalNode.high())));
-    }
-    sb.append("}").append(System.lineSeparator());
-    try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
-    }
-  }
 
-  private static String getNodeString(final int i) {
-    switch (i) {
-      case 0:
-        return "const_false";
-      case 1:
-        return "const_true";
-      default:
-        return "id_" + i;
+    private static String getNodeString(final int i) {
+        switch (i) {
+            case 0:
+                return "const_false";
+            case 1:
+                return "const_true";
+            default:
+                return "id_" + i;
+        }
     }
-  }
 }

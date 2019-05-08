@@ -56,73 +56,73 @@ package org.logicng.solvers.datastructures;
  * @since 1.0
  */
 public final class CLFrame {
-  private final int decision;
-  private final int level;
-  private final int trail;
-  private boolean mark;
+    private final int decision;
+    private final int level;
+    private final int trail;
+    private boolean mark;
 
-  /**
-   * Constructs a new frame.
-   * @param d the decision at this level
-   * @param l the decision level
-   * @param t the trail height before this decision
-   */
-  public CLFrame(int d, int l, int t) {
-    this.decision = d;
-    this.level = l;
-    this.trail = t;
-    this.mark = false;
-  }
+    /**
+     * Constructs a new frame.
+     * @param d the decision at this level
+     * @param l the decision level
+     * @param t the trail height before this decision
+     */
+    public CLFrame(int d, int l, int t) {
+        this.decision = d;
+        this.level = l;
+        this.trail = t;
+        this.mark = false;
+    }
 
-  /**
-   * Constructs a new empty frame at level 0.
-   */
-  public CLFrame() {
-    this(0, 0, 0);
-  }
+    /**
+     * Constructs a new empty frame at level 0.
+     */
+    public CLFrame() {
+        this(0, 0, 0);
+    }
 
-  /**
-   * Returns {@code true} if this frame is marked, {@code false} otherwise.
-   * @return {@code true} if this frame is marked
-   */
-  public boolean mark() {
-    return this.mark;
-  }
+    /**
+     * Returns {@code true} if this frame is marked, {@code false} otherwise.
+     * @return {@code true} if this frame is marked
+     */
+    public boolean mark() {
+        return this.mark;
+    }
 
-  /**
-   * Sets the 'mark' flag of this frame.
-   * @param mark {@code true} if it is marked, {@code false} otherwise
-   */
-  public void setMark(boolean mark) {
-    this.mark = mark;
-  }
+    /**
+     * Sets the 'mark' flag of this frame.
+     * @param mark {@code true} if it is marked, {@code false} otherwise
+     */
+    public void setMark(boolean mark) {
+        this.mark = mark;
+    }
 
-  /**
-   * Returns the decision level of this frame.
-   * @return the decision level of this frame
-   */
-  public int level() {
-    return this.level;
-  }
+    /**
+     * Returns the decision level of this frame.
+     * @return the decision level of this frame
+     */
+    public int level() {
+        return this.level;
+    }
 
-  /**
-   * Returns the trail height before this decision.
-   * @return the trail height before this decision
-   */
-  public int trail() {
-    return this.trail;
-  }
+    /**
+     * Returns the trail height before this decision.
+     * @return the trail height before this decision
+     */
+    public int trail() {
+        return this.trail;
+    }
 
-  /**
-   * Returns the decision of this frame.
-   * @return the decision of this frame
-   */
-  public int decision() {
-    return this.decision;
-  }
+    /**
+     * Returns the decision of this frame.
+     * @return the decision of this frame
+     */
+    public int decision() {
+        return this.decision;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("CLFrame{decision=%d, level=%d, trail=%d, mark=%s}", this.decision, this.level, this.trail, this.mark);
-  }
+    @Override
+    public String toString() {
+        return String.format("CLFrame{decision=%d, level=%d, trail=%d, mark=%s}", this.decision, this.level, this.trail, this.mark);
+    }
 }

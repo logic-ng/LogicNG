@@ -65,23 +65,23 @@ import java.math.BigDecimal;
  * @since 1.4.0
  */
 final class BDDCacheEntry {
-  int a;
-  int b;
-  int c;
-  BigDecimal bdres;
-  int res;
+    int a;
+    int b;
+    int c;
+    BigDecimal bdres;
+    int res;
 
-  /**
-   * Constructs a new BDD cache entry.
-   */
-  BDDCacheEntry() {
-    this.reset();
-  }
+    /**
+     * Constructs a new BDD cache entry.
+     */
+    BDDCacheEntry() {
+        this.reset();
+    }
 
-  /**
-   * Resets this BDD cache entry.
-   */
-  void reset() {
-    this.a = -1;
-  }
+    /**
+     * Resets this BDD cache entry.
+     */
+    void reset() {
+        this.a = -1;
+    }
 }

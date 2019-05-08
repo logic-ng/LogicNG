@@ -28,14 +28,14 @@
 
 package org.logicng.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.logicng.formulas.F;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.TreeSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link FormulaHelper}.

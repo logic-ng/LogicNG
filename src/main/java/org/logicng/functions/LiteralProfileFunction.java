@@ -28,18 +28,17 @@
 
 package org.logicng.functions;
 
+import static org.logicng.formulas.cache.FunctionCacheEntry.LITPROFILE;
+
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFunction;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.PBConstraint;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import static org.logicng.formulas.cache.FunctionCacheEntry.LITPROFILE;
 
 /**
  * A function that computes the literal profile for a given formula, i.e. it counts the number of occurrences for
@@ -53,73 +52,81 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.LITPROFILE;
  */
 public final class LiteralProfileFunction implements FormulaFunction<Map<Literal, Integer>> {
 
-  /**
-   * The non-caching implementation of the literal profile computation.  In this case the result map is only
-   * constructed once and results are just added to it.
-   * @param formula the formula
-   * @return the literal profile
-   */
-  private static Map<Literal, Integer> nonCachingLiteralProfile(final Formula formula) {
-    final SortedMap<Literal, Integer> map = new TreeMap<>();
-    nonCachingRecursion(formula, map);
-    return map;
-  }
+    /**
+     * The non-caching implementation of the literal profile computation.  In this case the result map is only
+     * constructed once and results are just added to it.
+     * @param formula the formula
+     * @return the literal profile
+     */
+    private static Map<Literal, Integer> nonCachingLiteralProfile(final Formula formula) {
+        final SortedMap<Literal, Integer> map = new TreeMap<>();
+        nonCachingRecursion(formula, map);
+        return map;
+    }
 
-  /**
-   * Recursive function for the non-caching literal profile computation.
-   * @param formula the formula
-   * @param map     the literal profile
-   */
-  private static void nonCachingRecursion(final Formula formula, final Map<Literal, Integer> map) {
-    if (formula.type() == FType.LITERAL) {
-      final Literal lit = (Literal) formula;
-      final Integer currentCount = map.get(lit);
-      if (currentCount == null)
-        map.put(lit, 1);
-      else
-        map.put(lit, currentCount + 1);
-    } else if (formula.type() == FType.PBC)
-      for (final Literal l : formula.literals())
-        nonCachingRecursion(l, map);
-    else
-      for (final Formula op : formula)
-        nonCachingRecursion(op, map);
-  }
-
-  /**
-   * The caching implementation of the literal profile computation.  In this case a result map is constructed for
-   * each sub-formula.
-   * @param formula the formula
-   * @return the literal profile
-   */
-  @SuppressWarnings("unchecked")
-  private static Map<Literal, Integer> cachingLiteralProfile(final Formula formula) {
-    final Object cached = formula.functionCacheEntry(LITPROFILE);
-    if (cached != null)
-      return (Map<Literal, Integer>) cached;
-    Map<Literal, Integer> result = new HashMap<>();
-    if (formula.type() == FType.LITERAL)
-      result.put((Literal) formula, 1);
-    else if (formula.type() == FType.PBC)
-      for (final Literal l : formula.literals())
-        result.put(l, 1);
-    else
-      for (final Formula op : formula) {
-        final Map<Literal, Integer> temp = cachingLiteralProfile(op);
-        for (Map.Entry<Literal, Integer> entry : temp.entrySet()) {
-          final Integer currentCount = result.get(entry.getKey());
-          if (currentCount == null)
-            result.put(entry.getKey(), entry.getValue());
-          else
-            result.put(entry.getKey(), currentCount + entry.getValue());
+    /**
+     * Recursive function for the non-caching literal profile computation.
+     * @param formula the formula
+     * @param map     the literal profile
+     */
+    private static void nonCachingRecursion(final Formula formula, final Map<Literal, Integer> map) {
+        if (formula.type() == FType.LITERAL) {
+            final Literal lit = (Literal) formula;
+            final Integer currentCount = map.get(lit);
+            if (currentCount == null) {
+                map.put(lit, 1);
+            } else {
+                map.put(lit, currentCount + 1);
+            }
+        } else if (formula.type() == FType.PBC) {
+            for (final Literal l : formula.literals()) {
+                nonCachingRecursion(l, map);
+            }
+        } else {
+            for (final Formula op : formula) {
+                nonCachingRecursion(op, map);
+            }
         }
-      }
-    formula.setFunctionCacheEntry(LITPROFILE, result);
-    return result;
-  }
+    }
 
-  @Override
-  public Map<Literal, Integer> apply(final Formula formula, boolean cache) {
-    return cache ? cachingLiteralProfile(formula) : nonCachingLiteralProfile(formula);
-  }
+    /**
+     * The caching implementation of the literal profile computation.  In this case a result map is constructed for
+     * each sub-formula.
+     * @param formula the formula
+     * @return the literal profile
+     */
+    @SuppressWarnings("unchecked")
+    private static Map<Literal, Integer> cachingLiteralProfile(final Formula formula) {
+        final Object cached = formula.functionCacheEntry(LITPROFILE);
+        if (cached != null) {
+            return (Map<Literal, Integer>) cached;
+        }
+        Map<Literal, Integer> result = new HashMap<>();
+        if (formula.type() == FType.LITERAL) {
+            result.put((Literal) formula, 1);
+        } else if (formula.type() == FType.PBC) {
+            for (final Literal l : formula.literals()) {
+                result.put(l, 1);
+            }
+        } else {
+            for (final Formula op : formula) {
+                final Map<Literal, Integer> temp = cachingLiteralProfile(op);
+                for (Map.Entry<Literal, Integer> entry : temp.entrySet()) {
+                    final Integer currentCount = result.get(entry.getKey());
+                    if (currentCount == null) {
+                        result.put(entry.getKey(), entry.getValue());
+                    } else {
+                        result.put(entry.getKey(), currentCount + entry.getValue());
+                    }
+                }
+            }
+        }
+        formula.setFunctionCacheEntry(LITPROFILE, result);
+        return result;
+    }
+
+    @Override
+    public Map<Literal, Integer> apply(final Formula formula, boolean cache) {
+        return cache ? cachingLiteralProfile(formula) : nonCachingLiteralProfile(formula);
+    }
 }

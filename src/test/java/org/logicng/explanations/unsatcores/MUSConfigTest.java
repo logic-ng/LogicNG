@@ -41,10 +41,10 @@ import java.util.Arrays;
  */
 public class MUSConfigTest {
 
-  @Test
-  public void testMUSConfiguration() {
-    final MUSConfig config = new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.valueOf("DELETION")).build();
-    Assert.assertEquals(String.format("MUSConfig{%nalgorithm=DELETION%n}%n"), config.toString());
-    Assert.assertTrue(Arrays.asList(CNFConfig.Algorithm.values()).contains(CNFConfig.Algorithm.valueOf("TSEITIN")));
-  }
+    @Test
+    public void testMUSConfiguration() {
+        final MUSConfig config = new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.valueOf("DELETION")).build();
+        Assert.assertEquals(String.format("MUSConfig{%nalgorithm=DELETION%n}%n"), config.toString());
+        Assert.assertTrue(Arrays.asList(CNFConfig.Algorithm.values()).contains(CNFConfig.Algorithm.valueOf("TSEITIN")));
+    }
 }

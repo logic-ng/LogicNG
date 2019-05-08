@@ -44,60 +44,66 @@ import java.util.List;
  */
 public class NQueensGenerator {
 
-  private final FormulaFactory f;
+    private final FormulaFactory f;
 
-  public NQueensGenerator(final FormulaFactory f) {
-    this.f = f;
-    this.f.putConfiguration(new CCConfig.Builder().amoEncoding(CCConfig.AMO_ENCODER.PURE).build());
-  }
-
-  public Formula generate(int n) {
-    int kk = 1;
-    Variable[][] varNames = new Variable[n][];
-    for (int i = 0; i < n; i++) {
-      varNames[i] = new Variable[n];
-      for (int j = 0; j < n; j++)
-        varNames[i][j] = f.variable("v" + kk++);
+    public NQueensGenerator(final FormulaFactory f) {
+        this.f = f;
+        this.f.putConfiguration(new CCConfig.Builder().amoEncoding(CCConfig.AMO_ENCODER.PURE).build());
     }
 
-    List<Formula> operands = new ArrayList<>();
-    List<Variable> vars = new ArrayList<>();
+    public Formula generate(int n) {
+        int kk = 1;
+        Variable[][] varNames = new Variable[n][];
+        for (int i = 0; i < n; i++) {
+            varNames[i] = new Variable[n];
+            for (int j = 0; j < n; j++) {
+                varNames[i][j] = f.variable("v" + kk++);
+            }
+        }
 
-    for (int i = 0; i < n; i++) {
-      vars.addAll(Arrays.asList(varNames[i]).subList(0, n));
-      operands.add(f.exo(vars).cnf());
-      vars.clear();
+        List<Formula> operands = new ArrayList<>();
+        List<Variable> vars = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            vars.addAll(Arrays.asList(varNames[i]).subList(0, n));
+            operands.add(f.exo(vars).cnf());
+            vars.clear();
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                vars.add(varNames[j][i]);
+            }
+            operands.add(f.exo(vars).cnf());
+            vars.clear();
+        }
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i; j++) {
+                vars.add(varNames[j][i + j]);
+            }
+            operands.add(f.amo(vars).cnf());
+            vars.clear();
+        }
+        for (int i = 1; i < n - 1; i++) {
+            for (int j = 0; j < n - i; j++) {
+                vars.add(varNames[j + i][j]);
+            }
+            operands.add(f.amo(vars).cnf());
+            vars.clear();
+        }
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i; j++) {
+                vars.add(varNames[j][n - 1 - (i + j)]);
+            }
+            operands.add(f.amo(vars).cnf());
+            vars.clear();
+        }
+        for (int i = 1; i < n - 1; i++) {
+            for (int j = 0; j < n - i; j++) {
+                vars.add(varNames[j + i][n - 1 - j]);
+            }
+            operands.add(f.amo(vars).cnf());
+            vars.clear();
+        }
+        return f.and(operands);
     }
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++)
-        vars.add(varNames[j][i]);
-      operands.add(f.exo(vars).cnf());
-      vars.clear();
-    }
-    for (int i = 0; i < n - 1; i++) {
-      for (int j = 0; j < n - i; j++)
-        vars.add(varNames[j][i + j]);
-      operands.add(f.amo(vars).cnf());
-      vars.clear();
-    }
-    for (int i = 1; i < n - 1; i++) {
-      for (int j = 0; j < n - i; j++)
-        vars.add(varNames[j + i][j]);
-      operands.add(f.amo(vars).cnf());
-      vars.clear();
-    }
-    for (int i = 0; i < n - 1; i++) {
-      for (int j = 0; j < n - i; j++)
-        vars.add(varNames[j][n - 1 - (i + j)]);
-      operands.add(f.amo(vars).cnf());
-      vars.clear();
-    }
-    for (int i = 1; i < n - 1; i++) {
-      for (int j = 0; j < n - i; j++)
-        vars.add(varNames[j + i][n - 1 - j]);
-      operands.add(f.amo(vars).cnf());
-      vars.clear();
-    }
-    return f.and(operands);
-  }
 }

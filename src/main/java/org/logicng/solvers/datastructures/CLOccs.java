@@ -60,64 +60,64 @@ import java.util.Iterator;
  * @since 1.0
  */
 public final class CLOccs implements Iterable<CLClause> {
-  private final LNGVector<CLClause> clauses;
-  private int count;
+    private final LNGVector<CLClause> clauses;
+    private int count;
 
-  /**
-   * Constructs a new occurrence list.
-   */
-  public CLOccs() {
-    this.count = 0;
-    this.clauses = new LNGVector<>();
-  }
+    /**
+     * Constructs a new occurrence list.
+     */
+    public CLOccs() {
+        this.count = 0;
+        this.clauses = new LNGVector<>();
+    }
 
-  /**
-   * Decrements the number of clauses in this occurrence list.
-   */
-  public void dec() {
-    this.count--;
-  }
+    /**
+     * Decrements the number of clauses in this occurrence list.
+     */
+    public void dec() {
+        this.count--;
+    }
 
-  /**
-   * Adds a new clause to this occurrence list.
-   * @param c the clause
-   */
-  public void add(final CLClause c) {
-    this.count++;
-    this.clauses.push(c);
-  }
+    /**
+     * Adds a new clause to this occurrence list.
+     * @param c the clause
+     */
+    public void add(final CLClause c) {
+        this.count++;
+        this.clauses.push(c);
+    }
 
-  /**
-   * Returns the number of clauses in this occurrence list.
-   * @return the number of clauses in this occurrence list
-   */
-  public int count() {
-    return this.count;
-  }
+    /**
+     * Returns the number of clauses in this occurrence list.
+     * @return the number of clauses in this occurrence list
+     */
+    public int count() {
+        return this.count;
+    }
 
-  /**
-   * Returns the clauses of this occurrence list.
-   * @return the clauses of this occurrence list
-   */
-  public LNGVector<CLClause> clauses() {
-    return this.clauses;
-  }
+    /**
+     * Returns the clauses of this occurrence list.
+     * @return the clauses of this occurrence list
+     */
+    public LNGVector<CLClause> clauses() {
+        return this.clauses;
+    }
 
-  /**
-   * Releases this occurrence list.
-   */
-  public void release() {
-    this.clauses.release();
-    this.count = 0;
-  }
+    /**
+     * Releases this occurrence list.
+     */
+    public void release() {
+        this.clauses.release();
+        this.count = 0;
+    }
 
-  @Override
-  public Iterator<CLClause> iterator() {
-    return this.clauses.iterator();
-  }
+    @Override
+    public Iterator<CLClause> iterator() {
+        return this.clauses.iterator();
+    }
 
-  @Override
-  public String toString() {
-    return String.format("CLOccs{count=%d, clauses=%s}", this.count, this.clauses);
-  }
+    @Override
+    public String toString() {
+        return String.format("CLOccs{count=%d, clauses=%s}", this.count, this.clauses);
+    }
 }

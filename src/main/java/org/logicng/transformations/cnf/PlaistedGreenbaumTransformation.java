@@ -28,6 +28,9 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_POS;
+import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
+
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -38,9 +41,6 @@ import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_POS;
-import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
 
 /**
  * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum.  Results in this implementation will always be
@@ -53,109 +53,116 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREEN
  */
 public final class PlaistedGreenbaumTransformation implements FormulaTransformation {
 
-  private final int boundaryForFactorization;
-  private final CNFPredicate cnfPredicate = new CNFPredicate();
-  private final CNFFactorization factorization = new CNFFactorization();
+    private final int boundaryForFactorization;
+    private final CNFPredicate cnfPredicate = new CNFPredicate();
+    private final CNFFactorization factorization = new CNFFactorization();
 
-  /**
-   * Constructor for a Plaisted &amp; Greenbaum transformation.
-   * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
-   */
-  public PlaistedGreenbaumTransformation(int boundaryForFactorization) {
-    this.boundaryForFactorization = boundaryForFactorization;
-  }
-
-  /**
-   * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
-   * bound of 12.
-   */
-  public PlaistedGreenbaumTransformation() {
-    this(12);
-  }
-
-  /**
-   * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
-   * auxiliary variable or a new one is
-   * generated.
-   * @param formula the formula
-   * @return the old or new auxiliary variable
-   */
-  private static Formula pgVariable(final Formula formula) {
-    if (formula.type() == FType.LITERAL)
-      return formula;
-    Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
-    if (var == null) {
-      var = formula.factory().newCNFVariable();
-      formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
+    /**
+     * Constructor for a Plaisted &amp; Greenbaum transformation.
+     * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
+     */
+    public PlaistedGreenbaumTransformation(int boundaryForFactorization) {
+        this.boundaryForFactorization = boundaryForFactorization;
     }
-    return var;
-  }
 
-  @Override
-  public Formula apply(final Formula formula, boolean cache) {
-    final Formula f = formula.nnf();
-    if (f.holds(this.cnfPredicate))
-      return f;
-    Formula pg;
-    if (f.numberOfAtoms() < this.boundaryForFactorization)
-      pg = f.transform(factorization);
-    else {
-      pg = this.computeTransformation(f, null);
-      final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
-      pg = pg.restrict(topLevel);
+    /**
+     * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
+     * bound of 12.
+     */
+    public PlaistedGreenbaumTransformation() {
+        this(12);
     }
-    if (cache)
-      formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
-              f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
-    return pg;
-  }
 
-  private Formula computeTransformation(final Formula formula, final Literal fixedPGVar) {
-    final FormulaFactory f = formula.factory();
-    switch (formula.type()) {
-      case LITERAL:
-        return f.verum();
-      case OR:
-      case AND:
-        final List<Formula> nops = new ArrayList<>();
-        nops.add(this.computePosPolarity(formula, fixedPGVar));
-        for (final Formula op : formula)
-          nops.add(this.computeTransformation(op, null));
-        return f.and(nops);
-      default:
-        throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+    /**
+     * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
+     * auxiliary variable or a new one is
+     * generated.
+     * @param formula the formula
+     * @return the old or new auxiliary variable
+     */
+    private static Formula pgVariable(final Formula formula) {
+        if (formula.type() == FType.LITERAL) {
+            return formula;
+        }
+        Formula var = formula.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE);
+        if (var == null) {
+            var = formula.factory().newCNFVariable();
+            formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE, var);
+        }
+        return var;
     }
-  }
 
-  private Formula computePosPolarity(final Formula formula, final Literal fixedPGVar) {
-    Formula result = formula.transformationCacheEntry(PLAISTED_GREENBAUM_POS);
-    if (result != null)
-      return result;
-    final FormulaFactory f = formula.factory();
-    final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
-    switch (formula.type()) {
-      case AND:
-        List<Formula> nops = new ArrayList<>();
-        for (final Formula op : formula)
-          nops.add(f.or(pgVar.negate(), pgVariable(op)));
-        result = f.and(nops);
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
-        return result;
-      case OR:
-        nops = new ArrayList<>();
-        nops.add(pgVar.negate());
-        for (final Formula op : formula)
-          nops.add(pgVariable(op));
-        result = f.or(nops);
-        formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
-        return result;
-      default:
-        throw new IllegalArgumentException("not yet implemented");
+    @Override
+    public Formula apply(final Formula formula, boolean cache) {
+        final Formula f = formula.nnf();
+        if (f.holds(this.cnfPredicate)) {
+            return f;
+        }
+        Formula pg;
+        if (f.numberOfAtoms() < this.boundaryForFactorization) {
+            pg = f.transform(factorization);
+        } else {
+            pg = this.computeTransformation(f, null);
+            final Assignment topLevel = new Assignment((Literal) f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+            pg = pg.restrict(topLevel);
+        }
+        if (cache) {
+            formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE,
+                    f.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+        }
+        return pg;
     }
-  }
 
-  @Override
-  public String toString() {
-    return String.format("PlaistedGreenbaumTransformation{boundary=%d}", this.boundaryForFactorization);
-  }
+    private Formula computeTransformation(final Formula formula, final Literal fixedPGVar) {
+        final FormulaFactory f = formula.factory();
+        switch (formula.type()) {
+            case LITERAL:
+                return f.verum();
+            case OR:
+            case AND:
+                final List<Formula> nops = new ArrayList<>();
+                nops.add(this.computePosPolarity(formula, fixedPGVar));
+                for (final Formula op : formula) {
+                    nops.add(this.computeTransformation(op, null));
+                }
+                return f.and(nops);
+            default:
+                throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+        }
+    }
+
+    private Formula computePosPolarity(final Formula formula, final Literal fixedPGVar) {
+        Formula result = formula.transformationCacheEntry(PLAISTED_GREENBAUM_POS);
+        if (result != null) {
+            return result;
+        }
+        final FormulaFactory f = formula.factory();
+        final Formula pgVar = fixedPGVar != null ? fixedPGVar : pgVariable(formula);
+        switch (formula.type()) {
+            case AND:
+                List<Formula> nops = new ArrayList<>();
+                for (final Formula op : formula) {
+                    nops.add(f.or(pgVar.negate(), pgVariable(op)));
+                }
+                result = f.and(nops);
+                formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
+                return result;
+            case OR:
+                nops = new ArrayList<>();
+                nops.add(pgVar.negate());
+                for (final Formula op : formula) {
+                    nops.add(pgVariable(op));
+                }
+                result = f.or(nops);
+                formula.setTransformationCacheEntry(PLAISTED_GREENBAUM_POS, result);
+                return result;
+            default:
+                throw new IllegalArgumentException("not yet implemented");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("PlaistedGreenbaumTransformation{boundary=%d}", this.boundaryForFactorization);
+    }
 }

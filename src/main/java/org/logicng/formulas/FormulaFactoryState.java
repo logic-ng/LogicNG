@@ -37,38 +37,38 @@ import java.util.Arrays;
  */
 public final class FormulaFactoryState {
 
-  private final int id;
+    private final int id;
 
-  private final int[] state;
+    private final int[] state;
 
-  /**
-   * Creates a new formula factory state with a given id and internal formula factory data.
-   * @param id    the id
-   * @param state the formula factory data
-   */
-  FormulaFactoryState(final int id, final int[] state) {
-    this.id = id;
-    this.state = Arrays.copyOf(state, state.length);
-  }
+    /**
+     * Creates a new formula factory state with a given id and internal formula factory data.
+     * @param id    the id
+     * @param state the formula factory data
+     */
+    FormulaFactoryState(final int id, final int[] state) {
+        this.id = id;
+        this.state = Arrays.copyOf(state, state.length);
+    }
 
-  /**
-   * Returns the id of this state.
-   * @return the id of this state
-   */
-  int id() {
-    return id;
-  }
+    /**
+     * Returns the id of this state.
+     * @return the id of this state
+     */
+    int id() {
+        return id;
+    }
 
-  /**
-   * Returns the internal formula factory state.
-   * @return the internal formula factory state
-   */
-  int[] state() {
-    return this.state;
-  }
+    /**
+     * Returns the internal formula factory state.
+     * @return the internal formula factory state
+     */
+    int[] state() {
+        return this.state;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("FormulaFactoryState{id=%d, state=%s}", id, Arrays.toString(state));
-  }
+    @Override
+    public String toString() {
+        return String.format("FormulaFactoryState{id=%d, state=%s}", id, Arrays.toString(state));
+    }
 }

@@ -50,71 +50,71 @@ import java.util.LinkedHashSet;
  */
 public class FormulaFactoryImporter implements FormulaTransformation {
 
-  private final FormulaFactory newFormulaFactory;
+    private final FormulaFactory newFormulaFactory;
 
-  /**
-   * Constructs a new formula factory importer with a given formula factory.  This is the formula factory where the
-   * formulas should be imported to.
-   * @param newFormulaFactory the formula factory where the formulas should be imported to
-   */
-  public FormulaFactoryImporter(final FormulaFactory newFormulaFactory) {
-    this.newFormulaFactory = newFormulaFactory;
-  }
-
-  @Override
-  public Formula apply(final Formula formula, final boolean cache) {
-    if (formula.factory() == this.newFormulaFactory) {
-      return formula;
+    /**
+     * Constructs a new formula factory importer with a given formula factory.  This is the formula factory where the
+     * formulas should be imported to.
+     * @param newFormulaFactory the formula factory where the formulas should be imported to
+     */
+    public FormulaFactoryImporter(final FormulaFactory newFormulaFactory) {
+        this.newFormulaFactory = newFormulaFactory;
     }
-    switch (formula.type()) {
-      case TRUE:
-        return this.newFormulaFactory.verum();
-      case FALSE:
-        return this.newFormulaFactory.falsum();
-      case LITERAL:
-        final Literal literal = (Literal) formula;
-        return this.newFormulaFactory.literal(literal.name(), literal.phase());
-      case NOT:
-        final Not not = (Not) formula;
-        return this.newFormulaFactory.not(apply(not.operand(), cache));
-      case IMPL:
-        final Implication implication = (Implication) formula;
-        return this.newFormulaFactory
-                .implication(apply(implication.left(), cache), apply(implication.right(), cache));
-      case EQUIV:
-        final Equivalence equivalence = (Equivalence) formula;
-        return this.newFormulaFactory
-                .equivalence(apply(equivalence.left(), cache), apply(equivalence.right(), cache));
-      case OR:
-        final Or or = (Or) formula;
-        return this.newFormulaFactory.or(gatherAppliedOperands(or));
-      case AND:
-        final And and = (And) formula;
-        return this.newFormulaFactory.and(gatherAppliedOperands(and));
-      case PBC:
-        final PBConstraint pbc = (PBConstraint) formula;
-        final Literal[] literals = new Literal[pbc.operands().length];
-        for (int i = 0; i < pbc.operands().length; i++) {
-          literals[i] = (Literal) apply(pbc.operands()[i], cache);
+
+    @Override
+    public Formula apply(final Formula formula, final boolean cache) {
+        if (formula.factory() == this.newFormulaFactory) {
+            return formula;
         }
-        return this.newFormulaFactory.pbc(pbc.comparator(), pbc.rhs(), literals, pbc.coefficients());
-      case NONE:
-        return null;
-      default:
-        throw new IllegalArgumentException("Unknown LogicNG formula type: " + formula.type());
+        switch (formula.type()) {
+            case TRUE:
+                return this.newFormulaFactory.verum();
+            case FALSE:
+                return this.newFormulaFactory.falsum();
+            case LITERAL:
+                final Literal literal = (Literal) formula;
+                return this.newFormulaFactory.literal(literal.name(), literal.phase());
+            case NOT:
+                final Not not = (Not) formula;
+                return this.newFormulaFactory.not(apply(not.operand(), cache));
+            case IMPL:
+                final Implication implication = (Implication) formula;
+                return this.newFormulaFactory
+                        .implication(apply(implication.left(), cache), apply(implication.right(), cache));
+            case EQUIV:
+                final Equivalence equivalence = (Equivalence) formula;
+                return this.newFormulaFactory
+                        .equivalence(apply(equivalence.left(), cache), apply(equivalence.right(), cache));
+            case OR:
+                final Or or = (Or) formula;
+                return this.newFormulaFactory.or(gatherAppliedOperands(or));
+            case AND:
+                final And and = (And) formula;
+                return this.newFormulaFactory.and(gatherAppliedOperands(and));
+            case PBC:
+                final PBConstraint pbc = (PBConstraint) formula;
+                final Literal[] literals = new Literal[pbc.operands().length];
+                for (int i = 0; i < pbc.operands().length; i++) {
+                    literals[i] = (Literal) apply(pbc.operands()[i], cache);
+                }
+                return this.newFormulaFactory.pbc(pbc.comparator(), pbc.rhs(), literals, pbc.coefficients());
+            case NONE:
+                return null;
+            default:
+                throw new IllegalArgumentException("Unknown LogicNG formula type: " + formula.type());
+        }
     }
-  }
 
-  /**
-   * Gather the operands of an n-ary operator and returns its applied operands.
-   * @param operator the n-ary operator
-   * @return the applied operands of the given operator
-   */
-  private LinkedHashSet<Formula> gatherAppliedOperands(final NAryOperator operator) {
-    final LinkedHashSet<Formula> applied = new LinkedHashSet<>();
-    for (final Formula operand : operator) {
-      applied.add(apply(operand, false));
+    /**
+     * Gather the operands of an n-ary operator and returns its applied operands.
+     * @param operator the n-ary operator
+     * @return the applied operands of the given operator
+     */
+    private LinkedHashSet<Formula> gatherAppliedOperands(final NAryOperator operator) {
+        final LinkedHashSet<Formula> applied = new LinkedHashSet<>();
+        for (final Formula operand : operator) {
+            applied.add(apply(operand, false));
+        }
+        return applied;
     }
-    return applied;
-  }
 }

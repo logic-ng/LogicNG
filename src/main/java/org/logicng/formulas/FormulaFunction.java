@@ -36,11 +36,11 @@ package org.logicng.formulas;
  */
 public interface FormulaFunction<T> {
 
-  /**
-   * Applies this function to a given formula.
-   * @param formula the input formula
-   * @param cache   indicates whether the result should be cached in this formula's cache
-   * @return the result of the application
-   */
-  T apply(Formula formula, boolean cache);
+    /**
+     * Applies this function to a given formula.
+     * @param formula the input formula
+     * @param cache   indicates whether the result should be cached in this formula's cache
+     * @return the result of the application
+     */
+    T apply(Formula formula, boolean cache);
 }

@@ -85,13 +85,27 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (this.handler != null) { this.handler.startedSolving(); }
+        if (this.handler != null) {
+            this.handler.startedSolving();
+        }
         this.model.clear();
         initLimits();
         Tristate res;
-        while (true) { if ((res = search()) != UNDEF || this.canceledByHandler) { break; } else { updateLimits(); } }
-        if (res == TRUE) { for (int i = 0; i < this.vals.size(); i++) { this.model.push(this.vals.get(i) == VALUE_TRUE); } }
-        if (this.handler != null) { this.handler.finishedSolving(); }
+        while (true) {
+            if ((res = search()) != UNDEF || this.canceledByHandler) {
+                break;
+            } else {
+                updateLimits();
+            }
+        }
+        if (res == TRUE) {
+            for (int i = 0; i < this.vals.size(); i++) {
+                this.model.push(this.vals.get(i) == VALUE_TRUE);
+            }
+        }
+        if (this.handler != null) {
+            this.handler.finishedSolving();
+        }
         backtrack();
         this.handler = null;
         this.canceledByHandler = false;
@@ -112,7 +126,9 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
         this.vals.set(idx, s);
         this.phases.set(idx, s);
         v.setLevel(this.level);
-        if (this.level == 0) { v.setState(CLVar.State.FIXED); }
+        if (this.level == 0) {
+            v.setState(CLVar.State.FIXED);
+        }
         this.trail.push(lit);
         v.setReason(reason);
         if (reason != null) {
@@ -136,23 +152,33 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
             reason.setForcing(false);
         }
         final int idx = Math.abs(lit);
-        if (!this.decisions.contains(idx)) { this.decisions.push(idx); }
+        if (!this.decisions.contains(idx)) {
+            this.decisions.push(idx);
+        }
     }
 
     @Override
     protected void initLimits() {
         newRestartLimit();
-        if (this.limits.simpSteps == 0) { this.limits.simpSteps = Integer.MAX_VALUE; }
+        if (this.limits.simpSteps == 0) {
+            this.limits.simpSteps = Integer.MAX_VALUE;
+        }
     }
 
     @Override
     protected void updateLimits() {
         this.limits.simpInc = Integer.MAX_VALUE;
         this.limits.simpSteps = this.limits.simpInc;
-        if (this.limits.searchInc == 0) { this.limits.searchInc = this.config.searchint; }
+        if (this.limits.searchInc == 0) {
+            this.limits.searchInc = this.config.searchint;
+        }
         if (this.limits.searchConflicts != 0) {
             final int inc = this.limits.searchInc;
-            if (this.limits.searchInc >= Integer.MAX_VALUE - inc) { this.limits.searchInc = Integer.MAX_VALUE; } else { this.limits.searchInc += inc; }
+            if (this.limits.searchInc >= Integer.MAX_VALUE - inc) {
+                this.limits.searchInc = Integer.MAX_VALUE;
+            } else {
+                this.limits.searchInc += inc;
+            }
         }
         this.limits.searchConflicts = this.limits.searchInc;
     }
@@ -161,13 +187,17 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
     protected CLClause newClause(final boolean redundant, final int glue) {
         final CLClause c = new CLClause();
         c.setRedundant(redundant);
-        for (int i = 0; i < this.addedlits.size(); i++) { c.lits().push(this.addedlits.get(i)); }
+        for (int i = 0; i < this.addedlits.size(); i++) {
+            c.lits().push(this.addedlits.get(i));
+        }
         return c;
     }
 
     @Override
     protected void connectClause(final CLClause c) {
-        if (c.satisfied()) { return; }
+        if (c.satisfied()) {
+            return;
+        }
 
         final int size = c.size();
         final boolean binary = size == 2;
@@ -186,7 +216,9 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
         final int l1 = l0 != 0 ? c.lits().get(1) : 0;
 
         final int newLevel = (l0 != 0 && l1 != 0) ? Math.min(var(l0).level(), var(l1).level()) : 0;
-        if (newLevel != Integer.MAX_VALUE) { backtrack(newLevel); }
+        if (newLevel != Integer.MAX_VALUE) {
+            backtrack(newLevel);
+        }
 
         if (size >= 2) {
             addWatch(l0, l1, binary, c);
@@ -205,14 +237,22 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
                 break;
             }
             if (tmp == VALUE_UNASSIGNED) {
-                if (lit != 0) { ignore = true; } else { lit = other; }
+                if (lit != 0) {
+                    ignore = true;
+                } else {
+                    lit = other;
+                }
             }
         }
         if (!ignore) {
             if (lit == 0) {
                 assert this.level == 0;
-                if (this.empty == null) { this.empty = c; }
-            } else { assign(lit, c); }
+                if (this.empty == null) {
+                    this.empty = c;
+                }
+            } else {
+                assign(lit, c);
+            }
         }
     }
 
@@ -229,10 +269,20 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
                 newWS.push(w);
                 int other = w.blit();
                 byte v = val(other);
-                if (v == VALUE_TRUE) { continue; }
+                if (v == VALUE_TRUE) {
+                    continue;
+                }
                 final CLClause clause = w.clause();
-                if (this.ignore != null && (this.ignore == clause || clause.redundant())) { continue; }
-                if (w.binary()) { if (v == VALUE_FALSE) { conflict = clause; } else { assign(other, clause); } } else {
+                if (this.ignore != null && (this.ignore == clause || clause.redundant())) {
+                    continue;
+                }
+                if (w.binary()) {
+                    if (v == VALUE_FALSE) {
+                        conflict = clause;
+                    } else {
+                        assign(other, clause);
+                    }
+                } else {
                     int p;
                     if (clause.lits().get(0) == lit) {
                         final int temp = clause.lits().get(0);
@@ -242,9 +292,13 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
                     assert clause.lits().get(1) == lit;
                     for (p = 2; p < clause.lits().size(); p++) {
                         other = clause.lits().get(p);
-                        if (val(other) >= 0) { break; }
+                        if (val(other) >= 0) {
+                            break;
+                        }
                     }
-                    if (p == clause.size()) { other = 0; }
+                    if (p == clause.size()) {
+                        other = 0;
+                    }
                     if (other != 0) {
                         clause.lits().set(p, lit);
                         clause.lits().set(1, other);
@@ -253,21 +307,37 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
                     } else {
                         other = clause.lits().get(0);
                         v = val(other);
-                        if (v == VALUE_FALSE) { conflict = clause; } else if (v != VALUE_TRUE) { assign(other, clause); } else { newWS.back().setBlit(other); }
+                        if (v == VALUE_FALSE) {
+                            conflict = clause;
+                        } else if (v != VALUE_TRUE) {
+                            assign(other, clause);
+                        } else {
+                            newWS.back().setBlit(other);
+                        }
                     }
                 }
             }
-            if (conflict != null) { while (i < ws.size()) { newWS.push(ws.get(i++)); } }
+            if (conflict != null) {
+                while (i < ws.size()) {
+                    newWS.push(ws.get(i++));
+                }
+            }
             ws.replaceInplace(newWS);
         }
-        if (conflict != null) { this.stats.conflicts++; }
+        if (conflict != null) {
+            this.stats.conflicts++;
+        }
         return conflict;
     }
 
     @Override
     protected void minimizeClause() {
         final LNGIntVector newAddedLits = new LNGIntVector(this.addedlits.size());
-        for (int i = 0; i < this.addedlits.size(); i++) { if (!minimizeLit(-this.addedlits.get(i))) { newAddedLits.push(this.addedlits.get(i)); } }
+        for (int i = 0; i < this.addedlits.size(); i++) {
+            if (!minimizeLit(-this.addedlits.get(i))) {
+                newAddedLits.push(this.addedlits.get(i));
+            }
+        }
         this.addedlits = newAddedLits;
     }
 
@@ -285,10 +355,16 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
         while (true) {
             for (int p = 0; p < reason.lits().size(); p++) {
                 lit = reason.lits().get(p);
-                if (pullLit(lit)) { open++; }
+                if (pullLit(lit)) {
+                    open++;
+                }
             }
-            while (it > 0 && marked(lit = -this.trail.get(--it)) == 0) { assert var(lit).level() == this.level; }
-            if (it == 0 || --open == 0) { break; }
+            while (it > 0 && marked(lit = -this.trail.get(--it)) == 0) {
+                assert var(lit).level() == this.level;
+            }
+            if (it == 0 || --open == 0) {
+                break;
+            }
             reason = var(lit).reason();
             assert reason != null;
         }
@@ -315,7 +391,11 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
         int nextDecision = 0;
         while (nextDecision == 0 && !this.decisions.empty()) {
             final int lit = this.decisions.top();
-            if (val(lit) != 0) { this.decisions.pop(lit); } else { nextDecision = lit; }
+            if (val(lit) != 0) {
+                this.decisions.pop(lit);
+            } else {
+                nextDecision = lit;
+            }
         }
         if (nextDecision != 0) {
             int newLevel;
@@ -323,7 +403,9 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
             for (newLevel = 0; newLevel < this.level; newLevel++) {
                 final CLFrame frame = this.control.get(newLevel + 1);
                 final int decision = Math.abs(frame.decision());
-                if (this.decisions.priority(decision) < nextDecisionPriority) { break; }
+                if (this.decisions.priority(decision) < nextDecisionPriority) {
+                    break;
+                }
             }
             backtrack(newLevel);
         }
@@ -336,14 +418,22 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
         CLClause conflict;
         Tristate res = UNDEF;
         while (res == UNDEF) {
-            if (this.empty != null) { res = FALSE; } else if ((conflict = bcp()) != null) {
+            if (this.empty != null) {
+                res = FALSE;
+            } else if ((conflict = bcp()) != null) {
                 if (this.handler != null && !this.handler.detectedConflict()) {
                     this.canceledByHandler = true;
                     return UNDEF;
                 }
                 analyze(conflict);
                 conflicts++;
-            } else if (conflicts >= this.limits.searchConflicts) { break; } else if (restarting()) { restart(); } else if (!decide()) { res = TRUE; }
+            } else if (conflicts >= this.limits.searchConflicts) {
+                break;
+            } else if (restarting()) {
+                restart();
+            } else if (!decide()) {
+                res = TRUE;
+            }
         }
         return res;
     }

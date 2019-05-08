@@ -28,14 +28,14 @@
 
 package org.logicng.predicates.satisfiability;
 
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_TAUTOLOGY;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.solvers.SATSolver;
-
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_TAUTOLOGY;
 
 /**
  * Tautology predicate.  Indicates whether a formula is a tautology or not.
@@ -44,45 +44,47 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_TAUTOLOGY;
  */
 public final class TautologyPredicate implements FormulaPredicate {
 
-  private final CNFPredicate cnfPredicate = new CNFPredicate();
-  private final SATPredicate satPredicate;
+    private final CNFPredicate cnfPredicate = new CNFPredicate();
+    private final SATPredicate satPredicate;
 
-  /**
-   * Constructs a new tautology predicate with a given formula factory.
-   * @param f the formula factory
-   */
-  public TautologyPredicate(final FormulaFactory f) {
-    this.satPredicate = new SATPredicate(f);
-  }
-
-  /**
-   * Constructs a new tautology predicate with a given SAT solver.
-   * @param solver the SAT solver
-   */
-  public TautologyPredicate(final SATSolver solver) {
-    this.satPredicate = new SATPredicate(solver);
-  }
-
-  @Override
-  public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.predicateCacheEntry(IS_TAUTOLOGY);
-    if (cached != Tristate.UNDEF)
-      return cached == Tristate.TRUE;
-    final FormulaFactory factory = formula.factory();
-    boolean result;
-    if (formula.holds(cnfPredicate))
-      result = formula == factory.verum();
-    else {
-      final Formula negation = formula.negate();
-      result = !negation.holds(this.satPredicate);
+    /**
+     * Constructs a new tautology predicate with a given formula factory.
+     * @param f the formula factory
+     */
+    public TautologyPredicate(final FormulaFactory f) {
+        this.satPredicate = new SATPredicate(f);
     }
-    if (cache)
-      formula.setPredicateCacheEntry(IS_TAUTOLOGY, result);
-    return result;
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    /**
+     * Constructs a new tautology predicate with a given SAT solver.
+     * @param solver the SAT solver
+     */
+    public TautologyPredicate(final SATSolver solver) {
+        this.satPredicate = new SATPredicate(solver);
+    }
+
+    @Override
+    public boolean test(final Formula formula, final boolean cache) {
+        final Tristate cached = formula.predicateCacheEntry(IS_TAUTOLOGY);
+        if (cached != Tristate.UNDEF) {
+            return cached == Tristate.TRUE;
+        }
+        final FormulaFactory factory = formula.factory();
+        final boolean result;
+        if (formula.holds(this.cnfPredicate)) {
+            result = formula == factory.verum();
+        } else {
+            final Formula negation = formula.negate();
+            result = !negation.holds(this.satPredicate);
+        }
+        if (cache) {
+            formula.setPredicateCacheEntry(IS_TAUTOLOGY, result);
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

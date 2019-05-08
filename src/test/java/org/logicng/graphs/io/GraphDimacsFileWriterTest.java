@@ -52,96 +52,101 @@ import java.util.List;
  */
 public class GraphDimacsFileWriterTest {
 
-  @Rule
-  public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    @Rule
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
-  @Test
-  public void testSmall() throws IOException {
-    Graph<String> g = new Graph<>();
-    g.connect(g.node("A"), g.node("B"));
-    g.node("C");
-    testFiles("small", g);
-  }
-
-  @Test
-  public void test20() throws IOException {
-    Graph<Long> g = GraphTest.getLongGraph("30");
-    for (long i = 0; i < 30; i++) {
-      g.node(i);
+    @Test
+    public void testSmall() throws IOException {
+        Graph<String> g = new Graph<>();
+        g.connect(g.node("A"), g.node("B"));
+        g.node("C");
+        testFiles("small", g);
     }
-    testFiles("30", g);
-  }
 
-  @Test
-  public void test50p1() throws IOException {
-    Graph<Long> g = GraphTest.getLongGraph("50");
-    g.node(51L);
-    testFiles("50p1", g);
-  }
-
-  private <T> void testFiles(final String fileName, final Graph<T> g) throws IOException {
-    GraphDimacsFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + "_t.col", g, true);
-    GraphDimacsFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + "_f", g, false);
-    final File expectedT = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_t.col");
-    final File expectedF = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_f.col");
-    final File tempT = new File("src/test/resources/graphs/io/temp/" + fileName + "_t.col");
-    final File tempF = new File("src/test/resources/graphs/io/temp/" + fileName + "_f.col");
-    final File expectedMap = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_t.map");
-    final File tempMap = new File("src/test/resources/graphs/io/temp/" + fileName + "_t.map");
-    assertFilesEqual(expectedT, tempT);
-    assertFilesEqual(expectedF, tempF);
-    assertMapFilesEqual(expectedMap, tempMap);
-  }
-
-  private void assertFilesEqual(final File expected, final File actual) throws IOException {
-    final BufferedReader expReader = new BufferedReader(new FileReader(expected));
-    final BufferedReader actReader = new BufferedReader(new FileReader(actual));
-    final List<String> expEdgeLines = new ArrayList<>();
-    List<String> actEdgeLines = new ArrayList<>();
-    List<String> expNodeLines = new ArrayList<>();
-    List<String> actNodeLines = new ArrayList<>();
-    for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++) {
-      String exp = expReader.readLine();
-      String act = actReader.readLine();
-      if (exp.contains("{") || exp.contains("}")) {
-        softly.assertThat(act).as("Line " + lineNumber + " not equal").isEqualTo(exp);
-      } else {
-        if (exp.contains("-")) {
-          expEdgeLines.add(exp);
-        } else {
-          expNodeLines.add(exp);
+    @Test
+    public void test20() throws IOException {
+        Graph<Long> g = GraphTest.getLongGraph("30");
+        for (long i = 0; i < 30; i++) {
+            g.node(i);
         }
-        if (act.contains("-")) {
-          actEdgeLines.add(act);
-        } else {
-          actNodeLines.add(act);
+        testFiles("30", g);
+    }
+
+    @Test
+    public void test50p1() throws IOException {
+        Graph<Long> g = GraphTest.getLongGraph("50");
+        g.node(51L);
+        testFiles("50p1", g);
+    }
+
+    private <T> void testFiles(final String fileName, final Graph<T> g) throws IOException {
+        GraphDimacsFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + "_t.col", g, true);
+        GraphDimacsFileWriter.write("src/test/resources/graphs/io/temp/" + fileName + "_f", g, false);
+        final File expectedT = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_t.col");
+        final File expectedF = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_f.col");
+        final File tempT = new File("src/test/resources/graphs/io/temp/" + fileName + "_t.col");
+        final File tempF = new File("src/test/resources/graphs/io/temp/" + fileName + "_f.col");
+        final File expectedMap = new File("src/test/resources/graphs/io/graphs-dimacs/" + fileName + "_t.map");
+        final File tempMap = new File("src/test/resources/graphs/io/temp/" + fileName + "_t.map");
+        assertFilesEqual(expectedT, tempT);
+        assertFilesEqual(expectedF, tempF);
+        assertMapFilesEqual(expectedMap, tempMap);
+    }
+
+    private void assertFilesEqual(final File expected, final File actual) throws IOException {
+        final BufferedReader expReader = new BufferedReader(new FileReader(expected));
+        final BufferedReader actReader = new BufferedReader(new FileReader(actual));
+        final List<String> expEdgeLines = new ArrayList<>();
+        List<String> actEdgeLines = new ArrayList<>();
+        List<String> expNodeLines = new ArrayList<>();
+        List<String> actNodeLines = new ArrayList<>();
+        for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++) {
+            String exp = expReader.readLine();
+            String act = actReader.readLine();
+            if (exp.contains("{") || exp.contains("}")) {
+                softly.assertThat(act).as("Line " + lineNumber + " not equal").isEqualTo(exp);
+            } else {
+                if (exp.contains("-")) {
+                    expEdgeLines.add(exp);
+                } else {
+                    expNodeLines.add(exp);
+                }
+                if (act.contains("-")) {
+                    actEdgeLines.add(act);
+                } else {
+                    actNodeLines.add(act);
+                }
+            }
         }
-      }
-    }
-    for (String actNode : actNodeLines) {
-      Assert.assertTrue(expNodeLines.contains(actNode));
-    }
-    for (String actEdge : actEdgeLines) {
-      String[] actEdgeNodes = actEdge.trim().split(" ");
+        for (String actNode : actNodeLines) {
+            Assert.assertTrue(expNodeLines.contains(actNode));
+        }
+        for (String actEdge : actEdgeLines) {
+            String[] actEdgeNodes = actEdge.trim().split(" ");
 
-      Condition<? super List<? extends String>> left = new ContainsCondition(actEdge);
-      Condition<? super List<? extends String>> right = new ContainsCondition("e " + actEdgeNodes[2] + " " + actEdgeNodes[1]);
-      softly.assertThat(expEdgeLines).has(Assertions.anyOf(left, right));
+            Condition<? super List<? extends String>> left = new ContainsCondition(actEdge);
+            Condition<? super List<? extends String>> right = new ContainsCondition("e " + actEdgeNodes[2] + " " + actEdgeNodes[1]);
+            softly.assertThat(expEdgeLines).has(Assertions.anyOf(left, right));
+        }
+        if (expReader.ready()) {
+            softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
+        }
+        if (actReader.ready()) {
+            softly.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
+        }
     }
-    if (expReader.ready())
-      softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
-    if (actReader.ready())
-      softly.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
-  }
 
-  private void assertMapFilesEqual(final File expected, final File actual) throws IOException {
-    final BufferedReader expReader = new BufferedReader(new FileReader(expected));
-    final BufferedReader actReader = new BufferedReader(new FileReader(actual));
-    for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++)
-      softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal").isEqualTo(expReader.readLine());
-    if (expReader.ready())
-      softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
-    if (actReader.ready())
-      softly.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
-  }
+    private void assertMapFilesEqual(final File expected, final File actual) throws IOException {
+        final BufferedReader expReader = new BufferedReader(new FileReader(expected));
+        final BufferedReader actReader = new BufferedReader(new FileReader(actual));
+        for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++) {
+            softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal").isEqualTo(expReader.readLine());
+        }
+        if (expReader.ready()) {
+            softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
+        }
+        if (actReader.ready()) {
+            softly.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
+        }
+    }
 }

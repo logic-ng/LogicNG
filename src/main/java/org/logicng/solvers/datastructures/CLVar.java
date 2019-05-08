@@ -57,112 +57,112 @@ package org.logicng.solvers.datastructures;
  */
 public final class CLVar {
 
-  /**
-   * The state of the variable which has three different states: free, fixed or eliminated.
-   */
-  public enum State {
-    FREE,
-    FIXED,
-    ELIMINATED
-  }
+    /**
+     * The state of the variable which has three different states: free, fixed or eliminated.
+     */
+    public enum State {
+        FREE,
+        FIXED,
+        ELIMINATED
+    }
 
-  private State state;
-  private int level;
-  private int mark;
-  private CLClause reason;
+    private State state;
+    private int level;
+    private int mark;
+    private CLClause reason;
 
-  /**
-   * Constructs a new variable.
-   */
-  public CLVar() {
-    this.reset();
-  }
+    /**
+     * Constructs a new variable.
+     */
+    public CLVar() {
+        this.reset();
+    }
 
-  /**
-   * Resets this variable's members.
-   */
-  public void reset() {
-    this.state = State.FREE;
-    this.level = Integer.MAX_VALUE;
-    this.mark = 0;
-    this.reason = null;
-  }
+    /**
+     * Resets this variable's members.
+     */
+    public void reset() {
+        this.state = State.FREE;
+        this.level = Integer.MAX_VALUE;
+        this.mark = 0;
+        this.reason = null;
+    }
 
-  /**
-   * Returns {@code true} if this variable's state is free, {@code false} otherwise.
-   * @return {@code true} if this variable's state is free
-   */
-  public boolean free() {
-    return this.state == State.FREE;
-  }
+    /**
+     * Returns {@code true} if this variable's state is free, {@code false} otherwise.
+     * @return {@code true} if this variable's state is free
+     */
+    public boolean free() {
+        return this.state == State.FREE;
+    }
 
-  /**
-   * Returns the mark value of this variable.
-   * @return the mark value of this variable
-   */
-  public int mark() {
-    return this.mark;
-  }
+    /**
+     * Returns the mark value of this variable.
+     * @return the mark value of this variable
+     */
+    public int mark() {
+        return this.mark;
+    }
 
-  /**
-   * Sets the mark value of this variable.
-   * @param mark the mark value
-   */
-  public void setMark(int mark) {
-    this.mark = mark;
-  }
+    /**
+     * Sets the mark value of this variable.
+     * @param mark the mark value
+     */
+    public void setMark(int mark) {
+        this.mark = mark;
+    }
 
-  /**
-   * Returns the decision level of this variable.
-   * @return the decision level of this variable
-   */
-  public int level() {
-    return this.level;
-  }
+    /**
+     * Returns the decision level of this variable.
+     * @return the decision level of this variable
+     */
+    public int level() {
+        return this.level;
+    }
 
-  /**
-   * Sets the decision level of this variable.
-   * @param level the decision level
-   */
-  public void setLevel(int level) {
-    this.level = level;
-  }
+    /**
+     * Sets the decision level of this variable.
+     * @param level the decision level
+     */
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
-  /**
-   * Returns the state of this variable.
-   * @return the state of this variable
-   */
-  public State state() {
-    return this.state;
-  }
+    /**
+     * Returns the state of this variable.
+     * @return the state of this variable
+     */
+    public State state() {
+        return this.state;
+    }
 
-  /**
-   * Sets the state of this variable.
-   * @param state the state of this variable
-   */
-  public void setState(final State state) {
-    this.state = state;
-  }
+    /**
+     * Sets the state of this variable.
+     * @param state the state of this variable
+     */
+    public void setState(final State state) {
+        this.state = state;
+    }
 
-  /**
-   * Returns the reason for this variable.
-   * @return the reason for this variable
-   */
-  public CLClause reason() {
-    return this.reason;
-  }
+    /**
+     * Returns the reason for this variable.
+     * @return the reason for this variable
+     */
+    public CLClause reason() {
+        return this.reason;
+    }
 
-  /**
-   * Sets the reason for this variable.
-   * @param reason the reason
-   */
-  public void setReason(final CLClause reason) {
-    this.reason = reason;
-  }
+    /**
+     * Sets the reason for this variable.
+     * @param reason the reason
+     */
+    public void setReason(final CLClause reason) {
+        this.reason = reason;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("CLVar{state=%s, level=%s, mark=%s, reason=%s}", this.state, this.level, this.mark, this.reason);
-  }
+    @Override
+    public String toString() {
+        return String.format("CLVar{state=%s, level=%s, mark=%s, reason=%s}", this.state, this.level, this.mark, this.reason);
+    }
 }
 

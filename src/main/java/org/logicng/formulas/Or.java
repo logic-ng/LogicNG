@@ -28,14 +28,13 @@
 
 package org.logicng.formulas;
 
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
+import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
 import org.logicng.datastructures.Assignment;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
-
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
-import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
 /**
  * Boolean disjunction.
@@ -50,60 +49,64 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
  */
 public final class Or extends NAryOperator {
 
-  private final boolean isCNFClause;
+    private final boolean isCNFClause;
 
-  /**
-   * Constructor.
-   * @param operands the list of operands
-   * @param f        the factory which created this instance
-   * @param isClause is {@code true} if the formula is a clause, {@code false} otherwise
-   */
-  Or(final LinkedHashSet<? extends Formula> operands, final FormulaFactory f, boolean isClause) {
-    super(FType.OR, operands, f);
-    if (isClause) {
-      this.setPredicateCacheEntry(IS_CNF, true);
-      this.setTransformationCacheEntry(FACTORIZED_CNF, this);
-      this.isCNFClause = true;
-    } else {
-      this.setPredicateCacheEntry(IS_CNF, false);
-      this.isCNFClause = false;
+    /**
+     * Constructor.
+     * @param operands the list of operands
+     * @param f        the factory which created this instance
+     * @param isClause is {@code true} if the formula is a clause, {@code false} otherwise
+     */
+    Or(final LinkedHashSet<? extends Formula> operands, final FormulaFactory f, boolean isClause) {
+        super(FType.OR, operands, f);
+        if (isClause) {
+            this.setPredicateCacheEntry(IS_CNF, true);
+            this.setTransformationCacheEntry(FACTORIZED_CNF, this);
+            this.isCNFClause = true;
+        } else {
+            this.setPredicateCacheEntry(IS_CNF, false);
+            this.isCNFClause = false;
+        }
     }
-  }
 
-  @Override
-  public boolean evaluate(final Assignment assignment) {
-    for (Formula op : operands)
-      if (op.evaluate(assignment))
-        return true;
-    return false;
-  }
-
-  /**
-   * Returns {@code true} if this formula is a CNF clause, {@code false} otherwise.
-   * @return {@code true} if this formula is a CNF clause
-   */
-  public boolean isCNFClause() {
-    return this.isCNFClause;
-  }
-
-  @Override
-  public int hashCode() {
-    return hashCode(17);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (other == this)
-      return true;
-    if (other instanceof Formula && this.f == ((Formula) other).f)
-      return false; // the same formula factory would have produced a == object
-    if (other instanceof Or) { // this is not really efficient... but should not be done anyway!
-      final LinkedHashSet<Formula> thisOps = new LinkedHashSet<>(this.operands.length);
-      Collections.addAll(thisOps, this.operands);
-      final LinkedHashSet<Formula> otherOps = new LinkedHashSet<>(((Or) other).operands.length);
-      Collections.addAll(otherOps, ((Or) other).operands);
-      return thisOps.equals(otherOps);
+    @Override
+    public boolean evaluate(final Assignment assignment) {
+        for (Formula op : operands) {
+            if (op.evaluate(assignment)) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
+
+    /**
+     * Returns {@code true} if this formula is a CNF clause, {@code false} otherwise.
+     * @return {@code true} if this formula is a CNF clause
+     */
+    public boolean isCNFClause() {
+        return this.isCNFClause;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode(17);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other instanceof Formula && this.f == ((Formula) other).f) {
+            return false; // the same formula factory would have produced a == object
+        }
+        if (other instanceof Or) { // this is not really efficient... but should not be done anyway!
+            final LinkedHashSet<Formula> thisOps = new LinkedHashSet<>(this.operands.length);
+            Collections.addAll(thisOps, this.operands);
+            final LinkedHashSet<Formula> otherOps = new LinkedHashSet<>(((Or) other).operands.length);
+            Collections.addAll(otherOps, ((Or) other).operands);
+            return thisOps.equals(otherOps);
+        }
+        return false;
+    }
 }

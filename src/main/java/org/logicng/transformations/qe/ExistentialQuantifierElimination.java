@@ -48,30 +48,31 @@ import java.util.Collection;
  */
 public final class ExistentialQuantifierElimination implements FormulaTransformation {
 
-  private final Variable[] elimination;
+    private final Variable[] elimination;
 
-  /**
-   * Constructs a new existential quantifier elimination for the given variables.
-   * @param variables the variables
-   */
-  public ExistentialQuantifierElimination(final Variable... variables) {
-    this.elimination = Arrays.copyOf(variables, variables.length);
-  }
+    /**
+     * Constructs a new existential quantifier elimination for the given variables.
+     * @param variables the variables
+     */
+    public ExistentialQuantifierElimination(final Variable... variables) {
+        this.elimination = Arrays.copyOf(variables, variables.length);
+    }
 
-  /**
-   * Constructs a new existential quantifier elimination for a given collection of variables.
-   * @param variables the collection of variables
-   */
-  public ExistentialQuantifierElimination(final Collection<Variable> variables) {
-    this.elimination = variables.toArray(new Variable[0]);
-  }
+    /**
+     * Constructs a new existential quantifier elimination for a given collection of variables.
+     * @param variables the collection of variables
+     */
+    public ExistentialQuantifierElimination(final Collection<Variable> variables) {
+        this.elimination = variables.toArray(new Variable[0]);
+    }
 
-  @Override
-  public Formula apply(final Formula formula, final boolean cache) {
-    Formula result = formula;
-    final FormulaFactory f = formula.factory();
-    for (final Variable var : this.elimination)
-      result = f.or(result.restrict(new Assignment(var)), result.restrict(new Assignment(var.negate())));
-    return result;
-  }
+    @Override
+    public Formula apply(final Formula formula, final boolean cache) {
+        Formula result = formula;
+        final FormulaFactory f = formula.factory();
+        for (final Variable var : this.elimination) {
+            result = f.or(result.restrict(new Assignment(var)), result.restrict(new Assignment(var.negate())));
+        }
+        return result;
+    }
 }

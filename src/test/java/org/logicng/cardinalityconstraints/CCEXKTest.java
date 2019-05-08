@@ -49,81 +49,85 @@ import java.util.List;
  */
 public class CCEXKTest {
 
-  private CCConfig[] configs;
+    private CCConfig[] configs;
 
-  public CCEXKTest() {
-    configs = new CCConfig[2];
-    configs[0] = new CCConfig.Builder().exkEncoding(CCConfig.EXK_ENCODER.TOTALIZER).build();
-    configs[1] = new CCConfig.Builder().exkEncoding(CCConfig.EXK_ENCODER.CARDINALITY_NETWORK).build();
-  }
-
-  @Test
-  public void testEXK() {
-    final FormulaFactory f = new FormulaFactory();
-    int counter = 0;
-    for (final CCConfig config : this.configs) {
-      f.putConfiguration(config);
-      testCC(10, 1, 10, f);
-      testCC(10, 2, 45, f);
-      testCC(10, 3, 120, f);
-      testCC(10, 4, 210, f);
-      testCC(10, 5, 252, f);
-      testCC(10, 6, 210, f);
-      testCC(10, 7, 120, f);
-      testCC(10, 8, 45, f);
-      testCC(10, 9, 10, f);
-      testCC(10, 10, 1, f);
-      testCC(10, 12, 0, f);
-      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
+    public CCEXKTest() {
+        configs = new CCConfig[2];
+        configs[0] = new CCConfig.Builder().exkEncoding(CCConfig.EXK_ENCODER.TOTALIZER).build();
+        configs[1] = new CCConfig.Builder().exkEncoding(CCConfig.EXK_ENCODER.CARDINALITY_NETWORK).build();
     }
-  }
 
-  private void testCC(int numLits, int rhs, int expected, final FormulaFactory f) {
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.variable("v" + i);
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(f.cc(CType.EQ, rhs, problemLits));
-    if (expected != 0)
-      Assert.assertEquals(Tristate.TRUE, solver.sat());
-    else
-      Assert.assertEquals(Tristate.FALSE, solver.sat());
-    final List<Assignment> models = solver.enumerateAllModels(problemLits);
-    Assert.assertEquals(expected, models.size());
-    for (final Assignment model : models)
-      Assert.assertTrue(model.positiveLiterals().size() == rhs);
-  }
+    @Test
+    public void testEXK() {
+        final FormulaFactory f = new FormulaFactory();
+        int counter = 0;
+        for (final CCConfig config : this.configs) {
+            f.putConfiguration(config);
+            testCC(10, 1, 10, f);
+            testCC(10, 2, 45, f);
+            testCC(10, 3, 120, f);
+            testCC(10, 4, 210, f);
+            testCC(10, 5, 252, f);
+            testCC(10, 6, 210, f);
+            testCC(10, 7, 120, f);
+            testCC(10, 8, 45, f);
+            testCC(10, 9, 10, f);
+            testCC(10, 10, 1, f);
+            testCC(10, 12, 0, f);
+            Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
+        }
+    }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testIllegalCC1() {
-    final FormulaFactory f = new FormulaFactory();
-    final CCEncoder encoder = new CCEncoder(f);
-    final int numLits = 100;
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.variable("v" + i);
-    encoder.encode(f.cc(CType.EQ, -1, problemLits));
-  }
+    private void testCC(int numLits, int rhs, int expected, final FormulaFactory f) {
+        final Variable[] problemLits = new Variable[numLits];
+        for (int i = 0; i < numLits; i++) {
+            problemLits[i] = f.variable("v" + i);
+        }
+        final SATSolver solver = MiniSat.miniSat(f);
+        solver.add(f.cc(CType.EQ, rhs, problemLits));
+        if (expected != 0) {
+            Assert.assertEquals(Tristate.TRUE, solver.sat());
+        } else {
+            Assert.assertEquals(Tristate.FALSE, solver.sat());
+        }
+        final List<Assignment> models = solver.enumerateAllModels(problemLits);
+        Assert.assertEquals(expected, models.size());
+        for (final Assignment model : models) {
+            Assert.assertTrue(model.positiveLiterals().size() == rhs);
+        }
+    }
 
-  @Test
-  public void testCCEXKTotalizer() {
-    FormulaFactory f = new FormulaFactory();
-    CCEXKTotalizer totalizer = new CCEXKTotalizer();
-    totalizer.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
-    Assert.assertNull(totalizer.incrementalData());
-    Assert.assertEquals("CCEXKTotalizer", totalizer.toString());
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalCC1() {
+        final FormulaFactory f = new FormulaFactory();
+        final CCEncoder encoder = new CCEncoder(f);
+        final int numLits = 100;
+        final Variable[] problemLits = new Variable[numLits];
+        for (int i = 0; i < numLits; i++) {
+            problemLits[i] = f.variable("v" + i);
+        }
+        encoder.encode(f.cc(CType.EQ, -1, problemLits));
+    }
 
-    CCEXKCardinalityNetwork cNetwork = new CCEXKCardinalityNetwork();
-    cNetwork.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
-    Assert.assertNull(cNetwork.incrementalData());
-    Assert.assertEquals("CCEXKCardinalityNetwork", cNetwork.toString());
-  }
+    @Test
+    public void testCCEXKTotalizer() {
+        FormulaFactory f = new FormulaFactory();
+        CCEXKTotalizer totalizer = new CCEXKTotalizer();
+        totalizer.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
+        Assert.assertNull(totalizer.incrementalData());
+        Assert.assertEquals("CCEXKTotalizer", totalizer.toString());
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("TOTALIZER", configs[0].exkEncoder.toString());
-    Assert.assertEquals("CARDINALITY_NETWORK", configs[1].exkEncoder.toString());
+        CCEXKCardinalityNetwork cNetwork = new CCEXKCardinalityNetwork();
+        cNetwork.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
+        Assert.assertNull(cNetwork.incrementalData());
+        Assert.assertEquals("CCEXKCardinalityNetwork", cNetwork.toString());
+    }
 
-    Assert.assertTrue(Arrays.asList(CCConfig.EXK_ENCODER.values()).contains(CCConfig.EXK_ENCODER.valueOf("CARDINALITY_NETWORK")));
-  }
+    @Test
+    public void testToString() {
+        Assert.assertEquals("TOTALIZER", configs[0].exkEncoder.toString());
+        Assert.assertEquals("CARDINALITY_NETWORK", configs[1].exkEncoder.toString());
+
+        Assert.assertTrue(Arrays.asList(CCConfig.EXK_ENCODER.values()).contains(CCConfig.EXK_ENCODER.valueOf("CARDINALITY_NETWORK")));
+    }
 }

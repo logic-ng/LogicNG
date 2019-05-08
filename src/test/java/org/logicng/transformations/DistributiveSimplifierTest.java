@@ -42,66 +42,66 @@ import org.logicng.io.parsers.PropositionalParser;
  */
 public class DistributiveSimplifierTest {
 
-  private DistributiveSimplifier distributiveSimplifier = new DistributiveSimplifier();
+    private DistributiveSimplifier distributiveSimplifier = new DistributiveSimplifier();
 
-  @Test
-  public void testConstants() {
-    Assert.assertEquals(F.TRUE, F.TRUE.transform(distributiveSimplifier));
-    Assert.assertEquals(F.FALSE, F.FALSE.transform(distributiveSimplifier));
-  }
+    @Test
+    public void testConstants() {
+        Assert.assertEquals(F.TRUE, F.TRUE.transform(distributiveSimplifier));
+        Assert.assertEquals(F.FALSE, F.FALSE.transform(distributiveSimplifier));
+    }
 
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(F.A, F.A.transform(distributiveSimplifier));
-    Assert.assertEquals(F.NA, F.NA.transform(distributiveSimplifier));
-  }
+    @Test
+    public void testLiterals() {
+        Assert.assertEquals(F.A, F.A.transform(distributiveSimplifier));
+        Assert.assertEquals(F.NA, F.NA.transform(distributiveSimplifier));
+    }
 
-  @Test
-  public void testNoPropagation() {
-    Assert.assertEquals(F.AND1, F.AND1.transform(distributiveSimplifier));
-    Assert.assertEquals(F.AND2, F.AND2.transform(distributiveSimplifier));
-    Assert.assertEquals(F.OR1, F.OR1.transform(distributiveSimplifier));
-    Assert.assertEquals(F.OR2, F.OR2.transform(distributiveSimplifier));
-  }
+    @Test
+    public void testNoPropagation() {
+        Assert.assertEquals(F.AND1, F.AND1.transform(distributiveSimplifier));
+        Assert.assertEquals(F.AND2, F.AND2.transform(distributiveSimplifier));
+        Assert.assertEquals(F.OR1, F.OR1.transform(distributiveSimplifier));
+        Assert.assertEquals(F.OR2, F.OR2.transform(distributiveSimplifier));
+    }
 
-  @Test
-  public void testPropagations() throws ParserException {
-    final PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertEquals(F.AND1, F.f.and(F.AND1, F.A).transform(distributiveSimplifier));
-    Assert.assertEquals(F.FALSE, F.f.and(F.AND2, F.A).transform(distributiveSimplifier));
-    Assert.assertEquals(F.f.and(F.OR1, F.X), F.f.and(F.OR1, F.X).transform(distributiveSimplifier));
-    Assert.assertEquals(F.f.and(F.OR2, F.X), F.f.and(F.OR2, F.X).transform(distributiveSimplifier));
-    Assert.assertEquals(F.f.or(F.AND1, F.A), F.f.or(F.AND1, F.A).transform(distributiveSimplifier));
-    Assert.assertEquals(F.f.or(F.AND2, F.A), F.f.or(F.AND2, F.A).transform(distributiveSimplifier));
-    Assert.assertEquals(F.OR1, F.f.or(F.OR1, F.X).transform(distributiveSimplifier));
-    Assert.assertEquals(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & f & c & (e | (~b | ~f | g) & (f | g | h) & (~f | ~g | h))"),
-            p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c").transform(distributiveSimplifier));
-  }
+    @Test
+    public void testPropagations() throws ParserException {
+        final PropositionalParser p = new PropositionalParser(F.f);
+        Assert.assertEquals(F.AND1, F.f.and(F.AND1, F.A).transform(distributiveSimplifier));
+        Assert.assertEquals(F.FALSE, F.f.and(F.AND2, F.A).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.and(F.OR1, F.X), F.f.and(F.OR1, F.X).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.and(F.OR2, F.X), F.f.and(F.OR2, F.X).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.or(F.AND1, F.A), F.f.or(F.AND1, F.A).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.or(F.AND2, F.A), F.f.or(F.AND2, F.A).transform(distributiveSimplifier));
+        Assert.assertEquals(F.OR1, F.f.or(F.OR1, F.X).transform(distributiveSimplifier));
+        Assert.assertEquals(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & f & c & (e | (~b | ~f | g) & (f | g | h) & (~f | ~g | h))"),
+                p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c").transform(distributiveSimplifier));
+    }
 
-  @Test
-  public void testFormulaTypes() {
-    Assert.assertEquals(F.IMP1, F.IMP1.transform(distributiveSimplifier));
-    Assert.assertEquals(F.EQ1, F.EQ1.transform(distributiveSimplifier));
-    Assert.assertEquals(F.NOT1, F.NOT1.transform(distributiveSimplifier));
-  }
+    @Test
+    public void testFormulaTypes() {
+        Assert.assertEquals(F.IMP1, F.IMP1.transform(distributiveSimplifier));
+        Assert.assertEquals(F.EQ1, F.EQ1.transform(distributiveSimplifier));
+        Assert.assertEquals(F.NOT1, F.NOT1.transform(distributiveSimplifier));
+    }
 
-  @Test
-  public void testComplexExamples() throws ParserException {
-    final PropositionalParser p = new PropositionalParser(F.f);
-    Formula cAnd = p.parse("(a | b | ~c) & (~a | ~d) & (~c | d | b) & (~c | ~b)");
-    Formula cAndD1 = cAnd.transform(distributiveSimplifier);
-    Assert.assertEquals(p.parse("(~a | ~d) & (~c | (a | b) & (d | b) & ~b)"), cAndD1);
-    Assert.assertEquals(p.parse("(~a | ~d) & (~c | ~b & (b | a & d))"), cAndD1.transform(distributiveSimplifier));
+    @Test
+    public void testComplexExamples() throws ParserException {
+        final PropositionalParser p = new PropositionalParser(F.f);
+        Formula cAnd = p.parse("(a | b | ~c) & (~a | ~d) & (~c | d | b) & (~c | ~b)");
+        Formula cAndD1 = cAnd.transform(distributiveSimplifier);
+        Assert.assertEquals(p.parse("(~a | ~d) & (~c | (a | b) & (d | b) & ~b)"), cAndD1);
+        Assert.assertEquals(p.parse("(~a | ~d) & (~c | ~b & (b | a & d))"), cAndD1.transform(distributiveSimplifier));
 
-    Assert.assertEquals(F.f.not(cAndD1), F.f.not(cAnd).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.not(cAndD1), F.f.not(cAnd).transform(distributiveSimplifier));
 
-    Formula cOr = p.parse("(x & y & z) | (x & y & ~z) | (x & ~y & z)");
-    Formula cOrD1 = cOr.transform(distributiveSimplifier);
-    Assert.assertEquals(p.parse("x & (y & z | y & ~z | ~y & z)"), cOrD1);
-    Assert.assertEquals(p.parse("x & (~y & z | y)"), cOrD1.transform(distributiveSimplifier));
+        Formula cOr = p.parse("(x & y & z) | (x & y & ~z) | (x & ~y & z)");
+        Formula cOrD1 = cOr.transform(distributiveSimplifier);
+        Assert.assertEquals(p.parse("x & (y & z | y & ~z | ~y & z)"), cOrD1);
+        Assert.assertEquals(p.parse("x & (~y & z | y)"), cOrD1.transform(distributiveSimplifier));
 
-    Assert.assertEquals(F.f.equivalence(cOrD1, cAndD1), F.f.equivalence(cOr, cAnd).transform(distributiveSimplifier));
-    Assert.assertEquals(F.f.implication(cOrD1, cAndD1), F.f.implication(cOr, cAnd).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.equivalence(cOrD1, cAndD1), F.f.equivalence(cOr, cAnd).transform(distributiveSimplifier));
+        Assert.assertEquals(F.f.implication(cOrD1, cAndD1), F.f.implication(cOr, cAnd).transform(distributiveSimplifier));
 
-  }
+    }
 }

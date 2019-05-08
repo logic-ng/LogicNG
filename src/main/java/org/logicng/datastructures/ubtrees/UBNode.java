@@ -70,8 +70,12 @@ public class UBNode<T extends Comparable<T>> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UBNode<?> ubNode = (UBNode<?>) o;
         return Objects.equals(element, ubNode.element) &&
                 Objects.equals(children, ubNode.children) &&

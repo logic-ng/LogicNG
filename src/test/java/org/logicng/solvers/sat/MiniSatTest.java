@@ -28,14 +28,14 @@
 
 package org.logicng.solvers.sat;
 
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.collections.LNGIntVector;
 
 import java.util.Arrays;
-
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Some MiniSat specific unit tests.
@@ -44,47 +44,48 @@ import static org.logicng.datastructures.Tristate.TRUE;
  */
 public class MiniSatTest {
 
-  @Test
-  public void testAnalyzeFinal() {
-    final MiniSat2Solver solver = new MiniSat2Solver();
-    solver.newVar(true, true);
-    solver.newVar(true, true);
-    solver.newVar(true, true);
-    solver.newVar(true, true);
-    solver.addClause(clause(1, 2, 3), null);
-    solver.addClause(clause(-1, -2), null);
-    solver.addClause(clause(-1, -3), null);
-    solver.addClause(clause(-2, -3), null);
-    Assert.assertEquals(TRUE, solver.solve(null));
-    Assert.assertEquals(FALSE, solver.solve(null, clause(1, 2)));
-  }
+    @Test
+    public void testAnalyzeFinal() {
+        final MiniSat2Solver solver = new MiniSat2Solver();
+        solver.newVar(true, true);
+        solver.newVar(true, true);
+        solver.newVar(true, true);
+        solver.newVar(true, true);
+        solver.addClause(clause(1, 2, 3), null);
+        solver.addClause(clause(-1, -2), null);
+        solver.addClause(clause(-1, -3), null);
+        solver.addClause(clause(-2, -3), null);
+        Assert.assertEquals(TRUE, solver.solve(null));
+        Assert.assertEquals(FALSE, solver.solve(null, clause(1, 2)));
+    }
 
-  @Test(expected = IllegalStateException.class)
-  public void testInvalidSaveState() {
-    final MiniSat2Solver solver = new MiniSat2Solver(new MiniSatConfig.Builder().incremental(false).build());
-    solver.saveState();
-  }
+    @Test(expected = IllegalStateException.class)
+    public void testInvalidSaveState() {
+        final MiniSat2Solver solver = new MiniSat2Solver(new MiniSatConfig.Builder().incremental(false).build());
+        solver.saveState();
+    }
 
-  @Test(expected = IllegalStateException.class)
-  public void testInvalidLoadState() {
-    final MiniSat2Solver solver = new MiniSat2Solver(new MiniSatConfig.Builder().incremental(false).build());
-    solver.loadState(null);
-  }
+    @Test(expected = IllegalStateException.class)
+    public void testInvalidLoadState() {
+        final MiniSat2Solver solver = new MiniSat2Solver(new MiniSatConfig.Builder().incremental(false).build());
+        solver.loadState(null);
+    }
 
-  @Test
-  public void testConfig() {
-    Assert.assertEquals("MINISAT", new MiniSatConfig.Builder().build().type().toString());
-    Assert.assertTrue(Arrays.asList(MiniSatConfig.ClauseMinimization.values()).contains(MiniSatConfig.ClauseMinimization.valueOf("DEEP")));
-  }
+    @Test
+    public void testConfig() {
+        Assert.assertEquals("MINISAT", new MiniSatConfig.Builder().build().type().toString());
+        Assert.assertTrue(Arrays.asList(MiniSatConfig.ClauseMinimization.values()).contains(MiniSatConfig.ClauseMinimization.valueOf("DEEP")));
+    }
 
-  private LNGIntVector clause(int... lits) {
-    final LNGIntVector c = new LNGIntVector(lits.length);
-    for (int l : lits)
-      c.push(literal(l));
-    return c;
-  }
+    private LNGIntVector clause(int... lits) {
+        final LNGIntVector c = new LNGIntVector(lits.length);
+        for (int l : lits) {
+            c.push(literal(l));
+        }
+        return c;
+    }
 
-  private int literal(int l) {
-    return l < 0 ? (-l * 2) ^ 1 : l * 2;
-  }
+    private int literal(int l) {
+        return l < 0 ? (-l * 2) ^ 1 : l * 2;
+    }
 }

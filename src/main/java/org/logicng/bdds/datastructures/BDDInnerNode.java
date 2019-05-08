@@ -42,70 +42,71 @@ import java.util.Set;
  */
 public final class BDDInnerNode implements BDDNode {
 
-  private final Variable var;
-  private final BDDNode low;
-  private final BDDNode high;
+    private final Variable var;
+    private final BDDNode low;
+    private final BDDNode high;
 
-  /**
-   * Constructor for a new inner BDD node holding a variable.
-   * @param var  the variable
-   * @param low  the low child node
-   * @param high the high child node
-   */
-  public BDDInnerNode(final Variable var, final BDDNode low, final BDDNode high) {
-    this.var = var;
-    this.low = low;
-    this.high = high;
-  }
-
-  @Override
-  public Variable label() {
-    return this.var;
-  }
-
-  @Override
-  public boolean isInnerNode() {
-    return true;
-  }
-
-  @Override
-  public BDDNode low() {
-    return this.low;
-  }
-
-  @Override
-  public BDDNode high() {
-    return this.high;
-  }
-
-  @Override
-  public Set<BDDNode> nodes() {
-    final Set<BDDNode> res = new HashSet<BDDNode>(Collections.singleton(this));
-    res.addAll(this.low.nodes());
-    res.addAll(this.high.nodes());
-    return res;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.var, this.low, this.high);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof BDDInnerNode) {
-      final BDDInnerNode o = (BDDInnerNode) other;
-      return Objects.equals(this.var, o.var)
-              && Objects.equals(this.low, o.low)
-              && Objects.equals(this.high, o.high);
+    /**
+     * Constructor for a new inner BDD node holding a variable.
+     * @param var  the variable
+     * @param low  the low child node
+     * @param high the high child node
+     */
+    public BDDInnerNode(final Variable var, final BDDNode low, final BDDNode high) {
+        this.var = var;
+        this.low = low;
+        this.high = high;
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    return "<" + this.var + " | low=" + this.low + " high=" + this.high + ">";
-  }
+    @Override
+    public Variable label() {
+        return this.var;
+    }
+
+    @Override
+    public boolean isInnerNode() {
+        return true;
+    }
+
+    @Override
+    public BDDNode low() {
+        return this.low;
+    }
+
+    @Override
+    public BDDNode high() {
+        return this.high;
+    }
+
+    @Override
+    public Set<BDDNode> nodes() {
+        final Set<BDDNode> res = new HashSet<BDDNode>(Collections.singleton(this));
+        res.addAll(this.low.nodes());
+        res.addAll(this.high.nodes());
+        return res;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.var, this.low, this.high);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other instanceof BDDInnerNode) {
+            final BDDInnerNode o = (BDDInnerNode) other;
+            return Objects.equals(this.var, o.var)
+                    && Objects.equals(this.low, o.low)
+                    && Objects.equals(this.high, o.high);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.var + " | low=" + this.low + " high=" + this.high + ">";
+    }
 }

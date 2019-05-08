@@ -32,7 +32,6 @@ import org.logicng.formulas.CType;
 
 /**
  * The default string representation for formulas.
- *
  * @version 1.0
  * @since 1.0
  */

@@ -28,12 +28,12 @@
 
 package org.logicng.functions;
 
+import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
+
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFunction;
 
 import java.util.LinkedHashSet;
-
-import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
 
 /**
  * A function that computes the all sub-nodes of a given formula.  The order of the sub-nodes is bottom-up, i.e. a
@@ -43,19 +43,23 @@ import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
  */
 public final class SubNodeFunction implements FormulaFunction<LinkedHashSet<Formula>> {
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public LinkedHashSet<Formula> apply(final Formula formula, boolean cache) {
-    final Object cached = formula.functionCacheEntry(SUBFORMULAS);
-    if (cached != null)
-      return (LinkedHashSet<Formula>) cached;
-    LinkedHashSet<Formula> result = new LinkedHashSet<>();
-    for (final Formula op : formula)
-      if (!result.contains(op))
-        result.addAll(apply(op, cache));
-    result.add(formula);
-    if (cache)
-      formula.setFunctionCacheEntry(SUBFORMULAS, result);
-    return result;
-  }
+    @Override
+    @SuppressWarnings("unchecked")
+    public LinkedHashSet<Formula> apply(final Formula formula, boolean cache) {
+        final Object cached = formula.functionCacheEntry(SUBFORMULAS);
+        if (cached != null) {
+            return (LinkedHashSet<Formula>) cached;
+        }
+        LinkedHashSet<Formula> result = new LinkedHashSet<>();
+        for (final Formula op : formula) {
+            if (!result.contains(op)) {
+                result.addAll(apply(op, cache));
+            }
+        }
+        result.add(formula);
+        if (cache) {
+            formula.setFunctionCacheEntry(SUBFORMULAS, result);
+        }
+        return result;
+    }
 }

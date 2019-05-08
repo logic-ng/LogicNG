@@ -28,11 +28,17 @@
 
 package org.logicng.formulas.printer;
 
-import org.logicng.formulas.*;
+import org.logicng.formulas.BinaryOperator;
+import org.logicng.formulas.CType;
+import org.logicng.formulas.FType;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
+import org.logicng.formulas.NAryOperator;
+import org.logicng.formulas.Not;
+import org.logicng.formulas.PBConstraint;
 
 /**
  * Super class for a formula string representation.
- *
  * @version 1.3
  * @since 1.0
  */
@@ -40,7 +46,6 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns the string representation of the given formula.
-     *
      * @param formula the formula
      * @return the string representation of the formula
      */
@@ -68,10 +73,11 @@ public abstract class FormulaStringRepresentation {
                 return this.naryOperator(nary, String.format("%s", op));
             case PBC:
                 final PBConstraint pbc = (PBConstraint) formula;
-                if (pbc.isTrivialFalse())
+                if (pbc.isTrivialFalse()) {
                     return this.falsum();
-                else if (pbc.isTrivialTrue())
+                } else if (pbc.isTrivialTrue()) {
                     return this.verum();
+                }
                 return String.format("%s%s%d", this.pbLhs(pbc.operands(), pbc.coefficients()), this.pbComparator(pbc.comparator()), pbc.rhs());
             default:
                 throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
@@ -80,7 +86,6 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns a bracketed string version of a given formula.
-     *
      * @param formula the formula
      * @return {@code "(" + formula.toString() + ")"}
      */
@@ -90,7 +95,6 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns the string representation of a binary operator.
-     *
      * @param operator the binary operator
      * @param opString the operator string
      * @return the string representation
@@ -105,7 +109,6 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns the string representation of an n-ary operator.
-     *
      * @param operator the n-ary operator
      * @param opString the operator string
      * @return the string representation
@@ -131,7 +134,6 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns the string representation of the left-hand side of a pseudo-Boolean constraint.
-     *
      * @param operands     the literals of the constraint
      * @param coefficients the coefficients of the constraint
      * @return the string representation
@@ -160,56 +162,48 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns the string representation of false.
-     *
      * @return the string representation of false
      */
     protected abstract String falsum();
 
     /**
      * Returns the string representation of true.
-     *
      * @return the string representation of true
      */
     protected abstract String verum();
 
     /**
      * Returns the string representation of not.
-     *
      * @return the string representation of not
      */
     protected abstract String negation();
 
     /**
      * Returns the string representation of an implication.
-     *
      * @return the string representation of an implication
      */
     protected abstract String implication();
 
     /**
      * Returns the string representation of an equivalence.
-     *
      * @return the string representation of an equivalence
      */
     protected abstract String equivalence();
 
     /**
      * Returns the string representation of and.
-     *
      * @return the string representation of and
      */
     protected abstract String and();
 
     /**
      * Returns the string representation of or.
-     *
      * @return the string representation of or
      */
     protected abstract String or();
 
     /**
      * Returns the string representation of a pseudo-Boolean comparator.
-     *
      * @param comparator the pseudo-Boolean comparator
      * @return the string representation of a pseudo-Boolean comparator
      */
@@ -217,28 +211,24 @@ public abstract class FormulaStringRepresentation {
 
     /**
      * Returns the string representation of a pseudo-Boolean multiplication.
-     *
      * @return the string representation of a pseudo-Boolean multiplication
      */
     protected abstract String pbMul();
 
     /**
      * Returns the string representation of a pseudo-Boolean addition.
-     *
      * @return the string representation of a pseudo-Boolean addition
      */
     protected abstract String pbAdd();
 
     /**
      * Returns the string representation of a left bracket.
-     *
      * @return the string representation of a left bracket
      */
     protected abstract String lbr();
 
     /**
      * Returns the string representation of right bracket.
-     *
      * @return the string representation of right bracket
      */
     protected abstract String rbr();

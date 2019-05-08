@@ -28,7 +28,7 @@
 
 /**
  * PBLib       -- Copyright (c) 2012-2013  Peter Steinke
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -36,10 +36,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -51,14 +51,14 @@
 
 package org.logicng.cardinalityconstraints;
 
+import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.BOTH;
+import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.INPUT_TO_OUTPUT;
+import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.OUTPUT_TO_INPUT;
+
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-
-import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.BOTH;
-import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.INPUT_TO_OUTPUT;
-import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.OUTPUT_TO_INPUT;
 
 /**
  * Implementation of cardinality networks due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell.
@@ -67,98 +67,107 @@ import static org.logicng.cardinalityconstraints.CCSorting.ImplicationDirection.
  */
 final class CCCardinalityNetworks {
 
-  private final CCSorting sorting;
-  private CCIncrementalData incData;
+    private final CCSorting sorting;
+    private CCIncrementalData incData;
 
-  /**
-   * Constructs a new cardinality encoder.
-   */
-  CCCardinalityNetworks() {
-    this.sorting = new CCSorting();
-  }
-
-  void buildAMK(final EncodingResult result, final Variable[] vars, int rhs) {
-    result.reset();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    if (rhs > vars.length / 2) {
-      int geq = vars.length - rhs;
-      for (final Variable v : vars)
-        input.push(v.negate());
-      sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
-      for (int i = 0; i < geq; i++)
-        result.addClause(output.get(i));
-    } else {
-      for (final Variable v : vars)
-        input.push(v);
-      sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
-      assert output.size() > rhs;
-      result.addClause(output.get(rhs).negate());
+    /**
+     * Constructs a new cardinality encoder.
+     */
+    CCCardinalityNetworks() {
+        this.sorting = new CCSorting();
     }
-  }
 
-  void buildAMKForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (final Variable var : vars)
-      input.push(var);
-    this.sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
-    assert output.size() > rhs;
-    result.addClause(output.get(rhs).negate());
-    this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, rhs, output);
-  }
-
-  void buildALK(final EncodingResult result, final Variable[] vars, int rhs) {
-    result.reset();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    final int newRHS = vars.length - rhs;
-    if (newRHS > vars.length / 2) {
-      int geq = vars.length - newRHS;
-      for (final Variable v : vars)
-        input.push(v);
-      sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
-      for (int i = 0; i < geq; i++)
-        result.addClause(output.get(i));
-    } else {
-      for (final Variable v : vars)
-        input.push(v.negate());
-      sorting.sort(newRHS + 1, input, result, output, INPUT_TO_OUTPUT);
-      assert output.size() > newRHS;
-      result.addClause(output.get(newRHS).negate());
+    void buildAMK(final EncodingResult result, final Variable[] vars, int rhs) {
+        result.reset();
+        final LNGVector<Literal> input = new LNGVector<>();
+        final LNGVector<Literal> output = new LNGVector<>();
+        if (rhs > vars.length / 2) {
+            int geq = vars.length - rhs;
+            for (final Variable v : vars) {
+                input.push(v.negate());
+            }
+            sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
+            for (int i = 0; i < geq; i++) {
+                result.addClause(output.get(i));
+            }
+        } else {
+            for (final Variable v : vars) {
+                input.push(v);
+            }
+            sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
+            assert output.size() > rhs;
+            result.addClause(output.get(rhs).negate());
+        }
     }
-  }
 
-  void buildALKForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (final Variable var : vars)
-      input.push(var.negate());
-    final int newRHS = vars.length - rhs;
-    this.sorting.sort(newRHS + 1, input, result, output, INPUT_TO_OUTPUT);
-    assert output.size() > newRHS;
-    result.addClause(output.get(newRHS).negate());
-    this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
-  }
+    void buildAMKForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
+        final LNGVector<Literal> input = new LNGVector<>();
+        final LNGVector<Literal> output = new LNGVector<>();
+        for (final Variable var : vars) {
+            input.push(var);
+        }
+        this.sorting.sort(rhs + 1, input, result, output, INPUT_TO_OUTPUT);
+        assert output.size() > rhs;
+        result.addClause(output.get(rhs).negate());
+        this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.CARDINALITY_NETWORK, rhs, output);
+    }
 
-  void buildEXK(final EncodingResult result, final Variable[] vars, int rhs) {
-    result.reset();
-    final LNGVector<Literal> input = new LNGVector<>();
-    final LNGVector<Literal> output = new LNGVector<>();
-    for (final Variable var : vars)
-      input.push(var);
-    this.sorting.sort(rhs + 1, input, result, output, BOTH);
-    assert output.size() > rhs;
-    result.addClause(output.get(rhs).negate());
-    result.addClause(output.get(rhs - 1));
-  }
+    void buildALK(final EncodingResult result, final Variable[] vars, int rhs) {
+        result.reset();
+        final LNGVector<Literal> input = new LNGVector<>();
+        final LNGVector<Literal> output = new LNGVector<>();
+        final int newRHS = vars.length - rhs;
+        if (newRHS > vars.length / 2) {
+            int geq = vars.length - newRHS;
+            for (final Variable v : vars) {
+                input.push(v);
+            }
+            sorting.sort(geq, input, result, output, OUTPUT_TO_INPUT);
+            for (int i = 0; i < geq; i++) {
+                result.addClause(output.get(i));
+            }
+        } else {
+            for (final Variable v : vars) {
+                input.push(v.negate());
+            }
+            sorting.sort(newRHS + 1, input, result, output, INPUT_TO_OUTPUT);
+            assert output.size() > newRHS;
+            result.addClause(output.get(newRHS).negate());
+        }
+    }
 
-  CCIncrementalData incrementalData() {
-    return this.incData;
-  }
+    void buildALKForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
+        final LNGVector<Literal> input = new LNGVector<>();
+        final LNGVector<Literal> output = new LNGVector<>();
+        for (final Variable var : vars) {
+            input.push(var.negate());
+        }
+        final int newRHS = vars.length - rhs;
+        this.sorting.sort(newRHS + 1, input, result, output, INPUT_TO_OUTPUT);
+        assert output.size() > newRHS;
+        result.addClause(output.get(newRHS).negate());
+        this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    void buildEXK(final EncodingResult result, final Variable[] vars, int rhs) {
+        result.reset();
+        final LNGVector<Literal> input = new LNGVector<>();
+        final LNGVector<Literal> output = new LNGVector<>();
+        for (final Variable var : vars) {
+            input.push(var);
+        }
+        this.sorting.sort(rhs + 1, input, result, output, BOTH);
+        assert output.size() > rhs;
+        result.addClause(output.get(rhs).negate());
+        result.addClause(output.get(rhs - 1));
+    }
+
+    CCIncrementalData incrementalData() {
+        return this.incData;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

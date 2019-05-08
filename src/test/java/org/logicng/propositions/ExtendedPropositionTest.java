@@ -47,96 +47,96 @@ import java.util.Objects;
  */
 public class ExtendedPropositionTest {
 
-  private final PropositionalParser p;
-  private final ExtendedProposition<BagPack> prop1;
-  private final ExtendedProposition<BagPack> prop2;
-  private final ExtendedProposition<BagPack> prop3;
-  private final ExtendedProposition<BagPack> prop4;
+    private final PropositionalParser p;
+    private final ExtendedProposition<BagPack> prop1;
+    private final ExtendedProposition<BagPack> prop2;
+    private final ExtendedProposition<BagPack> prop3;
+    private final ExtendedProposition<BagPack> prop4;
 
-  public ExtendedPropositionTest() throws ParserException {
-    FormulaFactory f = new FormulaFactory();
-    p = new PropositionalParser(f);
-    prop1 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
-    prop2 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
-    prop3 = new ExtendedProposition<>(new BagPack("prop3"), p.parse("a & b"), p.parse("~c"));
-    prop4 = new ExtendedProposition<>(new BagPack("prop4"), new ImmutableFormulaList(p.parse("a & b"), p.parse("~c")));
-  }
-
-  @Test
-  public void testGetters() throws ParserException {
-    final ImmutableFormulaList list1 = new ImmutableFormulaList(FType.AND, p.parse("a & b"));
-    final ImmutableFormulaList list2 = new ImmutableFormulaList(FType.AND, p.parse("a & b"), p.parse("~c"));
-    Assert.assertEquals(list1, prop1.formulas());
-    Assert.assertEquals(list2, prop2.formulas());
-    Assert.assertEquals(list2, prop3.formulas());
-    Assert.assertEquals(list2, prop4.formulas());
-
-    Assert.assertEquals("prop1", prop1.bagback().description);
-    Assert.assertEquals("prop2", prop2.bagback().description);
-    Assert.assertEquals("prop3", prop3.bagback().description);
-    Assert.assertEquals("prop4", prop4.bagback().description);
-  }
-
-  @Test
-  public void testFormula() throws ParserException {
-    FormulaFactory f = new FormulaFactory();
-
-    Assert.assertEquals(p.parse("a & b"), prop1.formula(f));
-    Assert.assertEquals(p.parse("a & b & ~c"), prop3.formula(f));
-  }
-
-  @Test
-  public void testHashCode() throws ParserException {
-    ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
-    ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
-    Assert.assertEquals(prop1.hashCode(), prop1.hashCode());
-    Assert.assertEquals(prop1.hashCode(), prop11.hashCode());
-    Assert.assertEquals(prop2.hashCode(), prop21.hashCode());
-  }
-
-  @Test
-  public void testEquals() throws ParserException {
-    ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
-    ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
-    ExtendedProposition<BagPack> prop31 = new ExtendedProposition<>(new BagPack("prop3"), Collections.singletonList(p.parse("a & b")));
-    Assert.assertTrue(prop1.equals(prop1));
-    Assert.assertTrue(prop1.equals(prop11));
-    Assert.assertTrue(prop2.equals(prop21));
-    Assert.assertFalse(prop1.equals(prop2));
-    Assert.assertFalse(prop3.equals(prop31));
-    Assert.assertFalse(prop3.equals(prop4));
-    Assert.assertFalse(prop1.equals(null));
-    Assert.assertFalse(prop1.equals("String"));
-  }
-
-  @Test
-  public void testToString() {
-    Assert.assertEquals("ExtendedProposition{formulas=AND[a & b], bagpack=prop1}", prop1.toString());
-    Assert.assertEquals("ExtendedProposition{formulas=AND[a & b, ~c], bagpack=prop2}", prop2.toString());
-    Assert.assertEquals("ExtendedProposition{formulas=AND[a & b, ~c], bagpack=prop3}", prop3.toString());
-    Assert.assertEquals("ExtendedProposition{formulas=AND[a & b, ~c], bagpack=prop4}", prop4.toString());
-  }
-
-  private static final class BagPack implements PropositionBagpack {
-    private final String description;
-
-    private BagPack(final String description) {
-      this.description = description;
+    public ExtendedPropositionTest() throws ParserException {
+        FormulaFactory f = new FormulaFactory();
+        p = new PropositionalParser(f);
+        prop1 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
+        prop2 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
+        prop3 = new ExtendedProposition<>(new BagPack("prop3"), p.parse("a & b"), p.parse("~c"));
+        prop4 = new ExtendedProposition<>(new BagPack("prop4"), new ImmutableFormulaList(p.parse("a & b"), p.parse("~c")));
     }
 
-    @Override
-    public int hashCode() {
-      return description.hashCode();
+    @Test
+    public void testGetters() throws ParserException {
+        final ImmutableFormulaList list1 = new ImmutableFormulaList(FType.AND, p.parse("a & b"));
+        final ImmutableFormulaList list2 = new ImmutableFormulaList(FType.AND, p.parse("a & b"), p.parse("~c"));
+        Assert.assertEquals(list1, prop1.formulas());
+        Assert.assertEquals(list2, prop2.formulas());
+        Assert.assertEquals(list2, prop3.formulas());
+        Assert.assertEquals(list2, prop4.formulas());
+
+        Assert.assertEquals("prop1", prop1.bagback().description);
+        Assert.assertEquals("prop2", prop2.bagback().description);
+        Assert.assertEquals("prop3", prop3.bagback().description);
+        Assert.assertEquals("prop4", prop4.bagback().description);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-      return obj instanceof BagPack && Objects.equals(this.description, ((BagPack) obj).description);
+    @Test
+    public void testFormula() throws ParserException {
+        FormulaFactory f = new FormulaFactory();
+
+        Assert.assertEquals(p.parse("a & b"), prop1.formula(f));
+        Assert.assertEquals(p.parse("a & b & ~c"), prop3.formula(f));
     }
 
-    @Override
-    public String toString() {
-      return description;
+    @Test
+    public void testHashCode() throws ParserException {
+        ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
+        ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
+        Assert.assertEquals(prop1.hashCode(), prop1.hashCode());
+        Assert.assertEquals(prop1.hashCode(), prop11.hashCode());
+        Assert.assertEquals(prop2.hashCode(), prop21.hashCode());
     }
-  }
+
+    @Test
+    public void testEquals() throws ParserException {
+        ExtendedProposition<BagPack> prop11 = new ExtendedProposition<>(new BagPack("prop1"), p.parse("a & b"));
+        ExtendedProposition<BagPack> prop21 = new ExtendedProposition<>(new BagPack("prop2"), Arrays.asList(p.parse("a & b"), p.parse("~c")));
+        ExtendedProposition<BagPack> prop31 = new ExtendedProposition<>(new BagPack("prop3"), Collections.singletonList(p.parse("a & b")));
+        Assert.assertTrue(prop1.equals(prop1));
+        Assert.assertTrue(prop1.equals(prop11));
+        Assert.assertTrue(prop2.equals(prop21));
+        Assert.assertFalse(prop1.equals(prop2));
+        Assert.assertFalse(prop3.equals(prop31));
+        Assert.assertFalse(prop3.equals(prop4));
+        Assert.assertFalse(prop1.equals(null));
+        Assert.assertFalse(prop1.equals("String"));
+    }
+
+    @Test
+    public void testToString() {
+        Assert.assertEquals("ExtendedProposition{formulas=AND[a & b], bagpack=prop1}", prop1.toString());
+        Assert.assertEquals("ExtendedProposition{formulas=AND[a & b, ~c], bagpack=prop2}", prop2.toString());
+        Assert.assertEquals("ExtendedProposition{formulas=AND[a & b, ~c], bagpack=prop3}", prop3.toString());
+        Assert.assertEquals("ExtendedProposition{formulas=AND[a & b, ~c], bagpack=prop4}", prop4.toString());
+    }
+
+    private static final class BagPack implements PropositionBagpack {
+        private final String description;
+
+        private BagPack(final String description) {
+            this.description = description;
+        }
+
+        @Override
+        public int hashCode() {
+            return description.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof BagPack && Objects.equals(this.description, ((BagPack) obj).description);
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
 }

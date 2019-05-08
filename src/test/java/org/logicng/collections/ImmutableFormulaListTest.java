@@ -40,14 +40,14 @@ import org.logicng.formulas.Variable;
  * @since 1.1
  */
 public class ImmutableFormulaListTest {
-  private FormulaFactory formulaFactory = new FormulaFactory();
-  private Variable a = formulaFactory.variable("A");
-  private Variable b = formulaFactory.variable("B");
+    private FormulaFactory formulaFactory = new FormulaFactory();
+    private Variable a = formulaFactory.variable("A");
+    private Variable b = formulaFactory.variable("B");
 
-  @Test
-  public void testFormula() {
-    ImmutableFormulaList ifl = new ImmutableFormulaList(FType.AND, a, b);
-    Assert.assertEquals(ifl.formula(formulaFactory), ifl.formula(formulaFactory)); //On purpose to check if both ways in method lead to the same result
-    Assert.assertEquals(formulaFactory.and(a, b), ifl.formula(formulaFactory));
-  }
+    @Test
+    public void testFormula() {
+        ImmutableFormulaList ifl = new ImmutableFormulaList(FType.AND, a, b);
+        Assert.assertEquals(ifl.formula(formulaFactory), ifl.formula(formulaFactory)); //On purpose to check if both ways in method lead to the same result
+        Assert.assertEquals(formulaFactory.and(a, b), ifl.formula(formulaFactory));
+    }
 }

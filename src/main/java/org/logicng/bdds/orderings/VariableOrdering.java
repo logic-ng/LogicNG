@@ -36,27 +36,27 @@ package org.logicng.bdds.orderings;
  */
 public enum VariableOrdering {
 
-  DFS(DFSOrdering.class),
-  BFS(BFSOrdering.class),
-  MIN2MAX(MinToMaxOrdering.class),
-  MAX2MIN(MaxToMinOrdering.class),
-  FORCE(ForceOrdering.class);
+    DFS(DFSOrdering.class),
+    BFS(BFSOrdering.class),
+    MIN2MAX(MinToMaxOrdering.class),
+    MAX2MIN(MaxToMinOrdering.class),
+    FORCE(ForceOrdering.class);
 
-  private final Class<? extends VariableOrderingProvider> provider;
+    private final Class<? extends VariableOrderingProvider> provider;
 
-  /**
-   * Constructs a new variable ordering with a given provider.
-   * @param provider the provider
-   */
-  VariableOrdering(final Class<? extends VariableOrderingProvider> provider) {
-    this.provider = provider;
-  }
+    /**
+     * Constructs a new variable ordering with a given provider.
+     * @param provider the provider
+     */
+    VariableOrdering(final Class<? extends VariableOrderingProvider> provider) {
+        this.provider = provider;
+    }
 
-  /**
-   * Returns the provider for this variable ordering.
-   * @return the provider for this variable ordering
-   */
-  public Class<? extends VariableOrderingProvider> provider() {
-    return this.provider;
-  }
+    /**
+     * Returns the provider for this variable ordering.
+     * @return the provider for this variable ordering
+     */
+    public Class<? extends VariableOrderingProvider> provider() {
+        return this.provider;
+    }
 }

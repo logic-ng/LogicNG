@@ -41,76 +41,77 @@ import java.util.Set;
  */
 public class Graph<T> {
 
-  private final String name;
-  private final Map<T, Node<T>> nodes;
+    private final String name;
+    private final Map<T, Node<T>> nodes;
 
-  /**
-   * Constructor for a new graph.
-   */
-  public Graph() {
-    this("");
-  }
-
-  /**
-   * Constructor for a new graph.
-   * @param name the name of the graph
-   */
-  public Graph(final String name) {
-    this.nodes = new LinkedHashMap<>();
-    this.name = name;
-  }
-
-  /**
-   * Returns the node with a given content. If such a node does not exist, it is created and added to the graph.
-   * @param content the given node content
-   * @return the node with the given content
-   */
-  public Node<T> node(T content) {
-    final Node<T> search = nodes.get(content);
-    if (search != null)
-      return search;
-    final Node<T> n = new Node<>(content, this);
-    nodes.put(content, n);
-    return n;
-  }
-
-  /**
-   * Returns all nodes of the graph.
-   * @return a set containing all nodes of the graph
-   */
-  public Set<Node<T>> nodes() {
-    return new LinkedHashSet<>(nodes.values());
-  }
-
-  /**
-   * Adds an edge between two given nodes, which must both belong to this graph. (Does nothing if the nodes are already connected)
-   * @param o the first given node
-   * @param t the second given node
-   */
-  public void connect(Node<T> o, Node<T> t) {
-    if (!o.equals(t)) {
-      o.connectTo(t);
-      t.connectTo(o);
+    /**
+     * Constructor for a new graph.
+     */
+    public Graph() {
+        this("");
     }
-  }
 
-  /**
-   * Removes the edge between two given nodes. (Does nothing if the nodes are not connected)
-   * @param o the first given node
-   * @param t the second given node
-   */
-  public void disconnect(Node<T> o, Node<T> t) {
-    if (!o.equals(t)) {
-      o.disconnectFrom(t);
-      t.disconnectFrom(o);
+    /**
+     * Constructor for a new graph.
+     * @param name the name of the graph
+     */
+    public Graph(final String name) {
+        this.nodes = new LinkedHashMap<>();
+        this.name = name;
     }
-  }
 
-  /**
-   * Returns the name of the graph.
-   * @return the name of the graph
-   */
-  public String name() {
-    return name;
-  }
+    /**
+     * Returns the node with a given content. If such a node does not exist, it is created and added to the graph.
+     * @param content the given node content
+     * @return the node with the given content
+     */
+    public Node<T> node(T content) {
+        final Node<T> search = nodes.get(content);
+        if (search != null) {
+            return search;
+        }
+        final Node<T> n = new Node<>(content, this);
+        nodes.put(content, n);
+        return n;
+    }
+
+    /**
+     * Returns all nodes of the graph.
+     * @return a set containing all nodes of the graph
+     */
+    public Set<Node<T>> nodes() {
+        return new LinkedHashSet<>(nodes.values());
+    }
+
+    /**
+     * Adds an edge between two given nodes, which must both belong to this graph. (Does nothing if the nodes are already connected)
+     * @param o the first given node
+     * @param t the second given node
+     */
+    public void connect(Node<T> o, Node<T> t) {
+        if (!o.equals(t)) {
+            o.connectTo(t);
+            t.connectTo(o);
+        }
+    }
+
+    /**
+     * Removes the edge between two given nodes. (Does nothing if the nodes are not connected)
+     * @param o the first given node
+     * @param t the second given node
+     */
+    public void disconnect(Node<T> o, Node<T> t) {
+        if (!o.equals(t)) {
+            o.disconnectFrom(t);
+            t.disconnectFrom(o);
+        }
+    }
+
+    /**
+     * Returns the name of the graph.
+     * @return the name of the graph
+     */
+    public String name() {
+        return name;
+    }
 }

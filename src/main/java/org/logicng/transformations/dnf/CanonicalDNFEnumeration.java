@@ -45,22 +45,24 @@ import java.util.List;
  */
 public final class CanonicalDNFEnumeration implements FormulaTransformation {
 
-  @Override
-  public Formula apply(final Formula formula, boolean cache) {
-    final FormulaFactory f = formula.factory();
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(formula);
-    final List<Assignment> enumeration = solver.enumerateAllModels();
-    if (enumeration.isEmpty())
-      return f.falsum();
-    final List<Formula> ops = new LinkedList<>();
-    for (final Assignment a : enumeration)
-      ops.add(a.formula(f));
-    return f.or(ops);
-  }
+    @Override
+    public Formula apply(final Formula formula, final boolean cache) {
+        final FormulaFactory f = formula.factory();
+        final SATSolver solver = MiniSat.miniSat(f);
+        solver.add(formula);
+        final List<Assignment> enumeration = solver.enumerateAllModels();
+        if (enumeration.isEmpty()) {
+            return f.falsum();
+        }
+        final List<Formula> ops = new LinkedList<>();
+        for (final Assignment a : enumeration) {
+            ops.add(a.formula(f));
+        }
+        return f.or(ops);
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

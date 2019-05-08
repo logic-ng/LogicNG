@@ -124,7 +124,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             importLit(lit);
             this.addedlits.push(lit);
         } else {
-            if (!trivialClause()) { newPushConnectClause(); }
+            if (!trivialClause()) {
+                newPushConnectClause();
+            }
             this.addedlits.clear();
         }
     }
@@ -132,13 +134,17 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (this.handler != null) { this.handler.startedSolving(); }
+        if (this.handler != null) {
+            this.handler.startedSolving();
+        }
         this.model.clear();
         initLimits();
         biasPhases();
         Tristate res;
         while (true) {
-            if ((res = search()) != UNDEF || this.canceledByHandler) { break; } else if ((res = simplify()) != UNDEF || this.canceledByHandler) {
+            if ((res = search()) != UNDEF || this.canceledByHandler) {
+                break;
+            } else if ((res = simplify()) != UNDEF || this.canceledByHandler) {
                 break;
             } else {
                 updateLimits();
@@ -153,8 +159,14 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             default:
                 break;
         }
-        if (res == TRUE) { for (int i = 0; i < this.vals.size(); i++) { this.model.push(this.vals.get(i) == VALUE_TRUE); } }
-        if (this.handler != null) { this.handler.finishedSolving(); }
+        if (res == TRUE) {
+            for (int i = 0; i < this.vals.size(); i++) {
+                this.model.push(this.vals.get(i) == VALUE_TRUE);
+            }
+        }
+        if (this.handler != null) {
+            this.handler.finishedSolving();
+        }
         this.handler = null;
         this.canceledByHandler = false;
         backtrack();
@@ -179,7 +191,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             this.watches.push(new LNGVector<CLWatch>());
             this.watches.push(new LNGVector<CLWatch>());
             this.occs.push(new CLOccs[]{new CLOccs(), new CLOccs()});
-            if (newIdx == 0) { continue; }
+            if (newIdx == 0) {
+                continue;
+            }
             this.decisions.push(newIdx);
         }
     }
@@ -198,14 +212,18 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final int idx = Math.abs(lit);
         final byte s = sign(lit);
         this.vals.set(idx, s);
-        if (this.simplifier == Simplifier.NOSIMP) { this.phases.set(idx, s); }
+        if (this.simplifier == Simplifier.NOSIMP) {
+            this.phases.set(idx, s);
+        }
         v.setLevel(this.level);
         if (this.level == 0) {
             this.stats.varsFixed++;
             if (v.state() == CLVar.State.ELIMINATED) {
                 assert this.stats.varsEliminated > 0;
                 this.stats.varsEliminated--;
-            } else { assert v.state() == CLVar.State.FREE; }
+            } else {
+                assert v.state() == CLVar.State.FREE;
+            }
             v.setState(CLVar.State.FIXED);
         }
         this.trail.push(lit);
@@ -213,7 +231,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         if (v.reason() != null) {
             assert !reason.forcing();
             reason.setForcing(true);
-            if (reason.redundant() && !reason.important()) { this.limits.reduceForcing++; }
+            if (reason.redundant() && !reason.important()) {
+                this.limits.reduceForcing++;
+            }
             updateGlue(reason);
         }
     }
@@ -236,44 +256,74 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             }
         }
         final int idx = Math.abs(lit);
-        if (!this.decisions.contains(idx)) { this.decisions.push(idx); }
+        if (!this.decisions.contains(idx)) {
+            this.decisions.push(idx);
+        }
     }
 
     @Override
     protected void initLimits() {
         newRestartLimit();
-        if (this.limits.simpSteps == 0) { this.limits.simpSteps = this.config.simpint; }
+        if (this.limits.simpSteps == 0) {
+            this.limits.simpSteps = this.config.simpint;
+        }
         if (this.stats.simplifications == 0) {
             assert this.config.boost > 0;
-            if (this.limits.simpSteps >= Integer.MAX_VALUE / this.config.boost) { this.limits.simpSteps = Integer.MAX_VALUE; } else { this.limits.simpSteps *= this.config.boost; }
+            if (this.limits.simpSteps >= Integer.MAX_VALUE / this.config.boost) {
+                this.limits.simpSteps = Integer.MAX_VALUE;
+            } else {
+                this.limits.simpSteps *= this.config.boost;
+            }
         }
-        if (this.limits.searchConflicts == 0 && this.config.searchfirst) { this.limits.searchConflicts = this.config.searchint; }
+        if (this.limits.searchConflicts == 0 && this.config.searchfirst) {
+            this.limits.searchConflicts = this.config.searchint;
+        }
         this.limits.simpRemovedVars = 0;
     }
 
     @Override
     protected void updateLimits() {
         if (this.config.simpgeom) {
-            if (this.limits.simpInc >= Integer.MAX_VALUE / 2) { this.limits.simpInc = Integer.MAX_VALUE; } else if (this.limits.simpInc == 0) {
+            if (this.limits.simpInc >= Integer.MAX_VALUE / 2) {
+                this.limits.simpInc = Integer.MAX_VALUE;
+            } else if (this.limits.simpInc == 0) {
                 this.limits.simpInc = this.config.simpint;
-            } else { this.limits.simpInc *= 2; }
+            } else {
+                this.limits.simpInc *= 2;
+            }
         } else {
-            if (this.limits.simpInc >= Integer.MAX_VALUE - this.config.simpint) { this.limits.simpInc = Integer.MAX_VALUE; } else { this.limits.simpInc += this.config.simpint; }
+            if (this.limits.simpInc >= Integer.MAX_VALUE - this.config.simpint) {
+                this.limits.simpInc = Integer.MAX_VALUE;
+            } else {
+                this.limits.simpInc += this.config.simpint;
+            }
         }
         this.limits.simpSteps = this.limits.simpInc;
-        if (this.config.stepslim != 0 && this.limits.simpSteps > this.config.stepslim) { this.limits.simpSteps = this.config.stepslim; }
+        if (this.config.stepslim != 0 && this.limits.simpSteps > this.config.stepslim) {
+            this.limits.simpSteps = this.config.stepslim;
+        }
 
-        if (this.limits.searchInc == 0) { this.limits.searchInc = this.config.searchint; }
+        if (this.limits.searchInc == 0) {
+            this.limits.searchInc = this.config.searchint;
+        }
         assert this.limits.searchInc != 0;
         if (this.limits.searchConflicts != 0) {
             int inc = this.limits.searchInc;
             final long removed = this.limits.simpRemovedVars;
             if (removed > 0 && remainingVars() != 0) {
                 final long reduction = (100 * removed) / remainingVars();
-                if (reduction > 1) { inc /= reduction; }
+                if (reduction > 1) {
+                    inc /= reduction;
+                }
             }
-            if (this.limits.searchInc >= Integer.MAX_VALUE - inc) { this.limits.searchInc = Integer.MAX_VALUE; } else { this.limits.searchInc += inc; }
-        } else { assert !this.config.searchfirst; }
+            if (this.limits.searchInc >= Integer.MAX_VALUE - inc) {
+                this.limits.searchInc = Integer.MAX_VALUE;
+            } else {
+                this.limits.searchInc += inc;
+            }
+        } else {
+            assert !this.config.searchfirst;
+        }
         this.limits.searchConflicts = this.limits.searchInc;
     }
 
@@ -282,18 +332,30 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final CLClause c = new CLClause();
         assert glue == 0 || redundant;
         assert eachVariableOccursOnlyOnce();
-        if (this.config.gluered) { c.setGlue(glue); } else { assert c.glue() == 0; }
+        if (this.config.gluered) {
+            c.setGlue(glue);
+        } else {
+            assert c.glue() == 0;
+        }
         c.setImportant(glue <= this.config.gluekeep);
         c.setRedundant(redundant);
         c.setActivity(this.stats.conflicts);
-        for (int i = 0; i < this.addedlits.size(); i++) { c.lits().push(this.addedlits.get(i)); }
-        if (redundant) { this.stats.clausesRedundant++; } else { this.stats.clausesIrredundant++; }
+        for (int i = 0; i < this.addedlits.size(); i++) {
+            c.lits().push(this.addedlits.get(i));
+        }
+        if (redundant) {
+            this.stats.clausesRedundant++;
+        } else {
+            this.stats.clausesIrredundant++;
+        }
         return c;
     }
 
     @Override
     protected void connectClause(final CLClause c) {
-        if (c.satisfied()) { return; }
+        if (c.satisfied()) {
+            return;
+        }
 
         final int size = c.size();
         final boolean binary = size == 2;
@@ -311,11 +373,15 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final int l0 = c.lits().get(0);
         final int l1 = l0 != 0 ? c.lits().get(1) : 0;
         final int newLevel = (l0 != 0 && l1 != 0) ? Math.min(var(l0).level(), var(l1).level()) : 0;
-        if (newLevel != Integer.MAX_VALUE) { backtrack(newLevel); }
+        if (newLevel != Integer.MAX_VALUE) {
+            backtrack(newLevel);
+        }
         if (size >= 2) {
             addWatch(l0, l1, binary, c);
             addWatch(l1, l0, binary, c);
-            if (this.dense) { connectOccs(c); }
+            if (this.dense) {
+                connectOccs(c);
+            }
         }
         boolean ignore = false;
         int lit = 0;
@@ -330,16 +396,26 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                 break;
             }
             if (tmp == VALUE_UNASSIGNED) {
-                if (lit != 0) { ignore = true; } else { lit = other; }
+                if (lit != 0) {
+                    ignore = true;
+                } else {
+                    lit = other;
+                }
             }
         }
         if (!ignore) {
             if (lit == 0) {
                 assert this.level == 0;
-                if (this.empty == null) { this.empty = c; }
-            } else { assign(lit, c); }
+                if (this.empty == null) {
+                    this.empty = c;
+                }
+            } else {
+                assign(lit, c);
+            }
         }
-        if (c.redundant() && c.important()) { this.limits.reduceImportant++; }
+        if (c.redundant() && c.important()) {
+            this.limits.reduceImportant++;
+        }
     }
 
     @Override
@@ -359,17 +435,27 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                 newWS.push(w);
                 int other = w.blit();
                 byte v = val(other);
-                if (v == VALUE_TRUE) { continue; }
+                if (v == VALUE_TRUE) {
+                    continue;
+                }
                 final CLClause clause = w.clause();
                 if (this.ignore != null) {
-                    if (this.ignore == clause) { continue; }
+                    if (this.ignore == clause) {
+                        continue;
+                    }
                     if (clause.redundant()) {
-                        if (!w.binary()) { visits++; }
+                        if (!w.binary()) {
+                            visits++;
+                        }
                         continue;
                     }
                 }
                 if (w.binary()) {
-                    if (v == VALUE_FALSE) { conflict = clause; } else { assign(other, clause); }
+                    if (v == VALUE_FALSE) {
+                        conflict = clause;
+                    } else {
+                        assign(other, clause);
+                    }
                 } else {
                     visits++;
                     if (clause.dumped()) {
@@ -385,9 +471,13 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                     assert clause.lits().get(1) == lit;
                     for (p = 2; p < clause.lits().size(); p++) {
                         other = clause.lits().get(p);
-                        if (val(other) >= 0) { break; }
+                        if (val(other) >= 0) {
+                            break;
+                        }
                     }
-                    if (p == clause.size()) { other = 0; }
+                    if (p == clause.size()) {
+                        other = 0;
+                    }
                     if (other != 0) {
                         clause.lits().set(p, lit);
                         clause.lits().set(1, other);
@@ -396,14 +486,26 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                     } else {
                         other = clause.lits().get(0);
                         v = val(other);
-                        if (v == VALUE_FALSE) { conflict = clause; } else if (v != VALUE_TRUE) { assign(other, clause); } else { newWS.back().setBlit(other); }
+                        if (v == VALUE_FALSE) {
+                            conflict = clause;
+                        } else if (v != VALUE_TRUE) {
+                            assign(other, clause);
+                        } else {
+                            newWS.back().setBlit(other);
+                        }
                     }
                 }
             }
-            if (conflict != null) { while (i < ws.size()) { newWS.push(ws.get(i++)); } }
+            if (conflict != null) {
+                while (i < ws.size()) {
+                    newWS.push(ws.get(i++));
+                }
+            }
             ws.replaceInplace(newWS);
         }
-        if (conflict != null && this.simplifier == Simplifier.NOSIMP) { this.stats.conflicts++; }
+        if (conflict != null && this.simplifier == Simplifier.NOSIMP) {
+            this.stats.conflicts++;
+        }
         this.stats.propagations += propagations;
         this.stats.steps += visits;
         return conflict;
@@ -416,7 +518,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final LNGIntVector newAddedLits = new LNGIntVector(this.addedlits.size());
         for (int i = 0; i < this.addedlits.size(); i++) {
             final int lit = this.addedlits.get(i);
-            if (!minimizeLit(-lit)) { newAddedLits.push(lit); }
+            if (!minimizeLit(-lit)) {
+                newAddedLits.push(lit);
+            }
         }
         this.addedlits = newAddedLits;
         this.stats.litsMinimized += learned - this.addedlits.size();
@@ -438,10 +542,16 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             bumpClause(reason);
             for (int p = 0; p < reason.lits().size(); p++) {
                 lit = reason.lits().get(p);
-                if (pullLit(lit)) { open++; }
+                if (pullLit(lit)) {
+                    open++;
+                }
             }
-            while (it > 0 && marked(lit = -this.trail.get(--it)) == 0) { assert var(lit).level() == this.level; }
-            if (it == 0 || --open == 0) { break; }
+            while (it > 0 && marked(lit = -this.trail.get(--it)) == 0) {
+                assert var(lit).level() == this.level;
+            }
+            if (it == 0 || --open == 0) {
+                break;
+            }
             reason = var(lit).reason();
             assert reason != null;
         }
@@ -474,7 +584,11 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         int nextDecision = 0;
         while (nextDecision == 0 && !this.decisions.empty()) {
             final int lit = this.decisions.top();
-            if (val(lit) != 0) { this.decisions.pop(lit); } else { nextDecision = lit; }
+            if (val(lit) != 0) {
+                this.decisions.pop(lit);
+            } else {
+                nextDecision = lit;
+            }
         }
         if (nextDecision != 0) {
             int newLevel;
@@ -483,7 +597,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                 for (newLevel = 0; newLevel < this.level; newLevel++) {
                     final CLFrame frame = this.control.get(newLevel + 1);
                     final int decision = Math.abs(frame.decision());
-                    if (this.decisions.priority(decision) < nextDecisionPriority) { break; }
+                    if (this.decisions.priority(decision) < nextDecisionPriority) {
+                        break;
+                    }
                 }
                 if (newLevel != 0) {
                     this.stats.restartsReuseCount++;
@@ -503,16 +619,24 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         CLClause conflict;
         Tristate res = UNDEF;
         while (res == UNDEF) {
-            if (this.empty != null) { res = FALSE; } else if ((conflict = bcp()) != null) {
+            if (this.empty != null) {
+                res = FALSE;
+            } else if ((conflict = bcp()) != null) {
                 if (this.handler != null && !this.handler.detectedConflict()) {
                     this.canceledByHandler = true;
                     return UNDEF;
                 }
                 analyze(conflict);
                 conflicts++;
-            } else if (conflicts >= this.limits.searchConflicts) { break; } else if (reducing()) { reduce(); } else if (restarting()) {
+            } else if (conflicts >= this.limits.searchConflicts) {
+                break;
+            } else if (reducing()) {
+                reduce();
+            } else if (restarting()) {
                 restart();
-            } else if (!decide()) { res = TRUE; }
+            } else if (!decide()) {
+                res = TRUE;
+            }
         }
         return res;
     }
@@ -523,15 +647,25 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     private void biasPhases() {
         final double[] score = new double[2 * (maxvar() + 1)];
         for (final CLClause c : this.clauses) {
-            if (c.redundant() || c.satisfied()) { continue; }
+            if (c.redundant() || c.satisfied()) {
+                continue;
+            }
             double inc = 1;
-            for (int size = c.size(); size > 0; size--) { inc /= 2.0; }
+            for (int size = c.size(); size > 0; size--) {
+                inc /= 2.0;
+            }
             for (int i = 0; i < c.lits().size(); i++) {
                 final int p = c.lits().get(i);
-                if (p > 0) { score[p * 2] += inc; } else { score[(-p * 2) - 1] += inc; }
+                if (p > 0) {
+                    score[p * 2] += inc;
+                } else {
+                    score[(-p * 2) - 1] += inc;
+                }
             }
         }
-        for (int idx = 1; idx <= maxvar(); idx++) { this.phases.set(idx, (score[idx * 2] > score[(idx * 2) - 1]) ? (byte) 1 : (byte) -1); }
+        for (int idx = 1; idx <= maxvar(); idx++) {
+            this.phases.set(idx, (score[idx * 2] > score[(idx * 2) - 1]) ? (byte) 1 : (byte) -1);
+        }
     }
 
     /**
@@ -549,12 +683,18 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      */
     private void touch(final int l) {
         int lit = l;
-        if (lit < 0) { lit = -lit; }
+        if (lit < 0) {
+            lit = -lit;
+        }
         final long newPriority = (long) occs(lit).count() + occs(-lit).count();
-        if (!var(lit).free()) { return; }
+        if (!var(lit).free()) {
+            return;
+        }
         final LNGLongPriorityQueue queue = currentCands();
         queue.update(lit, -newPriority);
-        if (this.schedule && !queue.contains(lit)) { queue.push(lit); }
+        if (this.schedule && !queue.contains(lit)) {
+            queue.push(lit);
+        }
     }
 
     /**
@@ -585,7 +725,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             for (final CLClause c : os) {
                 for (int i = 0; i < c.lits().size(); i++) {
                     final int other = c.lits().get(i);
-                    if (val(other) == VALUE_TRUE) { continue; }
+                    if (val(other) == VALUE_TRUE) {
+                        continue;
+                    }
                     assert other != lit;
                     touch(other);
                 }
@@ -610,7 +752,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      */
     private void connectOccs(final CLClause c) {
         assert this.dense;
-        for (int i = 0; i < c.lits().size(); i++) { addOcc(c.lits().get(i), c); }
+        for (int i = 0; i < c.lits().size(); i++) {
+            addOcc(c.lits().get(i), c);
+        }
     }
 
     /**
@@ -619,7 +763,11 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     private void connectOccs() {
         assert !this.dense;
         this.dense = true;
-        for (final CLClause c : this.clauses) { if (!c.redundant()) { connectOccs(c); } }
+        for (final CLClause c : this.clauses) {
+            if (!c.redundant()) {
+                connectOccs(c);
+            }
+        }
     }
 
     /**
@@ -637,15 +785,21 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @param c the clause
      */
     private void updateGlue(final CLClause c) {
-        if (!this.config.glueupdate) { return; }
+        if (!this.config.glueupdate) {
+            return;
+        }
         if (!this.config.gluered) {
             assert c.glue() == 0;
             return;
         }
         assert this.frames.empty();
-        for (int i = 0; i < c.lits().size(); i++) { markFrame(c.lits().get(i)); }
+        for (int i = 0; i < c.lits().size(); i++) {
+            markFrame(c.lits().get(i));
+        }
         final int newGlue = unmarkFrames();
-        if (newGlue >= c.glue()) { return; }
+        if (newGlue >= c.glue()) {
+            return;
+        }
         c.setGlue(newGlue);
         this.stats.gluesSum += newGlue;
         this.stats.gluesCount++;
@@ -657,14 +811,20 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @param c the clause
      */
     private void dumpClause(final CLClause c) {
-        if (c.dumped()) { return; }
+        if (c.dumped()) {
+            return;
+        }
         if (c.redundant()) {
             assert this.stats.clausesRedundant > 0;
             this.stats.clausesRedundant--;
         } else {
             assert this.stats.clausesIrredundant > 0;
             this.stats.clausesIrredundant--;
-            if (this.dense) { for (int i = 0; i < c.lits().size(); i++) { decOcc(c.lits().get(i)); } }
+            if (this.dense) {
+                for (int i = 0; i < c.lits().size(); i++) {
+                    decOcc(c.lits().get(i));
+                }
+            }
         }
         c.setDumped(true);
     }
@@ -704,7 +864,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @return {@code true} if a reduction should be performed
      */
     private boolean reducing() {
-        if (this.limits.reduceRedundant == 0) { this.limits.reduceRedundant = this.config.redinit; }
+        if (this.limits.reduceRedundant == 0) {
+            this.limits.reduceRedundant = this.config.redinit;
+        }
         long limit = this.limits.reduceRedundant;
         limit += this.limits.reduceForcing;
         limit += this.limits.reduceImportant;
@@ -717,15 +879,25 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     private void reduce() {
         this.stats.reductions++;
         final LNGVector<CLClause> candidates = new LNGVector<>();
-        for (final CLClause c : this.clauses) { if (c.redundant() && !c.important() && !c.forcing()) { candidates.push(c); } }
+        for (final CLClause c : this.clauses) {
+            if (c.redundant() && !c.important() && !c.forcing()) {
+                candidates.push(c);
+            }
+        }
         final int keep = candidates.size() / 2;
         candidates.sort(CLClause.comp);
-        for (int i = keep; i < candidates.size(); i++) { candidates.get(i).setRemove(true); }
+        for (int i = keep; i < candidates.size(); i++) {
+            candidates.get(i).setRemove(true);
+        }
         for (int idx = 1; idx <= maxvar(); idx++) {
             for (int sign = -1; sign <= 1; sign += 2) {
                 final LNGVector<CLWatch> ws = watches(sign * idx);
                 final LNGVector<CLWatch> newWs = new LNGVector<>(ws.size());
-                for (final CLWatch w : ws) { if (!w.clause().remove()) { newWs.push(w); } }
+                for (final CLWatch w : ws) {
+                    if (!w.clause().remove()) {
+                        newWs.push(w);
+                    }
+                }
                 ws.replaceInplace(newWs);
             }
         }
@@ -733,10 +905,16 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         int i;
         for (i = 0; i < this.clauses.size(); i++) {
             final CLClause c = this.clauses.get(i);
-            if (i == this.distilled) { this.distilled = j; }
-            if (!c.remove()) { this.clauses.set(j++, c); }
+            if (i == this.distilled) {
+                this.distilled = j;
+            }
+            if (!c.remove()) {
+                this.clauses.set(j++, c);
+            }
         }
-        if (i == this.distilled) { this.distilled = j; }
+        if (i == this.distilled) {
+            this.distilled = j;
+        }
         this.clauses.shrinkTo(j);
         long reduced = 0;
         for (int k = keep; k < candidates.size(); k++) {
@@ -766,11 +944,15 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @param remove the literal to remove
      */
     private void strengthen(final CLClause c, final int remove) {
-        if (c.dumped() || satisfied(c)) { return; }
+        if (c.dumped() || satisfied(c)) {
+            return;
+        }
         assert this.addedlits.empty();
         for (int i = 0; i < c.lits().size(); i++) {
             final int lit = c.lits().get(i);
-            if (lit != remove && val(lit) == 0) { this.addedlits.push(lit); }
+            if (lit != remove && val(lit) == 0) {
+                this.addedlits.push(lit);
+            }
         }
         newPushConnectClause();
         this.addedlits.clear();
@@ -783,10 +965,14 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @return {@code true} if a given clause is satisfied
      */
     private boolean satisfied(final CLClause c) {
-        if (c.satisfied()) { return true; }
+        if (c.satisfied()) {
+            return true;
+        }
         for (int i = 0; i < c.lits().size(); i++) {
             if (val(c.lits().get(i)) == VALUE_TRUE) {
-                if (this.level == 0) { c.setSatisfied(true); }
+                if (this.level == 0) {
+                    c.setSatisfied(true);
+                }
                 return true;
             }
         }
@@ -814,11 +1000,15 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final long steps = this.limits.simpSteps;
         assert this.level == 0;
         assert !this.config.plain;
-        if (!this.config.distill) { return; }
+        if (!this.config.distill) {
+            return;
+        }
         final long limit = this.stats.steps + steps / sizePenalty();
         boolean changed = false;
         boolean done = this.clauses.empty();
-        if (this.distilled >= this.clauses.size()) { this.distilled = 0; }
+        if (this.distilled >= this.clauses.size()) {
+            this.distilled = 0;
+        }
         while (this.empty == null && !done && this.stats.steps++ < limit) {
             final CLClause c = this.clauses.get(this.distilled);
             if (!c.redundant() && !c.dumped() && c.large() && !satisfied(c)) {
@@ -829,7 +1019,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                 for (int p = 0; conflict == null && p < c.lits().size(); p++) {
                     lit = c.lits().get(p);
                     final byte v = val(lit);
-                    if (v == VALUE_FALSE) { continue; }
+                    if (v == VALUE_FALSE) {
+                        continue;
+                    }
                     if (v == VALUE_TRUE) {
                         this.stats.distillStrengthened++;
                         strengthen(c, lit);
@@ -860,7 +1052,11 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                 backtrack();
             }
             if (++this.distilled == this.clauses.size()) {
-                if (changed) { changed = false; } else { done = true; }
+                if (changed) {
+                    changed = false;
+                } else {
+                    done = true;
+                }
                 this.distilled = 0;
             }
         }
@@ -882,17 +1078,27 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         this.stats.steps++;
         for (int i = 0; i < c.lits().size(); i++) {
             final int lit = c.lits().get(i);
-            if (lit == pivot) { continue; }
+            if (lit == pivot) {
+                continue;
+            }
             assert marked(lit) == 0;
             mark(lit);
         }
         this.stats.steps++;
         for (int p = 0; res && p < d.lits().size(); p++) {
             final int lit = d.lits().get(p);
-            if (lit == -pivot) { continue; }
+            if (lit == -pivot) {
+                continue;
+            }
             final int m = marked(lit);
-            if (m > 0) { continue; }
-            if (m < 0) { res = false; } else { mark(lit); }
+            if (m > 0) {
+                continue;
+            }
+            if (m < 0) {
+                res = false;
+            } else {
+                mark(lit);
+            }
         }
         unmark();
         return res;
@@ -910,19 +1116,31 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         this.stats.steps++;
         for (int i = 0; i < c.lits().size(); i++) {
             final int lit = c.lits().get(i);
-            if (lit == ignore) { continue; }
-            if (val(lit) < 0) { continue; }
+            if (lit == ignore) {
+                continue;
+            }
+            if (val(lit) < 0) {
+                continue;
+            }
             litoccs = occs(lit).count();
-            if (minlit != 0 && minoccs >= litoccs) { continue; }
+            if (minlit != 0 && minoccs >= litoccs) {
+                continue;
+            }
             minlit = lit;
             minoccs = litoccs;
         }
-        if (minoccs >= this.config.bwocclim) { return; }
+        if (minoccs >= this.config.bwocclim) {
+            return;
+        }
         assert minlit != 0;
-        for (int i = 0; i < c.lits().size(); i++) { mark(c.lits().get(i)); }
+        for (int i = 0; i < c.lits().size(); i++) {
+            mark(c.lits().get(i));
+        }
         final CLOccs os = occs(minlit);
         for (final CLClause d : os) {
-            if (d == c) { continue; }
+            if (d == c) {
+                continue;
+            }
             int lit;
             int count = this.seen.size();
             int negated = 0;
@@ -930,10 +1148,14 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             for (int p = 0; count != 0 && p < d.lits().size(); p++) {
                 lit = d.lits().get(p);
                 final int m = marked(lit);
-                if (m == 0) { continue; }
+                if (m == 0) {
+                    continue;
+                }
                 assert count > 0;
                 count--;
-                if (m > 0) { continue; }
+                if (m > 0) {
+                    continue;
+                }
                 assert m < 0;
                 if (negated != 0) {
                     count = Integer.MAX_VALUE;
@@ -941,7 +1163,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
                 }
                 negated = lit;
             }
-            if (count != 0) { continue; }
+            if (count != 0) {
+                continue;
+            }
             if (negated != 0) {
                 this.tostrengthen.push(new Pair<>(d, negated));
                 this.stats.backwardStrengthened++;
@@ -965,9 +1189,15 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         for (final CLClause c : os) {
             assert !c.redundant();
             this.stats.steps++;
-            if (c.dumped()) { continue; }
-            if (c.size() >= this.config.bwclslim) { continue; }
-            if (satisfied(c)) { continue; }
+            if (c.dumped()) {
+                continue;
+            }
+            if (c.size() >= this.config.bwclslim) {
+                continue;
+            }
+            if (satisfied(c)) {
+                continue;
+            }
             backward(c, lit);
         }
         while (!this.tostrengthen.empty()) {
@@ -992,13 +1222,19 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             final CLClause c = p.clauses().get(i);
             assert !c.redundant();
             this.stats.steps++;
-            if (c.dumped() || satisfied(c)) { continue; }
+            if (c.dumped() || satisfied(c)) {
+                continue;
+            }
             for (int j = 0; limit >= 0 && j < n.clauses().size(); j++) {
                 final CLClause d = n.clauses().get(j);
                 assert !d.redundant();
                 this.stats.steps++;
-                if (d.dumped() || satisfied(d)) { continue; }
-                if (tryResolve(c, cand, d)) { limit--; }
+                if (d.dumped() || satisfied(d)) {
+                    continue;
+                }
+                if (tryResolve(c, cand, d)) {
+                    limit--;
+                }
             }
         }
         return limit >= 0;
@@ -1017,14 +1253,20 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         this.stats.steps++;
         for (int i = 0; i < c.lits().size(); i++) {
             final int lit = c.lits().get(i);
-            if (lit != pivot) { this.addedlits.push(lit); }
+            if (lit != pivot) {
+                this.addedlits.push(lit);
+            }
         }
         this.stats.steps++;
         for (int i = 0; i < d.lits().size(); i++) {
             final int lit = d.lits().get(i);
-            if (lit != -pivot) { this.addedlits.push(lit); }
+            if (lit != -pivot) {
+                this.addedlits.push(lit);
+            }
         }
-        if (!trivialClause()) { newPushConnectClause(); }
+        if (!trivialClause()) {
+            newPushConnectClause();
+        }
         this.addedlits.clear();
     }
 
@@ -1045,7 +1287,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         pushExtension(0);
         for (int i = 0; i < c.lits().size(); i++) {
             final int lit = c.lits().get(i);
-            if (lit != blit) { pushExtension(lit); }
+            if (lit != blit) {
+                pushExtension(lit);
+            }
         }
         pushExtension(blit);
     }
@@ -1061,10 +1305,14 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final CLOccs n = occs(-cand);
         for (final CLClause c : p) {
             this.stats.steps++;
-            if (c.dumped() || satisfied(c)) { continue; }
+            if (c.dumped() || satisfied(c)) {
+                continue;
+            }
             for (final CLClause d : n) {
                 this.stats.steps++;
-                if (d.dumped() || satisfied(d)) { continue; }
+                if (d.dumped() || satisfied(d)) {
+                    continue;
+                }
                 doResolve(c, cand, d);
             }
         }
@@ -1078,7 +1326,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             e = n;
         }
         for (final CLClause c : e) {
-            if (c.dumped() || satisfied(c)) { continue; }
+            if (c.dumped() || satisfied(c)) {
+                continue;
+            }
             this.stats.steps++;
             pushExtension(c, extend);
         }
@@ -1088,7 +1338,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             final CLClause c = p.clauses().back();
             this.stats.steps++;
             p.clauses().pop();
-            if (c.satisfied() || c.dumped()) { continue; }
+            if (c.satisfied() || c.dumped()) {
+                continue;
+            }
             this.stats.clausesEliminated++;
             dumpClause(c);
         }
@@ -1097,7 +1349,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             final CLClause c = n.clauses().back();
             this.stats.steps++;
             n.clauses().pop();
-            if (c.satisfied() || c.dumped()) { continue; }
+            if (c.satisfied() || c.dumped()) {
+                continue;
+            }
             this.stats.clausesEliminated++;
             dumpClause(c);
         }
@@ -1118,7 +1372,11 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @return {@code true} if a given clause contains an eliminated variable
      */
     private boolean containsEliminated(final CLClause c) {
-        for (int i = 0; i < c.lits().size(); i++) { if (var(c.lits().get(i)).state() == CLVar.State.ELIMINATED) { return true; } }
+        for (int i = 0; i < c.lits().size(); i++) {
+            if (var(c.lits().get(i)).state() == CLVar.State.ELIMINATED) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -1127,8 +1385,12 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      */
     private void dumpEliminatedRedundant() {
         for (final CLClause c : this.clauses) {
-            if (!c.redundant() || c.satisfied() || c.dumped()) { continue; }
-            if (containsEliminated(c)) { dumpClause(c); }
+            if (!c.redundant() || c.satisfied() || c.dumped()) {
+                continue;
+            }
+            if (containsEliminated(c)) {
+                dumpClause(c);
+            }
         }
     }
 
@@ -1136,10 +1398,16 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * Updates the candidates priority queue for new rounds of simplification.
      */
     private void updateCands() {
-        if (!this.dense) { connectOccs(); }
+        if (!this.dense) {
+            connectOccs();
+        }
         assert !this.schedule;
         this.schedule = true;
-        if (this.schedule = currentCands().empty()) { for (int idx = 1; idx <= maxvar(); idx++) { touch(idx); } }
+        if (this.schedule = currentCands().empty()) {
+            for (int idx = 1; idx <= maxvar(); idx++) {
+                touch(idx);
+            }
+        }
         this.schedule = true;
         touchFixed();
     }
@@ -1151,15 +1419,27 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      */
     private boolean donotelim(final int cand) {
         int sign;
-        if (occs(cand).count() > this.config.elmpocclim1) { return true; }
-        if (occs(-cand).count() > this.config.elmpocclim1) { return true; }
-        if (occs(cand).count() > this.config.elmpocclim2 && occs(-cand).count() > this.config.elmpocclim2) { return true; }
+        if (occs(cand).count() > this.config.elmpocclim1) {
+            return true;
+        }
+        if (occs(-cand).count() > this.config.elmpocclim1) {
+            return true;
+        }
+        if (occs(cand).count() > this.config.elmpocclim2 && occs(-cand).count() > this.config.elmpocclim2) {
+            return true;
+        }
         for (sign = -1; sign <= 1; sign += 2) {
             final CLOccs os = occs(sign * cand);
             for (final CLClause c : os) {
                 assert !c.redundant();
-                if (c.size() >= this.config.elmclslim) { return true; }
-                for (int i = 0; i < c.lits().size(); i++) { if (occs(c.lits().get(i)).count() >= this.config.elmocclim) { return true; } }
+                if (c.size() >= this.config.elmclslim) {
+                    return true;
+                }
+                for (int i = 0; i < c.lits().size(); i++) {
+                    if (occs(c.lits().get(i)).count() >= this.config.elmocclim) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -1176,22 +1456,30 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final long steps = this.limits.simpSteps;
         assert this.level == 0;
         assert !this.config.plain;
-        if (!this.config.elim) { return; }
+        if (!this.config.elim) {
+            return;
+        }
         assert this.simplifier == Simplifier.TOPSIMP;
         this.simplifier = Simplifier.ELIM;
         updateCands();
         final long limit;
-        if (this.stats.simplifications <= this.config.elmrtc) { limit = Long.MAX_VALUE; } else {
+        if (this.stats.simplifications <= this.config.elmrtc) {
+            limit = Long.MAX_VALUE;
+        } else {
             limit = this.stats.steps + 10 * steps / sizePenalty();
         }
         while (this.empty == null && !this.candsElim.empty() && this.stats.steps++ < limit) {
             final int cand = this.candsElim.top();
             final long priority = this.candsElim.priority(cand);
             this.candsElim.pop(cand);
-            if (priority == 0 || !var(cand).free() || donotelim(cand)) { continue; }
+            if (priority == 0 || !var(cand).free() || donotelim(cand)) {
+                continue;
+            }
             backward(cand);
             backward(-cand);
-            if (tryElim(cand)) { doElim(cand); }
+            if (tryElim(cand)) {
+                doElim(cand);
+            }
         }
         assert this.schedule;
         this.schedule = false;
@@ -1207,13 +1495,19 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      * @return {@code true} if all resolvents with 'c' on 'blit' are tautological
      */
     private boolean blockClause(final CLClause c, final int blit) {
-        if (c.dumped() || satisfied(c)) { return false; }
+        if (c.dumped() || satisfied(c)) {
+            return false;
+        }
         final CLOccs os = occs(-blit);
         for (final CLClause d : os) {
             assert !d.redundant();
             this.stats.steps++;
-            if (d.dumped() || satisfied(d)) { continue; }
-            if (tryResolve(c, blit, d)) { return false; }
+            if (d.dumped() || satisfied(d)) {
+                continue;
+            }
+            if (tryResolve(c, blit, d)) {
+                return false;
+            }
         }
         return true;
     }
@@ -1226,7 +1520,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final CLOccs os = occs(blit);
         for (final CLClause c : os) {
             assert !c.redundant();
-            if (!blockClause(c, blit)) { continue; }
+            if (!blockClause(c, blit)) {
+                continue;
+            }
             this.stats.clausesBlocked++;
             pushExtension(c, blit);
             dumpClause(c);
@@ -1240,18 +1536,28 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         final long steps = this.limits.simpSteps;
         assert this.level == 0;
         assert !this.config.plain;
-        if (!this.config.block) { return; }
-        if (this.config.blkwait >= this.stats.simplifications) { return; }
+        if (!this.config.block) {
+            return;
+        }
+        if (this.config.blkwait >= this.stats.simplifications) {
+            return;
+        }
         assert this.simplifier == Simplifier.TOPSIMP;
         this.simplifier = Simplifier.BLOCK;
         updateCands();
         final long limit;
-        if (this.stats.simplifications <= this.config.blkrtc) { limit = Long.MAX_VALUE; } else { limit = this.stats.steps + 10 * steps / sizePenalty(); }
+        if (this.stats.simplifications <= this.config.blkrtc) {
+            limit = Long.MAX_VALUE;
+        } else {
+            limit = this.stats.steps + 10 * steps / sizePenalty();
+        }
         while (this.empty == null && !this.candsBlock.empty() && this.stats.steps++ < limit) {
             final int cand = this.candsBlock.top();
             final long priority = this.candsBlock.priority(cand);
             this.candsBlock.pop(cand);
-            if (priority == 0 || !var(cand).free()) { continue; }
+            if (priority == 0 || !var(cand).free()) {
+                continue;
+            }
             blockLit(cand);
             blockLit(-cand);
         }
@@ -1286,13 +1592,19 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         int i;
         for (i = 0; i < c.lits().size(); i++) {
             lit = c.lits().get(i);
-            if (val(lit) < 0) { break; }
+            if (val(lit) < 0) {
+                break;
+            }
         }
-        if (i == c.lits().size()) { return c; }
+        if (i == c.lits().size()) {
+            return c;
+        }
         assert this.addedlits.empty();
         for (i = 0; i < c.lits().size(); i++) {
             lit = c.lits().get(i);
-            if (val(lit) >= 0) { this.addedlits.push(lit); }
+            if (val(lit) >= 0) {
+                this.addedlits.push(lit);
+            }
         }
         final boolean redundant = c.redundant();
         final int glue = c.glue();
@@ -1311,14 +1623,20 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         int j = 0;
         long collected = 0;
         for (i = j; i < this.clauses.size(); i++) {
-            if (i == this.distilled) { this.distilled = j; }
+            if (i == this.distilled) {
+                this.distilled = j;
+            }
             final CLClause c = this.clauses.get(i);
-            if (c.forcing() || !(c.dumped() || satisfied(c))) { this.clauses.set(j++, reduceClause(c)); } else {
+            if (c.forcing() || !(c.dumped() || satisfied(c))) {
+                this.clauses.set(j++, reduceClause(c));
+            } else {
                 deleteClause(c);
                 collected++;
             }
         }
-        if (i == this.distilled) { this.distilled = j; }
+        if (i == this.distilled) {
+            this.distilled = j;
+        }
         this.clauses.shrinkTo(j);
         this.stats.clausesCollected += collected;
     }
@@ -1328,7 +1646,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
      */
     private void connectClauses() {
         assert !this.dense;
-        for (final CLClause c : this.clauses) { connectClause(c); }
+        for (final CLClause c : this.clauses) {
+            connectClause(c);
+        }
     }
 
     /**
@@ -1351,9 +1671,15 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         backtrack();
         final int varsBefore = remainingVars();
         if (!this.config.plain) {
-            if (this.empty == null) { distill(); }
-            if (this.empty == null) { block(); }
-            if (this.empty == null) { elim(); }
+            if (this.empty == null) {
+                distill();
+            }
+            if (this.empty == null) {
+                block();
+            }
+            if (this.empty == null) {
+                elim();
+            }
         }
         collect();
         assert this.simplifier == Simplifier.TOPSIMP;
@@ -1374,10 +1700,14 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
             boolean satisfied = false;
             while ((other = this.extension.back()) != 0) {
                 this.extension.pop();
-                if (val(other) == VALUE_TRUE) { satisfied = true; }
+                if (val(other) == VALUE_TRUE) {
+                    satisfied = true;
+                }
             }
             this.extension.pop();
-            if (!satisfied) { this.vals.set(Math.abs(lit), sign(lit)); }
+            if (!satisfied) {
+                this.vals.set(Math.abs(lit), sign(lit));
+            }
         }
     }
 
@@ -1395,7 +1725,11 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
         boolean res = true;
         for (int i = 0; i < this.addedlits.size(); i++) {
             lit = this.addedlits.get(i);
-            if (marked(lit) != 0 || marked(-lit) != 0) { res = false; } else { mark(lit); }
+            if (marked(lit) != 0 || marked(-lit) != 0) {
+                res = false;
+            } else {
+                mark(lit);
+            }
         }
         unmark();
         return res;

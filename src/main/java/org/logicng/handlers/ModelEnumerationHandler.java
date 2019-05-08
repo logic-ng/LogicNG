@@ -37,10 +37,10 @@ import org.logicng.datastructures.Assignment;
  */
 public interface ModelEnumerationHandler {
 
-  /**
-   * This method is called every time a model is found.
-   * @param assignment the respective model
-   * @return whether more models should be searched or not
-   */
-  boolean foundModel(Assignment assignment);
+    /**
+     * This method is called every time a model is found.
+     * @param assignment the respective model
+     * @return whether more models should be searched or not
+     */
+    boolean foundModel(Assignment assignment);
 }

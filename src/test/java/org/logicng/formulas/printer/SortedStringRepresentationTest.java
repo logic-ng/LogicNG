@@ -28,6 +28,8 @@
 
 package org.logicng.formulas.printer;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import org.junit.Test;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
@@ -38,11 +40,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-
 /**
  * Unit tests for {@link SortedStringRepresentation}
- *
  * @version 1.5
  * @since 1.5
  */

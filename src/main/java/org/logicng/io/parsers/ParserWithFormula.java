@@ -12,27 +12,27 @@ import org.logicng.formulas.FormulaFactory;
  */
 public abstract class ParserWithFormula extends Parser {
 
-  protected FormulaFactory f;
+    protected FormulaFactory f;
 
-  /**
-   * Constructor.
-   * @param input the token stream (e.g. a lexer) for the parser
-   */
-  public ParserWithFormula(final TokenStream input) {
-    super(input);
-  }
+    /**
+     * Constructor.
+     * @param input the token stream (e.g. a lexer) for the parser
+     */
+    public ParserWithFormula(final TokenStream input) {
+        super(input);
+    }
 
-  /**
-   * Sets the LogicNG formula factory for this parser
-   * @param f the LogicNG formula factory
-   */
-  public void setFormulaFactory(final FormulaFactory f) {
-    this.f = f;
-  }
+    /**
+     * Sets the LogicNG formula factory for this parser
+     * @param f the LogicNG formula factory
+     */
+    public void setFormulaFactory(final FormulaFactory f) {
+        this.f = f;
+    }
 
-  /**
-   * Returns the parsed formula.
-   * @return the parsed formula
-   */
-  public abstract Formula getParsedFormula();
+    /**
+     * Returns the parsed formula.
+     * @return the parsed formula
+     */
+    public abstract Formula getParsedFormula();
 }

@@ -56,58 +56,58 @@ package org.logicng.solvers.datastructures;
  * @since 1.0
  */
 public final class CLWatch {
-  private final boolean binary;
-  private final CLClause clause;
-  private int blit;
+    private final boolean binary;
+    private final CLClause clause;
+    private int blit;
 
-  /**
-   * Constructs a new clause watcher.
-   * @param l the blocking literal
-   * @param b {@code true} if this watch is for a binary clause, {@code false} otherwise
-   * @param c the clause to watch
-   */
-  public CLWatch(int l, boolean b, final CLClause c) {
-    this.blit = l;
-    this.binary = b;
-    this.clause = c;
-  }
+    /**
+     * Constructs a new clause watcher.
+     * @param l the blocking literal
+     * @param b {@code true} if this watch is for a binary clause, {@code false} otherwise
+     * @param c the clause to watch
+     */
+    public CLWatch(int l, boolean b, final CLClause c) {
+        this.blit = l;
+        this.binary = b;
+        this.clause = c;
+    }
 
-  /**
-   * Returns the blocking literal of this watcher.
-   * @return the blocking literal of this watcher
-   */
-  public int blit() {
-    return this.blit;
-  }
+    /**
+     * Returns the blocking literal of this watcher.
+     * @return the blocking literal of this watcher
+     */
+    public int blit() {
+        return this.blit;
+    }
 
-  /**
-   * Sets the blocking literal of this watcher
-   * @param blit the blocking literal
-   */
-  public void setBlit(int blit) {
-    this.blit = blit;
-  }
+    /**
+     * Sets the blocking literal of this watcher
+     * @param blit the blocking literal
+     */
+    public void setBlit(int blit) {
+        this.blit = blit;
+    }
 
-  /**
-   * Returns {@code true} if this watcher watches a binary clause, {@code false} otherwise.
-   * @return {@code true} if this watcher watches a binary clause
-   */
-  public boolean binary() {
-    return this.binary;
-  }
+    /**
+     * Returns {@code true} if this watcher watches a binary clause, {@code false} otherwise.
+     * @return {@code true} if this watcher watches a binary clause
+     */
+    public boolean binary() {
+        return this.binary;
+    }
 
-  /**
-   * Returns the watched clause.
-   * @return the watched clause
-   */
-  public CLClause clause() {
-    return this.clause;
-  }
+    /**
+     * Returns the watched clause.
+     * @return the watched clause
+     */
+    public CLClause clause() {
+        return this.clause;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("CLWatch{blit=%d, binary=%s, clause=%s}", this.blit, this.binary, this.clause);
-  }
+    @Override
+    public String toString() {
+        return String.format("CLWatch{blit=%d, binary=%s, clause=%s}", this.blit, this.binary, this.clause);
+    }
 }
 
 

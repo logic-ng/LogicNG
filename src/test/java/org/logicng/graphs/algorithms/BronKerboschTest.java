@@ -46,49 +46,49 @@ import java.util.SortedSet;
  */
 public class BronKerboschTest {
 
-  @Test
-  public void graph50Test() throws IOException {
-    Graph<Long> g = GraphTest.getLongGraph("50");
+    @Test
+    public void graph50Test() throws IOException {
+        Graph<Long> g = GraphTest.getLongGraph("50");
 
-    BronKerbosch<Long> bkp = new BronKerbosch<>(g);
-    Set<SortedSet<Node<Long>>> resultBkp = bkp.compute();
+        BronKerbosch<Long> bkp = new BronKerbosch<>(g);
+        Set<SortedSet<Node<Long>>> resultBkp = bkp.compute();
 
-    Assert.assertEquals(910, resultBkp.size());
+        Assert.assertEquals(910, resultBkp.size());
 
-    for (SortedSet<Node<Long>> clique1 : resultBkp) {
-      for (SortedSet<Node<Long>> clique2 : resultBkp) {
-        if (clique1.size() != clique2.size()) {
-          Assert.assertFalse(clique1.containsAll(clique2));
+        for (SortedSet<Node<Long>> clique1 : resultBkp) {
+            for (SortedSet<Node<Long>> clique2 : resultBkp) {
+                if (clique1.size() != clique2.size()) {
+                    Assert.assertFalse(clique1.containsAll(clique2));
+                }
+            }
         }
-      }
-    }
 
-    Node<Long> eleven = g.node(11L);
-    for (Node<Long> nb : eleven.neighbours()) {
-      g.disconnect(nb, eleven);
-    }
+        Node<Long> eleven = g.node(11L);
+        for (Node<Long> nb : eleven.neighbours()) {
+            g.disconnect(nb, eleven);
+        }
 
-    Set<SortedSet<Node<Long>>> resultEleven = bkp.compute();
-    int elevenCliques = 0;
-    for (SortedSet<Node<Long>> clique : resultEleven) {
-      if (clique.contains(eleven)) {
-        elevenCliques++;
-        Assert.assertEquals(1, clique.size());
-      }
-    }
-    Assert.assertEquals(1, elevenCliques);
+        Set<SortedSet<Node<Long>>> resultEleven = bkp.compute();
+        int elevenCliques = 0;
+        for (SortedSet<Node<Long>> clique : resultEleven) {
+            if (clique.contains(eleven)) {
+                elevenCliques++;
+                Assert.assertEquals(1, clique.size());
+            }
+        }
+        Assert.assertEquals(1, elevenCliques);
 
-    g.connect(eleven, g.node(10L));
+        g.connect(eleven, g.node(10L));
 
-    bkp.compute();
-    int tenCliques = 0;
-    for (List<Long> clique : bkp.getCliquesAsTLists()) {
-      if (clique.contains(11L)) {
-        tenCliques++;
-        Assert.assertEquals(2, clique.size());
-        Assert.assertTrue(clique.contains(10L));
-      }
+        bkp.compute();
+        int tenCliques = 0;
+        for (List<Long> clique : bkp.getCliquesAsTLists()) {
+            if (clique.contains(11L)) {
+                tenCliques++;
+                Assert.assertEquals(2, clique.size());
+                Assert.assertTrue(clique.contains(10L));
+            }
+        }
+        Assert.assertEquals(1, tenCliques);
     }
-    Assert.assertEquals(1, tenCliques);
-  }
 }
