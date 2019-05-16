@@ -106,7 +106,7 @@ public final class PBConstraint extends Formula {
     for (final int c : coefficients) {
       if (c > this.maxWeight)
         this.maxWeight = c;
-      if (c != 1)
+      if (c != 1 && c != 0)
         cc = false;
     }
     for (final Literal lit : literals)

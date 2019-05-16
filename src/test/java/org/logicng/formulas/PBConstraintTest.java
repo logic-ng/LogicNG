@@ -57,6 +57,7 @@ public class PBConstraintTest {
 
   private final PBConstraint pb1;
   private final PBConstraint pb2;
+  private final PBConstraint pb3;
   private final PBConstraint pb22;
   private final PBConstraint cc1;
   private final PBConstraint cc2;
@@ -71,8 +72,10 @@ public class PBConstraintTest {
     final List<Variable> litsCC2 = Arrays.asList(f.variable("a"), f2.variable("b"), f.variable("c"));
     final int[] coeffs1 = new int[]{3};
     final List<Integer> coeffs2 = Arrays.asList(3, -2, 7);
+    final List<Integer> coeffsCC3 = Arrays.asList(0, 1, 1);
     this.pb1 = f.pbc(CType.LE, 2, lits1, coeffs1);
     this.pb2 = f.pbc(CType.LE, 8, lits2, coeffs2);
+    this.pb3 = f.pbc(CType.GT, 2, litsCC2, coeffsCC3);
     this.pb22 = f2.pbc(CType.LE, 8, lits2, coeffs2);
     this.cc1 = f.cc(CType.LT, 1, lits1);
     this.cc2 = f.cc(CType.GE, 2, litsCC2);
@@ -108,6 +111,7 @@ public class PBConstraintTest {
     final Literal[] litsCC2 = new Literal[]{f.variable("a"), f.variable("b"), f2.variable("c")};
     final int[] coeffs1 = new int[]{3};
     final int[] coeffs2 = new int[]{3, -2, 7};
+    final int[] coeffs3 = {0, 1, 1};
 
     final int[] coeffsCC1 = new int[]{1};
     final int[] coeffsCC2 = new int[]{1, 1, 1};
@@ -125,6 +129,13 @@ public class PBConstraintTest {
     Assert.assertEquals(8, this.pb2.rhs());
     Assert.assertFalse(this.pb2.isCC());
     Assert.assertEquals(7, this.pb2.maxWeight());
+
+    Assert.assertArrayEquals(litsCC2, this.pb3.operands());
+    Assert.assertArrayEquals(coeffs3, this.pb3.coefficients());
+    Assert.assertEquals(CType.GT, this.pb3.comparator());
+    Assert.assertEquals(2, this.pb3.rhs());
+    Assert.assertTrue(this.pb3.isCC());
+    Assert.assertEquals(1, this.pb3.maxWeight());
 
     Assert.assertArrayEquals(lits1, this.cc1.operands());
     Assert.assertArrayEquals(coeffsCC1, this.cc1.coefficients());
