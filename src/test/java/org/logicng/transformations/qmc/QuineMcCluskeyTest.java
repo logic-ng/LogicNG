@@ -394,8 +394,8 @@ public class QuineMcCluskeyTest {
     final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
     final Formula inputDontCareCondition = parser.parse("b & c");
     final Formula expectedResult = parser.parse("~a & ~b & ~c & d | ~a & b & ~d | a & ~b & ~d | a & c | c & ~d");
-    final Formula acctualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
-    assertThat(factory.equivalence(acctualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+    final Formula actualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(actualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
   }
 
   @Test
@@ -405,8 +405,8 @@ public class QuineMcCluskeyTest {
     final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
     final Formula inputDontCareCondition = factory.verum();
     final Formula expectedResult = factory.verum();
-    final Formula acctualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
-    assertThat(factory.equivalence(acctualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+    final Formula actualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(actualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
   }
 
   @Test
@@ -416,8 +416,31 @@ public class QuineMcCluskeyTest {
     final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
     final Formula inputDontCareCondition = factory.falsum();
     final Formula expectedResult = inputDNF;
-    final Formula acctualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
-    assertThat(factory.equivalence(acctualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+    final Formula actualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(actualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+  }
+
+  @Test
+  public void testQMCwithDontCareExclusionClass() throws ParserException {
+    final FormulaFactory factory = new FormulaFactory();
+    final PropositionalParser parser = new PropositionalParser(factory);
+    final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
+    final Formula inputDontCareCondition = factory.amo(factory.variable("b"),factory.variable("c")).negate();
+    final Formula expectedResult = parser.parse("~a & ~b & ~c & d | ~a & b & ~d | a & ~b & ~d | a & c | c & ~d");
+    final Formula actualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(actualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+  }
+
+  @Test
+  public void testQMCwithDontCareExoClass() throws ParserException {
+    final FormulaFactory factory = new FormulaFactory();
+    final PropositionalParser parser = new PropositionalParser(factory);
+    final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
+    final Formula inputDontCareCondition = factory.exo(factory.variable("b"),factory.variable("c")).negate();
+    final Formula expectedResult = parser.parse("~a & ~d | c & a");
+    final Formula actualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    System.out.println(actualResult);
+    assertThat(factory.equivalence(actualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
   }
 
   static Term getTerm(final String string, final FormulaFactory f) throws ParserException {
