@@ -146,20 +146,20 @@ public class QuineMcCluskeyTest {
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(formula);
     final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
-            f.variable("v111"),
-            f.variable("v410"),
-            f.variable("v434"),
-            f.variable("v35"),
-            f.variable("v36"),
-            f.variable("v78"),
-            f.variable("v125"),
-            f.variable("v125"),
-            f.variable("v58"),
-            f.variable("v27"),
-            f.variable("v462"),
-            f.variable("v463"),
-            f.variable("v280"),
-            f.variable("v61")));
+        f.variable("v111"),
+        f.variable("v410"),
+        f.variable("v434"),
+        f.variable("v35"),
+        f.variable("v36"),
+        f.variable("v78"),
+        f.variable("v125"),
+        f.variable("v125"),
+        f.variable("v58"),
+        f.variable("v27"),
+        f.variable("v462"),
+        f.variable("v463"),
+        f.variable("v280"),
+        f.variable("v61")));
     final List<Formula> operands = new ArrayList<>(models.size());
     for (final Assignment model : models)
       operands.add(model.formula(f));
@@ -177,17 +177,17 @@ public class QuineMcCluskeyTest {
     final List<Literal> minterm2 = Arrays.asList(f.literal("A", true), f.literal("B", false), f.literal("C", true));
     final List<Literal> minterm3 = Arrays.asList(f.literal("A", false), f.literal("B", false), f.literal("C", false));
 
-    assertThat(convertToTerm(minterm1, f).bits()).isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.TRUE, Tristate.TRUE});
-    assertThat(convertToTerm(minterm2, f).bits()).isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.FALSE, Tristate.TRUE});
-    assertThat(convertToTerm(minterm3, f).bits()).isEqualTo(new Tristate[]{Tristate.FALSE, Tristate.FALSE, Tristate.FALSE});
+    assertThat(convertToTerm(minterm1, f, f.falsum()).bits()).isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.TRUE, Tristate.TRUE});
+    assertThat(convertToTerm(minterm2, f, f.falsum()).bits()).isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.FALSE, Tristate.TRUE});
+    assertThat(convertToTerm(minterm3, f, f.falsum()).bits()).isEqualTo(new Tristate[]{Tristate.FALSE, Tristate.FALSE, Tristate.FALSE});
 
-    assertThat(convertToTerm(minterm1, f).minterms()).isEqualTo(Collections.singletonList(p.parse("A & B & C")));
-    assertThat(convertToTerm(minterm2, f).minterms()).isEqualTo(Collections.singletonList(p.parse("A & ~B & C")));
-    assertThat(convertToTerm(minterm3, f).minterms()).isEqualTo(Collections.singletonList(p.parse("~A & ~B & ~C")));
+    assertThat(convertToTerm(minterm1, f, f.falsum()).minterms()).isEqualTo(Collections.singletonList(p.parse("A & B & C")));
+    assertThat(convertToTerm(minterm2, f, f.falsum()).minterms()).isEqualTo(Collections.singletonList(p.parse("A & ~B & C")));
+    assertThat(convertToTerm(minterm3, f, f.falsum()).minterms()).isEqualTo(Collections.singletonList(p.parse("~A & ~B & ~C")));
 
-    assertThat(convertToTerm(minterm1, f).termClass()).isEqualTo(3);
-    assertThat(convertToTerm(minterm2, f).termClass()).isEqualTo(2);
-    assertThat(convertToTerm(minterm3, f).termClass()).isEqualTo(0);
+    assertThat(convertToTerm(minterm1, f, f.falsum()).termClass()).isEqualTo(3);
+    assertThat(convertToTerm(minterm2, f, f.falsum()).termClass()).isEqualTo(2);
+    assertThat(convertToTerm(minterm3, f, f.falsum()).termClass()).isEqualTo(0);
   }
 
   @Test
@@ -387,11 +387,44 @@ public class QuineMcCluskeyTest {
     assertThat(notADNF).isEqualTo(f.literal("a", false));
   }
 
+  @Test
+  public void testWithDontCare() throws ParserException {
+    final FormulaFactory factory = new FormulaFactory();
+    final PropositionalParser parser = new PropositionalParser(factory);
+    final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
+    final Formula inputDontCareCondition = parser.parse("b & c");
+    final Formula expectedResult = parser.parse("~a & ~b & ~c & d | ~a & b & ~d | a & ~b & ~d | a & c | c & ~d");
+    final Formula acctualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(acctualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+  }
+
+  @Test
+  public void testWithDontCareEverythingIrrelevant() throws ParserException {
+    final FormulaFactory factory = new FormulaFactory();
+    final PropositionalParser parser = new PropositionalParser(factory);
+    final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
+    final Formula inputDontCareCondition = factory.verum();
+    final Formula expectedResult = factory.verum();
+    final Formula acctualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(acctualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+  }
+
+  @Test
+  public void testWithDontCareNothingIrrelevant() throws ParserException {
+    final FormulaFactory factory = new FormulaFactory();
+    final PropositionalParser parser = new PropositionalParser(factory);
+    final Formula inputDNF = parser.parse("c & ~d | ~a & b & ~d | ~a & b & c | a & ~b & c | a & ~b & ~d | ~a & ~b & ~c & d");
+    final Formula inputDontCareCondition = factory.falsum();
+    final Formula expectedResult = inputDNF;
+    final Formula acctualResult = QuineMcCluskeyAlgorithm.compute(inputDNF, inputDontCareCondition);
+    assertThat(factory.equivalence(acctualResult, expectedResult).holds(new TautologyPredicate(factory))).isTrue();
+  }
+
   static Term getTerm(final String string, final FormulaFactory f) throws ParserException {
     final List<Literal> literals = new ArrayList<>();
     final PropositionalParser p = new PropositionalParser(f);
     for (final String var : string.split(" "))
       literals.add((Literal) p.parse(var));
-    return convertToTerm(literals, f);
+    return convertToTerm(literals, f, f.falsum());
   }
 }

@@ -66,11 +66,24 @@ public class QuineMcCluskeyAlgorithm {
    * @return the minimized DNF due to Quine-McCluskey
    */
   public static Formula compute(final Formula formula, final Collection<Variable> relevantVariables) {
+    return compute(formula, relevantVariables, formula.factory().falsum());
+  }
+
+  /**
+   * Computes a minimized DNF for a given formula projected to a given set of variables.  First a projected canonical
+   * DNF of the formula is computed for the given variables.  Then for this canonical DNF the Quine-McCluskey algorithm
+   * is computed.
+   * @param formula           the formula
+   * @param relevantVariables the relevant formulas for the projected canonical DNF
+   * @param dontcareCondition a formula that defines a minterm as optional iff satisfied by it
+   * @return the minimized DNF due to Quine-McCluskey
+   */
+  public static Formula compute(final Formula formula, final Collection<Variable> relevantVariables, final Formula dontcareCondition) {
     final FormulaFactory f = formula.factory();
     final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(formula);
+    solver.add(f.or(formula, dontcareCondition));
     final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
-    return compute(models, f);
+    return compute(models, f, dontcareCondition);
   }
 
   /**
@@ -80,7 +93,7 @@ public class QuineMcCluskeyAlgorithm {
    * @return the minimized DNF due to Quine-McCluskey
    */
   public static Formula compute(final Formula formula) {
-    return compute(formula, formula.variables());
+    return compute(formula, formula.variables(), formula.factory().falsum());
   }
 
   /**
@@ -92,6 +105,33 @@ public class QuineMcCluskeyAlgorithm {
    * @return the minimized DNF due to Quine-McCluskey
    */
   public static Formula compute(final List<Assignment> models, final FormulaFactory f) {
+    return compute(models, f, f.falsum());
+  }
+
+  /**
+   * Computes a minimized DNF for a given formula.  First the canonical DNF of the formula is computed.  Then for
+   * this canonical DNF the Quine-McCluskey algorithm is computed. Any minterm that satisfies the don't-care-condition is considered optional.
+   * These minterms might be used to further shrink the result, but might also be ignored for the same reason.
+   * @param fomula            the formula
+   * @param dontCareCondition a formula that defines a minterm as optional iff satisfied by it
+   * @return the minimized DNF due to Quine-McCluskey
+   */
+  public static Formula compute(Formula fomula, Formula dontCareCondition) {
+    return compute(fomula, fomula.variables(), dontCareCondition);
+  }
+
+  /**
+   * Computes a minimized DNF for a given set of models.  These models have to represent a canonical DNF of a formula
+   * as computed e.g. by the projected model enumeration of a SAT solver {@link SATSolver#enumerateAllModels(Variable[])}
+   * or by the transformation {@link org.logicng.transformations.dnf.CanonicalDNFEnumeration}.
+   * @param models            the models of the formula
+   * @param f                 the formula factory
+   * @param dontcareCondition formula that defines a minterm as optional iff satisfied by it
+   * @return the minimized DNF due to Quine-McCluskey
+   */
+  public static Formula compute(final List<Assignment> models, final FormulaFactory f, final Formula dontcareCondition) {
+    if (dontcareCondition.equals(f.verum()))
+      return f.verum();
     if (models.isEmpty())
       return f.falsum();
     if (models.size() == 1)
@@ -99,12 +139,27 @@ public class QuineMcCluskeyAlgorithm {
     final List<Variable> varOrder = new ArrayList<>(models.get(0).positiveLiterals());
     varOrder.addAll(models.get(0).negativeVariables());
     Collections.sort(varOrder);
-    final List<Term> terms = transformModels2Terms(models, varOrder, f);
+    final List<Term> terms = transformModels2Terms(models, varOrder, f, dontcareCondition);
     final LinkedHashSet<Term> primeImplicants = computePrimeImplicants(terms);
-    final TermTable primeTermTable = new TermTable(primeImplicants);
+    final LinkedHashSet<Term> filteredPrimeImplicants = filterOutDontCares(primeImplicants);
+    final TermTable primeTermTable = new TermTable(filteredPrimeImplicants);
     primeTermTable.simplifyTableByDominance();
     final List<Term> chosenTerms = chooseSatBased(primeTermTable, f);
     return computeFormula(chosenTerms, varOrder);
+  }
+
+  /**
+   * A prime implicant that is marked as don't-care at this point in time was made by merging don't-care terms only.
+   * Therefore it does not need to be covered in the next step and can thus be sorted out before we create the table.
+   * @param primeImplicants the prime implicants
+   * @return a filtered set with no don't-care terms remaining.
+   */
+  private static LinkedHashSet<Term> filterOutDontCares(LinkedHashSet<Term> primeImplicants) {
+    LinkedHashSet<Term> result = new LinkedHashSet<>(primeImplicants.size());
+    for (Term t : primeImplicants)
+      if (!t.isDontCare())
+        result.add(t);
+    return result;
   }
 
   /**
@@ -115,13 +170,13 @@ public class QuineMcCluskeyAlgorithm {
    * @return the list of terms
    */
   private static List<Term> transformModels2Terms(final List<Assignment> models, final List<Variable> varOrder,
-                                                  final FormulaFactory f) {
+                                                  final FormulaFactory f, final Formula dontcareCondition) {
     final List<Term> terms = new ArrayList<>(models.size());
     for (final Assignment model : models) {
       final List<Literal> minterm = new ArrayList<>();
       for (final Variable variable : varOrder)
         minterm.add(model.evaluateLit(variable) ? variable : variable.negate());
-      terms.add(convertToTerm(minterm, f));
+      terms.add(convertToTerm(minterm, f, dontcareCondition));
     }
     return terms;
   }
@@ -226,11 +281,12 @@ public class QuineMcCluskeyAlgorithm {
    * @param f       the formula factory
    * @return the term for this minterm
    */
-  static Term convertToTerm(final List<Literal> minterm, final FormulaFactory f) {
+  static Term convertToTerm(final List<Literal> minterm, final FormulaFactory f, final Formula dontcareCondition) {
     final Tristate[] bits = new Tristate[minterm.size()];
     for (int i = 0; i < minterm.size(); i++)
       bits[i] = Tristate.fromBool(minterm.get(i).phase());
-    return new Term(bits, Collections.singletonList(f.and(minterm)));
+    boolean isDontCareTerm = dontcareCondition.evaluate(new Assignment(minterm));
+    return new Term(bits, Collections.singletonList(f.and(minterm)), isDontCareTerm);
   }
 
   /**

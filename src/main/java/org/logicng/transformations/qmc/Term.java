@@ -48,6 +48,7 @@ import java.util.List;
  */
 class Term {
 
+  private final boolean dontCare;
   private final Tristate[] bits;
   private final List<Formula> minterms;
   private final int termClass;
@@ -59,11 +60,21 @@ class Term {
    * @param bits     the bits
    * @param minterms the minterms
    */
-  Term(final Tristate[] bits, final List<Formula> minterms) {
+  Term(final Tristate[] bits, final List<Formula> minterms, final boolean dontCare) {
     this.bits = bits;
     this.minterms = minterms;
     this.termClass = countNonNegativeBits(bits);
     this.undefNum = computeUndefNum(bits);
+    this.dontCare = dontCare;
+  }
+
+  /**
+   * Constructs a new term with a given set of bits and the related minterms.
+   * @param bits     the bits
+   * @param minterms the minterms
+   */
+  Term(final Tristate[] bits, final List<Formula> minterms) {
+    this(bits,minterms,false);
   }
 
   /**
@@ -125,6 +136,12 @@ class Term {
   }
 
   /**
+   * Returns whether this term is considered a dont' care term.
+   * @return whether this term is don't care
+   */
+  boolean isDontCare() { return this.dontCare; }
+
+  /**
    * Sets whether this term was used in the combination step of QMC or not.
    * @param used whether this term was used
    */
@@ -158,7 +175,7 @@ class Term {
     newBits[diffPosition] = Tristate.UNDEF;
     final List<Formula> newMinterms = new ArrayList<>(this.minterms);
     newMinterms.addAll(other.minterms);
-    return new Term(newBits, newMinterms);
+    return new Term(newBits, newMinterms, this.dontCare && other.dontCare);
   }
 
   /**
