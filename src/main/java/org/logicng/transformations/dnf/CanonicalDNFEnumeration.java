@@ -32,11 +32,11 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
+import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Canonical DNF generation via enumeration of models by a SAT solver.
@@ -45,12 +45,31 @@ import java.util.List;
  */
 public final class CanonicalDNFEnumeration implements FormulaTransformation {
 
+  private Collection<Variable> relevantVariables;
+  private Collection<Variable> additionalVariables;
+
+  /**
+   * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
+   * all variables are considered relevant. Additionally every assignment contains literals for the given additional
+   * variables.
+   * @param relevantVariables   the set of variables
+   * @param additionalVariables the additional variables
+   */
+  public CanonicalDNFEnumeration(Collection<Variable> relevantVariables, Collection<Variable> additionalVariables) {
+    this.relevantVariables = relevantVariables;
+    this.additionalVariables = additionalVariables;
+  }
+
+  public CanonicalDNFEnumeration(){
+    this(null,null);
+  }
+
   @Override
   public Formula apply(final Formula formula, boolean cache) {
     final FormulaFactory f = formula.factory();
     final SATSolver solver = MiniSat.miniSat(f);
     solver.add(formula);
-    final List<Assignment> enumeration = solver.enumerateAllModels();
+    final List<Assignment> enumeration = solver.enumerateAllModels(relevantVariables, additionalVariables);
     if (enumeration.isEmpty())
       return f.falsum();
     final List<Formula> ops = new LinkedList<>();

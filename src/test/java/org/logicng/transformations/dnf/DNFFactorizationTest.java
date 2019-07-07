@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.FactorizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -116,6 +117,17 @@ public class DNFFactorizationTest {
     final Formula cdnf = p.parse("x0 & x1 & x2 & x3 | x0 & x1 & x2 & ~x3 | x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & x3 | x0 & x1 & ~x2 & x3 | ~x0 & x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & x3");
     Assert.assertEquals(cdnf, f.transform(new CanonicalDNFEnumeration()));
     Assert.assertEquals(F.f.falsum(), F.f.and(F.A, F.NA).transform(new CanonicalDNFEnumeration()));
+  }
+
+  @Test
+  public void testAdditionalVars() throws ParserException {
+    final PropositionalParser p = new PropositionalParser(F.f);
+    final Formula f = p.parse("a");
+    final Variable b = F.f.variable("b");
+    CanonicalDNFEnumeration transformation = new CanonicalDNFEnumeration(null,b.variables());
+    Formula result = f.transform(transformation);
+    Formula expected = p.parse("a&b|a&~b");
+    Assert.assertEquals(expected,result);
   }
 
   @Test
