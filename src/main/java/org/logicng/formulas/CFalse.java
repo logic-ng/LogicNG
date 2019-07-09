@@ -37,31 +37,31 @@ import org.logicng.datastructures.Assignment;
  */
 public final class CFalse extends Constant {
 
-  /**
-   * Constructor.
-   * @param factory the factory which created this instance
-   */
-  CFalse(final FormulaFactory factory) {
-    super(FType.FALSE, factory);
-  }
+    /**
+     * Constructor.
+     * @param factory the factory which created this instance
+     */
+    CFalse(final FormulaFactory factory) {
+        super(FType.FALSE, factory);
+    }
 
-  @Override
-  public boolean evaluate(final Assignment assignment) {
-    return false;
-  }
+    @Override
+    public boolean evaluate(final Assignment assignment) {
+        return false;
+    }
 
-  @Override
-  public Constant negate() {
-    return f.verum();
-  }
+    @Override
+    public Constant negate() {
+        return f.verum();
+    }
 
-  @Override
-  public int hashCode() {
-    return -42;
-  }
+    @Override
+    public int hashCode() {
+        return -42;
+    }
 
-  @Override
-  public boolean equals(final Object other) {
-    return other instanceof CFalse;
-  }
+    @Override
+    public boolean equals(final Object other) {
+        return other instanceof CFalse;
+    }
 }

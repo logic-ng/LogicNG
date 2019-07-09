@@ -40,19 +40,19 @@ import org.logicng.formulas.FormulaFactory;
  */
 public abstract class Proposition {
 
-  /**
-   * Returns the formulas of this constraint.
-   * @return the formulas of this constraint
-   */
-  public abstract ImmutableFormulaList formulas();
+    /**
+     * Returns the formulas of this constraint.
+     * @return the formulas of this constraint
+     */
+    public abstract ImmutableFormulaList formulas();
 
-  /**
-   * Returns the formula of this proposition.
-   * @param f the formula factory
-   * @return the formula of this proposition
-   */
-  public Formula formula(final FormulaFactory f) {
-    return this.formulas().formula(f);
-  }
+    /**
+     * Returns the formula of this proposition.
+     * @param f the formula factory
+     * @return the formula of this proposition
+     */
+    public Formula formula(final FormulaFactory f) {
+        return this.formulas().formula(f);
+    }
 
 }

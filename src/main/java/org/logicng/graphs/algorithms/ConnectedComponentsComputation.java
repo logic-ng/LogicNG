@@ -41,30 +41,32 @@ import java.util.Set;
  */
 public class ConnectedComponentsComputation {
 
-  /**
-   * Computes the set of connected components of a graph, where each component is represented by a set of nodes.
-   * @param graph the graph
-   * @param <T>   the type of the graph content
-   * @return the set of sets of nodes representing the connected components
-   */
-  public static <T> Set<Set<Node<T>>> compute(final Graph<T> graph) {
-    final Set<Set<Node<T>>> connectedComponents = new LinkedHashSet<>();
-    final Set<Node<T>> unmarkedNodes = new LinkedHashSet<>(graph.nodes());
+    /**
+     * Computes the set of connected components of a graph, where each component is represented by a set of nodes.
+     * @param graph the graph
+     * @param <T>   the type of the graph content
+     * @return the set of sets of nodes representing the connected components
+     */
+    public static <T> Set<Set<Node<T>>> compute(final Graph<T> graph) {
+        final Set<Set<Node<T>>> connectedComponents = new LinkedHashSet<>();
+        final Set<Node<T>> unmarkedNodes = new LinkedHashSet<>(graph.nodes());
 
-    while (!unmarkedNodes.isEmpty()) {
-      Set<Node<T>> connectedComp = new LinkedHashSet<>();
-      deepFirstSearch(unmarkedNodes.iterator().next(), connectedComp, unmarkedNodes);
-      connectedComponents.add(connectedComp);
+        while (!unmarkedNodes.isEmpty()) {
+            Set<Node<T>> connectedComp = new LinkedHashSet<>();
+            deepFirstSearch(unmarkedNodes.iterator().next(), connectedComp, unmarkedNodes);
+            connectedComponents.add(connectedComp);
+        }
+
+        return connectedComponents;
     }
 
-    return connectedComponents;
-  }
-
-  private static <T> void deepFirstSearch(Node<T> v, Set<Node<T>> component, final Set<Node<T>> unmarkedNodes) {
-    component.add(v);
-    unmarkedNodes.remove(v);
-    for (Node<T> neigh : v.neighbours())
-      if (unmarkedNodes.contains(neigh))
-        deepFirstSearch(neigh, component, unmarkedNodes);
-  }
+    private static <T> void deepFirstSearch(Node<T> v, Set<Node<T>> component, final Set<Node<T>> unmarkedNodes) {
+        component.add(v);
+        unmarkedNodes.remove(v);
+        for (Node<T> neigh : v.neighbours()) {
+            if (unmarkedNodes.contains(neigh)) {
+                deepFirstSearch(neigh, component, unmarkedNodes);
+            }
+        }
+    }
 }

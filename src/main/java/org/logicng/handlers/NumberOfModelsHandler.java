@@ -37,22 +37,23 @@ import org.logicng.datastructures.Assignment;
  */
 public final class NumberOfModelsHandler implements ModelEnumerationHandler {
 
-  private final int bound;
-  private int count;
+    private final int bound;
+    private int count;
 
-  /**
-   * Constructs a new model handler with an upper bound for the number of models (inclusive).
-   * @param bound the upper bound
-   * @throws IllegalArgumentException if the number of models to generate is &lt;= 0
-   */
-  public NumberOfModelsHandler(int bound) {
-    if (bound <= 0)
-      throw new IllegalArgumentException("You must generate at least 1 model.");
-    this.bound = bound;
-  }
+    /**
+     * Constructs a new model handler with an upper bound for the number of models (inclusive).
+     * @param bound the upper bound
+     * @throws IllegalArgumentException if the number of models to generate is &lt;= 0
+     */
+    public NumberOfModelsHandler(int bound) {
+        if (bound <= 0) {
+            throw new IllegalArgumentException("You must generate at least 1 model.");
+        }
+        this.bound = bound;
+    }
 
-  @Override
-  public boolean foundModel(final Assignment assignment) {
-    return ++count < bound;
-  }
+    @Override
+    public boolean foundModel(final Assignment assignment) {
+        return ++count < bound;
+    }
 }

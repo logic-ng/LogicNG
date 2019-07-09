@@ -43,54 +43,54 @@ import java.util.Arrays;
  */
 public class EvaluationTest {
 
-  private Assignment ass = new Assignment(Arrays.asList(F.A, F.B, F.C, F.NX, F.NY));
+    private Assignment ass = new Assignment(Arrays.asList(F.A, F.B, F.C, F.NX, F.NY));
 
-  @Test
-  public void testConstantEval() {
-    Assert.assertTrue(F.TRUE.evaluate(ass));
-    Assert.assertFalse(F.FALSE.evaluate(ass));
-  }
+    @Test
+    public void testConstantEval() {
+        Assert.assertTrue(F.TRUE.evaluate(ass));
+        Assert.assertFalse(F.FALSE.evaluate(ass));
+    }
 
-  @Test
-  public void testLiteralEval() {
-    Assert.assertTrue(F.A.evaluate(ass));
-    Assert.assertFalse(F.NA.evaluate(ass));
-    Assert.assertFalse(F.X.evaluate(ass));
-    Assert.assertTrue(F.NX.evaluate(ass));
-  }
+    @Test
+    public void testLiteralEval() {
+        Assert.assertTrue(F.A.evaluate(ass));
+        Assert.assertFalse(F.NA.evaluate(ass));
+        Assert.assertFalse(F.X.evaluate(ass));
+        Assert.assertTrue(F.NX.evaluate(ass));
+    }
 
-  @Test
-  public void testNotEval() {
-    Assert.assertFalse(F.NOT1.evaluate(ass));
-    Assert.assertTrue(F.NOT2.evaluate(ass));
-  }
+    @Test
+    public void testNotEval() {
+        Assert.assertFalse(F.NOT1.evaluate(ass));
+        Assert.assertTrue(F.NOT2.evaluate(ass));
+    }
 
-  @Test
-  public void testBinaryEval() {
-    Assert.assertTrue(F.IMP1.evaluate(ass));
-    Assert.assertTrue(F.IMP2.evaluate(ass));
-    Assert.assertFalse(F.IMP3.evaluate(ass));
-    Assert.assertTrue(F.IMP4.evaluate(ass));
+    @Test
+    public void testBinaryEval() {
+        Assert.assertTrue(F.IMP1.evaluate(ass));
+        Assert.assertTrue(F.IMP2.evaluate(ass));
+        Assert.assertFalse(F.IMP3.evaluate(ass));
+        Assert.assertTrue(F.IMP4.evaluate(ass));
 
-    Assert.assertTrue(F.EQ1.evaluate(ass));
-    Assert.assertTrue(F.EQ2.evaluate(ass));
-    Assert.assertFalse(F.EQ3.evaluate(ass));
-    Assert.assertTrue(F.EQ4.evaluate(ass));
-  }
+        Assert.assertTrue(F.EQ1.evaluate(ass));
+        Assert.assertTrue(F.EQ2.evaluate(ass));
+        Assert.assertFalse(F.EQ3.evaluate(ass));
+        Assert.assertTrue(F.EQ4.evaluate(ass));
+    }
 
-  @Test
-  public void testNAryEval() throws ParserException {
-    PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertFalse(F.OR1.evaluate(ass));
-    Assert.assertTrue(F.OR2.evaluate(ass));
-    Assert.assertTrue(F.OR3.evaluate(ass));
-    Assert.assertFalse(p.parse("~a | ~b | ~c | x | y").evaluate(ass));
-    Assert.assertTrue(p.parse("~a | ~b | ~c | x | ~y").evaluate(ass));
+    @Test
+    public void testNAryEval() throws ParserException {
+        PropositionalParser p = new PropositionalParser(F.f);
+        Assert.assertFalse(F.OR1.evaluate(ass));
+        Assert.assertTrue(F.OR2.evaluate(ass));
+        Assert.assertTrue(F.OR3.evaluate(ass));
+        Assert.assertFalse(p.parse("~a | ~b | ~c | x | y").evaluate(ass));
+        Assert.assertTrue(p.parse("~a | ~b | ~c | x | ~y").evaluate(ass));
 
-    Assert.assertTrue(F.AND1.evaluate(ass));
-    Assert.assertFalse(F.AND2.evaluate(ass));
-    Assert.assertFalse(F.AND3.evaluate(ass));
-    Assert.assertTrue(p.parse("a & b & c & ~x & ~y").evaluate(ass));
-    Assert.assertFalse(p.parse("a & b & c & ~x & y").evaluate(ass));
-  }
+        Assert.assertTrue(F.AND1.evaluate(ass));
+        Assert.assertFalse(F.AND2.evaluate(ass));
+        Assert.assertFalse(F.AND3.evaluate(ass));
+        Assert.assertTrue(p.parse("a & b & c & ~x & ~y").evaluate(ass));
+        Assert.assertFalse(p.parse("a & b & c & ~x & y").evaluate(ass));
+    }
 }

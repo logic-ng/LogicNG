@@ -51,131 +51,140 @@ import java.util.Map;
  */
 public final class FormulaDotFileWriter {
 
-  /**
-   * Private constructor.
-   */
-  private FormulaDotFileWriter() {
-    // Intentionally left empty.
-  }
-
-  /**
-   * Writes a given formula's internal data structure as a dot file.
-   * @param fileName      the file name of the dot file to write
-   * @param formula       the formula
-   * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final String fileName, final Formula formula, boolean alignLiterals) throws IOException {
-    write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
-  }
-
-  /**
-   * Writes a given formula's internal data structure as a dot file.
-   * @param file          the file of the dot file to write
-   * @param formula       the formula
-   * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final File file, final Formula formula, boolean alignLiterals) throws IOException {
-    final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
-    final Map<Formula, Integer> ids = new HashMap<>();
-    if (alignLiterals && !formula.literals().isEmpty())
-      sb.append(String.format("{ rank = same;%n"));
-    int id = 0;
-    for (final Literal lit : formula.literals()) {
-      ids.put(lit, id);
-      sb.append("  id").append(id).append(" [shape=box, label=\"").
-              append(lit.phase() ? lit.name() : "¬" + lit.name()).append(String.format("\"];%n"));
-      id++;
+    /**
+     * Private constructor.
+     */
+    private FormulaDotFileWriter() {
+        // Intentionally left empty.
     }
-    if (alignLiterals && !formula.literals().isEmpty())
-      sb.append(String.format("}%n"));
-    generateDotString(formula, sb, ids);
-    sb.append(String.format("}%n"));
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
-    }
-  }
 
-  /**
-   * Generates the dot string for a formula
-   * @param formula the formula
-   * @param sb      the current string builder
-   * @param ids     the current ID mapping
-   */
-  private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids) {
-    switch (formula.type()) {
-      case FALSE:
-        sb.append(String.format("  false;%n"));
-        break;
-      case TRUE:
-        sb.append(String.format("  true;%n"));
-        break;
-      case LITERAL:
-        break;
-      case PBC:
+    /**
+     * Writes a given formula's internal data structure as a dot file.
+     * @param fileName      the file name of the dot file to write
+     * @param formula       the formula
+     * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final String fileName, final Formula formula, boolean alignLiterals) throws IOException {
+        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
+    }
+
+    /**
+     * Writes a given formula's internal data structure as a dot file.
+     * @param file          the file of the dot file to write
+     * @param formula       the formula
+     * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final File file, final Formula formula, boolean alignLiterals) throws IOException {
+        final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
+        final Map<Formula, Integer> ids = new HashMap<>();
+        if (alignLiterals && !formula.literals().isEmpty()) {
+            sb.append(String.format("{ rank = same;%n"));
+        }
+        int id = 0;
+        for (final Literal lit : formula.literals()) {
+            ids.put(lit, id);
+            sb.append("  id").append(id).append(" [shape=box, label=\"").
+                    append(lit.phase() ? lit.name() : "¬" + lit.name()).append(String.format("\"];%n"));
+            id++;
+        }
+        if (alignLiterals && !formula.literals().isEmpty()) {
+            sb.append(String.format("}%n"));
+        }
+        generateDotString(formula, sb, ids);
+        sb.append(String.format("}%n"));
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
+    }
+
+    /**
+     * Generates the dot string for a formula
+     * @param formula the formula
+     * @param sb      the current string builder
+     * @param ids     the current ID mapping
+     */
+    private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids) {
+        switch (formula.type()) {
+            case FALSE:
+                sb.append(String.format("  false;%n"));
+                break;
+            case TRUE:
+                sb.append(String.format("  true;%n"));
+                break;
+            case LITERAL:
+                break;
+            case PBC:
+                final int id = ids.size();
+                ids.put(formula, id);
+                sb.append("  id").append(id).append(" [label=\"").append(formula.toString()).append(String.format("\"];%n"));
+                for (final Formula operand : ((PBConstraint) formula).operands()) {
+                    sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
+                }
+                break;
+            case NOT:
+                generateNotDotString((Not) formula, sb, ids);
+                break;
+            case IMPL:
+                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇒", true);
+                break;
+            case EQUIV:
+                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇔", true);
+                break;
+            case AND:
+                generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
+                break;
+            case OR:
+                generateNaryDotString((NAryOperator) formula, sb, ids, "∨");
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
+        }
+
+    }
+
+    private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids) {
+        int id;
+        if (!ids.containsKey(not.operand())) {
+            generateDotString(not.operand(), sb, ids);
+        }
+        id = ids.size();
+        ids.put(not, id);
+        sb.append("  id").append(id).append(String.format(" [label=\"¬\"];%n"));
+        sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(String.format(";%n"));
+    }
+
+    private static void generateBinaryDotString(final BinaryOperator formula, final StringBuilder sb,
+                                                final Map<Formula, Integer> ids, String op, boolean directions) {
+        if (!ids.containsKey(formula.left())) {
+            generateDotString(formula.left(), sb, ids);
+        }
+        if (!ids.containsKey(formula.right())) {
+            generateDotString(formula.right(), sb, ids);
+        }
         final int id = ids.size();
         ids.put(formula, id);
-        sb.append("  id").append(id).append(" [label=\"").append(formula.toString()).append(String.format("\"];%n"));
-        for (final Formula operand : ((PBConstraint) formula).operands())
-          sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
-        break;
-      case NOT:
-        generateNotDotString((Not) formula, sb, ids);
-        break;
-      case IMPL:
-        generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇒", true);
-        break;
-      case EQUIV:
-        generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇔", true);
-        break;
-      case AND:
-        generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
-        break;
-      case OR:
-        generateNaryDotString((NAryOperator) formula, sb, ids, "∨");
-        break;
-      default:
-        throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
+        sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
+        sb.append("  id").append(id).append(" -> id").append(ids.get(formula.left()));
+        sb.append(directions ? String.format(" [label=\"l\"];%n") : String.format(";%n"));
+        sb.append("  id").append(id).append(" -> id").append(ids.get(formula.right()));
+        sb.append(directions ? String.format(" [label=\"r\"];%n") : String.format(";%n"));
     }
 
-  }
-
-  private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids) {
-    int id;
-    if (!ids.containsKey(not.operand()))
-      generateDotString(not.operand(), sb, ids);
-    id = ids.size();
-    ids.put(not, id);
-    sb.append("  id").append(id).append(String.format(" [label=\"¬\"];%n"));
-    sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(String.format(";%n"));
-  }
-
-  private static void generateBinaryDotString(final BinaryOperator formula, final StringBuilder sb,
-                                              final Map<Formula, Integer> ids, String op, boolean directions) {
-    if (!ids.containsKey(formula.left()))
-      generateDotString(formula.left(), sb, ids);
-    if (!ids.containsKey(formula.right()))
-      generateDotString(formula.right(), sb, ids);
-    final int id = ids.size();
-    ids.put(formula, id);
-    sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
-    sb.append("  id").append(id).append(" -> id").append(ids.get(formula.left()));
-    sb.append(directions ? String.format(" [label=\"l\"];%n") : String.format(";%n"));
-    sb.append("  id").append(id).append(" -> id").append(ids.get(formula.right()));
-    sb.append(directions ? String.format(" [label=\"r\"];%n") : String.format(";%n"));
-  }
-
-  private static void generateNaryDotString(final NAryOperator formula, final StringBuilder sb,
-                                            final Map<Formula, Integer> ids, final String op) {
-    for (final Formula operand : formula)
-      if (!ids.containsKey(operand))
-        generateDotString(operand, sb, ids);
-    final int id = ids.size();
-    ids.put(formula, id);
-    sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
-    for (final Formula operand : formula)
-      sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
-  }
+    private static void generateNaryDotString(final NAryOperator formula, final StringBuilder sb,
+                                              final Map<Formula, Integer> ids, final String op) {
+        for (final Formula operand : formula) {
+            if (!ids.containsKey(operand)) {
+                generateDotString(operand, sb, ids);
+            }
+        }
+        final int id = ids.size();
+        ids.put(formula, id);
+        sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
+        for (final Formula operand : formula) {
+            sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
+        }
+    }
 }

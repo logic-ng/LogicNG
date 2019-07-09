@@ -63,44 +63,46 @@ package org.logicng.bdds.jbuddy;
  * @since 1.4.0
  */
 final class BDDCache {
-  private BDDCacheEntry[] table;
+    private BDDCacheEntry[] table;
 
-  /**
-   * Constructs a new BDD cache of a given size (number of entries in the cache).
-   * @param cs the cache size
-   */
-  BDDCache(final int cs) {
-    resize(cs);
-  }
+    /**
+     * Constructs a new BDD cache of a given size (number of entries in the cache).
+     * @param cs the cache size
+     */
+    BDDCache(final int cs) {
+        resize(cs);
+    }
 
-  /**
-   * Resizes the cache to a new number of entries.  The old cache entries are removed in this process.
-   * @param ns the new number of entries
-   */
-  private void resize(final int ns) {
-    final int size = BDDPrime.primeGTE(ns);
-    this.table = new BDDCacheEntry[size];
-    for (int n = 0; n < size; n++)
-      this.table[n] = new BDDCacheEntry();
-  }
+    /**
+     * Resizes the cache to a new number of entries.  The old cache entries are removed in this process.
+     * @param ns the new number of entries
+     */
+    private void resize(final int ns) {
+        final int size = BDDPrime.primeGTE(ns);
+        this.table = new BDDCacheEntry[size];
+        for (int n = 0; n < size; n++) {
+            this.table[n] = new BDDCacheEntry();
+        }
+    }
 
-  /**
-   * Resets (clears) the cache.
-   */
-  void reset() {
-    for (final BDDCacheEntry ce : this.table)
-      ce.reset();
-  }
+    /**
+     * Resets (clears) the cache.
+     */
+    void reset() {
+        for (final BDDCacheEntry ce : this.table) {
+            ce.reset();
+        }
+    }
 
-  /**
-   * Looks up a given hash value in the cache and returns the respective cache entry.
-   * <p>
-   * The return value is guaranteed to be non-null since every entry in the cache is always a {@link BDDCacheEntry}
-   * object.
-   * @param hash the hash value.
-   * @return the respective entry in the cache
-   */
-  BDDCacheEntry lookup(final int hash) {
-    return this.table[Math.abs(hash % this.table.length)];
-  }
+    /**
+     * Looks up a given hash value in the cache and returns the respective cache entry.
+     * <p>
+     * The return value is guaranteed to be non-null since every entry in the cache is always a {@link BDDCacheEntry}
+     * object.
+     * @param hash the hash value.
+     * @return the respective entry in the cache
+     */
+    BDDCacheEntry lookup(final int hash) {
+        return this.table[Math.abs(hash % this.table.length)];
+    }
 }

@@ -55,15 +55,15 @@ import org.logicng.formulas.FormulaFactory;
  */
 public final class PropositionalParser extends FormulaParser {
 
-  /**
-   * Constructs a new parser.
-   * @param f the formula factory
-   */
-  public PropositionalParser(final FormulaFactory f) {
-    super(f);
-    final PropositionalLexer lexer = new PropositionalLexer(null);
-    final CommonTokenStream tokens = new CommonTokenStream(lexer);
-    final ParserWithFormula parser = new LogicNGPropositionalParser(tokens);
-    setLexerAndParser(lexer, parser);
-  }
+    /**
+     * Constructs a new parser.
+     * @param f the formula factory
+     */
+    public PropositionalParser(final FormulaFactory f) {
+        super(f);
+        final PropositionalLexer lexer = new PropositionalLexer(null);
+        final CommonTokenStream tokens = new CommonTokenStream(lexer);
+        final ParserWithFormula parser = new LogicNGPropositionalParser(tokens);
+        setLexerAndParser(lexer, parser);
+    }
 }

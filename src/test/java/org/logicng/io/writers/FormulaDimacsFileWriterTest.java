@@ -51,72 +51,73 @@ import java.io.IOException;
  */
 public class FormulaDimacsFileWriterTest {
 
+    @Rule
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
-  @Rule
-  public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    private final FormulaFactory f = new FormulaFactory();
+    private final CNFEncoder encoder = new CNFEncoder(this.f, new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build());
+    private final PropositionalParser p = new PropositionalParser(this.f);
+    private final PseudoBooleanParser pp = new PseudoBooleanParser(this.f);
 
+    @Test
+    public void testConstants() throws IOException {
+        testFiles("false", this.f.falsum());
+        testFiles("true", this.f.verum());
+    }
 
-  private final FormulaFactory f = new FormulaFactory();
-  private final CNFEncoder encoder = new CNFEncoder(f, new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build());
-  private final PropositionalParser p = new PropositionalParser(f);
-  private final PseudoBooleanParser pp = new PseudoBooleanParser(f);
+    @Test
+    public void testLiterals() throws IOException {
+        testFiles("x", this.f.variable("x"));
+        testFiles("not_x", this.f.literal("x", false));
+    }
 
-  @Test
-  public void testConstants() throws IOException {
-    testFiles("false", f.falsum());
-    testFiles("true", f.verum());
-  }
+    @Test
+    public void testFormulas() throws IOException, ParserException {
+        final Formula f1 = this.encoder.encode(this.p.parse("(a & b) <=> (~c => (x | z))"));
+        final Formula f2 = this.encoder.encode(this.p.parse("a & b | b & ~c"));
+        final Formula f3 = this.encoder.encode(this.p.parse("(a & b) <=> (~c => (a | b))"));
+        final Formula f4 = this.encoder.encode(this.p.parse("~(a & b) | b & ~c"));
+        final Formula f5 = this.encoder.encode(this.pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 4)"));
+        testFiles("f1", f1);
+        testFiles("f2", f2);
+        testFiles("f3", f3);
+        testFiles("f4", f4);
+        testFiles("f5", f5);
+    }
 
-  @Test
-  public void testLiterals() throws IOException {
-    testFiles("x", f.variable("x"));
-    testFiles("not_x", f.literal("x", false));
-  }
+    @Test
+    public void testDuplicateFormulaParts() throws ParserException, IOException {
+        final Formula f6 = this.encoder.encode(this.p.parse("(a & b) | (c & ~(a & b))"));
+        testFiles("f6", f6);
+        final Formula f7 = this.encoder.encode(this.p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))"));
+        testFiles("f7", f7);
+    }
 
-  @Test
-  public void testFormulas() throws IOException, ParserException {
-    final Formula f1 = encoder.encode(p.parse("(a & b) <=> (~c => (x | z))"));
-    final Formula f2 = encoder.encode(p.parse("a & b | b & ~c"));
-    final Formula f3 = encoder.encode(p.parse("(a & b) <=> (~c => (a | b))"));
-    final Formula f4 = encoder.encode(p.parse("~(a & b) | b & ~c"));
-    final Formula f5 = encoder.encode(pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 4)"));
-    testFiles("f1", f1);
-    testFiles("f2", f2);
-    testFiles("f3", f3);
-    testFiles("f4", f4);
-    testFiles("f5", f5);
-  }
+    private void testFiles(final String fileName, final Formula formula) throws IOException {
+        FormulaDimacsFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.cnf", formula, true);
+        FormulaDimacsFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
+        final File expectedT = new File("src/test/resources/writers/formulas-dimacs/" + fileName + "_t.cnf");
+        final File expectedF = new File("src/test/resources/writers/formulas-dimacs/" + fileName + "_f.cnf");
+        final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_t.cnf");
+        final File tempF = new File("src/test/resources/writers/temp/" + fileName + "_f.cnf");
+        final File expectedMap = new File("src/test/resources/writers/formulas-dimacs/" + fileName + "_t.map");
+        final File tempMap = new File("src/test/resources/writers/temp/" + fileName + "_t.map");
+        assertFilesEqual(expectedT, tempT);
+        assertFilesEqual(expectedF, tempF);
+        assertFilesEqual(expectedMap, tempMap);
+    }
 
-  @Test
-  public void testDuplicateFormulaParts() throws ParserException, IOException {
-    final Formula f6 = encoder.encode(p.parse("(a & b) | (c & ~(a & b))"));
-    testFiles("f6", f6);
-    final Formula f7 = encoder.encode(p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))"));
-    testFiles("f7", f7);
-  }
-
-  private void testFiles(final String fileName, final Formula formula) throws IOException {
-    FormulaDimacsFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.cnf", formula, true);
-    FormulaDimacsFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
-    final File expectedT = new File("src/test/resources/writers/formulas-dimacs/" + fileName + "_t.cnf");
-    final File expectedF = new File("src/test/resources/writers/formulas-dimacs/" + fileName + "_f.cnf");
-    final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_t.cnf");
-    final File tempF = new File("src/test/resources/writers/temp/" + fileName + "_f.cnf");
-    final File expectedMap = new File("src/test/resources/writers/formulas-dimacs/" + fileName + "_t.map");
-    final File tempMap = new File("src/test/resources/writers/temp/" + fileName + "_t.map");
-    assertFilesEqual(expectedT, tempT);
-    assertFilesEqual(expectedF, tempF);
-    assertFilesEqual(expectedMap, tempMap);
-  }
-
-  private void assertFilesEqual(final File expected, final File actual) throws IOException {
-    final BufferedReader expReader = new BufferedReader(new FileReader(expected));
-    final BufferedReader actReader = new BufferedReader(new FileReader(actual));
-    for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++)
-      softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal").isEqualTo(expReader.readLine());
-    if (expReader.ready())
-      softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
-    if (actReader.ready())
-      softly.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
-  }
+    private void assertFilesEqual(final File expected, final File actual) throws IOException {
+        final BufferedReader expReader = new BufferedReader(new FileReader(expected));
+        final BufferedReader actReader = new BufferedReader(new FileReader(actual));
+        for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++) {
+            this.softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal").isEqualTo(expReader.readLine());
+        }
+        if (expReader.ready()) {
+            this.softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
+        }
+        if (actReader.ready()) {
+            this.softly.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
+        }
+    }
 }

@@ -28,9 +28,9 @@
 
 package org.logicng.graphs.datastructures;
 
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
 
 /**
  * Unit tests for {@link HypergraphNode}.
@@ -39,16 +39,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HypergraphNodeTest {
 
-  @Test
-  public void testSimpleMethods() {
-    final Hypergraph<String> hypergraph = new Hypergraph<>();
-    final HypergraphNode<String> node1 = new HypergraphNode<>(hypergraph, "A");
-    final HypergraphNode<String> node2 = new HypergraphNode<>(hypergraph, "B");
-    final HypergraphEdge<String> edge1 = new HypergraphEdge<>(node1, node2);
-    assertThat(node1.graph()).isEqualTo(hypergraph);
-    assertThat(node1.content()).isEqualTo("A");
-    assertThat(node1.edges()).containsExactlyInAnyOrder(edge1);
-  }
-
+    @Test
+    public void testSimpleMethods() {
+        final Hypergraph<String> hypergraph = new Hypergraph<>();
+        final HypergraphNode<String> node1 = new HypergraphNode<>(hypergraph, "A");
+        final HypergraphNode<String> node2 = new HypergraphNode<>(hypergraph, "B");
+        final HypergraphEdge<String> edge1 = new HypergraphEdge<>(node1, node2);
+        assertThat(node1.graph()).isEqualTo(hypergraph);
+        assertThat(node1.content()).isEqualTo("A");
+        assertThat(node1.edges()).containsExactlyInAnyOrder(edge1);
+    }
 
 }

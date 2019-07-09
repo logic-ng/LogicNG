@@ -28,6 +28,8 @@
 
 package org.logicng.bdds;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.logicng.bdds.datastructures.BDD;
 import org.logicng.formulas.Formula;
@@ -38,8 +40,6 @@ import org.logicng.testutils.PigeonHoleGenerator;
 
 import java.math.BigDecimal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Some more extensive tests for BDDs
  * @version 1.4.0
@@ -47,49 +47,49 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LargeBDDTest {
 
-  @Test
-  public void testPigeonHole() {
-    final FormulaFactory f = new FormulaFactory();
-    final PigeonHoleGenerator generator = new PigeonHoleGenerator(f);
-    testPigeonHole(f, generator, 2);
-    testPigeonHole(f, generator, 3);
-    testPigeonHole(f, generator, 4);
-    testPigeonHole(f, generator, 5);
-    testPigeonHole(f, generator, 6);
-    testPigeonHole(f, generator, 7);
-    testPigeonHole(f, generator, 8);
-    testPigeonHole(f, generator, 9);
-  }
+    @Test
+    public void testPigeonHole() {
+        final FormulaFactory f = new FormulaFactory();
+        final PigeonHoleGenerator generator = new PigeonHoleGenerator(f);
+        testPigeonHole(f, generator, 2);
+        testPigeonHole(f, generator, 3);
+        testPigeonHole(f, generator, 4);
+        testPigeonHole(f, generator, 5);
+        testPigeonHole(f, generator, 6);
+        testPigeonHole(f, generator, 7);
+        testPigeonHole(f, generator, 8);
+        testPigeonHole(f, generator, 9);
+    }
 
-  private void testPigeonHole(final FormulaFactory f, final PigeonHoleGenerator generator, final int size) {
-    final Formula pigeon = generator.generate(size);
-    final BDDFactory bddFactory = new BDDFactory(10000, 10000, f);
-    bddFactory.setNumberOfVars(pigeon.variables().size());
-    final BDD bdd = bddFactory.build(pigeon);
-    assertThat(bdd.isContradiction()).isTrue();
-  }
+    private void testPigeonHole(final FormulaFactory f, final PigeonHoleGenerator generator, final int size) {
+        final Formula pigeon = generator.generate(size);
+        final BDDFactory bddFactory = new BDDFactory(10000, 10000, f);
+        bddFactory.setNumberOfVars(pigeon.variables().size());
+        final BDD bdd = bddFactory.build(pigeon);
+        assertThat(bdd.isContradiction()).isTrue();
+    }
 
-  @Test
-  public void testQueens() {
-    final FormulaFactory f = new FormulaFactory();
-    final NQueensGenerator generator = new NQueensGenerator(f);
-    testQueens(f, generator, 4, 2);
-    testQueens(f, generator, 5, 10);
-    testQueens(f, generator, 6, 4);
-    testQueens(f, generator, 7, 40);
-    testQueens(f, generator, 8, 92);
-  }
+    @Test
+    public void testQueens() {
+        final FormulaFactory f = new FormulaFactory();
+        final NQueensGenerator generator = new NQueensGenerator(f);
+        testQueens(f, generator, 4, 2);
+        testQueens(f, generator, 5, 10);
+        testQueens(f, generator, 6, 4);
+        testQueens(f, generator, 7, 40);
+        testQueens(f, generator, 8, 92);
+    }
 
-  private void testQueens(final FormulaFactory f, final NQueensGenerator generator, final int size, final int models) {
-    final Formula queens = generator.generate(size);
-    final BDDFactory bddFactory = new BDDFactory(10000, 10000, f);
-    bddFactory.setNumberOfVars(queens.variables().size());
-    final BDD bdd = bddFactory.build(queens);
-    final Formula cnf = bdd.cnf();
-    assertThat(cnf.holds(new CNFPredicate())).isTrue();
-    final BDD cnfBDD = bddFactory.build(cnf);
-    assertThat(cnfBDD).isEqualTo(bdd);
-    assertThat(bdd.support()).isEqualTo(queens.variables());
-    assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(models));
-  }
+    private void testQueens(final FormulaFactory f, final NQueensGenerator generator, final int size, final int models) {
+        final Formula queens = generator.generate(size);
+        final BDDFactory bddFactory = new BDDFactory(10000, 10000, f);
+        bddFactory.setNumberOfVars(queens.variables().size());
+        final BDD bdd = bddFactory.build(queens);
+        final Formula cnf = bdd.cnf();
+        assertThat(cnf.holds(new CNFPredicate())).isTrue();
+        final BDD cnfBDD = bddFactory.build(cnf);
+        assertThat(cnfBDD).isEqualTo(bdd);
+        assertThat(bdd.support()).isEqualTo(queens.variables());
+        assertThat(bdd.modelCount()).isEqualTo(new BigDecimal(models));
+    }
 }

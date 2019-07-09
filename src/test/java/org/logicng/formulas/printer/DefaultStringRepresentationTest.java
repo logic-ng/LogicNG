@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 /**
  * Unit tests for {@link DefaultStringRepresentation}
- *
  * @version 1.1
  * @since 1.0
  */

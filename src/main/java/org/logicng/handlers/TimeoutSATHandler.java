@@ -35,33 +35,33 @@ package org.logicng.handlers;
  */
 public final class TimeoutSATHandler implements SATHandler {
 
-  private final long timeout;
-  private long designatedEnd;
+    private final long timeout;
+    private long designatedEnd;
 
-  /**
-   * Constructs a new instance with a given timeout in milliseconds.
-   * <p>
-   * Note that it might take a few milliseconds more until the sat solver is actually
-   * canceled, since the handler depends on the solvers call to {@code detectedConflict()}.
-   * @param timeout the timeout in milliseconds
-   */
-  public TimeoutSATHandler(long timeout) {
-    this.timeout = timeout;
-  }
+    /**
+     * Constructs a new instance with a given timeout in milliseconds.
+     * <p>
+     * Note that it might take a few milliseconds more until the sat solver is actually
+     * canceled, since the handler depends on the solvers call to {@code detectedConflict()}.
+     * @param timeout the timeout in milliseconds
+     */
+    public TimeoutSATHandler(long timeout) {
+        this.timeout = timeout;
+    }
 
-  @Override
-  public boolean detectedConflict() {
-    return System.currentTimeMillis() < designatedEnd;
-  }
+    @Override
+    public boolean detectedConflict() {
+        return System.currentTimeMillis() < designatedEnd;
+    }
 
-  @Override
-  public void startedSolving() {
-    long start = System.currentTimeMillis();
-    this.designatedEnd = start + this.timeout;
-  }
+    @Override
+    public void startedSolving() {
+        long start = System.currentTimeMillis();
+        this.designatedEnd = start + this.timeout;
+    }
 
-  @Override
-  public void finishedSolving() {
-    // nothing to do here
-  }
+    @Override
+    public void finishedSolving() {
+        // nothing to do here
+    }
 }

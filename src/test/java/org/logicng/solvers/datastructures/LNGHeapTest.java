@@ -40,21 +40,21 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
  */
 public class LNGHeapTest {
 
-  @Test
-  public void test() {
-    MiniSatStyleSolver solver = new MiniCard();
-    solver.newVar(true, true);
-    solver.newVar(true, true);
-    solver.newVar(true, true);
-    LNGHeap heap = new LNGHeap(solver);
-    Assert.assertTrue(heap.empty());
-    heap.insert(1);
-    heap.insert(2);
-    heap.insert(0);
-    Assert.assertEquals(1, heap.get(0));
-    Assert.assertEquals("LNGHeap{[1, 2], [2, 0], [0, 1]}", heap.toString());
-    Assert.assertEquals(3, heap.size());
-    heap.clear();
-    Assert.assertTrue(heap.empty());
-  }
+    @Test
+    public void test() {
+        MiniSatStyleSolver solver = new MiniCard();
+        solver.newVar(true, true);
+        solver.newVar(true, true);
+        solver.newVar(true, true);
+        LNGHeap heap = new LNGHeap(solver);
+        Assert.assertTrue(heap.empty());
+        heap.insert(1);
+        heap.insert(2);
+        heap.insert(0);
+        Assert.assertEquals(1, heap.get(0));
+        Assert.assertEquals("LNGHeap{[1, 2], [2, 0], [0, 1]}", heap.toString());
+        Assert.assertEquals(3, heap.size());
+        heap.clear();
+        Assert.assertTrue(heap.empty());
+    }
 }

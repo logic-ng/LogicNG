@@ -49,12 +49,12 @@
 
 package org.logicng.solvers.maxsat.encodings;
 
+import static org.logicng.solvers.sat.MiniSatStyleSolver.mkLit;
+import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
+
 import org.logicng.collections.LNGIntVector;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
-
-import static org.logicng.solvers.sat.MiniSatStyleSolver.mkLit;
-import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
 
 /**
  * Encodes that exactly one literal from 'lits' is assigned value true.  Uses the Ladder/Regular encoding for
@@ -64,40 +64,40 @@ import static org.logicng.solvers.sat.MiniSatStyleSolver.not;
  */
 final class Ladder extends Encoding {
 
-  /**
-   * Encodes and adds the AMO constraint to the given solver.
-   * @param s    the solver
-   * @param lits the literals for the constraint
-   */
-  public void encode(final MiniSatStyleSolver s, final LNGIntVector lits) {
-    assert lits.size() != 0;
-    if (lits.size() == 1)
-      addUnitClause(s, lits.get(0));
-    else {
-      final LNGIntVector seqAuxiliary = new LNGIntVector();
-      for (int i = 0; i < lits.size() - 1; i++) {
-        seqAuxiliary.push(mkLit(s.nVars(), false));
-        MaxSAT.newSATVariable(s);
-      }
-      for (int i = 0; i < lits.size(); i++) {
-        if (i == 0) {
-          addBinaryClause(s, lits.get(i), not(seqAuxiliary.get(i)));
-          addBinaryClause(s, not(lits.get(i)), seqAuxiliary.get(i));
-        } else if (i == lits.size() - 1) {
-          addBinaryClause(s, lits.get(i), seqAuxiliary.get(i - 1));
-          addBinaryClause(s, not(lits.get(i)), not(seqAuxiliary.get(i - 1)));
+    /**
+     * Encodes and adds the AMO constraint to the given solver.
+     * @param s    the solver
+     * @param lits the literals for the constraint
+     */
+    public void encode(final MiniSatStyleSolver s, final LNGIntVector lits) {
+        assert lits.size() != 0;
+        if (lits.size() == 1) {
+            addUnitClause(s, lits.get(0));
         } else {
-          addBinaryClause(s, not(seqAuxiliary.get(i - 1)), seqAuxiliary.get(i));
-          addTernaryClause(s, lits.get(i), not(seqAuxiliary.get(i)), seqAuxiliary.get(i - 1));
-          addBinaryClause(s, not(lits.get(i)), seqAuxiliary.get(i));
-          addBinaryClause(s, not(lits.get(i)), not(seqAuxiliary.get(i - 1)));
+            final LNGIntVector seqAuxiliary = new LNGIntVector();
+            for (int i = 0; i < lits.size() - 1; i++) {
+                seqAuxiliary.push(mkLit(s.nVars(), false));
+                MaxSAT.newSATVariable(s);
+            }
+            for (int i = 0; i < lits.size(); i++) {
+                if (i == 0) {
+                    addBinaryClause(s, lits.get(i), not(seqAuxiliary.get(i)));
+                    addBinaryClause(s, not(lits.get(i)), seqAuxiliary.get(i));
+                } else if (i == lits.size() - 1) {
+                    addBinaryClause(s, lits.get(i), seqAuxiliary.get(i - 1));
+                    addBinaryClause(s, not(lits.get(i)), not(seqAuxiliary.get(i - 1)));
+                } else {
+                    addBinaryClause(s, not(seqAuxiliary.get(i - 1)), seqAuxiliary.get(i));
+                    addTernaryClause(s, lits.get(i), not(seqAuxiliary.get(i)), seqAuxiliary.get(i - 1));
+                    addBinaryClause(s, not(lits.get(i)), seqAuxiliary.get(i));
+                    addBinaryClause(s, not(lits.get(i)), not(seqAuxiliary.get(i - 1)));
+                }
+            }
         }
-      }
     }
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

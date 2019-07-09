@@ -28,12 +28,12 @@
 
 package org.logicng.predicates;
 
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
-
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
 
 /**
  * DNF predicate.  Indicates whether a formula is in DNF or not.
@@ -41,68 +41,74 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
  * @since 1.0
  */
 public final class DNFPredicate implements FormulaPredicate {
-  @Override
-  public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.predicateCacheEntry(IS_DNF);
-    if (cached != Tristate.UNDEF)
-      return cached == Tristate.TRUE;
-    boolean result;
-    switch (formula.type()) {
-      case FALSE:
-      case TRUE:
-      case LITERAL:
-        return true;
-      case NOT:
-      case IMPL:
-      case EQUIV:
-      case PBC:
-        return false;
-      case OR:
-        result = true;
-        for (final Formula op : formula)
-          if (!this.isDNFClause(op))
-            result = false;
-        break;
-      case AND:
-        result = this.isDNFClause(formula);
-        break;
-      default:
-        throw new IllegalArgumentException("Cannot compute DNF predicate on " + formula.type());
+    @Override
+    public boolean test(final Formula formula, boolean cache) {
+        final Tristate cached = formula.predicateCacheEntry(IS_DNF);
+        if (cached != Tristate.UNDEF) {
+            return cached == Tristate.TRUE;
+        }
+        boolean result;
+        switch (formula.type()) {
+            case FALSE:
+            case TRUE:
+            case LITERAL:
+                return true;
+            case NOT:
+            case IMPL:
+            case EQUIV:
+            case PBC:
+                return false;
+            case OR:
+                result = true;
+                for (final Formula op : formula) {
+                    if (!this.isDNFClause(op)) {
+                        result = false;
+                    }
+                }
+                break;
+            case AND:
+                result = this.isDNFClause(formula);
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot compute DNF predicate on " + formula.type());
+        }
+        if (cache) {
+            formula.setPredicateCacheEntry(IS_DNF, result);
+        }
+        return result;
     }
-    if (cache)
-      formula.setPredicateCacheEntry(IS_DNF, result);
-    return result;
-  }
 
-  /**
-   * Returns {@code true} if the given formula is a DNF minterm, {@code false} otherwise.
-   * @param formula the formula
-   * @return {@code true} if the given formula is a DNF minterm
-   */
-  private boolean isDNFClause(final Formula formula) {
-    switch (formula.type()) {
-      case TRUE:
-      case FALSE:
-      case LITERAL:
-        return true;
-      case IMPL:
-      case EQUIV:
-      case PBC:
-      case NOT:
-      case OR:
-        return false;
-      case AND:
-        for (final Formula op : formula)
-          if (op.type() != FType.LITERAL)
-            return false;
-        return true;
-      default:
-        throw new IllegalArgumentException("Cannot compute DNF clause predicate on " + formula.type());
+    /**
+     * Returns {@code true} if the given formula is a DNF minterm, {@code false} otherwise.
+     * @param formula the formula
+     * @return {@code true} if the given formula is a DNF minterm
+     */
+    private boolean isDNFClause(final Formula formula) {
+        switch (formula.type()) {
+            case TRUE:
+            case FALSE:
+            case LITERAL:
+                return true;
+            case IMPL:
+            case EQUIV:
+            case PBC:
+            case NOT:
+            case OR:
+                return false;
+            case AND:
+                for (final Formula op : formula) {
+                    if (op.type() != FType.LITERAL) {
+                        return false;
+                    }
+                }
+                return true;
+            default:
+                throw new IllegalArgumentException("Cannot compute DNF clause predicate on " + formula.type());
+        }
     }
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

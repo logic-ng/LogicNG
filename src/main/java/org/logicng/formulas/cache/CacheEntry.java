@@ -34,9 +34,9 @@ package org.logicng.formulas.cache;
  * @since 1.0
  */
 public interface CacheEntry {
-  /**
-   * Returns the description for this entry.
-   * @return the description for this entry
-   */
-  String description();
+    /**
+     * Returns the description for this entry.
+     * @return the description for this entry
+     */
+    String description();
 }

@@ -34,22 +34,22 @@ package org.logicng.formulas.cache;
  * @since 1.0
  */
 public enum FunctionCacheEntry implements CacheEntry {
-  SUBFORMULAS("sub-formulas"),
-  VARPROFILE("variable profile"),
-  LITPROFILE("literal profile");
+    SUBFORMULAS("sub-formulas"),
+    VARPROFILE("variable profile"),
+    LITPROFILE("literal profile");
 
-  private final String description;
+    private final String description;
 
-  /**
-   * Constructs a new entry.
-   * @param description the description of this entry
-   */
-  FunctionCacheEntry(final String description) {
-    this.description = description;
-  }
+    /**
+     * Constructs a new entry.
+     * @param description the description of this entry
+     */
+    FunctionCacheEntry(final String description) {
+        this.description = description;
+    }
 
-  @Override
-  public String description() {
-    return "FunctionCacheEntry{description=" + description + "}";
-  }
+    @Override
+    public String description() {
+        return "FunctionCacheEntry{description=" + description + "}";
+    }
 }

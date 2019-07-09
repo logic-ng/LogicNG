@@ -38,21 +38,21 @@ import org.antlr.v4.runtime.LexerNoViableAltException;
  */
 public final class PropositionalLexer extends LogicNGPropositionalLexer {
 
-  /**
-   * Constructs a new LogicNG lexer.
-   * @param inputStream the input stream
-   */
-  public PropositionalLexer(final CharStream inputStream) {
-    super(inputStream);
-  }
+    /**
+     * Constructs a new LogicNG lexer.
+     * @param inputStream the input stream
+     */
+    public PropositionalLexer(final CharStream inputStream) {
+        super(inputStream);
+    }
 
-  @Override
-  public void recover(final LexerNoViableAltException exception) {
-    throw new LexerException(exception.getMessage());
-  }
+    @Override
+    public void recover(final LexerNoViableAltException exception) {
+        throw new LexerException(exception.getMessage());
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

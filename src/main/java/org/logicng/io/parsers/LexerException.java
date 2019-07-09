@@ -35,11 +35,11 @@ package org.logicng.io.parsers;
  */
 public final class LexerException extends RuntimeException {
 
-  /**
-   * Constructs a new lexer exception with a given message.
-   * @param message the message
-   */
-  public LexerException(final String message) {
-    super(message);
-  }
+    /**
+     * Constructs a new lexer exception with a given message.
+     * @param message the message
+     */
+    public LexerException(final String message) {
+        super(message);
+    }
 }

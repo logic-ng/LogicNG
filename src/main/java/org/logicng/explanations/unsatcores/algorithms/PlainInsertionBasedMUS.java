@@ -45,34 +45,36 @@ import java.util.List;
  */
 public class PlainInsertionBasedMUS extends MUSAlgorithm {
 
-  @Override
-  public <T extends Proposition> UNSATCore<T> computeMUS(List<T> propositions, FormulaFactory f, MUSConfig config) {
-    List<T> currentFormula = new ArrayList<>(propositions.size());
-    currentFormula.addAll(propositions);
-    final List<T> mus = new ArrayList<>(propositions.size());
-    final MiniSat solver = MiniSat.miniSat(f);
-    while (!currentFormula.isEmpty()) {
-      final List<T> currentSubset = new ArrayList<>(propositions.size());
-      T transitionProposition = null;
-      solver.reset();
-      for (final Proposition p : mus)
-        solver.add(p);
-      int count = currentFormula.size();
-      while (solver.sat() == Tristate.TRUE) {
-        if (count < 0)
-          throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
-        final T removeProposition = currentFormula.get(--count);
-        currentSubset.add(removeProposition);
-        transitionProposition = removeProposition;
-        solver.add(removeProposition);
-      }
-      currentFormula.clear();
-      currentFormula.addAll(currentSubset);
-      if (transitionProposition != null) {
-        currentFormula.remove(transitionProposition);
-        mus.add(transitionProposition);
-      }
+    @Override
+    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+        final List<T> currentFormula = new ArrayList<>(propositions.size());
+        currentFormula.addAll(propositions);
+        final List<T> mus = new ArrayList<>(propositions.size());
+        final MiniSat solver = MiniSat.miniSat(f);
+        while (!currentFormula.isEmpty()) {
+            final List<T> currentSubset = new ArrayList<>(propositions.size());
+            T transitionProposition = null;
+            solver.reset();
+            for (final Proposition p : mus) {
+                solver.add(p);
+            }
+            int count = currentFormula.size();
+            while (solver.sat() == Tristate.TRUE) {
+                if (count < 0) {
+                    throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
+                }
+                final T removeProposition = currentFormula.get(--count);
+                currentSubset.add(removeProposition);
+                transitionProposition = removeProposition;
+                solver.add(removeProposition);
+            }
+            currentFormula.clear();
+            currentFormula.addAll(currentSubset);
+            if (transitionProposition != null) {
+                currentFormula.remove(transitionProposition);
+                mus.add(transitionProposition);
+            }
+        }
+        return new UNSATCore<>(mus, true);
     }
-    return new UNSATCore<>(mus, true);
-  }
 }

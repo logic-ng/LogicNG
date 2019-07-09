@@ -42,89 +42,90 @@ import java.util.Objects;
  */
 public final class StandardProposition extends Proposition {
 
-  private final ImmutableFormulaList formulas;
-  private final String description;
+    private final ImmutableFormulaList formulas;
+    private final String description;
 
-  /**
-   * Constructs a new proposition for a single formulas.
-   * @param formula the formulas
-   */
-  public StandardProposition(final Formula formula) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formula);
-    this.description = "";
-  }
-
-  /**
-   * Constructs a new proposition for a single formulas.
-   * @param description the description
-   * @param formula     the formulas
-   */
-  public StandardProposition(final String description, final Formula formula) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formula);
-    this.description = description == null ? "" : description;
-  }
-
-  /**
-   * Constructs a new proposition for a collection of formulas.
-   * @param description the description
-   * @param formulas    the formulas
-   */
-  public StandardProposition(final String description, final Collection<? extends Formula> formulas) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.description = description == null ? "" : description;
-  }
-
-  /**
-   * Constructs a new proposition for a variable number of formulas.
-   * @param description the description
-   * @param formulas    the formulas
-   */
-  public StandardProposition(final String description, final Formula... formulas) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.description = description == null ? "" : description;
-  }
-
-  /**
-   * Constructs a new proposition for a immutable formula list.
-   * @param description the description
-   * @param formulas    the formulas
-   */
-  public StandardProposition(final String description, final ImmutableFormulaList formulas) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.description = description == null ? "" : description;
-  }
-
-  @Override
-  public ImmutableFormulaList formulas() {
-    return this.formulas;
-  }
-
-  /**
-   * Returns the bagpack of this proposition.
-   * @return the bagpack of this proposition
-   */
-  public String description() {
-    return this.description;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.formulas, this.description);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof StandardProposition) {
-      final StandardProposition o = (StandardProposition) other;
-      return Objects.equals(this.formulas, o.formulas) && Objects.equals(this.description, o.description);
+    /**
+     * Constructs a new proposition for a single formulas.
+     * @param formula the formulas
+     */
+    public StandardProposition(final Formula formula) {
+        this.formulas = new ImmutableFormulaList(FType.AND, formula);
+        this.description = "";
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    return String.format("StandardProposition{formulas=%s, description=%s}", this.formulas, this.description);
-  }
+    /**
+     * Constructs a new proposition for a single formulas.
+     * @param description the description
+     * @param formula     the formulas
+     */
+    public StandardProposition(final String description, final Formula formula) {
+        this.formulas = new ImmutableFormulaList(FType.AND, formula);
+        this.description = description == null ? "" : description;
+    }
+
+    /**
+     * Constructs a new proposition for a collection of formulas.
+     * @param description the description
+     * @param formulas    the formulas
+     */
+    public StandardProposition(final String description, final Collection<? extends Formula> formulas) {
+        this.formulas = new ImmutableFormulaList(FType.AND, formulas);
+        this.description = description == null ? "" : description;
+    }
+
+    /**
+     * Constructs a new proposition for a variable number of formulas.
+     * @param description the description
+     * @param formulas    the formulas
+     */
+    public StandardProposition(final String description, final Formula... formulas) {
+        this.formulas = new ImmutableFormulaList(FType.AND, formulas);
+        this.description = description == null ? "" : description;
+    }
+
+    /**
+     * Constructs a new proposition for a immutable formula list.
+     * @param description the description
+     * @param formulas    the formulas
+     */
+    public StandardProposition(final String description, final ImmutableFormulaList formulas) {
+        this.formulas = new ImmutableFormulaList(FType.AND, formulas);
+        this.description = description == null ? "" : description;
+    }
+
+    @Override
+    public ImmutableFormulaList formulas() {
+        return this.formulas;
+    }
+
+    /**
+     * Returns the bagpack of this proposition.
+     * @return the bagpack of this proposition
+     */
+    public String description() {
+        return this.description;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.formulas, this.description);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other instanceof StandardProposition) {
+            final StandardProposition o = (StandardProposition) other;
+            return Objects.equals(this.formulas, o.formulas) && Objects.equals(this.description, o.description);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("StandardProposition{formulas=%s, description=%s}", this.formulas, this.description);
+    }
 }

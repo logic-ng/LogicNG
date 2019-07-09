@@ -44,125 +44,125 @@ import java.util.TreeSet;
  */
 public class NotTest {
 
-  @Test
-  public void testType() {
-    Assert.assertEquals(FType.NOT, F.NOT1.type());
-  }
+    @Test
+    public void testType() {
+        Assert.assertEquals(FType.NOT, F.NOT1.type());
+    }
 
-  @Test
-  public void testCreator() {
-    Assert.assertEquals(F.TRUE, F.f.not(F.FALSE));
-    Assert.assertEquals(F.FALSE, F.f.not(F.TRUE));
-    Assert.assertEquals(F.A, F.f.not(F.NA));
-    Assert.assertEquals(F.NA, F.f.not(F.A));
-    Assert.assertEquals(F.IMP3, F.f.not(F.f.not(F.IMP3)));
-    Assert.assertEquals(F.NOT1, F.f.not(F.AND1));
-  }
+    @Test
+    public void testCreator() {
+        Assert.assertEquals(F.TRUE, F.f.not(F.FALSE));
+        Assert.assertEquals(F.FALSE, F.f.not(F.TRUE));
+        Assert.assertEquals(F.A, F.f.not(F.NA));
+        Assert.assertEquals(F.NA, F.f.not(F.A));
+        Assert.assertEquals(F.IMP3, F.f.not(F.f.not(F.IMP3)));
+        Assert.assertEquals(F.NOT1, F.f.not(F.AND1));
+    }
 
-  @Test
-  public void testGetters() {
-    Assert.assertEquals(F.AND1, ((Not) F.NOT1).operand());
-    Assert.assertEquals(F.OR1, ((Not) F.NOT2).operand());
-  }
+    @Test
+    public void testGetters() {
+        Assert.assertEquals(F.AND1, ((Not) F.NOT1).operand());
+        Assert.assertEquals(F.OR1, ((Not) F.NOT2).operand());
+    }
 
-  @Test
-  public void testVariables() {
-    Assert.assertEquals(2, F.NOT1.variables().size());
-    SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
-    Assert.assertEquals(lits, F.NOT1.variables());
+    @Test
+    public void testVariables() {
+        Assert.assertEquals(2, F.NOT1.variables().size());
+        SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+        Assert.assertEquals(lits, F.NOT1.variables());
 
-    Assert.assertEquals(2, F.NOT2.variables().size());
-    lits = new TreeSet<>(Arrays.asList(F.X, F.Y));
-    Assert.assertEquals(lits, F.NOT2.variables());
-  }
+        Assert.assertEquals(2, F.NOT2.variables().size());
+        lits = new TreeSet<>(Arrays.asList(F.X, F.Y));
+        Assert.assertEquals(lits, F.NOT2.variables());
+    }
 
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(2, F.NOT1.literals().size());
-    SortedSet<? extends Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
-    Assert.assertEquals(lits, F.NOT1.literals());
+    @Test
+    public void testLiterals() {
+        Assert.assertEquals(2, F.NOT1.literals().size());
+        SortedSet<? extends Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+        Assert.assertEquals(lits, F.NOT1.literals());
 
-    final Formula not = F.f.not(F.f.and(F.A, F.NB, F.f.implication(F.B, F.NA)));
-    Assert.assertEquals(4, not.literals().size());
-    lits = new TreeSet<>(Arrays.asList(F.A, F.NA, F.B, F.NB));
-    Assert.assertEquals(lits, not.literals());
-  }
+        final Formula not = F.f.not(F.f.and(F.A, F.NB, F.f.implication(F.B, F.NA)));
+        Assert.assertEquals(4, not.literals().size());
+        lits = new TreeSet<>(Arrays.asList(F.A, F.NA, F.B, F.NB));
+        Assert.assertEquals(lits, not.literals());
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("~(a & b)", F.NOT1.toString());
-    Assert.assertEquals("~(x | y)", F.NOT2.toString());
-  }
+    @Test
+    public void testToString() {
+        Assert.assertEquals("~(a & b)", F.NOT1.toString());
+        Assert.assertEquals("~(x | y)", F.NOT2.toString());
+    }
 
-  @Test
-  public void testEquals() {
-    Assert.assertEquals(F.NOT1, F.f.not(F.AND1));
-    Assert.assertEquals(F.NOT2, F.f.not(F.OR1));
-    Assert.assertEquals(F.NOT1, F.NOT1);
-    Assert.assertNotEquals(F.NOT1, null);
-    Assert.assertNotEquals(F.NOT1, F.A);
-    Assert.assertNotEquals(F.NOT1, F.NOT2);
-  }
+    @Test
+    public void testEquals() {
+        Assert.assertEquals(F.NOT1, F.f.not(F.AND1));
+        Assert.assertEquals(F.NOT2, F.f.not(F.OR1));
+        Assert.assertEquals(F.NOT1, F.NOT1);
+        Assert.assertNotEquals(F.NOT1, null);
+        Assert.assertNotEquals(F.NOT1, F.A);
+        Assert.assertNotEquals(F.NOT1, F.NOT2);
+    }
 
-  @Test
-  public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.NOT1, F.g.not(F.AND1));
-    Assert.assertEquals(F.NOT2, F.g.not(F.g.or(F.g.variable("x"), F.g.variable("y"))));
-    Assert.assertNotEquals(F.NOT1, F.g.variable("x"));
-    Assert.assertNotEquals(F.NOT2, F.g.not(F.g.or(F.g.variable("a"), F.g.variable("b"))));
-  }
+    @Test
+    public void testEqualsDifferentFormulaFactory() {
+        Assert.assertEquals(F.NOT1, F.g.not(F.AND1));
+        Assert.assertEquals(F.NOT2, F.g.not(F.g.or(F.g.variable("x"), F.g.variable("y"))));
+        Assert.assertNotEquals(F.NOT1, F.g.variable("x"));
+        Assert.assertNotEquals(F.NOT2, F.g.not(F.g.or(F.g.variable("a"), F.g.variable("b"))));
+    }
 
-  @Test
-  public void testHash() {
-    final Formula not = F.f.not(F.AND1);
-    Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());
-    Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());
-    Assert.assertEquals(F.NOT2.hashCode(), F.f.not(F.OR1).hashCode());
-  }
+    @Test
+    public void testHash() {
+        final Formula not = F.f.not(F.AND1);
+        Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());
+        Assert.assertEquals(F.NOT1.hashCode(), not.hashCode());
+        Assert.assertEquals(F.NOT2.hashCode(), F.f.not(F.OR1).hashCode());
+    }
 
-  @Test
-  public void testNumberOfAtoms() {
-    Assert.assertEquals(2, F.NOT1.numberOfAtoms());
-    Assert.assertEquals(2, F.NOT2.numberOfAtoms());
-    Assert.assertEquals(2, F.OR1.numberOfAtoms());
-    Assert.assertEquals(2, F.OR1.numberOfAtoms());
-  }
+    @Test
+    public void testNumberOfAtoms() {
+        Assert.assertEquals(2, F.NOT1.numberOfAtoms());
+        Assert.assertEquals(2, F.NOT2.numberOfAtoms());
+        Assert.assertEquals(2, F.OR1.numberOfAtoms());
+        Assert.assertEquals(2, F.OR1.numberOfAtoms());
+    }
 
-  @Test
-  public void testNumberOfNodes() {
-    Assert.assertEquals(4, F.NOT1.numberOfNodes());
-    Assert.assertEquals(4, F.NOT2.numberOfNodes());
-    Assert.assertEquals(4, F.NOT2.numberOfNodes());
-  }
+    @Test
+    public void testNumberOfNodes() {
+        Assert.assertEquals(4, F.NOT1.numberOfNodes());
+        Assert.assertEquals(4, F.NOT2.numberOfNodes());
+        Assert.assertEquals(4, F.NOT2.numberOfNodes());
+    }
 
-  @Test
-  public void testNumberOfInternalNodes() throws ParserException {
-    final Formula eq = new PropositionalParser(F.f).parse("a & (b | c) <=> ~(d => (b | c))");
-    Assert.assertEquals(4, F.NOT1.numberOfInternalNodes());
-    Assert.assertEquals(9, eq.numberOfInternalNodes());
-  }
+    @Test
+    public void testNumberOfInternalNodes() throws ParserException {
+        final Formula eq = new PropositionalParser(F.f).parse("a & (b | c) <=> ~(d => (b | c))");
+        Assert.assertEquals(4, F.NOT1.numberOfInternalNodes());
+        Assert.assertEquals(9, eq.numberOfInternalNodes());
+    }
 
-  @Test
-  public void testNumberOfOperands() {
-    Assert.assertEquals(1, F.NOT1.numberOfOperands());
-    Assert.assertEquals(1, F.f.not(F.EQ1).numberOfOperands());
-  }
+    @Test
+    public void testNumberOfOperands() {
+        Assert.assertEquals(1, F.NOT1.numberOfOperands());
+        Assert.assertEquals(1, F.f.not(F.EQ1).numberOfOperands());
+    }
 
-  @Test
-  public void testIsConstantFormula() {
-    Assert.assertFalse(F.NOT1.isConstantFormula());
-    Assert.assertFalse(F.NOT2.isConstantFormula());
-  }
+    @Test
+    public void testIsConstantFormula() {
+        Assert.assertFalse(F.NOT1.isConstantFormula());
+        Assert.assertFalse(F.NOT2.isConstantFormula());
+    }
 
-  @Test
-  public void testAtomicFormula() {
-    Assert.assertFalse(F.NOT1.isAtomicFormula());
-    Assert.assertFalse(F.NOT2.isAtomicFormula());
-  }
+    @Test
+    public void testAtomicFormula() {
+        Assert.assertFalse(F.NOT1.isAtomicFormula());
+        Assert.assertFalse(F.NOT2.isAtomicFormula());
+    }
 
-  @Test
-  public void testContains() {
-    Assert.assertTrue(F.NOT1.containsVariable(F.f.variable("a")));
-    Assert.assertFalse(F.NOT1.containsVariable(F.f.variable("x")));
-  }
+    @Test
+    public void testContains() {
+        Assert.assertTrue(F.NOT1.containsVariable(F.f.variable("a")));
+        Assert.assertFalse(F.NOT1.containsVariable(F.f.variable("x")));
+    }
 }

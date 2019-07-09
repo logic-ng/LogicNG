@@ -39,37 +39,37 @@ import org.logicng.formulas.Variable;
  */
 final class CCAMKCardinalityNetwork implements CCAtMostK {
 
-  private final CCCardinalityNetworks cardinalityNetwork;
+    private final CCCardinalityNetworks cardinalityNetwork;
 
-  /**
-   * Constructs a new cardinality encoder.
-   */
-  CCAMKCardinalityNetwork() {
-    this.cardinalityNetwork = new CCCardinalityNetworks();
-  }
+    /**
+     * Constructs a new cardinality encoder.
+     */
+    CCAMKCardinalityNetwork() {
+        this.cardinalityNetwork = new CCCardinalityNetworks();
+    }
 
-  @Override
-  public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-    cardinalityNetwork.buildAMK(result, vars, rhs);
-  }
+    @Override
+    public void build(final EncodingResult result, final Variable[] vars, int rhs) {
+        cardinalityNetwork.buildAMK(result, vars, rhs);
+    }
 
-  @Override
-  public CCIncrementalData incrementalData() {
-    return cardinalityNetwork.incrementalData();
-  }
+    @Override
+    public CCIncrementalData incrementalData() {
+        return cardinalityNetwork.incrementalData();
+    }
 
-  /**
-   * Builds the constraint for incremental usage.
-   * @param result the result
-   * @param vars   the variables
-   * @param rhs    the right-hand side
-   */
-  void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
-    cardinalityNetwork.buildAMKForIncremental(result, vars, rhs);
-  }
+    /**
+     * Builds the constraint for incremental usage.
+     * @param result the result
+     * @param vars   the variables
+     * @param rhs    the right-hand side
+     */
+    void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
+        cardinalityNetwork.buildAMKForIncremental(result, vars, rhs);
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

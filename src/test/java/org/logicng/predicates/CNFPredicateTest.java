@@ -39,29 +39,29 @@ import org.logicng.formulas.F;
  */
 public class CNFPredicateTest {
 
-  private final CNFPredicate cnfPredicate = new CNFPredicate();
+    private final CNFPredicate cnfPredicate = new CNFPredicate();
 
-  @Test
-  public void test() {
-    Assert.assertTrue(F.f.verum().holds(cnfPredicate));
-    Assert.assertTrue(F.f.falsum().holds(cnfPredicate));
-    Assert.assertTrue(F.A.holds(cnfPredicate));
-    Assert.assertTrue(F.NA.holds(cnfPredicate));
-    Assert.assertTrue(F.OR1.holds(cnfPredicate));
-    Assert.assertTrue(F.AND1.holds(cnfPredicate));
-    Assert.assertTrue(F.AND3.holds(cnfPredicate));
-    Assert.assertTrue(F.f.and(F.OR1, F.OR2, F.A, F.NY).holds(cnfPredicate));
-    Assert.assertFalse(F.PBC1.holds(cnfPredicate));
-    Assert.assertFalse(F.OR3.holds(cnfPredicate));
-    Assert.assertFalse(F.IMP1.holds(cnfPredicate));
-    Assert.assertFalse(F.EQ1.holds(cnfPredicate));
-    Assert.assertFalse(F.NOT1.holds(cnfPredicate));
-    Assert.assertFalse(F.NOT2.holds(cnfPredicate));
-    Assert.assertFalse(F.f.and(F.OR1, F.EQ1).holds(cnfPredicate));
-  }
+    @Test
+    public void test() {
+        Assert.assertTrue(F.f.verum().holds(cnfPredicate));
+        Assert.assertTrue(F.f.falsum().holds(cnfPredicate));
+        Assert.assertTrue(F.A.holds(cnfPredicate));
+        Assert.assertTrue(F.NA.holds(cnfPredicate));
+        Assert.assertTrue(F.OR1.holds(cnfPredicate));
+        Assert.assertTrue(F.AND1.holds(cnfPredicate));
+        Assert.assertTrue(F.AND3.holds(cnfPredicate));
+        Assert.assertTrue(F.f.and(F.OR1, F.OR2, F.A, F.NY).holds(cnfPredicate));
+        Assert.assertFalse(F.PBC1.holds(cnfPredicate));
+        Assert.assertFalse(F.OR3.holds(cnfPredicate));
+        Assert.assertFalse(F.IMP1.holds(cnfPredicate));
+        Assert.assertFalse(F.EQ1.holds(cnfPredicate));
+        Assert.assertFalse(F.NOT1.holds(cnfPredicate));
+        Assert.assertFalse(F.NOT2.holds(cnfPredicate));
+        Assert.assertFalse(F.f.and(F.OR1, F.EQ1).holds(cnfPredicate));
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("CNFPredicate", cnfPredicate.toString());
-  }
+    @Test
+    public void testToString() {
+        Assert.assertEquals("CNFPredicate", cnfPredicate.toString());
+    }
 }

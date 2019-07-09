@@ -37,12 +37,12 @@ package org.logicng.formulas;
  */
 public class Variable extends Literal {
 
-  /**
-   * Constructor.
-   * @param name the literal name
-   * @param f    the factory which created this literal
-   */
-  protected Variable(final String name, FormulaFactory f) {
-    super(name, true, f);
-  }
+    /**
+     * Constructor.
+     * @param name the literal name
+     * @param f    the factory which created this literal
+     */
+    protected Variable(final String name, FormulaFactory f) {
+        super(name, true, f);
+    }
 }

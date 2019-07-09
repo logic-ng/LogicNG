@@ -42,41 +42,47 @@ import java.util.List;
  */
 public class PigeonHoleGenerator {
 
-  private final FormulaFactory f;
+    private final FormulaFactory f;
 
-  public PigeonHoleGenerator(final FormulaFactory f) {
-    this.f = f;
-  }
-
-  public Formula generate(int n) {
-    return generate(n, "v");
-  }
-
-  public Formula generate(int n, String prefix) {
-    return f.and(placeInSomeHole(n, prefix), onlyOnePigeonInHole(n, prefix));
-  }
-
-  private Formula placeInSomeHole(int n, String prefix) {
-    if (n == 1)
-      return f.and(f.variable(prefix + "1"), f.variable(prefix + "2"));
-    List<Formula> ors = new LinkedList<>();
-    for (int i = 1; i <= n + 1; i++) {
-      List<Literal> orOps = new LinkedList<>();
-      for (int j = 1; j <= n; j++)
-        orOps.add(f.variable(prefix + (n * (i - 1) + j)));
-      ors.add(f.or(orOps));
+    public PigeonHoleGenerator(final FormulaFactory f) {
+        this.f = f;
     }
-    return f.and(ors);
-  }
 
-  private Formula onlyOnePigeonInHole(int n, String prefix) {
-    if (n == 1)
-      return f.or(f.literal(prefix + "1", false), f.literal(prefix + "2", false));
-    List<Formula> ors = new LinkedList<>();
-    for (int j = 1; j <= n; j++)
-      for (int i = 1; i <= n; i++)
-        for (int k = i + 1; k <= n + 1; k++)
-          ors.add(f.or(f.literal(prefix + (n * (i - 1) + j), false), f.literal(prefix + (n * (k - 1) + j), false)));
-    return f.and(ors);
-  }
+    public Formula generate(int n) {
+        return generate(n, "v");
+    }
+
+    public Formula generate(int n, String prefix) {
+        return f.and(placeInSomeHole(n, prefix), onlyOnePigeonInHole(n, prefix));
+    }
+
+    private Formula placeInSomeHole(int n, String prefix) {
+        if (n == 1) {
+            return f.and(f.variable(prefix + "1"), f.variable(prefix + "2"));
+        }
+        List<Formula> ors = new LinkedList<>();
+        for (int i = 1; i <= n + 1; i++) {
+            List<Literal> orOps = new LinkedList<>();
+            for (int j = 1; j <= n; j++) {
+                orOps.add(f.variable(prefix + (n * (i - 1) + j)));
+            }
+            ors.add(f.or(orOps));
+        }
+        return f.and(ors);
+    }
+
+    private Formula onlyOnePigeonInHole(int n, String prefix) {
+        if (n == 1) {
+            return f.or(f.literal(prefix + "1", false), f.literal(prefix + "2", false));
+        }
+        List<Formula> ors = new LinkedList<>();
+        for (int j = 1; j <= n; j++) {
+            for (int i = 1; i <= n; i++) {
+                for (int k = i + 1; k <= n + 1; k++) {
+                    ors.add(f.or(f.literal(prefix + (n * (i - 1) + j), false), f.literal(prefix + (n * (k - 1) + j), false)));
+                }
+            }
+        }
+        return f.and(ors);
+    }
 }

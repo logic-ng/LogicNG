@@ -65,15 +65,15 @@ import org.logicng.formulas.FormulaFactory;
  */
 public final class PseudoBooleanParser extends FormulaParser {
 
-  /**
-   * Constructs a new parser for pseudo boolean formulas.
-   * @param f the formula factory
-   */
-  public PseudoBooleanParser(final FormulaFactory f) {
-    super(f);
-    final PseudoBooleanLexer lexer = new PseudoBooleanLexer(null);
-    final CommonTokenStream tokens = new CommonTokenStream(lexer);
-    final ParserWithFormula parser = new LogicNGPseudoBooleanParser(tokens);
-    setLexerAndParser(lexer, parser);
-  }
+    /**
+     * Constructs a new parser for pseudo boolean formulas.
+     * @param f the formula factory
+     */
+    public PseudoBooleanParser(final FormulaFactory f) {
+        super(f);
+        final PseudoBooleanLexer lexer = new PseudoBooleanLexer(null);
+        final CommonTokenStream tokens = new CommonTokenStream(lexer);
+        final ParserWithFormula parser = new LogicNGPseudoBooleanParser(tokens);
+        setLexerAndParser(lexer, parser);
+    }
 }

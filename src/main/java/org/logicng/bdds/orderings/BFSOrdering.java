@@ -49,46 +49,49 @@ import java.util.Queue;
  */
 public class BFSOrdering implements VariableOrderingProvider {
 
-  @Override
-  public List<Variable> getOrder(final Formula formula) {
-    return new ArrayList<>(bfs(formula));
-  }
-
-  private LinkedHashSet<Variable> bfs(final Formula formula) {
-    final LinkedHashSet<Variable> variables = new LinkedHashSet<>();
-    final Queue<Formula> queue = new LinkedList<>();
-    queue.add(formula);
-    while (!queue.isEmpty()) {
-      final Formula current = queue.remove();
-      switch (current.type()) {
-        case LITERAL:
-          final Literal lit = (Literal) current;
-          if (lit.phase())
-            variables.add(lit.variable());
-          else
-            queue.add(lit.variable());
-          break;
-        case NOT:
-          queue.add(((Not) current).operand());
-          break;
-        case IMPL:
-        case EQUIV:
-          final BinaryOperator op = (BinaryOperator) current;
-          queue.add(op.left());
-          queue.add(op.right());
-          break;
-        case AND:
-        case OR:
-          for (final Formula operand : current)
-            queue.add(operand);
-          break;
-        case PBC:
-          final PBConstraint pbc = (PBConstraint) current;
-          for (final Literal literal : pbc.operands())
-            variables.add(literal.variable());
-          break;
-      }
+    @Override
+    public List<Variable> getOrder(final Formula formula) {
+        return new ArrayList<>(bfs(formula));
     }
-    return variables;
-  }
+
+    private LinkedHashSet<Variable> bfs(final Formula formula) {
+        final LinkedHashSet<Variable> variables = new LinkedHashSet<>();
+        final Queue<Formula> queue = new LinkedList<>();
+        queue.add(formula);
+        while (!queue.isEmpty()) {
+            final Formula current = queue.remove();
+            switch (current.type()) {
+                case LITERAL:
+                    final Literal lit = (Literal) current;
+                    if (lit.phase()) {
+                        variables.add(lit.variable());
+                    } else {
+                        queue.add(lit.variable());
+                    }
+                    break;
+                case NOT:
+                    queue.add(((Not) current).operand());
+                    break;
+                case IMPL:
+                case EQUIV:
+                    final BinaryOperator op = (BinaryOperator) current;
+                    queue.add(op.left());
+                    queue.add(op.right());
+                    break;
+                case AND:
+                case OR:
+                    for (final Formula operand : current) {
+                        queue.add(operand);
+                    }
+                    break;
+                case PBC:
+                    final PBConstraint pbc = (PBConstraint) current;
+                    for (final Literal literal : pbc.operands()) {
+                        variables.add(literal.variable());
+                    }
+                    break;
+            }
+        }
+        return variables;
+    }
 }

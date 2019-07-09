@@ -40,11 +40,11 @@ import java.util.List;
  */
 public interface VariableOrderingProvider {
 
-  /**
-   * Generates a variable ordering for a given formula.  Such a variable ordering can then be
-   * used in the {@link org.logicng.bdds.BDDFactory#setVariableOrder(List)} method.
-   * @param formula the formula
-   * @return the variable ordering
-   */
-  List<Variable> getOrder(final Formula formula);
+    /**
+     * Generates a variable ordering for a given formula.  Such a variable ordering can then be
+     * used in the {@link org.logicng.bdds.BDDFactory#setVariableOrder(List)} method.
+     * @param formula the formula
+     * @return the variable ordering
+     */
+    List<Variable> getOrder(final Formula formula);
 }

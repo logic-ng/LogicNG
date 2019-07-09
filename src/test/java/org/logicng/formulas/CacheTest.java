@@ -44,41 +44,41 @@ import java.util.List;
  */
 public class CacheTest {
 
-  @Test
-  public void testDescription() {
-    Assert.assertEquals("TransformationCacheEntry{description=and-inverter graph}", TransformationCacheEntry.AIG.description());
-    Assert.assertEquals("TransformationCacheEntry{description=negation normal form}", TransformationCacheEntry.NNF.description());
-    Assert.assertEquals("TransformationCacheEntry{description=Plaisted & Greenbaum conjunctive normal form (positive polarity)}", TransformationCacheEntry.PLAISTED_GREENBAUM_POS.description());
-    Assert.assertEquals("TransformationCacheEntry{description=Tseitin conjunctive normal form}", TransformationCacheEntry.TSEITIN.description());
-    Assert.assertEquals("TransformationCacheEntry{description=factorized conjunctive normal form}", TransformationCacheEntry.FACTORIZED_CNF.description());
+    @Test
+    public void testDescription() {
+        Assert.assertEquals("TransformationCacheEntry{description=and-inverter graph}", TransformationCacheEntry.AIG.description());
+        Assert.assertEquals("TransformationCacheEntry{description=negation normal form}", TransformationCacheEntry.NNF.description());
+        Assert.assertEquals("TransformationCacheEntry{description=Plaisted & Greenbaum conjunctive normal form (positive polarity)}", TransformationCacheEntry.PLAISTED_GREENBAUM_POS.description());
+        Assert.assertEquals("TransformationCacheEntry{description=Tseitin conjunctive normal form}", TransformationCacheEntry.TSEITIN.description());
+        Assert.assertEquals("TransformationCacheEntry{description=factorized conjunctive normal form}", TransformationCacheEntry.FACTORIZED_CNF.description());
 
-    Assert.assertEquals("PredicateCacheEntry{description=and-inverter graph}", PredicateCacheEntry.IS_AIG.description());
-    Assert.assertEquals("PredicateCacheEntry{description=tautology}", PredicateCacheEntry.IS_TAUTOLOGY.description());
-    Assert.assertEquals("PredicateCacheEntry{description=conjunctive normal form}", PredicateCacheEntry.IS_CNF.description());
+        Assert.assertEquals("PredicateCacheEntry{description=and-inverter graph}", PredicateCacheEntry.IS_AIG.description());
+        Assert.assertEquals("PredicateCacheEntry{description=tautology}", PredicateCacheEntry.IS_TAUTOLOGY.description());
+        Assert.assertEquals("PredicateCacheEntry{description=conjunctive normal form}", PredicateCacheEntry.IS_CNF.description());
 
-    Assert.assertEquals("FunctionCacheEntry{description=literal profile}", FunctionCacheEntry.LITPROFILE.description());
-    Assert.assertEquals("FunctionCacheEntry{description=variable profile}", FunctionCacheEntry.VARPROFILE.description());
-    Assert.assertEquals("FunctionCacheEntry{description=sub-formulas}", FunctionCacheEntry.SUBFORMULAS.description());
-  }
+        Assert.assertEquals("FunctionCacheEntry{description=literal profile}", FunctionCacheEntry.LITPROFILE.description());
+        Assert.assertEquals("FunctionCacheEntry{description=variable profile}", FunctionCacheEntry.VARPROFILE.description());
+        Assert.assertEquals("FunctionCacheEntry{description=sub-formulas}", FunctionCacheEntry.SUBFORMULAS.description());
+    }
 
-  @Test
-  public void testValues() {
-    final List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
-    Assert.assertEquals(13, valuesTrans.size());
-    Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF")));
-    Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG")));
+    @Test
+    public void testValues() {
+        final List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
+        Assert.assertEquals(13, valuesTrans.size());
+        Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF")));
+        Assert.assertTrue(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG")));
 
-    final List<PredicateCacheEntry> valuesPred = Arrays.asList(PredicateCacheEntry.values());
-    Assert.assertEquals(6, valuesPred.size());
-    Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_NNF")));
-    Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_CNF")));
-    Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_DNF")));
-    Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_SAT")));
+        final List<PredicateCacheEntry> valuesPred = Arrays.asList(PredicateCacheEntry.values());
+        Assert.assertEquals(6, valuesPred.size());
+        Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_NNF")));
+        Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_CNF")));
+        Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_DNF")));
+        Assert.assertTrue(valuesPred.contains(PredicateCacheEntry.valueOf("IS_SAT")));
 
-    final List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
-    Assert.assertEquals(3, valuesFunc.size());
-    Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("LITPROFILE")));
-    Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("SUBFORMULAS")));
-  }
+        final List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
+        Assert.assertEquals(3, valuesFunc.size());
+        Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("LITPROFILE")));
+        Assert.assertTrue(valuesFunc.contains(FunctionCacheEntry.valueOf("SUBFORMULAS")));
+    }
 
 }

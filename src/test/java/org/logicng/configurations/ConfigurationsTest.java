@@ -38,11 +38,11 @@ import org.junit.Test;
  */
 public class ConfigurationsTest {
 
-  @Test
-  public void testValueOf() {
-    Assert.assertEquals(ConfigurationType.CNF, ConfigurationType.valueOf("CNF"));
-    Assert.assertEquals(ConfigurationType.GLUCOSE, ConfigurationType.valueOf("GLUCOSE"));
-    Assert.assertEquals(ConfigurationType.MAXSAT, ConfigurationType.valueOf("MAXSAT"));
-    Assert.assertEquals(ConfigurationType.CC_ENCODER, ConfigurationType.valueOf("CC_ENCODER"));
-  }
+    @Test
+    public void testValueOf() {
+        Assert.assertEquals(ConfigurationType.CNF, ConfigurationType.valueOf("CNF"));
+        Assert.assertEquals(ConfigurationType.GLUCOSE, ConfigurationType.valueOf("GLUCOSE"));
+        Assert.assertEquals(ConfigurationType.MAXSAT, ConfigurationType.valueOf("MAXSAT"));
+        Assert.assertEquals(ConfigurationType.CC_ENCODER, ConfigurationType.valueOf("CC_ENCODER"));
+    }
 }

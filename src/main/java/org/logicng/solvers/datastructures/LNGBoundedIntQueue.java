@@ -85,76 +85,78 @@ import org.logicng.collections.LNGIntVector;
  * @since 1.0
  */
 public final class LNGBoundedIntQueue {
-  private final LNGIntVector elems;
-  private int first;
-  private int last;
-  private long sumOfQueue;
-  private int maxSize;
-  private int queueSize;
+    private final LNGIntVector elems;
+    private int first;
+    private int last;
+    private long sumOfQueue;
+    private int maxSize;
+    private int queueSize;
 
-  /**
-   * Constructs a new bounded int queue.
-   */
-  public LNGBoundedIntQueue() {
-    this.elems = new LNGIntVector();
-    this.first = 0;
-    this.last = 0;
-    this.sumOfQueue = 0;
-    this.maxSize = 0;
-    this.queueSize = 0;
-  }
-
-  /**
-   * Initializes the size of this queue.
-   * @param size the size
-   */
-  public void initSize(int size) {
-    this.growTo(size);
-  }
-
-  /**
-   * Pushes a new element to the queue.
-   * @param x the new element
-   */
-  public void push(int x) {
-    if (this.queueSize == this.maxSize) {
-      assert this.last == this.first;
-      this.sumOfQueue -= this.elems.get(this.last);
-      if ((++this.last) == this.maxSize)
+    /**
+     * Constructs a new bounded int queue.
+     */
+    public LNGBoundedIntQueue() {
+        this.elems = new LNGIntVector();
+        this.first = 0;
         this.last = 0;
-    } else
-      this.queueSize++;
-    this.sumOfQueue += x;
-    this.elems.set(this.first, x);
-    if ((++this.first) == this.maxSize) {
-      this.first = 0;
-      this.last = 0;
+        this.sumOfQueue = 0;
+        this.maxSize = 0;
+        this.queueSize = 0;
     }
-  }
 
-  /**
-   * Returns the average value of this queue.
-   * @return the average value of this queue
-   */
-  public int avg() {
-    return (int) (this.sumOfQueue / this.queueSize);
-  }
+    /**
+     * Initializes the size of this queue.
+     * @param size the size
+     */
+    public void initSize(int size) {
+        this.growTo(size);
+    }
 
-  /**
-   * Grows this queue to a given size.
-   * @param size the size
-   */
-  private void growTo(int size) {
-    this.elems.growTo(size, 0);
-    this.first = 0;
-    this.maxSize = size;
-    this.queueSize = 0;
-    this.last = 0;
-  }
+    /**
+     * Pushes a new element to the queue.
+     * @param x the new element
+     */
+    public void push(int x) {
+        if (this.queueSize == this.maxSize) {
+            assert this.last == this.first;
+            this.sumOfQueue -= this.elems.get(this.last);
+            if ((++this.last) == this.maxSize) {
+                this.last = 0;
+            }
+        } else {
+            this.queueSize++;
+        }
+        this.sumOfQueue += x;
+        this.elems.set(this.first, x);
+        if ((++this.first) == this.maxSize) {
+            this.first = 0;
+            this.last = 0;
+        }
+    }
 
-  @Override
-  public String toString() {
-    return String.format("LNGBoundedIntQueue{first=%d, last=%d, sumOfQueue=%d, maxSize=%d, queueSize=%d, elems=%s}",
-            this.first, this.last, this.sumOfQueue, this.maxSize, this.queueSize, this.elems);
-  }
+    /**
+     * Returns the average value of this queue.
+     * @return the average value of this queue
+     */
+    public int avg() {
+        return (int) (this.sumOfQueue / this.queueSize);
+    }
+
+    /**
+     * Grows this queue to a given size.
+     * @param size the size
+     */
+    private void growTo(int size) {
+        this.elems.growTo(size, 0);
+        this.first = 0;
+        this.maxSize = size;
+        this.queueSize = 0;
+        this.last = 0;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("LNGBoundedIntQueue{first=%d, last=%d, sumOfQueue=%d, maxSize=%d, queueSize=%d, elems=%s}",
+                this.first, this.last, this.sumOfQueue, this.maxSize, this.queueSize, this.elems);
+    }
 }

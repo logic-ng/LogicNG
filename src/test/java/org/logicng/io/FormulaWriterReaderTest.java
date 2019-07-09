@@ -55,116 +55,116 @@ import java.nio.file.Files;
  */
 public class FormulaWriterReaderTest {
 
-  @Test
-  public void testSimpleFormulaOneLine() throws ParserException, IOException {
-    final String fileName = "src/test/resources/writers/temp/simple_formula1.txt";
-    final File file = new File(fileName);
-    final FormulaFactory f = new FormulaFactory();
-    final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
-    FormulaWriter.write(file, p1, false);
-    final Formula p2 = FormulaReader.readPropositionalFormula(fileName, f);
-    final Formula p3 = FormulaReader.readPropositionalFormula(file, f);
-    Assert.assertEquals(p1, p2);
-    Assert.assertEquals(p1, p3);
-    try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-      int count = 0;
-      while (reader.ready()) {
-        reader.readLine();
-        count++;
-      }
-      Assert.assertEquals(1, count);
+    @Test
+    public void testSimpleFormulaOneLine() throws ParserException, IOException {
+        final String fileName = "src/test/resources/writers/temp/simple_formula1.txt";
+        final File file = new File(fileName);
+        final FormulaFactory f = new FormulaFactory();
+        final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
+        FormulaWriter.write(file, p1, false);
+        final Formula p2 = FormulaReader.readPropositionalFormula(fileName, f);
+        final Formula p3 = FormulaReader.readPropositionalFormula(file, f);
+        Assert.assertEquals(p1, p2);
+        Assert.assertEquals(p1, p3);
+        try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            int count = 0;
+            while (reader.ready()) {
+                reader.readLine();
+                count++;
+            }
+            Assert.assertEquals(1, count);
+        }
+        Files.deleteIfExists(file.toPath());
     }
-    Files.deleteIfExists(file.toPath());
-  }
 
-  @Test
-  public void testSimpleFormulaMultiLine() throws ParserException, IOException {
-    final String fileName = "src/test/resources/writers/temp/simple_formula2.txt";
-    final File file = new File(fileName);
-    final FormulaFactory f = new FormulaFactory();
-    final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
-    FormulaWriter.write(fileName, p1, true);
-    final Formula p2 = FormulaReader.readPropositionalFormula(fileName, f);
-    Assert.assertEquals(p1, p2);
-    try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-      int count = 0;
-      while (reader.ready()) {
-        reader.readLine();
-        count++;
-      }
-      Assert.assertEquals(3, count);
+    @Test
+    public void testSimpleFormulaMultiLine() throws ParserException, IOException {
+        final String fileName = "src/test/resources/writers/temp/simple_formula2.txt";
+        final File file = new File(fileName);
+        final FormulaFactory f = new FormulaFactory();
+        final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
+        FormulaWriter.write(fileName, p1, true);
+        final Formula p2 = FormulaReader.readPropositionalFormula(fileName, f);
+        Assert.assertEquals(p1, p2);
+        try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            int count = 0;
+            while (reader.ready()) {
+                reader.readLine();
+                count++;
+            }
+            Assert.assertEquals(3, count);
+        }
+        Files.deleteIfExists(file.toPath());
     }
-    Files.deleteIfExists(file.toPath());
-  }
 
-  @Test
-  public void testPBFormulaOneLine() throws ParserException, IOException {
-    final String fileName = "src/test/resources/writers/temp/simple_formula3.txt";
-    final File file = new File(fileName);
-    final FormulaFactory f = new FormulaFactory();
-    final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
-    FormulaWriter.write(fileName, p1, false);
-    final Formula p2 = FormulaReader.readPseudoBooleanFormula(fileName, f);
-    final Formula p3 = FormulaReader.readPseudoBooleanFormula(file, f);
-    Assert.assertEquals(p1, p2);
-    Assert.assertEquals(p1, p3);
-    try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-      int count = 0;
-      while (reader.ready()) {
-        reader.readLine();
-        count++;
-      }
-      Assert.assertEquals(1, count);
+    @Test
+    public void testPBFormulaOneLine() throws ParserException, IOException {
+        final String fileName = "src/test/resources/writers/temp/simple_formula3.txt";
+        final File file = new File(fileName);
+        final FormulaFactory f = new FormulaFactory();
+        final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
+        FormulaWriter.write(fileName, p1, false);
+        final Formula p2 = FormulaReader.readPseudoBooleanFormula(fileName, f);
+        final Formula p3 = FormulaReader.readPseudoBooleanFormula(file, f);
+        Assert.assertEquals(p1, p2);
+        Assert.assertEquals(p1, p3);
+        try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            int count = 0;
+            while (reader.ready()) {
+                reader.readLine();
+                count++;
+            }
+            Assert.assertEquals(1, count);
+        }
+        Files.deleteIfExists(file.toPath());
     }
-    Files.deleteIfExists(file.toPath());
-  }
 
-  @Test
-  public void testPBFormulaMultiLine() throws ParserException, IOException {
-    final String fileName = "src/test/resources/writers/temp/simple_formula4.txt";
-    final File file = new File(fileName);
-    final FormulaFactory f = new FormulaFactory();
-    final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
-    FormulaWriter.write(fileName, p1, true);
-    final Formula p2 = FormulaReader.readPseudoBooleanFormula(fileName, f);
-    Assert.assertEquals(p1, p2);
-    try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-      int count = 0;
-      while (reader.ready()) {
-        reader.readLine();
-        count++;
-      }
-      Assert.assertEquals(5, count);
+    @Test
+    public void testPBFormulaMultiLine() throws ParserException, IOException {
+        final String fileName = "src/test/resources/writers/temp/simple_formula4.txt";
+        final File file = new File(fileName);
+        final FormulaFactory f = new FormulaFactory();
+        final Formula p1 = new PseudoBooleanParser(f).parse("A & B & ~(C | (D => ~E)) & (2*y + 3*y >= 4) & (x <= 1)");
+        FormulaWriter.write(fileName, p1, true);
+        final Formula p2 = FormulaReader.readPseudoBooleanFormula(fileName, f);
+        Assert.assertEquals(p1, p2);
+        try (final BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            int count = 0;
+            while (reader.ready()) {
+                reader.readLine();
+                count++;
+            }
+            Assert.assertEquals(5, count);
+        }
+        Files.deleteIfExists(file.toPath());
     }
-    Files.deleteIfExists(file.toPath());
-  }
 
-  @Test
-  public void testSimpleFormulaOneLineFormatter() throws ParserException, IOException {
-    final String fileName = "src/test/resources/writers/temp/simple_formula5.txt";
-    final File file = new File(fileName);
-    final FormulaFactory f = new FormulaFactory();
-    final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
-    FormulaWriter.write(fileName, p1, false, new UTF8StringRepresentation());
-    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
-      Assert.assertEquals("A ∧ B ∧ ¬(C ∨ (D ⇒ ¬E))", reader.readLine());
+    @Test
+    public void testSimpleFormulaOneLineFormatter() throws ParserException, IOException {
+        final String fileName = "src/test/resources/writers/temp/simple_formula5.txt";
+        final File file = new File(fileName);
+        final FormulaFactory f = new FormulaFactory();
+        final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
+        FormulaWriter.write(fileName, p1, false, new UTF8StringRepresentation());
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+            Assert.assertEquals("A ∧ B ∧ ¬(C ∨ (D ⇒ ¬E))", reader.readLine());
+        }
+        Files.deleteIfExists(file.toPath());
     }
-    Files.deleteIfExists(file.toPath());
-  }
 
-  @Test
-  public void testSimpleFormulaMultiLineFormatter() throws ParserException, IOException {
-    final String fileName = "src/test/resources/writers/temp/simple_formula6.txt";
-    final File file = new File(fileName);
-    final FormulaFactory f = new FormulaFactory();
-    final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
-    FormulaWriter.write(fileName, p1, true, new UTF8StringRepresentation());
-    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
-      Assert.assertEquals("A", reader.readLine());
-      Assert.assertEquals("B", reader.readLine());
-      Assert.assertEquals("¬(C ∨ (D ⇒ ¬E))", reader.readLine());
+    @Test
+    public void testSimpleFormulaMultiLineFormatter() throws ParserException, IOException {
+        final String fileName = "src/test/resources/writers/temp/simple_formula6.txt";
+        final File file = new File(fileName);
+        final FormulaFactory f = new FormulaFactory();
+        final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
+        FormulaWriter.write(fileName, p1, true, new UTF8StringRepresentation());
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+            Assert.assertEquals("A", reader.readLine());
+            Assert.assertEquals("B", reader.readLine());
+            Assert.assertEquals("¬(C ∨ (D ⇒ ¬E))", reader.readLine());
+        }
+        Files.deleteIfExists(file.toPath());
     }
-    Files.deleteIfExists(file.toPath());
-  }
 
 }

@@ -28,6 +28,8 @@
 
 package org.logicng.bdds;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.logicng.bdds.datastructures.BDD;
 import org.logicng.bdds.orderings.VariableOrdering;
@@ -37,8 +39,6 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit tests for the BDD generation in the {@link org.logicng.formulas.Formula} class.
  * @version 1.4.0
@@ -46,28 +46,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FormulaBDDTest {
 
-  @Test
-  public void testBDDGeneration() throws ParserException {
-    final FormulaFactory f = new FormulaFactory();
-    final PseudoBooleanParser p = new PseudoBooleanParser(f);
-    final Formula formula = p.parse("(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X) & (Y <=> (X | (W + A + F < 1)))");
-    final BDD bddNoOrder = formula.bdd();
-    final BDD bddBfs = formula.bdd(VariableOrdering.BFS);
-    final BDD bddDfs = formula.bdd(VariableOrdering.DFS);
-    final BDD bddMin2Max = formula.bdd(VariableOrdering.MIN2MAX);
-    final BDD bddMax2Min = formula.bdd(VariableOrdering.MAX2MIN);
+    @Test
+    public void testBDDGeneration() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final PseudoBooleanParser p = new PseudoBooleanParser(f);
+        final Formula formula = p.parse("(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X) & (Y <=> (X | (W + A + F < 1)))");
+        final BDD bddNoOrder = formula.bdd();
+        final BDD bddBfs = formula.bdd(VariableOrdering.BFS);
+        final BDD bddDfs = formula.bdd(VariableOrdering.DFS);
+        final BDD bddMin2Max = formula.bdd(VariableOrdering.MIN2MAX);
+        final BDD bddMax2Min = formula.bdd(VariableOrdering.MAX2MIN);
 
-    assertThat(bddNoOrder.nodeCount()).isEqualTo(13);
-    assertThat(bddBfs.nodeCount()).isEqualTo(14);
-    assertThat(bddDfs.nodeCount()).isEqualTo(13);
-    assertThat(bddMin2Max.nodeCount()).isEqualTo(17);
-    assertThat(bddMax2Min.nodeCount()).isEqualTo(24);
+        assertThat(bddNoOrder.nodeCount()).isEqualTo(13);
+        assertThat(bddBfs.nodeCount()).isEqualTo(14);
+        assertThat(bddDfs.nodeCount()).isEqualTo(13);
+        assertThat(bddMin2Max.nodeCount()).isEqualTo(17);
+        assertThat(bddMax2Min.nodeCount()).isEqualTo(24);
 
-    final TautologyPredicate tautology = new TautologyPredicate(f);
-    assertThat(f.equivalence(bddNoOrder.cnf(), formula).holds(tautology)).isTrue();
-    assertThat(f.equivalence(bddBfs.cnf(), formula).holds(tautology)).isTrue();
-    assertThat(f.equivalence(bddDfs.cnf(), formula).holds(tautology)).isTrue();
-    assertThat(f.equivalence(bddMin2Max.cnf(), formula).holds(tautology)).isTrue();
-    assertThat(f.equivalence(bddMax2Min.cnf(), formula).holds(tautology)).isTrue();
-  }
+        final TautologyPredicate tautology = new TautologyPredicate(f);
+        assertThat(f.equivalence(bddNoOrder.cnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddBfs.cnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddDfs.cnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddMin2Max.cnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddMax2Min.cnf(), formula).holds(tautology)).isTrue();
+    }
 }
