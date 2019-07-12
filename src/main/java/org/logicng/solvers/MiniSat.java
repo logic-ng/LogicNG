@@ -28,10 +28,6 @@
 
 package org.logicng.solvers;
 
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -74,6 +70,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
  * @version 1.6.0
@@ -92,6 +92,7 @@ public final class MiniSat extends SATSolver {
   private final boolean incremental;
   private int nextStateId;
   private final PlaistedGreenbaumTransformationSolver pgTransformation;
+  private boolean lastComputationWithAssumptions;
 
   /**
    * Constructs a new SAT solver instance.
@@ -264,10 +265,11 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public Tristate sat(final SATHandler handler) {
-    if (this.result != UNDEF) {
+    if (lastResultIsUsable()) {
       return this.result;
     }
     this.result = this.solver.solve(handler);
+    this.lastComputationWithAssumptions = false;
     return this.result;
   }
 
@@ -282,6 +284,7 @@ public final class MiniSat extends SATSolver {
     final int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
     clauseVec.push(litNum);
     this.result = this.solver.solve(handler, clauseVec);
+    this.lastComputationWithAssumptions = true;
     return this.result;
   }
 
@@ -299,12 +302,14 @@ public final class MiniSat extends SATSolver {
       assumptionVec.push(litNum);
     }
     this.result = this.solver.solve(handler, assumptionVec);
+    this.lastComputationWithAssumptions = true;
     return this.result;
   }
 
   @Override
   public void reset() {
     this.solver.reset();
+    this.lastComputationWithAssumptions = false;
     this.pgTransformation.clearCache();
     this.result = UNDEF;
   }
@@ -465,6 +470,9 @@ public final class MiniSat extends SATSolver {
     }
     if (this.underlyingSolver() instanceof GlucoseSyrup && this.config.incremental()) {
       throw new IllegalStateException("Cannot compute an unsat core with Glucose in incremental mode.");
+    }
+    if (this.lastComputationWithAssumptions) {
+      throw new IllegalStateException("Cannot compute an unsat core for a computation with assumptions.");
     }
 
     final DRUPTrim trimmer = new DRUPTrim();
@@ -630,5 +638,9 @@ public final class MiniSat extends SATSolver {
       upZeroLiterals.add(getLiteralFromIntLiteral(literals.get(i)));
     }
     return upZeroLiterals;
+  }
+
+  private boolean lastResultIsUsable() {
+    return this.result != UNDEF && !this.lastComputationWithAssumptions;
   }
 }
