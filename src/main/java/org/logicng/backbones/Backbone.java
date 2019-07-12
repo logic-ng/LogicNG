@@ -53,159 +53,152 @@ import java.util.TreeSet;
  * <li>Optional variables: Variables that are neither in the positive nor in the negative backbone.
  * Therefore these variables can be assigned to true or false.
  * </ol>
- * If only the positive or negative backbone is computed, the optional variables are {@code null}.
- * Also the variable set which was not computed is {@code null}.  You can use the methods
- * {@link #hasPositiveBackboneResult()}, {@link #hasNegativeBackboneResult()}, and
- * {@link #hasOptionalVariablesResult()} to check if a certain result set was computed and is present
- * in the backbone object.
- * @version 1.5.0
+ * All variable sets which were not computed are empty.
+ * @version 1.5.2
  * @since 1.5.0
  */
 public class Backbone {
-    private final SortedSet<Variable> positiveBackbone;
-    private final SortedSet<Variable> negativeBackbone;
-    private final SortedSet<Variable> optionalVariables;
+  private final boolean sat;
+  private final SortedSet<Variable> positiveBackbone;
+  private final SortedSet<Variable> negativeBackbone;
+  private final SortedSet<Variable> optionalVariables;
 
-    /**
-     * Constructs a new backbone that contains the given backbone variables and the given optional variables.
-     * @param positiveBackbone  positive backbone variables
-     * @param negativeBackbone  negative backbone variables
-     * @param optionalVariables optional variables
-     */
-    public Backbone(final SortedSet<Variable> positiveBackbone, final SortedSet<Variable> negativeBackbone, final SortedSet<Variable> optionalVariables) {
-        this.positiveBackbone = positiveBackbone;
-        this.negativeBackbone = negativeBackbone;
-        this.optionalVariables = optionalVariables;
-    }
+  /**
+   * Constructs a new backbone that contains the given backbone variables and the given optional variables.
+   * @param sat               is the original formula satisfiable or not
+   * @param positiveBackbone  positive backbone variables
+   * @param negativeBackbone  negative backbone variables
+   * @param optionalVariables optional variables
+   */
+  private Backbone(final boolean sat, final SortedSet<Variable> positiveBackbone, final SortedSet<Variable> negativeBackbone,
+                   final SortedSet<Variable> optionalVariables) {
+    this.sat = sat;
+    this.positiveBackbone = positiveBackbone == null ? new TreeSet<Variable>() : positiveBackbone;
+    this.negativeBackbone = negativeBackbone == null ? new TreeSet<Variable>() : negativeBackbone;
+    this.optionalVariables = optionalVariables == null ? new TreeSet<Variable>() : optionalVariables;
+  }
 
-    /**
-     * Tests whether the backbone has a positive backbone result.
-     * @return {@code true} if the backbone has a positive backbone result, {@code false} otherwise
-     */
-    public boolean hasPositiveBackboneResult() {
-        return this.positiveBackbone != null;
-    }
+  /**
+   * Returns a new backbone for a satisfiable formula.
+   * @param positiveBackbone  positive backbone variables
+   * @param negativeBackbone  negative backbone variables
+   * @param optionalVariables optional variables
+   * @return the backbone
+   */
+  public static Backbone satBackbone(final SortedSet<Variable> positiveBackbone, final SortedSet<Variable> negativeBackbone,
+                                     final SortedSet<Variable> optionalVariables) {
+    return new Backbone(true, positiveBackbone, negativeBackbone, optionalVariables);
+  }
 
-    /**
-     * Tests whether the backbone has a negative backbone result.
-     * @return {@code true} if the backbone has a negative backbone result, {@code false} otherwise
-     */
-    public boolean hasNegativeBackboneResult() {
-        return this.negativeBackbone != null;
-    }
+  /**
+   * Returns a new empty backbone for an unsatisfiable formula.
+   * @return the backbone
+   */
+  public static Backbone unsatBackbone() {
+    return new Backbone(false, null, null, null);
+  }
 
-    /**
-     * Tests whether the backbone has an optional variables result.
-     * @return {@code true} if the backbone has an optional variables result, {@code false} otherwise
-     */
-    public boolean hasOptionalVariablesResult() {
-        return this.optionalVariables != null;
-    }
+  /**
+   * Returns whether the original formula of this backbone was satisfiable or not.
+   * @return whether the original formula of this backbone was satisfiable or not
+   */
+  public boolean isSat() {
+    return this.sat;
+  }
 
-    /**
-     * Returns the positive variables of the backbone.
-     * @return the set of positive backbone variables
-     */
-    public SortedSet<Variable> getPositiveBackbone() {
-        return hasPositiveBackboneResult() ? Collections.unmodifiableSortedSet(this.positiveBackbone) : null;
-    }
+  /**
+   * Returns the positive variables of the backbone.
+   * @return the set of positive backbone variables
+   */
+  public SortedSet<Variable> getPositiveBackbone() {
+    return Collections.unmodifiableSortedSet(this.positiveBackbone);
+  }
 
-    /**
-     * Returns the negative variables of the backbone.
-     * @return the set of negative backbone variables
-     */
-    public SortedSet<Variable> getNegativeBackbone() {
-        return hasNegativeBackboneResult() ? Collections.unmodifiableSortedSet(this.negativeBackbone) : null;
-    }
+  /**
+   * Returns the negative variables of the backbone.
+   * @return the set of negative backbone variables
+   */
+  public SortedSet<Variable> getNegativeBackbone() {
+    return Collections.unmodifiableSortedSet(this.negativeBackbone);
+  }
 
-    /**
-     * Returns the variables of the formula that are optional, i.e. not in the positive or negative backbone.
-     * @return the set of non-backbone variables
-     */
-    public SortedSet<Variable> getOptionalVariables() {
-        return hasOptionalVariablesResult() ? Collections.unmodifiableSortedSet(this.optionalVariables) : null;
-    }
+  /**
+   * Returns the variables of the formula that are optional, i.e. not in the positive or negative backbone.
+   * @return the set of non-backbone variables
+   */
+  public SortedSet<Variable> getOptionalVariables() {
+    return Collections.unmodifiableSortedSet(this.optionalVariables);
+  }
 
-    /**
-     * Returns all literals of the backbone.  Positive backbone variables have positive polarity, negative
-     * backbone variables have negative polarity.
-     * @return the set of both positive and negative backbone variables as literals
-     */
-    public SortedSet<Literal> getCompleteBackbone() {
-        final SortedSet<Literal> completeBackbone = new TreeSet<>();
-        if (hasPositiveBackboneResult()) {
-            completeBackbone.addAll(this.positiveBackbone);
-        }
-        if (hasNegativeBackboneResult()) {
-            for (final Variable var : this.negativeBackbone) {
-                completeBackbone.add(var.negate());
-            }
-        }
-        return Collections.unmodifiableSortedSet(completeBackbone);
+  /**
+   * Returns all literals of the backbone.  Positive backbone variables have positive polarity, negative
+   * backbone variables have negative polarity.
+   * @return the set of both positive and negative backbone variables as literals
+   */
+  public SortedSet<Literal> getCompleteBackbone() {
+    final SortedSet<Literal> completeBackbone = new TreeSet<Literal>(this.positiveBackbone);
+    for (final Variable var : this.negativeBackbone) {
+      completeBackbone.add(var.negate());
     }
+    return Collections.unmodifiableSortedSet(completeBackbone);
+  }
 
-    /**
-     * Returns the positive and negative backbone as a conjunction of literals.
-     * @param f the formula factory needed for construction the backbone formula.
-     * @return the backbone formula
-     */
-    public Formula toFormula(final FormulaFactory f) {
-        return f.and(this.getCompleteBackbone());
-    }
+  /**
+   * Returns the positive and negative backbone as a conjunction of literals.
+   * @param f the formula factory needed for construction the backbone formula.
+   * @return the backbone formula
+   */
+  public Formula toFormula(final FormulaFactory f) {
+    return this.sat ? f.and(this.getCompleteBackbone()) : f.falsum();
+  }
 
-    /**
-     * Returns the backbone as map from variables to tri-states. A positive variable is mapped to {@code Tristate.TRUE},
-     * a negative variable to {@code Tristate.FALSE} and the optional variables to {@code Tristate.UNDEF}.
-     * @return the mapping of the backbone
-     */
-    public SortedMap<Variable, Tristate> toMap() {
-        final SortedMap<Variable, Tristate> map = new TreeMap<>();
-        if (hasPositiveBackboneResult()) {
-            for (final Variable var : this.positiveBackbone) {
-                map.put(var, Tristate.TRUE);
-            }
-        }
-        if (hasNegativeBackboneResult()) {
-            for (final Variable var : this.negativeBackbone) {
-                map.put(var, Tristate.FALSE);
-            }
-        }
-        if (hasOptionalVariablesResult()) {
-            for (final Variable var : this.optionalVariables) {
-                map.put(var, Tristate.UNDEF);
-            }
-        }
-        return Collections.unmodifiableSortedMap(map);
+  /**
+   * Returns the backbone as map from variables to tri-states. A positive variable is mapped to {@code Tristate.TRUE},
+   * a negative variable to {@code Tristate.FALSE} and the optional variables to {@code Tristate.UNDEF}.
+   * @return the mapping of the backbone
+   */
+  public SortedMap<Variable, Tristate> toMap() {
+    final SortedMap<Variable, Tristate> map = new TreeMap<>();
+    for (final Variable var : this.positiveBackbone) {
+      map.put(var, Tristate.TRUE);
     }
+    for (final Variable var : this.negativeBackbone) {
+      map.put(var, Tristate.FALSE);
+    }
+    for (final Variable var : this.optionalVariables) {
+      map.put(var, Tristate.UNDEF);
+    }
+    return Collections.unmodifiableSortedMap(map);
+  }
 
-    @Override
-    public boolean equals(final Object other) {
-        if (other == null) {
-            return false;
-        }
-        if (this == other) {
-            return true;
-        }
-        if (getClass() != other.getClass()) {
-            return false;
-        }
-        final Backbone backbone = (Backbone) other;
-        return Objects.equals(this.positiveBackbone, backbone.positiveBackbone) &&
-                Objects.equals(this.negativeBackbone, backbone.negativeBackbone) &&
-                Objects.equals(this.optionalVariables, backbone.optionalVariables);
+  @Override
+  public boolean equals(final Object other) {
+    if (other == null) {
+      return false;
     }
+    if (this == other) {
+      return true;
+    }
+    if (getClass() != other.getClass()) {
+      return false;
+    }
+    final Backbone backbone = (Backbone) other;
+    return Objects.equals(this.positiveBackbone, backbone.positiveBackbone) &&
+            Objects.equals(this.negativeBackbone, backbone.negativeBackbone) &&
+            Objects.equals(this.optionalVariables, backbone.optionalVariables);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.positiveBackbone, this.negativeBackbone, this.optionalVariables);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.positiveBackbone, this.negativeBackbone, this.optionalVariables);
+  }
 
-    @Override
-    public String toString() {
-        return "Backbone{" +
-                "positiveBackbone=" + this.positiveBackbone +
-                ", negativeBackbone=" + this.negativeBackbone +
-                ", optionalVariables=" + this.optionalVariables +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Backbone{" +
+            "positiveBackbone=" + this.positiveBackbone +
+            ", negativeBackbone=" + this.negativeBackbone +
+            ", optionalVariables=" + this.optionalVariables +
+            '}';
+  }
 }

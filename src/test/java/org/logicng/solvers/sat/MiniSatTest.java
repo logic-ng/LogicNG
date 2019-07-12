@@ -28,14 +28,19 @@
 
 package org.logicng.solvers.sat;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.logicng.collections.LNGIntVector;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 
 import java.util.Arrays;
-
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
 
 /**
  * Some MiniSat specific unit tests.
@@ -77,14 +82,31 @@ public class MiniSatTest {
     Assert.assertTrue(Arrays.asList(MiniSatConfig.ClauseMinimization.values()).contains(MiniSatConfig.ClauseMinimization.valueOf("DEEP")));
   }
 
-  private LNGIntVector clause(int... lits) {
+  @Test
+  public void testAssumptionChecking() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final SATSolver solver = MiniSat.miniSat(f);
+    solver.add(f.parse("A & B"));
+    assertThat(solver.sat()).isEqualTo(TRUE);
+    assertThat(solver.sat(f.literal("A", true))).isEqualTo(TRUE);
+    assertThat(solver.sat(f.literal("B", true))).isEqualTo(TRUE);
+    assertThat(solver.sat(f.literal("A", false))).isEqualTo(FALSE);
+    assertThat(solver.sat(f.literal("B", false))).isEqualTo(FALSE);
+    assertThat(solver.sat(f.literal("A", true))).isEqualTo(TRUE);
+    assertThat(solver.sat(f.literal("B", true))).isEqualTo(TRUE);
+    assertThat(solver.sat(f.literal("A", false))).isEqualTo(FALSE);
+    assertThat(solver.sat()).isEqualTo(TRUE);
+  }
+
+  private LNGIntVector clause(final int... lits) {
     final LNGIntVector c = new LNGIntVector(lits.length);
-    for (int l : lits)
+    for (final int l : lits) {
       c.push(literal(l));
+    }
     return c;
   }
 
-  private int literal(int l) {
+  private int literal(final int l) {
     return l < 0 ? (-l * 2) ^ 1 : l * 2;
   }
 }
