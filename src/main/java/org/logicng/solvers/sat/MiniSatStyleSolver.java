@@ -129,6 +129,10 @@ public abstract class MiniSatStyleSolver {
     this.initialize();
   }
 
+  public Map<String, Integer> getName2idx() {
+    return this.name2idx;
+  }
+
   /**
    * Creates a literal for a given variable number and literal.
    * @param var  the variable number
@@ -441,8 +445,9 @@ public abstract class MiniSatStyleSolver {
    * @param x the variable index
    */
   protected void insertVarOrder(int x) {
-    if (!this.orderHeap.inHeap(x) && this.vars.get(x).decision())
+    if (!this.orderHeap.inHeap(x) && this.vars.get(x).decision()) {
       this.orderHeap.insert(x);
+    }
   }
 
   /**
@@ -451,11 +456,13 @@ public abstract class MiniSatStyleSolver {
    */
   protected int pickBranchLit() {
     int next = -1;
-    while (next == -1 || this.vars.get(next).assignment() != Tristate.UNDEF || !this.vars.get(next).decision())
-      if (this.orderHeap.empty())
+    while (next == -1 || this.vars.get(next).assignment() != Tristate.UNDEF || !this.vars.get(next).decision()) {
+      if (this.orderHeap.empty()) {
         return -1;
-      else
+      } else {
         next = this.orderHeap.removeMin();
+      }
+    }
     return mkLit(next, this.vars.get(next).polarity());
   }
 
@@ -483,12 +490,14 @@ public abstract class MiniSatStyleSolver {
     final MSVariable var = this.vars.get(v);
     var.incrementActivity(inc);
     if (var.activity() > 1e100) {
-      for (final MSVariable variable : this.vars)
+      for (final MSVariable variable : this.vars) {
         variable.rescaleActivity();
+      }
       this.varInc *= 1e-100;
     }
-    if (this.orderHeap.inHeap(v))
+    if (this.orderHeap.inHeap(v)) {
       this.orderHeap.decrease(v);
+    }
   }
 
   /**
@@ -496,9 +505,11 @@ public abstract class MiniSatStyleSolver {
    */
   protected void rebuildOrderHeap() {
     final LNGIntVector vs = new LNGIntVector();
-    for (int v = 0; v < this.nVars(); v++)
-      if (this.vars.get(v).decision() && this.vars.get(v).assignment() == Tristate.UNDEF)
+    for (int v = 0; v < this.nVars(); v++) {
+      if (this.vars.get(v).decision() && this.vars.get(v).assignment() == Tristate.UNDEF) {
         vs.push(v);
+      }
+    }
     this.orderHeap.build(vs);
   }
 
@@ -525,8 +536,9 @@ public abstract class MiniSatStyleSolver {
   protected void claBumpActivity(final MSClause c) {
     c.incrementActivity(claInc);
     if (c.activity() > 1e20) {
-      for (final MSClause clause : learnts)
+      for (final MSClause clause : learnts) {
         clause.rescaleActivity();
+      }
       claInc *= 1e-20;
     }
   }

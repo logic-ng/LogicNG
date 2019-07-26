@@ -28,6 +28,10 @@
 
 package org.logicng.solvers;
 
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -69,10 +73,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
@@ -124,7 +124,7 @@ public final class MiniSat extends SATSolver {
     this.validStates = new LNGIntVector();
     this.nextStateId = 0;
     this.ccEncoder = new CCEncoder(f);
-    this.pgTransformation = new PlaistedGreenbaumTransformationSolver(this);
+    this.pgTransformation = new PlaistedGreenbaumTransformationSolver(this.underlyingSolver(), this.initialPhase);
   }
 
   /**
@@ -358,7 +358,21 @@ public final class MiniSat extends SATSolver {
       allVariables.addAll(variables);
       allVariables.addAll(additionalVariables);
     }
-    final LNGIntVector relevantIndices = variables == null ? null : new LNGIntVector(variables.size());
+    final LNGIntVector relevantIndices;
+    if (variables == null) {
+      if (!this.config.isAuxiliaryVariablesInModels()) {
+        relevantIndices = new LNGIntVector();
+        for (final Map.Entry<String, Integer> entry : this.solver.getName2idx().entrySet()) {
+          if (isRelevantVariable(entry.getKey())) {
+            relevantIndices.push(entry.getValue());
+          }
+        }
+      } else {
+        relevantIndices = null;
+      }
+    } else {
+      relevantIndices = new LNGIntVector(variables.size());
+    }
     LNGIntVector relevantAllIndices = null;
     if (relevantIndices != null) {
       for (final Variable var : variables) {
@@ -374,7 +388,6 @@ public final class MiniSat extends SATSolver {
     while (proceed && this.sat((SATHandler) null) == TRUE) {
       final LNGBooleanVector modelFromSolver = this.solver.model();
       final Assignment model = this.createAssignment(modelFromSolver, relevantAllIndices);
-      assert model != null;
       models.add(model);
       proceed = handler == null || handler.foundModel(model);
       if (model.size() > 0) {

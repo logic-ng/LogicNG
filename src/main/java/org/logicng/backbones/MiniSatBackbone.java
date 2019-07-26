@@ -31,12 +31,12 @@ package org.logicng.backbones;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
 import org.logicng.solvers.sat.MiniSat2Solver;
+import org.logicng.transformations.cnf.PlaistedGreenbaumTransformationSolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +61,7 @@ import java.util.TreeSet;
 public class MiniSatBackbone extends MiniSat2Solver {
 
   private BackboneConfig config;
+  private final PlaistedGreenbaumTransformationSolver pgTransformation = new PlaistedGreenbaumTransformationSolver(this, true);
 
   /**
    * Type of the backbone computation.
@@ -117,23 +118,7 @@ public class MiniSatBackbone extends MiniSat2Solver {
    * @param formula the formula
    */
   public void add(final Formula formula) {
-    final Formula cnf = formula.cnf();
-    switch (cnf.type()) {
-      case TRUE:
-        break;
-      case FALSE:
-      case LITERAL:
-      case OR:
-        this.addClause(generateClauseVector(cnf), null);
-        break;
-      case AND:
-        for (final Formula op : cnf) {
-          this.addClause(generateClauseVector(op), null);
-        }
-        break;
-      default:
-        throw new IllegalStateException("Unexpected formula type in CNF: " + cnf.type());
-    }
+    this.pgTransformation.addCNFtoSolver(formula, null);
   }
 
   /**
@@ -400,22 +385,15 @@ public class MiniSatBackbone extends MiniSat2Solver {
     }
   }
 
-  /**
-   * Generates a solver vector of a clause.
-   * @param clause the clause
-   * @return the solver vector
-   */
-  private LNGIntVector generateClauseVector(final Formula clause) {
-    final LNGIntVector clauseVec = new LNGIntVector(clause.numberOfOperands());
-    for (final Literal lit : clause.literals()) {
-      int index = this.idxForName(lit.name());
-      if (index == -1) {
-        index = this.newVar(false, true);
-        this.addName(lit.name(), index);
-      }
-      final int litNum = lit.phase() ? index * 2 : (index * 2) ^ 1;
-      clauseVec.push(litNum);
-    }
-    return clauseVec;
+  @Override
+  public void reset() {
+    super.reset();
+    this.pgTransformation.clearCache();
+  }
+
+  @Override
+  public void loadState(final int[] state) {
+    super.loadState(state);
+    this.pgTransformation.clearCache();
   }
 }

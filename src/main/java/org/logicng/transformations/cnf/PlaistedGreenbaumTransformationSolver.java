@@ -35,7 +35,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.propositions.Proposition;
-import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,17 +53,20 @@ public final class PlaistedGreenbaumTransformationSolver {
 
   private final Map<Formula, Integer> variableCache;
   private final Set<Formula> formulaCache;
-  private final MiniSat solver;
+  private final MiniSatStyleSolver solver;
+  private final boolean initialPhase;
   private final CNFPredicate cnfPredicate = new CNFPredicate();
 
   /**
    * Constructs a new transformation for a given SAT solver.
-   * @param solver the solver
+   * @param solver       the solver
+   * @param initialPhase the initial phase for new variables
    */
-  public PlaistedGreenbaumTransformationSolver(final MiniSat solver) {
+  public PlaistedGreenbaumTransformationSolver(final MiniSatStyleSolver solver, final boolean initialPhase) {
     this.variableCache = new HashMap<>();
     this.formulaCache = new HashSet<>();
     this.solver = solver;
+    this.initialPhase = initialPhase;
   }
 
   /**
@@ -78,7 +81,7 @@ public final class PlaistedGreenbaumTransformationSolver {
     } else {
       computeTransformation(nnf, proposition);
       final int topLevelVariable = this.variableCache.get(nnf);
-      this.solver.underlyingSolver().addClause(topLevelVariable, proposition);
+      this.solver.addClause(topLevelVariable, proposition);
       this.variableCache.put(formula, topLevelVariable);
     }
   }
@@ -115,7 +118,7 @@ public final class PlaistedGreenbaumTransformationSolver {
     switch (formula.type()) {
       case AND: {
         for (final Formula op : formula) {
-          this.solver.underlyingSolver().addClause(new LNGIntVector(new int[]{pgVar ^ 1, pgVariable(op)}), proposition);
+          this.solver.addClause(new LNGIntVector(new int[]{pgVar ^ 1, pgVariable(op)}), proposition);
         }
         this.formulaCache.add(formula);
         break;
@@ -126,7 +129,7 @@ public final class PlaistedGreenbaumTransformationSolver {
         for (final Formula op : formula) {
           singleClause.push(pgVariable(op));
         }
-        this.solver.underlyingSolver().addClause(singleClause, proposition);
+        this.solver.addClause(singleClause, proposition);
         this.formulaCache.add(formula);
         break;
       }
@@ -142,11 +145,11 @@ public final class PlaistedGreenbaumTransformationSolver {
       case FALSE:
       case LITERAL:
       case OR:
-        this.solver.underlyingSolver().addClause(generateClauseVector(cnf.literals()), proposition);
+        this.solver.addClause(generateClauseVector(cnf.literals()), proposition);
         break;
       case AND:
         for (final Formula clause : cnf) {
-          this.solver.underlyingSolver().addClause(generateClauseVector(clause.literals()), proposition);
+          this.solver.addClause(generateClauseVector(clause.literals()), proposition);
         }
         break;
       default:
@@ -175,18 +178,18 @@ public final class PlaistedGreenbaumTransformationSolver {
   }
 
   private int solverLiteral(final Literal lit) {
-    int index = this.solver.underlyingSolver().idxForName(lit.name());
+    int index = this.solver.idxForName(lit.name());
     if (index == -1) {
-      index = this.solver.underlyingSolver().newVar(!this.solver.initialPhase(), true);
-      this.solver.underlyingSolver().addName(lit.name(), index);
+      index = this.solver.newVar(!this.initialPhase, true);
+      this.solver.addName(lit.name(), index);
     }
     return lit.phase() ? index * 2 : (index * 2) ^ 1;
   }
 
   private int newSolverVariable() {
-    final int index = this.solver.underlyingSolver().newVar(!this.solver.initialPhase(), true);
+    final int index = this.solver.newVar(!this.initialPhase, true);
     final String name = FormulaFactory.CNF_PREFIX + "MINISAT_" + index;
-    this.solver.underlyingSolver().addName(name, index);
+    this.solver.addName(name, index);
     return index * 2;
   }
 }
