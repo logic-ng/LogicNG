@@ -91,7 +91,7 @@ public class SATTest {
     this.f = new FormulaFactory();
     this.pg = new PigeonHoleGenerator(this.f);
     this.parser = new PropositionalParser(this.f);
-    this.solvers = new SATSolver[9];
+    this.solvers = new SATSolver[10];
     this.solvers[0] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().incremental(true).build());
     this.solvers[1] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().incremental(false).build());
     this.solvers[2] = MiniSat.glucose(this.f, new MiniSatConfig.Builder().incremental(false).build(),
@@ -99,20 +99,22 @@ public class SATTest {
     this.solvers[3] = MiniSat.miniCard(this.f, new MiniSatConfig.Builder().incremental(true).build());
     this.solvers[4] = MiniSat.miniCard(this.f, new MiniSatConfig.Builder().incremental(false).build());
     this.solvers[5] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-    this.solvers[6] = CleaneLing.minimalistic(this.f);
-    this.solvers[7] = CleaneLing.full(this.f, new CleaneLingConfig.Builder().plain(true).glueUpdate(true).gluered(true).build());
-    this.solvers[8] = CleaneLing.full(this.f);
+    this.solvers[6] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+    this.solvers[7] = CleaneLing.minimalistic(this.f);
+    this.solvers[8] = CleaneLing.full(this.f, new CleaneLingConfig.Builder().plain(true).glueUpdate(true).gluered(true).build());
+    this.solvers[9] = CleaneLing.full(this.f);
 
-    this.testStrings = new String[9];
+    this.testStrings = new String[10];
     this.testStrings[0] = "MiniSat{result=UNDEF, incremental=true}";
     this.testStrings[1] = "MiniSat{result=UNDEF, incremental=false}";
     this.testStrings[2] = "MiniSat{result=UNDEF, incremental=false}";
     this.testStrings[3] = "MiniSat{result=UNDEF, incremental=true}";
     this.testStrings[4] = "MiniSat{result=UNDEF, incremental=false}";
     this.testStrings[5] = "MiniSat{result=UNDEF, incremental=true}";
-    this.testStrings[6] = "CleaneLing{result=UNDEF, idx2name={}}";
+    this.testStrings[6] = "MiniSat{result=UNDEF, incremental=true}";
     this.testStrings[7] = "CleaneLing{result=UNDEF, idx2name={}}";
     this.testStrings[8] = "CleaneLing{result=UNDEF, idx2name={}}";
+    this.testStrings[9] = "CleaneLing{result=UNDEF, idx2name={}}";
   }
 
   @Test
@@ -356,7 +358,7 @@ public class SATTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testIllegalEnumeration() {
-    final SATSolver s = this.solvers[8];
+    final SATSolver s = this.solvers[9];
     final Variable[] lits = new Variable[100];
     for (int j = 0; j < lits.length; j++) {
       lits[j] = this.f.variable("x" + j);
@@ -561,7 +563,7 @@ public class SATTest {
   }
 
   @Test
-  public void testModelEnumerationWithHandler() {
+  public void testModelEnumerationWithHandler01() {
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
       final SortedSet<Variable> lits = new TreeSet<>();
@@ -577,6 +579,33 @@ public class SATTest {
 
       final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
       final List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
+      Assert.assertEquals(29, modelsWithHandler.size());
+      for (final Assignment model : modelsWithHandler) {
+        for (final Variable lit : lits) {
+          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+        }
+      }
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumerationWithHandler02() {
+    for (int i = 0; i < this.solvers.length - 1; i++) {
+      final SATSolver s = this.solvers[i];
+      final SortedSet<Variable> lits = new TreeSet<>();
+      final SortedSet<Variable> firstFive = new TreeSet<>();
+      for (int j = 0; j < 20; j++) {
+        final Variable lit = this.f.variable("x" + j);
+        lits.add(lit);
+        if (j < 5) {
+          firstFive.add(lit);
+        }
+      }
+      s.add(this.f.cc(CType.GE, 1, lits));
+
+      final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
+      final List<Assignment> modelsWithHandler = s.enumerateAllModels(null, Collections.singletonList(firstFive.first()), handler);
       Assert.assertEquals(29, modelsWithHandler.size());
       for (final Assignment model : modelsWithHandler) {
         for (final Variable lit : lits) {

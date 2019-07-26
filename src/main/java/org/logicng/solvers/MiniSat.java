@@ -351,13 +351,6 @@ public final class MiniSat extends SATSolver {
       stateBeforeEnumeration = this.saveState();
     }
     boolean proceed = true;
-    SortedSet<Variable> allVariables = new TreeSet<>();
-    if (variables == null) {
-      allVariables = null;
-    } else {
-      allVariables.addAll(variables);
-      allVariables.addAll(additionalVariables);
-    }
     final LNGIntVector relevantIndices;
     if (variables == null) {
       if (!this.config.isAuxiliaryVariablesInModels()) {
@@ -372,15 +365,20 @@ public final class MiniSat extends SATSolver {
       }
     } else {
       relevantIndices = new LNGIntVector(variables.size());
-    }
-    LNGIntVector relevantAllIndices = null;
-    if (relevantIndices != null) {
       for (final Variable var : variables) {
         relevantIndices.push(this.solver.idxForName(var.name()));
       }
-      relevantAllIndices = additionalVariables.isEmpty() ? relevantIndices : new LNGIntVector(allVariables.size());
-      if (!additionalVariables.isEmpty()) {
-        for (final Variable var : allVariables) {
+    }
+    LNGIntVector relevantAllIndices = null;
+    if (relevantIndices != null) {
+      if(additionalVariables.isEmpty()) {
+        relevantAllIndices = relevantIndices;
+      } else {
+        relevantAllIndices = new LNGIntVector(relevantIndices.size() + additionalVariables.size());
+        for(int i = 0; i < relevantIndices.size(); ++i) {
+          relevantAllIndices.push(relevantIndices.get(i));
+        }
+        for (final Variable var : additionalVariables) {
           relevantAllIndices.push(this.solver.idxForName(var.name()));
         }
       }
