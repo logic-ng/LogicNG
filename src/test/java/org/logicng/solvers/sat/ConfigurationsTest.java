@@ -36,7 +36,7 @@ import java.util.Arrays;
 
 /**
  * Unit tests for the solver configurations.
- * @version 1.3
+ * @version 1.6
  * @since 1.0
  */
 public class ConfigurationsTest {
@@ -69,6 +69,8 @@ public class ConfigurationsTest {
             "incremental=false%n" +
             "initialPhase=true%n" +
             "proofGeneration=false%n" +
+            "cnfMethod=FACTORY_CNF%n" +
+            "auxiliaryVariablesInModels=true%n" +
             "}%n");
     Assert.assertEquals(expected, config.toString());
   }
