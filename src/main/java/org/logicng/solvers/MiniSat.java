@@ -644,7 +644,7 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public String toString() {
-    return String.format("MiniSat{result=%s, incremental=%s}", this.result, this.incremental);
+    return String.format(this.solver.getClass().getSimpleName());
   }
 
   private Literal getLiteralFromIntLiteral(final int lit) {
@@ -669,5 +669,9 @@ public final class MiniSat extends SATSolver {
 
   private boolean lastResultIsUsable() {
     return this.result != UNDEF && !this.lastComputationWithAssumptions;
+  }
+
+  public MiniSatConfig getConfig() {
+    return this.config;
   }
 }
