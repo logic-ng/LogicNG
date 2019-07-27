@@ -13,6 +13,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
+import org.logicng.transformations.cnf.TseitinTransformation;
 import org.logicng.util.Pair;
 
 import java.util.ArrayList;
@@ -113,6 +114,50 @@ public class ModelTest {
     assertThat(this.solver.enumerateAllModels()).hasSize(4);
     for (final Assignment assignment : this.solver.enumerateAllModels()) {
       assertThat(formula.evaluate(assignment)).isTrue();
+    }
+  }
+
+  @Test
+  public void testCNFWithAuxiliaryVars() throws ParserException {
+    this.solver.reset();
+    final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+    final Formula cnf = formula.transform(new TseitinTransformation(0));
+    this.solver.add(cnf);
+    this.solver.sat();
+    final Assignment model = this.solver.model();
+    assertThat(formula.evaluate(model)).isTrue();
+    final List<Assignment> allModels = this.solver.enumerateAllModels();
+    assertThat(allModels).hasSize(4);
+    if (this.solver.getConfig().isAuxiliaryVariablesInModels()) {
+      assertThat(model.formula(f).variables()).isEqualTo(cnf.variables());
+      for (final Assignment assignment : allModels) {
+        assertThat(formula.evaluate(assignment)).isTrue();
+        assertThat(assignment.formula(f).variables()).isEqualTo(cnf.variables());
+      }
+    } else {
+      assertThat(model.formula(f).variables()).isEqualTo(formula.variables());
+      for (final Assignment assignment : allModels) {
+        assertThat(formula.evaluate(assignment)).isTrue();
+        assertThat(assignment.formula(f).variables()).isEqualTo(formula.variables());
+      }
+    }
+  }
+
+  @Test
+  public void testCNFWithAuxiliaryVarsRestrictedToOriginal() throws ParserException {
+    this.solver.reset();
+    final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+    final Formula cnf = formula.transform(new TseitinTransformation(0));
+    this.solver.add(cnf);
+    this.solver.sat();
+    final Assignment model = this.solver.model(formula.variables());
+    assertThat(formula.evaluate(model)).isTrue();
+    final List<Assignment> allModels = this.solver.enumerateAllModels(formula.variables());
+    assertThat(allModels).hasSize(4);
+    assertThat(model.formula(f).variables()).isEqualTo(formula.variables());
+    for (final Assignment assignment : allModels) {
+      assertThat(formula.evaluate(assignment)).isTrue();
+      assertThat(assignment.formula(f).variables()).isEqualTo(formula.variables());
     }
   }
 
