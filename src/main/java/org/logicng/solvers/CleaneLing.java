@@ -32,6 +32,8 @@ import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
+import org.logicng.backbones.Backbone;
+import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -156,20 +158,30 @@ public final class CleaneLing extends SATSolver {
             if (constraint.isCC()) {
                 final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
                 this.ccEncoder.encode(constraint, result);
-            } else { this.addClauseSet(formula.cnf(), proposition); }
-        } else { this.addClauseSet(formula.cnf(), proposition); }
+            } else {
+                this.addClauseSet(formula.cnf(), proposition);
+            }
+        } else {
+            this.addClauseSet(formula.cnf(), proposition);
+        }
     }
 
     @Override
     public void addWithoutUnknown(final Formula formula) {
         final Assignment restriction = new Assignment(true);
-        for (final Variable var : formula.variables()) { if (this.name2idx.get(var.name()) == null) { restriction.addLiteral(var.negate()); } }
+        for (final Variable var : formula.variables()) {
+            if (this.name2idx.get(var.name()) == null) {
+                restriction.addLiteral(var.negate());
+            }
+        }
         this.add(formula.restrict(restriction));
     }
 
     @Override
     public CCIncrementalData addIncrementalCC(final PBConstraint cc) {
-        if (!cc.isCC()) { throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint"); }
+        if (!cc.isCC()) {
+            throw new IllegalArgumentException("Cannot generate an incremental cardinality constraint on a pseudo-Boolean constraint");
+        }
         final EncodingResult result = EncodingResult.resultForCleaneLing(this.f, this);
         return this.ccEncoder.encodeIncremental(cc, result);
     }
@@ -190,7 +202,9 @@ public final class CleaneLing extends SATSolver {
 
     @Override
     public Tristate sat(final SATHandler handler) {
-        if (this.result != UNDEF) { return this.result; }
+        if (this.result != UNDEF) {
+            return this.result;
+        }
         this.result = this.solver.solve(handler);
         return this.result;
     }
@@ -213,7 +227,9 @@ public final class CleaneLing extends SATSolver {
 
     @Override
     public Assignment model(final Collection<Variable> variables) {
-        if (this.result == UNDEF) { throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first."); }
+        if (this.result == UNDEF) {
+            throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'sat' first.");
+        }
         return this.result == TRUE ? this.createAssignment(this.solver.model(), variables) : null;
     }
 
@@ -286,13 +302,20 @@ public final class CleaneLing extends SATSolver {
     @Override
     public SortedSet<Variable> knownVariables() {
         final SortedSet<Variable> result = new TreeSet<>();
-        for (final String name : this.name2idx.keySet()) { result.add(this.f.variable(name)); }
+        for (final String name : this.name2idx.keySet()) {
+            result.add(this.f.variable(name));
+        }
         return result;
     }
 
     @Override
     public UNSATCore<Proposition> unsatCore() {
         throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
+    }
+
+    @Override
+    public Backbone computeBackbone(final Collection<Variable> relevantVariables, final BackboneType type) {
+        throw new UnsupportedOperationException("CleaneLing cannot compute fast backbones at the moment");
     }
 
     /**
@@ -324,8 +347,12 @@ public final class CleaneLing extends SATSolver {
         for (int i = 1; i < vec.size(); i++) {
             final Variable var = this.f.variable(this.idx2name.get(i));
             if (vec.get(i)) {
-                if (variables == null || variables.contains(var)) { model.addLiteral(var); }
-            } else if (variables == null || variables.contains(var)) { model.addLiteral(var.negate()); }
+                if (variables == null || variables.contains(var)) {
+                    model.addLiteral(var);
+                }
+            } else if (variables == null || variables.contains(var)) {
+                model.addLiteral(var.negate());
+            }
         }
         return model;
     }

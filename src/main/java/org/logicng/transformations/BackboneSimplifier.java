@@ -28,10 +28,13 @@
 package org.logicng.transformations;
 
 import org.logicng.backbones.Backbone;
-import org.logicng.backbones.BackboneGeneration;
+import org.logicng.backbones.BackboneType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.sat.MiniSatConfig;
 
 /**
  * This class simplifies a formula by computing its backbone and propagating
@@ -44,7 +47,10 @@ import org.logicng.formulas.FormulaTransformation;
 public class BackboneSimplifier implements FormulaTransformation {
   @Override
   public Formula apply(final Formula formula, final boolean cache) {
-    final Backbone backbone = BackboneGeneration.compute(formula);
+    final SATSolver solver = MiniSat.miniSat(formula.factory(), new MiniSatConfig.Builder()
+            .fastBackboneComputation(true).build());
+    solver.add(formula);
+    final Backbone backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
     if (!backbone.isSat()) {
       return formula.factory().falsum();
     }

@@ -84,6 +84,10 @@ public final class MiniSatConfig extends Configuration {
     final boolean proofGeneration;
     final CNFMethod cnfMethod;
     final boolean auxiliaryVariablesInModels;
+    final boolean fastBackboneComputation;
+    final boolean bbInitialUBCheckForRotatableLiterals;
+    final boolean bbCheckForComplementModelLiterals;
+    final boolean bbCheckForRotatableLiterals;
 
     /**
      * Constructs a new MiniSAT configuration from a given builder.
@@ -105,6 +109,10 @@ public final class MiniSatConfig extends Configuration {
         this.proofGeneration = builder.proofGeneration;
         this.cnfMethod = builder.cnfMethod;
         this.auxiliaryVariablesInModels = builder.auxiliaryVariablesInModels;
+        this.fastBackboneComputation = builder.fastBackboneComputation;
+        this.bbInitialUBCheckForRotatableLiterals = builder.bbInitialUBCheckForRotatableLiterals;
+        this.bbCheckForComplementModelLiterals = builder.bbCheckForComplementModelLiterals;
+        this.bbCheckForRotatableLiterals = builder.bbCheckForRotatableLiterals;
     }
 
     /**
@@ -147,6 +155,14 @@ public final class MiniSatConfig extends Configuration {
         return this.auxiliaryVariablesInModels;
     }
 
+    /**
+     * Returns whether fast backbone computation is activated or not.
+     * @return whether fast backbone computation is activated or not
+     */
+    public boolean isFastBackboneComputation() {
+        return this.fastBackboneComputation;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MiniSatConfig{").append(System.lineSeparator());
@@ -164,6 +180,10 @@ public final class MiniSatConfig extends Configuration {
         sb.append("proofGeneration=").append(this.proofGeneration).append(System.lineSeparator());
         sb.append("cnfMethod=").append(this.cnfMethod).append(System.lineSeparator());
         sb.append("auxiliaryVariablesInModels=").append(this.auxiliaryVariablesInModels).append(System.lineSeparator());
+        sb.append("fastBackboneComputation=").append(this.fastBackboneComputation).append(System.lineSeparator());
+        sb.append("bbInitialUBCheckForRotatableLiterals=").append(this.bbInitialUBCheckForRotatableLiterals).append(System.lineSeparator());
+        sb.append("bbCheckForComplementModelLiterals=").append(this.bbCheckForComplementModelLiterals).append(System.lineSeparator());
+        sb.append("bbCheckForRotatableLiterals=").append(this.bbCheckForRotatableLiterals).append(System.lineSeparator());
         sb.append("}").append(System.lineSeparator());
         return sb.toString();
     }
@@ -186,6 +206,10 @@ public final class MiniSatConfig extends Configuration {
         private boolean proofGeneration = false;
         CNFMethod cnfMethod = FACTORY_CNF;
         boolean auxiliaryVariablesInModels = true;
+        private boolean fastBackboneComputation = false;
+        private boolean bbInitialUBCheckForRotatableLiterals = true;
+        private boolean bbCheckForComplementModelLiterals = true;
+        private boolean bbCheckForRotatableLiterals = true;
 
         /**
          * Sets the variable activity decay factor to a given value. The default value is 0.95.
@@ -335,6 +359,52 @@ public final class MiniSatConfig extends Configuration {
          */
         public Builder auxiliaryVariablesInModels(final boolean auxiliaryVariablesInModels) {
             this.auxiliaryVariablesInModels = auxiliaryVariablesInModels;
+            return this;
+        }
+
+        /**
+         * Sets whether fast backbone computation is turned on or off.  The default value is {@code false}.
+         * @param fastBackboneComputation {@code true} if fast backbone generation is on, {@code false} otherwise
+         * @return the builder
+         */
+        public Builder fastBackboneComputation(final boolean fastBackboneComputation) {
+            this.fastBackboneComputation = fastBackboneComputation;
+            return this;
+        }
+
+        /**
+         * Sets whether the backbone algorithm should check for rotatable literals.
+         * The default value is {@code true}.
+         * @param checkForRotatableLiterals the boolean value that is {@code true} if the algorithm should check for
+         *                                  rotatables or {@code false} otherwise.
+         * @return the builder
+         */
+        public Builder bbCheckForRotatableLiterals(final boolean checkForRotatableLiterals) {
+            this.bbCheckForRotatableLiterals = checkForRotatableLiterals;
+            return this;
+        }
+
+        /**
+         * Sets whether the backbone algorithm should check for rotatable literals during initial unit propagation.
+         * The default value is {@code true}.
+         * @param initialUBCheckForRotatableLiterals the boolean value that is {@code true} if the algorithm should
+         *                                           check for rotatables or {@code false} otherwise.
+         * @return the builder
+         */
+        public Builder bbInitialUBCheckForRotatableLiterals(final boolean initialUBCheckForRotatableLiterals) {
+            this.bbInitialUBCheckForRotatableLiterals = initialUBCheckForRotatableLiterals;
+            return this;
+        }
+
+        /**
+         * Sets whether the backbone algorithm should check for complement model literals.
+         * The default value is {@code true}.
+         * @param checkForComplementModelLiterals the boolean value that is {@code true} if the algorithm should check for
+         *                                        complement literals or {@code false} otherwise.
+         * @return the builder
+         */
+        public Builder bbCheckForComplementModelLiterals(final boolean checkForComplementModelLiterals) {
+            this.bbCheckForComplementModelLiterals = checkForComplementModelLiterals;
             return this;
         }
 

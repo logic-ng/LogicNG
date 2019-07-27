@@ -32,6 +32,8 @@ import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
+import org.logicng.backbones.Backbone;
+import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -371,11 +373,11 @@ public final class MiniSat extends SATSolver {
     }
     LNGIntVector relevantAllIndices = null;
     if (relevantIndices != null) {
-      if(additionalVariables.isEmpty()) {
+      if (additionalVariables.isEmpty()) {
         relevantAllIndices = relevantIndices;
       } else {
         relevantAllIndices = new LNGIntVector(relevantIndices.size() + additionalVariables.size());
-        for(int i = 0; i < relevantIndices.size(); ++i) {
+        for (int i = 0; i < relevantIndices.size(); ++i) {
           relevantAllIndices.push(relevantIndices.get(i));
         }
         for (final Variable var : additionalVariables) {
@@ -514,6 +516,20 @@ public final class MiniSat extends SATSolver {
       propositions.add(clause2proposition.get(getFormulaForVector(vector)));
     }
     return new UNSATCore<>(new ArrayList<>(propositions), false);
+  }
+
+  @Override
+  public Backbone computeBackbone(final Collection<Variable> relevantVariables, final BackboneType type) {
+    if (!this.config.isFastBackboneComputation()) {
+      throw new UnsupportedOperationException("Cannot compute a backbone if fast backbone computation is not turned on");
+    }
+    if (!(this.solver instanceof MiniSat2Solver)) {
+      throw new UnsupportedOperationException("Only the original MiniSat can compute fast backbones");
+    }
+    final SolverState state = saveState();
+    final Backbone backbone = ((MiniSat2Solver) this.solver).computeBackbone(relevantVariables, type);
+    loadState(state);
+    return backbone;
   }
 
   /**

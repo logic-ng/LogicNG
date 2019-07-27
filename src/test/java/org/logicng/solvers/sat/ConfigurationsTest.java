@@ -71,6 +71,10 @@ public class ConfigurationsTest {
             "proofGeneration=false%n" +
             "cnfMethod=FACTORY_CNF%n" +
             "auxiliaryVariablesInModels=true%n" +
+            "fastBackboneComputation=false%n" +
+            "bbInitialUBCheckForRotatableLiterals=true%n" +
+            "bbCheckForComplementModelLiterals=true%n" +
+            "bbCheckForRotatableLiterals=true%n" +
             "}%n");
     Assert.assertEquals(expected, config.toString());
   }

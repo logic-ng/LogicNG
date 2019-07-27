@@ -139,7 +139,7 @@ public abstract class MiniSatStyleSolver {
    * @param sign {@code true} if the literal is negative, {@code false} otherwise
    * @return the literal (as integer value)
    */
-  public static int mkLit(int var, boolean sign) {
+  public static int mkLit(final int var, final boolean sign) {
     return var + var + (sign ? 1 : 0);
   }
 
@@ -148,7 +148,7 @@ public abstract class MiniSatStyleSolver {
    * @param lit the literal
    * @return the negated literal
    */
-  public static int not(int lit) {
+  public static int not(final int lit) {
     return lit ^ 1;
   }
 
@@ -157,7 +157,7 @@ public abstract class MiniSatStyleSolver {
    * @param lit the literal
    * @return {@code true} if the literal is negated
    */
-  public static boolean sign(int lit) {
+  public static boolean sign(final int lit) {
     return (lit & 1) == 1;
   }
 
@@ -166,7 +166,7 @@ public abstract class MiniSatStyleSolver {
    * @param lit the literal
    * @return the variable index of the literal
    */
-  public static int var(int lit) {
+  public static int var(final int lit) {
     return lit >> 1;
   }
 
@@ -176,7 +176,7 @@ public abstract class MiniSatStyleSolver {
    * @param x the current number of restarts
    * @return the next number in the Luby sequence
    */
-  protected static double luby(double y, int x) {
+  protected static double luby(final double y, final int x) {
     int intX = x;
     int size = 1;
     int seq = 0;
@@ -248,7 +248,7 @@ public abstract class MiniSatStyleSolver {
    * @param lit the literal
    * @return the variable of the literal
    */
-  protected MSVariable v(int lit) {
+  protected MSVariable v(final int lit) {
     return this.vars.get(lit >> 1);
   }
 
@@ -257,7 +257,7 @@ public abstract class MiniSatStyleSolver {
    * @param lit the literal
    * @return the assigned value of the literal
    */
-  protected Tristate value(int lit) {
+  protected Tristate value(final int lit) {
     return sign(lit) ? Tristate.negate(this.v(lit).assignment()) : this.v(lit).assignment();
   }
 
@@ -267,7 +267,7 @@ public abstract class MiniSatStyleSolver {
    * @param y the second variable
    * @return {@code true} if the first variable's activity is larger then the second one's
    */
-  public boolean lt(int x, int y) {
+  public boolean lt(final int x, final int y) {
     return this.vars.get(x).activity() > this.vars.get(y).activity();
   }
 
@@ -286,7 +286,7 @@ public abstract class MiniSatStyleSolver {
    * @param var the variable index
    * @return the name for the index
    */
-  public String nameForIdx(int var) {
+  public String nameForIdx(final int var) {
     return this.idx2name.get(var);
   }
 
@@ -295,7 +295,7 @@ public abstract class MiniSatStyleSolver {
    * @param name the variable name
    * @param id   the variable index
    */
-  public void addName(final String name, int id) {
+  public void addName(final String name, final int id) {
     this.name2idx.put(name, id);
     this.idx2name.put(id, name);
   }
@@ -315,7 +315,7 @@ public abstract class MiniSatStyleSolver {
    * @param proposition a proposition (if required for proof tracing)
    * @return {@code true} if the clause was added successfully, {@code false} otherwise
    */
-  public boolean addClause(int lit, final Proposition proposition) {
+  public boolean addClause(final int lit, final Proposition proposition) {
     final LNGIntVector unit = new LNGIntVector(1);
     unit.push(lit);
     return this.addClause(unit, proposition);
@@ -412,7 +412,7 @@ public abstract class MiniSatStyleSolver {
    * @return the mapping from variable names to internal solver indices
    */
   public Map<String, Integer> name2idx() {
-    return name2idx;
+    return this.name2idx;
   }
 
   /**
@@ -436,7 +436,7 @@ public abstract class MiniSatStyleSolver {
    * @param x a variable index
    * @return the abstraction of levels
    */
-  protected int abstractLevel(int x) {
+  protected int abstractLevel(final int x) {
     return 1 << (this.vars.get(x).level() & 31);
   }
 
@@ -444,7 +444,7 @@ public abstract class MiniSatStyleSolver {
    * Inserts a variable (given by its index) into the heap of decision variables.
    * @param x the variable index
    */
-  protected void insertVarOrder(int x) {
+  protected void insertVarOrder(final int x) {
     if (!this.orderHeap.inHeap(x) && this.vars.get(x).decision()) {
       this.orderHeap.insert(x);
     }
@@ -477,7 +477,7 @@ public abstract class MiniSatStyleSolver {
    * Bumps the activity of the variable at a given index.
    * @param v the variable index
    */
-  protected void varBumpActivity(int v) {
+  protected void varBumpActivity(final int v) {
     this.varBumpActivity(v, this.varInc);
   }
 
@@ -486,7 +486,7 @@ public abstract class MiniSatStyleSolver {
    * @param v   the variable index
    * @param inc the increment value
    */
-  protected void varBumpActivity(int v, double inc) {
+  protected void varBumpActivity(final int v, final double inc) {
     final MSVariable var = this.vars.get(v);
     var.incrementActivity(inc);
     if (var.activity() > 1e100) {
@@ -526,7 +526,7 @@ public abstract class MiniSatStyleSolver {
    * Decays the clause activity increment by the clause decay factor.
    */
   protected void claDecayActivity() {
-    claInc *= (1 / clauseDecay);
+    this.claInc *= (1 / this.clauseDecay);
   }
 
   /**
@@ -534,12 +534,12 @@ public abstract class MiniSatStyleSolver {
    * @param c the clause
    */
   protected void claBumpActivity(final MSClause c) {
-    c.incrementActivity(claInc);
+    c.incrementActivity(this.claInc);
     if (c.activity() > 1e20) {
-      for (final MSClause clause : learnts) {
+      for (final MSClause clause : this.learnts) {
         clause.rescaleActivity();
       }
-      claInc *= 1e-20;
+      this.claInc *= 1e-20;
     }
   }
 
@@ -643,28 +643,28 @@ public abstract class MiniSatStyleSolver {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    sb.append("ok            ").append(ok).append(System.lineSeparator());
-    sb.append("qhead         ").append(qhead).append(System.lineSeparator());
-    sb.append("#clauses      ").append(clauses.size()).append(System.lineSeparator());
-    sb.append("#learnts      ").append(learnts.size()).append(System.lineSeparator());
-    sb.append("#watches      ").append(watches.size()).append(System.lineSeparator());
-    sb.append("#vars         ").append(vars.size()).append(System.lineSeparator());
-    sb.append("#orderheap    ").append(orderHeap.size()).append(System.lineSeparator());
-    sb.append("#trail        ").append(trail.size()).append(System.lineSeparator());
-    sb.append("#trailLim     ").append(trailLim.size()).append(System.lineSeparator());
+    sb.append("ok            ").append(this.ok).append(System.lineSeparator());
+    sb.append("qhead         ").append(this.qhead).append(System.lineSeparator());
+    sb.append("#clauses      ").append(this.clauses.size()).append(System.lineSeparator());
+    sb.append("#learnts      ").append(this.learnts.size()).append(System.lineSeparator());
+    sb.append("#watches      ").append(this.watches.size()).append(System.lineSeparator());
+    sb.append("#vars         ").append(this.vars.size()).append(System.lineSeparator());
+    sb.append("#orderheap    ").append(this.orderHeap.size()).append(System.lineSeparator());
+    sb.append("#trail        ").append(this.trail.size()).append(System.lineSeparator());
+    sb.append("#trailLim     ").append(this.trailLim.size()).append(System.lineSeparator());
 
-    sb.append("model         ").append(model).append(System.lineSeparator());
-    sb.append("conflict      ").append(conflict).append(System.lineSeparator());
-    sb.append("assumptions   ").append(assumptions).append(System.lineSeparator());
-    sb.append("#seen         ").append(seen.size()).append(System.lineSeparator());
-    sb.append("#stack        ").append(analyzeStack.size()).append(System.lineSeparator());
-    sb.append("#toclear      ").append(analyzeToClear.size()).append(System.lineSeparator());
+    sb.append("model         ").append(this.model).append(System.lineSeparator());
+    sb.append("conflict      ").append(this.conflict).append(System.lineSeparator());
+    sb.append("assumptions   ").append(this.assumptions).append(System.lineSeparator());
+    sb.append("#seen         ").append(this.seen.size()).append(System.lineSeparator());
+    sb.append("#stack        ").append(this.analyzeStack.size()).append(System.lineSeparator());
+    sb.append("#toclear      ").append(this.analyzeToClear.size()).append(System.lineSeparator());
 
-    sb.append("claInc        ").append(claInc).append(System.lineSeparator());
-    sb.append("simpDBAssigns ").append(simpDBAssigns).append(System.lineSeparator());
-    sb.append("simpDBProps   ").append(simpDBProps).append(System.lineSeparator());
-    sb.append("#clause lits  ").append(clausesLiterals).append(System.lineSeparator());
-    sb.append("#learnts lits ").append(learntsLiterals).append(System.lineSeparator());
+    sb.append("claInc        ").append(this.claInc).append(System.lineSeparator());
+    sb.append("simpDBAssigns ").append(this.simpDBAssigns).append(System.lineSeparator());
+    sb.append("simpDBProps   ").append(this.simpDBProps).append(System.lineSeparator());
+    sb.append("#clause lits  ").append(this.clausesLiterals).append(System.lineSeparator());
+    sb.append("#learnts lits ").append(this.learntsLiterals).append(System.lineSeparator());
     return sb.toString();
   }
 
@@ -680,7 +680,7 @@ public abstract class MiniSatStyleSolver {
      * @param clause      the clause
      * @param proposition the proposition
      */
-    public ProofInformation(LNGIntVector clause, Proposition proposition) {
+    public ProofInformation(final LNGIntVector clause, final Proposition proposition) {
       this.clause = clause;
       this.proposition = proposition;
     }
@@ -690,7 +690,7 @@ public abstract class MiniSatStyleSolver {
      * @return the clause
      */
     public LNGIntVector clause() {
-      return clause;
+      return this.clause;
     }
 
     /**
@@ -698,14 +698,14 @@ public abstract class MiniSatStyleSolver {
      * @return the proposition
      */
     public Proposition proposition() {
-      return proposition;
+      return this.proposition;
     }
 
     @Override
     public String toString() {
       return "ProofInformation{" +
-              "clause=" + clause +
-              ", proposition=" + proposition +
+              "clause=" + this.clause +
+              ", proposition=" + this.proposition +
               '}';
     }
   }
@@ -726,4 +726,5 @@ public abstract class MiniSatStyleSolver {
     }
     return upZeroLiterals;
   }
+
 }

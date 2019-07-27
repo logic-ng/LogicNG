@@ -29,7 +29,10 @@
 package org.logicng.backbones;
 
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.util.FormulaHelper;
 
 import java.util.Collection;
@@ -39,29 +42,16 @@ import java.util.Collections;
  * Main entry point for backbone computations.
  * <p>
  * This class provides convenient methods for backbone computation for many use cases.
- * For more control over the backbone solver you can create an instance of
- * {@link MiniSatBackbone} directly.  E.g., with an instance of {@link MiniSatBackbone}
- * the already loaded formulas can be re-used for multiple backbone computations.
- * @version 1.5.1
+ * @version 1.6.0
  * @since 1.5.0
  */
 public class BackboneGeneration {
-
-    private static final MiniSatBackbone solver = new MiniSatBackbone();
 
     /**
      * Private constructor.
      */
     private BackboneGeneration() {
         // Intentionally left empty.
-    }
-
-    /**
-     * Sets a new backbone configuration.
-     * @param config the new backbone configuration
-     */
-    public static void setConfig(final BackboneConfig config) {
-        solver.setConfig(config);
     }
 
     /**
@@ -72,9 +62,13 @@ public class BackboneGeneration {
      * @return the backbone or {@code null} if the formula is UNSAT
      */
     public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
-        solver.reset();
-        solver.add(formulas);
-        return solver.compute(variables, type);
+        if (formulas == null || formulas.isEmpty()) {
+            throw new IllegalArgumentException("Provide at least one formula for backbone computation");
+        }
+        final FormulaFactory f = formulas.iterator().next().factory();
+        final MiniSat miniSat = MiniSat.miniSat(f, new MiniSatConfig.Builder().fastBackboneComputation(true).build());
+        miniSat.add(formulas);
+        return miniSat.computeBackbone(variables, type);
     }
 
     /**
