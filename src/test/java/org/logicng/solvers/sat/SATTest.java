@@ -105,13 +105,13 @@ public class SATTest {
     this.solvers[9] = CleaneLing.full(this.f);
 
     this.testStrings = new String[10];
-    this.testStrings[0] = "MiniSat{result=UNDEF, incremental=true}";
-    this.testStrings[1] = "MiniSat{result=UNDEF, incremental=false}";
-    this.testStrings[2] = "MiniSat{result=UNDEF, incremental=false}";
-    this.testStrings[3] = "MiniSat{result=UNDEF, incremental=true}";
-    this.testStrings[4] = "MiniSat{result=UNDEF, incremental=false}";
-    this.testStrings[5] = "MiniSat{result=UNDEF, incremental=true}";
-    this.testStrings[6] = "MiniSat{result=UNDEF, incremental=true}";
+    this.testStrings[0] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+    this.testStrings[1] = "MiniSat2Solver{result=UNDEF, incremental=false}";
+    this.testStrings[2] = "GlucoseSyrup{result=UNDEF, incremental=false}";
+    this.testStrings[3] = "MiniCard{result=UNDEF, incremental=true}";
+    this.testStrings[4] = "MiniCard{result=UNDEF, incremental=false}";
+    this.testStrings[5] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+    this.testStrings[6] = "MiniSat2Solver{result=UNDEF, incremental=true}";
     this.testStrings[7] = "CleaneLing{result=UNDEF, idx2name={}}";
     this.testStrings[8] = "CleaneLing{result=UNDEF, idx2name={}}";
     this.testStrings[9] = "CleaneLing{result=UNDEF, idx2name={}}";
@@ -123,7 +123,6 @@ public class SATTest {
       s.add(F.TRUE);
       Assert.assertEquals(TRUE, s.sat());
       Assert.assertEquals(0, s.model().size());
-      Assert.assertTrue(s.toString().contains("MiniSat{result=TRUE, incremental=") || s.toString().equals("CleaneLing{result=TRUE, idx2name={}}"));
       s.reset();
     }
   }
