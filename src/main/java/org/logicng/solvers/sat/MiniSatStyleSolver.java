@@ -44,10 +44,15 @@
 
 package org.logicng.solvers.sat;
 
+import static org.logicng.datastructures.Tristate.UNDEF;
+
+import org.logicng.backbones.Backbone;
+import org.logicng.backbones.BackboneType;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.LNGHeap;
@@ -55,8 +60,15 @@ import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
 import org.logicng.solvers.datastructures.MSWatcher;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * The super class for all MiniSAT-style solvers.
@@ -119,6 +131,12 @@ public abstract class MiniSatStyleSolver {
   // Proof generating information
   protected LNGVector<ProofInformation> pgOriginalClauses;
   protected LNGVector<LNGIntVector> pgProof;
+
+  // backbone computation
+  private Stack<Integer> backboneCandidates;
+  private LNGIntVector backboneAssumptions;
+  private HashMap<Integer, Tristate> backboneMap;
+  private boolean computingBackbone;
 
   /**
    * Constructs a new MiniSAT-style solver with a given configuration.
@@ -225,6 +243,7 @@ public abstract class MiniSatStyleSolver {
       this.pgOriginalClauses = new LNGVector<>();
       this.pgProof = new LNGVector<>();
     }
+    this.computingBackbone = false;
   }
 
   /**
@@ -456,7 +475,7 @@ public abstract class MiniSatStyleSolver {
    */
   protected int pickBranchLit() {
     int next = -1;
-    while (next == -1 || this.vars.get(next).assignment() != Tristate.UNDEF || !this.vars.get(next).decision()) {
+    while (next == -1 || this.vars.get(next).assignment() != UNDEF || !this.vars.get(next).decision()) {
       if (this.orderHeap.empty()) {
         return -1;
       } else {
@@ -506,7 +525,7 @@ public abstract class MiniSatStyleSolver {
   protected void rebuildOrderHeap() {
     final LNGIntVector vs = new LNGIntVector();
     for (int v = 0; v < this.nVars(); v++) {
-      if (this.vars.get(v).decision() && this.vars.get(v).assignment() == Tristate.UNDEF) {
+      if (this.vars.get(v).decision() && this.vars.get(v).assignment() == UNDEF) {
         vs.push(v);
       }
     }
@@ -589,11 +608,30 @@ public abstract class MiniSatStyleSolver {
    */
   protected abstract void analyzeFinal(int p, final LNGIntVector outConflict);
 
-  /**
-   * Performs backtracking up to a given level.
-   * @param level the level
-   */
-  protected abstract void cancelUntil(int level);
+  protected void cancelUntil(final int level) {
+    if (decisionLevel() > level) {
+      if (!this.computingBackbone) {
+        for (int c = this.trail.size() - 1; c >= this.trailLim.get(level); c--) {
+          final int x = var(this.trail.get(c));
+          final MSVariable v = this.vars.get(x);
+          v.assign(Tristate.UNDEF);
+          v.setPolarity(sign(this.trail.get(c)));
+          insertVarOrder(x);
+        }
+      } else {
+        for (int c = this.trail.size() - 1; c >= this.trailLim.get(level); c--) {
+          final int x = var(this.trail.get(c));
+          final MSVariable v = this.vars.get(x);
+          v.assign(Tristate.UNDEF);
+          v.setPolarity(!this.computingBackbone && sign(this.trail.get(c)));
+          insertVarOrder(x);
+        }
+      }
+      this.qhead = this.trailLim.get(level);
+      this.trail.removeElements(this.trail.size() - this.trailLim.get(level));
+      this.trailLim.removeElements(this.trailLim.size() - level);
+    }
+  }
 
   /**
    * Reduces the database of learnt clauses.  Only clauses of the first half of the clauses with the most activity
@@ -727,4 +765,232 @@ public abstract class MiniSatStyleSolver {
     return upZeroLiterals;
   }
 
+  ///// Backbone Stuff /////
+
+  /**
+   * Computes the backbone of the given variables with respect to the formulas added to the solver.
+   * @param variables variables to test
+   * @param type      backbone type
+   * @return the backbone projected to the relevant variables or {@code null} if the formula on the solver with the restrictions are not satisfiable
+   */
+  public Backbone computeBackbone(final Collection<Variable> variables, final BackboneType type) {
+    final boolean sat = solve(null) == Tristate.TRUE;
+    if (sat) {
+      this.computingBackbone = true;
+      final List<Integer> relevantVarIndices = getRelevantVarIndices(variables);
+      initBackboneDS(relevantVarIndices);
+      computeBackbone(relevantVarIndices, type);
+      final Backbone backbone = buildBackbone(variables, type);
+      this.computingBackbone = false;
+      return backbone;
+    } else {
+      return Backbone.unsatBackbone();
+    }
+  }
+
+  /**
+   * Returns a list of relevant variable indices. A relevant variable is known by the solver.
+   * @param variables variables to convert and filter
+   * @return list of relevant variable indices
+   */
+  private List<Integer> getRelevantVarIndices(final Collection<Variable> variables) {
+    final List<Integer> relevantVarIndices = new ArrayList<>(variables.size());
+    for (final Variable var : variables) {
+      final Integer idx = this.name2idx.get(var.name());
+      // Note: Unknown variables are variables added to the solver yet. Thus, these are optional variables and can
+      // be left out for the backbone computation.
+      if (idx != null) {
+        relevantVarIndices.add(idx);
+      }
+    }
+    return relevantVarIndices;
+  }
+
+  /**
+   * Initializes the internal solver state for backbones.
+   * @param variables to test
+   */
+  private void initBackboneDS(final List<Integer> variables) {
+    this.backboneCandidates = new Stack<>();
+    this.backboneAssumptions = new LNGIntVector(variables.size());
+    this.backboneMap = new HashMap<>();
+    for (final Integer var : variables) {
+      this.backboneMap.put(var, UNDEF);
+    }
+  }
+
+  /**
+   * Computes the backbone for the given variables.
+   * @param variables variables to test
+   */
+  private void computeBackbone(final List<Integer> variables, final BackboneType type) {
+    final Stack<Integer> candidates = createInitialCandidates(variables, type);
+    while (candidates.size() > 0) {
+      final int lit = candidates.pop();
+      if (solveWithLit(lit)) {
+        refineUpperBound();
+      } else {
+        addBackboneLiteral(lit);
+      }
+    }
+  }
+
+  /**
+   * Creates the initial candidate literals for the backbone computation.
+   * @param variables variables to test
+   * @return initial candidates
+   */
+  private Stack<Integer> createInitialCandidates(final List<Integer> variables, final BackboneType type) {
+    for (final Integer var : variables) {
+      if (isUPZeroLit(var)) {
+        final int backboneLit = mkLit(var, !this.model.get(var));
+        addBackboneLiteral(backboneLit);
+      } else {
+        final boolean modelPhase = this.model.get(var);
+        if (isBothOrNegativeType(type) && !modelPhase || isBothOrPositiveType(type) && modelPhase) {
+          final int lit = mkLit(var, !modelPhase);
+          if (!this.config.bbInitialUBCheckForRotatableLiterals || !isRotatable(lit)) {
+            this.backboneCandidates.add(lit);
+          }
+        }
+      }
+    }
+    return this.backboneCandidates;
+  }
+
+  /**
+   * Refines the upper bound by optional checks (UP zero literal, complement model literal, rotatable literal).
+   */
+  private void refineUpperBound() {
+    for (final Integer lit : new ArrayList<>(this.backboneCandidates)) {
+      final int var = var(lit);
+      if (isUPZeroLit(var)) {
+        this.backboneCandidates.remove(lit);
+        addBackboneLiteral(lit);
+      } else if (this.config.bbCheckForComplementModelLiterals && this.model.get(var) == sign(lit)) {
+        this.backboneCandidates.remove(lit);
+      } else if (this.config.bbCheckForRotatableLiterals && isRotatable(lit)) {
+        this.backboneCandidates.remove(lit);
+      }
+    }
+  }
+
+  /**
+   * Tests the given literal with the formula on the solver for satisfiability.
+   * @param lit literal to test
+   * @return {@code true} if satisfiable, otherwise {@code false}
+   */
+  private boolean solveWithLit(final int lit) {
+    this.backboneAssumptions.push(not(lit));
+    final boolean sat = solve(null, this.backboneAssumptions) == Tristate.TRUE;
+    this.backboneAssumptions.pop();
+    return sat;
+  }
+
+  /**
+   * Builds the backbone object from the computed backbone literals.
+   * @param variables relevant variables
+   * @return backbone
+   */
+  private Backbone buildBackbone(final Collection<Variable> variables, final BackboneType type) {
+    final SortedSet<Variable> posBackboneVars = isBothOrPositiveType(type) ? new TreeSet<Variable>() : null;
+    final SortedSet<Variable> negBackboneVars = isBothOrNegativeType(type) ? new TreeSet<Variable>() : null;
+    final SortedSet<Variable> optionalVars = isBothType(type) ? new TreeSet<Variable>() : null;
+    for (final Variable var : variables) {
+      final Integer idx = this.name2idx.get(var.name());
+      if (idx == null) {
+        if (isBothType(type)) {
+          optionalVars.add(var);
+        }
+      } else {
+        switch (this.backboneMap.get(idx)) {
+          case TRUE:
+            if (isBothOrPositiveType(type)) {
+              posBackboneVars.add(var);
+            }
+            break;
+          case FALSE:
+            if (isBothOrNegativeType(type)) {
+              negBackboneVars.add(var);
+            }
+            break;
+          case UNDEF:
+            if (isBothType(type)) {
+              optionalVars.add(var);
+            }
+            break;
+          default:
+            throw new IllegalStateException("Unknown tristate: " + this.backboneMap.get(idx));
+        }
+      }
+    }
+    return Backbone.satBackbone(posBackboneVars, negBackboneVars, optionalVars);
+  }
+
+  /**
+   * Tests the given variable whether it is a unit propagated literal on level 0.
+   * <p>
+   * Assumption: The formula on the solver has successfully been tested to be satisfiable before.
+   * @param var variable index to test
+   * @return {@code true} if the variable is a unit propagated literal on level 0, otherwise {@code false}
+   */
+  private boolean isUPZeroLit(final int var) {
+    return this.vars.get(var).level() == 0;
+  }
+
+  /**
+   * Tests the given literal whether it is unit in the given clause.
+   * @param lit    literal to test
+   * @param clause clause containing the literal
+   * @return {@code true} if the literal is unit, {@code false} otherwise
+   */
+  private boolean isUnit(final int lit, final MSClause clause) {
+    for (int i = 0; i < clause.size(); ++i) {
+      final int clauseLit = clause.get(i);
+      if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Tests the given literal whether it is rotatable in the current model.
+   * @param lit literal to test
+   * @return {@code true} if the literal is rotatable, otherwise {@code false}
+   */
+  private boolean isRotatable(final int lit) {
+    // A rotatable literal MUST NOT be a unit propagated literal
+    if (v(lit).reason() != null) {
+      return false;
+    }
+    // A rotatable literal MUST NOT be unit
+    for (final MSWatcher watcher : this.watches.get(not(lit))) {
+      if (isUnit(lit, watcher.clause())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Adds the given literal to the backbone result and optionally adds the literal to the solver.
+   * @param lit literal to add
+   */
+  private void addBackboneLiteral(final int lit) {
+    this.backboneMap.put(var(lit), sign(lit) ? Tristate.FALSE : Tristate.TRUE);
+    this.backboneAssumptions.push(lit);
+  }
+
+  private boolean isBothOrPositiveType(final BackboneType type) {
+    return type == BackboneType.POSITIVE_AND_NEGATIVE || type == BackboneType.ONLY_POSITIVE;
+  }
+
+  private boolean isBothOrNegativeType(final BackboneType type) {
+    return type == BackboneType.POSITIVE_AND_NEGATIVE || type == BackboneType.ONLY_NEGATIVE;
+  }
+
+  private boolean isBothType(final BackboneType type) {
+    return type == BackboneType.POSITIVE_AND_NEGATIVE;
+  }
 }

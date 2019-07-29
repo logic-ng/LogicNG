@@ -314,7 +314,7 @@ public final class CleaneLing extends SATSolver {
     }
 
     @Override
-    public Backbone computeBackbone(final Collection<Variable> relevantVariables, final BackboneType type) {
+    public Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type) {
         throw new UnsupportedOperationException("CleaneLing cannot compute fast backbones at the moment");
     }
 

@@ -470,7 +470,7 @@ public abstract class SATSolver {
      * @param type              the type of backbone which should be computed
      * @return the backbone
      */
-    public abstract Backbone computeBackbone(final Collection<Variable> relevantVariables, final BackboneType type);
+    public abstract Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type);
 
     /**
      * Returns all unit propagated literals on level 0 of the current formula on the solver.

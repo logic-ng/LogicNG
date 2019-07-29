@@ -94,7 +94,7 @@ public class BackboneGenerationTest {
     @Test
     public void testSimpleBackbones() {
         final FormulaFactory f = new FormulaFactory();
-        final MiniSat solver = MiniSat.miniSat(f, new MiniSatConfig.Builder().fastBackboneComputation(true).build());
+        final MiniSat solver = MiniSat.miniSat(f);
 
         final Literal x = f.literal("x", true);
         final Literal y = f.literal("y", true);
@@ -109,7 +109,7 @@ public class BackboneGenerationTest {
 
         SolverState before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(Collections.<Variable>emptyList(), BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(Collections.<Variable>emptyList(), BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -117,7 +117,7 @@ public class BackboneGenerationTest {
         formula = x;
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singletonList(x))
         );
         solver.loadState(before);
@@ -125,7 +125,7 @@ public class BackboneGenerationTest {
         formula = f.and(x, y);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x, y))
         );
         solver.loadState(before);
@@ -133,7 +133,7 @@ public class BackboneGenerationTest {
         formula = f.or(x, y);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -141,7 +141,7 @@ public class BackboneGenerationTest {
         formula = x.negate();
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(x.negate()))
         );
         solver.loadState(before);
@@ -149,7 +149,7 @@ public class BackboneGenerationTest {
         formula = f.or(f.and(x, y, z), f.and(x, y, u), f.and(x, u, z));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(x))
         );
         solver.loadState(before);
@@ -157,7 +157,7 @@ public class BackboneGenerationTest {
         formula = f.and(f.or(x, y, z), f.or(x, y, u), f.or(x, u, z));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>()
         );
         solver.loadState(before);
@@ -165,7 +165,7 @@ public class BackboneGenerationTest {
         formula = f.and(f.or(x.negate(), y), x);
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x, y))
         );
         solver.loadState(before);
@@ -173,7 +173,7 @@ public class BackboneGenerationTest {
         formula = f.and(f.or(x, y), f.or(x.negate(), y));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(y))
         );
         solver.loadState(before);
@@ -181,14 +181,14 @@ public class BackboneGenerationTest {
         formula = f.and(f.and(f.or(x.negate(), y), x.negate()), f.and(z, f.or(x, y)));
         before = solver.saveState();
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Arrays.asList(x.negate(), y, z))
         );
         solver.loadState(before);
 
         formula = f.and(f.or(x, y), f.or(u, v), z);
         solver.add(formula);
-        assertThat(solver.computeBackbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
+        assertThat(solver.backbone(variables, BackboneType.POSITIVE_AND_NEGATIVE).getCompleteBackbone()).isEqualTo(
                 new TreeSet<>(Collections.singleton(z))
         );
     }
@@ -197,9 +197,9 @@ public class BackboneGenerationTest {
     public void testSmallFormulas() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
-        final MiniSat solver = MiniSat.miniSat(f, new MiniSatConfig.Builder().fastBackboneComputation(true).build());
+        final MiniSat solver = MiniSat.miniSat(f);
         solver.add(formula);
-        final Backbone backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        final Backbone backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         assertThat(verifyBackbone(backbone, formula, formula.variables())).isTrue();
     }
 
@@ -207,9 +207,9 @@ public class BackboneGenerationTest {
     public void testLargeFormula() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
-        final MiniSat solver = MiniSat.miniSat(f, new MiniSatConfig.Builder().fastBackboneComputation(true).build());
+        final MiniSat solver = MiniSat.miniSat(f);
         solver.add(formula);
-        final Backbone backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        final Backbone backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
         assertThat(verifyBackbone(backbone, formula, formula.variables())).isTrue();
     }
 
@@ -242,7 +242,7 @@ public class BackboneGenerationTest {
     @Test
     public void testBackboneType() {
         final FormulaFactory f = new FormulaFactory();
-        final MiniSat solver = MiniSat.miniSat(f, new MiniSatConfig.Builder().fastBackboneComputation(true).build());
+        final MiniSat solver = MiniSat.miniSat(f);
 
         final Literal x = f.literal("x", true);
         final Literal y = f.literal("y", true);
@@ -251,9 +251,9 @@ public class BackboneGenerationTest {
         Formula formula = f.not(x);
         SolverState before = solver.saveState();
         solver.add(formula);
-        Backbone backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        Backbone backbonePositive = solver.computeBackbone(formula.variables(), BackboneType.ONLY_POSITIVE);
-        Backbone backboneNegative = solver.computeBackbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        Backbone backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        Backbone backbonePositive = solver.backbone(formula.variables(), BackboneType.ONLY_POSITIVE);
+        Backbone backboneNegative = solver.backbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
         assertThat(backbone.getCompleteBackbone()).containsExactly(x.negate());
         assertThat(backbonePositive.getCompleteBackbone()).isEmpty();
         assertThat(backboneNegative.getCompleteBackbone()).containsExactly(x.negate());
@@ -265,9 +265,9 @@ public class BackboneGenerationTest {
         formula = f.and(f.or(x, y.negate()), x.negate());
         before = solver.saveState();
         solver.add(formula);
-        backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        backbonePositive = solver.computeBackbone(formula.variables(), BackboneType.ONLY_POSITIVE);
-        backboneNegative = solver.computeBackbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        backbonePositive = solver.backbone(formula.variables(), BackboneType.ONLY_POSITIVE);
+        backboneNegative = solver.backbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
         assertThat(backbone.getCompleteBackbone()).containsExactly(x.negate(), y.negate());
         assertThat(backbonePositive.getCompleteBackbone()).isEmpty();
         assertThat(backboneNegative.getCompleteBackbone()).containsExactly(x.negate(), y.negate());
@@ -279,9 +279,9 @@ public class BackboneGenerationTest {
         formula = f.and(f.or(x, y), f.or(x.negate(), y));
         before = solver.saveState();
         solver.add(formula);
-        backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        backbonePositive = solver.computeBackbone(formula.variables(), BackboneType.ONLY_POSITIVE);
-        backboneNegative = solver.computeBackbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        backbonePositive = solver.backbone(formula.variables(), BackboneType.ONLY_POSITIVE);
+        backboneNegative = solver.backbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
         assertThat(backbone.getCompleteBackbone()).containsExactly(y);
         assertThat(backbonePositive.getCompleteBackbone()).containsExactly(y);
         assertThat(backboneNegative.getCompleteBackbone()).isEmpty();
@@ -293,9 +293,9 @@ public class BackboneGenerationTest {
         formula = f.and(f.and(f.or(x.negate(), y), x.negate()), f.and(z, f.or(x, y)));
         before = solver.saveState();
         solver.add(formula);
-        backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
-        backbonePositive = solver.computeBackbone(formula.variables(), BackboneType.ONLY_POSITIVE);
-        backboneNegative = solver.computeBackbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
+        backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        backbonePositive = solver.backbone(formula.variables(), BackboneType.ONLY_POSITIVE);
+        backboneNegative = solver.backbone(formula.variables(), BackboneType.ONLY_NEGATIVE);
         assertThat(backbone.getCompleteBackbone()).containsExactly(x.negate(), y, z);
         assertThat(backbone.getOptionalVariables()).containsExactly();
         assertThat(backbonePositive.getCompleteBackbone()).containsExactly(y, z);
@@ -309,20 +309,20 @@ public class BackboneGenerationTest {
     @Test
     public void testDifferentConfigurations() throws IOException, ParserException {
         final List<MiniSatConfig> configs = new ArrayList<>();
-        configs.add(new MiniSatConfig.Builder().fastBackboneComputation(true).bbCheckForComplementModelLiterals(false).build());
-        configs.add(new MiniSatConfig.Builder().fastBackboneComputation(true).bbCheckForRotatableLiterals(false).build());
-        configs.add(new MiniSatConfig.Builder().fastBackboneComputation(true).bbInitialUBCheckForRotatableLiterals(false).build());
+        configs.add(new MiniSatConfig.Builder().bbCheckForComplementModelLiterals(false).build());
+        configs.add(new MiniSatConfig.Builder().bbCheckForRotatableLiterals(false).build());
+        configs.add(new MiniSatConfig.Builder().bbInitialUBCheckForRotatableLiterals(false).build());
 
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
-        MiniSat solver = MiniSat.miniSat(f, new MiniSatConfig.Builder().fastBackboneComputation(true).build());
+        MiniSat solver = MiniSat.miniSat(f);
         solver.add(formula);
-        final Backbone backbone = solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+        final Backbone backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
 
         for (final MiniSatConfig config : configs) {
             solver = MiniSat.miniSat(f, config);
             solver.add(formula);
-            assertThat(solver.computeBackbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE)).isEqualTo(backbone);
+            assertThat(solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE)).isEqualTo(backbone);
         }
     }
 }

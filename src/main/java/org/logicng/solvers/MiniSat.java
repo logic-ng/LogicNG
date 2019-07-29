@@ -519,16 +519,15 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public Backbone computeBackbone(final Collection<Variable> relevantVariables, final BackboneType type) {
-    if (!this.config.isFastBackboneComputation()) {
-      throw new UnsupportedOperationException("Cannot compute a backbone if fast backbone computation is not turned on");
+  public Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type) {
+    SolverState stateBeforeBackbone = null;
+    if (this.style == SolverStyle.MINISAT && this.incremental) {
+      stateBeforeBackbone = this.saveState();
     }
-    if (!(this.solver instanceof MiniSat2Solver)) {
-      throw new UnsupportedOperationException("Only the original MiniSat can compute fast backbones");
+    final Backbone backbone = this.solver.computeBackbone(relevantVariables, type);
+    if (this.style == SolverStyle.MINISAT && this.incremental) {
+      loadState(stateBeforeBackbone);
     }
-    final SolverState state = saveState();
-    final Backbone backbone = ((MiniSat2Solver) this.solver).computeBackbone(relevantVariables, type);
-    loadState(state);
     return backbone;
   }
 
