@@ -465,6 +465,15 @@ public abstract class SATSolver {
     public abstract UNSATCore<Proposition> unsatCore();
 
     /**
+     * Computes a backbone with both positive and negative variables of the current formula on the solver.
+     * @param relevantVariables the variables which should be considered for the backbone
+     * @return the backbone
+     */
+    public Backbone backbone(final Collection<Variable> relevantVariables) {
+        return backbone(relevantVariables, BackboneType.POSITIVE_AND_NEGATIVE);
+    }
+
+    /**
      * Computes a backbone of the current formula on the solver.
      * @param relevantVariables the variables which should be considered for the backbone
      * @param type              the type of backbone which should be computed

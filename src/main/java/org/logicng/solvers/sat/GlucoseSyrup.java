@@ -856,7 +856,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
           this.lbdQueue.fastClear();
           int bt = 0;
           if (this.incremental) {
-            bt = (decisionLevel() < this.assumptions.size()) ? decisionLevel() : this.assumptions.size();
+            bt = Math.min(decisionLevel(), this.assumptions.size());
           }
           cancelUntil(bt);
           return Tristate.UNDEF;
@@ -1049,6 +1049,19 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     for (int m = 0; m < selectors.size(); m++) {
       this.seen.set(var(selectors.get(m)), false);
     }
+  }
+
+  @Override
+  protected boolean isRotatable(final int lit) {
+    if (!super.isRotatable(lit)) {
+      return false;
+    }
+    for (final MSWatcher watcher : this.watchesBin.get(not(lit))) {
+      if (isUnit(lit, watcher.clause())) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

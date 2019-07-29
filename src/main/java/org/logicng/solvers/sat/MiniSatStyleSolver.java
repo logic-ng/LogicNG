@@ -944,7 +944,7 @@ public abstract class MiniSatStyleSolver {
    * @param clause clause containing the literal
    * @return {@code true} if the literal is unit, {@code false} otherwise
    */
-  private boolean isUnit(final int lit, final MSClause clause) {
+  protected boolean isUnit(final int lit, final MSClause clause) {
     for (int i = 0; i < clause.size(); ++i) {
       final int clauseLit = clause.get(i);
       if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
@@ -959,7 +959,7 @@ public abstract class MiniSatStyleSolver {
    * @param lit literal to test
    * @return {@code true} if the literal is rotatable, otherwise {@code false}
    */
-  private boolean isRotatable(final int lit) {
+  protected boolean isRotatable(final int lit) {
     // A rotatable literal MUST NOT be a unit propagated literal
     if (v(lit).reason() != null) {
       return false;
