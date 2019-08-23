@@ -28,10 +28,12 @@
 package org.logicng.transformations;
 
 import org.logicng.backbones.Backbone;
-import org.logicng.backbones.BackboneGeneration;
+import org.logicng.backbones.BackboneType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 
 /**
  * This class simplifies a formula by computing its backbone and propagating
@@ -42,19 +44,21 @@ import org.logicng.formulas.FormulaTransformation;
  * @since 1.5.0
  */
 public class BackboneSimplifier implements FormulaTransformation {
-    @Override
-    public Formula apply(final Formula formula, final boolean cache) {
-        final Backbone backbone = BackboneGeneration.compute(formula);
-        if (backbone == null) {
-            return formula.factory().falsum();
-        }
-        if (!backbone.getNegativeBackbone().isEmpty() || !backbone.getPositiveBackbone().isEmpty()) {
-            final Formula backboneFormula = backbone.toFormula(formula.factory());
-            final Assignment assignment = new Assignment(backbone.getCompleteBackbone());
-            final Formula restrictedFormula = formula.restrict(assignment);
-            return formula.factory().and(backboneFormula, restrictedFormula);
-        } else {
-            return formula;
-        }
+  @Override
+  public Formula apply(final Formula formula, final boolean cache) {
+    final SATSolver solver = MiniSat.miniSat(formula.factory());
+    solver.add(formula);
+    final Backbone backbone = solver.backbone(formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
+    if (!backbone.isSat()) {
+      return formula.factory().falsum();
     }
+    if (!backbone.getNegativeBackbone().isEmpty() || !backbone.getPositiveBackbone().isEmpty()) {
+      final Formula backboneFormula = backbone.toFormula(formula.factory());
+      final Assignment assignment = new Assignment(backbone.getCompleteBackbone());
+      final Formula restrictedFormula = formula.restrict(assignment);
+      return formula.factory().and(backboneFormula, restrictedFormula);
+    } else {
+      return formula;
+    }
+  }
 }

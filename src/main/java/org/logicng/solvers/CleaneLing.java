@@ -32,6 +32,8 @@ import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
+import org.logicng.backbones.Backbone;
+import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -310,6 +312,11 @@ public final class CleaneLing extends SATSolver {
     @Override
     public UNSATCore<Proposition> unsatCore() {
         throw new UnsupportedOperationException("CleaneLing cannot compute unsat cores at the moment");
+    }
+
+    @Override
+    public Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type) {
+        throw new UnsupportedOperationException("CleaneLing cannot compute fast backbones at the moment");
     }
 
     /**

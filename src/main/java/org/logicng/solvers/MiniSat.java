@@ -32,6 +32,8 @@ import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 
+import org.logicng.backbones.Backbone;
+import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -61,6 +63,7 @@ import org.logicng.solvers.sat.MiniCard;
 import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
+import org.logicng.transformations.cnf.PlaistedGreenbaumTransformationSolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,9 +78,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 1.3.1
+ * @version 1.6.0
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -92,6 +99,8 @@ public final class MiniSat extends SATSolver {
   private final boolean initialPhase;
   private final boolean incremental;
   private int nextStateId;
+  private final PlaistedGreenbaumTransformationSolver pgTransformation;
+  private boolean lastComputationWithAssumptions;
 
   /**
    * Constructs a new SAT solver instance.
@@ -123,6 +132,7 @@ public final class MiniSat extends SATSolver {
     this.validStates = new LNGIntVector();
     this.nextStateId = 0;
     this.ccEncoder = new CCEncoder(f);
+    this.pgTransformation = new PlaistedGreenbaumTransformationSolver(this.underlyingSolver(), this.initialPhase);
   }
 
   /**
@@ -186,9 +196,9 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public void add(final Formula formula, final Proposition proposition) {
+    this.result = UNDEF;
     if (formula.type() == FType.PBC) {
       final PBConstraint constraint = (PBConstraint) formula;
-      this.result = UNDEF;
       if (constraint.isCC()) {
         if (this.style == SolverStyle.MINICARD) {
           if (constraint.comparator() == CType.LE) {
@@ -199,17 +209,27 @@ public final class MiniSat extends SATSolver {
             ((MiniCard) this.solver).addAtMost(generateClauseVector(Arrays.asList(constraint.operands())), constraint.rhs());
             this.solver.addClause(generateClauseVector(Arrays.asList(constraint.operands())), proposition);
           } else {
-            this.addClauseSet(constraint.cnf(), proposition);
+            addFormulaAsCNF(constraint, proposition);
           }
         } else {
           final EncodingResult result = EncodingResult.resultForMiniSat(this.f, this);
           this.ccEncoder.encode(constraint, result);
         }
       } else {
-        this.addClauseSet(constraint.cnf(), proposition);
+        addFormulaAsCNF(constraint, proposition);
       }
     } else {
+      addFormulaAsCNF(formula, proposition);
+    }
+  }
+
+  private void addFormulaAsCNF(final Formula formula, final Proposition proposition) {
+    if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.FACTORY_CNF) {
       this.addClauseSet(formula.cnf(), proposition);
+    } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.PG_ON_SOLVER) {
+      this.pgTransformation.addCNFtoSolver(formula, proposition);
+    } else {
+      throw new IllegalStateException("Unknown Solver CNF method: " + this.config.getCnfMethod());
     }
   }
 
@@ -239,7 +259,8 @@ public final class MiniSat extends SATSolver {
   @Override
   protected void addClause(final Formula formula, final Proposition proposition) {
     this.result = UNDEF;
-    this.solver.addClause(generateClauseVector(formula.literals()), proposition);
+    final LNGIntVector ps = generateClauseVector(formula.literals());
+    this.solver.addClause(ps, proposition);
   }
 
   @Override
@@ -252,10 +273,11 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public Tristate sat(final SATHandler handler) {
-    if (this.result != UNDEF) {
+    if (lastResultIsUsable()) {
       return this.result;
     }
     this.result = this.solver.solve(handler);
+    this.lastComputationWithAssumptions = false;
     return this.result;
   }
 
@@ -270,6 +292,7 @@ public final class MiniSat extends SATSolver {
     final int litNum = literal.phase() ? index * 2 : (index * 2) ^ 1;
     clauseVec.push(litNum);
     this.result = this.solver.solve(handler, clauseVec);
+    this.lastComputationWithAssumptions = true;
     return this.result;
   }
 
@@ -287,12 +310,15 @@ public final class MiniSat extends SATSolver {
       assumptionVec.push(litNum);
     }
     this.result = this.solver.solve(handler, assumptionVec);
+    this.lastComputationWithAssumptions = true;
     return this.result;
   }
 
   @Override
   public void reset() {
     this.solver.reset();
+    this.lastComputationWithAssumptions = false;
+    this.pgTransformation.clearCache();
     this.result = UNDEF;
   }
 
@@ -333,22 +359,34 @@ public final class MiniSat extends SATSolver {
       stateBeforeEnumeration = this.saveState();
     }
     boolean proceed = true;
-    SortedSet<Variable> allVariables = new TreeSet<>();
+    final LNGIntVector relevantIndices;
     if (variables == null) {
-      allVariables = null;
+      if (!this.config.isAuxiliaryVariablesInModels()) {
+        relevantIndices = new LNGIntVector();
+        for (final Map.Entry<String, Integer> entry : this.solver.getName2idx().entrySet()) {
+          if (isRelevantVariable(entry.getKey())) {
+            relevantIndices.push(entry.getValue());
+          }
+        }
+      } else {
+        relevantIndices = null;
+      }
     } else {
-      allVariables.addAll(variables);
-      allVariables.addAll(additionalVariables);
-    }
-    final LNGIntVector relevantIndices = variables == null ? null : new LNGIntVector(variables.size());
-    LNGIntVector relevantAllIndices = null;
-    if (relevantIndices != null) {
+      relevantIndices = new LNGIntVector(variables.size());
       for (final Variable var : variables) {
         relevantIndices.push(this.solver.idxForName(var.name()));
       }
-      relevantAllIndices = additionalVariables.isEmpty() ? relevantIndices : new LNGIntVector(allVariables.size());
-      if (!additionalVariables.isEmpty()) {
-        for (final Variable var : allVariables) {
+    }
+    LNGIntVector relevantAllIndices = null;
+    if (relevantIndices != null) {
+      if (additionalVariables.isEmpty()) {
+        relevantAllIndices = relevantIndices;
+      } else {
+        relevantAllIndices = new LNGIntVector(relevantIndices.size() + additionalVariables.size());
+        for (int i = 0; i < relevantIndices.size(); ++i) {
+          relevantAllIndices.push(relevantIndices.get(i));
+        }
+        for (final Variable var : additionalVariables) {
           relevantAllIndices.push(this.solver.idxForName(var.name()));
         }
       }
@@ -356,7 +394,6 @@ public final class MiniSat extends SATSolver {
     while (proceed && this.sat((SATHandler) null) == TRUE) {
       final LNGBooleanVector modelFromSolver = this.solver.model();
       final Assignment model = this.createAssignment(modelFromSolver, relevantAllIndices);
-      assert model != null;
       models.add(model);
       proceed = handler == null || handler.foundModel(model);
       if (model.size() > 0) {
@@ -421,6 +458,7 @@ public final class MiniSat extends SATSolver {
     this.validStates.shrinkTo(index + 1);
     this.solver.loadState(state.state());
     this.result = UNDEF;
+    this.pgTransformation.clearCache();
   }
 
   @Override
@@ -451,6 +489,9 @@ public final class MiniSat extends SATSolver {
     }
     if (this.underlyingSolver() instanceof GlucoseSyrup && this.config.incremental()) {
       throw new IllegalStateException("Cannot compute an unsat core with Glucose in incremental mode.");
+    }
+    if (this.lastComputationWithAssumptions) {
+      throw new IllegalStateException("Cannot compute an unsat core for a computation with assumptions.");
     }
 
     final DRUPTrim trimmer = new DRUPTrim();
@@ -483,6 +524,19 @@ public final class MiniSat extends SATSolver {
     return new UNSATCore<>(new ArrayList<>(propositions), false);
   }
 
+  @Override
+  public Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type) {
+    SolverState stateBeforeBackbone = null;
+    if (this.style == SolverStyle.MINISAT && this.incremental) {
+      stateBeforeBackbone = this.saveState();
+    }
+    final Backbone backbone = this.solver.computeBackbone(relevantVariables, type);
+    if (this.style == SolverStyle.MINISAT && this.incremental) {
+      loadState(stateBeforeBackbone);
+    }
+    return backbone;
+  }
+
   /**
    * Generates a clause vector of a collection of literals.
    * @param literals the literals
@@ -513,17 +567,28 @@ public final class MiniSat extends SATSolver {
     final Assignment model = new Assignment();
     if (relevantIndices == null) {
       for (int i = 0; i < vec.size(); i++) {
-        model.addLiteral(this.f.literal(this.solver.nameForIdx(i), vec.get(i)));
+        final String name = this.solver.nameForIdx(i);
+        if (isRelevantVariable(name)) {
+          model.addLiteral(this.f.literal(name, vec.get(i)));
+        }
       }
     } else {
       for (int i = 0; i < relevantIndices.size(); i++) {
         final int index = relevantIndices.get(i);
         if (index != -1) {
-          model.addLiteral(this.f.literal(this.solver.nameForIdx(index), vec.get(index)));
+          final String name = this.solver.nameForIdx(index);
+          if (isRelevantVariable(name)) {
+            model.addLiteral(this.f.literal(name, vec.get(index)));
+          }
         }
       }
     }
     return model;
+  }
+
+  private boolean isRelevantVariable(final String name) {
+    return this.config.isAuxiliaryVariablesInModels() || (!name.startsWith(FormulaFactory.CNF_PREFIX) &&
+            !name.startsWith(FormulaFactory.CC_PREFIX) && !name.startsWith(FormulaFactory.PB_PREFIX));
   }
 
   /**
@@ -584,7 +649,7 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public String toString() {
-    return String.format("MiniSat{result=%s, incremental=%s}", this.result, this.incremental);
+    return String.format("%s{result=%s, incremental=%s}", this.solver.getClass().getSimpleName(), this.result, this.incremental);
   }
 
   private Literal getLiteralFromIntLiteral(final int lit) {
@@ -605,6 +670,14 @@ public final class MiniSat extends SATSolver {
       upZeroLiterals.add(getLiteralFromIntLiteral(literals.get(i)));
     }
     return upZeroLiterals;
+  }
+
+  private boolean lastResultIsUsable() {
+    return this.result != UNDEF && !this.lastComputationWithAssumptions;
+  }
+
+  public MiniSatConfig getConfig() {
+    return this.config;
   }
 
   @Override

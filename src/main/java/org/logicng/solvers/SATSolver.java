@@ -28,6 +28,8 @@
 
 package org.logicng.solvers;
 
+import org.logicng.backbones.Backbone;
+import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
@@ -462,6 +464,23 @@ public abstract class SATSolver {
      * @return the unsat core
      */
     public abstract UNSATCore<Proposition> unsatCore();
+
+    /**
+     * Computes a backbone with both positive and negative variables of the current formula on the solver.
+     * @param relevantVariables the variables which should be considered for the backbone
+     * @return the backbone
+     */
+    public Backbone backbone(final Collection<Variable> relevantVariables) {
+        return backbone(relevantVariables, BackboneType.POSITIVE_AND_NEGATIVE);
+    }
+
+    /**
+     * Computes a backbone of the current formula on the solver.
+     * @param relevantVariables the variables which should be considered for the backbone
+     * @param type              the type of backbone which should be computed
+     * @return the backbone
+     */
+    public abstract Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type);
 
     /**
      * Returns all unit propagated literals on level 0 of the current formula on the solver.
