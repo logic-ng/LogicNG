@@ -45,6 +45,7 @@ import org.logicng.propositions.Proposition;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -91,7 +92,9 @@ public abstract class SATSolver {
      * @param propositions the set of propositions
      */
     public void addPropositions(final Collection<? extends Proposition> propositions) {
-        for (final Proposition proposition : propositions) { add(proposition); }
+        for (final Proposition proposition : propositions) {
+            add(proposition);
+        }
     }
 
     /**
@@ -99,7 +102,9 @@ public abstract class SATSolver {
      * @param propositions the set of propositions
      */
     public void addPropositions(final Proposition... propositions) {
-        for (final Proposition proposition : propositions) { add(proposition); }
+        for (final Proposition proposition : propositions) {
+            add(proposition);
+        }
     }
 
     /**
@@ -107,7 +112,9 @@ public abstract class SATSolver {
      * @param proposition the proposition
      */
     public void add(final Proposition proposition) {
-        for (final Formula formula : proposition.formulas()) { this.add(formula, proposition); }
+        for (final Formula formula : proposition.formulas()) {
+            this.add(formula, proposition);
+        }
     }
 
     /**
@@ -115,7 +122,9 @@ public abstract class SATSolver {
      * @param formulas the formula list
      */
     public void add(final ImmutableFormulaList formulas) {
-        for (final Formula formula : formulas) { this.add(formula); }
+        for (final Formula formula : formulas) {
+            this.add(formula);
+        }
     }
 
     /**
@@ -123,7 +132,9 @@ public abstract class SATSolver {
      * @param formulas the collection of formulas
      */
     public void add(final Collection<? extends Formula> formulas) {
-        for (final Formula formula : formulas) { this.add(formula); }
+        for (final Formula formula : formulas) {
+            this.add(formula);
+        }
     }
 
     /**
@@ -141,7 +152,9 @@ public abstract class SATSolver {
      * @param proposition   the proposition
      */
     public void addWithRelaxation(final Variable relaxationVar, final Proposition proposition) {
-        for (final Formula formula : proposition.formulas()) { this.addWithRelaxation(relaxationVar, formula); }
+        for (final Formula formula : proposition.formulas()) {
+            this.addWithRelaxation(relaxationVar, formula);
+        }
     }
 
     /**
@@ -150,7 +163,9 @@ public abstract class SATSolver {
      * @param formulas      the formula list
      */
     public void addWithRelaxation(final Variable relaxationVar, final ImmutableFormulaList formulas) {
-        for (final Formula formula : formulas) { this.addWithRelaxation(relaxationVar, formula); }
+        for (final Formula formula : formulas) {
+            this.addWithRelaxation(relaxationVar, formula);
+        }
     }
 
     /**
@@ -159,7 +174,9 @@ public abstract class SATSolver {
      * @param formulas      the collection of formulas
      */
     public void addWithRelaxation(final Variable relaxationVar, final Collection<? extends Formula> formulas) {
-        for (final Formula formula : formulas) { this.addWithRelaxation(relaxationVar, formula); }
+        for (final Formula formula : formulas) {
+            this.addWithRelaxation(relaxationVar, formula);
+        }
     }
 
     /**
@@ -190,7 +207,9 @@ public abstract class SATSolver {
                 this.addClause(formula, proposition);
                 break;
             case AND:
-                for (final Formula op : formula) { this.addClause(op, proposition); }
+                for (final Formula op : formula) {
+                    this.addClause(op, proposition);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Input formula ist not a valid CNF: " + formula);
@@ -212,7 +231,9 @@ public abstract class SATSolver {
                 this.addClauseWithRelaxation(relaxationVar, formula);
                 break;
             case AND:
-                for (final Formula op : formula) { this.addClauseWithRelaxation(relaxationVar, op); }
+                for (final Formula op : formula) {
+                    this.addClauseWithRelaxation(relaxationVar, op);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Input formula ist not a valid CNF: " + formula);
@@ -456,4 +477,10 @@ public abstract class SATSolver {
     public FormulaFactory factory() {
         return this.f;
     }
+
+    /**
+     * Returns the formula which is currently stored on the solver.
+     * @return the formula on the solver
+     */
+    public abstract Set<Formula> formulaOnSolver();
 }
