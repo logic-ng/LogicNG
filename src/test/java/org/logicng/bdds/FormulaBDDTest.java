@@ -31,6 +31,7 @@ package org.logicng.bdds;
 import org.junit.Test;
 import org.logicng.bdds.datastructures.BDD;
 import org.logicng.bdds.orderings.VariableOrdering;
+import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -45,6 +46,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 1.4.0
  */
 public class FormulaBDDTest {
+
+  @Test
+  public void testSimpleCases() {
+    final FormulaFactory f = new FormulaFactory();
+    BDD bdd = f.verum().bdd();
+    assertThat(bdd.isTautology()).isTrue();
+    bdd = f.falsum().bdd();
+    assertThat(bdd.isContradiction()).isTrue();
+    bdd = f.variable("A").bdd();
+    assertThat(bdd.enumerateAllModels()).containsExactly(new Assignment(f.variable("A")));
+  }
 
   @Test
   public void testBDDGeneration() throws ParserException {
