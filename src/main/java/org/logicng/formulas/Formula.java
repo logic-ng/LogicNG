@@ -243,7 +243,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @return the BDD for this formula with the given ordering
      */
     public BDD bdd(final VariableOrdering variableOrdering) {
-        final int varNum = this.variables().size();
+        final int varNum = this.variables().size() == 0 ? 1 : this.variables.size();
         final BDDFactory factory = new BDDFactory(varNum * 30, varNum * 20, this.factory());
         if (variableOrdering == null) {
             factory.setNumberOfVars(varNum);

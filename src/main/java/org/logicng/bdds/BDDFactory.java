@@ -57,6 +57,8 @@ MODIFICATIONS.
 
 package org.logicng.bdds;
 
+import static org.logicng.formulas.FType.AND;
+
 import org.logicng.bdds.datastructures.BDD;
 import org.logicng.bdds.datastructures.BDDConstant;
 import org.logicng.bdds.datastructures.BDDInnerNode;
@@ -87,20 +89,18 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import static org.logicng.formulas.FType.AND;
-
 /**
  * The factory for the jBuddy implementation.
  * @version 1.4.0
  * @since 1.4.0
  */
-public final class BDDFactory {
+public class BDDFactory {
 
-  private final BDDKernel kernel;
+  protected final BDDKernel kernel;
 
-  private final FormulaFactory f;
-  private final SortedMap<Variable, Integer> var2idx;
-  private final SortedMap<Integer, Variable> idx2var;
+  protected final FormulaFactory f;
+  protected final SortedMap<Variable, Integer> var2idx;
+  protected final SortedMap<Integer, Variable> idx2var;
 
 
   /**
@@ -110,8 +110,17 @@ public final class BDDFactory {
    * @param f         the formula factory
    */
   public BDDFactory(final int numNodes, final int cacheSize, final FormulaFactory f) {
+    this(new BDDKernel(numNodes, cacheSize), f);
+  }
+
+  /**
+   * Constructs a new jBuddy BDD factory.
+   * @param kernel the BDD kernel
+   * @param f      the formula factory
+   */
+  protected BDDFactory(final BDDKernel kernel, final FormulaFactory f) {
     this.f = f;
-    this.kernel = new BDDKernel(numNodes, cacheSize);
+    this.kernel = kernel;
     this.var2idx = new TreeMap<>();
     this.idx2var = new TreeMap<>();
   }

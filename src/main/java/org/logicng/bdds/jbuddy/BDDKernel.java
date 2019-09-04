@@ -68,7 +68,7 @@ import java.util.List;
  * @version 1.4.0
  * @since 1.4.0
  */
-public final class BDDKernel {
+public class BDDKernel {
 
   public static final int BDD_TRUE = 1;
   public static final int BDD_FALSE = 0;
@@ -112,10 +112,10 @@ public final class BDDKernel {
   private int freepos; // First free node
   private int freenum; // Number of free nodes
   private long produced; // Number of new nodes ever produced
-  private int varnum; // Number of defined BDD variables
+  protected int varnum; // Number of defined BDD variables
   private int[] refstack; // Internal node reference stack
   private int refstacktop; // Internal node reference stack top
-  private int[] level2var; // Level -> variable table
+  protected  int[] level2var; // Level -> variable table
 
   private int[] quantvarset; // Current variable set for quant.
   private int quantvarsetID; // Current id used in quantvarset
@@ -596,7 +596,7 @@ public final class BDDKernel {
     gbcRehash();
   }
 
-  private void initRef() {
+  protected void initRef() {
     this.refstacktop = 0;
   }
 
@@ -621,23 +621,23 @@ public final class BDDKernel {
     return a < 2;
   }
 
-  private boolean isOne(final int a) {
+  protected boolean isOne(final int a) {
     return a == 1;
   }
 
-  private boolean isZero(final int a) {
+  protected boolean isZero(final int a) {
     return a == 0;
   }
 
-  private int level(final int a) {
+  protected int level(final int a) {
     return this.nodes[a].level;
   }
 
-  private int low(final int a) {
+  protected int low(final int a) {
     return this.nodes[a].low;
   }
 
-  private int high(final int a) {
+  protected int high(final int a) {
     return this.nodes[a].high;
   }
 

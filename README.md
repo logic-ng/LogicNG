@@ -1,4 +1,4 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.5.2-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.6.0-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -19,7 +19,7 @@ LogicNG is released in the Maven Central Repository.  To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.5.2</version>
+  <version>1.6.0</version>
 </dependency>
 ```
 to your Maven POM.
@@ -62,6 +62,15 @@ We recently started a Wiki section for a [FAQ](https://github.com/logic-ng/Logic
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available through the German company [BooleWorks GmbH](http://www.booleworks.com) - the company behind LogicNG.  Please contact Christoph Zengler at christoph@logicng.org for further details.
 
 ## Changelog
+
+### Version 1.6.0 (Release September 2019)
+* A new method for generating CNFs directly on the solver instead of using the formula factory.
+  This often leads to a faster generation and reduced Heap consumption but with the loss of 
+  caching
+* The standard MiniSat-based solvers can now directly efficiently compute a backone.  No extra solver 
+  is required anymore
+* The current formula on a MiniSat-based solver can be extracted
+* BDD factory can now be extended externally
 
 ### Version 1.5.2 (Release July 2019)
 * Fixed caching behaviour when using a `sat()` call without assumptions after a call with assumptions
