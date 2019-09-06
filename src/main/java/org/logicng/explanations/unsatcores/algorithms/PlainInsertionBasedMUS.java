@@ -59,7 +59,7 @@ public class PlainInsertionBasedMUS extends MUSAlgorithm {
         solver.add(p);
       int count = currentFormula.size();
       while (solver.sat() == Tristate.TRUE) {
-        if (count < 0)
+        if (count == 0)
           throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
         final T removeProposition = currentFormula.get(--count);
         currentSubset.add(removeProposition);

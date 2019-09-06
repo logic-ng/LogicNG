@@ -34,6 +34,7 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
 import org.logicng.testutils.PigeonHoleGenerator;
@@ -42,6 +43,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -76,6 +79,19 @@ public class MUSGenerationTest {
     this.file4 = readDimacs("src/test/resources/sat/ca032.shuffled.cnf");
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testNoFormulas() {
+    final MUSGeneration mus = new MUSGeneration();
+    mus.computeMUS(Collections.<Proposition>emptyList(), this.f, new MUSConfig.Builder().build());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSATFormulaSetDeletionBasedMUS() {
+    final MUSGeneration mus = new MUSGeneration();
+    StandardProposition proposition = new StandardProposition(f.variable("a"));
+    mus.computeMUS(Collections.singletonList(proposition), this.f, new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.DELETION).build());
+  }
+
   @Test
   public void testDeletionBasedMUS() {
     final MUSGeneration mus = new MUSGeneration();
@@ -97,6 +113,13 @@ public class MUSGenerationTest {
     testMUS(file2, mus7);
     testMUS(file3, mus8);
     testMUS(file4, mus9);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSATFormulaSetPlainInsertionBasedMUS() {
+    final MUSGeneration mus = new MUSGeneration();
+    StandardProposition proposition = new StandardProposition(f.variable("a"));
+    mus.computeMUS(Collections.singletonList(proposition), this.f, new MUSConfig.Builder().algorithm(MUSConfig.Algorithm.PLAIN_INSERTION).build());
   }
 
   @Test

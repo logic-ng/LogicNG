@@ -59,6 +59,11 @@ import java.util.TreeSet;
  */
 public class BackboneGenerationTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoFormulas() {
+        BackboneGeneration.compute(Collections.<Formula>emptyList(), new TreeSet<Variable>(), BackboneType.POSITIVE_AND_NEGATIVE);
+    }
+
     @Test
     public void testBackboneGeneration() {
         final FormulaFactory f = new FormulaFactory();
