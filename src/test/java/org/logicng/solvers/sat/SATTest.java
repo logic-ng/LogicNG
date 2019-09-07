@@ -71,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1002,11 +1001,10 @@ public class SATTest {
       }
       s.add(this.f.cc(CType.EQ, 2, literals));
 
-      List<Variable> selectionOrder01 = literals;
-      s.setSelectionOrder(selectionOrder01);
+      s.setSelectionOrder(literals);
       List<Assignment> models = s.enumerateAllModels();
       Assert.assertEquals(10, models.size());
-      testModelsOrder(models, selectionOrder01);
+      testModelsOrderLT(models, literals);
 
       s.reset();
       s.add(this.f.cc(CType.EQ, 2, literals));
@@ -1017,9 +1015,53 @@ public class SATTest {
       s.setSelectionOrder(selectionOrder02);
       models = s.enumerateAllModels();
       Assert.assertEquals(10, models.size());
-      testModelsOrder(models, selectionOrder02);
+      testModelsOrderLT(models, selectionOrder02);
 
       s.reset();
+    }
+  }
+
+  @Test
+  public void testDimacsFilesWithSelectionOrder() throws IOException {
+    final Map<String, Boolean> expectedResults = new HashMap<>();
+    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
+    while (reader.ready()) {
+      final String[] tokens = reader.readLine().split(";");
+      expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
+    }
+    final File testFolder = new File("src/test/resources/sat");
+    final File[] files = testFolder.listFiles();
+    assert files != null;
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support selection order
+      }
+      for (final File file : files) {
+        final String fileName = file.getName();
+        if (fileName.endsWith(".cnf")) {
+          readCNF(solver, file);
+          List<Literal> selectionOrder = new ArrayList<>();
+          for (Variable var : FormulaHelper.variables(solver.formulaOnSolver())) {
+            if (selectionOrder.size() < 10) {
+              selectionOrder.add(var.negate());
+            }
+          }
+          solver.setSelectionOrder(selectionOrder);
+          final boolean res = solver.sat() == TRUE;
+          Assert.assertEquals(expectedResults.get(fileName), res);
+          List<Assignment> models = solver.enumerateAllModels(new ModelEnumerationHandler() {
+            private int count = 0;
+
+            @Override
+            public boolean foundModel(Assignment assignment) {
+              count++;
+              return count < 20;
+            }
+          });
+          testModelsOrderLE(models, selectionOrder);
+        }
+      }
+      solver.reset();
     }
   }
 
@@ -1037,7 +1079,15 @@ public class SATTest {
     assertThat(models1).containsOnlyElementsOf(models2);
   }
 
-  private void testModelsOrder(List<Assignment> models, List<? extends Literal> selectionOrder) {
+  private void testModelsOrderLE(List<Assignment> models, List<? extends Literal> selectionOrder) {
+    for(int i = 0; i < models.size() - 1; i++) {
+      Assignment a = models.get(i);
+      Assignment b = models.get(i+1);
+      assertThat(compareModel(a, b, selectionOrder)).isNotPositive();
+    }
+  }
+
+  private void testModelsOrderLT(List<Assignment> models, List<? extends Literal> selectionOrder) {
     for(int i = 0; i < models.size() - 1; i++) {
       Assignment a = models.get(i);
       Assignment b = models.get(i+1);
@@ -1056,31 +1106,5 @@ public class SATTest {
       }
     }
     return 0;
-  }
-
-  @Test
-  public void testDimacsFilesWithSelectionOrder() throws IOException {
-    final Map<String, Boolean> expectedResults = new HashMap<>();
-    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
-    while (reader.ready()) {
-      final String[] tokens = reader.readLine().split(";");
-      expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
-    }
-    final File testFolder = new File("src/test/resources/sat");
-    final File[] files = testFolder.listFiles();
-    assert files != null;
-    for (final SATSolver solver : this.solvers) {
-      for (final File file : files) {
-        final String fileName = file.getName();
-        if (fileName.endsWith(".cnf")) {
-          readCNF(solver, file);
-          SortedSet<Variable> vars = FormulaHelper.variables(solver.formulaOnSolver());
-          solver.setSelectionOrder(new ArrayList<>(vars));
-          final boolean res = solver.sat() == TRUE;
-          Assert.assertEquals(expectedResults.get(fileName), res);
-        }
-      }
-      solver.reset();
-    }
   }
 }

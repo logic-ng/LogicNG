@@ -140,7 +140,8 @@ public abstract class MiniSatStyleSolver {
   private boolean computingBackbone;
 
   // Selection order
-  private LNGIntVector selectionOrder;
+  protected LNGIntVector selectionOrder;
+  protected int selectionOrderIdx;
 
   /**
    * Constructs a new MiniSAT-style solver with a given configuration.
@@ -249,6 +250,7 @@ public abstract class MiniSatStyleSolver {
     }
     this.computingBackbone = false;
     this.selectionOrder = new LNGIntVector();
+    this.selectionOrderIdx = 0;
   }
 
   /**
@@ -479,9 +481,9 @@ public abstract class MiniSatStyleSolver {
      * @return the literal or -1 if there are no unassigned literals left
      */
     protected int pickBranchLit() {
-        if (selectionOrder.size() > 0) {
-            for (int i = 0; i < selectionOrder.size(); ++i) {
-                int lit = selectionOrder.get(i);
+        if (selectionOrder.size() > 0 && selectionOrderIdx < selectionOrder.size()) {
+            while(selectionOrderIdx < selectionOrder.size()) {
+                int lit = selectionOrder.get(selectionOrderIdx++);
                 int var = var(lit);
                 MSVariable msVariable = vars.get(var);
                 if (msVariable.assignment() == UNDEF) {
