@@ -52,6 +52,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
@@ -137,6 +138,9 @@ public abstract class MiniSatStyleSolver {
   private LNGIntVector backboneAssumptions;
   private HashMap<Integer, Tristate> backboneMap;
   private boolean computingBackbone;
+
+  // Selection order
+  private LNGIntVector selectionOrder;
 
   /**
    * Constructs a new MiniSAT-style solver with a given configuration.
@@ -244,6 +248,7 @@ public abstract class MiniSatStyleSolver {
       this.pgProof = new LNGVector<>();
     }
     this.computingBackbone = false;
+    this.selectionOrder = new LNGIntVector();
   }
 
   /**
@@ -469,21 +474,31 @@ public abstract class MiniSatStyleSolver {
     }
   }
 
-  /**
-   * Picks the next branching literal.
-   * @return the literal or -1 if there are no unassigned literals left
-   */
-  protected int pickBranchLit() {
-    int next = -1;
-    while (next == -1 || this.vars.get(next).assignment() != UNDEF || !this.vars.get(next).decision()) {
-      if (this.orderHeap.empty()) {
-        return -1;
-      } else {
-        next = this.orderHeap.removeMin();
-      }
+    /**
+     * Picks the next branching literal.
+     * @return the literal or -1 if there are no unassigned literals left
+     */
+    protected int pickBranchLit() {
+        if (selectionOrder.size() > 0) {
+            for (int i = 0; i < selectionOrder.size(); ++i) {
+                int lit = selectionOrder.get(i);
+                int var = var(lit);
+                MSVariable msVariable = vars.get(var);
+                if (msVariable.assignment() == UNDEF) {
+                    return lit;
+                }
+            }
+        }
+        int next = -1;
+        while (next == -1 || this.vars.get(next).assignment() != UNDEF || !this.vars.get(next).decision()) {
+            if (this.orderHeap.empty()) {
+                return -1;
+            } else {
+                next = this.orderHeap.removeMin();
+            }
+        }
+        return mkLit(next, this.vars.get(next).polarity());
     }
-    return mkLit(next, this.vars.get(next).polarity());
-  }
 
   /**
    * Decays the variable activity increment by the variable decay factor.
@@ -1000,5 +1015,18 @@ public abstract class MiniSatStyleSolver {
 
   public LNGVector<MSVariable> variables() {
     return this.vars;
+  }
+
+  public void setSelectionOrder(List<? extends Literal> selectionOrder) {
+      this.selectionOrder.clear();
+      for (Literal literal : selectionOrder) {
+          // TODO What to do when a variable is unknown to the solver? Throw exception or add new variable to solver?
+          int var = name2idx.get(literal.name());
+          this.selectionOrder.push(mkLit(var, !literal.phase()));
+      }
+  }
+
+  public void resetSelectionOrder() {
+      this.selectionOrder.clear();
   }
 }

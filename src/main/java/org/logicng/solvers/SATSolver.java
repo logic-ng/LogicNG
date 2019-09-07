@@ -502,4 +502,19 @@ public abstract class SATSolver {
      * @return the formula on the solver
      */
     public abstract Set<Formula> formulaOnSolver();
+
+    /**
+     * Sets the selection order of the variables and their polarity.
+     * <p>
+     * If a custom selection order is set, the solver will pick a variable from the custom order in order to branch on it during the search.
+     * The given polarity in the selection order is used as assignment for the variable.
+     * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
+     * <p>
+     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
+     * @param selectionOrder the variable order and their polarity that should be checked first
+     */
+    public abstract void setSelectionOrder(List<? extends Literal> selectionOrder);
+
+    public abstract void resetSelectionOrder();
 }
