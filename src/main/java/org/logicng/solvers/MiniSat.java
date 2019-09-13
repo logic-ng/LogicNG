@@ -78,10 +78,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
  * @version 1.6.0
@@ -378,15 +374,19 @@ public final class MiniSat extends SATSolver {
       }
     }
     LNGIntVector relevantAllIndices = null;
+    final TreeSet<Variable> uniqueAdditionalVariables = new TreeSet<>(additionalVariables);
+    if (variables != null) {
+      uniqueAdditionalVariables.removeAll(variables);
+    }
     if (relevantIndices != null) {
-      if (additionalVariables.isEmpty()) {
+      if (uniqueAdditionalVariables.isEmpty()) {
         relevantAllIndices = relevantIndices;
       } else {
-        relevantAllIndices = new LNGIntVector(relevantIndices.size() + additionalVariables.size());
+        relevantAllIndices = new LNGIntVector(relevantIndices.size() + uniqueAdditionalVariables.size());
         for (int i = 0; i < relevantIndices.size(); ++i) {
           relevantAllIndices.push(relevantIndices.get(i));
         }
-        for (final Variable var : additionalVariables) {
+        for (final Variable var : uniqueAdditionalVariables) {
           relevantAllIndices.push(this.solver.idxForName(var.name()));
         }
       }
@@ -711,12 +711,12 @@ public final class MiniSat extends SATSolver {
   }
 
   @Override
-  public void setSelectionOrder(List<? extends Literal> selectionOrder) {
-    solver.setSelectionOrder(selectionOrder);
+  public void setSelectionOrder(final List<? extends Literal> selectionOrder) {
+    this.solver.setSelectionOrder(selectionOrder);
   }
 
   @Override
   public void resetSelectionOrder() {
-    solver.resetSelectionOrder();
+    this.solver.resetSelectionOrder();
   }
 }

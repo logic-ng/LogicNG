@@ -1019,6 +1019,30 @@ public class SATTest {
     }
   }
 
+  @Test
+  public void testModelEnumerationWithAdditionalVariables() throws ParserException {
+    final SATSolver solver = MiniSat.miniSat(this.f);
+    solver.add(this.f.parse("A | B | C | D | E"));
+    final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(this.f.variable("A"), this.f.variable("B")), Arrays.asList(this.f.variable("B"), this.f.variable("C")));
+    for (final Assignment model : models) {
+      int countB = 0;
+      for (final Variable variable : model.positiveLiterals()) {
+        if (variable.name().equals("B")) {
+          countB++;
+        }
+      }
+      assertThat(countB).isLessThan(2);
+      countB = 0;
+      for (final Variable variable : model.negativeVariables()) {
+        if (variable.name().equals("B")) {
+          countB++;
+        }
+      }
+      assertThat(countB).isLessThan(2);
+    }
+
+  }
+
   private void compareFormulas(final Collection<Formula> original, final Collection<Formula> solver) {
     final SortedSet<Variable> vars = new TreeSet<>();
     for (final Formula formula : original) {
