@@ -426,4 +426,14 @@ public final class CleaneLing extends SATSolver {
     public Set<Formula> formulaOnSolver() {
         throw new UnsupportedOperationException("The CleaneLing solver does not support returning the formula on the solver");
     }
+
+    @Override
+    public void setSelectionOrder(List<? extends Literal> selectionOrder) {
+        throw new UnsupportedOperationException("The CleaneLing solver does not support a custom selection order");
+    }
+
+    @Override
+    public void resetSelectionOrder() {
+        throw new UnsupportedOperationException("The CleaneLing solver does not support a custom selection order");
+    }
 }

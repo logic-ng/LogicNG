@@ -558,6 +558,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
       return Tristate.FALSE;
     }
     int conflictC = 0;
+    selectionOrderIdx = 0;
     while (true) {
       final MSClause confl = propagate();
       if (confl != null) {
@@ -572,6 +573,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         final LNGIntVector learntClause = new LNGIntVector();
         analyze(confl, learntClause);
         cancelUntil(this.analyzeBtLevel);
+        selectionOrderIdx = 0;
 
         if (this.config.proofGeneration) {
           final LNGIntVector vec = new LNGIntVector(learntClause.size());

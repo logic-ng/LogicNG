@@ -709,4 +709,14 @@ public final class MiniSat extends SATSolver {
     }
     return formulas;
   }
+
+  @Override
+  public void setSelectionOrder(List<? extends Literal> selectionOrder) {
+    solver.setSelectionOrder(selectionOrder);
+  }
+
+  @Override
+  public void resetSelectionOrder() {
+    solver.resetSelectionOrder();
+  }
 }
