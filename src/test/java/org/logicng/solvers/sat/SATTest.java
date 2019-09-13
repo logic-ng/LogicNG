@@ -36,6 +36,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
 import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
@@ -956,31 +957,27 @@ public class SATTest {
   @Test
   public void testSelectionOrderSimple01() throws ParserException {
     for (final SATSolver s : this.solvers) {
-      if(s instanceof CleaneLing) {
+      if (s instanceof CleaneLing) {
         continue; // Cleaning does not support selection order
       }
       s.add(this.parser.parse("~(x <=> y)"));
 
-      s.setSelectionOrder(Arrays.asList(F.X, F.Y));
-      assertThat(s.sat()).isEqualTo(TRUE);
+      assertThat(s.satWithSelectionOrder(Arrays.asList(F.X, F.Y))).isEqualTo(TRUE);
       Assignment assignment = s.model();
       assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
 
       s.setSolverToUndef();
-      s.setSelectionOrder(Arrays.asList(F.Y, F.X));
-      assertThat(s.sat()).isEqualTo(TRUE);
+      assertThat(s.satWithSelectionOrder(Arrays.asList(F.Y, F.X))).isEqualTo(TRUE);
       assignment = s.model();
       assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
 
       s.setSolverToUndef();
-      s.setSelectionOrder(Collections.singletonList(F.NX));
-      assertThat(s.sat()).isEqualTo(TRUE);
+      assertThat(s.sat(Collections.singletonList(F.NX))).isEqualTo(TRUE);
       assignment = s.model();
       assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
 
       s.setSolverToUndef();
-      s.setSelectionOrder(Arrays.asList(F.NY, F.NX));
-      assertThat(s.sat()).isEqualTo(TRUE);
+      assertThat(s.satWithSelectionOrder(Arrays.asList(F.NY, F.NX))).isEqualTo(TRUE);
       assignment = s.model();
       assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
 
@@ -988,39 +985,7 @@ public class SATTest {
     }
   }
 
-  @Test
-  public void testSelectionOrderSimple02() {
-    for (final SATSolver s : this.solvers) {
-      if (s instanceof CleaneLing) {
-        continue; // Cleaning does not support selection order
-      }
-      final List<Variable> literals = new ArrayList<>();
-      for (int i = 0; i < 5; i++) {
-        final Variable lit = this.f.variable("x" + i);
-        literals.add(lit);
-      }
-      s.add(this.f.cc(CType.EQ, 2, literals));
-
-      s.setSelectionOrder(literals);
-      List<Assignment> models = s.enumerateAllModels();
-      Assert.assertEquals(10, models.size());
-      testModelsOrderLT(models, literals);
-
-      s.reset();
-      s.add(this.f.cc(CType.EQ, 2, literals));
-      List<Literal> selectionOrder02 = Arrays.asList(
-              this.f.literal("x4", true), this.f.literal("x0", false),
-              this.f.literal("x1", true), this.f.literal("x2", true),
-              this.f.literal("x3", true));
-      s.setSelectionOrder(selectionOrder02);
-      models = s.enumerateAllModels();
-      Assert.assertEquals(10, models.size());
-      testModelsOrderLT(models, selectionOrder02);
-
-      s.reset();
-    }
-  }
-
+  @Ignore("Long running")
   @Test
   public void testDimacsFilesWithSelectionOrder() throws IOException {
     final Map<String, Boolean> expectedResults = new HashMap<>();
@@ -1040,25 +1005,14 @@ public class SATTest {
         final String fileName = file.getName();
         if (fileName.endsWith(".cnf")) {
           readCNF(solver, file);
-          List<Literal> selectionOrder = new ArrayList<>();
-          for (Variable var : FormulaHelper.variables(solver.formulaOnSolver())) {
+          final List<Literal> selectionOrder = new ArrayList<>();
+          for (final Variable var : FormulaHelper.variables(solver.formulaOnSolver())) {
             if (selectionOrder.size() < 10) {
               selectionOrder.add(var.negate());
             }
           }
-          solver.setSelectionOrder(selectionOrder);
-          final boolean res = solver.sat() == TRUE;
+          final boolean res = solver.satWithSelectionOrder(selectionOrder) == TRUE;
           Assert.assertEquals(expectedResults.get(fileName), res);
-          List<Assignment> models = solver.enumerateAllModels(new ModelEnumerationHandler() {
-            private int count = 0;
-
-            @Override
-            public boolean foundModel(Assignment assignment) {
-              count++;
-              return count < 20;
-            }
-          });
-          testModelsOrderLE(models, selectionOrder);
         }
       }
       solver.reset();
@@ -1079,26 +1033,26 @@ public class SATTest {
     assertThat(models1).containsOnlyElementsOf(models2);
   }
 
-  private void testModelsOrderLE(List<Assignment> models, List<? extends Literal> selectionOrder) {
-    for(int i = 0; i < models.size() - 1; i++) {
-      Assignment a = models.get(i);
-      Assignment b = models.get(i+1);
+  private void testModelsOrderLE(final List<Assignment> models, final List<? extends Literal> selectionOrder) {
+    for (int i = 0; i < models.size() - 1; i++) {
+      final Assignment a = models.get(i);
+      final Assignment b = models.get(i + 1);
       assertThat(compareModel(a, b, selectionOrder)).isNotPositive();
     }
   }
 
-  private void testModelsOrderLT(List<Assignment> models, List<? extends Literal> selectionOrder) {
-    for(int i = 0; i < models.size() - 1; i++) {
-      Assignment a = models.get(i);
-      Assignment b = models.get(i+1);
+  private void testModelsOrderLT(final List<Assignment> models, final List<? extends Literal> selectionOrder) {
+    for (int i = 0; i < models.size() - 1; i++) {
+      final Assignment a = models.get(i);
+      final Assignment b = models.get(i + 1);
       assertThat(compareModel(a, b, selectionOrder)).isNegative();
     }
   }
 
-  private int compareModel(Assignment a, Assignment b, List<? extends Literal> selectionOrder) {
-    SortedSet<Literal> aLiterals = a.literals();
-    SortedSet<Literal> bLiterals = b.literals();
-    for (Literal lit : selectionOrder) {
+  private int compareModel(final Assignment a, final Assignment b, final List<? extends Literal> selectionOrder) {
+    final SortedSet<Literal> aLiterals = a.literals();
+    final SortedSet<Literal> bLiterals = b.literals();
+    for (final Literal lit : selectionOrder) {
       if (aLiterals.contains(lit) && !bLiterals.contains(lit)) {
         return -1;
       } else if (!aLiterals.contains(lit) && bLiterals.contains(lit)) {
