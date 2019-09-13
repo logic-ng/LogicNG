@@ -99,13 +99,13 @@ public final class UTF8StringRepresentation extends FormulaStringRepresentation 
   }
 
   @Override
-  public String toString(final Formula formula) {
+  protected String toInnerString(final Formula formula) {
     switch (formula.type()) {
       case LITERAL:
         final Literal lit = (Literal) formula;
         return lit.phase() ? utf8Name(lit.name()) : this.negation() + utf8Name(lit.name());
       default:
-        return super.toString(formula);
+        return super.toInnerString(formula);
     }
   }
 

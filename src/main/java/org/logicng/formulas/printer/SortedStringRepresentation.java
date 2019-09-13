@@ -99,7 +99,7 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
      * @return the sorted string representation of the formula with regard to the variable ordering
      */
     @Override
-    public String toString(final Formula formula) {
+    public String toInnerString(final Formula formula) {
         switch (formula.type()) {
             case FALSE:
                 return falsum();
@@ -154,12 +154,12 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
             if (++count == size) {
                 last = op;
             } else {
-                sb.append(operator.type().precedence() < op.type().precedence() ? toString(op) : bracket(op));
+                sb.append(operator.type().precedence() < op.type().precedence() ? toInnerString(op) : bracket(op));
                 sb.append(opString);
             }
         }
         if (last != null) {
-            sb.append(operator.type().precedence() < last.type().precedence() ? toString(last) : bracket(last));
+            sb.append(operator.type().precedence() < last.type().precedence() ? toInnerString(last) : bracket(last));
         }
         return sb.toString();
     }
@@ -226,8 +226,8 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
             right = equivalence.left();
             left = equivalence.right();
         }
-        final String leftString = FType.EQUIV.precedence() < left.type().precedence() ? toString(left) : bracket(left);
-        final String rightString = FType.EQUIV.precedence() < right.type().precedence() ? toString(right) : bracket(right);
+        final String leftString = FType.EQUIV.precedence() < left.type().precedence() ? toInnerString(left) : bracket(left);
+        final String rightString = FType.EQUIV.precedence() < right.type().precedence() ? toInnerString(right) : bracket(right);
         return String.format("%s%s%s", leftString, equivalence(), rightString);
     }
 
