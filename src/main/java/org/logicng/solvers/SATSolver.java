@@ -291,7 +291,7 @@ public abstract class SATSolver {
      * @param assumptions a collection of literals
      * @return the satisfiability of the formula in the solver
      */
-    public Tristate sat(final Collection<Literal> assumptions) {
+    public Tristate sat(final Collection<? extends Literal> assumptions) {
         return this.sat(null, assumptions);
     }
 
