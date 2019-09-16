@@ -348,6 +348,7 @@ public abstract class SATSolver {
      */
     public Tristate satWithSelectionOrder(final List<? extends Literal> selectionOrder, final SATHandler handler,
                                           final Collection<? extends Literal> assumptions) {
+        setSolverToUndef();
         setSelectionOrder(selectionOrder);
         final Tristate sat = assumptions != null ? sat(handler, assumptions) : sat(handler);
         resetSelectionOrder();
