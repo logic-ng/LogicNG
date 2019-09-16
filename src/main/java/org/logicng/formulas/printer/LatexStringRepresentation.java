@@ -59,13 +59,13 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
   }
 
   @Override
-  public String toString(final Formula formula) {
+  public String toInnerString(final Formula formula) {
     switch (formula.type()) {
       case LITERAL:
         final Literal lit = (Literal) formula;
         return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
       default:
-        return super.toString(formula);
+        return super.toInnerString(formula);
     }
   }
 

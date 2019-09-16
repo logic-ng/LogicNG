@@ -799,6 +799,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     final LNGIntVector learntClause = new LNGIntVector();
     final LNGIntVector selectors = new LNGIntVector();
     boolean blocked = false;
+    this.selectionOrderIdx = 0;
     while (true) {
       final MSClause confl = propagate();
       if (confl != null) {
@@ -827,6 +828,9 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
         this.lbdQueue.push(this.analyzeLBD);
         this.sumLBD += this.analyzeLBD;
         cancelUntil(this.analyzeBtLevel);
+        if (this.analyzeBtLevel < this.selectionOrder.size()) {
+          this.selectionOrderIdx = this.analyzeBtLevel;
+        }
 
         if (this.config.proofGeneration) {
           final LNGIntVector vec = new LNGIntVector(learntClause.size());

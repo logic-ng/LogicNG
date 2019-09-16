@@ -52,6 +52,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
@@ -137,6 +138,10 @@ public abstract class MiniSatStyleSolver {
   private LNGIntVector backboneAssumptions;
   private HashMap<Integer, Tristate> backboneMap;
   private boolean computingBackbone;
+
+  // Selection order
+  protected LNGIntVector selectionOrder;
+  protected int selectionOrderIdx;
 
   /**
    * Constructs a new MiniSAT-style solver with a given configuration.
@@ -244,6 +249,8 @@ public abstract class MiniSatStyleSolver {
       this.pgProof = new LNGVector<>();
     }
     this.computingBackbone = false;
+    this.selectionOrder = new LNGIntVector();
+    this.selectionOrderIdx = 0;
   }
 
   /**
@@ -474,6 +481,16 @@ public abstract class MiniSatStyleSolver {
    * @return the literal or -1 if there are no unassigned literals left
    */
   protected int pickBranchLit() {
+    if (this.selectionOrder.size() > 0 && this.selectionOrderIdx < this.selectionOrder.size()) {
+      while (this.selectionOrderIdx < this.selectionOrder.size()) {
+        final int lit = this.selectionOrder.get(this.selectionOrderIdx++);
+        final int var = var(lit);
+        final MSVariable msVariable = this.vars.get(var);
+        if (msVariable.assignment() == UNDEF) {
+          return lit;
+        }
+      }
+    }
     int next = -1;
     while (next == -1 || this.vars.get(next).assignment() != UNDEF || !this.vars.get(next).decision()) {
       if (this.orderHeap.empty()) {
@@ -1000,5 +1017,19 @@ public abstract class MiniSatStyleSolver {
 
   public LNGVector<MSVariable> variables() {
     return this.vars;
+  }
+
+  public void setSelectionOrder(final List<? extends Literal> selectionOrder) {
+    this.selectionOrder.clear();
+    for (final Literal literal : selectionOrder) {
+      final Integer var = this.name2idx.get(literal.name());
+      if (var != null) {
+        this.selectionOrder.push(mkLit(var, !literal.phase()));
+      }
+    }
+  }
+
+  public void resetSelectionOrder() {
+    this.selectionOrder.clear();
   }
 }

@@ -36,6 +36,7 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
 import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
@@ -59,6 +60,7 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
 import org.logicng.testutils.PigeonHoleGenerator;
+import org.logicng.util.FormulaHelper;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -952,6 +954,153 @@ public class SATTest {
     }
   }
 
+  @Test
+  public void testSelectionOrderSimple01() throws ParserException {
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support selection order
+      }
+      Formula formula = this.parser.parse("~(x <=> y)");
+      solver.add(formula);
+
+      List<Literal> selectionOrder = Arrays.<Literal>asList(F.X, F.Y);
+      assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
+      Assignment assignment = solver.model();
+      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
+      testLocalMinimum(solver, assignment, selectionOrder);
+      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+      solver.setSolverToUndef();
+      selectionOrder = Arrays.<Literal>asList(F.Y, F.X);
+      assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
+      assignment = solver.model();
+      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
+      testLocalMinimum(solver, assignment, selectionOrder);
+      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+      solver.setSolverToUndef();
+      selectionOrder = Collections.singletonList(F.NX);
+      assertThat(solver.sat(selectionOrder)).isEqualTo(TRUE);
+      assignment = solver.model();
+      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
+      testLocalMinimum(solver, assignment, selectionOrder);
+      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+      solver.setSolverToUndef();
+      selectionOrder = Arrays.asList(F.NY, F.NX);
+      assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
+      assignment = solver.model();
+      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
+      testLocalMinimum(solver, assignment, selectionOrder);
+      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+      solver.reset();
+    }
+  }
+
+  @Test
+  public void testSelectionOrderSimple02() {
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support selection order
+      }
+      final List<Variable> literals = new ArrayList<>();
+      for (int i = 0; i < 5; i++) {
+        final Variable lit = this.f.variable("x" + i);
+        literals.add(lit);
+      }
+      solver.add(this.f.cc(CType.EQ, 2, literals));
+
+      for (int i = 0; i < 10; ++i) {
+        assertThat(solver.satWithSelectionOrder(literals)).isEqualTo(TRUE);
+        Assignment assignment = solver.model();
+        testLocalMinimum(solver, assignment, literals);
+        testHighestLexicographicalAssignment(solver, assignment, literals);
+        solver.add(assignment.blockingClause(this.f, literals));
+      }
+
+      solver.reset();
+      solver.add(this.f.cc(CType.EQ, 2, literals));
+      List<Literal> selectionOrder02 = Arrays.asList(
+              this.f.literal("x4", true), this.f.literal("x0", false),
+              this.f.literal("x1", true), this.f.literal("x2", true),
+              this.f.literal("x3", true));
+
+      for (int i = 0; i < 10; ++i) {
+        assertThat(solver.satWithSelectionOrder(selectionOrder02)).isEqualTo(TRUE);
+        Assignment assignment = solver.model();
+        testLocalMinimum(solver, assignment, selectionOrder02);
+        testHighestLexicographicalAssignment(solver, assignment, selectionOrder02);
+        solver.add(assignment.blockingClause(this.f, selectionOrder02));
+      }
+
+      solver.reset();
+    }
+  }
+
+  @Ignore("Long running")
+  @Test
+  public void testDimacsFilesWithSelectionOrder() throws IOException {
+    final Map<String, Boolean> expectedResults = new HashMap<>();
+    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
+    while (reader.ready()) {
+      final String[] tokens = reader.readLine().split(";");
+      expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
+    }
+    final File testFolder = new File("src/test/resources/sat");
+    final File[] files = testFolder.listFiles();
+    assert files != null;
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support selection order
+      }
+      for (final File file : files) {
+        final String fileName = file.getName();
+        if (fileName.endsWith(".cnf")) {
+          readCNF(solver, file);
+          final List<Literal> selectionOrder = new ArrayList<>();
+          for (final Variable var : FormulaHelper.variables(solver.formulaOnSolver())) {
+            if (selectionOrder.size() < 10) {
+              selectionOrder.add(var.negate());
+            }
+          }
+          final boolean res = solver.satWithSelectionOrder(selectionOrder) == TRUE;
+          Assert.assertEquals(expectedResults.get(fileName), res);
+          if (expectedResults.get(fileName)) {
+            Assignment assignment = solver.model();
+            testLocalMinimum(solver, assignment, selectionOrder);
+            testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+          }
+        }
+      }
+      solver.reset();
+    }
+  }
+
+  @Test
+  public void testModelEnumerationWithAdditionalVariables() throws ParserException {
+    final SATSolver solver = MiniSat.miniSat(this.f);
+    solver.add(this.f.parse("A | B | C | D | E"));
+    final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(this.f.variable("A"), this.f.variable("B")), Arrays.asList(this.f.variable("B"), this.f.variable("C")));
+    for (final Assignment model : models) {
+      int countB = 0;
+      for (final Variable variable : model.positiveLiterals()) {
+        if (variable.name().equals("B")) {
+          countB++;
+        }
+      }
+      assertThat(countB).isLessThan(2);
+      countB = 0;
+      for (final Variable variable : model.negativeVariables()) {
+        if (variable.name().equals("B")) {
+          countB++;
+        }
+      }
+      assertThat(countB).isLessThan(2);
+    }
+
+  }
+
   private void compareFormulas(final Collection<Formula> original, final Collection<Formula> solver) {
     final SortedSet<Variable> vars = new TreeSet<>();
     for (final Formula formula : original) {
@@ -964,5 +1113,47 @@ public class SATTest {
     miniSat.add(solver);
     final List<Assignment> models2 = miniSat.enumerateAllModels(vars);
     assertThat(models1).containsOnlyElementsOf(models2);
+  }
+
+  /**
+   * Tests if the given satisfying assignment is a local minimal model regarding the given relevant literals, i.e.
+   * there is no variable in the assignment, contained in the relevant literals, that can be flipped without
+   * resulting in an unsatisfying assignment.
+   * @param solver           the solver with the loaded formulas
+   * @param assignment       the satisfying assignment
+   * @param relevantLiterals the relevant literals.
+   */
+  private void testLocalMinimum(SATSolver solver, Assignment assignment, Collection<? extends Literal> relevantLiterals) {
+    SortedSet<Literal> literals = assignment.literals();
+    for (Literal lit : relevantLiterals) {
+      if (!literals.contains(lit)) {
+        SortedSet<Literal> literalsWithFlip = new TreeSet<>(literals);
+        literalsWithFlip.remove(lit.negate());
+        literalsWithFlip.add(lit);
+        assertThat(solver.sat(literalsWithFlip)).isEqualTo(FALSE);
+      }
+    }
+  }
+
+  /**
+   * Tests if the given satisfying assignment is the highest assignment in the lexicographical order based on the given
+   * literals order.
+   * @param solver     the solver with the loaded formulas
+   * @param assignment the satisfying assignment
+   * @param order      the literals order
+   */
+  private void testHighestLexicographicalAssignment(SATSolver solver, Assignment assignment, List<? extends Literal> order) {
+    SortedSet<Literal> literals = assignment.literals();
+    List<Literal> orderSublist = new ArrayList<>();
+    for (Literal lit : order) {
+      boolean containsLit = literals.contains(lit);
+      if (!containsLit) {
+        SortedSet<Literal> orderSubsetWithFlip = new TreeSet<>(orderSublist);
+        orderSubsetWithFlip.remove(lit.negate());
+        orderSubsetWithFlip.add(lit);
+        assertThat(solver.sat(orderSubsetWithFlip)).isEqualTo(FALSE);
+      }
+      orderSublist.add(containsLit ? lit : lit.negate());
+    }
   }
 }

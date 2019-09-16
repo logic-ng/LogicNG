@@ -30,10 +30,20 @@ package org.logicng.transformations.cnf;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.predicates.CNFPredicate;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
+
+import java.util.List;
+import java.util.SortedSet;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Unit tests for the class {@link CNFEncoder}.
@@ -41,6 +51,8 @@ import org.logicng.io.parsers.PropositionalParser;
  * @since 1.1
  */
 public class CNFEncoderTest {
+
+  private static final CNFPredicate cnfPredicate = new CNFPredicate();
 
   private static final String p1 = "(x1 | x2) & x3 & x4 & ((x1 & x5 & ~(x6 | x7) | x8) | x9)";
   private static final String p2 = "(y1 | y2) & y3 & y4 & ((y1 & y5 & ~(y6 | y7) | y8) | y9)";
@@ -140,6 +152,25 @@ public class CNFEncoderTest {
   }
 
   @Test
+  public void testBDDEncoder() throws ParserException {
+    final FormulaFactory f = new FormulaFactory();
+    final PropositionalParser p = new PropositionalParser(f);
+    final Formula phi1 = p.parse(p1);
+    final Formula phi2 = p.parse(p2);
+    final Formula phi3 = p.parse(p3);
+    CNFEncoder encoder = new CNFEncoder(f, new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.BDD).build());
+    Formula phi1CNF = encoder.encode(phi1);
+    assertThat(phi1CNF.holds(cnfPredicate)).isTrue();
+    assertThat(equivalentModels(phi1, phi1CNF, phi1.variables())).isTrue();
+    Formula phi2CNF = encoder.encode(phi2);
+    assertThat(phi2CNF.holds(cnfPredicate)).isTrue();
+    assertThat(equivalentModels(phi2, phi2CNF, phi2.variables())).isTrue();
+    Formula phi3CNF = encoder.encode(phi3);
+    assertThat(phi3CNF.holds(cnfPredicate)).isTrue();
+    assertThat(equivalentModels(phi3, phi3CNF, phi3.variables())).isTrue();
+  }
+
+  @Test
   public void testAdvancedEncoder() throws ParserException {
     final FormulaFactory f = new FormulaFactory();
     final PropositionalParser p = new PropositionalParser(f);
@@ -188,4 +219,18 @@ public class CNFEncoderTest {
     new CNFConfig.Builder().fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.FACTORIZATION).build();
   }
 
+  private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {
+    final SATSolver s = MiniSat.miniSat(f1.factory());
+    s.add(f1);
+    final List<Assignment> models1 = s.enumerateAllModels(vars);
+    s.reset();
+    s.add(f2);
+    final List<Assignment> models2 = s.enumerateAllModels(vars);
+    if (models1.size() != models2.size())
+      return false;
+    for (final Assignment model : models1)
+      if (!models2.contains(model))
+        return false;
+    return true;
+  }
 }

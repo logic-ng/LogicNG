@@ -291,7 +291,7 @@ public abstract class SATSolver {
      * @param assumptions a collection of literals
      * @return the satisfiability of the formula in the solver
      */
-    public Tristate sat(final Collection<Literal> assumptions) {
+    public Tristate sat(final Collection<? extends Literal> assumptions) {
         return this.sat(null, assumptions);
     }
 
@@ -314,6 +314,46 @@ public abstract class SATSolver {
      * @return the satisfiability of the formula in the solver
      */
     public abstract Tristate sat(final SATHandler handler, final Collection<? extends Literal> assumptions);
+
+    /**
+     * Solves the formula on the solver with a given selection order.
+     * <p>
+     * If a custom selection order is set, the solver will pick a variable from the custom order in order to branch on it during the search.
+     * The given polarity in the selection order is used as assignment for the variable.
+     * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
+     * <p>
+     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
+     * @param selectionOrder the order of the literals for the selection order
+     * @return the satisfiability of the formula in the solver
+     */
+    public Tristate satWithSelectionOrder(final List<? extends Literal> selectionOrder) {
+        return satWithSelectionOrder(selectionOrder, null, null);
+    }
+
+    /**
+     * Solves the formula on the solver with a given selection order, a given SAT handler and a list of additional
+     * assumptions.
+     * <p>
+     * If a custom selection order is set, the solver will pick a variable from the custom order in order to branch on it during the search.
+     * The given polarity in the selection order is used as assignment for the variable.
+     * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
+     * <p>
+     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
+     * @param selectionOrder the order of the literals for the selection order
+     * @param handler        the SAT handler
+     * @param assumptions    a collection of literals
+     * @return the satisfiability of the formula in the solver
+     */
+    public Tristate satWithSelectionOrder(final List<? extends Literal> selectionOrder, final SATHandler handler,
+                                          final Collection<? extends Literal> assumptions) {
+        setSolverToUndef();
+        setSelectionOrder(selectionOrder);
+        final Tristate sat = assumptions != null ? sat(handler, assumptions) : sat(handler);
+        resetSelectionOrder();
+        return sat;
+    }
 
     /**
      * Resets the SAT solver.
@@ -502,4 +542,16 @@ public abstract class SATSolver {
      * @return the formula on the solver
      */
     public abstract Set<Formula> formulaOnSolver();
+
+    /**
+     * Sets the selection order of the variables and their polarity.
+     * <p>
+     * @param selectionOrder the variable order and their polarity that should be checked first
+     */
+    protected abstract void setSelectionOrder(List<? extends Literal> selectionOrder);
+
+    /**
+     * Resets the selection order on the solver.  The internal activity heuristics for the variable ordering will be used again.
+     */
+    protected abstract void resetSelectionOrder();
 }

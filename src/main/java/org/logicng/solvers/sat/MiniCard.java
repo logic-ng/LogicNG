@@ -638,6 +638,7 @@ public final class MiniCard extends MiniSatStyleSolver {
       return Tristate.FALSE;
     }
     int conflictC = 0;
+    this.selectionOrderIdx = 0;
     while (true) {
       final MSClause confl = propagate();
       if (confl != null) {
@@ -652,6 +653,9 @@ public final class MiniCard extends MiniSatStyleSolver {
         final LNGIntVector learntClause = new LNGIntVector();
         analyze(confl, learntClause);
         cancelUntil(this.analyzeBtLevel);
+        if (this.analyzeBtLevel < this.selectionOrder.size()) {
+          this.selectionOrderIdx = this.analyzeBtLevel;
+        }
         if (learntClause.size() == 1) {
           uncheckedEnqueue(learntClause.get(0), null);
           this.unitClauses.push(learntClause.get(0));

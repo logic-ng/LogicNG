@@ -31,6 +31,7 @@ package org.logicng.io.writers;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.junit.Rule;
 import org.junit.Test;
+import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -51,15 +52,18 @@ import java.io.IOException;
  */
 public class FormulaDimacsFileWriterTest {
 
-
   @Rule
   public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
-
 
   private final FormulaFactory f = new FormulaFactory();
   private final CNFEncoder encoder = new CNFEncoder(f, new CNFConfig.Builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build());
   private final PropositionalParser p = new PropositionalParser(f);
   private final PseudoBooleanParser pp = new PseudoBooleanParser(f);
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNonCNF() throws IOException {
+    FormulaDimacsFileWriter.write("non-cnf", F.IMP1, false);
+  }
 
   @Test
   public void testConstants() throws IOException {
