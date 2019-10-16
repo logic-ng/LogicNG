@@ -92,12 +92,31 @@ public abstract class FormulaStringRepresentation {
     }
 
     /**
-     * Returns a bracketed string version of a given formula.
+     * Returns a bracketed string version of a given formula. Exception: If the formula is a trivial pseudo-Boolean
+     * constraint, then the string version of the formula is returned without brackets.
      * @param formula the formula
      * @return {@code "(" + formula.toString() + ")"}
      */
     protected String bracket(final Formula formula) {
-        return String.format("%s%s%s", this.lbr(), this.toInnerString(formula), this.rbr());
+        if (isTrivialCase(formula)) {
+            return this.toInnerString(formula);
+        } else {
+            return String.format("%s%s%s", this.lbr(), this.toInnerString(formula), this.rbr());
+        }
+    }
+
+    /**
+     * Checks if the formula is a pseudo-Boolean constraint that is trivially false or trivially true.
+     * @param formula the formula
+     * @return {@code true} if the formula is a trivial pseudo-Boolean constraint, otherwise {@code false}
+     */
+    protected boolean isTrivialCase(Formula formula) {
+        if (formula.type() == FType.PBC) {
+            PBConstraint pbc = (PBConstraint) formula;
+            return pbc.isTrivialFalse() || pbc.isTrivialTrue();
+        } else {
+            return false;
+        }
     }
 
     /**

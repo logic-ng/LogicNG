@@ -63,6 +63,15 @@ public class UTF8StringRepresentationTest {
     Assert.assertEquals("2a + -4b + 3x ≥ 2", F.f.string(F.PBC3, sr));
     Assert.assertEquals("2a + -4b + 3x < 2", F.f.string(F.PBC4, sr));
     Assert.assertEquals("2a + -4b + 3x ≤ 2", F.f.string(F.PBC5, sr));
+    Assert.assertEquals("a ⇒ ⊥", F.f.string(F.f.implication(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a ⇔ ⊥", F.f.string(F.f.equivalence(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a ∧ ⊥", F.f.string(F.f.and(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a ∨ ⊥", F.f.string(F.f.or(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a ⇒ ⊤", F.f.string(F.f.implication(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a ⇔ ⊤", F.f.string(F.f.equivalence(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a ∧ ⊤", F.f.string(F.f.and(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a ∨ ⊤", F.f.string(F.f.or(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a ∨ ⊤ ∨ ⊥ ∨ (⊤ ⇔ b)", F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), sr));
   }
 
   @Test

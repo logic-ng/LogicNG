@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 /**
  * Unit tests for {@link DefaultStringRepresentation}
- *
  * @version 1.1
  * @since 1.0
  */
@@ -70,6 +69,15 @@ public class DefaultStringRepresentationTest {
         Assert.assertEquals("2*a + -4*b + 3*x <= 2", F.f.string(F.PBC5, this.sr));
         Assert.assertEquals("$true", F.f.string(F.f.pbc(CType.LT, 42, new ArrayList<Literal>(), new ArrayList<Integer>()), this.sr));
         Assert.assertEquals("$false", F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<Literal>(), new ArrayList<Integer>()), this.sr));
+        Assert.assertEquals("a => $false", F.f.string(F.f.implication(F.A, F.f.exo()), sr));
+        Assert.assertEquals("a <=> $false", F.f.string(F.f.equivalence(F.A, F.f.exo()), sr));
+        Assert.assertEquals("a & $false", F.f.string(F.f.and(F.A, F.f.exo()), sr));
+        Assert.assertEquals("a | $false", F.f.string(F.f.or(F.A, F.f.exo()), sr));
+        Assert.assertEquals("a => $true", F.f.string(F.f.implication(F.A, F.f.amo()), sr));
+        Assert.assertEquals("a <=> $true", F.f.string(F.f.equivalence(F.A, F.f.amo()), sr));
+        Assert.assertEquals("a & $true", F.f.string(F.f.and(F.A, F.f.amo()), sr));
+        Assert.assertEquals("a | $true", F.f.string(F.f.or(F.A, F.f.amo()), sr));
+        Assert.assertEquals("a | $true | $false | ($true <=> b)", F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), sr));
     }
 
     @Test

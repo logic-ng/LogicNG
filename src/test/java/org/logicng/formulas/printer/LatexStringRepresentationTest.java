@@ -63,6 +63,16 @@ public class LatexStringRepresentationTest {
     Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\geq 2", F.f.string(F.PBC3, sr));
     Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x < 2", F.f.string(F.PBC4, sr));
     Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\leq 2", F.f.string(F.PBC5, sr));
+    Assert.assertEquals("a \\rightarrow \\bottom", F.f.string(F.f.implication(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a \\leftrightarrow \\bottom", F.f.string(F.f.equivalence(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a \\land \\bottom", F.f.string(F.f.and(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a \\lor \\bottom", F.f.string(F.f.or(F.A, F.f.exo()), sr));
+    Assert.assertEquals("a \\rightarrow \\top", F.f.string(F.f.implication(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a \\leftrightarrow \\top", F.f.string(F.f.equivalence(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a \\land \\top", F.f.string(F.f.and(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a \\lor \\top", F.f.string(F.f.or(F.A, F.f.amo()), sr));
+    Assert.assertEquals("a \\lor \\top \\lor \\bottom \\lor \\left(\\top \\leftrightarrow b\\right)", F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), sr));
+
   }
 
   @Test
