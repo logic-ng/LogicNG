@@ -28,24 +28,21 @@
 
 package org.logicng.handlers;
 
-import org.logicng.datastructures.Assignment;
-
 /**
- * Interface for a handler for the enumeration of models.
+ * Interface for a handler for the BDD factory.
  * @version 1.6.2
- * @since 1.0
+ * @since 1.6.2
  */
-public interface ModelEnumerationHandler {
+public interface BDDHandler {
 
-  /**
-   * This method is called when the model enumeration starts.
-   */
-  void started();
+    /**
+     * This method is called when the BDD generation starts.
+     */
+    void started();
 
-  /**
-   * This method is called every time a model is found.
-   * @param assignment the respective model
-   * @return whether more models should be searched or not
-   */
-  boolean foundModel(Assignment assignment);
+    /**
+     * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int)} is called.
+     * @return whether BDD generation should be continued or not
+     */
+    boolean addRefCalled();
 }

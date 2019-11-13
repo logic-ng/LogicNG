@@ -294,6 +294,11 @@ public class SATTest {
       try {
         final List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
           @Override
+          public void started() {
+            // nothing to do here
+          }
+
+          @Override
           public boolean foundModel(final Assignment assignment) {
             return !assignment.negativeLiterals().isEmpty();
           }

@@ -52,6 +52,11 @@ public final class NumberOfModelsHandler implements ModelEnumerationHandler {
   }
 
   @Override
+  public void started() {
+    // nothing to do here
+  }
+
+  @Override
   public boolean foundModel(final Assignment assignment) {
     return ++count < bound;
   }
