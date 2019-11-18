@@ -29,20 +29,33 @@
 package org.logicng.handlers;
 
 /**
- * Interface for a handler for the BDD factory.
+ * A BDD handler which cancels the build process after a given number of added nodes.
  * @version 1.6.2
  * @since 1.6.2
  */
-public interface BDDHandler {
+public final class NumberOfNodesBDDHandler implements BDDHandler {
+
+    private final int bound;
+    private int count;
 
     /**
-     * This method is called when the computation starts.
+     * Constructs a new BDD handler with an upper bound for the number of added nodes (inclusive).
+     * @param bound the upper bound
      */
-    void started();
+    public NumberOfNodesBDDHandler(final int bound) {
+        if (bound < 0) {
+            throw new IllegalArgumentException("The bound for added nodes must be equal or greater than 0.");
+        }
+        this.bound = bound;
+    }
 
-    /**
-     * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
-     * @return whether BDD generation should be continued or not
-     */
-    boolean addRefCalled();
+    @Override
+    public void started() {
+        count = 0;
+    }
+
+    @Override
+    public boolean addRefCalled() {
+        return ++count < bound;
+    }
 }

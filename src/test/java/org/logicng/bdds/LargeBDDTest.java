@@ -33,6 +33,7 @@ import org.logicng.bdds.datastructures.BDD;
 import org.logicng.bdds.jbuddy.BDDKernel;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.handlers.NumberOfNodesBDDHandler;
 import org.logicng.handlers.TimeoutBDDHandler;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.testutils.NQueensGenerator;
@@ -118,6 +119,30 @@ public class LargeBDDTest {
     final TimeoutBDDHandler handler = new TimeoutBDDHandler(1000L);
     final BDD bdd = bddFactory.build(queens, handler);
     assertThat(handler.aborted()).isTrue();
+    assertThat(bdd.index()).isEqualTo(BDDKernel.BDD_ABORT);
+  }
+
+  @Test
+  public void testNumberOfNodesHandlerSmall() {
+    final FormulaFactory f = new FormulaFactory();
+    final NQueensGenerator generator = new NQueensGenerator(f);
+    final Formula queens = generator.generate(4);
+    final BDDFactory bddFactory = new BDDFactory(10000, 10000, f);
+    bddFactory.setNumberOfVars(queens.variables().size());
+    final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(1000);
+    final BDD bdd = bddFactory.build(queens, handler);
+    assertThat(bdd.index()).isNotEqualTo(BDDKernel.BDD_ABORT);
+  }
+
+  @Test
+  public void testNumberOfNodesHandlerLarge() {
+    final FormulaFactory f = new FormulaFactory();
+    final NQueensGenerator generator = new NQueensGenerator(f);
+    final Formula queens = generator.generate(10);
+    final BDDFactory bddFactory = new BDDFactory(10000, 10000, f);
+    bddFactory.setNumberOfVars(queens.variables().size());
+    final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(5);
+    final BDD bdd = bddFactory.build(queens, handler);
     assertThat(bdd.index()).isEqualTo(BDDKernel.BDD_ABORT);
   }
 }
