@@ -55,6 +55,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.handlers.TimeoutHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.datastructures.MSVariable;
@@ -158,8 +159,8 @@ public final class MiniCard extends MiniSatStyleSolver {
   @Override
   public Tristate solve(final SATHandler handler) {
     this.handler = handler;
-    if (this.handler != null) {
-      this.handler.startedSolving();
+    if (handler instanceof TimeoutHandler) {
+      ((TimeoutHandler) handler).started();
     }
     this.model.clear();
     this.conflict.clear();

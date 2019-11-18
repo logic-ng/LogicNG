@@ -43,6 +43,7 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
+import org.logicng.handlers.SATHandler;
 import org.logicng.handlers.TimeoutModelEnumerationHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
@@ -295,8 +296,8 @@ public class SATTest {
       try {
         final List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
           @Override
-          public void started() {
-            // nothing to do here
+          public SATHandler satHandler() {
+            return null;
           }
 
           @Override
@@ -305,7 +306,7 @@ public class SATTest {
           }
 
           @Override
-          public boolean solverResult(final Tristate result) {
+          public boolean satSolverFinished() {
             // nothing to do here
             return true;
           }
@@ -472,11 +473,25 @@ public class SATTest {
   }
 
   @Test
-  public void testTimeoutSATHandler() {
+  public void testTimeoutSATHandlerSmall() {
+    for (final SATSolver s : this.solvers) {
+      s.add(F.IMP1);
+      final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
+      final Tristate result = s.sat(handler);
+      assertThat(handler.aborted()).isFalse();
+      assertThat(result).isEqualTo(TRUE);
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testTimeoutSATHandlerLarge() {
     for (final SATSolver s : this.solvers) {
       s.add(this.pg.generate(10));
-      final Tristate result = s.sat(new TimeoutSATHandler(1000));
-      Assert.assertEquals(UNDEF, result);
+      final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
+      final Tristate result = s.sat(handler);
+      assertThat(handler.aborted()).isTrue();
+      assertThat(result).isEqualTo(UNDEF);
       s.reset();
     }
   }

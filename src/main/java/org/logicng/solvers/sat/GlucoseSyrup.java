@@ -82,6 +82,7 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.handlers.TimeoutHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.datastructures.LNGBoundedIntQueue;
 import org.logicng.solvers.datastructures.LNGBoundedLongQueue;
@@ -296,8 +297,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
       throw new IllegalStateException("Cannot use incremental and proof generation at the same time");
     }
     this.handler = handler;
-    if (this.handler != null) {
-      this.handler.startedSolving();
+    if (handler instanceof TimeoutHandler) {
+      ((TimeoutHandler) handler).started();
     }
     this.model.clear();
     this.conflict.clear();

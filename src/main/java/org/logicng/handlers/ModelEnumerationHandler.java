@@ -29,7 +29,6 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
-import org.logicng.datastructures.Tristate;
 
 /**
  * Interface for a handler for the enumeration of models.
@@ -39,9 +38,10 @@ import org.logicng.datastructures.Tristate;
 public interface ModelEnumerationHandler {
 
   /**
-   * This method is called when the model enumeration starts.
+   * Returns a SAT handler which can be used to cancel internal SAT calls of the model enumeration process.
+   * @return a SAT handler
    */
-  void started();
+  SATHandler satHandler();
 
   /**
    * This method is called every time a model is found.
@@ -52,8 +52,7 @@ public interface ModelEnumerationHandler {
 
   /**
    * This method is called every time the SAT solver finished.
-   * @param result the SAT solver result
    * @return whether more models should be searched or not
    */
-  boolean solverResult(final Tristate result);
+  boolean satSolverFinished();
 }

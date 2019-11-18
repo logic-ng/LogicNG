@@ -29,7 +29,6 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
-import org.logicng.datastructures.Tristate;
 
 /**
  * A model enumeration handler that terminates the solving process after a given number of models.
@@ -53,8 +52,8 @@ public final class NumberOfModelsHandler implements ModelEnumerationHandler {
   }
 
   @Override
-  public void started() {
-    // nothing to do here
+  public SATHandler satHandler() {
+    return null;
   }
 
   @Override
@@ -63,7 +62,7 @@ public final class NumberOfModelsHandler implements ModelEnumerationHandler {
   }
 
   @Override
-  public boolean solverResult(final Tristate result) {
-    return result == Tristate.TRUE;
+  public boolean satSolverFinished() {
+    return true;
   }
 }

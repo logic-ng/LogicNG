@@ -36,11 +36,6 @@ package org.logicng.handlers;
 public interface BDDHandler {
 
     /**
-     * This method is called when the BDD generation starts.
-     */
-    void started();
-
-    /**
      * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
      * @return whether BDD generation should be continued or not
      */

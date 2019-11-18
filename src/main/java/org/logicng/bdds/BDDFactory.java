@@ -72,6 +72,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.BDDHandler;
+import org.logicng.handlers.TimeoutHandler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -152,8 +153,8 @@ public class BDDFactory {
    * @return the top node of the BDD or {@link BDDKernel#BDD_ABORT} if the computation was aborted
    */
   public BDD build(final Formula formula, final BDDHandler handler) {
-    if (handler != null) {
-      handler.started();
+    if (handler instanceof TimeoutHandler) {
+      ((TimeoutHandler) handler).started();
     }
     return new BDD(buildRec(formula, handler), this);
   }

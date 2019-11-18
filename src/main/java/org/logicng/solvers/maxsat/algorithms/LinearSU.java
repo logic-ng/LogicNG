@@ -131,6 +131,7 @@ public final class LinearSU extends MaxSAT {
     ubCost = 0;
     while (true) {
       res = searchSATSolver(this.solver, satHandler());
+      satSolverFinished();
       if (res == Tristate.UNDEF)
         return MaxSATResult.UNDEF;
       if (res == Tristate.TRUE) {
@@ -197,6 +198,7 @@ public final class LinearSU extends MaxSAT {
     this.solver = this.rebuildSolver(1);
     while (true) {
       res = searchSATSolver(this.solver, satHandler());
+      satSolverFinished();
       if (res == Tristate.UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == Tristate.TRUE) {

@@ -33,11 +33,7 @@ package org.logicng.handlers;
  * @version 1.6.2
  * @since 1.6.2
  */
-public final class TimeoutBDDHandler implements BDDHandler {
-
-    private final long timeout;
-    private long designatedEnd;
-    private boolean aborted;
+public final class TimeoutBDDHandler extends TimeoutHandler implements BDDHandler {
 
     /**
      * Constructs a new instance with a given timeout in milliseconds.
@@ -47,27 +43,11 @@ public final class TimeoutBDDHandler implements BDDHandler {
      * @param timeout the timeout in milliseconds
      */
     public TimeoutBDDHandler(final long timeout) {
-        this.timeout = timeout;
-    }
-
-    /**
-     * Returns whether the computation was aborted by the timeout handler.
-     * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
-     */
-    public boolean aborted() {
-        return this.aborted;
-    }
-
-    @Override
-    public void started() {
-        final long start = System.currentTimeMillis();
-        this.designatedEnd = start + this.timeout;
-        this.aborted = false;
+        super(timeout);
     }
 
     @Override
     public boolean addRefCalled() {
-        this.aborted = System.currentTimeMillis() >= this.designatedEnd;
-        return !this.aborted;
+        return testCurrentTime();
     }
 }

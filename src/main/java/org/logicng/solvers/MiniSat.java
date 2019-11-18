@@ -53,8 +53,7 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
-import org.logicng.handlers.TimeoutModelEnumerationHandler;
-import org.logicng.handlers.TimeoutSATHandler;
+import org.logicng.handlers.TimeoutHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.datastructures.MSClause;
@@ -351,8 +350,8 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler) {
-    if(handler != null) {
-      handler.started();
+    if(handler instanceof TimeoutHandler) {
+      ((TimeoutHandler) handler).started();
     }
     final List<Assignment> models = new ArrayList<>();
     SolverState stateBeforeEnumeration = null;
@@ -419,13 +418,8 @@ public final class MiniSat extends SATSolver {
     if (handler == null) {
       return this.sat((SATHandler) null) == TRUE;
     }
-    SATHandler satHandler = null;
-    if (handler instanceof TimeoutModelEnumerationHandler) {
-      final long remainingTime = ((TimeoutModelEnumerationHandler) handler).remainingTime();
-      satHandler = new TimeoutSATHandler(remainingTime);
-    }
-    final Tristate tristate = sat(satHandler);
-    return handler.solverResult(tristate);
+    final Tristate tristate = sat(handler.satHandler());
+    return handler.satSolverFinished() && tristate == TRUE;
   }
 
   /**
