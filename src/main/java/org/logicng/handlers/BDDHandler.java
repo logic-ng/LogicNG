@@ -41,7 +41,7 @@ public interface BDDHandler {
     void started();
 
     /**
-     * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int)} is called.
+     * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
      * @return whether BDD generation should be continued or not
      */
     boolean addRefCalled();

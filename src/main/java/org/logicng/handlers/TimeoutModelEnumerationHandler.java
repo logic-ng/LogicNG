@@ -1,6 +1,7 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Tristate;
 
 /**
  * A model enumeration handler which cancels the computation process after a given timeout.
@@ -32,6 +33,15 @@ public class TimeoutModelEnumerationHandler implements ModelEnumerationHandler {
         return this.aborted;
     }
 
+    /**
+     * Returns the remaining time until the designated end.
+     * @return the remaining time in milliseconds
+     */
+    public long remainingTime() {
+        final long remainingTime = this.designatedEnd - System.currentTimeMillis();
+        return remainingTime >= 0 ? remainingTime : 0L;
+    }
+
     @Override
     public void started() {
         final long start = System.currentTimeMillis();
@@ -43,5 +53,13 @@ public class TimeoutModelEnumerationHandler implements ModelEnumerationHandler {
     public boolean foundModel(final Assignment assignment) {
         this.aborted = System.currentTimeMillis() >= this.designatedEnd;
         return !this.aborted;
+    }
+
+    @Override
+    public boolean solverResult(final Tristate result) {
+        if (result == Tristate.UNDEF) {
+            this.aborted = true;
+        }
+        return result == Tristate.TRUE;
     }
 }

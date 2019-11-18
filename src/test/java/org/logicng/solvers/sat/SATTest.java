@@ -28,13 +28,6 @@
 
 package org.logicng.solvers.sat;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,6 +43,7 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
+import org.logicng.handlers.TimeoutModelEnumerationHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -79,6 +73,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
@@ -301,6 +302,12 @@ public class SATTest {
           @Override
           public boolean foundModel(final Assignment assignment) {
             return !assignment.negativeLiterals().isEmpty();
+          }
+
+          @Override
+          public boolean solverResult(final Tristate result) {
+            // nothing to do here
+            return true;
           }
         });
         Assert.assertFalse(models.isEmpty());
@@ -543,6 +550,47 @@ public class SATTest {
       s.add(this.pg.generate(7));
       Assert.assertEquals(FALSE, s.sat());
       s.reset();
+    }
+  }
+
+  @Test
+  public void testTimeoutModelEnumerationHandlerWithUNSATInstance() {
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support a timeout handler for model enumeration
+      }
+      solver.add(this.pg.generate(10));
+      final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(1000L);
+      final List<Assignment> assignments = solver.enumerateAllModels(handler);
+      assertThat(assignments).isEmpty();
+      assertThat(handler.aborted()).isTrue();
+      solver.reset();
+    }
+  }
+
+  @Test
+  public void testTimeoutModelEnumerationHandlerWithSATInstance() {
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support a timeout handler for model enumeration
+      }
+      final List<Variable> variables = new ArrayList<Variable>();
+      for (int i = 0; i < 1000; i++) {
+        variables.add(this.f.variable("x" + i));
+      }
+
+      solver.add(this.f.exo(variables));
+      TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(50L);
+      solver.enumerateAllModels(handler);
+      assertThat(handler.aborted()).isTrue();
+      solver.reset();
+
+      solver.add(this.f.exo(variables.subList(0, 5)));
+      handler = new TimeoutModelEnumerationHandler(1000L);
+      final List<Assignment> assignments = solver.enumerateAllModels(handler);
+      assertThat(assignments).hasSize(5);
+      assertThat(handler.aborted()).isFalse();
+      solver.reset();
     }
   }
 

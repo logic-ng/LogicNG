@@ -28,32 +28,46 @@
 
 package org.logicng.handlers;
 
-import org.logicng.datastructures.Assignment;
-import org.logicng.datastructures.Tristate;
-
 /**
- * Interface for a handler for the enumeration of models.
+ * A BDD handler which cancels the build process after a given timeout.
  * @version 1.6.2
- * @since 1.0
+ * @since 1.6.2
  */
-public interface ModelEnumerationHandler {
+public final class TimeoutBDDHandler implements BDDHandler {
 
-  /**
-   * This method is called when the model enumeration starts.
-   */
-  void started();
+    private final long timeout;
+    private long designatedEnd;
+    private boolean aborted;
 
-  /**
-   * This method is called every time a model is found.
-   * @param assignment the respective model
-   * @return whether more models should be searched or not
-   */
-  boolean foundModel(Assignment assignment);
+    /**
+     * Constructs a new instance with a given timeout in milliseconds.
+     * <p>
+     * Note that it might take a few milliseconds more until the build process is actually canceled, since the handler
+     * depends on the BDD factory's call to {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)}.
+     * @param timeout the timeout in milliseconds
+     */
+    public TimeoutBDDHandler(final long timeout) {
+        this.timeout = timeout;
+    }
 
-  /**
-   * This method is called every time the SAT solver finished.
-   * @param result the SAT solver result
-   * @return whether more models should be searched or not
-   */
-  boolean solverResult(final Tristate result);
+    /**
+     * Returns whether the computation was aborted by the timeout handler.
+     * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
+     */
+    public boolean aborted() {
+        return this.aborted;
+    }
+
+    @Override
+    public void started() {
+        final long start = System.currentTimeMillis();
+        this.designatedEnd = start + this.timeout;
+        this.aborted = false;
+    }
+
+    @Override
+    public boolean addRefCalled() {
+        this.aborted = System.currentTimeMillis() >= this.designatedEnd;
+        return !this.aborted;
+    }
 }

@@ -29,10 +29,11 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Tristate;
 
 /**
  * A model enumeration handler that terminates the solving process after a given number of models.
- * @version 1.0
+ * @version 1.6.2
  * @since 1.0
  */
 public final class NumberOfModelsHandler implements ModelEnumerationHandler {
@@ -45,7 +46,7 @@ public final class NumberOfModelsHandler implements ModelEnumerationHandler {
    * @param bound the upper bound
    * @throws IllegalArgumentException if the number of models to generate is &lt;= 0
    */
-  public NumberOfModelsHandler(int bound) {
+  public NumberOfModelsHandler(final int bound) {
     if (bound <= 0)
       throw new IllegalArgumentException("You must generate at least 1 model.");
     this.bound = bound;
@@ -58,6 +59,11 @@ public final class NumberOfModelsHandler implements ModelEnumerationHandler {
 
   @Override
   public boolean foundModel(final Assignment assignment) {
-    return ++count < bound;
+    return ++this.count < this.bound;
+  }
+
+  @Override
+  public boolean solverResult(final Tristate result) {
+    return result == Tristate.TRUE;
   }
 }
