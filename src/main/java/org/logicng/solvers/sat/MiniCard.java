@@ -159,8 +159,8 @@ public final class MiniCard extends MiniSatStyleSolver {
   @Override
   public Tristate solve(final SATHandler handler) {
     this.handler = handler;
-    if (handler instanceof TimeoutHandler) {
-      ((TimeoutHandler) handler).started();
+    if (handler != null) {
+      handler.started();
     }
     this.model.clear();
     this.conflict.clear();

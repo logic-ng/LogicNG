@@ -33,7 +33,7 @@ package org.logicng.handlers;
  * @version 1.6.2
  * @since 1.6.2
  */
-public final class NumberOfNodesBDDHandler implements BDDHandler {
+public final class NumberOfNodesBDDHandler extends ComputationHandler implements BDDHandler {
 
     private final int bound;
     private int count;
@@ -51,11 +51,13 @@ public final class NumberOfNodesBDDHandler implements BDDHandler {
 
     @Override
     public void started() {
+        super.started();
         count = 0;
     }
 
     @Override
     public boolean addRefCalled() {
-        return ++count < bound;
+        this.aborted = ++count >= bound;
+        return !aborted;
     }
 }

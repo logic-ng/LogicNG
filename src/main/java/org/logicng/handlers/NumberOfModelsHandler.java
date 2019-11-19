@@ -35,7 +35,7 @@ import org.logicng.datastructures.Assignment;
  * @version 1.6.2
  * @since 1.0
  */
-public final class NumberOfModelsHandler implements ModelEnumerationHandler {
+public final class NumberOfModelsHandler extends ComputationHandler implements ModelEnumerationHandler {
 
   private final int bound;
   private int count;
@@ -52,13 +52,20 @@ public final class NumberOfModelsHandler implements ModelEnumerationHandler {
   }
 
   @Override
+  public void started() {
+    super.started();
+    this.count = 0;
+  }
+
+  @Override
   public SATHandler satHandler() {
     return null;
   }
 
   @Override
   public boolean foundModel(final Assignment assignment) {
-    return ++this.count < this.bound;
+    this.aborted = ++this.count >= this.bound;
+    return !aborted;
   }
 
   @Override

@@ -248,11 +248,12 @@ public class PartialWeightedMaxSATTest {
   }
 
   private void testTimeoutHandler(MaxSATSolver solver) {
+    TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(1000L);
+
     PigeonHoleGenerator pg = new PigeonHoleGenerator(f);
     Formula formula = pg.generate(10);
     solver.addHardFormula(formula);
     solver.addSoftFormula(f.or(formula.variables()), 10);
-    TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(10L);
     MaxSAT.MaxSATResult result = solver.solve(handler);
     assertThat(handler.aborted()).isTrue();
     assertThat(result).isEqualTo(MaxSAT.MaxSATResult.UNDEF);
@@ -260,7 +261,6 @@ public class PartialWeightedMaxSATTest {
     solver.reset();
     solver.addHardFormula(F.IMP1);
     solver.addSoftFormula(F.AND1, 10);
-    handler = new TimeoutMaxSATHandler(2000L);
     result = solver.solve(handler);
     assertThat(handler.aborted()).isFalse();
     assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);

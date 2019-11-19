@@ -32,10 +32,21 @@ import org.logicng.formulas.Formula;
 
 /**
  * A handler for factorization methods (CNF, DNF).
- * @version 1.0
+ * @version 1.6.2
  * @since 1.0
  */
 public interface FactorizationHandler {
+
+  /**
+   * Returns whether the computation was aborted by the timeout handler.
+   * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
+   */
+  boolean aborted();
+
+  /**
+   * This method is called when the computation starts.
+   */
+  void started();
 
   /**
    * This method is called every time a distribution is performed.
@@ -49,5 +60,4 @@ public interface FactorizationHandler {
    * @return whether the factorization should be continued or not
    */
   boolean createdClause(final Formula clause);
-
 }

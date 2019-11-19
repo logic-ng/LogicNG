@@ -69,6 +69,17 @@ public final class CNFFactorization implements FormulaTransformation {
 
   @Override
   public Formula apply(final Formula formula, boolean cache) {
+    if(handler != null) {
+      handler.toString();
+    }
+    this.proceed = true;
+    return applyRec(formula, cache);
+  }
+
+  public Formula applyRec(final Formula formula, boolean cache) {
+    if(handler != null) {
+      handler.started();
+    }
     if (!this.proceed)
       return null;
     if (formula.type().precedence() >= LITERAL.precedence())
@@ -80,14 +91,14 @@ public final class CNFFactorization implements FormulaTransformation {
       case NOT:
       case IMPL:
       case EQUIV:
-        cached = this.apply(formula.nnf(), cache);
+        cached = this.applyRec(formula.nnf(), cache);
         break;
       case OR:
         LinkedHashSet<Formula> nops = new LinkedHashSet<>();
         for (final Formula op : formula) {
           if (!this.proceed)
             return null;
-          nops.add(this.apply(op, cache));
+          nops.add(this.applyRec(op, cache));
         }
         final Iterator<Formula> it = nops.iterator();
         cached = it.next();
@@ -100,7 +111,7 @@ public final class CNFFactorization implements FormulaTransformation {
       case AND:
         nops = new LinkedHashSet<>();
         for (final Formula op : formula) {
-          final Formula apply = this.apply(op, cache);
+          final Formula apply = this.applyRec(op, cache);
           if (!this.proceed)
             return null;
           nops.add(apply);

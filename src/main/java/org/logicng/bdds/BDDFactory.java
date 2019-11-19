@@ -153,8 +153,8 @@ public class BDDFactory {
    * @return the top node of the BDD or {@link BDDKernel#BDD_ABORT} if the computation was aborted
    */
   public BDD build(final Formula formula, final BDDHandler handler) {
-    if (handler instanceof TimeoutHandler) {
-      ((TimeoutHandler) handler).started();
+    if (handler != null) {
+      handler.started();
     }
     return new BDD(buildRec(formula, handler), this);
   }

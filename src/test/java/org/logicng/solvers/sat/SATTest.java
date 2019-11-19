@@ -295,6 +295,18 @@ public class SATTest {
       s.add(F.IMP3);
       try {
         final List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
+          private boolean aborted;
+
+          @Override
+          public boolean aborted() {
+            return aborted;
+          }
+
+          @Override
+          public void started() {
+            this.aborted = false;
+          }
+
           @Override
           public SATHandler satHandler() {
             return null;
@@ -302,7 +314,8 @@ public class SATTest {
 
           @Override
           public boolean foundModel(final Assignment assignment) {
-            return !assignment.negativeLiterals().isEmpty();
+            this.aborted = assignment.negativeLiterals().isEmpty();
+            return !aborted;
           }
 
           @Override
@@ -652,6 +665,7 @@ public class SATTest {
 
       final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
       final List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(29, modelsWithHandler.size());
       for (final Assignment model : modelsWithHandler) {
         for (final Variable lit : lits) {
@@ -679,6 +693,7 @@ public class SATTest {
 
       final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
       final List<Assignment> modelsWithHandler = s.enumerateAllModels(null, Collections.singletonList(firstFive.first()), handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(29, modelsWithHandler.size());
       for (final Assignment model : modelsWithHandler) {
         for (final Variable lit : lits) {
@@ -712,6 +727,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       NumberOfModelsHandler handler = new NumberOfModelsHandler(100);
       List<Assignment> models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
@@ -721,6 +737,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       handler = new NumberOfModelsHandler(200);
       models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isFalse();
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
@@ -730,6 +747,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       handler = new NumberOfModelsHandler(50);
       models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(50, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
@@ -739,6 +757,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       handler = new NumberOfModelsHandler(1);
       models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(1, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());

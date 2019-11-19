@@ -36,6 +36,17 @@ package org.logicng.handlers;
 public interface SATHandler {
 
   /**
+   * Returns whether the computation was aborted by the timeout handler.
+   * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
+   */
+  boolean aborted();
+
+  /**
+   * This method is called when the computation starts.
+   */
+  void started();
+
+  /**
    * This method is called every time a conflict is found.
    * @return whether SAT solving should be continued or not
    */

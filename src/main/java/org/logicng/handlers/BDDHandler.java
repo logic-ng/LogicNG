@@ -36,6 +36,12 @@ package org.logicng.handlers;
 public interface BDDHandler {
 
     /**
+     * Returns whether the computation was aborted by the timeout handler.
+     * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
+     */
+    boolean aborted();
+
+    /**
      * This method is called when the computation starts.
      */
     void started();

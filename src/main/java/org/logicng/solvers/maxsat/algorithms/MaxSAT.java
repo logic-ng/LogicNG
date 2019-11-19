@@ -184,8 +184,8 @@ public abstract class MaxSAT {
    */
   public final MaxSATResult search(final MaxSATHandler handler) {
     this.handler = handler;
-    if (handler instanceof TimeoutHandler) {
-      ((TimeoutHandler) handler).started();
+    if (handler != null) {
+      handler.started();
     }
     final MaxSATResult result = search();
     if (handler != null)

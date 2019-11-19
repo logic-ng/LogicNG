@@ -5,11 +5,10 @@ package org.logicng.handlers;
  * @version 1.6.2
  * @since 1.6.2
  */
-public abstract class TimeoutHandler {
+public abstract class TimeoutHandler extends ComputationHandler {
 
     protected final long timeout;
     protected long designatedEnd;
-    protected boolean aborted;
 
     /**
      * Constructs a new abstract timeout handler with a given timeout in milliseconds.
@@ -19,21 +18,11 @@ public abstract class TimeoutHandler {
         this.timeout = timeout;
     }
 
-    /**
-     * Returns whether the computation was aborted by the timeout handler.
-     * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
-     */
-    public boolean aborted() {
-        return this.aborted;
-    }
-
-    /**
-     * This method is called when the computation starts.
-     */
+    @Override
     public void started() {
+        super.started();
         final long start = System.currentTimeMillis();
         this.designatedEnd = start + this.timeout;
-        this.aborted = false;
     }
 
     /**

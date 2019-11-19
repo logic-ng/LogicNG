@@ -350,8 +350,8 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler) {
-    if(handler instanceof TimeoutHandler) {
-      ((TimeoutHandler) handler).started();
+    if (handler != null) {
+      handler.started();
     }
     final List<Assignment> models = new ArrayList<>();
     SolverState stateBeforeEnumeration = null;

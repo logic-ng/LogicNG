@@ -59,6 +59,8 @@ public final class TimeoutMaxSATHandler extends TimeoutHandler implements MaxSAT
   public void started() {
     super.started();
     this.satHandler.started();
+    this.currentLb = -1;
+    this.currentUb = -1;
   }
 
   @Override

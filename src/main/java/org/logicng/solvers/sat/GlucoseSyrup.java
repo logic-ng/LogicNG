@@ -297,8 +297,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
       throw new IllegalStateException("Cannot use incremental and proof generation at the same time");
     }
     this.handler = handler;
-    if (handler instanceof TimeoutHandler) {
-      ((TimeoutHandler) handler).started();
+    if (handler != null) {
+      handler.started();
     }
     this.model.clear();
     this.conflict.clear();

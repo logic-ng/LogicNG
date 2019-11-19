@@ -68,7 +68,15 @@ public final class DNFFactorization implements FormulaTransformation {
   }
 
   @Override
-  public Formula apply(final Formula formula, boolean cache) {
+  public Formula apply(Formula formula, boolean cache) {
+    if(handler != null) {
+      handler.started();
+    }
+    this.proceed = true;
+    return applyRec(formula, cache);
+  }
+
+  private Formula applyRec(final Formula formula, boolean cache) {
     if (!this.proceed)
       return null;
     if (formula.type().precedence() >= LITERAL.precedence())
@@ -81,12 +89,12 @@ public final class DNFFactorization implements FormulaTransformation {
       case IMPL:
       case EQUIV:
       case PBC:
-        cached = apply(formula.nnf(), cache);
+        cached = applyRec(formula.nnf(), cache);
         break;
       case OR:
         LinkedHashSet<Formula> nops = new LinkedHashSet<>();
         for (final Formula op : formula) {
-          final Formula apply = this.apply(op, cache);
+          final Formula apply = this.applyRec(op, cache);
           if (!this.proceed)
             return null;
           nops.add(apply);
@@ -98,7 +106,7 @@ public final class DNFFactorization implements FormulaTransformation {
         for (final Formula op : formula) {
           if (!this.proceed)
             return null;
-          nops.add(this.apply(op, cache));
+          nops.add(this.applyRec(op, cache));
         }
         final Iterator<Formula> it = nops.iterator();
         cached = it.next();

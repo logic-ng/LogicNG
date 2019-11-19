@@ -131,6 +131,7 @@ public class LargeBDDTest {
     bddFactory.setNumberOfVars(queens.variables().size());
     final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(1000);
     final BDD bdd = bddFactory.build(queens, handler);
+    assertThat(handler.aborted()).isFalse();
     assertThat(bdd.index()).isNotEqualTo(BDDKernel.BDD_ABORT);
   }
 
@@ -143,6 +144,7 @@ public class LargeBDDTest {
     bddFactory.setNumberOfVars(queens.variables().size());
     final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(5);
     final BDD bdd = bddFactory.build(queens, handler);
+    assertThat(handler.aborted()).isTrue();
     assertThat(bdd.index()).isEqualTo(BDDKernel.BDD_ABORT);
   }
 }
