@@ -35,29 +35,29 @@ package org.logicng.handlers;
  */
 public final class NumberOfNodesBDDHandler extends ComputationHandler implements BDDHandler {
 
-    private final int bound;
-    private int count;
+  private final int bound;
+  private int count;
 
-    /**
-     * Constructs a new BDD handler with an upper bound for the number of added nodes (inclusive).
-     * @param bound the upper bound
-     */
-    public NumberOfNodesBDDHandler(final int bound) {
-        if (bound < 0) {
-            throw new IllegalArgumentException("The bound for added nodes must be equal or greater than 0.");
-        }
-        this.bound = bound;
+  /**
+   * Constructs a new BDD handler with an upper bound for the number of added nodes (inclusive).
+   * @param bound the upper bound
+   */
+  public NumberOfNodesBDDHandler(final int bound) {
+    if (bound < 0) {
+      throw new IllegalArgumentException("The bound for added nodes must be equal or greater than 0.");
     }
+    this.bound = bound;
+  }
 
-    @Override
-    public void started() {
-        super.started();
-        count = 0;
-    }
+  @Override
+  public void started() {
+    super.started();
+    this.count = 0;
+  }
 
-    @Override
-    public boolean addRefCalled() {
-        this.aborted = ++count >= bound;
-        return !aborted;
-    }
+  @Override
+  public boolean newRefAdded() {
+    this.aborted = ++this.count >= this.bound;
+    return !this.aborted;
+  }
 }

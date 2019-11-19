@@ -35,18 +35,7 @@ import org.logicng.datastructures.Assignment;
  * @version 1.6.2
  * @since 1.0
  */
-public interface ModelEnumerationHandler {
-
-  /**
-   * Returns whether the computation was aborted by the timeout handler.
-   * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
-   */
-  boolean aborted();
-
-  /**
-   * This method is called when the computation starts.
-   */
-  void started();
+public interface ModelEnumerationHandler extends Handler {
 
   /**
    * Returns a SAT handler which can be used to cancel internal SAT calls of the model enumeration process.

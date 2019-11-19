@@ -33,22 +33,11 @@ package org.logicng.handlers;
  * @version 1.6.2
  * @since 1.6.2
  */
-public interface BDDHandler {
+public interface BDDHandler extends Handler {
 
-    /**
-     * Returns whether the computation was aborted by the timeout handler.
-     * @return {@code true} if the computation was aborted by the timeout handler, otherwise {@code false}
-     */
-    boolean aborted();
-
-    /**
-     * This method is called when the computation starts.
-     */
-    void started();
-
-    /**
-     * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
-     * @return whether BDD generation should be continued or not
-     */
-    boolean addRefCalled();
+  /**
+   * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
+   * @return whether BDD generation should be continued or not
+   */
+  boolean newRefAdded();
 }

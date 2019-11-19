@@ -118,7 +118,7 @@ public class BDDKernel {
   protected int varnum; // Number of defined BDD variables
   private int[] refstack; // Internal node reference stack
   private int refstacktop; // Internal node reference stack top
-  protected  int[] level2var; // Level -> variable table
+  protected int[] level2var; // Level -> variable table
 
   private int[] quantvarset; // Current variable set for quant.
   private int quantvarsetID; // Current id used in quantvarset
@@ -394,18 +394,17 @@ public class BDDKernel {
   /**
    * Adds a reference for a given node.  Reference counting is done on externally referenced nodes only and the count for
    * a specific node {@code r} can and must be increased using this function to avoid loosing the node in the next
-   * garbage collection.  If a BDD handler is given, the handler's {@link BDDHandler#addRefCalled()} method is called.
+   * garbage collection.  If a BDD handler is given, the handler's {@link BDDHandler#newRefAdded()} method is called.
    * If the generation gets aborted due to the handler, the method will return {@link BDDKernel#BDD_ABORT} as result. If
    * {@code null} is passed as handler, the generation will continue without interruption.
-   * @param root the node
+   * @param root    the node
    * @param handler the BDD handler
    * @return return the node
    * @throws IllegalArgumentException if the root node was invalid
    */
   public int addRef(final int root, final BDDHandler handler) {
-    if(handler != null && !handler.addRefCalled()) {
+    if (handler != null && !handler.newRefAdded())
       return BDD_ABORT;
-    }
     if (root < 2)
       return root;
     if (root >= this.nodesize)

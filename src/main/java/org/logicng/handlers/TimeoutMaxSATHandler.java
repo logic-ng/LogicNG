@@ -71,13 +71,13 @@ public final class TimeoutMaxSATHandler extends TimeoutHandler implements MaxSAT
   @Override
   public boolean foundLowerBound(final int lowerBound, final Assignment model) {
     this.currentLb = lowerBound;
-    return testCurrentTime();
+    return timeLimitExceeded();
   }
 
   @Override
   public boolean foundUpperBound(final int upperBound, final Assignment model) {
     this.currentUb = upperBound;
-    return testCurrentTime();
+    return timeLimitExceeded();
   }
 
   @Override

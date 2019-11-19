@@ -5,22 +5,17 @@ package org.logicng.handlers;
  * @version 1.6.2
  * @since 1.6.2
  */
-public abstract class ComputationHandler {
+public abstract class ComputationHandler implements Handler {
 
-    protected boolean aborted;
+  protected boolean aborted;
 
-    /**
-     * Returns whether the computation was aborted by the handler.
-     * @return {@code true} if the computation was aborted by the handler, otherwise {@code false}
-     */
-    public boolean aborted() {
-        return this.aborted;
-    }
+  @Override
+  public boolean aborted() {
+    return this.aborted;
+  }
 
-    /**
-     * This method is called when the computation starts.
-     */
-    public void started() {
-        this.aborted = false;
-    }
+  @Override
+  public void started() {
+    this.aborted = false;
+  }
 }

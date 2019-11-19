@@ -48,7 +48,7 @@ public final class TimeoutSATHandler extends TimeoutHandler implements SATHandle
 
   @Override
   public boolean detectedConflict() {
-    return testCurrentTime();
+    return timeLimitExceeded();
   }
 
   @Override
