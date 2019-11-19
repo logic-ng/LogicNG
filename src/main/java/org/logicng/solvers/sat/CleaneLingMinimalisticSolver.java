@@ -54,7 +54,6 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
-import org.logicng.handlers.TimeoutHandler;
 import org.logicng.solvers.datastructures.CLClause;
 import org.logicng.solvers.datastructures.CLFrame;
 import org.logicng.solvers.datastructures.CLVar;
@@ -86,8 +85,8 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (handler != null) {
-            handler.started();
+        if (this.handler != null) {
+            this.handler.started();
         }
         this.model.clear();
         initLimits();

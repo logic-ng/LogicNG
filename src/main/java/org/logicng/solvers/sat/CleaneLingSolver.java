@@ -133,8 +133,8 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (handler != null) {
-            handler.started();
+        if (this.handler != null) {
+            this.handler.started();
         }
         this.model.clear();
         initLimits();
