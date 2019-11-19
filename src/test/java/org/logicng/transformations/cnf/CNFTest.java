@@ -39,6 +39,8 @@ import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Unit Tests for CNF conversion.
@@ -134,9 +136,23 @@ public class CNFTest {
 
   private static class TestFactorizationHandler implements FactorizationHandler {
 
+    private boolean aborted;
     private int distCount = 0;
     private int clauseCount = 0;
     private long longestClause = 0;
+
+    @Override
+    public boolean aborted() {
+      return this.aborted;
+    }
+
+    @Override
+    public void started() {
+      this.aborted = false;
+      this.distCount = 0;
+      this.clauseCount = 0;
+      this.longestClause = 0;
+    }
 
     @Override
     public boolean performedDistribution() {
@@ -150,5 +166,51 @@ public class CNFTest {
       longestClause = Math.max(clause.numberOfAtoms(), longestClause);
       return true;
     }
+  }
+
+  @Test
+  public void testWithHandler() throws ParserException {
+    final PropositionalParser p = new PropositionalParser(F.f);
+    Formula formula = p.parse("(~(~(a | b) => ~(x | y))) & ((a | x) => ~(b | y))");
+    FactorizationHandler handler = new FactorizationHandler() {
+      private boolean aborted;
+      private int dists = 0;
+      private int clauses = 0;
+
+      @Override
+      public boolean aborted() {
+        return this.aborted;
+      }
+
+      @Override
+      public void started() {
+        this.aborted = false;
+        this.dists = 0;
+        this.clauses = 0;
+      }
+
+      @Override
+      public boolean performedDistribution() {
+        this.dists++;
+        this.aborted = this.dists >= 100;
+        return !this.aborted;
+      }
+
+      @Override
+      public boolean createdClause(final Formula clause) {
+        this.clauses++;
+        this.aborted = this.clauses >= 2;
+        return !this.aborted;
+      }
+    };
+    final CNFFactorization factorization = new CNFFactorization(handler);
+    Formula cnf = factorization.apply(formula, false);
+    assertThat(handler.aborted()).isTrue();
+    assertThat(cnf).isNull();
+
+    formula = p.parse("~(a | b)");
+    cnf = factorization.apply(formula, false);
+    assertThat(handler.aborted()).isFalse();
+    assertThat(cnf).isNotNull();
   }
 }

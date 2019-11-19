@@ -29,20 +29,35 @@
 package org.logicng.handlers;
 
 /**
- * Interface for a handler for SAT solvers.
+ * A BDD handler which cancels the build process after a given number of added nodes.
  * @version 1.6.2
- * @since 1.0
+ * @since 1.6.2
  */
-public interface SATHandler extends Handler {
+public final class NumberOfNodesBDDHandler extends ComputationHandler implements BDDHandler {
+
+  private final int bound;
+  private int count;
 
   /**
-   * This method is called every time a conflict is found.
-   * @return whether SAT solving should be continued or not
+   * Constructs a new BDD handler with an upper bound for the number of added nodes (inclusive).
+   * @param bound the upper bound
    */
-  boolean detectedConflict();
+  public NumberOfNodesBDDHandler(final int bound) {
+    if (bound < 0) {
+      throw new IllegalArgumentException("The bound for added nodes must be equal or greater than 0.");
+    }
+    this.bound = bound;
+  }
 
-  /**
-   * This method is called when the SAT solver finished solving.
-   */
-  void finishedSolving();
+  @Override
+  public void started() {
+    super.started();
+    this.count = 0;
+  }
+
+  @Override
+  public boolean newRefAdded() {
+    this.aborted = ++this.count >= this.bound;
+    return !this.aborted;
+  }
 }

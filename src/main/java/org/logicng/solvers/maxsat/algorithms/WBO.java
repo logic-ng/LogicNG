@@ -417,6 +417,7 @@ public class WBO extends MaxSAT {
     assert this.assumptions.size() == 0;
     this.solver = this.rebuildHardSolver();
     Tristate res = searchSATSolver(this.solver, satHandler(), this.assumptions);
+    satSolverFinished();
     if (res == FALSE)
       nbCores++;
     else if (res == TRUE) {
@@ -444,6 +445,7 @@ public class WBO extends MaxSAT {
     this.solver = this.rebuildWeightSolver(this.weightStrategy);
     while (true) {
       final Tristate res = searchSATSolver(this.solver, satHandler(), this.assumptions);
+      satSolverFinished();
       if (res == UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == FALSE) {
@@ -501,6 +503,7 @@ public class WBO extends MaxSAT {
     this.solver = this.rebuildSolver();
     while (true) {
       final Tristate res = searchSATSolver(this.solver, satHandler(), this.assumptions);
+      satSolverFinished();
       if (res == UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == FALSE) {

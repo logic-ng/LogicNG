@@ -297,7 +297,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     }
     this.handler = handler;
     if (this.handler != null) {
-      this.handler.startedSolving();
+      this.handler.started();
     }
     this.model.clear();
     this.conflict.clear();

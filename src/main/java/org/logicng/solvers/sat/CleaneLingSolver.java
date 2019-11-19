@@ -50,21 +50,22 @@
 
 package org.logicng.solvers.sat;
 
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGLongPriorityQueue;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.SATHandler;
+import org.logicng.handlers.TimeoutHandler;
 import org.logicng.solvers.datastructures.CLClause;
 import org.logicng.solvers.datastructures.CLFrame;
 import org.logicng.solvers.datastructures.CLOccs;
 import org.logicng.solvers.datastructures.CLVar;
 import org.logicng.solvers.datastructures.CLWatch;
 import org.logicng.util.Pair;
+
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * A complete Reimplementation of the CleaneLing solver.
@@ -132,7 +133,9 @@ public final class CleaneLingSolver extends CleaneLingStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (this.handler != null) { this.handler.startedSolving(); }
+        if (this.handler != null) {
+            this.handler.started();
+        }
         this.model.clear();
         initLimits();
         biasPhases();

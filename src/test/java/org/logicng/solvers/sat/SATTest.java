@@ -28,13 +28,6 @@
 
 package org.logicng.solvers.sat;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,6 +43,8 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
+import org.logicng.handlers.SATHandler;
+import org.logicng.handlers.TimeoutModelEnumerationHandler;
 import org.logicng.handlers.TimeoutSATHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -79,6 +74,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
 
 /**
  * Unit tests for the SAT solvers.
@@ -293,9 +295,33 @@ public class SATTest {
       s.add(F.IMP3);
       try {
         final List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
+          private boolean aborted;
+
+          @Override
+          public boolean aborted() {
+            return aborted;
+          }
+
+          @Override
+          public void started() {
+            this.aborted = false;
+          }
+
+          @Override
+          public SATHandler satHandler() {
+            return null;
+          }
+
           @Override
           public boolean foundModel(final Assignment assignment) {
-            return !assignment.negativeLiterals().isEmpty();
+            this.aborted = assignment.negativeLiterals().isEmpty();
+            return !aborted;
+          }
+
+          @Override
+          public boolean satSolverFinished() {
+            // nothing to do here
+            return true;
           }
         });
         Assert.assertFalse(models.isEmpty());
@@ -460,11 +486,25 @@ public class SATTest {
   }
 
   @Test
-  public void testTimeoutSATHandler() {
+  public void testTimeoutSATHandlerSmall() {
+    for (final SATSolver s : this.solvers) {
+      s.add(F.IMP1);
+      final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
+      final Tristate result = s.sat(handler);
+      assertThat(handler.aborted()).isFalse();
+      assertThat(result).isEqualTo(TRUE);
+      s.reset();
+    }
+  }
+
+  @Test
+  public void testTimeoutSATHandlerLarge() {
     for (final SATSolver s : this.solvers) {
       s.add(this.pg.generate(10));
-      final Tristate result = s.sat(new TimeoutSATHandler(1000));
-      Assert.assertEquals(UNDEF, result);
+      final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
+      final Tristate result = s.sat(handler);
+      assertThat(handler.aborted()).isTrue();
+      assertThat(result).isEqualTo(UNDEF);
       s.reset();
     }
   }
@@ -542,6 +582,47 @@ public class SATTest {
   }
 
   @Test
+  public void testTimeoutModelEnumerationHandlerWithUNSATInstance() {
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support a timeout handler for model enumeration
+      }
+      solver.add(this.pg.generate(10));
+      final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(1000L);
+      final List<Assignment> assignments = solver.enumerateAllModels(handler);
+      assertThat(assignments).isEmpty();
+      assertThat(handler.aborted()).isTrue();
+      solver.reset();
+    }
+  }
+
+  @Test
+  public void testTimeoutModelEnumerationHandlerWithSATInstance() {
+    for (final SATSolver solver : this.solvers) {
+      if (solver instanceof CleaneLing) {
+        continue; // Cleaning does not support a timeout handler for model enumeration
+      }
+      final List<Variable> variables = new ArrayList<Variable>();
+      for (int i = 0; i < 1000; i++) {
+        variables.add(this.f.variable("x" + i));
+      }
+
+      solver.add(this.f.exo(variables));
+      TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(50L);
+      solver.enumerateAllModels(handler);
+      assertThat(handler.aborted()).isTrue();
+      solver.reset();
+
+      solver.add(this.f.exo(variables.subList(0, 5)));
+      handler = new TimeoutModelEnumerationHandler(1000L);
+      final List<Assignment> assignments = solver.enumerateAllModels(handler);
+      assertThat(assignments).hasSize(5);
+      assertThat(handler.aborted()).isFalse();
+      solver.reset();
+    }
+  }
+
+  @Test
   public void testModelEnumeration() {
     for (int i = 0; i < this.solvers.length - 1; i++) {
       final SATSolver s = this.solvers[i];
@@ -584,6 +665,7 @@ public class SATTest {
 
       final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
       final List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(29, modelsWithHandler.size());
       for (final Assignment model : modelsWithHandler) {
         for (final Variable lit : lits) {
@@ -611,6 +693,7 @@ public class SATTest {
 
       final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
       final List<Assignment> modelsWithHandler = s.enumerateAllModels(null, Collections.singletonList(firstFive.first()), handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(29, modelsWithHandler.size());
       for (final Assignment model : modelsWithHandler) {
         for (final Variable lit : lits) {
@@ -644,6 +727,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       NumberOfModelsHandler handler = new NumberOfModelsHandler(100);
       List<Assignment> models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
@@ -653,6 +737,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       handler = new NumberOfModelsHandler(200);
       models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isFalse();
       Assert.assertEquals(100, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
@@ -662,6 +747,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       handler = new NumberOfModelsHandler(50);
       models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(50, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
@@ -671,6 +757,7 @@ public class SATTest {
       s.add(this.f.exo(lits));
       handler = new NumberOfModelsHandler(1);
       models = s.enumerateAllModels(lits, handler);
+      assertThat(handler.aborted()).isTrue();
       Assert.assertEquals(1, models.size());
       for (final Assignment m : models) {
         Assert.assertEquals(1, m.positiveLiterals().size());
