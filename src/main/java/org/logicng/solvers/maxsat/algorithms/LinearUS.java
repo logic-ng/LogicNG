@@ -117,6 +117,7 @@ public final class LinearUS extends MaxSAT {
     this.encoder.setIncremental(MaxSATConfig.IncrementalStrategy.NONE);
     while (true) {
       res = searchSATSolver(this.solver, satHandler(), assumptions);
+      satSolverFinished();
       if (res == Tristate.UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == Tristate.TRUE) {
@@ -165,6 +166,7 @@ public final class LinearUS extends MaxSAT {
     this.encoder.setIncremental(MaxSATConfig.IncrementalStrategy.ITERATIVE);
     while (true) {
       res = searchSATSolver(this.solver, satHandler(), assumptions);
+      satSolverFinished();
       if (res == Tristate.UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == Tristate.TRUE) {

@@ -53,6 +53,7 @@ import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.handlers.TimeoutHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.datastructures.MSClause;
@@ -80,7 +81,7 @@ import java.util.TreeSet;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 1.6.0
+ * @version 1.6.2
  * @since 1.0
  */
 public final class MiniSat extends SATSolver {
@@ -349,7 +350,10 @@ public final class MiniSat extends SATSolver {
 
   @Override
   public List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler) {
-    final List<Assignment> models = new LinkedList<>();
+    if (handler != null) {
+      handler.started();
+    }
+    final List<Assignment> models = new ArrayList<>();
     SolverState stateBeforeEnumeration = null;
     if (this.style == SolverStyle.MINISAT && this.incremental) {
       stateBeforeEnumeration = this.saveState();
@@ -374,7 +378,7 @@ public final class MiniSat extends SATSolver {
       }
     }
     LNGIntVector relevantAllIndices = null;
-    final TreeSet<Variable> uniqueAdditionalVariables = new TreeSet<>(additionalVariables);
+    final SortedSet<Variable> uniqueAdditionalVariables = new TreeSet<>(additionalVariables);
     if (variables != null) {
       uniqueAdditionalVariables.removeAll(variables);
     }
@@ -391,7 +395,7 @@ public final class MiniSat extends SATSolver {
         }
       }
     }
-    while (proceed && this.sat((SATHandler) null) == TRUE) {
+    while (proceed && modelEnumerationSATCall(handler)) {
       final LNGBooleanVector modelFromSolver = this.solver.model();
       final Assignment model = this.createAssignment(modelFromSolver, relevantAllIndices);
       models.add(model);
@@ -408,6 +412,14 @@ public final class MiniSat extends SATSolver {
       this.loadState(stateBeforeEnumeration);
     }
     return models;
+  }
+
+  private boolean modelEnumerationSATCall(final ModelEnumerationHandler handler) {
+    if (handler == null) {
+      return this.sat((SATHandler) null) == TRUE;
+    }
+    final Tristate tristate = sat(handler.satHandler());
+    return handler.satSolverFinished() && tristate == TRUE;
   }
 
   /**

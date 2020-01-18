@@ -56,6 +56,7 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.handlers.MaxSATHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.handlers.TimeoutHandler;
 import org.logicng.solvers.datastructures.MSHardClause;
 import org.logicng.solvers.datastructures.MSSoftClause;
 import org.logicng.solvers.sat.GlucoseConfig;
@@ -157,22 +158,22 @@ public abstract class MaxSAT {
   /**
    * Solves the formula that is currently loaded in the SAT solver with a set of assumptions.
    * @param s           the SAT solver
-   * @param handler     a SAT handler
+   * @param satHandler     a SAT handler
    * @param assumptions the assumptions
    * @return the result of the solving process
    */
-  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler handler, final LNGIntVector assumptions) {
-    return s.solve(handler, assumptions);
+  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler satHandler, final LNGIntVector assumptions) {
+    return s.solve(satHandler, assumptions);
   }
 
   /**
    * Solves the formula without assumptions.
    * @param s       the SAT solver
-   * @param handler a SAT handler
+   * @param satHandler a SAT handler
    * @return the result of the solving process
    */
-  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler handler) {
-    return s.solve(handler);
+  public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler satHandler) {
+    return s.solve(satHandler);
   }
 
   /**
@@ -183,8 +184,9 @@ public abstract class MaxSAT {
    */
   public final MaxSATResult search(final MaxSATHandler handler) {
     this.handler = handler;
-    if (handler != null)
-      handler.startedSolving();
+    if (handler != null) {
+      handler.started();
+    }
     final MaxSATResult result = search();
     if (handler != null)
       handler.finishedSolving();
@@ -244,7 +246,7 @@ public abstract class MaxSAT {
    * @param weight the weight of the soft clause
    * @param lits   the literals of the soft clause
    */
-  public void addSoftClause(int weight, final LNGIntVector lits) {
+  public void addSoftClause(final int weight, final LNGIntVector lits) {
     final LNGIntVector rVars = new LNGIntVector();
     this.softClauses.push(new MSSoftClause(lits, weight, LIT_UNDEF, rVars));
     this.nbSoft++;
@@ -256,7 +258,7 @@ public abstract class MaxSAT {
    * @param lits   the literals of the soft clause
    * @param vars   the relaxation variables of the soft clause
    */
-  public void addSoftClause(int weight, final LNGIntVector lits, final LNGIntVector vars) {
+  public void addSoftClause(final int weight, final LNGIntVector lits, final LNGIntVector vars) {
     this.softClauses.push(new MSSoftClause(lits, weight, LIT_UNDEF, vars));
     this.nbSoft++;
   }
@@ -266,8 +268,8 @@ public abstract class MaxSAT {
    * @param sign the sign of the literal
    * @return the new literal
    */
-  public int newLiteral(boolean sign) {
-    int p = mkLit(this.nVars(), sign);
+  public int newLiteral(final boolean sign) {
+    final int p = mkLit(this.nVars(), sign);
     this.newVar();
     return p;
   }
@@ -284,7 +286,7 @@ public abstract class MaxSAT {
    * Initializes 'ubCost' to the sum of weights of the soft clauses
    * @param weight the weight
    */
-  public void updateSumWeights(int weight) {
+  public void updateSumWeights(final int weight) {
     if (weight != this.hardWeight)
       this.ubCost += weight;
   }
@@ -293,7 +295,7 @@ public abstract class MaxSAT {
    * Initializes the current weight to the maximum weight of the soft clauses.
    * @param weight the weight
    */
-  public void setCurrentWeight(int weight) {
+  public void setCurrentWeight(final int weight) {
     if (weight > this.currentWeight && weight != this.hardWeight)
       this.currentWeight = weight;
   }
@@ -327,10 +329,10 @@ public abstract class MaxSAT {
    * @param currentModel the model found by the solver
    */
   public void saveModel(final LNGBooleanVector currentModel) {
-    assert nbInitialVariables != 0;
+    assert this.nbInitialVariables != 0;
     assert currentModel.size() != 0;
     this.model.clear();
-    for (int i = 0; i < nbInitialVariables; i++)
+    for (int i = 0; i < this.nbInitialVariables; i++)
       this.model.push(currentModel.get(i));
   }
 
@@ -342,25 +344,25 @@ public abstract class MaxSAT {
    * @param weight       the weight
    * @return the cost of the given model
    */
-  public int computeCostModel(final LNGBooleanVector currentModel, int weight) {
+  public int computeCostModel(final LNGBooleanVector currentModel, final int weight) {
     assert currentModel.size() != 0;
     int currentCost = 0;
     for (int i = 0; i < nSoft(); i++) {
       boolean unsatisfied = true;
-      for (int j = 0; j < softClauses.get(i).clause().size(); j++) {
-        if (weight != Integer.MAX_VALUE && softClauses.get(i).weight() != weight) {
+      for (int j = 0; j < this.softClauses.get(i).clause().size(); j++) {
+        if (weight != Integer.MAX_VALUE && this.softClauses.get(i).weight() != weight) {
           unsatisfied = false;
           continue;
         }
-        assert var(softClauses.get(i).clause().get(j)) < currentModel.size();
-        if ((sign(softClauses.get(i).clause().get(j)) && !currentModel.get(var(softClauses.get(i).clause().get(j))))
-                || (!sign(softClauses.get(i).clause().get(j)) && currentModel.get(var(softClauses.get(i).clause().get(j))))) {
+        assert var(this.softClauses.get(i).clause().get(j)) < currentModel.size();
+        if ((sign(this.softClauses.get(i).clause().get(j)) && !currentModel.get(var(this.softClauses.get(i).clause().get(j))))
+                || (!sign(this.softClauses.get(i).clause().get(j)) && currentModel.get(var(this.softClauses.get(i).clause().get(j))))) {
           unsatisfied = false;
           break;
         }
       }
       if (unsatisfied)
-        currentCost += softClauses.get(i).weight();
+        currentCost += this.softClauses.get(i).weight();
     }
     return currentCost;
   }
@@ -370,13 +372,13 @@ public abstract class MaxSAT {
    * @param cache is indicates whether the result should be cached.
    * @return {@code true} if the formula has lexicographical optimization criterion
    */
-  public boolean isBMO(boolean cache) {
-    assert orderWeights.size() == 0;
+  public boolean isBMO(final boolean cache) {
+    assert this.orderWeights.size() == 0;
     boolean bmo = true;
     final SortedSet<Integer> partitionWeights = new TreeSet<>();
     final SortedMap<Integer, Integer> nbPartitionWeights = new TreeMap<>();
     for (int i = 0; i < nSoft(); i++) {
-      final int weight = softClauses.get(i).weight();
+      final int weight = this.softClauses.get(i).weight();
       partitionWeights.add(weight);
       final Integer foundNB = nbPartitionWeights.get(weight);
       if (foundNB == null)
@@ -385,20 +387,20 @@ public abstract class MaxSAT {
         nbPartitionWeights.put(weight, foundNB + 1);
     }
     for (final int i : partitionWeights)
-      orderWeights.push(i);
-    orderWeights.sortReverse();
+      this.orderWeights.push(i);
+    this.orderWeights.sortReverse();
     long totalWeights = 0;
-    for (int i = 0; i < orderWeights.size(); i++)
-      totalWeights += orderWeights.get(i) * nbPartitionWeights.get(orderWeights.get(i));
-    for (int i = 0; i < orderWeights.size(); i++) {
-      totalWeights -= orderWeights.get(i) * nbPartitionWeights.get(orderWeights.get(i));
-      if (orderWeights.get(i) < totalWeights) {
+    for (int i = 0; i < this.orderWeights.size(); i++)
+      totalWeights += this.orderWeights.get(i) * nbPartitionWeights.get(this.orderWeights.get(i));
+    for (int i = 0; i < this.orderWeights.size(); i++) {
+      totalWeights -= this.orderWeights.get(i) * nbPartitionWeights.get(this.orderWeights.get(i));
+      if (this.orderWeights.get(i) < totalWeights) {
         bmo = false;
         break;
       }
     }
     if (!cache)
-      orderWeights.clear();
+      this.orderWeights.clear();
     return bmo;
   }
 
@@ -431,15 +433,19 @@ public abstract class MaxSAT {
    * @return the current SAT handler
    */
   SATHandler satHandler() {
-    return handler == null ? null : handler.satHandler();
+    return this.handler == null ? null : this.handler.satHandler();
   }
 
   boolean foundLowerBound(final int lowerBound, final Assignment model) {
-    return handler == null || handler.foundLowerBound(lowerBound, model);
+    return this.handler == null || this.handler.foundLowerBound(lowerBound, model);
   }
 
   boolean foundUpperBound(final int upperBound, final Assignment model) {
-    return handler == null || handler.foundUpperBound(upperBound, model);
+    return this.handler == null || this.handler.foundUpperBound(upperBound, model);
+  }
+
+  boolean satSolverFinished() {
+    return this.handler == null || this.handler.satSolverFinished();
   }
 
   /**
@@ -453,11 +459,11 @@ public abstract class MaxSAT {
     private final int nbSC;
 
     private Stats() {
-      this.ubC = model.size() == 0 ? -1 : ubCost;
-      this.nbS = nbSatisfiable;
-      this.nbC = nbCores;
-      this.avgCS = nbCores != 0 ? (double) sumSizeCores / nbCores : 0.0;
-      this.nbSC = nbSymmetryClauses;
+      this.ubC = MaxSAT.this.model.size() == 0 ? -1 : MaxSAT.this.ubCost;
+      this.nbS = MaxSAT.this.nbSatisfiable;
+      this.nbC = MaxSAT.this.nbCores;
+      this.avgCS = MaxSAT.this.nbCores != 0 ? (double) MaxSAT.this.sumSizeCores / MaxSAT.this.nbCores : 0.0;
+      this.nbSC = MaxSAT.this.nbSymmetryClauses;
     }
 
     /**

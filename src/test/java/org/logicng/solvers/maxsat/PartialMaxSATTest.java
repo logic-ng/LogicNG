@@ -30,6 +30,8 @@ package org.logicng.solvers.maxsat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.logicng.formulas.F;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.handlers.MaxSATHandler;
@@ -37,6 +39,7 @@ import org.logicng.handlers.TimeoutMaxSATHandler;
 import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
+import org.logicng.testutils.PigeonHoleGenerator;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -46,6 +49,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 /**
@@ -153,26 +157,108 @@ public class PartialMaxSATTest {
   }
 
   @Test
-  public void testTimeoutHandler() throws IOException {
+  public void testTimeoutHandlerWBO() {
+    final MaxSATConfig[] configs = new MaxSATConfig[1];
+    configs[0] = new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build();
+    for (final MaxSATConfig config : configs) {
+      final MaxSATSolver solver = MaxSATSolver.wbo(config);
+      testTimeoutHandler(solver);
+    }
+  }
+
+  @Test
+  public void testTimeoutHandlerIncWBO() {
+    final MaxSATConfig[] configs = new MaxSATConfig[1];
+    configs[0] = new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build();
+    for (final MaxSATConfig config : configs) {
+      final MaxSATSolver solver = MaxSATSolver.wbo(config);
+      testTimeoutHandler(solver);
+    }
+  }
+
+  @Test
+  public void testTimeoutHandlerLinearSU() {
+    final MaxSATConfig[] configs = new MaxSATConfig[4];
+    configs[0] = new MaxSATConfig.Builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(false).verbosity(SOME).output(logStream).build();
+    configs[1] = new MaxSATConfig.Builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(false).verbosity(SOME).output(logStream).build();
+    configs[2] = new MaxSATConfig.Builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(true).verbosity(SOME).output(logStream).build();
+    configs[3] = new MaxSATConfig.Builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(true).verbosity(SOME).output(logStream).build();
+    for (final MaxSATConfig config : configs) {
+      final MaxSATSolver solver = MaxSATSolver.wbo(config);
+      testTimeoutHandler(solver);
+    }
+  }
+
+  @Test
+  public void testTimeoutHandlerLinearUS() {
+    final MaxSATConfig[] configs = new MaxSATConfig[3];
+    configs[0] = new MaxSATConfig.Builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(logStream).build();
+    configs[1] = new MaxSATConfig.Builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(logStream).build();
+    configs[2] = new MaxSATConfig.Builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(logStream).build();
+    for (final MaxSATConfig config : configs) {
+      final MaxSATSolver solver = MaxSATSolver.wbo(config);
+      testTimeoutHandler(solver);
+    }
+  }
+
+  @Test
+  public void testTimeoutHandlerMSU3() {
+    final MaxSATConfig[] configs = new MaxSATConfig[3];
+    configs[0] = new MaxSATConfig.Builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(logStream).build();
+    configs[1] = new MaxSATConfig.Builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(logStream).build();
+    configs[2] = new MaxSATConfig.Builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(logStream).build();
+    for (final MaxSATConfig config : configs) {
+      final MaxSATSolver solver = MaxSATSolver.wbo(config);
+      testTimeoutHandler(solver);
+    }
+  }
+
+  private void testTimeoutHandler(MaxSATSolver solver) {
+    TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(1000L);
+
+    PigeonHoleGenerator pg = new PigeonHoleGenerator(f);
+    Formula formula = pg.generate(10);
+    solver.addHardFormula(formula);
+    solver.addSoftFormula(f.or(formula.variables()), 1);
+    MaxSAT.MaxSATResult result = solver.solve(handler);
+    assertThat(handler.aborted()).isTrue();
+    assertThat(result).isEqualTo(MaxSAT.MaxSATResult.UNDEF);
+
+    solver.reset();
+    solver.addHardFormula(F.IMP1);
+    solver.addSoftFormula(F.AND1, 1);
+    result = solver.solve(handler);
+    assertThat(handler.aborted()).isFalse();
+    assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+  }
+
+  @Test
+  public void testTimeoutHandlerSimple() throws IOException {
     MaxSATSolver solver = MaxSATSolver.wbo(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
     readCNF(solver, "src/test/resources/partialmaxsat/c1355_F176gat-1278gat@1.wcnf");
-    MaxSATHandler handler = new TimeoutMaxSATHandler(1000);
-    Assert.assertEquals(MaxSAT.MaxSATResult.UNDEF, solver.solve(handler));
-    Assert.assertTrue(handler.lowerBoundApproximation() < 13);
+    TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(1000L);
+    MaxSAT.MaxSATResult result = solver.solve(handler);
+    assertThat(handler.aborted()).isTrue();
+    assertThat(result).isEqualTo(MaxSAT.MaxSATResult.UNDEF);
+    assertThat(handler.lowerBoundApproximation()).isLessThan(13);
 
     solver = MaxSATSolver.wbo(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
     readCNF(solver, "src/test/resources/partialmaxsat/c1355_F1229gat@1.wcnf");
-    handler = new TimeoutMaxSATHandler(5000);
-    Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
+    handler = new TimeoutMaxSATHandler(5000L);
+    result = solver.solve(handler);
+    assertThat(handler.aborted()).isFalse();
+    assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
   }
 
   @Test
   public void testTimeoutHandlerUB() throws IOException {
-    MaxSATSolver solver = MaxSATSolver.linearSU(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
+    final MaxSATSolver solver = MaxSATSolver.linearSU(new MaxSATConfig.Builder().verbosity(SOME).output(logStream).build());
     readCNF(solver, "src/test/resources/partialmaxsat/c1355_F1229gat@1.wcnf");
-    MaxSATHandler handler = new TimeoutMaxSATHandler(5000);
-    Assert.assertEquals(MaxSAT.MaxSATResult.OPTIMUM, solver.solve(handler));
-    Assert.assertEquals(solver.result(), handler.upperBoundApproximation());
+    final TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(5000);
+    MaxSAT.MaxSATResult result = solver.solve(handler);
+    assertThat(handler.aborted()).isFalse();
+    assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+    assertThat(solver.result()).isEqualTo(handler.upperBoundApproximation());
   }
 
   private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {
@@ -193,11 +279,11 @@ public class PartialMaxSATTest {
       assert tokens.length >= 3;
       assert "0".equals(tokens[tokens.length - 1]);
       literals.clear();
-      int weight = Integer.parseInt(tokens[0]);
+      final int weight = Integer.parseInt(tokens[0]);
       for (int i = 1; i < tokens.length - 1; i++) {
         if (!tokens[i].isEmpty()) {
-          int parsedLit = Integer.parseInt(tokens[i]);
-          String var = "v" + Math.abs(parsedLit);
+          final int parsedLit = Integer.parseInt(tokens[i]);
+          final String var = "v" + Math.abs(parsedLit);
           literals.add(parsedLit > 0 ? f.literal(var, true) : f.literal(var, false));
         }
       }

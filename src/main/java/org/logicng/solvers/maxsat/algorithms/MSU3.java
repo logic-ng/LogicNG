@@ -131,6 +131,7 @@ public final class MSU3 extends MaxSAT {
       this.coreMapping.put(softClauses.get(i).assumptionVar(), i);
     while (true) {
       res = searchSATSolver(this.solver, satHandler(), assumptions);
+      satSolverFinished();
       if (res == Tristate.UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == Tristate.TRUE) {
@@ -199,6 +200,7 @@ public final class MSU3 extends MaxSAT {
       this.coreMapping.put(softClauses.get(i).assumptionVar(), i);
     while (true) {
       res = searchSATSolver(this.solver, satHandler(), assumptions);
+      satSolverFinished();
       if (res == Tristate.UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == Tristate.TRUE) {

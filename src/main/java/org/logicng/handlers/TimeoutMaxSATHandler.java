@@ -32,14 +32,12 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * A MaxSAT handler which cancels the solving process after a given timeout.
- * @version 1.0
+ * @version 1.6.2
  * @since 1.0
  */
-public final class TimeoutMaxSATHandler implements MaxSATHandler {
+public final class TimeoutMaxSATHandler extends TimeoutHandler implements MaxSATHandler {
 
-  private final long timeout;
-  private final SATHandler satHandler;
-  private long designatedEnd;
+  private final TimeoutSATHandler satHandler;
   private int currentLb;
   private int currentUb;
 
@@ -51,8 +49,16 @@ public final class TimeoutMaxSATHandler implements MaxSATHandler {
    * @param timeout the timeout in milliseconds
    */
   public TimeoutMaxSATHandler(final long timeout) {
-    this.timeout = timeout;
+    super(timeout);
     this.satHandler = new TimeoutSATHandler(timeout);
+    this.currentLb = -1;
+    this.currentUb = -1;
+  }
+
+  @Override
+  public void started() {
+    super.started();
+    this.satHandler.started();
     this.currentLb = -1;
     this.currentUb = -1;
   }
@@ -65,20 +71,19 @@ public final class TimeoutMaxSATHandler implements MaxSATHandler {
   @Override
   public boolean foundLowerBound(final int lowerBound, final Assignment model) {
     this.currentLb = lowerBound;
-    return System.currentTimeMillis() < designatedEnd;
+    return timeLimitExceeded();
   }
 
   @Override
   public boolean foundUpperBound(final int upperBound, final Assignment model) {
     this.currentUb = upperBound;
-    return System.currentTimeMillis() < designatedEnd;
+    return timeLimitExceeded();
   }
 
   @Override
-  public void startedSolving() {
-    this.satHandler.startedSolving();
-    final long start = System.currentTimeMillis();
-    this.designatedEnd = start + this.timeout;
+  public boolean satSolverFinished() {
+    this.aborted = this.satHandler.aborted();
+    return !this.aborted;
   }
 
   @Override

@@ -325,6 +325,7 @@ public final class IncWBO extends WBO {
         if (!this.incSoft.get(i))
           assumptions.push(not(softClauses.get(i).assumptionVar()));
       final Tristate res = searchSATSolver(solver, satHandler(), assumptions);
+      satSolverFinished();
       if (res == UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == FALSE) {
@@ -410,6 +411,7 @@ public final class IncWBO extends WBO {
         if (!this.incSoft.get(i))
           assumptions.push(not(softClauses.get(i).assumptionVar()));
       final Tristate res = searchSATSolver(solver, satHandler(), assumptions);
+      satSolverFinished();
       if (res == UNDEF)
         return MaxSATResult.UNDEF;
       else if (res == FALSE) {

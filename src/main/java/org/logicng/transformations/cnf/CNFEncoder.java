@@ -34,6 +34,7 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.FactorizationHandler;
+import org.logicng.handlers.ComputationHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +109,7 @@ public class CNFEncoder {
           this.factorizationHandler = new AdvancedFactorizationHandler();
           this.advancedFactorization = new CNFFactorization(this.factorizationHandler);
         }
-        this.factorizationHandler.reset(this.config().distributionBoundary, this.config().createdClauseBoundary);
+        this.factorizationHandler.setBounds(this.config().distributionBoundary, this.config().createdClauseBoundary);
         return this.advancedEncoding(formula);
       default:
         throw new IllegalStateException("Unknown CNF encoding algorithm: " + this.config().algorithm);
@@ -176,28 +177,35 @@ public class CNFEncoder {
   /**
    * The factorization handler for the advanced CNF encoding.
    */
-  private static class AdvancedFactorizationHandler implements FactorizationHandler {
+  private static class AdvancedFactorizationHandler extends ComputationHandler implements FactorizationHandler {
 
     private int distributionBoundary;
     private int createdClauseBoundary;
     private int currentDistributions;
     private int currentClauses;
 
-    private void reset(final int distributionBoundary, final int createdClauseBoundary) {
+    private void setBounds(final int distributionBoundary, final int createdClauseBoundary) {
       this.distributionBoundary = distributionBoundary;
       this.createdClauseBoundary = createdClauseBoundary;
+    }
+
+    @Override
+    public void started() {
+      super.started();
       this.currentDistributions = 0;
       this.currentClauses = 0;
     }
 
     @Override
     public boolean performedDistribution() {
-      return this.distributionBoundary == -1 || ++this.currentDistributions <= this.distributionBoundary;
+      this.aborted = this.distributionBoundary != -1 && ++this.currentDistributions > this.distributionBoundary;
+      return !aborted;
     }
 
     @Override
     public boolean createdClause(final Formula clause) {
-      return this.createdClauseBoundary == -1 || ++this.currentClauses <= this.createdClauseBoundary;
+      this.aborted = this.createdClauseBoundary != -1 && ++this.currentClauses > this.createdClauseBoundary;
+      return !aborted;
     }
   }
 }

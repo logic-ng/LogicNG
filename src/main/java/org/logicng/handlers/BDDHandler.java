@@ -29,20 +29,15 @@
 package org.logicng.handlers;
 
 /**
- * Interface for a handler for SAT solvers.
+ * Interface for a handler for the BDD factory.
  * @version 1.6.2
- * @since 1.0
+ * @since 1.6.2
  */
-public interface SATHandler extends Handler {
+public interface BDDHandler extends Handler {
 
   /**
-   * This method is called every time a conflict is found.
-   * @return whether SAT solving should be continued or not
+   * This method is called every a new reference is added, i.e the method {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
+   * @return whether BDD generation should be continued or not
    */
-  boolean detectedConflict();
-
-  /**
-   * This method is called when the SAT solver finished solving.
-   */
-  void finishedSolving();
+  boolean newRefAdded();
 }

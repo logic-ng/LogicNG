@@ -29,20 +29,25 @@
 package org.logicng.handlers;
 
 /**
- * Interface for a handler for SAT solvers.
+ * A BDD handler which cancels the build process after a given timeout.
  * @version 1.6.2
- * @since 1.0
+ * @since 1.6.2
  */
-public interface SATHandler extends Handler {
+public final class TimeoutBDDHandler extends TimeoutHandler implements BDDHandler {
 
   /**
-   * This method is called every time a conflict is found.
-   * @return whether SAT solving should be continued or not
+   * Constructs a new instance with a given timeout in milliseconds.
+   * <p>
+   * Note that it might take a few milliseconds more until the build process is actually canceled, since the handler
+   * depends on the BDD factory's call to {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)}.
+   * @param timeout the timeout in milliseconds
    */
-  boolean detectedConflict();
+  public TimeoutBDDHandler(final long timeout) {
+    super(timeout);
+  }
 
-  /**
-   * This method is called when the SAT solver finished solving.
-   */
-  void finishedSolving();
+  @Override
+  public boolean newRefAdded() {
+    return timeLimitExceeded();
+  }
 }

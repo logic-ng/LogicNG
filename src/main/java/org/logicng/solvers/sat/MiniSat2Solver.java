@@ -194,7 +194,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
   public Tristate solve(final SATHandler handler) {
     this.handler = handler;
     if (this.handler != null) {
-      this.handler.startedSolving();
+      this.handler.started();
     }
     this.model.clear();
     this.conflict.clear();

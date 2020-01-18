@@ -38,6 +38,8 @@ import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Unit Tests for DNF conversion.
  * @version 1.1
@@ -121,24 +123,47 @@ public class DNFFactorizationTest {
   @Test
   public void testWithHandler() throws ParserException {
     final PropositionalParser p = new PropositionalParser(F.f);
-    final Formula formula = p.parse("(~(~(a | b) => ~(x | y))) & ((a | x) => ~(b | y))");
-    final DNFFactorization factorization = new DNFFactorization(new FactorizationHandler() {
+    Formula formula = p.parse("(~(~(a | b) => ~(x | y))) & ((a | x) => ~(b | y))");
+    FactorizationHandler handler = new FactorizationHandler() {
+      private boolean aborted;
       private int dists = 0;
       private int clauses = 0;
 
       @Override
+      public boolean aborted() {
+        return this.aborted;
+      }
+
+      @Override
+      public void started() {
+        this.aborted = false;
+        this.dists = 0;
+        this.clauses = 0;
+      }
+
+      @Override
       public boolean performedDistribution() {
         this.dists++;
-        return this.dists < 100;
+        this.aborted = this.dists >= 100;
+        return !this.aborted;
       }
 
       @Override
       public boolean createdClause(final Formula clause) {
         this.clauses++;
-        return this.clauses < 5;
+        this.aborted = this.clauses >= 5;
+        return !this.aborted;
       }
-    });
-    Assert.assertNull(factorization.apply(formula, false));
+    };
+    final DNFFactorization factorization = new DNFFactorization(handler);
+    Formula dnf = factorization.apply(formula, false);
+    assertThat(handler.aborted()).isTrue();
+    assertThat(dnf).isNull();
+
+    formula = p.parse("~(a | b)");
+    dnf = factorization.apply(formula, false);
+    assertThat(handler.aborted()).isFalse();
+    assertThat(dnf).isNotNull();
   }
 
   @Test

@@ -57,8 +57,6 @@ MODIFICATIONS.
 
 package org.logicng.bdds;
 
-import static org.logicng.formulas.FType.AND;
-
 import org.logicng.bdds.datastructures.BDD;
 import org.logicng.bdds.datastructures.BDDConstant;
 import org.logicng.bdds.datastructures.BDDInnerNode;
@@ -67,12 +65,15 @@ import org.logicng.bdds.jbuddy.BDDKernel;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Equivalence;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Implication;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.BDDHandler;
+import org.logicng.handlers.TimeoutHandler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ import java.util.TreeSet;
 
 /**
  * The factory for the jBuddy implementation.
- * @version 1.4.0
+ * @version 1.6.2
  * @since 1.4.0
  */
 public class BDDFactory {
@@ -135,15 +136,41 @@ public class BDDFactory {
    * @return the top node of the BDD
    */
   public BDD build(final Formula formula) {
-    return new BDD(buildRec(formula), this);
+    return build(formula, null);
+  }
+
+  /**
+   * Builds a BDD for a given formula.  BDDs support all Boolean formula types but not pseudo-Boolean constraints.
+   * The reason is that before converting a formula to a BDD one must specify the number of variables.  In case of
+   * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore the caller first
+   * has to transform any pseudo-Boolean constraints in their respective CNF representation before converting them
+   * to a BDD.
+   *
+   * If a BDD handler is given and the BDD generation is aborted due to the handler, the method will return
+   * {@link BDDKernel#BDD_ABORT} as result. If {@code null} is passed as handler, the generation will continue without
+   * interruption.
+   * @param formula the formula
+   * @param handler the BDD handler
+   * @return the top node of the BDD or {@link BDDKernel#BDD_ABORT} if the computation was aborted
+   */
+  public BDD build(final Formula formula, final BDDHandler handler) {
+    if (handler != null) {
+      handler.started();
+    }
+    return new BDD(buildRec(formula, handler), this);
   }
 
   /**
    * Recursive build procedure for the BDD.
+   *
+   * If a BDD handler is given and the BDD generation is aborted due to the handler, the method will return
+   * {@link BDDKernel#BDD_ABORT} as result. If {@code null} is passed as handler, the generation will continue without
+   * interruption.
    * @param formula the formula
-   * @return the BDD index
+   * @param handler the BDD handler
+   * @return the BDD index or {@link BDDKernel#BDD_ABORT} if the computation was aborted
    */
-  private int buildRec(final Formula formula) {
+  private int buildRec(final Formula formula, final BDDHandler handler) {
     switch (formula.type()) {
       case FALSE:
         return BDDKernel.BDD_FALSE;
@@ -158,26 +185,59 @@ public class BDDFactory {
           this.idx2var.put(idx, lit.variable());
         }
         return lit.phase() ? this.kernel.ithVar(idx) : this.kernel.nithVar(idx);
-      case NOT:
+      case NOT: {
         final Not not = (Not) formula;
-        return this.kernel.addRef(this.kernel.not(buildRec(not.operand())));
-      case IMPL:
+        final int operand = buildRec(not.operand(), handler);
+        if (operand == BDDKernel.BDD_ABORT) {
+          return BDDKernel.BDD_ABORT;
+        } else {
+          return this.kernel.addRef(this.kernel.not(operand), handler);
+        }
+      }
+      case IMPL: {
         final Implication impl = (Implication) formula;
-        return this.kernel.addRef(this.kernel.implication(buildRec(impl.left()), buildRec(impl.right())));
-      case EQUIV:
+        final int left = buildRec(impl.left(), handler);
+        if (left == BDDKernel.BDD_ABORT) {
+          return BDDKernel.BDD_ABORT;
+        }
+        final int right = buildRec(impl.right(), handler);
+        if (right == BDDKernel.BDD_ABORT) {
+          return BDDKernel.BDD_ABORT;
+        }
+        return this.kernel.addRef(this.kernel.implication(left, right), handler);
+      }
+      case EQUIV: {
         final Equivalence equiv = (Equivalence) formula;
-        return this.kernel.addRef(this.kernel.equivalence(buildRec(equiv.left()), buildRec(equiv.right())));
+        final int left = buildRec(equiv.left(), handler);
+        if (left == BDDKernel.BDD_ABORT) {
+          return BDDKernel.BDD_ABORT;
+        }
+        final int right = buildRec(equiv.right(), handler);
+        if (right == BDDKernel.BDD_ABORT) {
+          return BDDKernel.BDD_ABORT;
+        }
+        return this.kernel.addRef(this.kernel.equivalence(left, right), handler);
+      }
       case AND:
-      case OR:
+      case OR: {
         final Iterator<Formula> it = formula.iterator();
-        int res = buildRec(it.next());
-        while (it.hasNext())
-          res = formula.type() == AND
-                  ? this.kernel.addRef(this.kernel.and(res, buildRec(it.next())))
-                  : this.kernel.addRef(this.kernel.or(res, buildRec(it.next())));
+        int res = buildRec(it.next(), handler);
+        if (res == BDDKernel.BDD_ABORT) {
+          return BDDKernel.BDD_ABORT;
+        }
+        while (it.hasNext()) {
+          final int operand = buildRec(it.next(), handler);
+          if (operand == BDDKernel.BDD_ABORT) {
+            return BDDKernel.BDD_ABORT;
+          }
+          res = formula.type() == FType.AND
+                  ? this.kernel.addRef(this.kernel.and(res, operand), handler)
+                  : this.kernel.addRef(this.kernel.or(res, operand), handler);
+        }
         return res;
+      }
       case PBC:
-        return buildRec(formula.nnf());
+        return buildRec(formula.nnf(), handler);
       default:
         throw new IllegalArgumentException("Unsupported operator for BDD generation: " + formula.type());
     }

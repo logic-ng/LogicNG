@@ -50,10 +50,6 @@
 
 package org.logicng.solvers.sat;
 
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
@@ -64,6 +60,10 @@ import org.logicng.solvers.datastructures.CLVar;
 import org.logicng.solvers.datastructures.CLWatch;
 
 import java.io.PrintStream;
+
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * A minimalistic version of the CleaneLing solver.
@@ -85,7 +85,9 @@ public final class CleaneLingMinimalisticSolver extends CleaneLingStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (this.handler != null) { this.handler.startedSolving(); }
+        if (this.handler != null) {
+            this.handler.started();
+        }
         this.model.clear();
         initLimits();
         Tristate res;

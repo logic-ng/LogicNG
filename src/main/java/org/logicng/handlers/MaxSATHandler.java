@@ -32,10 +32,10 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * Interface for a handler for MaxSAT solvers.
- * @version 1.0
+ * @version 1.6.2
  * @since 1.0
  */
-public interface MaxSATHandler {
+public interface MaxSATHandler extends Handler {
 
   /**
    * Returns a SAT handler which can be used to cancel internal SAT calls of the MaxSAT solver.
@@ -60,9 +60,10 @@ public interface MaxSATHandler {
   boolean foundUpperBound(final int upperBound, final Assignment model);
 
   /**
-   * This method is called when the MaxSAT solver starts solving.
+   * This method is called every time the SAT solver finished.
+   * @return whether more models should be searched or not
    */
-  void startedSolving();
+  boolean satSolverFinished();
 
   /**
    * This method is called when the MaxSAT solver finished solving.
