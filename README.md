@@ -63,7 +63,7 @@ The library is released under the Apache License and therefore is free to use in
 
 ## Changelog
 
-### Version 1.6.2 (Release November 2019)
+### Version 1.6.2 (Release January 2020)
 * Some improvements to handlers for computations
 * New BDD handlers
 
