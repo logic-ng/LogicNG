@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * @version 1.5.1
  * @since 1.5.1
  */
-public class FormulaHelper {
+public final class FormulaHelper {
 
     /**
      * Private empty constructor.  Class only contains static utility methods.

@@ -32,7 +32,14 @@ import java.util.stream.Collectors;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class ModelCounter {
+public final class ModelCounter {
+
+    /**
+     * Private empty constructor.  Class only contains static utility methods.
+     */
+    private ModelCounter() {
+        // Intentionally left empty
+    }
 
     /**
      * Computes the model count for a given set of formulas (interpreted as conjunction)

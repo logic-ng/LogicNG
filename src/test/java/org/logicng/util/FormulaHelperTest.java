@@ -32,9 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.F;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.TreeSet;
 
 /**
@@ -70,5 +74,25 @@ public class FormulaHelperTest {
         assertThat(FormulaHelper.literals(Arrays.asList(F.TRUE, F.FALSE))).isEqualTo(new TreeSet<>());
         assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
         assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.NY))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
+    }
+
+    @Test
+    public void testNegateLiterals() {
+        assertThat((ArrayList<Literal>) FormulaHelper.negateLiterals(Collections.emptyList(), ArrayList::new))
+                .isEqualTo(new ArrayList<Formula>());
+        assertThat((ArrayList<Literal>) FormulaHelper.negateLiterals(Arrays.asList(F.A, F.NB), ArrayList::new))
+                .isEqualTo(Arrays.asList(F.NA, F.B));
+        assertThat((HashSet<Literal>) FormulaHelper.negateLiterals(Arrays.asList(F.A, F.NB), HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(F.NA, F.B)));
+    }
+
+    @Test
+    public void testNegate() {
+        assertThat((ArrayList<Formula>) FormulaHelper.negate(Collections.emptyList(), ArrayList::new))
+                .isEqualTo(new ArrayList<Formula>());
+        assertThat((ArrayList<Formula>) FormulaHelper.negate(Arrays.asList(F.A, F.TRUE, F.NB, F.AND1), ArrayList::new))
+                .isEqualTo(Arrays.asList(F.NA, F.FALSE, F.B, F.f.not(F.AND1)));
+        assertThat((HashSet<Formula>) FormulaHelper.negate(Arrays.asList(F.A, F.TRUE, F.NB, F.AND1), HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(F.NA, F.FALSE, F.B, F.f.not(F.AND1))));
     }
 }

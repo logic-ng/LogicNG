@@ -6,11 +6,11 @@ import java.util.Iterator;
 import java.util.function.Supplier;
 
 /**
- * A class which contains utility methods for {@link java.util.Collection} objects.
+ * A class which contains utility methods for {@link Collection} objects.
  * @version 2.0.0
  * @since 2.0.0
  */
-public class CollectionHelper {
+public final class CollectionHelper {
 
     /**
      * Private empty constructor.  Class only contains static utility methods.

@@ -28,6 +28,8 @@
 
 package org.logicng.datastructures;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
@@ -39,8 +41,6 @@ import org.logicng.io.parsers.PropositionalParser;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for the class {@link Assignment}.
@@ -62,14 +62,17 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testPositiveLiterals() {
+    public void testPositiveVariables() {
         final Variable[] a = {F.A, F.B, F.X, F.Y};
         Assignment ass1 = new Assignment(Arrays.asList(a), false);
         assertThat(ass1.positiveVariables()).containsExactly(a);
+        assertThat(ass1.positiveLiterals()).containsExactly(a);
         ass1 = new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY));
         assertThat(ass1.positiveVariables()).containsExactly(F.A, F.B);
+        assertThat(ass1.positiveLiterals()).containsExactly(F.A, F.B);
         ass1 = new Assignment(Arrays.asList(F.NA, F.NB, F.NX, F.NY));
         assertThat(ass1.positiveVariables().size()).isEqualTo(0);
+        assertThat(ass1.positiveLiterals().size()).isEqualTo(0);
     }
 
     @Test
@@ -182,6 +185,7 @@ public class AssignmentTest {
         ass.addLiteral(F.B);
         ass.addLiteral(F.NX);
         ass.addLiteral(F.NY);
+        assertThat(ass).isNotEqualTo(null);
         assertThat(new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY), false)).isEqualTo(new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY), false));
         assertThat(new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY), true)).isEqualTo(new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY), false));
         assertThat(new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY), false)).isEqualTo(new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY), true));
