@@ -41,52 +41,54 @@ import java.util.Objects;
  */
 final public class UNSATCore<T extends Proposition> {
 
-  private final List<T> propositions;
-  private final boolean isMUS;
+    private final List<T> propositions;
+    private final boolean isMUS;
 
-  /**
-   * Constructs a new unsatisfiable core.
-   * @param propositions the propositions of the core
-   * @param isMUS        {@code true} if it is a MUS, {@code false} otherwise
-   */
-  public UNSATCore(final List<T> propositions, boolean isMUS) {
-    this.propositions = propositions;
-    this.isMUS = isMUS;
-  }
+    /**
+     * Constructs a new unsatisfiable core.
+     * @param propositions the propositions of the core
+     * @param isMUS        {@code true} if it is a MUS, {@code false} otherwise
+     */
+    public UNSATCore(final List<T> propositions, final boolean isMUS) {
+        this.propositions = propositions;
+        this.isMUS = isMUS;
+    }
 
-  /**
-   * Returns the propositions of this MUS.
-   * @return the propositions of this MUS
-   */
-  public List<T> propositions() {
-    return this.propositions;
-  }
+    /**
+     * Returns the propositions of this MUS.
+     * @return the propositions of this MUS
+     */
+    public List<T> propositions() {
+        return this.propositions;
+    }
 
-  /**
-   * Returns {@code true} if this core is a MUS, {@code false} otherwise.
-   * @return {@code true} if this core is a MUS, {@code false} otherwise
-   */
-  public boolean isMUS() {
-    return this.isMUS;
-  }
+    /**
+     * Returns {@code true} if this core is a MUS, {@code false} otherwise.
+     * @return {@code true} if this core is a MUS, {@code false} otherwise
+     */
+    public boolean isMUS() {
+        return this.isMUS;
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.propositions, this.isMUS);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.propositions, this.isMUS);
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (!(o instanceof UNSATCore))
-      return false;
-    UNSATCore unsatCore = (UNSATCore) o;
-    return this.isMUS == unsatCore.isMUS && Objects.equals(this.propositions, unsatCore.propositions);
-  }
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UNSATCore)) {
+            return false;
+        }
+        final UNSATCore<?> unsatCore = (UNSATCore<?>) o;
+        return this.isMUS == unsatCore.isMUS && Objects.equals(this.propositions, unsatCore.propositions);
+    }
 
-  @Override
-  public String toString() {
-    return String.format("UNSATCore{isMUS=%s, propositions=%s}", this.isMUS, this.propositions);
-  }
+    @Override
+    public String toString() {
+        return String.format("UNSATCore{isMUS=%s, propositions=%s}", this.isMUS, this.propositions);
+    }
 }

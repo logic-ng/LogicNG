@@ -28,92 +28,92 @@
 
 package org.logicng.formulas;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit Tests for the class {@link CTrue}.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
 public class CTrueTest {
 
-  @Test
-  public void testType() {
-    Assert.assertEquals(FType.TRUE, F.TRUE.type());
-  }
+    @Test
+    public void testType() {
+        assertThat(F.TRUE.type()).isEqualTo(FType.TRUE);
+    }
 
-  @Test
-  public void testNumberOfAtoms() {
-    Assert.assertEquals(1, F.TRUE.numberOfAtoms());
-    Assert.assertEquals(1, F.TRUE.numberOfAtoms());
-  }
+    @Test
+    public void testNumberOfAtoms() {
+        assertThat(F.TRUE.numberOfAtoms()).isEqualTo(1);
+        assertThat(F.TRUE.numberOfAtoms()).isEqualTo(1);
+    }
 
-  @Test
-  public void testNegation() {
-    Assert.assertEquals(F.FALSE, F.TRUE.negate());
-  }
+    @Test
+    public void testNegation() {
+        assertThat(F.TRUE.negate()).isEqualTo(F.FALSE);
+    }
 
-  @Test
-  public void testVariables() {
-    Assert.assertEquals(0, F.TRUE.variables().size());
-  }
+    @Test
+    public void testVariables() {
+        assertThat(F.TRUE.variables().size()).isEqualTo(0);
+    }
 
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(0, F.TRUE.literals().size());
-  }
+    @Test
+    public void testLiterals() {
+        assertThat(F.TRUE.literals().size()).isEqualTo(0);
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("$true", F.TRUE.toString());
-  }
+    @Test
+    public void testToString() {
+        assertThat(F.TRUE.toString()).isEqualTo("$true");
+    }
 
-  @Test
-  public void testEquals() {
-    Assert.assertEquals(F.TRUE, F.f.verum());
-    Assert.assertNotEquals(F.TRUE, null);
-    Assert.assertNotEquals(F.TRUE, F.f.falsum());
-  }
+    @Test
+    public void testEquals() {
+        assertThat(F.f.verum()).isEqualTo(F.TRUE);
+        assertThat(F.f.falsum()).isNotEqualTo(F.TRUE);
+    }
 
-  @Test
-  public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.TRUE, F.g.verum());
-    Assert.assertNotEquals(F.TRUE, F.g.falsum());
-  }
+    @Test
+    public void testEqualsDifferentFormulaFactory() {
+        assertThat(F.g.verum()).isEqualTo(F.TRUE);
+        assertThat(F.g.falsum()).isNotEqualTo(F.TRUE);
+    }
 
-  @Test
-  public void testHash() {
-    Assert.assertEquals(F.f.verum().hashCode(), F.TRUE.hashCode());
-  }
+    @Test
+    public void testHash() {
+        assertThat(F.TRUE.hashCode()).isEqualTo(F.f.verum().hashCode());
+    }
 
-  @Test
-  public void testNumberOfNodes() {
-    Assert.assertEquals(1, F.TRUE.numberOfNodes());
-  }
+    @Test
+    public void testNumberOfNodes() {
+        assertThat(F.TRUE.numberOfNodes()).isEqualTo(1);
+    }
 
-  @Test
-  public void testNumberOfInternalNodes() {
-    Assert.assertEquals(1, F.TRUE.numberOfInternalNodes());
-  }
+    @Test
+    public void testNumberOfInternalNodes() {
+        assertThat(F.TRUE.numberOfInternalNodes()).isEqualTo(1);
+    }
 
-  @Test
-  public void testNumberOfOperands() {
-    Assert.assertEquals(0, F.TRUE.numberOfOperands());
-  }
+    @Test
+    public void testNumberOfOperands() {
+        assertThat(F.TRUE.numberOfOperands()).isEqualTo(0);
+    }
 
-  @Test
-  public void testIsConstantFormula() {
-    Assert.assertTrue(F.TRUE.isConstantFormula());
-  }
+    @Test
+    public void testIsConstantFormula() {
+        assertThat(F.TRUE.isConstantFormula()).isTrue();
+    }
 
-  @Test
-  public void testAtomicFormula() {
-    Assert.assertTrue(F.TRUE.isAtomicFormula());
-  }
+    @Test
+    public void testAtomicFormula() {
+        assertThat(F.TRUE.isAtomicFormula()).isTrue();
+    }
 
-  @Test
-  public void testContains() {
-    Assert.assertFalse(F.TRUE.containsVariable(F.f.variable("a")));
-  }
+    @Test
+    public void testContains() {
+        assertThat(F.TRUE.containsVariable(F.f.variable("a"))).isFalse();
+    }
 }

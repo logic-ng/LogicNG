@@ -28,9 +28,6 @@
 
 package org.logicng.solvers.sat;
 
-import static org.logicng.solvers.sat.MiniSatConfig.CNFMethod.FACTORY_CNF;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.DEEP;
-
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.Formula;
@@ -38,7 +35,7 @@ import org.logicng.solvers.SATSolver;
 
 /**
  * The configuration object for a MiniSAT-style SAT solver.
- * @version 1.6.0
+ * @version 2.0.0
  * @since 1.0
  */
 public final class MiniSatConfig extends Configuration {
@@ -67,7 +64,7 @@ public final class MiniSatConfig extends Configuration {
      * </ul>
      */
     public enum CNFMethod {
-        FACTORY_CNF, PG_ON_SOLVER
+        FACTORY_CNF, PG_ON_SOLVER, DIRECT_PG_ON_SOLVER
     }
 
     final double varDecay;
@@ -114,7 +111,15 @@ public final class MiniSatConfig extends Configuration {
     }
 
     /**
-     * Returns whether the solver is incremental or not
+     * Returns a new builder for the configuration.
+     * @return the builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Returns whether the solver is incremental or not.
      * @return {@code true} if the solver is incremental, {@code false} otherwise
      */
     public boolean incremental() {
@@ -173,17 +178,19 @@ public final class MiniSatConfig extends Configuration {
         sb.append("bbInitialUBCheckForRotatableLiterals=").append(this.bbInitialUBCheckForRotatableLiterals).append(System.lineSeparator());
         sb.append("bbCheckForComplementModelLiterals=").append(this.bbCheckForComplementModelLiterals).append(System.lineSeparator());
         sb.append("bbCheckForRotatableLiterals=").append(this.bbCheckForRotatableLiterals).append(System.lineSeparator());
-        sb.append("}").append(System.lineSeparator());
+        sb.append("}");
         return sb.toString();
     }
 
     /**
      * The builder for a MiniSAT configuration.
+     * @version 2.0.0
+     * @since 1.0
      */
     public static class Builder {
         private double varDecay = 0.95;
         private double varInc = 1.0;
-        private ClauseMinimization clauseMin = DEEP;
+        private ClauseMinimization clauseMin = ClauseMinimization.DEEP;
         private int restartFirst = 100;
         private double restartInc = 2.0;
         private double clauseDecay = 0.999;
@@ -193,11 +200,15 @@ public final class MiniSatConfig extends Configuration {
         private boolean incremental = true;
         private boolean initialPhase = false;
         private boolean proofGeneration = false;
-        CNFMethod cnfMethod = FACTORY_CNF;
-        boolean auxiliaryVariablesInModels = true;
+        private CNFMethod cnfMethod = CNFMethod.DIRECT_PG_ON_SOLVER;
+        private boolean auxiliaryVariablesInModels = false;
         private boolean bbInitialUBCheckForRotatableLiterals = true;
         private boolean bbCheckForComplementModelLiterals = true;
         private boolean bbCheckForRotatableLiterals = true;
+
+        private Builder() {
+            // Initialize only via factory
+        }
 
         /**
          * Sets the variable activity decay factor to a given value. The default value is 0.95.

@@ -28,52 +28,53 @@
 
 package org.logicng.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link Pair}.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
 public class PairTest {
 
-  private final Pair<String, Integer> pair1 = new Pair<>("abc", 12);
-  private final Pair<String, Integer> pair2 = new Pair<>("cde", 12);
-  private final Pair<String, Integer> pair3 = new Pair<>("cde", 42);
+    private final Pair<String, Integer> pair1 = new Pair<>("abc", 12);
+    private final Pair<String, Integer> pair2 = new Pair<>("cde", 12);
+    private final Pair<String, Integer> pair3 = new Pair<>("cde", 42);
 
-  @Test
-  public void testGetters() {
-    Assert.assertEquals("abc", pair1.first());
-    Assert.assertEquals("cde", pair2.first());
-    Assert.assertEquals("cde", pair3.first());
-    Assert.assertEquals(12, (int) pair1.second());
-    Assert.assertEquals(12, (int) pair2.second());
-    Assert.assertEquals(42, (int) pair3.second());
-  }
+    @Test
+    public void testGetters() {
+        assertThat(this.pair1.first()).isEqualTo("abc");
+        assertThat(this.pair2.first()).isEqualTo("cde");
+        assertThat(this.pair3.first()).isEqualTo("cde");
+        assertThat((int) this.pair1.second()).isEqualTo(12);
+        assertThat((int) this.pair2.second()).isEqualTo(12);
+        assertThat((int) this.pair3.second()).isEqualTo(42);
+    }
 
-  @Test
-  public void testHashCode() {
-    Assert.assertEquals(pair1.hashCode(), pair1.hashCode());
-    Assert.assertEquals(pair1.hashCode(), new Pair<>("abc", 12).hashCode());
-  }
+    @Test
+    public void testHashCode() {
+        assertThat(this.pair1.hashCode()).isEqualTo(this.pair1.hashCode());
+        assertThat(new Pair<>("abc", 12).hashCode()).isEqualTo(this.pair1.hashCode());
+    }
 
-  @Test
-  public void testEquals() {
-    Assert.assertTrue(pair1.equals(pair1));
-    Assert.assertTrue(pair1.equals(new Pair<>("abc", 12)));
-    Assert.assertFalse(pair1.equals(pair2));
-    Assert.assertFalse(pair2.equals(pair3));
-    Assert.assertFalse(pair1.equals(pair3));
-    Assert.assertFalse(pair1.equals("String"));
-    Assert.assertFalse(pair1.equals(null));
-  }
+    @Test
+    public void testEquals() {
+        assertThat(this.pair1.equals(this.pair1)).isTrue();
+        assertThat(this.pair1.equals(new Pair<>("abc", 12))).isTrue();
+        assertThat(this.pair1.equals(this.pair2)).isFalse();
+        assertThat(this.pair2.equals(this.pair3)).isFalse();
+        assertThat(this.pair1.equals(this.pair3)).isFalse();
+        assertThat(this.pair1.equals("String")).isFalse();
+        assertThat(this.pair1.equals(null)).isFalse();
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("<abc, 12>", pair1.toString());
-    Assert.assertEquals("<cde, 12>", pair2.toString());
-    Assert.assertEquals("<cde, 42>", pair3.toString());
-  }
+    @Test
+    public void testToString() {
+        assertThat(this.pair1.toString()).isEqualTo("<abc, 12>");
+        assertThat(this.pair2.toString()).isEqualTo("<cde, 12>");
+        assertThat(this.pair3.toString()).isEqualTo("<cde, 42>");
+    }
 
 }

@@ -36,7 +36,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.transformations.Subsumption;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -45,14 +45,14 @@ import java.util.SortedSet;
  * I.e. performs as many subsumptions as possible.  A subsumption in a DNF means,
  * that e.g. a minterm {@code A & B & C} is subsumed by another minterm {@code A & B}
  * and can therefore be deleted for an equivalent DNF.
- * @version 1.5.0
+ * @version 2.0.0
  * @since 1.5.0
  */
 public class DNFSubsumption extends Subsumption implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        if (!formula.holds(new DNFPredicate())) {
+        if (!formula.holds(DNFPredicate.get())) {
             throw new IllegalArgumentException("DNF subsumption can only be applied to formulas in DNF");
         }
         if (formula.type().precedence() >= FType.LITERAL.precedence() || formula.type() == FType.AND) {
@@ -60,7 +60,7 @@ public class DNFSubsumption extends Subsumption implements FormulaTransformation
         }
         assert formula.type() == FType.OR;
         final UBTree<Literal> ubTree = generateSubsumedUBTree(formula);
-        final List<Formula> minterms = new LinkedList<>();
+        final List<Formula> minterms = new ArrayList<>();
         for (final SortedSet<Literal> literals : ubTree.allSets()) {
             minterms.add(formula.factory().and(literals));
         }

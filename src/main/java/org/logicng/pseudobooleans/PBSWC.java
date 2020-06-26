@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-/*****************************************************************************************
+/*
  * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -45,7 +45,7 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *****************************************************************************************/
+ */
 
 package org.logicng.pseudobooleans;
 
@@ -64,52 +64,58 @@ import java.util.List;
  */
 final class PBSWC implements PBEncoding {
 
-  private final FormulaFactory f;
+    private final FormulaFactory f;
 
-  /**
-   * Constructs a new sequential weight counter encoder.
-   * @param f the formula factory
-   */
-  PBSWC(final FormulaFactory f) {
-    this.f = f;
-  }
-
-  @Override
-  public List<Formula> encode(final LNGVector<Literal> lits, final LNGIntVector coeffs, int rhs, final List<Formula> result) {
-    this.generateConstraint(rhs, lits, coeffs, result);
-    return result;
-  }
-
-  private void generateConstraint(int rhs, final LNGVector<Literal> lits, final LNGIntVector coeffs,
-                                  final List<Formula> result) {
-    int n = lits.size();
-    final LNGVector<LNGVector<Literal>> seqAuxiliary = new LNGVector<>(n + 1);
-    for (int i = 0; i < n + 1; i++) {
-      final LNGVector<Literal> temp = new LNGVector<>();
-      temp.growTo(rhs + 1);
-      seqAuxiliary.push(temp);
+    /**
+     * Constructs a new sequential weight counter encoder.
+     * @param f the formula factory
+     */
+    PBSWC(final FormulaFactory f) {
+        this.f = f;
     }
-    for (int i = 1; i <= n; ++i)
-      for (int j = 1; j <= rhs; ++j)
-        seqAuxiliary.get(i).set(j, f.newPBVariable());
-    for (int i = 1; i <= n; i++) {
-      int wi = coeffs.get(i - 1);
-      assert wi <= rhs;
-      for (int j = 1; j <= rhs; j++) {
-        if (i >= 2 && i <= n && j <= rhs)
-          result.add(f.clause(seqAuxiliary.get(i - 1).get(j).negate(), seqAuxiliary.get(i).get(j)));
-        if (i <= n && j <= wi)
-          result.add(f.clause(lits.get(i - 1).negate(), seqAuxiliary.get(i).get(j)));
-        if (i >= 2 && i <= n && j <= rhs - wi)
-          result.add(f.clause(seqAuxiliary.get(i - 1).get(j).negate(), lits.get(i - 1).negate(), seqAuxiliary.get(i).get(j + wi)));
-      }
-      if (i >= 2)
-        result.add(f.clause(seqAuxiliary.get(i - 1).get(rhs + 1 - wi).negate(), lits.get(i - 1).negate()));
-    }
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public List<Formula> encode(final LNGVector<Literal> lits, final LNGIntVector coeffs, final int rhs, final List<Formula> result) {
+        this.generateConstraint(rhs, lits, coeffs, result);
+        return result;
+    }
+
+    private void generateConstraint(final int rhs, final LNGVector<Literal> lits, final LNGIntVector coeffs,
+                                    final List<Formula> result) {
+        final int n = lits.size();
+        final LNGVector<LNGVector<Literal>> seqAuxiliary = new LNGVector<>(n + 1);
+        for (int i = 0; i < n + 1; i++) {
+            final LNGVector<Literal> temp = new LNGVector<>();
+            temp.growTo(rhs + 1);
+            seqAuxiliary.push(temp);
+        }
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= rhs; ++j) {
+                seqAuxiliary.get(i).set(j, this.f.newPBVariable());
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            final int wi = coeffs.get(i - 1);
+            assert wi <= rhs;
+            for (int j = 1; j <= rhs; j++) {
+                if (i >= 2 && i <= n && j <= rhs) {
+                    result.add(this.f.clause(seqAuxiliary.get(i - 1).get(j).negate(), seqAuxiliary.get(i).get(j)));
+                }
+                if (i <= n && j <= wi) {
+                    result.add(this.f.clause(lits.get(i - 1).negate(), seqAuxiliary.get(i).get(j)));
+                }
+                if (i >= 2 && i <= n && j <= rhs - wi) {
+                    result.add(this.f.clause(seqAuxiliary.get(i - 1).get(j).negate(), lits.get(i - 1).negate(), seqAuxiliary.get(i).get(j + wi)));
+                }
+            }
+            if (i >= 2) {
+                result.add(this.f.clause(seqAuxiliary.get(i - 1).get(rhs + 1 - wi).negate(), lits.get(i - 1).negate()));
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

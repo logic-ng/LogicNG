@@ -36,105 +36,111 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 /**
  * Super class for Boolean constants.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
 public abstract class Constant extends Formula {
 
-  private static final SortedSet<Variable> EMPTY_VARIABLE_SET = Collections.unmodifiableSortedSet(new TreeSet<Variable>());
-  private static final SortedSet<Literal> EMPTY_LITERAL_SET = Collections.unmodifiableSortedSet(new TreeSet<Literal>());
+    private static final SortedSet<Variable> EMPTY_VARIABLE_SET = Collections.unmodifiableSortedSet(new TreeSet<>());
+    private static final SortedSet<Literal> EMPTY_LITERAL_SET = Collections.unmodifiableSortedSet(new TreeSet<>());
 
-  private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
-    @Override
-    public boolean hasNext() {
-      return false;
+    private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Formula next() {
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    };
+
+    /**
+     * Constructor.
+     * @param type    the constant type
+     * @param factory the factory which created this instance
+     */
+    Constant(final FType type, final FormulaFactory factory) {
+        super(type, factory);
     }
 
     @Override
-    public Formula next() {
-      throw new NoSuchElementException();
+    public long numberOfAtoms() {
+        return 1L;
     }
 
     @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
+    public long numberOfNodes() {
+        return 1L;
     }
-  };
 
-  /**
-   * Constructor.
-   * @param type    the constant type
-   * @param factory the factory which created this instance
-   */
-  Constant(final FType type, final FormulaFactory factory) {
-    super(type, factory);
-  }
+    @Override
+    public int numberOfOperands() {
+        return 0;
+    }
 
-  @Override
-  public long numberOfAtoms() {
-    return 1L;
-  }
+    @Override
+    public boolean isConstantFormula() {
+        return true;
+    }
 
-  @Override
-  public long numberOfNodes() {
-    return 1L;
-  }
+    @Override
+    public boolean isAtomicFormula() {
+        return true;
+    }
 
-  @Override
-  public int numberOfOperands() {
-    return 0;
-  }
+    @Override
+    public SortedSet<Variable> variables() {
+        return EMPTY_VARIABLE_SET;
+    }
 
-  @Override
-  public boolean isConstantFormula() {
-    return true;
-  }
+    @Override
+    public SortedSet<Literal> literals() {
+        return EMPTY_LITERAL_SET;
+    }
 
-  @Override
-  public boolean isAtomicFormula() {
-    return true;
-  }
+    @Override
+    public boolean containsVariable(final Variable variable) {
+        return false;
+    }
 
-  @Override
-  public SortedSet<Variable> variables() {
-    return EMPTY_VARIABLE_SET;
-  }
+    @Override
+    public Formula restrict(final Assignment assignment) {
+        return this;
+    }
 
-  @Override
-  public SortedSet<Literal> literals() {
-    return EMPTY_LITERAL_SET;
-  }
+    @Override
+    public boolean containsNode(final Formula formula) {
+        return this == formula;
+    }
 
-  @Override
-  public boolean containsVariable(final Variable variable) {
-    return false;
-  }
+    @Override
+    public Formula substitute(final Substitution substitution) {
+        return this;
+    }
 
-  @Override
-  public Formula restrict(final Assignment assignment) {
-    return this;
-  }
+    @Override
+    public Formula nnf() {
+        return this;
+    }
 
-  @Override
-  public boolean containsNode(final Formula formula) {
-    return this == formula;
-  }
+    @Override
+    public Iterator<Formula> iterator() {
+        return ITERATOR;
+    }
 
-  @Override
-  public Formula substitute(final Substitution substitution) {
-    return this;
-  }
-
-  @Override
-  public Formula nnf() {
-    return this;
-  }
-
-  @Override
-  public Iterator<Formula> iterator() {
-    return ITERATOR;
-  }
+    @Override
+    public Stream<Formula> stream() {
+        return Stream.empty();
+    }
 }

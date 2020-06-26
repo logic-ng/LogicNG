@@ -35,19 +35,19 @@ package org.logicng.handlers;
  */
 public final class TimeoutBDDHandler extends TimeoutHandler implements BDDHandler {
 
-  /**
-   * Constructs a new instance with a given timeout in milliseconds.
-   * <p>
-   * Note that it might take a few milliseconds more until the build process is actually canceled, since the handler
-   * depends on the BDD factory's call to {@link org.logicng.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)}.
-   * @param timeout the timeout in milliseconds
-   */
-  public TimeoutBDDHandler(final long timeout) {
-    super(timeout);
-  }
+    /**
+     * Constructs a new instance with a given timeout in milliseconds.
+     * <p>
+     * Note that it might take a few milliseconds more until the build process is actually canceled, since the handler
+     * depends on the BDD factory's call to {@link org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)}.
+     * @param timeout the timeout in milliseconds
+     */
+    public TimeoutBDDHandler(final long timeout) {
+        super(timeout);
+    }
 
-  @Override
-  public boolean newRefAdded() {
-    return timeLimitExceeded();
-  }
+    @Override
+    public boolean newRefAdded() {
+        return timeLimitExceeded();
+    }
 }

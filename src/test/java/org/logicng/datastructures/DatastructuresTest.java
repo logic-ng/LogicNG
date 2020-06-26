@@ -28,26 +28,27 @@
 
 package org.logicng.datastructures;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the package data structures.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
 public class DatastructuresTest {
 
-  @Test
-  public void testTristate() {
-    Assert.assertEquals(Tristate.TRUE, Tristate.valueOf("TRUE"));
-    Assert.assertEquals(Tristate.FALSE, Tristate.valueOf("FALSE"));
-    Assert.assertEquals(Tristate.UNDEF, Tristate.valueOf("UNDEF"));
-  }
+    @Test
+    public void testTristate() {
+        assertThat(Tristate.valueOf("TRUE")).isEqualTo(Tristate.TRUE);
+        assertThat(Tristate.valueOf("FALSE")).isEqualTo(Tristate.FALSE);
+        assertThat(Tristate.valueOf("UNDEF")).isEqualTo(Tristate.UNDEF);
+    }
 
-  @Test
-  public void testEncodingAuxiliaryVariable() {
-    EncodingAuxiliaryVariable eav = new EncodingAuxiliaryVariable("var", false);
-    Assert.assertEquals("var", eav.toString());
-  }
+    @Test
+    public void testEncodingAuxiliaryVariable() {
+        final EncodingAuxiliaryVariable eav = new EncodingAuxiliaryVariable("var", false);
+        assertThat(eav.toString()).isEqualTo("var");
+    }
 }

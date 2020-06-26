@@ -28,9 +28,22 @@
 
 package org.logicng.formulas.printer;
 
-import org.logicng.formulas.*;
+import org.logicng.formulas.BinaryOperator;
+import org.logicng.formulas.Equivalence;
+import org.logicng.formulas.FType;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
+import org.logicng.formulas.NAryOperator;
+import org.logicng.formulas.Not;
+import org.logicng.formulas.PBConstraint;
+import org.logicng.formulas.Variable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A sorted string representation for formulas.
@@ -70,8 +83,7 @@ import java.util.*;
  * Example 4:
  * Given the variable ordering [b, c, d], the sorted string representation for the formula a &amp; (c | (d =&gt; b)) would be
  * ((d =&gt; b) | c) &amp; a.
- *
- * @version 1.5.0
+ * @version 2.0.0
  * @since 1.5.0
  */
 public final class SortedStringRepresentation extends DefaultStringRepresentation {
@@ -84,7 +96,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
 
     /**
      * Constructs a new sorted string representation with a given ordering of variables.
-     *
      * @param varOrder the given variable ordering
      */
     public SortedStringRepresentation(final List<Variable> varOrder) {
@@ -94,7 +105,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
 
     /**
      * Returns the sorted string representation of the given formula.
-     *
      * @param formula the formula
      * @return the sorted string representation of the formula with regard to the variable ordering
      */
@@ -122,10 +132,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
                 return naryOperator(nary, String.format("%s", op));
             case PBC:
                 final PBConstraint pbc = (PBConstraint) formula;
-                if (pbc.isTrivialFalse())
-                    return this.falsum();
-                else if (pbc.isTrivialTrue())
-                    return this.verum();
                 return String.format("%s%s%d", pbLhs(pbc.operands(), pbc.coefficients()), pbComparator(pbc.comparator()), pbc.rhs());
             default:
                 throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
@@ -134,7 +140,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
 
     /**
      * Returns the sorted string representation of an n-ary operator.
-     *
      * @param operator the n-ary operator
      * @param opString the operator string
      * @return the string representation
@@ -146,7 +151,7 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
             operands.add(op);
         }
         final int size = operator.numberOfOperands();
-        Collections.sort(operands, this.comparator);
+        operands.sort(this.comparator);
         final StringBuilder sb = new StringBuilder();
         int count = 0;
         Formula last = null;
@@ -166,7 +171,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
 
     /**
      * Returns the sorted string representation of the left-hand side of a pseudo-Boolean constraint.
-     *
      * @param operands     the literals of the constraint
      * @param coefficients the coefficients of the constraint
      * @return the sorted string representation
@@ -212,7 +216,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
 
     /**
      * Returns the string representation of an equivalence.
-     *
      * @param equivalence the equivalence
      * @return the string representation
      */
@@ -241,7 +244,6 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
 
         /**
          * Compares two given formulas considering the variable ordering of this class.
-         *
          * @param formula1 the first formula
          * @param formula2 the second formula
          * @return -1 iff formula1 &lt; formula2 (when for the first time a variable of the ordering appears in formula1 but not formula2)

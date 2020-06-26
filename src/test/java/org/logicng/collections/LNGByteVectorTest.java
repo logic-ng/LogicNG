@@ -28,214 +28,237 @@
 
 package org.logicng.collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link LNGByteVector}.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
 public class LNGByteVectorTest {
 
-  @Test
-  public void testVectorCreation() {
-    LNGByteVector v1 = new LNGByteVector();
-    Assert.assertEquals(0, v1.size());
-    Assert.assertTrue(v1.empty());
-    LNGByteVector v2 = new LNGByteVector(10);
-    Assert.assertEquals(0, v2.size());
-    Assert.assertTrue(v2.empty());
-    LNGByteVector v3 = new LNGByteVector(10, (byte) 42);
-    Assert.assertEquals(10, v3.size());
-    for (int i = 0; i < v3.size(); i++)
-      Assert.assertEquals(42, v3.get(i));
-    Assert.assertFalse(v3.empty());
-    LNGByteVector v4 = new LNGByteVector(v3);
-    Assert.assertEquals(10, v4.size());
-    for (int i = 0; i < v4.size(); i++)
-      Assert.assertEquals(42, v4.get(i));
-    Assert.assertFalse(v4.empty());
-    LNGByteVector v5 = new LNGByteVector((byte) 0, (byte) 1, (byte) 2, (byte) 3, (byte) 4);
-    Assert.assertEquals(5, v5.size());
-    for (int i = 0; i < 5; i++)
-      Assert.assertEquals(i, v5.get(i));
-  }
-
-  @Test
-  public void testVectorAddElements() {
-    LNGByteVector v1 = new LNGByteVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 100; i++) {
-      v1.push((byte) i);
-      Assert.assertEquals(i + 1, v1.size());
-      Assert.assertEquals(i, v1.back());
-      Assert.assertEquals(i, v1.get(i));
+    @Test
+    public void testVectorCreation() {
+        final LNGByteVector v1 = new LNGByteVector();
+        assertThat(v1.size()).isEqualTo(0);
+        assertThat(v1.empty()).isTrue();
+        final LNGByteVector v2 = new LNGByteVector(10);
+        assertThat(v2.size()).isEqualTo(0);
+        assertThat(v2.empty()).isTrue();
+        final LNGByteVector v3 = new LNGByteVector(10, (byte) 42);
+        assertThat(v3.size()).isEqualTo(10);
+        for (int i = 0; i < v3.size(); i++) {
+            assertThat(v3.get(i)).isEqualTo((byte) 42);
+        }
+        assertThat(v3.empty()).isFalse();
+        final LNGByteVector v4 = new LNGByteVector(v3);
+        assertThat(v4.size()).isEqualTo(10);
+        for (int i = 0; i < v4.size(); i++) {
+            assertThat(v4.get(i)).isEqualTo((byte) 42);
+        }
+        assertThat(v4.empty()).isFalse();
+        final LNGByteVector v5 = new LNGByteVector((byte) 0, (byte) 1, (byte) 2, (byte) 3, (byte) 4);
+        assertThat(v5.size()).isEqualTo(5);
+        for (int i = 0; i < 5; i++) {
+            assertThat(v5.get(i)).isEqualTo((byte) i);
+        }
     }
-    Assert.assertFalse(v1.empty());
-    v1.clear();
-    Assert.assertTrue(v1.empty());
-  }
 
-  @Test
-  public void legalUnsafePush() {
-    LNGByteVector v1 = new LNGByteVector(100);
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 100; i++) {
-      v1.unsafePush((byte) i);
-      Assert.assertEquals(i + 1, v1.size());
-      Assert.assertEquals(i, v1.back());
-      Assert.assertEquals(i, v1.get(i));
+    @Test
+    public void testVectorAddElements() {
+        final LNGByteVector v1 = new LNGByteVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 100; i++) {
+            v1.push((byte) i);
+            assertThat(v1.size()).isEqualTo(i + 1);
+            assertThat(v1.back()).isEqualTo(i);
+            assertThat(v1.get(i)).isEqualTo((byte) i);
+        }
+        assertThat(v1.empty()).isFalse();
+        v1.clear();
+        assertThat(v1.empty()).isTrue();
     }
-    Assert.assertFalse(v1.empty());
-    v1.clear();
-    Assert.assertTrue(v1.empty());
-  }
 
-  @Test(expected = ArrayIndexOutOfBoundsException.class)
-  public void illegalUnsafePush() {
-    LNGByteVector v1 = new LNGByteVector(100);
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++)
-      v1.unsafePush((byte) i);
-  }
-
-  @Test
-  public void testGettingSettingAndPopping() {
-    LNGByteVector v1 = new LNGByteVector();
-    for (int i = 0; i < 100; i++)
-      v1.push((byte) i);
-    for (int i = 99; i >= 0; i--) {
-      v1.set(i, (byte) 42);
-      Assert.assertEquals(42, v1.get(i));
+    @Test
+    public void legalUnsafePush() {
+        final LNGByteVector v1 = new LNGByteVector(100);
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 100; i++) {
+            v1.unsafePush((byte) i);
+            assertThat(v1.size()).isEqualTo(i + 1);
+            assertThat(v1.back()).isEqualTo(i);
+            assertThat(v1.get(i)).isEqualTo((byte) i);
+        }
+        assertThat(v1.empty()).isFalse();
+        v1.clear();
+        assertThat(v1.empty()).isTrue();
     }
-    for (int i = 99; i >= 0; i--) {
-      v1.pop();
-      Assert.assertEquals(i, v1.size());
-    }
-  }
 
-  @Test
-  public void testVectorShrink() {
-    LNGByteVector v1 = new LNGByteVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 100; i++)
-      v1.push((byte) i);
-    Assert.assertFalse(v1.empty());
-    int beforeSize = v1.size();
-    v1.shrinkTo(v1.size() + 50);
-    Assert.assertEquals(v1.size(), beforeSize);
-    for (int i = 50; i > 0; i--) {
-      v1.shrinkTo(i);
-      Assert.assertEquals((i - 1), v1.back());
+    @Test
+    public void illegalUnsafePush() {
+        final LNGByteVector v1 = new LNGByteVector(100);
+        assertThat(v1.empty()).isTrue();
+        assertThatThrownBy(() -> {
+            for (int i = 0; i < 1000; i++) {
+                v1.unsafePush((byte) i);
+            }
+        }).isInstanceOf(ArrayIndexOutOfBoundsException.class);
     }
-  }
 
-  @Test
-  public void testGrowTo() {
-    LNGByteVector v1 = new LNGByteVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 50; i++)
-      v1.push((byte) i);
-    Assert.assertFalse(v1.empty());
-    for (int i = 0; i < 51; i += 10) {
-      v1.growTo(50 + i, (byte) 51);
-      Assert.assertEquals(50 + i, v1.size());
-      for (int j = 0; j < 50; j++)
-        Assert.assertEquals(j, v1.get(j));
-      for (int j = 50; j < 50 + i; j++)
-        Assert.assertEquals(51, v1.get(j));
+    @Test
+    public void testGettingSettingAndPopping() {
+        final LNGByteVector v1 = new LNGByteVector();
+        for (int i = 0; i < 100; i++) {
+            v1.push((byte) i);
+        }
+        for (int i = 99; i >= 0; i--) {
+            v1.set(i, (byte) 42);
+            assertThat(v1.get(i)).isEqualTo((byte) 42);
+        }
+        for (int i = 99; i >= 0; i--) {
+            v1.pop();
+            assertThat(v1.size()).isEqualTo(i);
+        }
     }
-    Assert.assertEquals(100, v1.size());
-    v1.growTo(100, (byte) 51);
-    Assert.assertEquals(100, v1.size());
-    for (int i = 0; i < 50; i++)
-      Assert.assertEquals(i, v1.get(i));
-    for (int i = 50; i < 100; i++)
-      Assert.assertEquals(51, v1.get(i));
-  }
 
-  @Test
-  public void testRemoveElements() {
-    LNGByteVector v1 = new LNGByteVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 100; i++)
-      v1.push((byte) i);
-    Assert.assertFalse(v1.empty());
-    for (int i = 0; i < 9; i++) {
-      v1.removeElements(10);
-      Assert.assertEquals(100 - (i + 1) * 10, v1.size());
-      Assert.assertEquals(100 - (i + 1) * 10 - 1, v1.back());
+    @Test
+    public void testVectorShrink() {
+        final LNGByteVector v1 = new LNGByteVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 100; i++) {
+            v1.push((byte) i);
+        }
+        assertThat(v1.empty()).isFalse();
+        final int beforeSize = v1.size();
+        v1.shrinkTo(v1.size() + 50);
+        assertThat(beforeSize).isEqualTo(v1.size());
+        for (int i = 50; i > 0; i--) {
+            v1.shrinkTo(i);
+            assertThat(v1.back()).isEqualTo((i - 1));
+        }
     }
-    Assert.assertEquals(10, v1.size());
-    v1.removeElements(10);
-    Assert.assertTrue(v1.empty());
-  }
 
-  @Test
-  public void testSort() {
-    LNGByteVector v1 = new LNGByteVector(100);
-    LNGByteVector v2 = new LNGByteVector(100);
-    for (int i = 99; i >= 0; i--)
-      v1.push((byte) i);
-    for (int i = 0; i < 100; i++)
-      v2.push((byte) i);
-    v1.sort();
-    v2.sort();
-    for (int i = 0; i < 100; i++) {
-      Assert.assertEquals(v2.get(i), v1.get(i));
-      if (i != 99)
-        Assert.assertTrue(v1.get(i) < v1.get(i + 1));
+    @Test
+    public void testGrowTo() {
+        final LNGByteVector v1 = new LNGByteVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 50; i++) {
+            v1.push((byte) i);
+        }
+        assertThat(v1.empty()).isFalse();
+        for (int i = 0; i < 51; i += 10) {
+            v1.growTo(50 + i, (byte) 51);
+            assertThat(v1.size()).isEqualTo(50 + i);
+            for (int j = 0; j < 50; j++) {
+                assertThat(v1.get(j)).isEqualTo((byte) j);
+            }
+            for (int j = 50; j < 50 + i; j++) {
+                assertThat(v1.get(j)).isEqualTo((byte) 51);
+            }
+        }
+        assertThat(v1.size()).isEqualTo(100);
+        v1.growTo(100, (byte) 51);
+        assertThat(v1.size()).isEqualTo(100);
+        for (int i = 0; i < 50; i++) {
+            assertThat(v1.get(i)).isEqualTo((byte) i);
+        }
+        for (int i = 50; i < 100; i++) {
+            assertThat(v1.get(i)).isEqualTo((byte) 51);
+        }
     }
-    LNGByteVector v3 = new LNGByteVector(100);
-    v3.sort();
-    Assert.assertTrue(v3.empty());
-  }
 
-  @Test
-  public void testSortReverse() {
-    LNGByteVector v1 = new LNGByteVector(100);
-    LNGByteVector v2 = new LNGByteVector(100);
-    for (int i = 99; i >= 0; i--)
-      v1.push((byte) i);
-    for (int i = 0; i < 100; i++)
-      v2.push((byte) i);
-    v1.sortReverse();
-    v2.sortReverse();
-    for (int i = 0; i < 100; i++) {
-      Assert.assertEquals(v2.get(i), v1.get(i));
-      if (i != 99)
-        Assert.assertTrue(v1.get(i) > v1.get(i + 1));
+    @Test
+    public void testRemoveElements() {
+        final LNGByteVector v1 = new LNGByteVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 100; i++) {
+            v1.push((byte) i);
+        }
+        assertThat(v1.empty()).isFalse();
+        for (int i = 0; i < 9; i++) {
+            v1.removeElements(10);
+            assertThat(v1.size()).isEqualTo(100 - (i + 1) * 10);
+            assertThat(v1.back()).isEqualTo(100 - (i + 1) * 10 - 1);
+        }
+        assertThat(v1.size()).isEqualTo(10);
+        v1.removeElements(10);
+        assertThat(v1.empty()).isTrue();
     }
-    LNGByteVector v3 = new LNGByteVector(100);
-    v3.sortReverse();
-    Assert.assertTrue(v3.empty());
-  }
 
-  @Test
-  public void testToArray() {
-    LNGByteVector v1 = new LNGByteVector(100);
-    byte[] expected = new byte[50];
-    for (int i = 0; i < 100; i++) {
-      v1.push((byte) i);
-      if (i < 50)
-        expected[i] = (byte) i;
+    @Test
+    public void testSort() {
+        final LNGByteVector v1 = new LNGByteVector(100);
+        final LNGByteVector v2 = new LNGByteVector(100);
+        for (int i = 99; i >= 0; i--) {
+            v1.push((byte) i);
+        }
+        for (int i = 0; i < 100; i++) {
+            v2.push((byte) i);
+        }
+        v1.sort();
+        v2.sort();
+        for (int i = 0; i < 100; i++) {
+            assertThat(v1.get(i)).isEqualTo(v2.get(i));
+            if (i != 99) {
+                assertThat(v1.get(i) < v1.get(i + 1)).isTrue();
+            }
+        }
+        final LNGByteVector v3 = new LNGByteVector(100);
+        v3.sort();
+        assertThat(v3.empty()).isTrue();
     }
-    v1.shrinkTo(50);
-    Assert.assertArrayEquals(expected, v1.toArray());
-  }
 
-  @Test
-  public void testToString() {
-    LNGByteVector v1 = new LNGByteVector();
-    Assert.assertEquals("[]", v1.toString());
-    v1.push((byte) 1);
-    Assert.assertEquals("[1]", v1.toString());
-    v1.push((byte) 2);
-    Assert.assertEquals("[1, 2]", v1.toString());
-    v1.push((byte) 3);
-    Assert.assertEquals("[1, 2, 3]", v1.toString());
-    v1.push((byte) 4);
-    Assert.assertEquals("[1, 2, 3, 4]", v1.toString());
-  }
+    @Test
+    public void testSortReverse() {
+        final LNGByteVector v1 = new LNGByteVector(100);
+        final LNGByteVector v2 = new LNGByteVector(100);
+        for (int i = 99; i >= 0; i--) {
+            v1.push((byte) i);
+        }
+        for (int i = 0; i < 100; i++) {
+            v2.push((byte) i);
+        }
+        v1.sortReverse();
+        v2.sortReverse();
+        for (int i = 0; i < 100; i++) {
+            assertThat(v1.get(i)).isEqualTo(v2.get(i));
+            if (i != 99) {
+                assertThat(v1.get(i) > v1.get(i + 1)).isTrue();
+            }
+        }
+        final LNGByteVector v3 = new LNGByteVector(100);
+        v3.sortReverse();
+        assertThat(v3.empty()).isTrue();
+    }
+
+    @Test
+    public void testToArray() {
+        final LNGByteVector v1 = new LNGByteVector(100);
+        final byte[] expected = new byte[50];
+        for (int i = 0; i < 100; i++) {
+            v1.push((byte) i);
+            if (i < 50) {
+                expected[i] = (byte) i;
+            }
+        }
+        v1.shrinkTo(50);
+        assertThat(v1.toArray()).containsExactly(expected);
+    }
+
+    @Test
+    public void testToString() {
+        final LNGByteVector v1 = new LNGByteVector();
+        assertThat(v1.toString()).isEqualTo("[]");
+        v1.push((byte) 1);
+        assertThat(v1.toString()).isEqualTo("[1]");
+        v1.push((byte) 2);
+        assertThat(v1.toString()).isEqualTo("[1, 2]");
+        v1.push((byte) 3);
+        assertThat(v1.toString()).isEqualTo("[1, 2, 3]");
+        v1.push((byte) 4);
+        assertThat(v1.toString()).isEqualTo("[1, 2, 3, 4]");
+    }
 }

@@ -28,21 +28,22 @@
 
 package org.logicng.configurations;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the package configurations.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
 public class ConfigurationsTest {
 
-  @Test
-  public void testValueOf() {
-    Assert.assertEquals(ConfigurationType.CNF, ConfigurationType.valueOf("CNF"));
-    Assert.assertEquals(ConfigurationType.GLUCOSE, ConfigurationType.valueOf("GLUCOSE"));
-    Assert.assertEquals(ConfigurationType.MAXSAT, ConfigurationType.valueOf("MAXSAT"));
-    Assert.assertEquals(ConfigurationType.CC_ENCODER, ConfigurationType.valueOf("CC_ENCODER"));
-  }
+    @Test
+    public void testValueOf() {
+        assertThat(ConfigurationType.valueOf("CNF")).isEqualTo(ConfigurationType.CNF);
+        assertThat(ConfigurationType.valueOf("GLUCOSE")).isEqualTo(ConfigurationType.GLUCOSE);
+        assertThat(ConfigurationType.valueOf("MAXSAT")).isEqualTo(ConfigurationType.MAXSAT);
+        assertThat(ConfigurationType.valueOf("CC_ENCODER")).isEqualTo(ConfigurationType.CC_ENCODER);
+    }
 }

@@ -28,83 +28,72 @@
 
 package org.logicng.io.writers;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 /**
  * Unit tests for the {@link FormulaDotFileWriter}.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
 public class FormulaDotFileWriterTest {
 
-  private final FormulaFactory f = new FormulaFactory();
-  private final PropositionalParser p = new PropositionalParser(f);
-  private final PseudoBooleanParser pp = new PseudoBooleanParser(f);
+    private final FormulaFactory f = new FormulaFactory();
+    private final PropositionalParser p = new PropositionalParser(this.f);
+    private final PseudoBooleanParser pp = new PseudoBooleanParser(this.f);
 
-  @Test
-  public void testConstants() throws IOException {
-    testFiles("false", f.falsum());
-    testFiles("true", f.verum());
-  }
+    @Test
+    public void testConstants() throws IOException {
+        testFiles("false", this.f.falsum());
+        testFiles("true", this.f.verum());
+    }
 
-  @Test
-  public void testLiterals() throws IOException {
-    testFiles("x", f.variable("x"));
-    testFiles("not_x", f.literal("x", false));
-  }
+    @Test
+    public void testLiterals() throws IOException {
+        testFiles("x", this.f.variable("x"));
+        testFiles("not_x", this.f.literal("x", false));
+    }
 
-  @Test
-  public void testFormulas() throws IOException, ParserException {
-    final Formula f1 = p.parse("(a & b) <=> (~c => (x | z))");
-    final Formula f2 = p.parse("a & b | b & ~c");
-    final Formula f3 = p.parse("(a & b) <=> (~c => (a | b))");
-    final Formula f4 = p.parse("~(a & b) | b & ~c");
-    final Formula f5 = pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 23)");
-    testFiles("f1", f1);
-    testFiles("f2", f2);
-    testFiles("f3", f3);
-    testFiles("f4", f4);
-    testFiles("f5", f5);
-  }
+    @Test
+    public void testFormulas() throws IOException, ParserException {
+        final Formula f1 = this.p.parse("(a & b) <=> (~c => (x | z))");
+        final Formula f2 = this.p.parse("a & b | b & ~c");
+        final Formula f3 = this.p.parse("(a & b) <=> (~c => (a | b))");
+        final Formula f4 = this.p.parse("~(a & b) | b & ~c");
+        final Formula f5 = this.pp.parse("a | ~b | (2*a + 3*~b + 4*c <= 23)");
+        testFiles("f1", f1);
+        testFiles("f2", f2);
+        testFiles("f3", f3);
+        testFiles("f4", f4);
+        testFiles("f5", f5);
+    }
 
-  @Test
-  public void testDuplicateFormulaParts() throws ParserException, IOException {
-    final Formula f6 = p.parse("(a & b) | (c & ~(a & b))");
-    testFiles("f6", f6);
-    final Formula f7 = p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))");
-    testFiles("f7", f7);
-  }
+    @Test
+    public void testDuplicateFormulaParts() throws ParserException, IOException {
+        final Formula f6 = this.p.parse("(a & b) | (c & ~(a & b))");
+        testFiles("f6", f6);
+        final Formula f7 = this.p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))");
+        testFiles("f7", f7);
+    }
 
-  private void testFiles(final String fileName, final Formula formula) throws IOException {
-    FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.dot", formula, true);
-    FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
-    final File expectedT = new File("src/test/resources/writers/formulas-dot/" + fileName + "_t.dot");
-    final File expectedF = new File("src/test/resources/writers/formulas-dot/" + fileName + "_f.dot");
-    final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_t.dot");
-    final File tempF = new File("src/test/resources/writers/temp/" + fileName + "_f.dot");
-    assertFilesEqual(expectedT, tempT);
-    assertFilesEqual(expectedF, tempF);
-  }
-
-  private void assertFilesEqual(final File expected, final File actual) throws IOException {
-    final BufferedReader expReader = new BufferedReader(new FileReader(expected));
-    final BufferedReader actReader = new BufferedReader(new FileReader(actual));
-    for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++)
-      Assert.assertEquals("Line " + lineNumber + " not equal", expReader.readLine(), actReader.readLine());
-    if (expReader.ready())
-      Assert.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");
-    if (actReader.ready())
-      Assert.fail("Additional line(s) found, starting with \"" + actReader.readLine() + "\"");
-  }
+    private void testFiles(final String fileName, final Formula formula) throws IOException {
+        FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.dot", formula, true);
+        FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
+        final File expectedT = new File("src/test/resources/writers/formulas-dot/" + fileName + "_t.dot");
+        final File expectedF = new File("src/test/resources/writers/formulas-dot/" + fileName + "_f.dot");
+        final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_t.dot");
+        final File tempF = new File("src/test/resources/writers/temp/" + fileName + "_f.dot");
+        assertThat(contentOf(tempT)).isEqualTo(contentOf(expectedT));
+        assertThat(contentOf(tempF)).isEqualTo(contentOf(expectedF));
+    }
 }

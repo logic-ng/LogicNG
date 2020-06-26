@@ -28,18 +28,20 @@
 
 package org.logicng.formulas;
 
-import org.logicng.bdds.BDDFactory;
-import org.logicng.bdds.datastructures.BDD;
-import org.logicng.bdds.orderings.VariableOrdering;
-import org.logicng.bdds.orderings.VariableOrderingProvider;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.CacheEntry;
+import org.logicng.knowledgecompilation.bdds.BDDFactory;
+import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
+import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.stream.Stream;
 
 /**
  * Super class for formulas.
@@ -243,19 +245,19 @@ public abstract class Formula implements Iterable<Formula> {
      * @return the BDD for this formula with the given ordering
      */
     public BDD bdd(final VariableOrdering variableOrdering) {
-        final int varNum = this.variables().size() == 0 ? 1 : this.variables.size();
-        final BDDFactory factory = new BDDFactory(varNum * 30, varNum * 20, this.factory());
+        final int varNum = this.variables().size();
+        final BDDKernel kernel;
         if (variableOrdering == null) {
-            factory.setNumberOfVars(varNum);
+            kernel = new BDDKernel(this.factory(), varNum, varNum * 30, varNum * 20);
         } else {
             try {
                 final VariableOrderingProvider provider = variableOrdering.provider().newInstance();
-                factory.setVariableOrder(provider.getOrder(this));
+                kernel = new BDDKernel(this.f, provider.getOrder(this), varNum * 30, varNum * 20);
             } catch (final InstantiationException | IllegalAccessException e) {
                 throw new IllegalStateException("Could not generate the BDD variable ordering provider", e);
             }
         }
-        return factory.build(this);
+        return BDDFactory.build(this, kernel, null);
     }
 
     /**
@@ -402,6 +404,16 @@ public abstract class Formula implements Iterable<Formula> {
         this.transformationCache.clear();
         this.functionCache.clear();
     }
+
+    /**
+     * Returns a stream of this formula's operands.
+     * <p>
+     * Most times streams have worse performance then iterating over the formula per iterator.
+     * Since internally formulas store their operands, a costly call to {@code Arrays.stream()}
+     * is necessary.  So if performance matters - avoid using streams.
+     * @return the stream
+     */
+    public abstract Stream<Formula> stream();
 
     @Override
     public String toString() {

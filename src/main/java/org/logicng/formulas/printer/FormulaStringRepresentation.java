@@ -28,11 +28,18 @@
 
 package org.logicng.formulas.printer;
 
-import org.logicng.formulas.*;
+import org.logicng.formulas.BinaryOperator;
+import org.logicng.formulas.CType;
+import org.logicng.formulas.FType;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Literal;
+import org.logicng.formulas.NAryOperator;
+import org.logicng.formulas.Not;
+import org.logicng.formulas.PBConstraint;
 
 /**
  * Super class for a formula string representation.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public abstract class FormulaStringRepresentation {
@@ -56,7 +63,7 @@ public abstract class FormulaStringRepresentation {
      * @param formula the formula
      * @return the string representation of the formula
      */
-    protected String toInnerString(Formula formula) {
+    protected String toInnerString(final Formula formula) {
         switch (formula.type()) {
             case FALSE:
                 return this.falsum();
@@ -80,11 +87,6 @@ public abstract class FormulaStringRepresentation {
                 return this.naryOperator(nary, String.format("%s", op));
             case PBC:
                 final PBConstraint pbc = (PBConstraint) formula;
-                if (pbc.isTrivialFalse()) {
-                    return this.falsum();
-                } else if (pbc.isTrivialTrue()) {
-                    return this.verum();
-                }
                 return String.format("%s%s%d", this.pbLhs(pbc.operands(), pbc.coefficients()), this.pbComparator(pbc.comparator()), pbc.rhs());
             default:
                 throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
@@ -98,25 +100,7 @@ public abstract class FormulaStringRepresentation {
      * @return {@code "(" + formula.toString() + ")"}
      */
     protected String bracket(final Formula formula) {
-        if (isTrivialCase(formula)) {
-            return this.toInnerString(formula);
-        } else {
-            return String.format("%s%s%s", this.lbr(), this.toInnerString(formula), this.rbr());
-        }
-    }
-
-    /**
-     * Checks if the formula is a pseudo-Boolean constraint that is trivially false or trivially true.
-     * @param formula the formula
-     * @return {@code true} if the formula is a trivial pseudo-Boolean constraint, otherwise {@code false}
-     */
-    protected boolean isTrivialCase(Formula formula) {
-        if (formula.type() == FType.PBC) {
-            PBConstraint pbc = (PBConstraint) formula;
-            return pbc.isTrivialFalse() || pbc.isTrivialTrue();
-        } else {
-            return false;
-        }
+        return String.format("%s%s%s", this.lbr(), this.toInnerString(formula), this.rbr());
     }
 
     /**

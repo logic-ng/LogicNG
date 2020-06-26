@@ -28,31 +28,29 @@
 
 package org.logicng.solvers;
 
-import org.logicng.backbones.Backbone;
-import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
-import org.logicng.collections.ImmutableFormulaList;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.explanations.unsatcores.UNSATCore;
+import org.logicng.formulas.CardinalityConstraint;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
-import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
+import org.logicng.solvers.functions.ModelEnumerationFunction;
+import org.logicng.solvers.functions.SolverFunction;
+import org.logicng.solvers.functions.UnsatCoreFunction;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public abstract class SATSolver {
@@ -114,19 +112,7 @@ public abstract class SATSolver {
      * @param proposition the proposition
      */
     public void add(final Proposition proposition) {
-        for (final Formula formula : proposition.formulas()) {
-            this.add(formula, proposition);
-        }
-    }
-
-    /**
-     * Adds a formula list to the solver.
-     * @param formulas the formula list
-     */
-    public void add(final ImmutableFormulaList formulas) {
-        for (final Formula formula : formulas) {
-            this.add(formula);
-        }
+        this.add(proposition.formula(), proposition);
     }
 
     /**
@@ -154,20 +140,7 @@ public abstract class SATSolver {
      * @param proposition   the proposition
      */
     public void addWithRelaxation(final Variable relaxationVar, final Proposition proposition) {
-        for (final Formula formula : proposition.formulas()) {
-            this.addWithRelaxation(relaxationVar, formula);
-        }
-    }
-
-    /**
-     * Adds a formula list to the solver.
-     * @param relaxationVar the relaxation variable
-     * @param formulas      the formula list
-     */
-    public void addWithRelaxation(final Variable relaxationVar, final ImmutableFormulaList formulas) {
-        for (final Formula formula : formulas) {
-            this.addWithRelaxation(relaxationVar, formula);
-        }
+        this.addWithRelaxation(relaxationVar, proposition.formula());
     }
 
     /**
@@ -192,7 +165,7 @@ public abstract class SATSolver {
      * @param cc the cardinality constraint
      * @return the incremental data of this constraint, or null if the right hand side of cc is 1
      */
-    public abstract CCIncrementalData addIncrementalCC(final PBConstraint cc);
+    public abstract CCIncrementalData addIncrementalCC(final CardinalityConstraint cc);
 
     /**
      * Adds a formula which is already in CNF to the solver.
@@ -390,11 +363,19 @@ public abstract class SATSolver {
     public abstract Assignment model(final Collection<Variable> variables);
 
     /**
+     * Executes a solver function on this solver.
+     * @param function the solver function
+     * @param <RESULT> the result type of the function
+     * @return the result of executing the solver function on the current solver
+     */
+    public abstract <RESULT> RESULT execute(final SolverFunction<RESULT> function);
+
+    /**
      * Enumerates all models of the current formula.
      * @return the list of models
      */
     public List<Assignment> enumerateAllModels() {
-        return this.enumerateAllModels((Collection<Variable>) null);
+        return execute(ModelEnumerationFunction.builder().build());
     }
 
     /**
@@ -403,8 +384,8 @@ public abstract class SATSolver {
      * @param variables the set of variables
      * @return the list of models
      */
-    public List<Assignment> enumerateAllModels(final Variable[] variables) {
-        return this.enumerateAllModels(Arrays.asList(variables));
+    public List<Assignment> enumerateAllModels(final Collection<Variable> variables) {
+        return execute(ModelEnumerationFunction.builder().variables(variables).build());
     }
 
     /**
@@ -413,57 +394,9 @@ public abstract class SATSolver {
      * @param variables the set of variables
      * @return the list of models
      */
-    public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables);
-
-    /**
-     * Enumerates all models of the current formula wrt. a given set of variables.  If the set is {@code null},
-     * all variables are considered relevant. Additionally every assignment contains literals for the given additional
-     * variables.
-     * @param variables           the set of variables
-     * @param additionalVariables the additional variables
-     * @return the list of models
-     */
-    public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables);
-
-    /**
-     * Enumerates all models of the current formula and passes it to a model enumeration handler.
-     * @param handler the model enumeration handler
-     * @return the list of models
-     */
-    public List<Assignment> enumerateAllModels(final ModelEnumerationHandler handler) {
-        return this.enumerateAllModels((Collection<Variable>) null, handler);
+    public List<Assignment> enumerateAllModels(final Variable... variables) {
+        return execute(ModelEnumerationFunction.builder().variables(variables).build());
     }
-
-    /**
-     * Enumerates all models of the current formula wrt. a given set of variables and passes it to a model
-     * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
-     * @param variables the set of variables
-     * @param handler   the model enumeration handler
-     * @return the list of models
-     */
-    public List<Assignment> enumerateAllModels(final Variable[] variables, final ModelEnumerationHandler handler) {
-        return this.enumerateAllModels(Arrays.asList(variables), handler);
-    }
-
-    /**
-     * Enumerates all models of the current formula wrt. a given set of variables  and passes it to a model
-     * enumeration handler.  If the set is {@code null}, all literals are considered relevant.
-     * @param variables the set of variables
-     * @param handler   the model enumeration handler
-     * @return the list of models
-     */
-    public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final ModelEnumerationHandler handler);
-
-    /**
-     * Enumerates all models of the current formula wrt. a given set of variables  and passes it to a model
-     * enumeration handler.  If the set is {@code null}, all literals are considered relevant. Additionally every
-     * assignment contains literals for the given additional variables.
-     * @param variables           the set of variables
-     * @param additionalVariables the additional variables
-     * @param handler             the model enumeration handler
-     * @return the list of models
-     */
-    public abstract List<Assignment> enumerateAllModels(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler);
 
     /**
      * Saves the current solver state.
@@ -503,31 +436,9 @@ public abstract class SATSolver {
      * required to generate a proof trace and an unsat core.
      * @return the unsat core
      */
-    public abstract UNSATCore<Proposition> unsatCore();
-
-    /**
-     * Computes a backbone with both positive and negative variables of the current formula on the solver.
-     * @param relevantVariables the variables which should be considered for the backbone
-     * @return the backbone
-     */
-    public Backbone backbone(final Collection<Variable> relevantVariables) {
-        return backbone(relevantVariables, BackboneType.POSITIVE_AND_NEGATIVE);
+    public UNSATCore<Proposition> unsatCore() {
+        return execute(new UnsatCoreFunction());
     }
-
-    /**
-     * Computes a backbone of the current formula on the solver.
-     * @param relevantVariables the variables which should be considered for the backbone
-     * @param type              the type of backbone which should be computed
-     * @return the backbone
-     */
-    public abstract Backbone backbone(final Collection<Variable> relevantVariables, final BackboneType type);
-
-    /**
-     * Returns all unit propagated literals on level 0 of the current formula on the solver.
-     * If the formula is UNSAT, {@code null} will be returned.
-     * @return all unit propagated literals on level 0, or {@code null} if the formula is unsatisfiable
-     */
-    public abstract SortedSet<Literal> upZeroLiterals();
 
     /**
      * Returns the formula factory for this solver.
@@ -536,12 +447,6 @@ public abstract class SATSolver {
     public FormulaFactory factory() {
         return this.f;
     }
-
-    /**
-     * Returns the formula which is currently stored on the solver.
-     * @return the formula on the solver
-     */
-    public abstract Set<Formula> formulaOnSolver();
 
     /**
      * Sets the selection order of the variables and their polarity.

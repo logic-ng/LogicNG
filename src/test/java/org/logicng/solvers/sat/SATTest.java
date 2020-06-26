@@ -28,10 +28,9 @@
 
 package org.logicng.solvers.sat;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.logicng.collections.ImmutableFormulaList;
+import org.junit.jupiter.api.Test;
+import org.logicng.LogicNGTest;
+import org.logicng.LongRunningTag;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
@@ -39,7 +38,6 @@ import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
@@ -50,19 +48,19 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.propositions.StandardProposition;
-import org.logicng.solvers.CleaneLing;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
+import org.logicng.solvers.functions.FormulaOnSolverFunction;
+import org.logicng.solvers.functions.ModelEnumerationFunction;
+import org.logicng.solvers.functions.UpZeroLiteralsFunction;
 import org.logicng.testutils.PigeonHoleGenerator;
 import org.logicng.util.FormulaHelper;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -76,6 +74,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
@@ -87,1160 +86,1050 @@ import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
  * @version 1.6
  * @since 1.0
  */
-public class SATTest {
+public class SATTest implements LogicNGTest {
 
-  private final FormulaFactory f;
-  private final SATSolver[] solvers;
-  private final PigeonHoleGenerator pg;
-  private final PropositionalParser parser;
-  private final String[] testStrings;
+    private final FormulaFactory f;
+    private final SATSolver[] solvers;
+    private final PigeonHoleGenerator pg;
+    private final PropositionalParser parser;
+    private final String[] testStrings;
 
-  public SATTest() {
-    this.f = new FormulaFactory();
-    this.pg = new PigeonHoleGenerator(this.f);
-    this.parser = new PropositionalParser(this.f);
-    this.solvers = new SATSolver[10];
-    this.solvers[0] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().incremental(true).build());
-    this.solvers[1] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().incremental(false).build());
-    this.solvers[2] = MiniSat.glucose(this.f, new MiniSatConfig.Builder().incremental(false).build(),
-            new GlucoseConfig.Builder().build());
-    this.solvers[3] = MiniSat.miniCard(this.f, new MiniSatConfig.Builder().incremental(true).build());
-    this.solvers[4] = MiniSat.miniCard(this.f, new MiniSatConfig.Builder().incremental(false).build());
-    this.solvers[5] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-    this.solvers[6] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
-    this.solvers[7] = CleaneLing.minimalistic(this.f);
-    this.solvers[8] = CleaneLing.full(this.f, new CleaneLingConfig.Builder().plain(true).glueUpdate(true).gluered(true).build());
-    this.solvers[9] = CleaneLing.full(this.f);
+    public SATTest() {
+        this.f = new FormulaFactory();
+        this.pg = new PigeonHoleGenerator(this.f);
+        this.parser = new PropositionalParser(this.f);
+        this.solvers = new SATSolver[8];
+        this.solvers[0] = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(true).build());
+        this.solvers[1] = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(false).build());
+        this.solvers[2] = MiniSat.glucose(this.f, MiniSatConfig.builder().incremental(false).build(),
+                GlucoseConfig.builder().build());
+        this.solvers[3] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(true).build());
+        this.solvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(false).build());
+        this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
 
-    this.testStrings = new String[10];
-    this.testStrings[0] = "MiniSat2Solver{result=UNDEF, incremental=true}";
-    this.testStrings[1] = "MiniSat2Solver{result=UNDEF, incremental=false}";
-    this.testStrings[2] = "GlucoseSyrup{result=UNDEF, incremental=false}";
-    this.testStrings[3] = "MiniCard{result=UNDEF, incremental=true}";
-    this.testStrings[4] = "MiniCard{result=UNDEF, incremental=false}";
-    this.testStrings[5] = "MiniSat2Solver{result=UNDEF, incremental=true}";
-    this.testStrings[6] = "MiniSat2Solver{result=UNDEF, incremental=true}";
-    this.testStrings[7] = "CleaneLing{result=UNDEF, idx2name={}}";
-    this.testStrings[8] = "CleaneLing{result=UNDEF, idx2name={}}";
-    this.testStrings[9] = "CleaneLing{result=UNDEF, idx2name={}}";
-  }
-
-  @Test
-  public void testTrue() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.TRUE);
-      Assert.assertEquals(TRUE, s.sat());
-      Assert.assertEquals(0, s.model().size());
-      s.reset();
+        this.testStrings = new String[8];
+        this.testStrings[0] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+        this.testStrings[1] = "MiniSat2Solver{result=UNDEF, incremental=false}";
+        this.testStrings[2] = "GlucoseSyrup{result=UNDEF, incremental=false}";
+        this.testStrings[3] = "MiniCard{result=UNDEF, incremental=true}";
+        this.testStrings[4] = "MiniCard{result=UNDEF, incremental=false}";
+        this.testStrings[5] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+        this.testStrings[6] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+        this.testStrings[7] = "MiniSat2Solver{result=UNDEF, incremental=true}";
     }
-  }
 
-  @Test
-  public void testFalse() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.FALSE);
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testLiterals() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.A);
-      Assert.assertEquals(TRUE, s.sat());
-      Assert.assertEquals(1, s.model().size());
-      Assert.assertTrue(s.model().evaluateLit(F.A));
-      s.add(F.NA);
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-      s.add(F.NA);
-      Assert.assertEquals(TRUE, s.sat());
-      Assert.assertEquals(1, s.model().size());
-      Assert.assertTrue(s.model().evaluateLit(F.NA));
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testAnd1() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.AND1);
-      Assert.assertEquals(TRUE, s.sat());
-      Assert.assertEquals(2, s.model().size());
-      Assert.assertTrue(s.model().evaluateLit(F.A));
-      Assert.assertTrue(s.model().evaluateLit(F.B));
-      s.add(F.NOT1);
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testAnd2() {
-    for (final SATSolver s : this.solvers) {
-      final StandardProposition prop = new StandardProposition(this.f.and(this.f.literal("a", true), this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", false)));
-      s.add(prop);
-      Assert.assertEquals(TRUE, s.sat());
-      Assert.assertEquals(4, s.model().size());
-      Assert.assertTrue(s.model().evaluateLit(this.f.variable("a")));
-      Assert.assertFalse(s.model().evaluateLit(this.f.variable("b")));
-      Assert.assertTrue(s.model().evaluateLit(this.f.variable("c")));
-      Assert.assertFalse(s.model().evaluateLit(this.f.variable("d")));
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testAnd3() {
-    for (final SATSolver s : this.solvers) {
-      final List<Formula> formulas = new ArrayList<>(3);
-      formulas.add(this.f.literal("a", true));
-      formulas.add(this.f.literal("b", false));
-      formulas.add(this.f.literal("a", false));
-      formulas.add(this.f.literal("d", false));
-      s.add(formulas);
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testFormula1() throws ParserException {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.parser.parse("(x => y) & (~x => y) & (y => z) & (z => ~x)"));
-      Assert.assertEquals(TRUE, s.sat());
-      Assert.assertEquals(3, s.model().size());
-      Assert.assertFalse(s.model().evaluateLit(this.f.variable("x")));
-      Assert.assertTrue(s.model().evaluateLit(this.f.variable("y")));
-      Assert.assertTrue(s.model().evaluateLit(this.f.variable("z")));
-      s.add(this.f.variable("x"));
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testFormula2() throws ParserException {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      s.add(this.parser.parse("(x => y) & (~x => y) & (y => z) & (z => ~x)"));
-      final List<Assignment> models = s.enumerateAllModels();
-      Assert.assertEquals(1, models.size());
-      Assert.assertEquals(3, models.get(0).size());
-      Assert.assertFalse(models.get(0).evaluateLit(this.f.variable("x")));
-      Assert.assertTrue(models.get(0).evaluateLit(this.f.variable("y")));
-      Assert.assertTrue(models.get(0).evaluateLit(this.f.variable("z")));
-      s.add(this.f.variable("x"));
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testCC1() {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      final Variable[] lits = new Variable[100];
-      for (int j = 0; j < lits.length; j++) {
-        lits[j] = this.f.variable("x" + j);
-      }
-      s.add(this.f.exo(lits));
-      final List<Assignment> models = s.enumerateAllModels(lits);
-      Assert.assertEquals(100, models.size());
-      for (final Assignment m : models) {
-        Assert.assertEquals(1, m.positiveLiterals().size());
-      }
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPBC() {
-    for (final SATSolver s : this.solvers) {
-      final List<Literal> lits = new ArrayList<>();
-      final List<Integer> coeffs = new ArrayList<>();
-      for (int i = 0; i < 5; i++) {
-        lits.add(this.f.literal("x" + i, i % 2 == 0));
-        coeffs.add(i + 1);
-      }
-      s.add(this.f.pbc(CType.GE, 10, lits, coeffs));
-      Assert.assertEquals(Tristate.TRUE, s.sat());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPartialModel() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.A);
-      s.add(F.B);
-      s.add(F.C);
-      final Variable[] relevantVars = new Variable[2];
-      relevantVars[0] = F.A;
-      relevantVars[1] = F.B;
-      Assert.assertEquals(Tristate.TRUE, s.sat());
-      final Assignment relModel = s.model(relevantVars);
-      Assert.assertTrue(relModel.negativeLiterals().isEmpty());
-      Assert.assertFalse(relModel.literals().contains(F.C));
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testModelEnumerationHandler() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.IMP3);
-      try {
-        final List<Assignment> models = s.enumerateAllModels(new ModelEnumerationHandler() {
-          private boolean aborted;
-
-          @Override
-          public boolean aborted() {
-            return aborted;
-          }
-
-          @Override
-          public void started() {
-            this.aborted = false;
-          }
-
-          @Override
-          public SATHandler satHandler() {
-            return null;
-          }
-
-          @Override
-          public boolean foundModel(final Assignment assignment) {
-            this.aborted = assignment.negativeLiterals().isEmpty();
-            return !aborted;
-          }
-
-          @Override
-          public boolean satSolverFinished() {
-            // nothing to do here
-            return true;
-          }
-        });
-        Assert.assertFalse(models.isEmpty());
-        Assert.assertTrue(models.get(models.size() - 1).negativeLiterals().isEmpty());
-        models.remove(models.size() - 1);
-        for (final Assignment model : models) {
-          Assert.assertFalse(model.negativeLiterals().isEmpty());
+    @Test
+    public void testTrue() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.TRUE);
+            assertSolverSat(s);
+            assertThat(s.model().size()).isEqualTo(0);
+            s.reset();
         }
-      } catch (final Exception e) {
-        Assert.assertTrue(e instanceof UnsupportedOperationException);
-      }
-
-      s.reset();
     }
-  }
 
-  @Test
-  public void testWithRelaxation() throws ParserException {
-    final PropositionalParser parser = new PropositionalParser(this.f);
-    final Formula one = parser.parse("a & b & (c | ~d)");
-    final Formula two = parser.parse("~a | ~c");
-
-    for (final SATSolver s : this.solvers) {
-      s.add(one);
-      s.addWithRelaxation(this.f.variable("d"), two);
-      Assert.assertEquals(Tristate.TRUE, s.sat());
-      try {
-        Assert.assertEquals(2, s.enumerateAllModels().size());
-      } catch (final Exception e) {
-        Assert.assertTrue(e instanceof UnsupportedOperationException);
-      }
-      s.reset();
-
-      s.add(one);
-      s.addWithRelaxation(this.f.variable("d"), new StandardProposition(two));
-      Assert.assertEquals(Tristate.TRUE, s.sat());
-      try {
-        Assert.assertEquals(2, s.enumerateAllModels().size());
-      } catch (final Exception e) {
-        Assert.assertTrue(e instanceof UnsupportedOperationException);
-      }
-      s.reset();
-
-      s.add(one);
-      s.addWithRelaxation(this.f.variable("d"), new ImmutableFormulaList(two));
-      Assert.assertEquals(Tristate.TRUE, s.sat());
-      try {
-        Assert.assertEquals(2, s.enumerateAllModels().size());
-      } catch (final Exception e) {
-        Assert.assertTrue(e instanceof UnsupportedOperationException);
-      }
-      s.reset();
-
-      s.add(one);
-      s.addWithRelaxation(this.f.variable("d"), Arrays.asList(two, this.f.verum()));
-      Assert.assertEquals(Tristate.TRUE, s.sat());
-      try {
-        Assert.assertEquals(2, s.enumerateAllModels().size());
-      } catch (final Exception e) {
-        Assert.assertTrue(e instanceof UnsupportedOperationException);
-      }
-      s.reset();
-    }
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testIllegalEnumeration() {
-    final SATSolver s = this.solvers[9];
-    final Variable[] lits = new Variable[100];
-    for (int j = 0; j < lits.length; j++) {
-      lits[j] = this.f.variable("x" + j);
-    }
-    s.add(this.f.exo(lits));
-    s.enumerateAllModels(lits);
-  }
-
-  @Test
-  public void testPigeonHole1() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(1));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPigeonHole2() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(2));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPigeonHole3() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(3));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPigeonHole4() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(4));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPigeonHole5() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(5));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPigeonHole6() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(6));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testPigeonHole7() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(7));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testDifferentClauseMinimizations() {
-    final SATSolver[] moreSolvers = new SATSolver[6];
-    moreSolvers[0] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().clMinimization(NONE).build());
-    moreSolvers[1] = MiniSat.miniSat(this.f, new MiniSatConfig.Builder().clMinimization(BASIC).build());
-    moreSolvers[2] = MiniSat.glucose(this.f, new MiniSatConfig.Builder().clMinimization(NONE).build(), new GlucoseConfig.Builder().build());
-    moreSolvers[3] = MiniSat.glucose(this.f, new MiniSatConfig.Builder().clMinimization(BASIC).build(), new GlucoseConfig.Builder().build());
-    moreSolvers[4] = MiniSat.miniCard(this.f, new MiniSatConfig.Builder().clMinimization(NONE).build());
-    moreSolvers[5] = MiniSat.miniCard(this.f, new MiniSatConfig.Builder().clMinimization(BASIC).build());
-    for (final SATSolver s : moreSolvers) {
-      s.add(this.pg.generate(7));
-      Assert.assertEquals(FALSE, s.sat());
-      Assert.assertNull(s.model());
-    }
-  }
-
-  @Test
-  public void testTimeoutSATHandlerSmall() {
-    for (final SATSolver s : this.solvers) {
-      s.add(F.IMP1);
-      final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
-      final Tristate result = s.sat(handler);
-      assertThat(handler.aborted()).isFalse();
-      assertThat(result).isEqualTo(TRUE);
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testTimeoutSATHandlerLarge() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(10));
-      final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
-      final Tristate result = s.sat(handler);
-      assertThat(handler.aborted()).isTrue();
-      assertThat(result).isEqualTo(UNDEF);
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testDimacsFiles() throws IOException {
-    final Map<String, Boolean> expectedResults = new HashMap<>();
-    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
-    while (reader.ready()) {
-      final String[] tokens = reader.readLine().split(";");
-      expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
-    }
-    final File testFolder = new File("src/test/resources/sat");
-    final File[] files = testFolder.listFiles();
-    assert files != null;
-    for (final SATSolver solver : this.solvers) {
-      for (final File file : files) {
-        final String fileName = file.getName();
-        if (fileName.endsWith(".cnf")) {
-          readCNF(solver, file);
-          final boolean res = solver.sat() == TRUE;
-          Assert.assertEquals(expectedResults.get(fileName), res);
+    @Test
+    public void testFalse() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.FALSE);
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
         }
-      }
-      solver.reset();
     }
-  }
 
-  private void readCNF(final SATSolver solver, final File file) throws IOException {
-    solver.reset();
-    final BufferedReader reader = new BufferedReader(new FileReader(file));
-    while (reader.ready()) {
-      final String line = reader.readLine();
-      if (line.startsWith("p cnf")) {
-        break;
-      }
-    }
-    String[] tokens;
-    final List<Literal> literals = new ArrayList<>();
-    while (reader.ready()) {
-      tokens = reader.readLine().split("\\s+");
-      if (tokens.length >= 2) {
-        assert "0".equals(tokens[tokens.length - 1]);
-        literals.clear();
-        for (int i = 0; i < tokens.length - 1; i++) {
-          if (!tokens[i].isEmpty()) {
-            final int parsedLit = Integer.parseInt(tokens[i]);
-            final String var = "v" + Math.abs(parsedLit);
-            literals.add(parsedLit > 0 ? this.f.literal(var, true) : this.f.literal(var, false));
-          }
+    @Test
+    public void testLiterals() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.A);
+            assertSolverSat(s);
+            assertThat(s.model().size()).isEqualTo(1);
+            assertThat(s.model().evaluateLit(F.A)).isTrue();
+            s.add(F.NA);
+            assertSolverUnsat(s);
+            s.reset();
+            s.add(F.NA);
+            assertSolverSat(s);
+            assertThat(s.model().size()).isEqualTo(1);
+            assertThat(s.model().evaluateLit(F.NA)).isTrue();
+            s.reset();
         }
-        if (!literals.isEmpty()) {
-          solver.add(this.f.or(literals));
+    }
+
+    @Test
+    public void testAnd1() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.AND1);
+            assertSolverSat(s);
+            assertThat(s.model().size()).isEqualTo(2);
+            assertThat(s.model().evaluateLit(F.A)).isTrue();
+            assertThat(s.model().evaluateLit(F.B)).isTrue();
+            s.add(F.NOT1);
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
         }
-      }
     }
-  }
 
-  @Test
-  public void testPigeonHoleWithReset() {
-    for (final SATSolver s : this.solvers) {
-      s.add(this.pg.generate(4));
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-      s.add(this.pg.generate(5));
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-      s.add(this.pg.generate(6));
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-      s.add(this.pg.generate(7));
-      Assert.assertEquals(FALSE, s.sat());
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testTimeoutModelEnumerationHandlerWithUNSATInstance() {
-    for (final SATSolver solver : this.solvers) {
-      if (solver instanceof CleaneLing) {
-        continue; // Cleaning does not support a timeout handler for model enumeration
-      }
-      solver.add(this.pg.generate(10));
-      final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(1000L);
-      final List<Assignment> assignments = solver.enumerateAllModels(handler);
-      assertThat(assignments).isEmpty();
-      assertThat(handler.aborted()).isTrue();
-      solver.reset();
-    }
-  }
-
-  @Test
-  public void testTimeoutModelEnumerationHandlerWithSATInstance() {
-    for (final SATSolver solver : this.solvers) {
-      if (solver instanceof CleaneLing) {
-        continue; // Cleaning does not support a timeout handler for model enumeration
-      }
-      final List<Variable> variables = new ArrayList<Variable>();
-      for (int i = 0; i < 1000; i++) {
-        variables.add(this.f.variable("x" + i));
-      }
-
-      solver.add(this.f.exo(variables));
-      TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(50L);
-      solver.enumerateAllModels(handler);
-      assertThat(handler.aborted()).isTrue();
-      solver.reset();
-
-      solver.add(this.f.exo(variables.subList(0, 5)));
-      handler = new TimeoutModelEnumerationHandler(1000L);
-      final List<Assignment> assignments = solver.enumerateAllModels(handler);
-      assertThat(assignments).hasSize(5);
-      assertThat(handler.aborted()).isFalse();
-      solver.reset();
-    }
-  }
-
-  @Test
-  public void testModelEnumeration() {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      final SortedSet<Variable> lits = new TreeSet<>();
-      final SortedSet<Variable> firstFive = new TreeSet<>();
-      for (int j = 0; j < 20; j++) {
-        final Variable lit = this.f.variable("x" + j);
-        lits.add(lit);
-        if (j < 5) {
-          firstFive.add(lit);
+    @Test
+    public void testAnd2() {
+        for (final SATSolver s : this.solvers) {
+            final StandardProposition prop = new StandardProposition(this.f.and(this.f.literal("a", true), this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", false)));
+            s.add(prop);
+            assertSolverSat(s);
+            assertThat(s.model().size()).isEqualTo(4);
+            assertThat(s.model().evaluateLit(this.f.variable("a"))).isTrue();
+            assertThat(s.model().evaluateLit(this.f.variable("b"))).isFalse();
+            assertThat(s.model().evaluateLit(this.f.variable("c"))).isTrue();
+            assertThat(s.model().evaluateLit(this.f.variable("d"))).isFalse();
+            s.reset();
         }
-      }
-      s.add(this.f.cc(CType.GE, 1, lits));
+    }
 
-      final List<Assignment> models = s.enumerateAllModels(firstFive, lits);
-      Assert.assertEquals(32, models.size());
-      for (final Assignment model : models) {
-        for (final Variable lit : lits) {
-          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+    @Test
+    public void testAnd3() {
+        for (final SATSolver s : this.solvers) {
+            final List<Formula> formulas = new ArrayList<>(3);
+            formulas.add(this.f.literal("a", true));
+            formulas.add(this.f.literal("b", false));
+            formulas.add(this.f.literal("a", false));
+            formulas.add(this.f.literal("d", false));
+            s.add(formulas);
+            assertSolverUnsat(s);
+            s.reset();
         }
-      }
-      s.reset();
     }
-  }
 
-  @Test
-  public void testModelEnumerationWithHandler01() {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      final SortedSet<Variable> lits = new TreeSet<>();
-      final SortedSet<Variable> firstFive = new TreeSet<>();
-      for (int j = 0; j < 20; j++) {
-        final Variable lit = this.f.variable("x" + j);
-        lits.add(lit);
-        if (j < 5) {
-          firstFive.add(lit);
+    @Test
+    public void testFormula1() throws ParserException {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.parser.parse("(x => y) & (~x => y) & (y => z) & (z => ~x)"));
+            assertSolverSat(s);
+            assertThat(s.model().size()).isEqualTo(3);
+            assertThat(s.model().evaluateLit(this.f.variable("x"))).isFalse();
+            assertThat(s.model().evaluateLit(this.f.variable("y"))).isTrue();
+            assertThat(s.model().evaluateLit(this.f.variable("z"))).isTrue();
+            s.add(this.f.variable("x"));
+            assertSolverUnsat(s);
+            s.reset();
         }
-      }
-      s.add(this.f.cc(CType.GE, 1, lits));
+    }
 
-      final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
-      final List<Assignment> modelsWithHandler = s.enumerateAllModels(firstFive, lits, handler);
-      assertThat(handler.aborted()).isTrue();
-      Assert.assertEquals(29, modelsWithHandler.size());
-      for (final Assignment model : modelsWithHandler) {
-        for (final Variable lit : lits) {
-          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
+    @Test
+    public void testFormula2() throws ParserException {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            s.add(this.parser.parse("(x => y) & (~x => y) & (y => z) & (z => ~x)"));
+            final List<Assignment> models = s.enumerateAllModels();
+            assertThat(models.size()).isEqualTo(1);
+            assertThat(models.get(0).size()).isEqualTo(3);
+            assertThat(models.get(0).evaluateLit(this.f.variable("x"))).isFalse();
+            assertThat(models.get(0).evaluateLit(this.f.variable("y"))).isTrue();
+            assertThat(models.get(0).evaluateLit(this.f.variable("z"))).isTrue();
+            s.add(this.f.variable("x"));
+            assertSolverUnsat(s);
+            s.reset();
         }
-      }
-      s.reset();
     }
-  }
 
-  @Test
-  public void testModelEnumerationWithHandler02() {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      final SortedSet<Variable> lits = new TreeSet<>();
-      final SortedSet<Variable> firstFive = new TreeSet<>();
-      for (int j = 0; j < 20; j++) {
-        final Variable lit = this.f.variable("x" + j);
-        lits.add(lit);
-        if (j < 5) {
-          firstFive.add(lit);
-        }
-      }
-      s.add(this.f.cc(CType.GE, 1, lits));
-
-      final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
-      final List<Assignment> modelsWithHandler = s.enumerateAllModels(null, Collections.singletonList(firstFive.first()), handler);
-      assertThat(handler.aborted()).isTrue();
-      Assert.assertEquals(29, modelsWithHandler.size());
-      for (final Assignment model : modelsWithHandler) {
-        for (final Variable lit : lits) {
-          Assert.assertTrue(model.positiveLiterals().contains(lit) || model.negativeVariables().contains(lit));
-        }
-      }
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testEmptyEnumeration() {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      s.add(this.f.falsum());
-      final List<Assignment> models = s.enumerateAllModels();
-      Assert.assertTrue(models.isEmpty());
-
-      s.reset();
-    }
-  }
-
-  @Test
-  public void testNumberOfModelHandler() {
-    for (int i = 0; i < this.solvers.length - 1; i++) {
-      final SATSolver s = this.solvers[i];
-      final Variable[] lits = new Variable[100];
-      for (int j = 0; j < lits.length; j++) {
-        lits[j] = this.f.variable("x" + j);
-      }
-      s.add(this.f.exo(lits));
-      NumberOfModelsHandler handler = new NumberOfModelsHandler(100);
-      List<Assignment> models = s.enumerateAllModels(lits, handler);
-      assertThat(handler.aborted()).isTrue();
-      Assert.assertEquals(100, models.size());
-      for (final Assignment m : models) {
-        Assert.assertEquals(1, m.positiveLiterals().size());
-      }
-      s.reset();
-
-      s.add(this.f.exo(lits));
-      handler = new NumberOfModelsHandler(200);
-      models = s.enumerateAllModels(lits, handler);
-      assertThat(handler.aborted()).isFalse();
-      Assert.assertEquals(100, models.size());
-      for (final Assignment m : models) {
-        Assert.assertEquals(1, m.positiveLiterals().size());
-      }
-      s.reset();
-
-      s.add(this.f.exo(lits));
-      handler = new NumberOfModelsHandler(50);
-      models = s.enumerateAllModels(lits, handler);
-      assertThat(handler.aborted()).isTrue();
-      Assert.assertEquals(50, models.size());
-      for (final Assignment m : models) {
-        Assert.assertEquals(1, m.positiveLiterals().size());
-      }
-      s.reset();
-
-      s.add(this.f.exo(lits));
-      handler = new NumberOfModelsHandler(1);
-      models = s.enumerateAllModels(lits, handler);
-      assertThat(handler.aborted()).isTrue();
-      Assert.assertEquals(1, models.size());
-      for (final Assignment m : models) {
-        Assert.assertEquals(1, m.positiveLiterals().size());
-      }
-      s.reset();
-    }
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testIllegalHandler() {
-    new NumberOfModelsHandler(0);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testAddNonCCAsCC() {
-    final MiniSat solver = MiniSat.miniSat(this.f);
-    solver.addIncrementalCC((PBConstraint) F.PBC3);
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void testModelBeforeSolving() {
-    final MiniSat solver = MiniSat.miniSat(this.f);
-    solver.model();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCLAddNonCCAsCC() {
-    final CleaneLing solver = CleaneLing.minimalistic(this.f, new CleaneLingConfig.Builder().gluered(true).build());
-    solver.addIncrementalCC((PBConstraint) F.PBC3);
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void testCLModelBeforeSolving() {
-    final CleaneLing solver = CleaneLing.minimalistic(this.f);
-    solver.model();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testCLSatWithLit() {
-    final CleaneLing solver = CleaneLing.minimalistic(this.f);
-    solver.add(F.AND1);
-    solver.sat(new TimeoutSATHandler(10000), F.A);
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testCLSaveState() {
-    final CleaneLing solver = CleaneLing.minimalistic(this.f);
-    solver.add(F.AND1);
-    solver.saveState();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testCLLoadState() {
-    final CleaneLing solver = CleaneLing.minimalistic(this.f);
-    solver.add(F.AND1);
-    solver.loadState(new SolverState(27, new int[3]));
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testCLSatWithLitCollection() {
-    final CleaneLing solver = CleaneLing.minimalistic(this.f);
-    solver.add(F.AND1);
-    final List<Literal> lits = new ArrayList<>();
-    lits.add(F.A);
-    lits.add(F.B);
-    solver.sat(new TimeoutSATHandler(10000), lits);
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testCLEnumerateWithWrongConfig() {
-    final CleaneLing solver = CleaneLing.full(this.f, new CleaneLingConfig.Builder().plain(false).build());
-    solver.add(F.AND1);
-    solver.enumerateAllModels();
-  }
-
-  @Test
-  public void testToString() {
-    for (int i = 0; i < this.solvers.length; i++) {
-      Assert.assertEquals(this.testStrings[i], this.solvers[i].toString());
-    }
-  }
-
-  @Test
-  public void testPrintMinimalisticCleaneLing() {
-    final CleaneLingMinimalisticSolver clms = new CleaneLingMinimalisticSolver(new CleaneLingConfig.Builder().build());
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    final PrintStream ps = new PrintStream(baos);
-    clms.printSolverState(ps);
-    final String expected = String.format("level=0%n" +
-            "next=0%n" +
-            "ignore=null%n" +
-            "empty=null%n" +
-            "vars=[]%n" +
-            "vals=[]%n" +
-            "phases=[]%n" +
-            "decisions=LNGDoublePriorityQueue{}%n" +
-            "control=[CLFrame{decision=0, level=0, trail=0, mark=false}]%n" +
-            "watches=[]%n" +
-            "trail=[]%n" +
-            "frames=[]%n");
-    Assert.assertEquals(expected, baos.toString());
-  }
-
-  @Test
-  public void testKnownVariables() throws ParserException {
-    final PropositionalParser parser = new PropositionalParser(this.f);
-    final Formula phi = parser.parse("x1 & x2 & x3 & (x4 | ~x5)");
-    final SATSolver minisat = MiniSat.miniSat(this.f);
-    final SATSolver minicard = MiniSat.miniCard(this.f);
-    final SATSolver cleaneling = CleaneLing.minimalistic(this.f);
-    minisat.add(phi);
-    minicard.add(phi);
-    cleaneling.add(phi);
-    final SortedSet<Variable> expected = new TreeSet<>(Arrays.asList(
-            this.f.variable("x1"),
-            this.f.variable("x2"),
-            this.f.variable("x3"),
-            this.f.variable("x4"),
-            this.f.variable("x5")));
-    Assert.assertEquals(expected, minisat.knownVariables());
-    Assert.assertEquals(expected, minicard.knownVariables());
-    Assert.assertEquals(expected, cleaneling.knownVariables());
-
-    final SolverState state = minisat.saveState();
-    final SolverState stateCard = minicard.saveState();
-    minisat.add(this.f.variable("x6"));
-    minicard.add(this.f.variable("x6"));
-    cleaneling.add(this.f.variable("x6"));
-    final SortedSet<Variable> expected2 = new TreeSet<>(Arrays.asList(
-            this.f.variable("x1"),
-            this.f.variable("x2"),
-            this.f.variable("x3"),
-            this.f.variable("x4"),
-            this.f.variable("x5"),
-            this.f.variable("x6")));
-    Assert.assertEquals(expected2, minisat.knownVariables());
-    Assert.assertEquals(expected2, minicard.knownVariables());
-    Assert.assertEquals(expected2, cleaneling.knownVariables());
-
-    // load state for minisat
-    minisat.loadState(state);
-    minicard.loadState(stateCard);
-    Assert.assertEquals(expected, minisat.knownVariables());
-    Assert.assertEquals(expected, minicard.knownVariables());
-  }
-
-  @Test
-  public void testAddWithoutUnknown() throws ParserException {
-    final PropositionalParser parser = new PropositionalParser(this.f);
-    final Formula phi = parser.parse("x1 & (~x2 | x3) & (x4 | ~x5)");
-    final SortedSet<Variable> phiVars = new TreeSet<>(Arrays.asList(
-            this.f.variable("x1"),
-            this.f.variable("x2"),
-            this.f.variable("x3"),
-            this.f.variable("x4"),
-            this.f.variable("x5")));
-    final Formula add1 = parser.parse("x1 | x6 | x7");
-    final Formula add2 = parser.parse("~x1 | ~x6 | x8");
-    final Formula add3 = parser.parse("x2 & ~x3 | x7");
-    final Formula add4 = parser.parse("x8 | x9");
-    final SATSolver minisat = MiniSat.miniSat(this.f);
-    final SATSolver minicard = MiniSat.miniCard(this.f);
-    final SATSolver cleaneling = CleaneLing.minimalistic(this.f);
-    final SATSolver[] solvers = new SATSolver[]{minisat, minicard, cleaneling};
-    for (final SATSolver solver : solvers) {
-      solver.add(phi);
-      solver.addWithoutUnknown(add1);
-      Assert.assertEquals(TRUE, solver.sat());
-      Assert.assertEquals(phiVars, solver.model().formula(this.f).variables());
-      solver.addWithoutUnknown(add2);
-      Assert.assertEquals(TRUE, solver.sat());
-      Assert.assertEquals(phiVars, solver.model().formula(this.f).variables());
-      if (solver instanceof MiniSat) {
-        final SolverState state = solver.saveState();
-        solver.addWithoutUnknown(add3);
-        Assert.assertEquals(FALSE, solver.sat());
-        solver.loadState(state);
-        solver.add(add1);
-        Assert.assertEquals(TRUE, solver.sat());
-        Assert.assertTrue(solver.model().formula(this.f).variables().containsAll(Arrays.asList(this.f.variable("x6"), this.f.variable("x7"))));
-        solver.loadState(state);
-        solver.sat();
-        Assert.assertEquals(phiVars, solver.model().formula(this.f).variables());
-      } else {
-        solver.add(add1);
-        Assert.assertEquals(TRUE, solver.sat());
-        Assert.assertTrue(solver.model().formula(this.f).variables().containsAll(Arrays.asList(this.f.variable("x6"), this.f.variable("x7"))));
-        solver.add(this.f.variable("x7"));
-        Assert.assertEquals(TRUE, solver.sat());
-        Assert.assertTrue(solver.model().formula(this.f).variables().containsAll(Arrays.asList(this.f.variable("x6"), this.f.variable("x7"))));
-        solver.addWithoutUnknown(add4);
-        Assert.assertEquals(FALSE, solver.sat());
-      }
-    }
-  }
-
-  @Test
-  public void testUPZeroLiteralsUNSAT() throws ParserException {
-    final Formula formula = this.parser.parse("a & (a => b) & (b => c) & (c => ~a)");
-    for (final SATSolver solver : this.solvers) {
-      solver.reset();
-      solver.add(formula);
-      solver.sat();
-      final SortedSet<Literal> upLiterals = solver.upZeroLiterals();
-      assertThat(upLiterals).isNull();
-    }
-  }
-
-  @Test
-  public void testUPZeroLiterals() throws ParserException {
-    // Note: The complete unit propagated set of literals on level 0 depends on each solver's added learned clauses during the solving process
-    final Map<Formula, SortedSet<Literal>> expectedSubsets = new HashMap<>();
-    expectedSubsets.put(this.f.verum(), new TreeSet<Literal>());
-    expectedSubsets.put(this.parser.parse("a"), new TreeSet<>(Collections.singletonList(this.f.literal("a", true))));
-    expectedSubsets.put(this.parser.parse("a | b"), new TreeSet<Literal>());
-    expectedSubsets.put(this.parser.parse("a & b"), new TreeSet<>(Arrays.asList(this.f.literal("a", true), this.f.literal("b", true))));
-    expectedSubsets.put(this.parser.parse("a & ~b"), new TreeSet<>(Arrays.asList(this.f.literal("a", true), this.f.literal("b", false))));
-    expectedSubsets.put(this.parser.parse("(a | c) & ~b"), new TreeSet<>(Collections.singletonList(this.f.literal("b", false))));
-    expectedSubsets.put(this.parser.parse("(b | c) & ~b & (~c | d)"), new TreeSet<>(Arrays.asList(
-            this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", true))));
-    for (final SATSolver solver : this.solvers) {
-      for (final Formula formula : expectedSubsets.keySet()) {
-        solver.reset();
-        solver.add(formula);
-        final boolean res = solver.sat() == TRUE;
-        assertThat(res).isTrue();
-        final SortedSet<Literal> upLiterals = solver.upZeroLiterals();
-        assertThat(upLiterals).containsAll(expectedSubsets.get(formula));
-      }
-    }
-  }
-
-  @Test
-  public void testUPZeroLiteralsDimacsFiles() throws IOException {
-    final File testFolder = new File("src/test/resources/sat");
-    final File[] files = testFolder.listFiles();
-    assert files != null;
-    for (final SATSolver solver : this.solvers) {
-      for (final File file : files) {
-        final String fileName = file.getName();
-        if (fileName.endsWith(".cnf")) {
-          readCNF(solver, file);
-          final boolean res = solver.sat() == TRUE;
-          if (res) {
-            final SortedSet<Literal> upZeroLiterals = solver.upZeroLiterals();
-            final List<Literal> negations = new ArrayList<>(upZeroLiterals.size());
-            for (final Literal lit : upZeroLiterals) {
-              negations.add(lit.negate());
+    @Test
+    public void testCC1() {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            final Variable[] lits = new Variable[100];
+            for (int j = 0; j < lits.length; j++) {
+                lits[j] = this.f.variable("x" + j);
             }
-            solver.add(this.f.or(negations));
-            // Test if CNF implies identified unit propagated literals on level zero, i.e., each literal is a backbone literal
-            assertThat(solver.sat()).isEqualTo(FALSE);
-          }
-        }
-      }
-      solver.reset();
-    }
-  }
-
-  @Test
-  public void testFormulaOnSolver() throws ParserException {
-    for (final SATSolver solver : this.solvers) {
-      if (solver instanceof MiniSat) {
-        final PseudoBooleanParser p = new PseudoBooleanParser(this.f);
-        final Set<Formula> formulas = new LinkedHashSet<>();
-        formulas.add(p.parse("A | B | C"));
-        formulas.add(p.parse("~A | ~B | ~C"));
-        formulas.add(p.parse("A | ~B"));
-        formulas.add(p.parse("A"));
-        solver.add(formulas);
-        compareFormulas(formulas, solver.formulaOnSolver());
-        formulas.add(p.parse("~A | C"));
-        solver.reset();
-        solver.add(formulas);
-        compareFormulas(formulas, solver.formulaOnSolver());
-        final Formula formula = p.parse("C + D + E <= 2");
-        formulas.add(formula);
-        solver.add(formula);
-        compareFormulas(formulas, solver.formulaOnSolver());
-      }
-    }
-  }
-
-  @Test
-  public void testSelectionOrderSimple01() throws ParserException {
-    for (final SATSolver solver : this.solvers) {
-      if (solver instanceof CleaneLing) {
-        continue; // Cleaning does not support selection order
-      }
-      Formula formula = this.parser.parse("~(x <=> y)");
-      solver.add(formula);
-
-      List<Literal> selectionOrder = Arrays.<Literal>asList(F.X, F.Y);
-      assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
-      Assignment assignment = solver.model();
-      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
-      testLocalMinimum(solver, assignment, selectionOrder);
-      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
-
-      solver.setSolverToUndef();
-      selectionOrder = Arrays.<Literal>asList(F.Y, F.X);
-      assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
-      assignment = solver.model();
-      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
-      testLocalMinimum(solver, assignment, selectionOrder);
-      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
-
-      solver.setSolverToUndef();
-      selectionOrder = Collections.singletonList(F.NX);
-      assertThat(solver.sat(selectionOrder)).isEqualTo(TRUE);
-      assignment = solver.model();
-      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
-      testLocalMinimum(solver, assignment, selectionOrder);
-      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
-
-      solver.setSolverToUndef();
-      selectionOrder = Arrays.asList(F.NY, F.NX);
-      assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
-      assignment = solver.model();
-      assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
-      testLocalMinimum(solver, assignment, selectionOrder);
-      testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
-
-      solver.reset();
-    }
-  }
-
-  @Test
-  public void testSelectionOrderSimple02() {
-    for (final SATSolver solver : this.solvers) {
-      if (solver instanceof CleaneLing) {
-        continue; // Cleaning does not support selection order
-      }
-      final List<Variable> literals = new ArrayList<>();
-      for (int i = 0; i < 5; i++) {
-        final Variable lit = this.f.variable("x" + i);
-        literals.add(lit);
-      }
-      solver.add(this.f.cc(CType.EQ, 2, literals));
-
-      for (int i = 0; i < 10; ++i) {
-        assertThat(solver.satWithSelectionOrder(literals)).isEqualTo(TRUE);
-        Assignment assignment = solver.model();
-        testLocalMinimum(solver, assignment, literals);
-        testHighestLexicographicalAssignment(solver, assignment, literals);
-        solver.add(assignment.blockingClause(this.f, literals));
-      }
-
-      solver.reset();
-      solver.add(this.f.cc(CType.EQ, 2, literals));
-      List<Literal> selectionOrder02 = Arrays.asList(
-              this.f.literal("x4", true), this.f.literal("x0", false),
-              this.f.literal("x1", true), this.f.literal("x2", true),
-              this.f.literal("x3", true));
-
-      for (int i = 0; i < 10; ++i) {
-        assertThat(solver.satWithSelectionOrder(selectionOrder02)).isEqualTo(TRUE);
-        Assignment assignment = solver.model();
-        testLocalMinimum(solver, assignment, selectionOrder02);
-        testHighestLexicographicalAssignment(solver, assignment, selectionOrder02);
-        solver.add(assignment.blockingClause(this.f, selectionOrder02));
-      }
-
-      solver.reset();
-    }
-  }
-
-  @Ignore("Long running")
-  @Test
-  public void testDimacsFilesWithSelectionOrder() throws IOException {
-    final Map<String, Boolean> expectedResults = new HashMap<>();
-    final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
-    while (reader.ready()) {
-      final String[] tokens = reader.readLine().split(";");
-      expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
-    }
-    final File testFolder = new File("src/test/resources/sat");
-    final File[] files = testFolder.listFiles();
-    assert files != null;
-    for (final SATSolver solver : this.solvers) {
-      if (solver instanceof CleaneLing) {
-        continue; // Cleaning does not support selection order
-      }
-      for (final File file : files) {
-        final String fileName = file.getName();
-        if (fileName.endsWith(".cnf")) {
-          readCNF(solver, file);
-          final List<Literal> selectionOrder = new ArrayList<>();
-          for (final Variable var : FormulaHelper.variables(solver.formulaOnSolver())) {
-            if (selectionOrder.size() < 10) {
-              selectionOrder.add(var.negate());
+            s.add(this.f.exo(lits));
+            final List<Assignment> models = s.enumerateAllModels(lits);
+            assertThat(models.size()).isEqualTo(100);
+            for (final Assignment m : models) {
+                assertThat(m.positiveVariables().size()).isEqualTo(1);
             }
-          }
-          final boolean res = solver.satWithSelectionOrder(selectionOrder) == TRUE;
-          Assert.assertEquals(expectedResults.get(fileName), res);
-          if (expectedResults.get(fileName)) {
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPBC() {
+        for (final SATSolver s : this.solvers) {
+            final List<Literal> lits = new ArrayList<>();
+            final List<Integer> coeffs = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                lits.add(this.f.literal("x" + i, i % 2 == 0));
+                coeffs.add(i + 1);
+            }
+            s.add(this.f.pbc(CType.GE, 10, lits, coeffs));
+            assertSolverSat(s);
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPartialModel() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.A);
+            s.add(F.B);
+            s.add(F.C);
+            final Variable[] relevantVars = new Variable[2];
+            relevantVars[0] = F.A;
+            relevantVars[1] = F.B;
+            assertSolverSat(s);
+            final Assignment relModel = s.model(relevantVars);
+            assertThat(relModel.negativeLiterals().isEmpty()).isTrue();
+            assertThat(relModel.literals().contains(F.C)).isFalse();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testModelEnumerationHandler() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.IMP3);
+            try {
+                final ModelEnumerationHandler handler = new ModelEnumerationHandler() {
+                    private boolean aborted;
+
+                    @Override
+                    public boolean aborted() {
+                        return this.aborted;
+                    }
+
+                    @Override
+                    public void started() {
+                        this.aborted = false;
+                    }
+
+                    @Override
+                    public SATHandler satHandler() {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean foundModel(final Assignment assignment) {
+                        this.aborted = assignment.negativeLiterals().isEmpty();
+                        return !this.aborted;
+                    }
+
+                    @Override
+                    public boolean satSolverFinished() {
+                        // nothing to do here
+                        return true;
+                    }
+                };
+                final List<Assignment> models = s.execute(ModelEnumerationFunction.builder().handler(handler).build());
+                assertThat(models.isEmpty()).isFalse();
+                assertThat(models.get(models.size() - 1).negativeLiterals().isEmpty()).isTrue();
+                models.remove(models.size() - 1);
+                for (final Assignment model : models) {
+                    assertThat(model.negativeLiterals().isEmpty()).isFalse();
+                }
+            } catch (final Exception e) {
+                assertThat(e instanceof UnsupportedOperationException).isTrue();
+            }
+
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testWithRelaxation() throws ParserException {
+        final PropositionalParser parser = new PropositionalParser(this.f);
+        final Formula one = parser.parse("a & b & (c | ~d)");
+        final Formula two = parser.parse("~a | ~c");
+
+        for (final SATSolver s : this.solvers) {
+            s.add(one);
+            s.addWithRelaxation(this.f.variable("d"), two);
+            assertSolverSat(s);
+            try {
+                assertThat(s.enumerateAllModels().size()).isEqualTo(2);
+            } catch (final Exception e) {
+                assertThat(e instanceof UnsupportedOperationException).isTrue();
+            }
+            s.reset();
+
+            s.add(one);
+            s.addWithRelaxation(this.f.variable("d"), new StandardProposition(two));
+            assertSolverSat(s);
+            try {
+                assertThat(s.enumerateAllModels().size()).isEqualTo(2);
+            } catch (final Exception e) {
+                assertThat(e instanceof UnsupportedOperationException).isTrue();
+            }
+            s.reset();
+
+            s.add(one);
+            s.addWithRelaxation(this.f.variable("d"), two);
+            assertSolverSat(s);
+            try {
+                assertThat(s.enumerateAllModels().size()).isEqualTo(2);
+            } catch (final Exception e) {
+                assertThat(e instanceof UnsupportedOperationException).isTrue();
+            }
+            s.reset();
+
+            s.add(one);
+            s.addWithRelaxation(this.f.variable("d"), Arrays.asList(two, this.f.verum()));
+            assertSolverSat(s);
+            try {
+                assertThat(s.enumerateAllModels().size()).isEqualTo(2);
+            } catch (final Exception e) {
+                assertThat(e instanceof UnsupportedOperationException).isTrue();
+            }
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole1() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(1));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole2() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(2));
+            assertSolverUnsat(s);
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole3() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(3));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole4() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(4));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole5() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(5));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole6() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(6));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testPigeonHole7() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(7));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testDifferentClauseMinimizations() {
+        final SATSolver[] moreSolvers = new SATSolver[6];
+        moreSolvers[0] = MiniSat.miniSat(this.f, MiniSatConfig.builder().clMinimization(NONE).build());
+        moreSolvers[1] = MiniSat.miniSat(this.f, MiniSatConfig.builder().clMinimization(BASIC).build());
+        moreSolvers[2] = MiniSat.glucose(this.f, MiniSatConfig.builder().clMinimization(NONE).build(), GlucoseConfig.builder().build());
+        moreSolvers[3] = MiniSat.glucose(this.f, MiniSatConfig.builder().clMinimization(BASIC).build(), GlucoseConfig.builder().build());
+        moreSolvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().clMinimization(NONE).build());
+        moreSolvers[5] = MiniSat.miniCard(this.f, MiniSatConfig.builder().clMinimization(BASIC).build());
+        for (final SATSolver s : moreSolvers) {
+            s.add(this.pg.generate(7));
+            assertSolverUnsat(s);
+            assertThat(s.model()).isNull();
+        }
+    }
+
+    @Test
+    public void testTimeoutSATHandlerSmall() {
+        for (final SATSolver s : this.solvers) {
+            s.add(F.IMP1);
+            final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
+            final Tristate result = s.sat(handler);
+            assertThat(handler.aborted()).isFalse();
+            assertThat(result).isEqualTo(TRUE);
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testTimeoutSATHandlerLarge() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(10));
+            final TimeoutSATHandler handler = new TimeoutSATHandler(1000L);
+            final Tristate result = s.sat(handler);
+            assertThat(handler.aborted()).isTrue();
+            assertThat(result).isEqualTo(UNDEF);
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testDimacsFiles() throws IOException {
+        final Map<String, Boolean> expectedResults = new HashMap<>();
+        final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
+        while (reader.ready()) {
+            final String[] tokens = reader.readLine().split(";");
+            expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
+        }
+        final File testFolder = new File("src/test/resources/sat");
+        final File[] files = testFolder.listFiles();
+        assert files != null;
+        for (final SATSolver solver : this.solvers) {
+            for (final File file : files) {
+                final String fileName = file.getName();
+                if (fileName.endsWith(".cnf")) {
+                    readCNF(solver, file);
+                    final boolean res = solver.sat() == TRUE;
+                    assertThat(res).isEqualTo(expectedResults.get(fileName));
+                }
+            }
+            solver.reset();
+        }
+    }
+
+    private void readCNF(final SATSolver solver, final File file) throws IOException {
+        solver.reset();
+        final BufferedReader reader = new BufferedReader(new FileReader(file));
+        while (reader.ready()) {
+            final String line = reader.readLine();
+            if (line.startsWith("p cnf")) {
+                break;
+            }
+        }
+        String[] tokens;
+        final List<Literal> literals = new ArrayList<>();
+        while (reader.ready()) {
+            tokens = reader.readLine().split("\\s+");
+            if (tokens.length >= 2) {
+                assert "0".equals(tokens[tokens.length - 1]);
+                literals.clear();
+                for (int i = 0; i < tokens.length - 1; i++) {
+                    if (!tokens[i].isEmpty()) {
+                        final int parsedLit = Integer.parseInt(tokens[i]);
+                        final String var = "v" + Math.abs(parsedLit);
+                        literals.add(parsedLit > 0 ? this.f.literal(var, true) : this.f.literal(var, false));
+                    }
+                }
+                if (!literals.isEmpty()) {
+                    solver.add(this.f.or(literals));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testPigeonHoleWithReset() {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.pg.generate(4));
+            assertSolverUnsat(s);
+            s.reset();
+            s.add(this.pg.generate(5));
+            assertSolverUnsat(s);
+            s.reset();
+            s.add(this.pg.generate(6));
+            assertSolverUnsat(s);
+            s.reset();
+            s.add(this.pg.generate(7));
+            assertSolverUnsat(s);
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testTimeoutModelEnumerationHandlerWithUNSATInstance() {
+        for (final SATSolver solver : this.solvers) {
+            solver.add(this.pg.generate(10));
+            final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(1000L);
+            final List<Assignment> assignments = solver.execute(ModelEnumerationFunction.builder().handler(handler).build());
+            assertThat(assignments).isEmpty();
+            assertThat(handler.aborted()).isTrue();
+            solver.reset();
+        }
+    }
+
+    @Test
+    public void testTimeoutModelEnumerationHandlerWithSATInstance() {
+        for (final SATSolver solver : this.solvers) {
+            final List<Variable> variables = new ArrayList<>();
+            for (int i = 0; i < 1000; i++) {
+                variables.add(this.f.variable("x" + i));
+            }
+
+            solver.add(this.f.exo(variables));
+            TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(50L);
+            solver.execute(ModelEnumerationFunction.builder().handler(handler).build());
+            assertThat(handler.aborted()).isTrue();
+            solver.reset();
+
+            solver.add(this.f.exo(variables.subList(0, 5)));
+            handler = new TimeoutModelEnumerationHandler(1000L);
+            final List<Assignment> assignments = solver.execute(ModelEnumerationFunction.builder().handler(handler).build());
+            assertThat(assignments).hasSize(5);
+            assertThat(handler.aborted()).isFalse();
+            solver.reset();
+        }
+    }
+
+    @Test
+    public void testModelEnumeration() {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            final SortedSet<Variable> lits = new TreeSet<>();
+            final SortedSet<Variable> firstFive = new TreeSet<>();
+            for (int j = 0; j < 20; j++) {
+                final Variable lit = this.f.variable("x" + j);
+                lits.add(lit);
+                if (j < 5) {
+                    firstFive.add(lit);
+                }
+            }
+            s.add(this.f.cc(CType.GE, 1, lits));
+
+            final List<Assignment> models = s.execute(ModelEnumerationFunction.builder().variables(firstFive).additionalVariables(lits).build());
+            assertThat(models.size()).isEqualTo(32);
+            for (final Assignment model : models) {
+                for (final Variable lit : lits) {
+                    assertThat(model.positiveVariables().contains(lit) || model.negativeVariables().contains(lit)).isTrue();
+                }
+            }
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testModelEnumerationWithHandler01() {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            final SortedSet<Variable> lits = new TreeSet<>();
+            final SortedSet<Variable> firstFive = new TreeSet<>();
+            for (int j = 0; j < 20; j++) {
+                final Variable lit = this.f.variable("x" + j);
+                lits.add(lit);
+                if (j < 5) {
+                    firstFive.add(lit);
+                }
+            }
+            s.add(this.f.cc(CType.GE, 1, lits));
+
+            final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
+            final List<Assignment> modelsWithHandler = s.execute(ModelEnumerationFunction.builder().variables(firstFive).additionalVariables(lits).handler(handler).build());
+            assertThat(handler.aborted()).isTrue();
+            assertThat(modelsWithHandler.size()).isEqualTo(29);
+            for (final Assignment model : modelsWithHandler) {
+                for (final Variable lit : lits) {
+                    assertThat(model.positiveVariables().contains(lit) || model.negativeVariables().contains(lit)).isTrue();
+                }
+            }
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testModelEnumerationWithHandler02() {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            final SortedSet<Variable> lits = new TreeSet<>();
+            final SortedSet<Variable> firstFive = new TreeSet<>();
+            for (int j = 0; j < 20; j++) {
+                final Variable lit = this.f.variable("x" + j);
+                lits.add(lit);
+                if (j < 5) {
+                    firstFive.add(lit);
+                }
+            }
+            s.add(this.f.cc(CType.GE, 1, lits));
+
+            final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
+            final List<Assignment> modelsWithHandler = s.execute(ModelEnumerationFunction.builder().additionalVariables(Collections.singletonList(firstFive.first())).handler(handler).build());
+            assertThat(handler.aborted()).isTrue();
+            assertThat(modelsWithHandler.size()).isEqualTo(29);
+            for (final Assignment model : modelsWithHandler) {
+                for (final Variable lit : lits) {
+                    assertThat(model.positiveVariables().contains(lit) || model.negativeVariables().contains(lit)).isTrue();
+                }
+            }
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testEmptyEnumeration() {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            s.add(this.f.falsum());
+            final List<Assignment> models = s.enumerateAllModels();
+            assertThat(models.isEmpty()).isTrue();
+
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testNumberOfModelHandler() {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            final Variable[] lits = new Variable[100];
+            for (int j = 0; j < lits.length; j++) {
+                lits[j] = this.f.variable("x" + j);
+            }
+            s.add(this.f.exo(lits));
+            NumberOfModelsHandler handler = new NumberOfModelsHandler(100);
+            List<Assignment> models = s.execute(ModelEnumerationFunction.builder().variables(lits).handler(handler).build());
+            assertThat(handler.aborted()).isTrue();
+            assertThat(models.size()).isEqualTo(100);
+            for (final Assignment m : models) {
+                assertThat(m.positiveVariables().size()).isEqualTo(1);
+            }
+            s.reset();
+
+            s.add(this.f.exo(lits));
+            handler = new NumberOfModelsHandler(200);
+            models = s.execute(ModelEnumerationFunction.builder().variables(lits).handler(handler).build());
+            assertThat(handler.aborted()).isFalse();
+            assertThat(models.size()).isEqualTo(100);
+            for (final Assignment m : models) {
+                assertThat(m.positiveVariables().size()).isEqualTo(1);
+            }
+            s.reset();
+
+            s.add(this.f.exo(lits));
+            handler = new NumberOfModelsHandler(50);
+            models = s.execute(ModelEnumerationFunction.builder().variables(lits).handler(handler).build());
+            assertThat(handler.aborted()).isTrue();
+            assertThat(models.size()).isEqualTo(50);
+            for (final Assignment m : models) {
+                assertThat(m.positiveVariables().size()).isEqualTo(1);
+            }
+            s.reset();
+
+            s.add(this.f.exo(lits));
+            handler = new NumberOfModelsHandler(1);
+            models = s.execute(ModelEnumerationFunction.builder().variables(lits).handler(handler).build());
+            assertThat(handler.aborted()).isTrue();
+            assertThat(models.size()).isEqualTo(1);
+            for (final Assignment m : models) {
+                assertThat(m.positiveVariables().size()).isEqualTo(1);
+            }
+            s.reset();
+        }
+    }
+
+    @Test
+    public void testIllegalHandler() {
+        assertThatThrownBy(() -> new NumberOfModelsHandler(0)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testModelBeforeSolving() {
+        final MiniSat solver = MiniSat.miniSat(this.f);
+        assertThatThrownBy(solver::model).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void testToString() {
+        for (int i = 0; i < this.solvers.length; i++) {
+            assertThat(this.solvers[i].toString()).isEqualTo(this.testStrings[i]);
+        }
+    }
+
+    @Test
+    public void testKnownVariables() throws ParserException {
+        final PropositionalParser parser = new PropositionalParser(this.f);
+        final Formula phi = parser.parse("x1 & x2 & x3 & (x4 | ~x5)");
+        final SATSolver minisat = MiniSat.miniSat(this.f);
+        final SATSolver minicard = MiniSat.miniCard(this.f);
+        minisat.add(phi);
+        minicard.add(phi);
+        final SortedSet<Variable> expected = new TreeSet<>(Arrays.asList(
+                this.f.variable("x1"),
+                this.f.variable("x2"),
+                this.f.variable("x3"),
+                this.f.variable("x4"),
+                this.f.variable("x5")));
+        assertThat(minisat.knownVariables()).isEqualTo(expected);
+        assertThat(minicard.knownVariables()).isEqualTo(expected);
+
+        final SolverState state = minisat.saveState();
+        final SolverState stateCard = minicard.saveState();
+        minisat.add(this.f.variable("x6"));
+        minicard.add(this.f.variable("x6"));
+        final SortedSet<Variable> expected2 = new TreeSet<>(Arrays.asList(
+                this.f.variable("x1"),
+                this.f.variable("x2"),
+                this.f.variable("x3"),
+                this.f.variable("x4"),
+                this.f.variable("x5"),
+                this.f.variable("x6")));
+        assertThat(minisat.knownVariables()).isEqualTo(expected2);
+        assertThat(minicard.knownVariables()).isEqualTo(expected2);
+
+        // load state for minisat
+        minisat.loadState(state);
+        minicard.loadState(stateCard);
+        assertThat(minisat.knownVariables()).isEqualTo(expected);
+        assertThat(minicard.knownVariables()).isEqualTo(expected);
+    }
+
+    @Test
+    public void testAddWithoutUnknown() throws ParserException {
+        final PropositionalParser parser = new PropositionalParser(this.f);
+        final Formula phi = parser.parse("x1 & (~x2 | x3) & (x4 | ~x5)");
+        final SortedSet<Variable> phiVars = new TreeSet<>(Arrays.asList(
+                this.f.variable("x1"),
+                this.f.variable("x2"),
+                this.f.variable("x3"),
+                this.f.variable("x4"),
+                this.f.variable("x5")));
+        final Formula add1 = parser.parse("x1 | x6 | x7");
+        final Formula add2 = parser.parse("~x1 | ~x6 | x8");
+        final Formula add3 = parser.parse("x2 & ~x3 | x7");
+        final Formula add4 = parser.parse("x8 | x9");
+        final SATSolver minisat = MiniSat.miniSat(this.f);
+        final SATSolver minicard = MiniSat.miniCard(this.f);
+        final SATSolver[] solvers = new SATSolver[]{minisat, minicard};
+        for (final SATSolver solver : solvers) {
+            solver.add(phi);
+            solver.addWithoutUnknown(add1);
+            assertThat(solver.sat()).isEqualTo(TRUE);
+            assertThat(solver.model().formula(this.f).variables()).isEqualTo(phiVars);
+            solver.addWithoutUnknown(add2);
+            assertThat(solver.sat()).isEqualTo(TRUE);
+            assertThat(solver.model().formula(this.f).variables()).isEqualTo(phiVars);
+            if (solver instanceof MiniSat) {
+                final SolverState state = solver.saveState();
+                solver.addWithoutUnknown(add3);
+                assertThat(solver.sat()).isEqualTo(FALSE);
+                solver.loadState(state);
+                solver.add(add1);
+                assertThat(solver.sat()).isEqualTo(TRUE);
+                assertThat(solver.model().formula(this.f).variables().containsAll(Arrays.asList(this.f.variable("x6"), this.f.variable("x7")))).isTrue();
+                solver.loadState(state);
+                solver.sat();
+                assertThat(solver.model().formula(this.f).variables()).isEqualTo(phiVars);
+            } else {
+                solver.add(add1);
+                assertThat(solver.sat()).isEqualTo(TRUE);
+                assertThat(solver.model().formula(this.f).variables().containsAll(Arrays.asList(this.f.variable("x6"), this.f.variable("x7")))).isTrue();
+                solver.add(this.f.variable("x7"));
+                assertThat(solver.sat()).isEqualTo(TRUE);
+                assertThat(solver.model().formula(this.f).variables().containsAll(Arrays.asList(this.f.variable("x6"), this.f.variable("x7")))).isTrue();
+                solver.addWithoutUnknown(add4);
+                assertThat(solver.sat()).isEqualTo(FALSE);
+            }
+        }
+    }
+
+    @Test
+    public void testUPZeroLiteralsUNSAT() throws ParserException {
+        final Formula formula = this.parser.parse("a & (a => b) & (b => c) & (c => ~a)");
+        for (final SATSolver solver : this.solvers) {
+            solver.reset();
+            solver.add(formula);
+            solver.sat();
+            final SortedSet<Literal> upLiterals = solver.execute(new UpZeroLiteralsFunction());
+            assertThat(upLiterals).isNull();
+        }
+    }
+
+    @Test
+    public void testUPZeroLiterals() throws ParserException {
+        // Note: The complete unit propagated set of literals on level 0 depends on each solver's added learned clauses during the solving process
+        final Map<Formula, SortedSet<Literal>> expectedSubsets = new HashMap<>();
+        expectedSubsets.put(this.f.verum(), new TreeSet<>());
+        expectedSubsets.put(this.parser.parse("a"), new TreeSet<>(Collections.singletonList(this.f.literal("a", true))));
+        expectedSubsets.put(this.parser.parse("a | b"), new TreeSet<>());
+        expectedSubsets.put(this.parser.parse("a & b"), new TreeSet<>(Arrays.asList(this.f.literal("a", true), this.f.literal("b", true))));
+        expectedSubsets.put(this.parser.parse("a & ~b"), new TreeSet<>(Arrays.asList(this.f.literal("a", true), this.f.literal("b", false))));
+        expectedSubsets.put(this.parser.parse("(a | c) & ~b"), new TreeSet<>(Collections.singletonList(this.f.literal("b", false))));
+        expectedSubsets.put(this.parser.parse("(b | c) & ~b & (~c | d)"), new TreeSet<>(Arrays.asList(
+                this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", true))));
+        for (final SATSolver solver : this.solvers) {
+            for (final Formula formula : expectedSubsets.keySet()) {
+                solver.reset();
+                solver.add(formula);
+                final boolean res = solver.sat() == TRUE;
+                assertThat(res).isTrue();
+                final SortedSet<Literal> upLiterals = solver.execute(new UpZeroLiteralsFunction());
+                assertThat(upLiterals).containsAll(expectedSubsets.get(formula));
+            }
+        }
+    }
+
+    @Test
+    public void testUPZeroLiteralsDimacsFiles() throws IOException {
+        final File testFolder = new File("src/test/resources/sat");
+        final File[] files = testFolder.listFiles();
+        assert files != null;
+        for (final SATSolver solver : this.solvers) {
+            for (final File file : files) {
+                final String fileName = file.getName();
+                if (fileName.endsWith(".cnf")) {
+                    readCNF(solver, file);
+                    final boolean res = solver.sat() == TRUE;
+                    if (res) {
+                        final SortedSet<Literal> upZeroLiterals = solver.execute(new UpZeroLiteralsFunction());
+                        final List<Literal> negations = new ArrayList<>(upZeroLiterals.size());
+                        for (final Literal lit : upZeroLiterals) {
+                            negations.add(lit.negate());
+                        }
+                        solver.add(this.f.or(negations));
+                        // Test if CNF implies identified unit propagated literals on level zero, i.e., each literal is a backbone literal
+                        assertThat(solver.sat()).isEqualTo(FALSE);
+                    }
+                }
+            }
+            solver.reset();
+        }
+    }
+
+    @Test
+    public void testFormulaOnSolver() throws ParserException {
+        for (final SATSolver solver : this.solvers) {
+            if (solver instanceof MiniSat) {
+                final PseudoBooleanParser p = new PseudoBooleanParser(this.f);
+                final Set<Formula> formulas = new LinkedHashSet<>();
+                formulas.add(p.parse("A | B | C"));
+                formulas.add(p.parse("~A | ~B | ~C"));
+                formulas.add(p.parse("A | ~B"));
+                formulas.add(p.parse("A"));
+                solver.add(formulas);
+                compareFormulas(formulas, solver.execute(new FormulaOnSolverFunction()));
+                formulas.add(p.parse("~A | C"));
+                solver.reset();
+                solver.add(formulas);
+                compareFormulas(formulas, solver.execute(new FormulaOnSolverFunction()));
+                final Formula formula = p.parse("C + D + E <= 2");
+                formulas.add(formula);
+                solver.add(formula);
+                compareFormulas(formulas, solver.execute(new FormulaOnSolverFunction()));
+            }
+        }
+    }
+
+    @Test
+    public void testSelectionOrderSimple01() throws ParserException {
+        for (final SATSolver solver : this.solvers) {
+            final Formula formula = this.parser.parse("~(x <=> y)");
+            solver.add(formula);
+
+            List<Literal> selectionOrder = Arrays.asList(F.X, F.Y);
+            assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
             Assignment assignment = solver.model();
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
             testLocalMinimum(solver, assignment, selectionOrder);
             testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
-          }
+
+            solver.setSolverToUndef();
+            selectionOrder = Arrays.asList(F.Y, F.X);
+            assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
+            assignment = solver.model();
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
+            testLocalMinimum(solver, assignment, selectionOrder);
+            testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+            solver.setSolverToUndef();
+            selectionOrder = Collections.singletonList(F.NX);
+            assertThat(solver.sat(selectionOrder)).isEqualTo(TRUE);
+            assignment = solver.model();
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
+            testLocalMinimum(solver, assignment, selectionOrder);
+            testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+            solver.setSolverToUndef();
+            selectionOrder = Arrays.asList(F.NY, F.NX);
+            assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
+            assignment = solver.model();
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
+            testLocalMinimum(solver, assignment, selectionOrder);
+            testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+
+            solver.reset();
         }
-      }
-      solver.reset();
     }
-  }
 
-  @Test
-  public void testModelEnumerationWithAdditionalVariables() throws ParserException {
-    final SATSolver solver = MiniSat.miniSat(this.f);
-    solver.add(this.f.parse("A | B | C | D | E"));
-    final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(this.f.variable("A"), this.f.variable("B")), Arrays.asList(this.f.variable("B"), this.f.variable("C")));
-    for (final Assignment model : models) {
-      int countB = 0;
-      for (final Variable variable : model.positiveLiterals()) {
-        if (variable.name().equals("B")) {
-          countB++;
+    @Test
+    public void testSelectionOrderSimple02() {
+        for (final SATSolver solver : this.solvers) {
+            final List<Variable> literals = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                final Variable lit = this.f.variable("x" + i);
+                literals.add(lit);
+            }
+            solver.add(this.f.cc(CType.EQ, 2, literals));
+
+            for (int i = 0; i < 10; ++i) {
+                assertThat(solver.satWithSelectionOrder(literals)).isEqualTo(TRUE);
+                final Assignment assignment = solver.model();
+                testLocalMinimum(solver, assignment, literals);
+                testHighestLexicographicalAssignment(solver, assignment, literals);
+                solver.add(assignment.blockingClause(this.f, literals));
+            }
+
+            solver.reset();
+            solver.add(this.f.cc(CType.EQ, 2, literals));
+            final List<Literal> selectionOrder02 = Arrays.asList(
+                    this.f.literal("x4", true), this.f.literal("x0", false),
+                    this.f.literal("x1", true), this.f.literal("x2", true),
+                    this.f.literal("x3", true));
+
+            for (int i = 0; i < 10; ++i) {
+                assertThat(solver.satWithSelectionOrder(selectionOrder02)).isEqualTo(TRUE);
+                final Assignment assignment = solver.model();
+                testLocalMinimum(solver, assignment, selectionOrder02);
+                testHighestLexicographicalAssignment(solver, assignment, selectionOrder02);
+                solver.add(assignment.blockingClause(this.f, selectionOrder02));
+            }
+
+            solver.reset();
         }
-      }
-      assertThat(countB).isLessThan(2);
-      countB = 0;
-      for (final Variable variable : model.negativeVariables()) {
-        if (variable.name().equals("B")) {
-          countB++;
+    }
+
+    @Test
+    @LongRunningTag
+    public void testDimacsFilesWithSelectionOrder() throws IOException {
+        final Map<String, Boolean> expectedResults = new HashMap<>();
+        final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/sat/results.txt"));
+        while (reader.ready()) {
+            final String[] tokens = reader.readLine().split(";");
+            expectedResults.put(tokens[0], Boolean.valueOf(tokens[1]));
         }
-      }
-      assertThat(countB).isLessThan(2);
+        final File testFolder = new File("src/test/resources/sat");
+        final File[] files = testFolder.listFiles();
+        assert files != null;
+        for (final SATSolver solver : this.solvers) {
+            for (final File file : files) {
+                final String fileName = file.getName();
+                if (fileName.endsWith(".cnf")) {
+                    readCNF(solver, file);
+                    final List<Literal> selectionOrder = new ArrayList<>();
+                    for (final Variable var : FormulaHelper.variables(solver.execute(new FormulaOnSolverFunction()))) {
+                        if (selectionOrder.size() < 10) {
+                            selectionOrder.add(var.negate());
+                        }
+                    }
+                    final boolean res = solver.satWithSelectionOrder(selectionOrder) == TRUE;
+                    assertThat(res).isEqualTo(expectedResults.get(fileName));
+                    if (expectedResults.get(fileName)) {
+                        final Assignment assignment = solver.model();
+                        testLocalMinimum(solver, assignment, selectionOrder);
+                        testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
+                    }
+                }
+            }
+            solver.reset();
+        }
     }
 
-  }
+    @Test
+    public void testModelEnumerationWithAdditionalVariables() throws ParserException {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A | B | C | D | E"));
+        final List<Assignment> models = solver.execute(ModelEnumerationFunction.builder()
+                .variables(Arrays.asList(this.f.variable("A"), this.f.variable("B")))
+                .additionalVariables(Arrays.asList(this.f.variable("B"), this.f.variable("C"))).build());
+        for (final Assignment model : models) {
+            int countB = 0;
+            for (final Variable variable : model.positiveVariables()) {
+                if (variable.name().equals("B")) {
+                    countB++;
+                }
+            }
+            assertThat(countB).isLessThan(2);
+            countB = 0;
+            for (final Variable variable : model.negativeVariables()) {
+                if (variable.name().equals("B")) {
+                    countB++;
+                }
+            }
+            assertThat(countB).isLessThan(2);
+        }
 
-  private void compareFormulas(final Collection<Formula> original, final Collection<Formula> solver) {
-    final SortedSet<Variable> vars = new TreeSet<>();
-    for (final Formula formula : original) {
-      vars.addAll(formula.variables());
     }
-    final MiniSat miniSat = MiniSat.miniSat(this.f);
-    miniSat.add(original);
-    final List<Assignment> models1 = miniSat.enumerateAllModels(vars);
-    miniSat.reset();
-    miniSat.add(solver);
-    final List<Assignment> models2 = miniSat.enumerateAllModels(vars);
-    assertThat(models1).containsOnlyElementsOf(models2);
-  }
 
-  /**
-   * Tests if the given satisfying assignment is a local minimal model regarding the given relevant literals, i.e.
-   * there is no variable in the assignment, contained in the relevant literals, that can be flipped without
-   * resulting in an unsatisfying assignment.
-   * @param solver           the solver with the loaded formulas
-   * @param assignment       the satisfying assignment
-   * @param relevantLiterals the relevant literals.
-   */
-  private void testLocalMinimum(SATSolver solver, Assignment assignment, Collection<? extends Literal> relevantLiterals) {
-    SortedSet<Literal> literals = assignment.literals();
-    for (Literal lit : relevantLiterals) {
-      if (!literals.contains(lit)) {
-        SortedSet<Literal> literalsWithFlip = new TreeSet<>(literals);
-        literalsWithFlip.remove(lit.negate());
-        literalsWithFlip.add(lit);
-        assertThat(solver.sat(literalsWithFlip)).isEqualTo(FALSE);
-      }
+    private void compareFormulas(final Collection<Formula> original, final Collection<Formula> solver) {
+        final SortedSet<Variable> vars = new TreeSet<>();
+        for (final Formula formula : original) {
+            vars.addAll(formula.variables());
+        }
+        final MiniSat miniSat = MiniSat.miniSat(this.f);
+        miniSat.add(original);
+        final List<Assignment> models1 = miniSat.enumerateAllModels(vars);
+        miniSat.reset();
+        miniSat.add(solver);
+        final List<Assignment> models2 = miniSat.enumerateAllModels(vars);
+        assertThat(models1).hasSameElementsAs(models2);
     }
-  }
 
-  /**
-   * Tests if the given satisfying assignment is the highest assignment in the lexicographical order based on the given
-   * literals order.
-   * @param solver     the solver with the loaded formulas
-   * @param assignment the satisfying assignment
-   * @param order      the literals order
-   */
-  private void testHighestLexicographicalAssignment(SATSolver solver, Assignment assignment, List<? extends Literal> order) {
-    SortedSet<Literal> literals = assignment.literals();
-    List<Literal> orderSublist = new ArrayList<>();
-    for (Literal lit : order) {
-      boolean containsLit = literals.contains(lit);
-      if (!containsLit) {
-        SortedSet<Literal> orderSubsetWithFlip = new TreeSet<>(orderSublist);
-        orderSubsetWithFlip.remove(lit.negate());
-        orderSubsetWithFlip.add(lit);
-        assertThat(solver.sat(orderSubsetWithFlip)).isEqualTo(FALSE);
-      }
-      orderSublist.add(containsLit ? lit : lit.negate());
+    /**
+     * Tests if the given satisfying assignment is a local minimal model regarding the given relevant literals, i.e.
+     * there is no variable in the assignment, contained in the relevant literals, that can be flipped without
+     * resulting in an unsatisfying assignment.
+     * @param solver           the solver with the loaded formulas
+     * @param assignment       the satisfying assignment
+     * @param relevantLiterals the relevant literals.
+     */
+    private void testLocalMinimum(final SATSolver solver, final Assignment assignment, final Collection<? extends Literal> relevantLiterals) {
+        final SortedSet<Literal> literals = assignment.literals();
+        for (final Literal lit : relevantLiterals) {
+            if (!literals.contains(lit)) {
+                final SortedSet<Literal> literalsWithFlip = new TreeSet<>(literals);
+                literalsWithFlip.remove(lit.negate());
+                literalsWithFlip.add(lit);
+                assertThat(solver.sat(literalsWithFlip)).isEqualTo(FALSE);
+            }
+        }
     }
-  }
+
+    /**
+     * Tests if the given satisfying assignment is the highest assignment in the lexicographical order based on the given
+     * literals order.
+     * @param solver     the solver with the loaded formulas
+     * @param assignment the satisfying assignment
+     * @param order      the literals order
+     */
+    private void testHighestLexicographicalAssignment(final SATSolver solver, final Assignment assignment, final List<? extends Literal> order) {
+        final SortedSet<Literal> literals = assignment.literals();
+        final List<Literal> orderSublist = new ArrayList<>();
+        for (final Literal lit : order) {
+            final boolean containsLit = literals.contains(lit);
+            if (!containsLit) {
+                final SortedSet<Literal> orderSubsetWithFlip = new TreeSet<>(orderSublist);
+                orderSubsetWithFlip.remove(lit.negate());
+                orderSubsetWithFlip.add(lit);
+                assertThat(solver.sat(orderSubsetWithFlip)).isEqualTo(FALSE);
+            }
+            orderSublist.add(containsLit ? lit : lit.negate());
+        }
+    }
 }

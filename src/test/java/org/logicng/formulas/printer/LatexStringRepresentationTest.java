@@ -28,10 +28,11 @@
 
 package org.logicng.formulas.printer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Variable;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link LatexStringRepresentation}
@@ -39,46 +40,46 @@ import org.logicng.formulas.Variable;
  * @since 1.0
  */
 public class LatexStringRepresentationTest {
-  private final FormulaStringRepresentation sr = new LatexStringRepresentation();
+    private final FormulaStringRepresentation sr = new LatexStringRepresentation();
 
-  @Test
-  public void testLatexPrinter() {
-    Assert.assertEquals("\\bottom", F.f.string(F.FALSE, sr));
-    Assert.assertEquals("\\top", F.f.string(F.TRUE, sr));
-    Assert.assertEquals("x", F.f.string(F.X, sr));
-    Assert.assertEquals("\\lnot a", F.f.string(F.NA, sr));
-    Assert.assertEquals("x_{1}", F.f.string(F.f.variable("x1"), sr));
-    Assert.assertEquals("x_{190}", F.f.string(F.f.variable("x190"), sr));
-    Assert.assertEquals("x_{234}", F.f.string(F.f.variable("x234"), sr));
-    Assert.assertEquals("x_{567}", F.f.string(F.f.variable("x567"), sr));
-    Assert.assertEquals("abc_{8}", F.f.string(F.f.variable("abc8"), sr));
-    Assert.assertEquals("\\lnot a \\rightarrow \\lnot b", F.f.string(F.IMP2, sr));
-    Assert.assertEquals("a \\land b \\rightarrow x \\lor y", F.f.string(F.IMP3, sr));
-    Assert.assertEquals("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b", F.f.string(F.EQ4, sr));
-    Assert.assertEquals("\\left(x \\lor y\\right) \\land \\left(\\lnot x \\lor \\lnot y\\right)", F.f.string(F.AND3, sr));
-    Assert.assertEquals("a \\land b \\land c \\land x", F.f.string(F.f.and(F.A, F.B, F.C, F.X), sr));
-    Assert.assertEquals("a \\lor b \\lor c \\lor x", F.f.string(F.f.or(F.A, F.B, F.C, F.X), sr));
-    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x = 2", F.f.string(F.PBC1, sr));
-    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x > 2", F.f.string(F.PBC2, sr));
-    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\geq 2", F.f.string(F.PBC3, sr));
-    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x < 2", F.f.string(F.PBC4, sr));
-    Assert.assertEquals("2\\cdot a + -4\\cdot b + 3\\cdot x \\leq 2", F.f.string(F.PBC5, sr));
-    Assert.assertEquals("a \\rightarrow \\bottom", F.f.string(F.f.implication(F.A, F.f.exo()), sr));
-    Assert.assertEquals("a \\leftrightarrow \\bottom", F.f.string(F.f.equivalence(F.A, F.f.exo()), sr));
-    Assert.assertEquals("a \\land \\bottom", F.f.string(F.f.and(F.A, F.f.exo()), sr));
-    Assert.assertEquals("a \\lor \\bottom", F.f.string(F.f.or(F.A, F.f.exo()), sr));
-    Assert.assertEquals("a \\rightarrow \\top", F.f.string(F.f.implication(F.A, F.f.amo()), sr));
-    Assert.assertEquals("a \\leftrightarrow \\top", F.f.string(F.f.equivalence(F.A, F.f.amo()), sr));
-    Assert.assertEquals("a \\land \\top", F.f.string(F.f.and(F.A, F.f.amo()), sr));
-    Assert.assertEquals("a \\lor \\top", F.f.string(F.f.or(F.A, F.f.amo()), sr));
-    Assert.assertEquals("a \\lor \\top \\lor \\bottom \\lor \\left(\\top \\leftrightarrow b\\right)", F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), sr));
+    @Test
+    public void testLatexPrinter() {
+        assertThat(F.f.string(F.FALSE, this.sr)).isEqualTo("\\bottom");
+        assertThat(F.f.string(F.TRUE, this.sr)).isEqualTo("\\top");
+        assertThat(F.f.string(F.X, this.sr)).isEqualTo("x");
+        assertThat(F.f.string(F.NA, this.sr)).isEqualTo("\\lnot a");
+        assertThat(F.f.string(F.f.variable("x1"), this.sr)).isEqualTo("x_{1}");
+        assertThat(F.f.string(F.f.variable("x190"), this.sr)).isEqualTo("x_{190}");
+        assertThat(F.f.string(F.f.variable("x234"), this.sr)).isEqualTo("x_{234}");
+        assertThat(F.f.string(F.f.variable("x567"), this.sr)).isEqualTo("x_{567}");
+        assertThat(F.f.string(F.f.variable("abc8"), this.sr)).isEqualTo("abc_{8}");
+        assertThat(F.f.string(F.IMP2, this.sr)).isEqualTo("\\lnot a \\rightarrow \\lnot b");
+        assertThat(F.f.string(F.IMP3, this.sr)).isEqualTo("a \\land b \\rightarrow x \\lor y");
+        assertThat(F.f.string(F.EQ4, this.sr)).isEqualTo("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b");
+        assertThat(F.f.string(F.AND3, this.sr)).isEqualTo("\\left(x \\lor y\\right) \\land \\left(\\lnot x \\lor \\lnot y\\right)");
+        assertThat(F.f.string(F.f.and(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("a \\land b \\land c \\land x");
+        assertThat(F.f.string(F.f.or(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("a \\lor b \\lor c \\lor x");
+        assertThat(F.f.string(F.PBC1, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x = 2");
+        assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x > 2");
+        assertThat(F.f.string(F.PBC3, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x \\geq 2");
+        assertThat(F.f.string(F.PBC4, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x < 2");
+        assertThat(F.f.string(F.PBC5, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x \\leq 2");
+        assertThat(F.f.string(F.f.implication(F.A, F.f.exo()), this.sr)).isEqualTo("\\lnot a");
+        assertThat(F.f.string(F.f.equivalence(F.A, F.f.exo()), this.sr)).isEqualTo("\\lnot a");
+        assertThat(F.f.string(F.f.and(F.A, F.f.exo()), this.sr)).isEqualTo("\\bottom");
+        assertThat(F.f.string(F.f.or(F.A, F.f.exo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.implication(F.A, F.f.amo()), this.sr)).isEqualTo("\\top");
+        assertThat(F.f.string(F.f.equivalence(F.A, F.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.and(F.A, F.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.or(F.A, F.f.amo()), this.sr)).isEqualTo("\\top");
+        assertThat(F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), this.sr)).isEqualTo("\\top");
 
-  }
+    }
 
-  @Test
-  public void testSpecialCases() {
-    Variable var = F.f.variable("\ntest9t");
-    Assert.assertEquals("\ntest9t", F.f.string(var, sr));
-    Assert.assertEquals("LatexStringRepresentation", sr.toString());
-  }
+    @Test
+    public void testSpecialCases() {
+        final Variable var = F.f.variable("\ntest9t");
+        assertThat(F.f.string(var, this.sr)).isEqualTo("\ntest9t");
+        assertThat(this.sr.toString()).isEqualTo("LatexStringRepresentation");
+    }
 }

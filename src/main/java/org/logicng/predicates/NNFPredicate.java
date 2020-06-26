@@ -40,11 +40,30 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_NNF;
  * @since 1.5.1
  */
 public final class NNFPredicate implements FormulaPredicate {
+
+    private final static NNFPredicate INSTANCE = new NNFPredicate();
+
+    /**
+     * Private empty constructor.  Singleton class.
+     */
+    private NNFPredicate() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton of the predicate.
+     * @return the predicate instance
+     */
+    public static NNFPredicate get() {
+        return INSTANCE;
+    }
+
     @Override
-    public boolean test(final Formula formula, boolean cache) {
+    public boolean test(final Formula formula, final boolean cache) {
         final Tristate cached = formula.predicateCacheEntry(IS_NNF);
-        if (cached != Tristate.UNDEF)
+        if (cached != Tristate.UNDEF) {
             return cached == Tristate.TRUE;
+        }
         boolean result;
         switch (formula.type()) {
             case FALSE:
@@ -55,11 +74,12 @@ public final class NNFPredicate implements FormulaPredicate {
             case AND:
             case OR:
                 result = true;
-                for (final Formula op : formula)
+                for (final Formula op : formula) {
                     if (!test(op, cache)) {
                         result = false;
                         break;
                     }
+                }
                 break;
             case NOT:
             case IMPL:
@@ -70,8 +90,9 @@ public final class NNFPredicate implements FormulaPredicate {
             default:
                 throw new IllegalArgumentException("Cannot compute NNF predicate on " + formula.type());
         }
-        if (cache)
+        if (cache) {
             formula.setPredicateCacheEntry(IS_NNF, result);
+        }
         return result;
     }
 

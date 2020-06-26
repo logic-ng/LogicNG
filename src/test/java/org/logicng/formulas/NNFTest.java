@@ -27,62 +27,63 @@
 ///////////////////////////////////////////////////////////////////////////
 package org.logicng.formulas;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
 /**
  * Unit Tests for NNF conversion.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public class NNFTest {
 
-  @Test
-  public void testConstants() {
-    Assert.assertEquals(F.TRUE, F.TRUE.nnf());
-    Assert.assertEquals(F.FALSE, F.FALSE.nnf());
-  }
+    @Test
+    public void testConstants() {
+        assertThat(F.TRUE.nnf()).isEqualTo(F.TRUE);
+        assertThat(F.FALSE.nnf()).isEqualTo(F.FALSE);
+    }
 
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(F.A, F.A.nnf());
-    Assert.assertEquals(F.NA, F.NA.nnf());
-  }
+    @Test
+    public void testLiterals() {
+        assertThat(F.A.nnf()).isEqualTo(F.A);
+        assertThat(F.NA.nnf()).isEqualTo(F.NA);
+    }
 
-  @Test
-  public void testBinaryOperators() throws ParserException {
-    PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertEquals(p.parse("~a | b"), F.IMP1.nnf());
-    Assert.assertEquals(p.parse("a | ~b"), F.IMP2.nnf());
-    Assert.assertEquals(p.parse("~a | ~b | x | y"), F.IMP3.nnf());
-    Assert.assertEquals(p.parse("(~a | ~b) & (a | b) | (~x & ~y) | (x & y)"), F.IMP4.nnf());
-    Assert.assertEquals(p.parse("(a & b) | (~a & ~b)"), F.EQ1.nnf());
-    Assert.assertEquals(p.parse("(~a & ~b) | (a & b)"), F.EQ2.nnf());
-    Assert.assertEquals(p.parse("(a & b & (x | y)) | ((~a | ~b) & ~x & ~y)"), F.EQ3.nnf());
-  }
+    @Test
+    public void testBinaryOperators() throws ParserException {
+        final PropositionalParser p = new PropositionalParser(F.f);
+        assertThat(F.IMP1.nnf()).isEqualTo(p.parse("~a | b"));
+        assertThat(F.IMP2.nnf()).isEqualTo(p.parse("a | ~b"));
+        assertThat(F.IMP3.nnf()).isEqualTo(p.parse("~a | ~b | x | y"));
+        assertThat(F.IMP4.nnf()).isEqualTo(p.parse("(~a | ~b) & (a | b) | (~x & ~y) | (x & y)"));
+        assertThat(F.EQ1.nnf()).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
+        assertThat(F.EQ2.nnf()).isEqualTo(p.parse("(~a & ~b) | (a & b)"));
+        assertThat(F.EQ3.nnf()).isEqualTo(p.parse("(a & b & (x | y)) | ((~a | ~b) & ~x & ~y)"));
+    }
 
-  @Test
-  public void testNAryOperators() throws ParserException {
-    PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertEquals(F.AND1, F.AND1.nnf());
-    Assert.assertEquals(F.OR1, F.OR1.nnf());
-    Assert.assertEquals(p.parse("~a & ~b & c & (~x | y) & (~w | z)"), p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").nnf());
-    Assert.assertEquals(p.parse("~a  | ~b | c | (~x & y) | (~w | z)"), p.parse("~(a & b) | c | ~(x | ~y) | (w => z)").nnf());
-  }
+    @Test
+    public void testNAryOperators() throws ParserException {
+        final PropositionalParser p = new PropositionalParser(F.f);
+        assertThat(F.AND1.nnf()).isEqualTo(F.AND1);
+        assertThat(F.OR1.nnf()).isEqualTo(F.OR1);
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").nnf()).isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y) | (w => z)").nnf()).isEqualTo(p.parse("~a  | ~b | c | (~x & y) | (~w | z)"));
+    }
 
-  @Test
-  public void testNot() throws ParserException {
-    PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertEquals(p.parse("~a"), p.parse("~a").nnf());
-    Assert.assertEquals(p.parse("a"), p.parse("~~a").nnf());
-    Assert.assertEquals(p.parse("a & ~b"), p.parse("~(a => b)").nnf());
-    Assert.assertEquals(p.parse("~a & ~b & (x | y)"), p.parse("~(~(a | b) => ~(x | y))").nnf());
-    Assert.assertEquals(p.parse("(~a | ~b) & (a | b)"), p.parse("~(a <=> b)").nnf());
-    Assert.assertEquals(p.parse("((a | b) | (x | y)) & ((~a & ~b) | (~x & ~y))"), p.parse("~(~(a | b) <=> ~(x | y))").nnf());
-    Assert.assertEquals(p.parse("~a | ~b | x | y"), p.parse("~(a & b & ~x & ~y)").nnf());
-    Assert.assertEquals(p.parse("~a & ~b & x & y"), p.parse("~(a | b | ~x | ~y)").nnf());
-    Assert.assertEquals(p.parse("~a & ~b & x & y"), p.parse("~(a | b | ~x | ~y)").nnf());
-  }
+    @Test
+    public void testNot() throws ParserException {
+        final PropositionalParser p = new PropositionalParser(F.f);
+        assertThat(p.parse("~a").nnf()).isEqualTo(p.parse("~a"));
+        assertThat(p.parse("~~a").nnf()).isEqualTo(p.parse("a"));
+        assertThat(p.parse("~(a => b)").nnf()).isEqualTo(p.parse("a & ~b"));
+        assertThat(p.parse("~(~(a | b) => ~(x | y))").nnf()).isEqualTo(p.parse("~a & ~b & (x | y)"));
+        assertThat(p.parse("~(a <=> b)").nnf()).isEqualTo(p.parse("(~a | ~b) & (a | b)"));
+        assertThat(p.parse("~(~(a | b) <=> ~(x | y))").nnf()).isEqualTo(p.parse("((a | b) | (x | y)) & ((~a & ~b) | (~x & ~y))"));
+        assertThat(p.parse("~(a & b & ~x & ~y)").nnf()).isEqualTo(p.parse("~a | ~b | x | y"));
+        assertThat(p.parse("~(a | b | ~x | ~y)").nnf()).isEqualTo(p.parse("~a & ~b & x & y"));
+        assertThat(p.parse("~(a | b | ~x | ~y)").nnf()).isEqualTo(p.parse("~a & ~b & x & y"));
+    }
 }

@@ -42,108 +42,110 @@ import java.util.regex.Pattern;
  */
 public final class LatexStringRepresentation extends FormulaStringRepresentation {
 
-  private static final Pattern pattern = Pattern.compile("(.*?)(\\d*)");
+    private static final Pattern pattern = Pattern.compile("(.*?)(\\d*)");
 
-  /**
-   * Returns the latex string for a variable name
-   * @param name the name
-   * @return the matching UTF8 symbol
-   */
-  private static String latexName(final String name) {
-    final Matcher matcher = pattern.matcher(name);
-    if (!matcher.matches())
-      return name;
-    if (matcher.group(2).isEmpty())
-      return matcher.group(1);
-    return matcher.group(1) + "_{" + matcher.group(2) + "}";
-  }
-
-  @Override
-  public String toInnerString(final Formula formula) {
-    switch (formula.type()) {
-      case LITERAL:
-        final Literal lit = (Literal) formula;
-        return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
-      default:
-        return super.toInnerString(formula);
+    /**
+     * Returns the latex string for a variable name
+     * @param name the name
+     * @return the matching UTF8 symbol
+     */
+    private static String latexName(final String name) {
+        final Matcher matcher = pattern.matcher(name);
+        if (!matcher.matches()) {
+            return name;
+        }
+        if (matcher.group(2).isEmpty()) {
+            return matcher.group(1);
+        }
+        return matcher.group(1) + "_{" + matcher.group(2) + "}";
     }
-  }
 
-  @Override
-  protected String falsum() {
-    return "\\bottom";
-  }
-
-  @Override
-  protected String verum() {
-    return "\\top";
-  }
-
-  @Override
-  protected String negation() {
-    return "\\lnot";
-  }
-
-  @Override
-  protected String implication() {
-    return " \\rightarrow ";
-  }
-
-  @Override
-  protected String equivalence() {
-    return " \\leftrightarrow ";
-  }
-
-  @Override
-  protected String and() {
-    return " \\land ";
-  }
-
-  @Override
-  protected String or() {
-    return " \\lor ";
-  }
-
-  @Override
-  protected String pbComparator(CType comparator) {
-    switch (comparator) {
-      case EQ:
-        return " = ";
-      case LE:
-        return " \\leq ";
-      case LT:
-        return " < ";
-      case GE:
-        return " \\geq ";
-      case GT:
-        return " > ";
-      default:
-        throw new IllegalArgumentException("Unknown pseudo-Boolean comparison: " + comparator);
+    @Override
+    public String toInnerString(final Formula formula) {
+        switch (formula.type()) {
+            case LITERAL:
+                final Literal lit = (Literal) formula;
+                return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
+            default:
+                return super.toInnerString(formula);
+        }
     }
-  }
 
-  @Override
-  protected String pbMul() {
-    return "\\cdot ";
-  }
+    @Override
+    protected String falsum() {
+        return "\\bottom";
+    }
 
-  @Override
-  protected String pbAdd() {
-    return " + ";
-  }
+    @Override
+    protected String verum() {
+        return "\\top";
+    }
 
-  @Override
-  protected String lbr() {
-    return "\\left(";
-  }
+    @Override
+    protected String negation() {
+        return "\\lnot";
+    }
 
-  @Override
-  protected String rbr() {
-    return "\\right)";
-  }
+    @Override
+    protected String implication() {
+        return " \\rightarrow ";
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    protected String equivalence() {
+        return " \\leftrightarrow ";
+    }
+
+    @Override
+    protected String and() {
+        return " \\land ";
+    }
+
+    @Override
+    protected String or() {
+        return " \\lor ";
+    }
+
+    @Override
+    protected String pbComparator(CType comparator) {
+        switch (comparator) {
+            case EQ:
+                return " = ";
+            case LE:
+                return " \\leq ";
+            case LT:
+                return " < ";
+            case GE:
+                return " \\geq ";
+            case GT:
+                return " > ";
+            default:
+                throw new IllegalArgumentException("Unknown pseudo-Boolean comparison: " + comparator);
+        }
+    }
+
+    @Override
+    protected String pbMul() {
+        return "\\cdot ";
+    }
+
+    @Override
+    protected String pbAdd() {
+        return " + ";
+    }
+
+    @Override
+    protected String lbr() {
+        return "\\left(";
+    }
+
+    @Override
+    protected String rbr() {
+        return "\\right)";
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

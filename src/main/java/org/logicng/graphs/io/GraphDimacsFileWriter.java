@@ -50,64 +50,64 @@ import java.util.Set;
  */
 public final class GraphDimacsFileWriter {
 
-  /**
-   * Private constructor.
-   */
-  private GraphDimacsFileWriter() {
-    // Intentionally left empty.
-  }
-
-  /**
-   * Writes a given graph's internal data structure as a dimacs file.
-   * @param fileName     the file name of the dimacs file to write
-   * @param g            the graph
-   * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
-   * @param <T>          the type of the graph content
-   * @throws IOException if there was a problem writing the file
-   */
-  public static <T> void write(final String fileName, Graph<T> g, boolean writeMapping) throws IOException {
-    File file = new File(fileName.endsWith(".col") ? fileName : fileName + ".col");
-    Map<Node<T>, Long> node2id = new LinkedHashMap<>();
-    long i = 1;
-    for (Node<T> node : g.nodes()) {
-      node2id.put(node, i++);
+    /**
+     * Private constructor.
+     */
+    private GraphDimacsFileWriter() {
+        // Intentionally left empty.
     }
 
-    StringBuilder sb = new StringBuilder("p edge ");
-    Set<Pair<Node<T>, Node<T>>> edges = new LinkedHashSet<>();
-    Set<Node<T>> doneNodes = new LinkedHashSet<>();
-    for (Node<T> d : g.nodes()) {
-      for (Node<T> n : d.neighbours()) {
-        if (!doneNodes.contains(n)) {
-          edges.add(new Pair<>(d, n));
+    /**
+     * Writes a given graph's internal data structure as a dimacs file.
+     * @param fileName     the file name of the dimacs file to write
+     * @param g            the graph
+     * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
+     * @param <T>          the type of the graph content
+     * @throws IOException if there was a problem writing the file
+     */
+    public static <T> void write(final String fileName, Graph<T> g, boolean writeMapping) throws IOException {
+        File file = new File(fileName.endsWith(".col") ? fileName : fileName + ".col");
+        Map<Node<T>, Long> node2id = new LinkedHashMap<>();
+        long i = 1;
+        for (Node<T> node : g.nodes()) {
+            node2id.put(node, i++);
         }
-      }
-      doneNodes.add(d);
-    }
-    sb.append(node2id.size()).append(" ").append(edges.size()).append(System.lineSeparator());
 
-    for (Pair<Node<T>, Node<T>> edge : edges) {
-      sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second())).append(System.lineSeparator());
+        StringBuilder sb = new StringBuilder("p edge ");
+        Set<Pair<Node<T>, Node<T>>> edges = new LinkedHashSet<>();
+        Set<Node<T>> doneNodes = new LinkedHashSet<>();
+        for (Node<T> d : g.nodes()) {
+            for (Node<T> n : d.neighbours()) {
+                if (!doneNodes.contains(n)) {
+                    edges.add(new Pair<>(d, n));
+                }
+            }
+            doneNodes.add(d);
+        }
+        sb.append(node2id.size()).append(" ").append(edges.size()).append(System.lineSeparator());
+
+        for (Pair<Node<T>, Node<T>> edge : edges) {
+            sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second())).append(System.lineSeparator());
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
+        if (writeMapping) {
+            String mappingFileName = (fileName.endsWith(".col") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
+            writeMapping(new File(mappingFileName), node2id);
+        }
     }
 
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
+    private static <T> void writeMapping(File mappingFile, Map<Node<T>, Long> node2id) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Node<T>, Long> entry : node2id.entrySet()) {
+            sb.append(entry.getKey().content()).append(";").append(entry.getValue()).append(System.lineSeparator());
+        }
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
     }
-    if (writeMapping) {
-      String mappingFileName = (fileName.endsWith(".col") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
-      writeMapping(new File(mappingFileName), node2id);
-    }
-  }
-
-  private static <T> void writeMapping(File mappingFile, Map<Node<T>, Long> node2id) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    for (Map.Entry<Node<T>, Long> entry : node2id.entrySet()) {
-      sb.append(entry.getKey().content()).append(";").append(entry.getValue()).append(System.lineSeparator());
-    }
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
-    }
-  }
 }

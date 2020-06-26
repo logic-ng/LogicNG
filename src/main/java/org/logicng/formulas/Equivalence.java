@@ -28,9 +28,9 @@
 
 package org.logicng.formulas;
 
-import org.logicng.datastructures.Assignment;
-
 import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
+
+import org.logicng.datastructures.Assignment;
 
 /**
  * Boolean equivalence.
@@ -39,54 +39,57 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
  */
 public final class Equivalence extends BinaryOperator {
 
-  /**
-   * Private constructor (initialize with {@code createNAryOperator()})
-   * @param left  the left-hand side operand
-   * @param right the right-hand side operand
-   * @param f     the factory which created this instance
-   */
-  Equivalence(final Formula left, final Formula right, final FormulaFactory f) {
-    super(FType.EQUIV, left, right, f);
-  }
-
-  @Override
-  public boolean evaluate(final Assignment assignment) {
-    return left.evaluate(assignment) == right.evaluate(assignment);
-  }
-
-  @Override
-  public Formula restrict(final Assignment assignment) {
-    return f.equivalence(left.restrict(assignment), right.restrict(assignment));
-  }
-
-  @Override
-  public Formula nnf() {
-    Formula nnf = this.transformationCache.get(NNF);
-    if (nnf == null) {
-      nnf = f.or(f.and(left.nnf(), right.nnf()), f.and(f.not(left).nnf(), f.not(right).nnf()));
-      this.transformationCache.put(NNF, nnf);
+    /**
+     * Private constructor (initialize with {@code createNAryOperator()})
+     * @param left  the left-hand side operand
+     * @param right the right-hand side operand
+     * @param f     the factory which created this instance
+     */
+    Equivalence(final Formula left, final Formula right, final FormulaFactory f) {
+        super(FType.EQUIV, left, right, f);
     }
-    return nnf;
-  }
 
-  @Override
-  public int hashCode() {
-    if (this.hashCode == 0)
-      this.hashCode = 41 * (left.hashCode() + right.hashCode());
-    return this.hashCode;
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (other == this)
-      return true;
-    if (other instanceof Formula && this.f == ((Formula) other).f)
-      return false; // the same formula factory would have produced a == object
-    if (other instanceof Equivalence) {
-      Equivalence otherEq = (Equivalence) other;
-      return this.left.equals(otherEq.left) && this.right.equals(otherEq.right) ||
-              this.left.equals(otherEq.right) && this.right.equals(otherEq.left);
+    @Override
+    public boolean evaluate(final Assignment assignment) {
+        return left.evaluate(assignment) == right.evaluate(assignment);
     }
-    return false;
-  }
+
+    @Override
+    public Formula restrict(final Assignment assignment) {
+        return f.equivalence(left.restrict(assignment), right.restrict(assignment));
+    }
+
+    @Override
+    public Formula nnf() {
+        Formula nnf = this.transformationCache.get(NNF);
+        if (nnf == null) {
+            nnf = f.or(f.and(left.nnf(), right.nnf()), f.and(f.not(left).nnf(), f.not(right).nnf()));
+            this.transformationCache.put(NNF, nnf);
+        }
+        return nnf;
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.hashCode == 0) {
+            this.hashCode = 41 * (left.hashCode() + right.hashCode());
+        }
+        return this.hashCode;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other instanceof Formula && this.f == ((Formula) other).f) {
+            return false; // the same formula factory would have produced a == object
+        }
+        if (other instanceof Equivalence) {
+            Equivalence otherEq = (Equivalence) other;
+            return this.left.equals(otherEq.left) && this.right.equals(otherEq.right) ||
+                    this.left.equals(otherEq.right) && this.right.equals(otherEq.left);
+        }
+        return false;
+    }
 }

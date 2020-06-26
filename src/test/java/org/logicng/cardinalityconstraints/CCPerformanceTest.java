@@ -28,65 +28,66 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.logicng.LogicNGTest;
+import org.logicng.LongRunningTag;
 import org.logicng.datastructures.Assignment;
-import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
+import org.logicng.formulas.CardinalityConstraint;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Performance tests for cardinality constraints.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
-public class CCPerformanceTest {
+public class CCPerformanceTest implements LogicNGTest {
 
-  private CCConfig[] configs;
+    private final CCConfig[] configs;
 
-  public CCPerformanceTest() {
-    configs = new CCConfig[3];
-    configs[0] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build();
-    configs[1] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build();
-    configs[2] = new CCConfig.Builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build();
-  }
-
-  @Ignore
-  @Test
-  public void testAMKPerformance() {
-    final FormulaFactory f = new FormulaFactory();
-    int counter = 0;
-    for (final CCConfig config : this.configs) {
-      f.putConfiguration(config);
-      buildAMK(10_000, f, false);
-      Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
+    public CCPerformanceTest() {
+        this.configs = new CCConfig[3];
+        this.configs[0] = CCConfig.builder().amkEncoding(CCConfig.AMK_ENCODER.TOTALIZER).build();
+        this.configs[1] = CCConfig.builder().amkEncoding(CCConfig.AMK_ENCODER.MODULAR_TOTALIZER).build();
+        this.configs[2] = CCConfig.builder().amkEncoding(CCConfig.AMK_ENCODER.CARDINALITY_NETWORK).build();
     }
-  }
 
-  @Test
-  public void testAMKPerformanceMiniCard() {
-    final FormulaFactory f = new FormulaFactory();
-    buildAMK(10_000, f, true);
-    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
-  }
-
-  private void buildAMK(int numLits, final FormulaFactory f, boolean miniCard) {
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.variable("v" + i);
-    final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
-    for (int i = 10; i < 100; i = i + 10) {
-      final PBConstraint pbc = f.cc(CType.LE, i, problemLits);
-      solver.reset();
-      solver.add(pbc);
-      Assert.assertEquals(Tristate.TRUE, solver.sat());
-      final Assignment model = solver.model();
-      Assert.assertTrue(pbc.evaluate(model));
+    @Test
+    @LongRunningTag
+    public void testAMKPerformance() {
+        for (final CCConfig config : this.configs) {
+            final FormulaFactory f = new FormulaFactory();
+            f.putConfiguration(config);
+            buildAMK(10_000, f, false);
+            assertThat(f.newCCVariable().name()).endsWith("_0");
+        }
     }
-  }
+
+    @Test
+    public void testAMKPerformanceMiniCard() {
+        final FormulaFactory f = new FormulaFactory();
+        buildAMK(10_000, f, true);
+        assertThat(f.newCCVariable().name()).endsWith("_0");
+    }
+
+    private void buildAMK(final int numLits, final FormulaFactory f, final boolean miniCard) {
+        final Variable[] problemLits = new Variable[numLits];
+        for (int i = 0; i < numLits; i++) {
+            problemLits[i] = f.variable("v" + i);
+        }
+        final SATSolver solver = miniCard ? MiniSat.miniCard(f) : MiniSat.miniSat(f);
+        for (int i = 10; i < 100; i = i + 10) {
+            final CardinalityConstraint cc = (CardinalityConstraint) f.cc(CType.LE, i, problemLits);
+            solver.reset();
+            solver.add(cc);
+            assertSolverSat(solver);
+            final Assignment model = solver.model();
+            assertThat(cc.evaluate(model)).isTrue();
+        }
+    }
 }

@@ -28,161 +28,163 @@
 
 package org.logicng.formulas;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Substitution;
 
 /**
  * Unit Tests for the class {@link Literal}.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
 public class LiteralTest {
 
-  @Test
-  public void testType() {
-    Assert.assertEquals(FType.LITERAL, F.A.type());
-    Assert.assertEquals(FType.LITERAL, F.NA.type());
-  }
+    @Test
+    public void testType() {
+        assertThat(F.A.type()).isEqualTo(FType.LITERAL);
+        assertThat(F.NA.type()).isEqualTo(FType.LITERAL);
+    }
 
-  @Test
-  public void testShortcutCreators() {
-    Assert.assertEquals(F.f.variable("a"), F.f.literal("a", true));
-    Assert.assertEquals(F.f.variable("name"), F.f.literal("name", true));
-  }
+    @Test
+    public void testShortcutCreators() {
+        assertThat(F.f.literal("a", true) == F.f.variable("a")).isTrue();
+        assertThat(F.f.literal("name", true) == F.f.variable("name")).isTrue();
+    }
 
-  @Test
-  public void testNegation() {
-    Assert.assertEquals(F.NA, F.A.negate());
-    Assert.assertEquals(F.A, F.NA.negate());
-  }
+    @Test
+    public void testNegation() {
+        assertThat(F.A.negate() == F.NA).isTrue();
+        assertThat(F.NA.negate() == F.A).isTrue();
+    }
 
-  @Test
-  public void testGetters() {
-    Assert.assertEquals("a", F.A.name());
-    Assert.assertEquals("a", F.NA.name());
-    Assert.assertEquals(true, F.A.phase());
-    Assert.assertEquals(false, F.NA.phase());
-  }
+    @Test
+    public void testGetters() {
+        assertThat(F.A.name()).isEqualTo("a");
+        assertThat(F.NA.name()).isEqualTo("a");
+        assertThat(F.A.phase()).isEqualTo(true);
+        assertThat(F.NA.phase()).isEqualTo(false);
+    }
 
-  @Test
-  public void testVariables() {
-    Assert.assertEquals(1, F.A.variables().size());
-    Assert.assertEquals(F.A, F.A.variables().first());
-    Assert.assertEquals(1, F.NA.variables().size());
-    Assert.assertEquals(F.A, F.NA.variables().first());
-  }
+    @Test
+    public void testVariables() {
+        assertThat(F.A.variables)
+                .hasSize(1)
+                .containsExactly(F.A);
+        assertThat(F.NA.variables)
+                .hasSize(1)
+                .containsExactly(F.A);
+    }
 
-  @Test
-  public void testLiterals() {
-    Assert.assertEquals(1, F.A.literals().size());
-    Assert.assertEquals(F.A, F.A.literals().first());
-    Assert.assertEquals(1, F.NA.literals().size());
-    Assert.assertEquals(F.NA, F.NA.literals().first());
-  }
+    @Test
+    public void testLiterals() {
+        assertThat(F.A.literals())
+                .hasSize(1)
+                .containsExactly(F.A);
+        assertThat(F.NA.literals())
+                .hasSize(1)
+                .containsExactly(F.NA);
+    }
 
-  @Test
-  public void testExpSubstitution() {
-    final Substitution substitution = new Substitution();
-    substitution.addMapping(F.f.variable("a"), F.f.literal("b", false));
-    substitution.addMapping(F.f.variable("c"), F.f.variable("d"));
-    substitution.addMapping(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z")));
-  }
+    @Test
+    public void testExpSubstitution() {
+        final Substitution substitution = new Substitution();
+        substitution.addMapping(F.f.variable("a"), F.f.literal("b", false));
+        substitution.addMapping(F.f.variable("c"), F.f.variable("d"));
+        substitution.addMapping(F.f.variable("x"), F.f.and(F.f.variable("y"), F.f.variable("z")));
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("a", F.A.toString());
-    Assert.assertEquals("~a", F.NA.toString());
-  }
+    @Test
+    public void testToString() {
+        assertThat(F.A.toString()).isEqualTo("a");
+        assertThat(F.NA.toString()).isEqualTo("~a");
+    }
 
-  @Test
-  public void testEquals() {
-    Assert.assertEquals(F.A, F.f.literal("a", true));
-    Assert.assertEquals(F.NA, F.f.literal("a", false));
-    Assert.assertEquals(F.A, F.A);
-    Assert.assertNotEquals(F.A, F.B);
-    Assert.assertNotEquals(F.A, F.NA);
-    Assert.assertNotEquals(F.A, null);
-    Assert.assertNotEquals(F.A, F.f.falsum());
-  }
+    @Test
+    public void testEquals() {
+        assertThat(F.f.literal("a", true).equals(F.A)).isTrue();
+        assertThat(F.f.literal("a", false).equals(F.NA)).isTrue();
+        assertThat(F.A.equals(F.A)).isTrue();
+        assertThat(F.B.equals(F.A)).isFalse();
+        assertThat(F.NA.equals(F.A)).isFalse();
+        assertThat(F.f.falsum()).isNotEqualTo(F.A);
+    }
 
-  @Test
-  public void testEqualsDifferentFormulaFactory() {
-    Assert.assertEquals(F.A, F.g.literal("a", true));
-    Assert.assertEquals(F.NA, F.g.literal("a", false));
-    Assert.assertNotEquals(F.A, F.g.literal("a", false));
-    Assert.assertNotEquals(F.A, F.g.literal("b", true));
-    Assert.assertNotEquals(F.A, F.g.falsum());
-  }
+    @Test
+    public void testEqualsDifferentFormulaFactory() {
+        assertThat(F.g.literal("a", true).equals(F.A)).isTrue();
+        assertThat(F.g.literal("a", false).equals(F.NA)).isTrue();
+        assertThat(F.g.literal("a", false).equals(F.A)).isFalse();
+        assertThat(F.g.literal("b", true).equals(F.A)).isFalse();
+        assertThat(F.g.falsum()).isNotEqualTo(F.A);
+    }
 
-  @Test
-  public void testCompareTo() {
-    Assert.assertTrue(F.A.compareTo(F.A) == 0);
-    Assert.assertTrue(F.NA.compareTo(F.NA) == 0);
-    Assert.assertTrue(F.A.compareTo(F.NA) < 0);
-    Assert.assertTrue(F.A.compareTo(F.NB) < 0);
-    Assert.assertTrue(F.A.compareTo(F.B) < 0);
-    Assert.assertTrue(F.A.compareTo(F.X) < 0);
-    Assert.assertTrue(F.NA.compareTo(F.NX) < 0);
-  }
+    @Test
+    public void testCompareTo() {
+        assertThat(F.A.compareTo(F.A) == 0).isTrue();
+        assertThat(F.NA.compareTo(F.NA) == 0).isTrue();
+        assertThat(F.A.compareTo(F.NA) < 0).isTrue();
+        assertThat(F.A.compareTo(F.NB) < 0).isTrue();
+        assertThat(F.A.compareTo(F.B) < 0).isTrue();
+        assertThat(F.A.compareTo(F.X) < 0).isTrue();
+        assertThat(F.NA.compareTo(F.NX) < 0).isTrue();
+    }
 
-  @Test
-  public void testHash() {
-    Assert.assertEquals(F.A.hashCode(), F.f.literal("a", true).hashCode());
-    Assert.assertEquals(F.NA.hashCode(), F.f.literal("a", false).hashCode());
-  }
+    @Test
+    public void testHash() {
+        assertThat(F.f.literal("a", true).hashCode()).isEqualTo(F.A.hashCode());
+        assertThat(F.f.literal("a", false).hashCode()).isEqualTo(F.NA.hashCode());
+    }
 
-  @Test
-  public void testNumberOfAtoms() {
-    Assert.assertEquals(1, F.A.numberOfAtoms());
-    Assert.assertEquals(1, F.NA.numberOfAtoms());
-    Assert.assertEquals(1, F.NA.numberOfAtoms());
-  }
+    @Test
+    public void testNumberOfAtoms() {
+        assertThat(F.A.numberOfAtoms()).isEqualTo(1);
+        assertThat(F.NA.numberOfAtoms()).isEqualTo(1);
+        assertThat(F.NA.numberOfAtoms()).isEqualTo(1);
+    }
 
-  @Test
-  public void testNumberOfNodes() {
-    Assert.assertEquals(1, F.A.numberOfNodes());
-    Assert.assertEquals(1, F.NA.numberOfNodes());
-    Assert.assertEquals(1, F.NA.numberOfNodes());
-  }
+    @Test
+    public void testNumberOfNodes() {
+        assertThat(F.A.numberOfNodes()).isEqualTo(1);
+        assertThat(F.NA.numberOfNodes()).isEqualTo(1);
+        assertThat(F.NA.numberOfNodes()).isEqualTo(1);
+    }
 
-  @Test
-  public void testNumberOfInternalNodes() {
-    Assert.assertEquals(1, F.A.numberOfInternalNodes());
-    Assert.assertEquals(1, F.NA.numberOfInternalNodes());
-  }
+    @Test
+    public void testNumberOfInternalNodes() {
+        assertThat(F.A.numberOfInternalNodes()).isEqualTo(1);
+        assertThat(F.NA.numberOfInternalNodes()).isEqualTo(1);
+    }
 
-  @Test
-  public void testNumberOfOperands() {
-    Assert.assertEquals(0, F.A.numberOfOperands());
-    Assert.assertEquals(0, F.NA.numberOfOperands());
-  }
+    @Test
+    public void testNumberOfOperands() {
+        assertThat(F.A.numberOfOperands()).isEqualTo(0);
+        assertThat(F.NA.numberOfOperands()).isEqualTo(0);
+    }
 
-  @Test
-  public void testIsConstantFormula() {
-    Assert.assertFalse(F.A.isConstantFormula());
-    Assert.assertFalse(F.NA.isConstantFormula());
-  }
+    @Test
+    public void testIsConstantFormula() {
+        assertThat(F.A.isConstantFormula()).isFalse();
+        assertThat(F.NA.isConstantFormula()).isFalse();
+    }
 
-  @Test
-  public void testAtomicFormula() {
-    Assert.assertTrue(F.A.isAtomicFormula());
-    Assert.assertTrue(F.NA.isAtomicFormula());
-  }
+    @Test
+    public void testAtomicFormula() {
+        assertThat(F.A.isAtomicFormula()).isTrue();
+        assertThat(F.NA.isAtomicFormula()).isTrue();
+    }
 
-  @Test
-  public void testContains() {
-    Assert.assertFalse(F.A.containsVariable(F.f.variable("b")));
-    Assert.assertTrue(F.A.containsVariable(F.f.variable("a")));
-    Assert.assertFalse(F.NA.containsVariable(F.f.variable("b")));
-    Assert.assertTrue(F.NA.containsVariable(F.f.variable("a")));
-  }
+    @Test
+    public void testContains() {
+        assertThat(F.A.containsVariable(F.f.variable("b"))).isFalse();
+        assertThat(F.A.containsVariable(F.f.variable("a"))).isTrue();
+        assertThat(F.NA.containsVariable(F.f.variable("b"))).isFalse();
+        assertThat(F.NA.containsVariable(F.f.variable("a"))).isTrue();
+    }
 
-  @Test
-  public void testPosNeg() {
-    Assert.assertEquals(F.A, F.A.variable());
-    Assert.assertEquals(F.NA, F.A.negative());
-    Assert.assertEquals(F.A, F.NA.variable());
-    Assert.assertEquals(F.NA, F.NA.negative());
-  }
+    @Test
+    public void testPosNeg() {
+        assertThat(F.A.variable() == F.A).isTrue();
+        assertThat(F.NA.variable() == F.A).isTrue();
+    }
 }

@@ -1,7 +1,7 @@
 package org.logicng.datastructures.ubtrees;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -17,7 +17,7 @@ import java.util.TreeSet;
  * @since 1.5.0
  */
 public class UBTree<T extends Comparable<T>> {
-    private SortedMap<T, UBNode<T>> rootNodes;
+    private final SortedMap<T, UBNode<T>> rootNodes;
 
     /**
      * Constructs an empty UBTree.
@@ -31,9 +31,9 @@ public class UBTree<T extends Comparable<T>> {
      * @param set the set of comparable objects
      */
     public void addSet(final SortedSet<T> set) {
-        SortedMap<T, UBNode<T>> nodes = rootNodes;
+        SortedMap<T, UBNode<T>> nodes = this.rootNodes;
         UBNode<T> node = null;
-        for (T element : set) {
+        for (final T element : set) {
             node = nodes.get(element);
             if (node == null) {
                 node = new UBNode<>(element);
@@ -51,7 +51,7 @@ public class UBTree<T extends Comparable<T>> {
      * @param set the set to search for
      * @return the first subset which is found for the given set or {@code null} if there is none
      */
-    public SortedSet<T> firstSubset(SortedSet<T> set) {
+    public SortedSet<T> firstSubset(final SortedSet<T> set) {
         if (this.rootNodes.isEmpty() || set == null || set.isEmpty()) {
             return null;
         }
@@ -87,7 +87,7 @@ public class UBTree<T extends Comparable<T>> {
     public Set<SortedSet<T>> allSets() {
         final List<UBNode<T>> allEndOfPathNodes = getAllEndOfPathNodes(this.rootNodes);
         final Set<SortedSet<T>> allSets = new LinkedHashSet<>();
-        for (UBNode<T> endOfPathNode : allEndOfPathNodes) {
+        for (final UBNode<T> endOfPathNode : allEndOfPathNodes) {
             allSets.add(endOfPathNode.set());
         }
         return allSets;
@@ -98,55 +98,55 @@ public class UBTree<T extends Comparable<T>> {
      * @return all root nodes of this UBTree
      */
     SortedMap<T, UBNode<T>> rootNodes() {
-        return rootNodes;
+        return this.rootNodes;
     }
 
     private SortedSet<T> firstSubset(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest) {
-        Set<UBNode<T>> nodes = getAllNodesContainingElements(set, forest);
+        final Set<UBNode<T>> nodes = getAllNodesContainingElements(set, forest);
         SortedSet<T> foundSubset = null;
-        for (UBNode<T> node : nodes) {
+        for (final UBNode<T> node : nodes) {
             if (foundSubset != null) {
                 return foundSubset;
             }
             if (node.isEndOfPath()) {
                 return node.set();
             }
-            SortedSet<T> remainingSet = new TreeSet<>(set);
+            final SortedSet<T> remainingSet = new TreeSet<>(set);
             remainingSet.remove(set.first());
             foundSubset = firstSubset(remainingSet, node.children());
         }
         return foundSubset;
     }
 
-    private void allSubsets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, Set<SortedSet<T>> subsets) {
-        Set<UBNode<T>> nodes = getAllNodesContainingElements(set, forest);
-        for (UBNode<T> node : nodes) {
+    private void allSubsets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final Set<SortedSet<T>> subsets) {
+        final Set<UBNode<T>> nodes = getAllNodesContainingElements(set, forest);
+        for (final UBNode<T> node : nodes) {
             if (node.isEndOfPath()) {
                 subsets.add(node.set());
             }
-            SortedSet<T> remainingSet = new TreeSet<>(set);
+            final SortedSet<T> remainingSet = new TreeSet<>(set);
             remainingSet.remove(set.first());
             allSubsets(remainingSet, node.children(), subsets);
         }
     }
 
-    private void allSupersets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, Set<SortedSet<T>> supersets) {
-        Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(set, forest, set.first());
-        for (UBNode<T> node : nodes) {
+    private void allSupersets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final Set<SortedSet<T>> supersets) {
+        final Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(set, forest, set.first());
+        for (final UBNode<T> node : nodes) {
             allSupersets(set, node.children(), supersets);
         }
-        for (UBNode<T> node : forest.values()) {
+        for (final UBNode<T> node : forest.values()) {
             if (node.element().equals(set.first())) {
-                SortedSet<T> remainingSet = new TreeSet<>(set);
+                final SortedSet<T> remainingSet = new TreeSet<>(set);
                 remainingSet.remove(set.first());
                 if (!remainingSet.isEmpty()) {
                     allSupersets(remainingSet, node.children(), supersets);
                 } else {
-                    List<UBNode<T>> allEndOfPathNodes = getAllEndOfPathNodes(node.children());
+                    final List<UBNode<T>> allEndOfPathNodes = getAllEndOfPathNodes(node.children());
                     if (node.isEndOfPath()) {
                         allEndOfPathNodes.add(node);
                     }
-                    for (UBNode<T> endOfPathNode :allEndOfPathNodes) {
+                    for (final UBNode<T> endOfPathNode : allEndOfPathNodes) {
                         supersets.add(endOfPathNode.set());
                     }
                 }
@@ -154,10 +154,10 @@ public class UBTree<T extends Comparable<T>> {
         }
     }
 
-    private Set<UBNode<T>> getAllNodesContainingElements(SortedSet<T> set, SortedMap<T, UBNode<T>> forest) {
-        Set<UBNode<T>> nodes = new LinkedHashSet<>();
-        for (T element : set) {
-            UBNode<T> node = forest.get(element);
+    private Set<UBNode<T>> getAllNodesContainingElements(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest) {
+        final Set<UBNode<T>> nodes = new LinkedHashSet<>();
+        for (final T element : set) {
+            final UBNode<T> node = forest.get(element);
             if (node != null) {
                 nodes.add(node);
             }
@@ -165,9 +165,9 @@ public class UBTree<T extends Comparable<T>> {
         return nodes;
     }
 
-    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(SortedSet<T> set, SortedMap<T, UBNode<T>> forest, T element) {
-        Set<UBNode<T>> nodes = new LinkedHashSet<>();
-        for (UBNode<T> node : forest.values()) {
+    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final T element) {
+        final Set<UBNode<T>> nodes = new LinkedHashSet<>();
+        for (final UBNode<T> node : forest.values()) {
             if (node != null && node.element().compareTo(element) < 0) {
                 nodes.add(node);
             }
@@ -175,14 +175,14 @@ public class UBTree<T extends Comparable<T>> {
         return nodes;
     }
 
-    private List<UBNode<T>> getAllEndOfPathNodes(SortedMap<T, UBNode<T>> forest) {
-        final List<UBNode<T>> endOfPathNodes = new LinkedList<>();
+    private List<UBNode<T>> getAllEndOfPathNodes(final SortedMap<T, UBNode<T>> forest) {
+        final List<UBNode<T>> endOfPathNodes = new ArrayList<>();
         getAllEndOfPathNodes(forest, endOfPathNodes);
         return endOfPathNodes;
     }
 
-    private void getAllEndOfPathNodes(SortedMap<T, UBNode<T>> forest, List<UBNode<T>> endOfPathNodes) {
-        for (UBNode<T> node : forest.values()) {
+    private void getAllEndOfPathNodes(final SortedMap<T, UBNode<T>> forest, final List<UBNode<T>> endOfPathNodes) {
+        for (final UBNode<T> node : forest.values()) {
             if (node.isEndOfPath()) {
                 endOfPathNodes.add(node);
             }

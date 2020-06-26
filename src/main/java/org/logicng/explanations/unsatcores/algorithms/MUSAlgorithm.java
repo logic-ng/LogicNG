@@ -42,14 +42,14 @@ import java.util.List;
  */
 abstract class MUSAlgorithm {
 
-  /**
-   * Computes a MUS for the given propositions.
-   * @param propositions the propositions
-   * @param f            the formula factory
-   * @param config       the MUS configuration
-   * @param <T>          the type of the MUSes propositions
-   * @return the MUS
-   */
-  public abstract <T extends Proposition> UNSATCore computeMUS(final List<T> propositions, final FormulaFactory f,
-                                                               final MUSConfig config);
+    /**
+     * Computes a MUS for the given propositions.
+     * @param propositions the propositions
+     * @param f            the formula factory
+     * @param config       the MUS configuration
+     * @param <T>          the type of the MUSes propositions
+     * @return the MUS
+     */
+    public abstract <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f,
+                                                                    final MUSConfig config);
 }

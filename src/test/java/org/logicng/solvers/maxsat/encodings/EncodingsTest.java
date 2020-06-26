@@ -28,47 +28,48 @@
 
 package org.logicng.solvers.maxsat.encodings;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
 /**
  * Unit test for the package {@link org.logicng.solvers.maxsat.encodings}.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
 public class EncodingsTest {
 
-  @Test
-  public void testEncoder() {
-    Encoder encoder = new Encoder(MaxSATConfig.CardinalityEncoding.TOTALIZER);
-    Assert.assertEquals("Encoder", encoder.toString());
-  }
+    @Test
+    public void testEncoder() {
+        final Encoder encoder = new Encoder(MaxSATConfig.CardinalityEncoding.TOTALIZER);
+        assertThat(encoder.toString()).isEqualTo("Encoder");
+    }
 
-  @Test
-  public void testTotalizer() {
-    Totalizer totalizer = new Totalizer(MaxSATConfig.IncrementalStrategy.ITERATIVE);
-    Assert.assertEquals(MaxSATConfig.IncrementalStrategy.ITERATIVE, totalizer.incremental());
-    Assert.assertEquals("Totalizer", totalizer.toString());
-  }
+    @Test
+    public void testTotalizer() {
+        final Totalizer totalizer = new Totalizer(MaxSATConfig.IncrementalStrategy.ITERATIVE);
+        assertThat(totalizer.incremental()).isEqualTo(MaxSATConfig.IncrementalStrategy.ITERATIVE);
+        assertThat(totalizer.toString()).isEqualTo("Totalizer");
+    }
 
-  @Test
-  public void testModularTotalizer() {
-    ModularTotalizer mTotalizer = new ModularTotalizer();
-    Assert.assertEquals(false, mTotalizer.hasCreatedEncoding());
-    Assert.assertEquals("ModularTotalizer", mTotalizer.toString());
-  }
+    @Test
+    public void testModularTotalizer() {
+        final ModularTotalizer mTotalizer = new ModularTotalizer();
+        assertThat(mTotalizer.hasCreatedEncoding()).isEqualTo(false);
+        assertThat(mTotalizer.toString()).isEqualTo("ModularTotalizer");
+    }
 
-  @Test
-  public void testSequentialWeightCounter() {
-    SequentialWeightCounter swc = new SequentialWeightCounter();
-    Assert.assertEquals(false, swc.hasCreatedEncoding());
-    Assert.assertEquals("SequentialWeightCounter", swc.toString());
-  }
+    @Test
+    public void testSequentialWeightCounter() {
+        final SequentialWeightCounter swc = new SequentialWeightCounter();
+        assertThat(swc.hasCreatedEncoding()).isEqualTo(false);
+        assertThat(swc.toString()).isEqualTo("SequentialWeightCounter");
+    }
 
-  @Test
-  public void testLadder() {
-    Ladder ladder = new Ladder();
-    Assert.assertEquals("Ladder", ladder.toString());
-  }
+    @Test
+    public void testLadder() {
+        final Ladder ladder = new Ladder();
+        assertThat(ladder.toString()).isEqualTo("Ladder");
+    }
 }

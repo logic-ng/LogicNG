@@ -54,72 +54,70 @@ import java.util.TreeSet;
  */
 public final class FormulaDimacsFileWriter {
 
-  private static final CNFPredicate CNF_PREDICATE = new CNFPredicate();
+    /**
+     * Private constructor.
+     */
+    private FormulaDimacsFileWriter() {
+        // Intentionally left empty.
+    }
 
-  /**
-   * Private constructor.
-   */
-  private FormulaDimacsFileWriter() {
-    // Intentionally left empty.
-  }
+    /**
+     * Writes a given formula's internal data structure as a dimacs file.  Must only be called with a formula which is in CNF.
+     * @param fileName     the file name of the dimacs file to write
+     * @param formula      the formula
+     * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
+     * @throws IOException              if there was a problem writing the file
+     * @throws IllegalArgumentException if the formula was not in CNF
+     */
+    public static void write(final String fileName, final Formula formula, final boolean writeMapping) throws IOException {
+        final File file = new File(fileName.endsWith(".cnf") ? fileName : fileName + ".cnf");
+        final SortedMap<Variable, Long> var2id = new TreeMap<>();
+        long i = 1;
+        for (final Variable var : new TreeSet<>(formula.variables())) {
+            var2id.put(var, i++);
+        }
+        if (!formula.holds(CNFPredicate.get())) {
+            throw new IllegalArgumentException("Cannot write a non-CNF formula to dimacs.  Convert to CNF first.");
+        }
+        final List<Formula> parts = new ArrayList<>();
+        if (formula.type().equals(FType.LITERAL)) {
+            parts.add(formula);
+        } else {
+            for (final Formula part : formula) {
+                parts.add(part);
+            }
+        }
+        final StringBuilder sb = new StringBuilder("p cnf ");
+        final int partsSize = formula.type().equals(FType.FALSE) ? 1 : parts.size();
+        sb.append(var2id.size()).append(" ").append(partsSize).append(System.lineSeparator());
 
-  /**
-   * Writes a given formula's internal data structure as a dimacs file.  Must only be called with a formula which is in CNF.
-   * @param fileName     the file name of the dimacs file to write
-   * @param formula      the formula
-   * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
-   * @throws IOException              if there was a problem writing the file
-   * @throws IllegalArgumentException if the formula was not in CNF
-   */
-  public static void write(final String fileName, Formula formula, boolean writeMapping) throws IOException {
-    File file = new File(fileName.endsWith(".cnf") ? fileName : fileName + ".cnf");
-    SortedMap<Variable, Long> var2id = new TreeMap<>();
-    long i = 1;
-    for (Variable var : new TreeSet<>(formula.variables())) {
-      var2id.put(var, i++);
+        for (final Formula part : parts) {
+            for (final Literal lit : part.literals()) {
+                sb.append(lit.phase() ? "" : "-").append(var2id.get(lit.variable())).append(" ");
+            }
+            sb.append(String.format(" 0%n"));
+        }
+        if (formula.type().equals(FType.FALSE)) {
+            sb.append(String.format("0%n"));
+        }
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
+        if (writeMapping) {
+            final String mappingFileName = (fileName.endsWith(".cnf") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
+            writeMapping(new File(mappingFileName), var2id);
+        }
     }
-    if (!formula.holds(CNF_PREDICATE)) {
-      throw new IllegalArgumentException("Cannot write a non-CNF formula to dimacs.  Convert to CNF first.");
-    }
-    List<Formula> parts = new ArrayList<>();
-    if (formula.type().equals(FType.LITERAL)) {
-      parts.add(formula);
-    } else {
-      for (Formula part : formula) {
-        parts.add(part);
-      }
-    }
-    StringBuilder sb = new StringBuilder("p cnf ");
-    int partsSize = formula.type().equals(FType.FALSE) ? 1 : parts.size();
-    sb.append(var2id.size()).append(" ").append(partsSize).append(System.lineSeparator());
 
-    for (Formula part : parts) {
-      for (Literal lit : part.literals()) {
-        sb.append(lit.phase() ? "" : "-").append(var2id.get(lit.variable())).append(" ");
-      }
-      sb.append(String.format(" 0%n"));
+    private static void writeMapping(final File mappingFile, final SortedMap<Variable, Long> var2id) throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        for (final Map.Entry<Variable, Long> entry : var2id.entrySet()) {
+            sb.append(entry.getKey()).append(";").append(entry.getValue()).append(System.lineSeparator());
+        }
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
     }
-    if (formula.type().equals(FType.FALSE)) {
-      sb.append(String.format("0%n"));
-    }
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
-    }
-    if (writeMapping) {
-      String mappingFileName = (fileName.endsWith(".cnf") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
-      writeMapping(new File(mappingFileName), var2id);
-    }
-  }
-
-  private static void writeMapping(File mappingFile, SortedMap<Variable, Long> var2id) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    for (Map.Entry<Variable, Long> entry : var2id.entrySet()) {
-      sb.append(entry.getKey()).append(";").append(entry.getValue()).append(System.lineSeparator());
-    }
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
-    }
-  }
 }

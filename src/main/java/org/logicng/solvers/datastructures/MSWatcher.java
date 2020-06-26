@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-/******************************************************************************************
+/*
  * MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -40,7 +40,7 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
  * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- ******************************************************************************************/
+ */
 
 package org.logicng.solvers.datastructures;
 
@@ -50,47 +50,47 @@ package org.logicng.solvers.datastructures;
  * @since 1.0
  */
 public final class MSWatcher {
-  private final MSClause clause;
-  private final int blocker;
+    private final MSClause clause;
+    private final int blocker;
 
-  /**
-   * Constructs a new watcher.
-   * @param clause  the watched clause
-   * @param blocker the blocking literal
-   */
-  public MSWatcher(final MSClause clause, int blocker) {
-    this.clause = clause;
-    this.blocker = blocker;
-  }
+    /**
+     * Constructs a new watcher.
+     * @param clause  the watched clause
+     * @param blocker the blocking literal
+     */
+    public MSWatcher(final MSClause clause, final int blocker) {
+        this.clause = clause;
+        this.blocker = blocker;
+    }
 
-  /**
-   * Returns the blocking literal of this watcher.
-   * @return the blocking literal of this watcher
-   */
-  public int blocker() {
-    return this.blocker;
-  }
+    /**
+     * Returns the blocking literal of this watcher.
+     * @return the blocking literal of this watcher
+     */
+    public int blocker() {
+        return this.blocker;
+    }
 
-  /**
-   * Returns the watched clause of this watcher.
-   * @return the watched clause of this watcher
-   */
-  public MSClause clause() {
-    return this.clause;
-  }
+    /**
+     * Returns the watched clause of this watcher.
+     * @return the watched clause of this watcher
+     */
+    public MSClause clause() {
+        return this.clause;
+    }
 
-  @Override
-  public int hashCode() {
-    return this.clause.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return this.clause.hashCode();
+    }
 
-  @Override
-  public boolean equals(final Object other) {
-    return this == other || other instanceof MSWatcher && this.clause == (((MSWatcher) other).clause);
-  }
+    @Override
+    public boolean equals(final Object other) {
+        return this == other || other instanceof MSWatcher && this.clause == (((MSWatcher) other).clause);
+    }
 
-  @Override
-  public String toString() {
-    return String.format("MSWatcher{clause=%s, blocker=%d}", this.clause, this.blocker);
-  }
+    @Override
+    public String toString() {
+        return String.format("MSWatcher{clause=%s, blocker=%d}", this.clause, this.blocker);
+    }
 }

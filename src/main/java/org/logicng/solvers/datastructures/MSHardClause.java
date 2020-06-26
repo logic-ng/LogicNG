@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-/*****************************************************************************************
+/*
  * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -45,7 +45,7 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *****************************************************************************************/
+ */
 
 package org.logicng.solvers.datastructures;
 
@@ -58,34 +58,35 @@ import org.logicng.collections.LNGIntVector;
  */
 public final class MSHardClause {
 
-  private final LNGIntVector clause;
+    private final LNGIntVector clause;
 
-  /**
-   * Constructs a new hard clause.
-   * @param clause the clause
-   */
-  public MSHardClause(final LNGIntVector clause) {
-    this.clause = new LNGIntVector(clause);
-  }
-
-  /**
-   * Returns the clause of this hard clause.
-   * @return the clause
-   */
-  public LNGIntVector clause() {
-    return this.clause;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("MSHardClause{lits=[");
-    for (int i = 0; i < this.clause.size(); i++) {
-      int lit = this.clause.get(i);
-      sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
-      if (i != this.clause.size() - 1)
-        sb.append(", ");
+    /**
+     * Constructs a new hard clause.
+     * @param clause the clause
+     */
+    public MSHardClause(final LNGIntVector clause) {
+        this.clause = new LNGIntVector(clause);
     }
-    sb.append("]}");
-    return sb.toString();
-  }
+
+    /**
+     * Returns the clause of this hard clause.
+     * @return the clause
+     */
+    public LNGIntVector clause() {
+        return this.clause;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MSHardClause{lits=[");
+        for (int i = 0; i < this.clause.size(); i++) {
+            final int lit = this.clause.get(i);
+            sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
+            if (i != this.clause.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
 }

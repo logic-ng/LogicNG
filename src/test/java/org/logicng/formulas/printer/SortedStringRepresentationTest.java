@@ -28,23 +28,21 @@
 
 package org.logicng.formulas.printer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-import org.logicng.io.parsers.ParserException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link SortedStringRepresentation}
- * @version 1.5
+ * @version 2.0.0
  * @since 1.5
  */
 public class SortedStringRepresentationTest {
@@ -71,7 +69,7 @@ public class SortedStringRepresentationTest {
     }
 
     @Test
-    public void testSortedPrinter() throws ParserException {
+    public void testSortedPrinter() {
         assertThat(F.f.string(F.FALSE, this.sr)).isEqualTo("$false");
         assertThat(F.f.string(F.TRUE, this.sr)).isEqualTo("$true");
         assertThat(F.f.string(F.X, this.sr)).isEqualTo("x");
@@ -87,17 +85,17 @@ public class SortedStringRepresentationTest {
         assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("3*x + -4*b + 2*a > 2");
         assertThat(F.f.string(F.f.and(F.NB, F.PBC1), this.sr)).isEqualTo("(3*x + -4*b + 2*a = 2) & ~b");
         assertThat(F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<Literal>(Arrays.asList(F.A, F.B)), new ArrayList<>(Arrays.asList(1, 1))), this.sr)).isEqualTo("b + a = 42");
-        assertThat(F.f.string(F.f.pbc(CType.LT, 42, new ArrayList<Literal>(), new ArrayList<Integer>()), this.sr)).isEqualTo("$true");
-        assertThat(F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<Literal>(), new ArrayList<Integer>()), this.sr)).isEqualTo("$false");
-        assertThat(F.f.string(F.f.implication(F.A, F.f.exo()), sr)).isEqualTo("a => $false");
-        assertThat(F.f.string(F.f.equivalence(F.A, F.f.exo()), sr)).isEqualTo("$false <=> a");
-        assertThat(F.f.string(F.f.and(F.A, F.f.exo()), sr)).isEqualTo("$false & a");
-        assertThat(F.f.string(F.f.or(F.A, F.f.exo()), sr)).isEqualTo("$false | a");
-        assertThat(F.f.string(F.f.implication(F.A, F.f.amo()), sr)).isEqualTo("a => $true");
-        assertThat(F.f.string(F.f.equivalence(F.A, F.f.amo()), sr)).isEqualTo("$true <=> a");
-        assertThat(F.f.string(F.f.and(F.A, F.f.amo()), sr)).isEqualTo("$true & a");
-        assertThat(F.f.string(F.f.or(F.A, F.f.amo()), sr)).isEqualTo("$true | a");
-        assertThat(F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), sr)).isEqualTo("$true | $false | ($true <=> b) | a");
+        assertThat(F.f.string(F.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$false");
+        assertThat(F.f.string(F.f.implication(F.A, F.f.exo()), this.sr)).isEqualTo("~a");
+        assertThat(F.f.string(F.f.equivalence(F.A, F.f.exo()), this.sr)).isEqualTo("~a");
+        assertThat(F.f.string(F.f.and(F.A, F.f.exo()), this.sr)).isEqualTo("$false");
+        assertThat(F.f.string(F.f.or(F.A, F.f.exo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.implication(F.A, F.f.amo()), this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.f.equivalence(F.A, F.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.and(F.A, F.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.or(F.A, F.f.amo()), this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), this.sr)).isEqualTo("$true");
 
         // some variables not in varOrder
         this.varOrder.remove(F.X);
@@ -105,7 +103,7 @@ public class SortedStringRepresentationTest {
         assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("-4*b + 2*a + 3*x > 2");
 
         // empty varOrder
-        assertThat(F.f.string(F.EQ3, new SortedStringRepresentation(new ArrayList<Variable>()))).isEqualTo("a & b <=> x | y");
+        assertThat(F.f.string(F.EQ3, new SortedStringRepresentation(new ArrayList<>()))).isEqualTo("a & b <=> x | y");
     }
 
     @Test

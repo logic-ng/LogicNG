@@ -28,9 +28,10 @@
 
 package org.logicng.transformations.dnf;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -42,7 +43,7 @@ import java.io.IOException;
 
 /**
  * Unit tests for {@link DNFSubsumption}.
- * @version 1.5.0
+ * @version 2.0.0
  * @since 1.5.0
  */
 public class DNFSubsumptionTest {
@@ -51,9 +52,9 @@ public class DNFSubsumptionTest {
     private final PropositionalParser p = new PropositionalParser(this.f);
     private final DNFSubsumption s = new DNFSubsumption();
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNotInDNF() throws ParserException {
-        this.s.apply(this.p.parse("a => b"), false);
+    @Test
+    public void testNotInDNF() {
+        assertThatThrownBy(() -> this.s.apply(this.p.parse("a => b"), false)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

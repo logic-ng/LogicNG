@@ -28,8 +28,9 @@
 
 package org.logicng.graphs.algorithms;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.GraphTest;
 import org.logicng.graphs.datastructures.Node;
@@ -41,54 +42,54 @@ import java.util.SortedSet;
 
 /**
  * Unit tests for the class {@link BronKerbosch}.
- * @version 1.2
+ * @version 2.0.0
  * @since 1.2
  */
 public class BronKerboschTest {
 
-  @Test
-  public void graph50Test() throws IOException {
-    Graph<Long> g = GraphTest.getLongGraph("50");
+    @Test
+    public void graph50Test() throws IOException {
+        final Graph<Long> g = GraphTest.getLongGraph("50");
 
-    BronKerbosch<Long> bkp = new BronKerbosch<>(g);
-    Set<SortedSet<Node<Long>>> resultBkp = bkp.compute();
+        final BronKerbosch<Long> bkp = new BronKerbosch<>(g);
+        final Set<SortedSet<Node<Long>>> resultBkp = bkp.compute();
 
-    Assert.assertEquals(910, resultBkp.size());
+        assertThat(resultBkp.size()).isEqualTo(910);
 
-    for (SortedSet<Node<Long>> clique1 : resultBkp) {
-      for (SortedSet<Node<Long>> clique2 : resultBkp) {
-        if (clique1.size() != clique2.size()) {
-          Assert.assertFalse(clique1.containsAll(clique2));
+        for (final SortedSet<Node<Long>> clique1 : resultBkp) {
+            for (final SortedSet<Node<Long>> clique2 : resultBkp) {
+                if (clique1.size() != clique2.size()) {
+                    assertThat(clique1.containsAll(clique2)).isFalse();
+                }
+            }
         }
-      }
-    }
 
-    Node<Long> eleven = g.node(11L);
-    for (Node<Long> nb : eleven.neighbours()) {
-      g.disconnect(nb, eleven);
-    }
+        final Node<Long> eleven = g.node(11L);
+        for (final Node<Long> nb : eleven.neighbours()) {
+            g.disconnect(nb, eleven);
+        }
 
-    Set<SortedSet<Node<Long>>> resultEleven = bkp.compute();
-    int elevenCliques = 0;
-    for (SortedSet<Node<Long>> clique : resultEleven) {
-      if (clique.contains(eleven)) {
-        elevenCliques++;
-        Assert.assertEquals(1, clique.size());
-      }
-    }
-    Assert.assertEquals(1, elevenCliques);
+        final Set<SortedSet<Node<Long>>> resultEleven = bkp.compute();
+        int elevenCliques = 0;
+        for (final SortedSet<Node<Long>> clique : resultEleven) {
+            if (clique.contains(eleven)) {
+                elevenCliques++;
+                assertThat(clique.size()).isEqualTo(1);
+            }
+        }
+        assertThat(elevenCliques).isEqualTo(1);
 
-    g.connect(eleven, g.node(10L));
+        g.connect(eleven, g.node(10L));
 
-    bkp.compute();
-    int tenCliques = 0;
-    for (List<Long> clique : bkp.getCliquesAsTLists()) {
-      if (clique.contains(11L)) {
-        tenCliques++;
-        Assert.assertEquals(2, clique.size());
-        Assert.assertTrue(clique.contains(10L));
-      }
+        bkp.compute();
+        int tenCliques = 0;
+        for (final List<Long> clique : bkp.getCliquesAsTLists()) {
+            if (clique.contains(11L)) {
+                tenCliques++;
+                assertThat(clique.size()).isEqualTo(2);
+                assertThat(clique.contains(10L)).isTrue();
+            }
+        }
+        assertThat(tenCliques).isEqualTo(1);
     }
-    Assert.assertEquals(1, tenCliques);
-  }
 }

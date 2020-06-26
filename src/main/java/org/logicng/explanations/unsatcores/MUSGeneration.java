@@ -37,56 +37,56 @@ import java.util.List;
 
 /**
  * Computes a minimal unsatisfiable subset (MUS) of a given formula with different algorithms.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.1
  */
 public final class MUSGeneration {
 
-  private final DeletionBasedMUS deletion;
-  private final PlainInsertionBasedMUS insertion;
+    private final DeletionBasedMUS deletion;
+    private final PlainInsertionBasedMUS insertion;
 
-  /**
-   * Constructs a new MUS generator.
-   */
-  public MUSGeneration() {
-    this.deletion = new DeletionBasedMUS();
-    this.insertion = new PlainInsertionBasedMUS();
-  }
-
-  /**
-   * Computes a MUS for the given propositions with the default algorithm and the default configuration.
-   * @param propositions the propositions
-   * @param f            the formula factory
-   * @param <T>          the type of the MUSes propositions
-   * @return the MUS
-   */
-  public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f) {
-    return this.computeMUS(propositions, f, new MUSConfig.Builder().build());
-  }
-
-  /**
-   * Computes a MUS for the given propositions and the given configuration of the MUS generation.
-   * @param propositions the propositions
-   * @param f            the formula factory
-   * @param config       the MUS configuration
-   * @param <T>          the type of the MUSes propositions
-   * @return the MUS
-   */
-  public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
-    if (propositions.isEmpty())
-      throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
-    switch (config.algorithm) {
-      case PLAIN_INSERTION:
-        return insertion.computeMUS(propositions, f, config);
-      case DELETION:
-      default:
-        return deletion.computeMUS(propositions, f, config);
+    /**
+     * Constructs a new MUS generator.
+     */
+    public MUSGeneration() {
+        this.deletion = new DeletionBasedMUS();
+        this.insertion = new PlainInsertionBasedMUS();
     }
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    /**
+     * Computes a MUS for the given propositions with the default algorithm and the default configuration.
+     * @param propositions the propositions
+     * @param f            the formula factory
+     * @param <T>          the type of the MUSes propositions
+     * @return the MUS
+     */
+    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f) {
+        return this.computeMUS(propositions, f, MUSConfig.builder().build());
+    }
 
+    /**
+     * Computes a MUS for the given propositions and the given configuration of the MUS generation.
+     * @param propositions the propositions
+     * @param f            the formula factory
+     * @param config       the MUS configuration
+     * @param <T>          the type of the MUSes propositions
+     * @return the MUS
+     */
+    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+        if (propositions.isEmpty()) {
+            throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
+        }
+        switch (config.algorithm) {
+            case PLAIN_INSERTION:
+                return this.insertion.computeMUS(propositions, f, config);
+            case DELETION:
+            default:
+                return this.deletion.computeMUS(propositions, f, config);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

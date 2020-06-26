@@ -28,18 +28,18 @@
 
 package org.logicng.util;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.formulas.F;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.TreeSet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit tests for {@link FormulaHelper}.
- * @version 1.5.1
+ * @version 2.0.0
  * @since 1.5.1
  */
 public class FormulaHelperTest {
@@ -50,16 +50,12 @@ public class FormulaHelperTest {
         assertThat(FormulaHelper.variables(F.FALSE)).isEqualTo(new TreeSet<>());
         assertThat(FormulaHelper.variables(F.A)).isEqualTo(new TreeSet<>(Collections.singletonList(F.A)));
         assertThat(FormulaHelper.variables(F.NA)).isEqualTo(new TreeSet<>(Collections.singletonList(F.A)));
-        assertThat(FormulaHelper.variables(F.IMP1, F.IMP2, F.IMP3)).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y)));
-        assertThat(FormulaHelper.variables(F.IMP1, F.Y)).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.Y)));
+        assertThat(FormulaHelper.variables(F.IMP1, F.IMP2, F.IMP3)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y)));
+        assertThat(FormulaHelper.variables(F.IMP1, F.Y)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.Y)));
 
         assertThat(FormulaHelper.variables(Arrays.asList(F.TRUE, F.FALSE))).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.variables(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y)));
-        assertThat(FormulaHelper.variables(Arrays.asList(F.IMP1, F.Y))).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.Y)));
+        assertThat(FormulaHelper.variables(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y)));
+        assertThat(FormulaHelper.variables(Arrays.asList(F.IMP1, F.Y))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.Y)));
     }
 
     @Test
@@ -68,15 +64,11 @@ public class FormulaHelperTest {
         assertThat(FormulaHelper.literals(F.FALSE)).isEqualTo(new TreeSet<>());
         assertThat(FormulaHelper.literals(F.A)).isEqualTo(new TreeSet<>(Collections.singletonList(F.A)));
         assertThat(FormulaHelper.literals(F.NA)).isEqualTo(new TreeSet<>(Collections.singletonList(F.NA)));
-        assertThat(FormulaHelper.literals(F.IMP1, F.IMP2, F.IMP3)).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
-        assertThat(FormulaHelper.literals(F.IMP1, F.NY)).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
+        assertThat(FormulaHelper.literals(F.IMP1, F.IMP2, F.IMP3)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
+        assertThat(FormulaHelper.literals(F.IMP1, F.NY)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
 
         assertThat(FormulaHelper.literals(Arrays.asList(F.TRUE, F.FALSE))).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
-        assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.NY))).isEqualTo(
-                new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
+        assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
+        assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.NY))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
     }
 }

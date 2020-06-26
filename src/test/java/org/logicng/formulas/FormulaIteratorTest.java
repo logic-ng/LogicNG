@@ -28,233 +28,137 @@
 
 package org.logicng.formulas;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
- * Tests for the formula iterators.
- * @version 1.0
+ * Tests for the formula iterators and streams.
+ * @version 2.0.0
  * @since 1.0
  */
 public class FormulaIteratorTest {
 
-  private final FormulaFactory f = new FormulaFactory();
-  private final PropositionalParser p = new PropositionalParser(f);
+    private final FormulaFactory f = new FormulaFactory();
+    private final PropositionalParser p = new PropositionalParser(this.f);
 
-  @Test
-  public void testTrue() {
-    Iterator<Formula> it = f.verum().iterator();
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
+    @Test
+    public void testTrue() {
+        final Formula formula = this.f.verum();
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.hasNext()).isFalse();
+        assertThat(formula.stream().count()).isEqualTo(0);
+        assertThatThrownBy(() -> formula.iterator().next()).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test(expected = NoSuchElementException.class)
-  public void testTrueNSE() {
-    f.verum().iterator().next();
-  }
+    @Test
+    public void testFalse() {
+        final Formula formula = this.f.falsum();
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.hasNext()).isFalse();
+        assertThat(formula.stream().count()).isEqualTo(0);
+        assertThatThrownBy(() -> formula.iterator().next()).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void testTrueUSO() {
-    f.verum().iterator().remove();
-  }
+    @Test
+    public void testLiteral() {
+        final Formula formula = this.f.variable("a");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.hasNext()).isFalse();
+        assertThat(formula.stream().count()).isEqualTo(0);
+        assertThatThrownBy(() -> formula.iterator().next()).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test
-  public void testFalse() {
-    Iterator<Formula> it = f.falsum().iterator();
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
+    @Test
+    public void testNot() throws ParserException {
+        final Formula formula = this.p.parse("~(a & (b | c))");
+        final Formula operand = this.p.parse("a & (b | c)");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.next()).isEqualTo(operand);
+        assertThatThrownBy(it::next).isInstanceOf(NoSuchElementException.class);
+        assertThat(formula.stream().count()).isEqualTo(1);
+        assertThat(formula.stream().collect(Collectors.toList())).containsExactly(operand);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test(expected = NoSuchElementException.class)
-  public void testFalseNSE() {
-    f.falsum().iterator().next();
-  }
+    @Test
+    public void testImplication() throws ParserException {
+        final Formula formula = this.p.parse("a => c | d");
+        final Formula left = this.f.variable("a");
+        final Formula right = this.p.parse("c | d");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.next()).isEqualTo(left);
+        assertThat(it.next()).isEqualTo(right);
+        assertThatThrownBy(it::next).isInstanceOf(NoSuchElementException.class);
+        assertThat(formula.stream().count()).isEqualTo(2);
+        assertThat(formula.stream().collect(Collectors.toList())).containsExactly(left, right);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void testFalseUSO() {
-    f.falsum().iterator().remove();
-  }
+    @Test
+    public void testEquivalence() throws ParserException {
+        final Formula formula = this.p.parse("a <=> c | d");
+        final Formula left = this.f.variable("a");
+        final Formula right = this.p.parse("c | d");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.next()).isEqualTo(left);
+        assertThat(it.next()).isEqualTo(right);
+        assertThatThrownBy(it::next).isInstanceOf(NoSuchElementException.class);
+        assertThat(formula.stream().count()).isEqualTo(2);
+        assertThat(formula.stream().collect(Collectors.toList())).containsExactly(left, right);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test
-  public void testLiteral() {
-    Iterator<Formula> it = f.variable("a").iterator();
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
+    @Test
+    public void testAnd() throws ParserException {
+        final Formula formula = this.p.parse("a & (c | d) & ~e");
+        final Formula op1 = this.p.parse("a");
+        final Formula op2 = this.p.parse("c | d");
+        final Formula op3 = this.p.parse("~e");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.next()).isEqualTo(op1);
+        assertThat(it.next()).isEqualTo(op2);
+        assertThat(it.next()).isEqualTo(op3);
+        assertThatThrownBy(it::next).isInstanceOf(NoSuchElementException.class);
+        assertThat(formula.stream().count()).isEqualTo(3);
+        assertThat(formula.stream().collect(Collectors.toList())).containsExactly(op1, op2, op3);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test(expected = NoSuchElementException.class)
-  public void testLiteralNSE() {
-    f.variable("a").iterator().next();
-  }
+    @Test
+    public void testOr() throws ParserException {
+        final Formula formula = this.p.parse("a | (c & d) | ~e");
+        final Formula op1 = this.p.parse("a");
+        final Formula op2 = this.p.parse("c & d");
+        final Formula op3 = this.p.parse("~e");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.next()).isEqualTo(op1);
+        assertThat(it.next()).isEqualTo(op2);
+        assertThat(it.next()).isEqualTo(op3);
+        assertThatThrownBy(it::next).isInstanceOf(NoSuchElementException.class);
+        assertThat(formula.stream().count()).isEqualTo(3);
+        assertThat(formula.stream().collect(Collectors.toList())).containsExactly(op1, op2, op3);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void testLiteralUSO() {
-    f.variable("a").iterator().remove();
-  }
-
-  @Test
-  public void testNot() throws ParserException {
-    Iterator<Formula> it = p.parse("~(a & (b | c))").iterator();
-    Assert.assertTrue(it.hasNext());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("a & (b | c)"), it.next());
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
-
-  @Test(expected = NoSuchElementException.class)
-  public void testNotNSE() throws ParserException {
-    Iterator<Formula> it = p.parse("~(a & (b | c))").iterator();
-    it.next();
-    it.next();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testNotUSO() throws ParserException {
-    Iterator<Formula> it = p.parse("~(a & (b | c))").iterator();
-    it.next();
-    it.remove();
-  }
-
-  @Test
-  public void testImplication() throws ParserException {
-    Iterator<Formula> it = p.parse("a => c | d").iterator();
-    Assert.assertTrue(it.hasNext());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("a"), it.next());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("c | d"), it.next());
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
-
-  @Test(expected = NoSuchElementException.class)
-  public void testImplicationNSE() throws ParserException {
-    Iterator<Formula> it = p.parse("a => c | d").iterator();
-    it.next();
-    it.next();
-    it.next();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testImplicationUSO() throws ParserException {
-    Iterator<Formula> it = p.parse("a => c | d").iterator();
-    it.next();
-    it.remove();
-  }
-
-  @Test
-  public void testEquivalence() throws ParserException {
-    Iterator<Formula> it = p.parse("a <=> c | d").iterator();
-    Assert.assertTrue(it.hasNext());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("a"), it.next());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("c | d"), it.next());
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
-
-  @Test(expected = NoSuchElementException.class)
-  public void testEquivalenceNSE() throws ParserException {
-    Iterator<Formula> it = p.parse("a <=> c | d").iterator();
-    it.next();
-    it.next();
-    it.next();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testEquivalenceUSO() throws ParserException {
-    Iterator<Formula> it = p.parse("a <=> c | d").iterator();
-    it.next();
-    it.remove();
-  }
-
-  @Test
-  public void testAnd() throws ParserException {
-    Iterator<Formula> it = p.parse("a & (c | d) & ~e").iterator();
-    Assert.assertTrue(it.hasNext());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("a"), it.next());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("c | d"), it.next());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("~e"), it.next());
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
-
-  @Test(expected = NoSuchElementException.class)
-  public void testAndNSE() throws ParserException {
-    Iterator<Formula> it = p.parse("a & (c | d) & ~e").iterator();
-    it.next();
-    it.next();
-    it.next();
-    it.next();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testAndUSO() throws ParserException {
-    Iterator<Formula> it = p.parse("a & (c | d) & ~e").iterator();
-    it.next();
-    it.remove();
-  }
-
-  @Test
-  public void testOr() throws ParserException {
-    Iterator<Formula> it = p.parse("a | (c & d) | ~e").iterator();
-    Assert.assertTrue(it.hasNext());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("a"), it.next());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("c & d"), it.next());
-    Assert.assertTrue(it.hasNext());
-    Assert.assertEquals(p.parse("~e"), it.next());
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
-
-  @Test(expected = NoSuchElementException.class)
-  public void testOrNSE() throws ParserException {
-    Iterator<Formula> it = p.parse("a | (c & d) | ~e").iterator();
-    it.next();
-    it.next();
-    it.next();
-    it.next();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testOrUSO() throws ParserException {
-    Iterator<Formula> it = p.parse("a | (c & d) | ~e").iterator();
-    it.next();
-    it.remove();
-  }
-
-  @Test
-  public void testPBC() throws ParserException {
-    final Formula pb1 = new PseudoBooleanParser(f).parse("3*a + 4*b + 5*c <= 8");
-    Iterator<Formula> it = pb1.iterator();
-    Assert.assertFalse(it.hasNext());
-    Assert.assertFalse(it.hasNext());
-  }
-
-  @Test(expected = NoSuchElementException.class)
-  public void testPBCNSE() throws ParserException {
-    final Formula pb1 = new PseudoBooleanParser(f).parse("3*a + 4*b + 5*c <= 8");
-    pb1.iterator().next();
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testPBCUSO() throws ParserException {
-    final Formula pb1 = new PseudoBooleanParser(f).parse("3*a + 4*b + 5*c <= 8");
-    pb1.iterator().remove();
-  }
-
-
+    @Test
+    public void testPBC() throws ParserException {
+        final Formula formula = new PseudoBooleanParser(this.f).parse("3*a + 4*b + 5*c <= 8");
+        final Iterator<Formula> it = formula.iterator();
+        assertThat(it.hasNext()).isFalse();
+        assertThat(formula.stream().count()).isEqualTo(0);
+        assertThatThrownBy(() -> formula.iterator().next()).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> formula.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
+    }
 }

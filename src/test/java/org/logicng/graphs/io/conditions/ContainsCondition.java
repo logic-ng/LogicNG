@@ -39,15 +39,15 @@ import java.util.List;
  */
 public class ContainsCondition extends Condition<List<? extends String>> {
 
-  private final String element;
+    private final String element;
 
-  public ContainsCondition(String element) {
-    this.element = element;
-  }
+    public ContainsCondition(String element) {
+        this.element = element;
+    }
 
-  @Override
-  public boolean matches(List<? extends String> strings) {
-    return strings.contains(element);
-  }
+    @Override
+    public boolean matches(List<? extends String> strings) {
+        return strings.contains(element);
+    }
 
 }

@@ -28,14 +28,16 @@
 
 package org.logicng.transformations.cnf;
 
-import org.logicng.bdds.BDDFactory;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaTransformation;
-import org.logicng.predicates.CNFPredicate;
-import org.logicng.transformations.UnitPropagation;
-
 import static org.logicng.formulas.FType.LITERAL;
 import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_CNF;
+
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaTransformation;
+import org.logicng.knowledgecompilation.bdds.BDDFactory;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.predicates.CNFPredicate;
+import org.logicng.transformations.UnitPropagation;
 
 /**
  * Transformation of a formula in CNF by converting it to a BDD.
@@ -44,60 +46,61 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_CNF;
  */
 public final class BDDCNFTransformation implements FormulaTransformation {
 
-  private final CNFPredicate cnfPredicate = new CNFPredicate();
-  private final UnitPropagation up = new UnitPropagation();
-  private BDDFactory bddFactory;
-  private final boolean externalFactory;
-  private int numNodes;
-  private int cacheSize;
+    private final UnitPropagation up = new UnitPropagation();
+    private final BDDKernel kernel;
 
-
-  /**
-   * Constructs a new BDD-based CNF transformation with a given BDD factory
-   * @param factory the BDD factory
-   */
-  public BDDCNFTransformation(final BDDFactory factory) {
-    this.bddFactory = factory;
-    this.externalFactory = true;
-  }
-
-  /**
-   * Constructs a new BDD-based CNF transformation with a given number of nodes and cache size for the BDD factory.
-   * @param numNodes  the number of nodes
-   * @param cacheSize the cache size
-   */
-  public BDDCNFTransformation(final int numNodes, final int cacheSize) {
-    this.numNodes = numNodes;
-    this.cacheSize = cacheSize;
-    this.externalFactory = false;
-  }
-
-  /**
-   * Constructs a new BDD-based CNF transformation and determines the node size and cache size on its own.
-   */
-  public BDDCNFTransformation() {
-    this(0, 0);
-  }
-
-  @Override
-  public Formula apply(final Formula formula, final boolean cache) {
-    if (formula.type().precedence() >= LITERAL.precedence())
-      return formula;
-    if (formula.holds(this.cnfPredicate))
-      return formula;
-    final Formula cached = formula.transformationCacheEntry(BDD_CNF);
-    if (cache && cached != null)
-      return cached;
-    if (!this.externalFactory) {
-      final int numVars = formula.variables().size();
-      final int nodes = this.numNodes == 0 ? numVars * 30 : this.numNodes;
-      final int cacheS = this.cacheSize == 0 ? numVars * 20 : this.cacheSize;
-      this.bddFactory = new BDDFactory(nodes, cacheS, formula.factory());
-      this.bddFactory.setNumberOfVars(numVars);
+    /**
+     * Constructs a new BDD-based CNF transformation with an optional BDD kernel.
+     * <p>
+     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
+     * the number of different variables in all applied formulas <b>must not exceed</b>
+     * the number of variables in the kernel.
+     * @param kernel the optional BDD kernel
+     */
+    public BDDCNFTransformation(final BDDKernel kernel) {
+        this.kernel = kernel;
     }
-    final Formula cnf = this.bddFactory.build(formula).cnf().transform(this.up);
-    if (cache)
-      formula.setTransformationCacheEntry(BDD_CNF, cnf);
-    return cnf;
-  }
+
+    /**
+     * Constructs a new BDD-based CNF transformation for a given number of variables.
+     * <p>
+     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
+     * the number of different variables in all applied formulas <b>must not exceed</b>
+     * {@code numVars}.
+     * <p>
+     * To improve performance you might want to use {@link #BDDCNFTransformation(BDDKernel)},
+     * where you have full control over the node and cache size in the used BDD kernel.
+     * @param f       the formula factory to use
+     * @param numVars the number of variables
+     */
+    public BDDCNFTransformation(final FormulaFactory f, final int numVars) {
+        this.kernel = new BDDKernel(f, numVars, Math.max(numVars * 30, 20_000), Math.max(numVars * 20, 20_000));
+    }
+
+    /**
+     * Constructs a new BDD-based CNF transformation and constructs a new BDD kernel
+     * for every formula application.
+     */
+    public BDDCNFTransformation() {
+        this(null);
+    }
+
+    @Override
+    public Formula apply(final Formula formula, final boolean cache) {
+        if (formula.type().precedence() >= LITERAL.precedence()) {
+            return formula;
+        }
+        if (formula.holds(CNFPredicate.get())) {
+            return formula;
+        }
+        final Formula cached = formula.transformationCacheEntry(BDD_CNF);
+        if (cache && cached != null) {
+            return cached;
+        }
+        final Formula cnf = BDDFactory.build(formula, this.kernel, null).cnf().transform(this.up);
+        if (cache) {
+            formula.setTransformationCacheEntry(BDD_CNF, cnf);
+        }
+        return cnf;
+    }
 }

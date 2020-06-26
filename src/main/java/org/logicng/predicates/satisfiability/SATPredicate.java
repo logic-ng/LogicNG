@@ -33,10 +33,8 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
-import org.logicng.predicates.DNFPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.SolverState;
 
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
 
@@ -47,52 +45,38 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
  */
 public final class SATPredicate implements FormulaPredicate {
 
-  private final SATSolver solver;
-  private final SolverState externalSolverState;
+    private final SATSolver solver;
 
-  /**
-   * Constructs a new SAT predicate with a given formula factory.
-   * @param f the formula factory
-   */
-  public SATPredicate(final FormulaFactory f) {
-    this.solver = MiniSat.miniSat(f);
-    this.externalSolverState = null;
-  }
-
-  /**
-   * Constructs a new SAT predicate with a given SAT solver.  If there are already formulas on the solver,
-   * these formulas are kept and the satisfiability is checked against these formulas.  The solver state
-   * is not changed.
-   * @param solver the SAT solver
-   */
-  public SATPredicate(final SATSolver solver) {
-    this.solver = solver;
-    this.externalSolverState = solver.saveState();
-  }
-
-  @Override
-  public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = externalSolverState != null ? Tristate.UNDEF : formula.predicateCacheEntry(IS_SAT);
-    if (cached != Tristate.UNDEF)
-      return cached == Tristate.TRUE;
-    boolean result;
-    if (formula.type() == FType.FALSE)
-      result = false;
-    else {
-      this.solver.add(formula);
-      result = solver.sat() == Tristate.TRUE;
-      if (externalSolverState != null)
-        this.solver.loadState(externalSolverState);
-      else
-        solver.reset();
+    /**
+     * Constructs a new SAT predicate with a given formula factory.
+     * @param f the formula factory
+     */
+    public SATPredicate(final FormulaFactory f) {
+        this.solver = MiniSat.miniSat(f);
     }
-    if (cache && externalSolverState == null)
-      formula.setPredicateCacheEntry(IS_SAT, result);
-    return result;
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public boolean test(final Formula formula, final boolean cache) {
+        final Tristate cached = formula.predicateCacheEntry(IS_SAT);
+        if (cached != Tristate.UNDEF) {
+            return cached == Tristate.TRUE;
+        }
+        final boolean result;
+        if (formula.type() == FType.FALSE) {
+            result = false;
+        } else {
+            this.solver.add(formula);
+            result = this.solver.sat() == Tristate.TRUE;
+            this.solver.reset();
+        }
+        if (cache) {
+            formula.setPredicateCacheEntry(IS_SAT, result);
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

@@ -47,51 +47,53 @@ import java.util.Set;
  */
 public class GraphDotFileWriter {
 
-  /**
-   * Private constructor.
-   */
-  private GraphDotFileWriter() {
-    // Intentionally left empty.
-  }
-
-  /**
-   * Writes a given formula's internal data structure as a dimacs file.
-   * @param fileName the file name of the dimacs file to write
-   * @param graph    the graph
-   * @param <T>      the type of the graph content
-   * @throws IOException if there was a problem writing the file
-   */
-  public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
-    write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
-  }
-
-  /**
-   * Writes a given graph's internal data structure as a dot file.
-   * @param file  the file of the dot file to write
-   * @param graph the graph
-   * @param <T>   the type of the graph content
-   * @throws IOException if there was a problem writing the file
-   */
-  public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-    final StringBuilder sb = new StringBuilder(String.format("strict graph {%n"));
-
-    Set<Node<T>> doneNodes = new LinkedHashSet<>();
-    for (Node<T> d : graph.nodes()) {
-      for (Node<T> n : d.neighbours())
-        if (!doneNodes.contains(n))
-          sb.append("  ").append(d.content()).append(" -- ").append(n.content()).append(System.lineSeparator());
-      doneNodes.add(d);
+    /**
+     * Private constructor.
+     */
+    private GraphDotFileWriter() {
+        // Intentionally left empty.
     }
-    for (Node<T> d : graph.nodes()) {
-      if (d.neighbours().isEmpty()) {
-        sb.append("  ").append(d.content()).append(System.lineSeparator());
-      }
-    }
-    sb.append("}");
 
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
+    /**
+     * Writes a given formula's internal data structure as a dimacs file.
+     * @param fileName the file name of the dimacs file to write
+     * @param graph    the graph
+     * @param <T>      the type of the graph content
+     * @throws IOException if there was a problem writing the file
+     */
+    public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
+        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
     }
-  }
+
+    /**
+     * Writes a given graph's internal data structure as a dot file.
+     * @param file  the file of the dot file to write
+     * @param graph the graph
+     * @param <T>   the type of the graph content
+     * @throws IOException if there was a problem writing the file
+     */
+    public static <T> void write(final File file, final Graph<T> graph) throws IOException {
+        final StringBuilder sb = new StringBuilder(String.format("strict graph {%n"));
+
+        Set<Node<T>> doneNodes = new LinkedHashSet<>();
+        for (Node<T> d : graph.nodes()) {
+            for (Node<T> n : d.neighbours()) {
+                if (!doneNodes.contains(n)) {
+                    sb.append("  ").append(d.content()).append(" -- ").append(n.content()).append(System.lineSeparator());
+                }
+            }
+            doneNodes.add(d);
+        }
+        for (Node<T> d : graph.nodes()) {
+            if (d.neighbours().isEmpty()) {
+                sb.append("  ").append(d.content()).append(System.lineSeparator());
+            }
+        }
+        sb.append("}");
+
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
+    }
 }

@@ -41,45 +41,66 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
  * @since 1.0
  */
 public final class AIGPredicate implements FormulaPredicate {
-  @Override
-  public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.predicateCacheEntry(IS_AIG);
-    if (cached != Tristate.UNDEF)
-      return cached == Tristate.TRUE;
-    boolean result;
-    switch (formula.type()) {
-      case FALSE:
-      case TRUE:
-      case LITERAL:
-        result = true;
-        break;
-      case IMPL:
-      case EQUIV:
-      case OR:
-      case PBC:
-        result = false;
-        break;
-      case NOT:
-        result = test(((Not) formula).operand(), cache);
-        break;
-      case AND:
-        result = true;
-        for (final Formula op : formula)
-          if (!test(op, cache)) {
-            result = false;
-            break;
-          }
-        break;
-      default:
-        throw new IllegalArgumentException("Cannot compute AIG predicate on " + formula.type());
-    }
-    if (cache)
-      formula.setPredicateCacheEntry(IS_AIG, result);
-    return result;
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    private final static AIGPredicate INSTANCE = new AIGPredicate();
+
+    /**
+     * Private empty constructor.  Singleton class.
+     */
+    private AIGPredicate() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton of the predicate.
+     * @return the predicate instance
+     */
+    public static AIGPredicate get() {
+        return INSTANCE;
+    }
+
+    @Override
+    public boolean test(final Formula formula, final boolean cache) {
+        final Tristate cached = formula.predicateCacheEntry(IS_AIG);
+        if (cached != Tristate.UNDEF) {
+            return cached == Tristate.TRUE;
+        }
+        boolean result;
+        switch (formula.type()) {
+            case FALSE:
+            case TRUE:
+            case LITERAL:
+                result = true;
+                break;
+            case IMPL:
+            case EQUIV:
+            case OR:
+            case PBC:
+                result = false;
+                break;
+            case NOT:
+                result = test(((Not) formula).operand(), cache);
+                break;
+            case AND:
+                result = true;
+                for (final Formula op : formula) {
+                    if (!test(op, cache)) {
+                        result = false;
+                        break;
+                    }
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot compute AIG predicate on " + formula.type());
+        }
+        if (cache) {
+            formula.setPredicateCacheEntry(IS_AIG, result);
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

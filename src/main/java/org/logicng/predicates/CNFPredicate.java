@@ -40,29 +40,48 @@ import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
  * @since 1.0
  */
 public final class CNFPredicate implements FormulaPredicate {
-  @Override
-  public boolean test(final Formula formula, boolean cache) {
-    final Tristate cached = formula.predicateCacheEntry(IS_CNF);
-    if (cached != Tristate.UNDEF)
-      return cached == Tristate.TRUE;
-    switch (formula.type()) {
-      case FALSE:
-      case TRUE:
-      case LITERAL:
-        return true;
-      case NOT:
-      case IMPL:
-      case EQUIV:
-      case PBC:
-        return false;
-      // AND and OR always have a cached CNF predicate (set in the constructor)
-      default:
-        throw new IllegalArgumentException("Cannot compute CNF predicate on " + formula.type());
-    }
-  }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    private final static CNFPredicate INSTANCE = new CNFPredicate();
+
+    /**
+     * Private empty constructor.  Singleton class.
+     */
+    private CNFPredicate() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton of the predicate.
+     * @return the predicate instance
+     */
+    public static CNFPredicate get() {
+        return INSTANCE;
+    }
+
+    @Override
+    public boolean test(final Formula formula, final boolean cache) {
+        final Tristate cached = formula.predicateCacheEntry(IS_CNF);
+        if (cached != Tristate.UNDEF) {
+            return cached == Tristate.TRUE;
+        }
+        switch (formula.type()) {
+            case FALSE:
+            case TRUE:
+            case LITERAL:
+                return true;
+            case NOT:
+            case IMPL:
+            case EQUIV:
+            case PBC:
+                return false;
+            // AND and OR always have a cached CNF predicate (set in the constructor)
+            default:
+                throw new IllegalArgumentException("Cannot compute CNF predicate on " + formula.type());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

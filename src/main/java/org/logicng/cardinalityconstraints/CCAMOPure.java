@@ -37,25 +37,27 @@ import org.logicng.formulas.Variable;
  * @version 1.1
  * @since 1.0
  */
-final class CCAMOPure implements CCAtMostOne {
+public final class CCAMOPure implements CCAtMostOne {
 
-  /**
-   * Constructs the naive AMO encoder.
-   */
-  CCAMOPure() {
-    // intentionally left empty
-  }
+    /**
+     * Constructs the naive AMO encoder.
+     */
+    public CCAMOPure() {
+        // intentionally left empty
+    }
 
-  @Override
-  public void build(final EncodingResult result, final Variable... vars) {
-    result.reset();
-    for (int i = 0; i < vars.length; i++)
-      for (int j = i + 1; j < vars.length; j++)
-        result.addClause(vars[i].negate(), vars[j].negate());
-  }
+    @Override
+    public void build(final EncodingResult result, final Variable... vars) {
+        result.reset();
+        for (int i = 0; i < vars.length; i++) {
+            for (int j = i + 1; j < vars.length; j++) {
+                result.addClause(vars[i].negate(), vars[j].negate());
+            }
+        }
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

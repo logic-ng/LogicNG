@@ -28,211 +28,234 @@
 
 package org.logicng.collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link LNGIntVector}.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
 public class LNGIntVectorTest {
 
-  @Test
-  public void testVectorCreation() {
-    LNGIntVector v1 = new LNGIntVector();
-    Assert.assertEquals(0, v1.size());
-    Assert.assertTrue(v1.empty());
-    LNGIntVector v2 = new LNGIntVector(10);
-    Assert.assertEquals(0, v2.size());
-    Assert.assertTrue(v2.empty());
-    LNGIntVector v3 = new LNGIntVector(10, 42);
-    Assert.assertEquals(10, v3.size());
-    for (int i = 0; i < v3.size(); i++)
-      Assert.assertEquals(42, v3.get(i));
-    Assert.assertFalse(v3.empty());
-    LNGIntVector v4 = new LNGIntVector(v3);
-    Assert.assertEquals(10, v4.size());
-    for (int i = 0; i < v4.size(); i++)
-      Assert.assertEquals(42, v4.get(i));
-    Assert.assertFalse(v4.empty());
-    LNGIntVector v5 = new LNGIntVector(0, 1, 2, 3, 4);
-    Assert.assertEquals(5, v5.size());
-    for (int i = 0; i < 5; i++)
-      Assert.assertEquals(i, v5.get(i));
-  }
-
-  @Test
-  public void testVectorAddElements() {
-    LNGIntVector v1 = new LNGIntVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++) {
-      v1.push(i);
-      Assert.assertEquals(i + 1, v1.size());
-      Assert.assertEquals(i, v1.back());
-      Assert.assertEquals(i, v1.get(i));
+    @Test
+    public void testVectorCreation() {
+        final LNGIntVector v1 = new LNGIntVector();
+        assertThat(v1.size()).isEqualTo(0);
+        assertThat(v1.empty()).isTrue();
+        final LNGIntVector v2 = new LNGIntVector(10);
+        assertThat(v2.size()).isEqualTo(0);
+        assertThat(v2.empty()).isTrue();
+        final LNGIntVector v3 = new LNGIntVector(10, 42);
+        assertThat(v3.size()).isEqualTo(10);
+        for (int i = 0; i < v3.size(); i++) {
+            assertThat(v3.get(i)).isEqualTo(42);
+        }
+        assertThat(v3.empty()).isFalse();
+        final LNGIntVector v4 = new LNGIntVector(v3);
+        assertThat(v4.size()).isEqualTo(10);
+        for (int i = 0; i < v4.size(); i++) {
+            assertThat(v4.get(i)).isEqualTo(42);
+        }
+        assertThat(v4.empty()).isFalse();
+        final LNGIntVector v5 = new LNGIntVector(0, 1, 2, 3, 4);
+        assertThat(v5.size()).isEqualTo(5);
+        for (int i = 0; i < 5; i++) {
+            assertThat(v5.get(i)).isEqualTo(i);
+        }
     }
-    Assert.assertFalse(v1.empty());
-    v1.clear();
-    Assert.assertTrue(v1.empty());
-  }
 
-  @Test
-  public void legalUnsafePush() {
-    LNGIntVector v1 = new LNGIntVector(1000);
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++) {
-      v1.unsafePush(i);
-      Assert.assertEquals(i + 1, v1.size());
-      Assert.assertEquals(i, v1.back());
-      Assert.assertEquals(i, v1.get(i));
+    @Test
+    public void testVectorAddElements() {
+        final LNGIntVector v1 = new LNGIntVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 1000; i++) {
+            v1.push(i);
+            assertThat(v1.size()).isEqualTo(i + 1);
+            assertThat(v1.back()).isEqualTo(i);
+            assertThat(v1.get(i)).isEqualTo(i);
+        }
+        assertThat(v1.empty()).isFalse();
+        v1.clear();
+        assertThat(v1.empty()).isTrue();
     }
-    Assert.assertFalse(v1.empty());
-    v1.clear();
-    Assert.assertTrue(v1.empty());
-  }
 
-  @Test(expected = ArrayIndexOutOfBoundsException.class)
-  public void illegalUnsafePush() {
-    LNGIntVector v1 = new LNGIntVector(100);
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++)
-      v1.unsafePush(i);
-  }
-
-  @Test
-  public void testGettingSettingAndPopping() {
-    LNGIntVector v1 = new LNGIntVector();
-    for (int i = 0; i < 1000; i++)
-      v1.push(i);
-    for (int i = 999; i >= 0; i--) {
-      v1.set(i, 42);
-      Assert.assertEquals(42, v1.get(i));
+    @Test
+    public void legalUnsafePush() {
+        final LNGIntVector v1 = new LNGIntVector(1000);
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 1000; i++) {
+            v1.unsafePush(i);
+            assertThat(v1.size()).isEqualTo(i + 1);
+            assertThat(v1.back()).isEqualTo(i);
+            assertThat(v1.get(i)).isEqualTo(i);
+        }
+        assertThat(v1.empty()).isFalse();
+        v1.clear();
+        assertThat(v1.empty()).isTrue();
     }
-    for (int i = 999; i >= 0; i--) {
-      v1.pop();
-      Assert.assertEquals(i, v1.size());
-    }
-  }
 
-  @Test
-  public void testVectorShrink() {
-    LNGIntVector v1 = new LNGIntVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++)
-      v1.push(i);
-    Assert.assertFalse(v1.empty());
-    for (int i = 500; i > 0; i--) {
-      v1.shrinkTo(i);
-      Assert.assertEquals((i - 1), v1.back());
+    @Test
+    public void illegalUnsafePush() {
+        final LNGIntVector v1 = new LNGIntVector(100);
+        assertThat(v1.empty()).isTrue();
+        assertThatThrownBy(() -> {
+            for (int i = 0; i < 1000; i++) {
+                v1.unsafePush(i);
+            }
+        }).isInstanceOf(ArrayIndexOutOfBoundsException.class);
     }
-  }
 
-  @Test
-  public void testGrowTo() {
-    LNGIntVector v1 = new LNGIntVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++)
-      v1.push(i);
-    Assert.assertFalse(v1.empty());
-    for (int i = 0; i < 1001; i += 10) {
-      v1.growTo(1000 + i, 1001);
-      Assert.assertEquals(1000 + i, v1.size());
-      for (int j = 0; j < 1000; j++)
-        Assert.assertEquals(j, v1.get(j));
-      for (int j = 1000; j < 1000 + i; j++)
-        Assert.assertEquals(1001, v1.get(j));
+    @Test
+    public void testGettingSettingAndPopping() {
+        final LNGIntVector v1 = new LNGIntVector();
+        for (int i = 0; i < 1000; i++) {
+            v1.push(i);
+        }
+        for (int i = 999; i >= 0; i--) {
+            v1.set(i, 42);
+            assertThat(v1.get(i)).isEqualTo(42);
+        }
+        for (int i = 999; i >= 0; i--) {
+            v1.pop();
+            assertThat(v1.size()).isEqualTo(i);
+        }
     }
-    Assert.assertEquals(2000, v1.size());
-    v1.growTo(100, 1001);
-    Assert.assertEquals(2000, v1.size());
-    for (int i = 0; i < 1000; i++)
-      Assert.assertEquals(i, v1.get(i));
-    for (int i = 1000; i < 2000; i++)
-      Assert.assertEquals(1001, v1.get(i));
-  }
 
-  @Test
-  public void testRemoveElements() {
-    LNGIntVector v1 = new LNGIntVector();
-    Assert.assertTrue(v1.empty());
-    for (int i = 0; i < 1000; i++)
-      v1.push(i);
-    Assert.assertFalse(v1.empty());
-    for (int i = 0; i < 9; i++) {
-      v1.removeElements(100);
-      Assert.assertEquals(1000 - (i + 1) * 100, v1.size());
-      Assert.assertEquals(1000 - (i + 1) * 100 - 1, v1.back());
+    @Test
+    public void testVectorShrink() {
+        final LNGIntVector v1 = new LNGIntVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 1000; i++) {
+            v1.push(i);
+        }
+        assertThat(v1.empty()).isFalse();
+        for (int i = 500; i > 0; i--) {
+            v1.shrinkTo(i);
+            assertThat(v1.back()).isEqualTo((i - 1));
+        }
     }
-    Assert.assertEquals(100, v1.size());
-    v1.removeElements(100);
-    Assert.assertTrue(v1.empty());
-  }
 
-  @Test
-  public void testSort() {
-    LNGIntVector v1 = new LNGIntVector(1000);
-    LNGIntVector v2 = new LNGIntVector(1000);
-    for (int i = 999; i >= 0; i--)
-      v1.push(i);
-    for (int i = 0; i < 1000; i++)
-      v2.push(i);
-    v1.sort();
-    v2.sort();
-    for (int i = 0; i < 1000; i++) {
-      Assert.assertEquals(v2.get(i), v1.get(i));
-      if (i != 999)
-        Assert.assertTrue(v1.get(i) < v1.get(i + 1));
+    @Test
+    public void testGrowTo() {
+        final LNGIntVector v1 = new LNGIntVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 1000; i++) {
+            v1.push(i);
+        }
+        assertThat(v1.empty()).isFalse();
+        for (int i = 0; i < 1001; i += 10) {
+            v1.growTo(1000 + i, 1001);
+            assertThat(v1.size()).isEqualTo(1000 + i);
+            for (int j = 0; j < 1000; j++) {
+                assertThat(v1.get(j)).isEqualTo(j);
+            }
+            for (int j = 1000; j < 1000 + i; j++) {
+                assertThat(v1.get(j)).isEqualTo(1001);
+            }
+        }
+        assertThat(v1.size()).isEqualTo(2000);
+        v1.growTo(100, 1001);
+        assertThat(v1.size()).isEqualTo(2000);
+        for (int i = 0; i < 1000; i++) {
+            assertThat(v1.get(i)).isEqualTo(i);
+        }
+        for (int i = 1000; i < 2000; i++) {
+            assertThat(v1.get(i)).isEqualTo(1001);
+        }
     }
-    LNGIntVector v3 = new LNGIntVector(1000);
-    v3.sort();
-    Assert.assertTrue(v3.empty());
-  }
 
-  @Test
-  public void testSortReverse() {
-    LNGIntVector v1 = new LNGIntVector(1000);
-    LNGIntVector v2 = new LNGIntVector(1000);
-    for (int i = 999; i >= 0; i--)
-      v1.push(i);
-    for (int i = 0; i < 1000; i++)
-      v2.push(i);
-    v1.sortReverse();
-    v2.sortReverse();
-    for (int i = 0; i < 1000; i++) {
-      Assert.assertEquals(v2.get(i), v1.get(i));
-      if (i != 999)
-        Assert.assertTrue(v1.get(i) > v1.get(i + 1));
+    @Test
+    public void testRemoveElements() {
+        final LNGIntVector v1 = new LNGIntVector();
+        assertThat(v1.empty()).isTrue();
+        for (int i = 0; i < 1000; i++) {
+            v1.push(i);
+        }
+        assertThat(v1.empty()).isFalse();
+        for (int i = 0; i < 9; i++) {
+            v1.removeElements(100);
+            assertThat(v1.size()).isEqualTo(1000 - (i + 1) * 100);
+            assertThat(v1.back()).isEqualTo(1000 - (i + 1) * 100 - 1);
+        }
+        assertThat(v1.size()).isEqualTo(100);
+        v1.removeElements(100);
+        assertThat(v1.empty()).isTrue();
     }
-    LNGIntVector v3 = new LNGIntVector(1000);
-    v3.sortReverse();
-    Assert.assertTrue(v3.empty());
-  }
 
-  @Test
-  public void testToArray() {
-    LNGIntVector v1 = new LNGIntVector(1000);
-    int[] expected = new int[500];
-    for (int i = 0; i < 1000; i++) {
-      v1.push(i);
-      if (i < 500)
-        expected[i] = i;
+    @Test
+    public void testSort() {
+        final LNGIntVector v1 = new LNGIntVector(1000);
+        final LNGIntVector v2 = new LNGIntVector(1000);
+        for (int i = 999; i >= 0; i--) {
+            v1.push(i);
+        }
+        for (int i = 0; i < 1000; i++) {
+            v2.push(i);
+        }
+        v1.sort();
+        v2.sort();
+        for (int i = 0; i < 1000; i++) {
+            assertThat(v1.get(i)).isEqualTo(v2.get(i));
+            if (i != 999) {
+                assertThat(v1.get(i) < v1.get(i + 1)).isTrue();
+            }
+        }
+        final LNGIntVector v3 = new LNGIntVector(1000);
+        v3.sort();
+        assertThat(v3.empty()).isTrue();
     }
-    v1.shrinkTo(500);
-    Assert.assertArrayEquals(expected, v1.toArray());
-  }
 
-  @Test
-  public void testToString() {
-    LNGIntVector v1 = new LNGIntVector();
-    Assert.assertEquals("[]", v1.toString());
-    v1.push(1);
-    Assert.assertEquals("[1]", v1.toString());
-    v1.push(2);
-    Assert.assertEquals("[1, 2]", v1.toString());
-    v1.push(3);
-    Assert.assertEquals("[1, 2, 3]", v1.toString());
-    v1.push(4);
-    Assert.assertEquals("[1, 2, 3, 4]", v1.toString());
-  }
+    @Test
+    public void testSortReverse() {
+        final LNGIntVector v1 = new LNGIntVector(1000);
+        final LNGIntVector v2 = new LNGIntVector(1000);
+        for (int i = 999; i >= 0; i--) {
+            v1.push(i);
+        }
+        for (int i = 0; i < 1000; i++) {
+            v2.push(i);
+        }
+        v1.sortReverse();
+        v2.sortReverse();
+        for (int i = 0; i < 1000; i++) {
+            assertThat(v1.get(i)).isEqualTo(v2.get(i));
+            if (i != 999) {
+                assertThat(v1.get(i) > v1.get(i + 1)).isTrue();
+            }
+        }
+        final LNGIntVector v3 = new LNGIntVector(1000);
+        v3.sortReverse();
+        assertThat(v3.empty()).isTrue();
+    }
+
+    @Test
+    public void testToArray() {
+        final LNGIntVector v1 = new LNGIntVector(1000);
+        final int[] expected = new int[500];
+        for (int i = 0; i < 1000; i++) {
+            v1.push(i);
+            if (i < 500) {
+                expected[i] = i;
+            }
+        }
+        v1.shrinkTo(500);
+        assertThat(v1.toArray()).containsExactly(expected);
+    }
+
+    @Test
+    public void testToString() {
+        final LNGIntVector v1 = new LNGIntVector();
+        assertThat(v1.toString()).isEqualTo("[]");
+        v1.push(1);
+        assertThat(v1.toString()).isEqualTo("[1]");
+        v1.push(2);
+        assertThat(v1.toString()).isEqualTo("[1, 2]");
+        v1.push(3);
+        assertThat(v1.toString()).isEqualTo("[1, 2, 3]");
+        v1.push(4);
+        assertThat(v1.toString()).isEqualTo("[1, 2, 3, 4]");
+    }
 }

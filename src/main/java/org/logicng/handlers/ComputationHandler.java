@@ -7,15 +7,15 @@ package org.logicng.handlers;
  */
 public abstract class ComputationHandler implements Handler {
 
-  protected boolean aborted;
+    protected boolean aborted;
 
-  @Override
-  public boolean aborted() {
-    return this.aborted;
-  }
+    @Override
+    public boolean aborted() {
+        return this.aborted;
+    }
 
-  @Override
-  public void started() {
-    this.aborted = false;
-  }
+    @Override
+    public void started() {
+        this.aborted = false;
+    }
 }

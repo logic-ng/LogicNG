@@ -46,24 +46,27 @@ import java.util.List;
  */
 public final class DeletionBasedMUS extends MUSAlgorithm {
 
-  @Override
-  public <T extends Proposition> UNSATCore<T> computeMUS(List<T> propositions, final FormulaFactory f, final MUSConfig config) {
-    final List<T> mus = new ArrayList<>(propositions.size());
-    final List<SolverState> solverStates = new ArrayList<>(propositions.size());
-    final MiniSat solver = MiniSat.miniSat(f);
-    for (final Proposition proposition : propositions) {
-      solverStates.add(solver.saveState());
-      solver.add(proposition);
+    @Override
+    public <T extends Proposition> UNSATCore<T> computeMUS(List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+        final List<T> mus = new ArrayList<>(propositions.size());
+        final List<SolverState> solverStates = new ArrayList<>(propositions.size());
+        final MiniSat solver = MiniSat.miniSat(f);
+        for (final Proposition proposition : propositions) {
+            solverStates.add(solver.saveState());
+            solver.add(proposition);
+        }
+        if (solver.sat() != Tristate.FALSE) {
+            throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
+        }
+        for (int i = solverStates.size() - 1; i >= 0; i--) {
+            solver.loadState(solverStates.get(i));
+            for (final Proposition prop : mus) {
+                solver.add(prop);
+            }
+            if (solver.sat() == Tristate.TRUE) {
+                mus.add(propositions.get(i));
+            }
+        }
+        return new UNSATCore<>(mus, true);
     }
-    if (solver.sat() != Tristate.FALSE)
-      throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
-    for (int i = solverStates.size() - 1; i >= 0; i--) {
-      solver.loadState(solverStates.get(i));
-      for (final Proposition prop : mus)
-        solver.add(prop);
-      if (solver.sat() == Tristate.TRUE)
-        mus.add(propositions.get(i));
-    }
-    return new UNSATCore<>(mus, true);
-  }
 }

@@ -37,52 +37,52 @@ import org.logicng.datastructures.Assignment;
  */
 public interface MaxSATHandler extends Handler {
 
-  /**
-   * Returns a SAT handler which can be used to cancel internal SAT calls of the MaxSAT solver.
-   * @return a SAT handler
-   */
-  SATHandler satHandler();
+    /**
+     * Returns a SAT handler which can be used to cancel internal SAT calls of the MaxSAT solver.
+     * @return a SAT handler
+     */
+    SATHandler satHandler();
 
-  /**
-   * This method is called when the MaxSAT solver found a new lower bound for a solution.
-   * @param lowerBound the cost of the lower bound
-   * @param model      the model of the lower bound, may be null if not applicable
-   * @return whether solving process should be continued or not
-   */
-  boolean foundLowerBound(final int lowerBound, final Assignment model);
+    /**
+     * This method is called when the MaxSAT solver found a new lower bound for a solution.
+     * @param lowerBound the cost of the lower bound
+     * @param model      the model of the lower bound, may be null if not applicable
+     * @return whether solving process should be continued or not
+     */
+    boolean foundLowerBound(final int lowerBound, final Assignment model);
 
-  /**
-   * This method is called when the MaxSAT solver found a new upper bound for a solution.
-   * @param upperBound the cost of the upper bound
-   * @param model      the model of the upper bound, may be null if not applicable
-   * @return whether solving process should be continued or not
-   */
-  boolean foundUpperBound(final int upperBound, final Assignment model);
+    /**
+     * This method is called when the MaxSAT solver found a new upper bound for a solution.
+     * @param upperBound the cost of the upper bound
+     * @param model      the model of the upper bound, may be null if not applicable
+     * @return whether solving process should be continued or not
+     */
+    boolean foundUpperBound(final int upperBound, final Assignment model);
 
-  /**
-   * This method is called every time the SAT solver finished.
-   * @return whether more models should be searched or not
-   */
-  boolean satSolverFinished();
+    /**
+     * This method is called every time the SAT solver finished.
+     * @return whether more models should be searched or not
+     */
+    boolean satSolverFinished();
 
-  /**
-   * This method is called when the MaxSAT solver finished solving.
-   */
-  void finishedSolving();
+    /**
+     * This method is called when the MaxSAT solver finished solving.
+     */
+    void finishedSolving();
 
-  /**
-   * Returns the last approximation of the result or -1 if there is no approximation for the lower bound.
-   * If the handler does not cancel the solving process, it is not guaranteed that this
-   * method will return the optimal result. Use the respective method of the MaxSAT solver instead.
-   * @return the last approximation of the result or -1 if no approximation is known
-   */
-  int lowerBoundApproximation();
+    /**
+     * Returns the last approximation of the result or -1 if there is no approximation for the lower bound.
+     * If the handler does not cancel the solving process, it is not guaranteed that this
+     * method will return the optimal result. Use the respective method of the MaxSAT solver instead.
+     * @return the last approximation of the result or -1 if no approximation is known
+     */
+    int lowerBoundApproximation();
 
-  /**
-   * Returns the last approximation of the result or -1 if there is no approximation for the lower bound.
-   * If the handler does not cancel the solving process, it is not guaranteed that this
-   * method will return the optimal result. Use the respective method of the MaxSAT solver instead.
-   * @return the last approximation of the result or -1 if no approximation is known
-   */
-  int upperBoundApproximation();
+    /**
+     * Returns the last approximation of the result or -1 if there is no approximation for the lower bound.
+     * If the handler does not cancel the solving process, it is not guaranteed that this
+     * method will return the optimal result. Use the respective method of the MaxSAT solver instead.
+     * @return the last approximation of the result or -1 if no approximation is known
+     */
+    int upperBoundApproximation();
 }

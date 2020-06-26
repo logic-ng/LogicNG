@@ -47,119 +47,129 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
  */
 public final class CNFFactorization implements FormulaTransformation {
 
-  private final FactorizationHandler handler;
-  private boolean proceed;
+    private final FactorizationHandler handler;
+    private boolean proceed;
 
-  /**
-   * Constructor for a CNF Factorization without a factorization handler.
-   */
-  public CNFFactorization() {
-    this.proceed = true;
-    this.handler = null;
-  }
-
-  /**
-   * Constructor for a CNF Factorization with a given factorization handler.
-   * @param handler the handler
-   */
-  public CNFFactorization(final FactorizationHandler handler) {
-    this.proceed = true;
-    this.handler = handler;
-  }
-
-  @Override
-  public Formula apply(final Formula formula, boolean cache) {
-    if (this.handler != null) {
-      this.handler.started();
+    /**
+     * Constructor for a CNF Factorization without a factorization handler.
+     */
+    public CNFFactorization() {
+        this.proceed = true;
+        this.handler = null;
     }
-    this.proceed = true;
-    return applyRec(formula, cache);
-  }
 
-  public Formula applyRec(final Formula formula, boolean cache) {
-    if (!this.proceed)
-      return null;
-    if (formula.type().precedence() >= LITERAL.precedence())
-      return formula;
-    Formula cached = formula.transformationCacheEntry(FACTORIZED_CNF);
-    if (cached != null)
-      return cached;
-    switch (formula.type()) {
-      case NOT:
-      case IMPL:
-      case EQUIV:
-        cached = this.applyRec(formula.nnf(), cache);
-        break;
-      case OR:
-        LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-        for (final Formula op : formula) {
-          if (!this.proceed)
-            return null;
-          nops.add(this.applyRec(op, cache));
-        }
-        final Iterator<Formula> it = nops.iterator();
-        cached = it.next();
-        while (it.hasNext()) {
-          if (!this.proceed)
-            return null;
-          cached = this.distribute(cached, it.next());
-        }
-        break;
-      case AND:
-        nops = new LinkedHashSet<>();
-        for (final Formula op : formula) {
-          final Formula apply = this.applyRec(op, cache);
-          if (!this.proceed)
-            return null;
-          nops.add(apply);
-        }
-        cached = formula.factory().and(nops);
-        break;
-      case PBC:
-        cached = formula.nnf();
-        break;
-      default:
-        throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+    /**
+     * Constructor for a CNF Factorization with a given factorization handler.
+     * @param handler the handler
+     */
+    public CNFFactorization(final FactorizationHandler handler) {
+        this.proceed = true;
+        this.handler = handler;
     }
-    if (this.proceed) {
-      if (cache)
-        formula.setTransformationCacheEntry(FACTORIZED_CNF, cached);
-      return cached;
-    }
-    return null;
-  }
 
-  /**
-   * Computes the distribution (factorization) of two formulas.
-   * @param f1 the first formula
-   * @param f2 the second formula
-   * @return the distribution of the two formulas
-   */
-  private Formula distribute(final Formula f1, final Formula f2) {
-    if (this.handler != null)
-      this.proceed = this.handler.performedDistribution();
-    if (this.proceed) {
-      final FormulaFactory f = f1.factory();
-      if (f1.type() == AND || f2.type() == AND) {
-        final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-        for (final Formula op : f1.type() == AND ? f1 : f2) {
-          final Formula distribute = this.distribute(op, f1.type() == AND ? f2 : f1);
-          if (!this.proceed)
-            return null;
-          nops.add(distribute);
+    @Override
+    public Formula apply(final Formula formula, final boolean cache) {
+        if (this.handler != null) {
+            this.handler.started();
         }
-        return f.and(nops);
-      }
-      final Formula clause = f.or(f1, f2);
-      if (this.handler != null)
-        proceed = this.handler.createdClause(clause);
-      return clause;
+        this.proceed = true;
+        return applyRec(formula, cache);
     }
-    return null;
-  }
+    
+    private Formula applyRec(final Formula formula, final boolean cache) {
+        if (!this.proceed) {
+            return null;
+        }
+        if (formula.type().precedence() >= LITERAL.precedence()) {
+            return formula;
+        }
+        Formula cached = formula.transformationCacheEntry(FACTORIZED_CNF);
+        if (cached != null) {
+            return cached;
+        }
+        switch (formula.type()) {
+            case NOT:
+            case IMPL:
+            case EQUIV:
+                cached = this.applyRec(formula.nnf(), cache);
+                break;
+            case OR:
+                LinkedHashSet<Formula> nops = new LinkedHashSet<>();
+                for (final Formula op : formula) {
+                    if (!this.proceed) {
+                        return null;
+                    }
+                    nops.add(this.applyRec(op, cache));
+                }
+                final Iterator<Formula> it = nops.iterator();
+                cached = it.next();
+                while (it.hasNext()) {
+                    if (!this.proceed) {
+                        return null;
+                    }
+                    cached = this.distribute(cached, it.next());
+                }
+                break;
+            case AND:
+                nops = new LinkedHashSet<>();
+                for (final Formula op : formula) {
+                    final Formula apply = this.applyRec(op, cache);
+                    if (!this.proceed) {
+                        return null;
+                    }
+                    nops.add(apply);
+                }
+                cached = formula.factory().and(nops);
+                break;
+            case PBC:
+                cached = formula.nnf();
+                break;
+            default:
+                throw new IllegalArgumentException("Could not process the formula type " + formula.type());
+        }
+        if (this.proceed) {
+            if (cache) {
+                formula.setTransformationCacheEntry(FACTORIZED_CNF, cached);
+            }
+            return cached;
+        }
+        return null;
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    /**
+     * Computes the distribution (factorization) of two formulas.
+     * @param f1 the first formula
+     * @param f2 the second formula
+     * @return the distribution of the two formulas
+     */
+    private Formula distribute(final Formula f1, final Formula f2) {
+        if (this.handler != null) {
+            this.proceed = this.handler.performedDistribution();
+        }
+        if (this.proceed) {
+            final FormulaFactory f = f1.factory();
+            if (f1.type() == AND || f2.type() == AND) {
+                final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
+                for (final Formula op : f1.type() == AND ? f1 : f2) {
+                    final Formula distribute = this.distribute(op, f1.type() == AND ? f2 : f1);
+                    if (!this.proceed) {
+                        return null;
+                    }
+                    nops.add(distribute);
+                }
+                return f.and(nops);
+            }
+            final Formula clause = f.or(f1, f2);
+            if (this.handler != null) {
+                this.proceed = this.handler.createdClause(clause);
+            }
+            return clause;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

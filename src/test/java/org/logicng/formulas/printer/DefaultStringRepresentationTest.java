@@ -28,17 +28,17 @@
 
 package org.logicng.formulas.printer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.F;
-import org.logicng.formulas.Literal;
 
 import java.util.ArrayList;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Unit tests for {@link DefaultStringRepresentation}
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
 public class DefaultStringRepresentationTest {
@@ -46,43 +46,43 @@ public class DefaultStringRepresentationTest {
 
     @Test
     public void testDefaultPrinter() {
-        Assert.assertEquals("$false", F.f.string(F.FALSE, this.sr));
-        Assert.assertEquals("$true", F.f.string(F.TRUE, this.sr));
-        Assert.assertEquals("x", F.f.string(F.X, this.sr));
-        Assert.assertEquals("~a", F.f.string(F.NA, this.sr));
-        Assert.assertEquals("~(a & b)", F.f.string(F.f.not(F.AND1), this.sr));
-        Assert.assertEquals("x1", F.f.string(F.f.variable("x1"), this.sr));
-        Assert.assertEquals("x190", F.f.string(F.f.variable("x190"), this.sr));
-        Assert.assertEquals("x234", F.f.string(F.f.variable("x234"), this.sr));
-        Assert.assertEquals("x567", F.f.string(F.f.variable("x567"), this.sr));
-        Assert.assertEquals("abc8", F.f.string(F.f.variable("abc8"), this.sr));
-        Assert.assertEquals("~a => ~b", F.f.string(F.IMP2, this.sr));
-        Assert.assertEquals("a & b => x | y", F.f.string(F.IMP3, this.sr));
-        Assert.assertEquals("a => b <=> ~a => ~b", F.f.string(F.EQ4, this.sr));
-        Assert.assertEquals("(x | y) & (~x | ~y)", F.f.string(F.AND3, this.sr));
-        Assert.assertEquals("a & b & c & x", F.f.string(F.f.and(F.A, F.B, F.C, F.X), this.sr));
-        Assert.assertEquals("a | b | c | x", F.f.string(F.f.or(F.A, F.B, F.C, F.X), this.sr));
-        Assert.assertEquals("2*a + -4*b + 3*x = 2", F.f.string(F.PBC1, this.sr));
-        Assert.assertEquals("2*a + -4*b + 3*x > 2", F.f.string(F.PBC2, this.sr));
-        Assert.assertEquals("2*a + -4*b + 3*x >= 2", F.f.string(F.PBC3, this.sr));
-        Assert.assertEquals("2*a + -4*b + 3*x < 2", F.f.string(F.PBC4, this.sr));
-        Assert.assertEquals("2*a + -4*b + 3*x <= 2", F.f.string(F.PBC5, this.sr));
-        Assert.assertEquals("$true", F.f.string(F.f.pbc(CType.LT, 42, new ArrayList<Literal>(), new ArrayList<Integer>()), this.sr));
-        Assert.assertEquals("$false", F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<Literal>(), new ArrayList<Integer>()), this.sr));
-        Assert.assertEquals("a => $false", F.f.string(F.f.implication(F.A, F.f.exo()), sr));
-        Assert.assertEquals("a <=> $false", F.f.string(F.f.equivalence(F.A, F.f.exo()), sr));
-        Assert.assertEquals("a & $false", F.f.string(F.f.and(F.A, F.f.exo()), sr));
-        Assert.assertEquals("a | $false", F.f.string(F.f.or(F.A, F.f.exo()), sr));
-        Assert.assertEquals("a => $true", F.f.string(F.f.implication(F.A, F.f.amo()), sr));
-        Assert.assertEquals("a <=> $true", F.f.string(F.f.equivalence(F.A, F.f.amo()), sr));
-        Assert.assertEquals("a & $true", F.f.string(F.f.and(F.A, F.f.amo()), sr));
-        Assert.assertEquals("a | $true", F.f.string(F.f.or(F.A, F.f.amo()), sr));
-        Assert.assertEquals("a | $true | $false | ($true <=> b)", F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), sr));
+        assertThat(F.f.string(F.FALSE, this.sr)).isEqualTo("$false");
+        assertThat(F.f.string(F.TRUE, this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.X, this.sr)).isEqualTo("x");
+        assertThat(F.f.string(F.NA, this.sr)).isEqualTo("~a");
+        assertThat(F.f.string(F.f.not(F.AND1), this.sr)).isEqualTo("~(a & b)");
+        assertThat(F.f.string(F.f.variable("x1"), this.sr)).isEqualTo("x1");
+        assertThat(F.f.string(F.f.variable("x190"), this.sr)).isEqualTo("x190");
+        assertThat(F.f.string(F.f.variable("x234"), this.sr)).isEqualTo("x234");
+        assertThat(F.f.string(F.f.variable("x567"), this.sr)).isEqualTo("x567");
+        assertThat(F.f.string(F.f.variable("abc8"), this.sr)).isEqualTo("abc8");
+        assertThat(F.f.string(F.IMP2, this.sr)).isEqualTo("~a => ~b");
+        assertThat(F.f.string(F.IMP3, this.sr)).isEqualTo("a & b => x | y");
+        assertThat(F.f.string(F.EQ4, this.sr)).isEqualTo("a => b <=> ~a => ~b");
+        assertThat(F.f.string(F.AND3, this.sr)).isEqualTo("(x | y) & (~x | ~y)");
+        assertThat(F.f.string(F.f.and(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("a & b & c & x");
+        assertThat(F.f.string(F.f.or(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("a | b | c | x");
+        assertThat(F.f.string(F.PBC1, this.sr)).isEqualTo("2*a + -4*b + 3*x = 2");
+        assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("2*a + -4*b + 3*x > 2");
+        assertThat(F.f.string(F.PBC3, this.sr)).isEqualTo("2*a + -4*b + 3*x >= 2");
+        assertThat(F.f.string(F.PBC4, this.sr)).isEqualTo("2*a + -4*b + 3*x < 2");
+        assertThat(F.f.string(F.PBC5, this.sr)).isEqualTo("2*a + -4*b + 3*x <= 2");
+        assertThat(F.f.string(F.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$false");
+        assertThat(F.f.string(F.f.implication(F.A, F.f.exo()), this.sr)).isEqualTo("~a");
+        assertThat(F.f.string(F.f.equivalence(F.A, F.f.exo()), this.sr)).isEqualTo("~a");
+        assertThat(F.f.string(F.f.and(F.A, F.f.exo()), this.sr)).isEqualTo("$false");
+        assertThat(F.f.string(F.f.or(F.A, F.f.exo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.implication(F.A, F.f.amo()), this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.f.equivalence(F.A, F.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.and(F.A, F.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(F.f.string(F.f.or(F.A, F.f.amo()), this.sr)).isEqualTo("$true");
+        assertThat(F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), this.sr)).isEqualTo("$true");
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals("DefaultStringRepresentation", this.sr.toString());
+        assertThat(this.sr.toString()).isEqualTo("DefaultStringRepresentation");
     }
 
 }

@@ -34,33 +34,36 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.functions.ModelEnumerationFunction;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Canonical DNF generation via enumeration of models by a SAT solver.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
 public final class CanonicalDNFEnumeration implements FormulaTransformation {
 
-  @Override
-  public Formula apply(final Formula formula, boolean cache) {
-    final FormulaFactory f = formula.factory();
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(formula);
-    final List<Assignment> enumeration = solver.enumerateAllModels();
-    if (enumeration.isEmpty())
-      return f.falsum();
-    final List<Formula> ops = new LinkedList<>();
-    for (final Assignment a : enumeration)
-      ops.add(a.formula(f));
-    return f.or(ops);
-  }
+    @Override
+    public Formula apply(final Formula formula, final boolean cache) {
+        final FormulaFactory f = formula.factory();
+        final SATSolver solver = MiniSat.miniSat(f);
+        solver.add(formula);
+        final List<Assignment> enumeration = solver.execute(ModelEnumerationFunction.builder().build());
+        if (enumeration.isEmpty()) {
+            return f.falsum();
+        }
+        final List<Formula> ops = new ArrayList<>();
+        for (final Assignment a : enumeration) {
+            ops.add(a.formula(f));
+        }
+        return f.or(ops);
+    }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

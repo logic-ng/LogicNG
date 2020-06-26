@@ -32,6 +32,8 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.functions.BackboneFunction;
+import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.util.FormulaHelper;
 
 import java.util.Collection;
@@ -65,9 +67,9 @@ public class BackboneGeneration {
             throw new IllegalArgumentException("Provide at least one formula for backbone computation");
         }
         final FormulaFactory f = formulas.iterator().next().factory();
-        final MiniSat miniSat = MiniSat.miniSat(f);
+        final MiniSat miniSat = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         miniSat.add(formulas);
-        return miniSat.backbone(variables, type);
+        return miniSat.execute(BackboneFunction.builder().variables(variables).type(type).build());
     }
 
     /**

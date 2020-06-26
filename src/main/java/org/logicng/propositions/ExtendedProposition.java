@@ -28,96 +28,64 @@
 
 package org.logicng.propositions;
 
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 
-import java.util.Collection;
 import java.util.Objects;
 
 /**
- * An extended proposition in LogicNG.  An extended proposition is a collection of formulas with additional information
- * like a user-provided {@link PropositionBagpack} object.
+ * An extended proposition in LogicNG.  An extended proposition is a formula with additional information
+ * like a user-provided {@link PropositionBackpack} object.
  * @param <T> the type of the bagback
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
-public final class ExtendedProposition<T extends PropositionBagpack> extends Proposition {
+public final class ExtendedProposition<T extends PropositionBackpack> extends Proposition {
 
-  private final ImmutableFormulaList formulas;
-  private final T bagback;
+    private final Formula formula;
+    private final T backpack;
 
-  /**
-   * Constructs a new extended proposition for a single formula.
-   * @param bagback the bagpack
-   * @param formula the formula
-   */
-  public ExtendedProposition(final T bagback, final Formula formula) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formula);
-    this.bagback = bagback;
-  }
-
-  /**
-   * Constructs a new extended proposition for a collection of formulas.
-   * @param bagback  the bagpack
-   * @param formulas the formulas
-   */
-  public ExtendedProposition(final T bagback, final Collection<? extends Formula> formulas) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.bagback = bagback;
-  }
-
-  /**
-   * Constructs a new extended proposition for a variable number of formulas.
-   * @param bagback  the bagpack
-   * @param formulas the formulas
-   */
-  public ExtendedProposition(final T bagback, final Formula... formulas) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.bagback = bagback;
-  }
-
-  /**
-   * Constructs a new extended proposition for a immutable list of formulas.
-   * @param bagback  the bagpack
-   * @param formulas the formulas
-   */
-  public ExtendedProposition(final T bagback, final ImmutableFormulaList formulas) {
-    this.formulas = new ImmutableFormulaList(FType.AND, formulas);
-    this.bagback = bagback;
-  }
-
-  @Override
-  public ImmutableFormulaList formulas() {
-    return this.formulas;
-  }
-
-  /**
-   * Returns the bagpack of this proposition.
-   * @return the bagpack of this proposition
-   */
-  public T bagback() {
-    return this.bagback;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.formulas, this.bagback);
-  }
-
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof ExtendedProposition) {
-      final ExtendedProposition o = (ExtendedProposition) other;
-      return Objects.equals(this.formulas, o.formulas) && Objects.equals(this.bagback, o.bagback);
+    /**
+     * Constructs a new extended proposition for a single formula.
+     * @param backpack the backpack
+     * @param formula  the formula
+     */
+    public ExtendedProposition(final T backpack, final Formula formula) {
+        this.formula = formula;
+        this.backpack = backpack;
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    return String.format("ExtendedProposition{formulas=%s, bagpack=%s}", this.formulas, this.bagback);
-  }
+    @Override
+    public Formula formula() {
+        return this.formula;
+    }
+
+    /**
+     * Returns the backpack of this proposition.
+     * @return the backpack of this proposition
+     */
+    public T backpack() {
+        return this.backpack;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.formula, this.backpack);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other instanceof ExtendedProposition) {
+            final ExtendedProposition<?> o = (ExtendedProposition<?>) other;
+            return Objects.equals(this.formula, o.formula) && Objects.equals(this.backpack, o.backpack);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ExtendedProposition{formula=%s, backpack=%s}", this.formula, this.backpack);
+    }
 }

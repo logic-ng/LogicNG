@@ -50,75 +50,76 @@ import java.util.LinkedHashSet;
  */
 public final class FormulaReader {
 
-  /**
-   * Private constructor.
-   */
-  private FormulaReader() {
-    // Intentionally left empty.
-  }
-
-  /**
-   * Reads a given file and returns the contained propositional formula.
-   * @param fileName the file name
-   * @param f        the formula factory
-   * @return the parsed formula
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
-   */
-  public static Formula readPropositionalFormula(final String fileName, final FormulaFactory f) throws IOException, ParserException {
-    return read(new File(fileName), new PropositionalParser(f));
-  }
-
-  /**
-   * Reads a given file and returns the contained propositional formula.
-   * @param file the file
-   * @param f    the formula factory
-   * @return the parsed formula
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
-   */
-  public static Formula readPropositionalFormula(final File file, final FormulaFactory f) throws IOException, ParserException {
-    return read(file, new PropositionalParser(f));
-  }
-
-  /**
-   * Reads a given file and returns the contained pseudo-Boolean formula.
-   * @param fileName the file name
-   * @param f        the formula factory
-   * @return the parsed formula
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
-   */
-  public static Formula readPseudoBooleanFormula(final String fileName, final FormulaFactory f) throws IOException, ParserException {
-    return read(new File(fileName), new PseudoBooleanParser(f));
-  }
-
-  /**
-   * Reads a given file and returns the contained pseudo-Boolean formula.
-   * @param file the file
-   * @param f    the formula factory
-   * @return the parsed formula
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
-   */
-  public static Formula readPseudoBooleanFormula(final File file, final FormulaFactory f) throws IOException, ParserException {
-    return read(file, new PseudoBooleanParser(f));
-  }
-
-  /**
-   * Internal read function.
-   * @param file   the file
-   * @param parser the parser
-   * @return the parsed formula
-   * @throws IOException     if there was a problem reading the file
-   * @throws ParserException if there was a problem parsing the formula
-   */
-  private static Formula read(final File file, final FormulaParser parser) throws IOException, ParserException {
-    try (final BufferedReader br = new BufferedReader(new FileReader(file))) {
-      final LinkedHashSet<Formula> ops = new LinkedHashSet<>();
-      while (br.ready())
-        ops.add(parser.parse(br.readLine()));
-      return parser.factory().and(ops);
+    /**
+     * Private constructor.
+     */
+    private FormulaReader() {
+        // Intentionally left empty.
     }
-  }
+
+    /**
+     * Reads a given file and returns the contained propositional formula.
+     * @param fileName the file name
+     * @param f        the formula factory
+     * @return the parsed formula
+     * @throws IOException     if there was a problem reading the file
+     * @throws ParserException if there was a problem parsing the formula
+     */
+    public static Formula readPropositionalFormula(final String fileName, final FormulaFactory f) throws IOException, ParserException {
+        return read(new File(fileName), new PropositionalParser(f));
+    }
+
+    /**
+     * Reads a given file and returns the contained propositional formula.
+     * @param file the file
+     * @param f    the formula factory
+     * @return the parsed formula
+     * @throws IOException     if there was a problem reading the file
+     * @throws ParserException if there was a problem parsing the formula
+     */
+    public static Formula readPropositionalFormula(final File file, final FormulaFactory f) throws IOException, ParserException {
+        return read(file, new PropositionalParser(f));
+    }
+
+    /**
+     * Reads a given file and returns the contained pseudo-Boolean formula.
+     * @param fileName the file name
+     * @param f        the formula factory
+     * @return the parsed formula
+     * @throws IOException     if there was a problem reading the file
+     * @throws ParserException if there was a problem parsing the formula
+     */
+    public static Formula readPseudoBooleanFormula(final String fileName, final FormulaFactory f) throws IOException, ParserException {
+        return read(new File(fileName), new PseudoBooleanParser(f));
+    }
+
+    /**
+     * Reads a given file and returns the contained pseudo-Boolean formula.
+     * @param file the file
+     * @param f    the formula factory
+     * @return the parsed formula
+     * @throws IOException     if there was a problem reading the file
+     * @throws ParserException if there was a problem parsing the formula
+     */
+    public static Formula readPseudoBooleanFormula(final File file, final FormulaFactory f) throws IOException, ParserException {
+        return read(file, new PseudoBooleanParser(f));
+    }
+
+    /**
+     * Internal read function.
+     * @param file   the file
+     * @param parser the parser
+     * @return the parsed formula
+     * @throws IOException     if there was a problem reading the file
+     * @throws ParserException if there was a problem parsing the formula
+     */
+    private static Formula read(final File file, final FormulaParser parser) throws IOException, ParserException {
+        try (final BufferedReader br = new BufferedReader(new FileReader(file))) {
+            final LinkedHashSet<Formula> ops = new LinkedHashSet<>();
+            while (br.ready()) {
+                ops.add(parser.parse(br.readLine()));
+            }
+            return parser.factory().and(ops);
+        }
+    }
 }

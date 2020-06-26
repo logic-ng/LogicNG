@@ -35,12 +35,12 @@ package org.logicng.io.parsers;
  */
 public final class ParserException extends Exception {
 
-  /**
-   * Constructs a new parser exception with a given message and inner exception.
-   * @param message   the message
-   * @param exception the inner exception
-   */
-  public ParserException(final String message, final Exception exception) {
-    super(message, exception);
-  }
+    /**
+     * Constructs a new parser exception with a given message and inner exception.
+     * @param message   the message
+     * @param exception the inner exception
+     */
+    public ParserException(final String message, final Exception exception) {
+        super(message, exception);
+    }
 }

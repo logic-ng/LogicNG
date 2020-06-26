@@ -28,20 +28,19 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.logicng.collections.ImmutableFormulaList;
-import org.logicng.datastructures.Assignment;
-import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.FType;
+import org.junit.jupiter.api.Test;
+import org.logicng.LogicNGTest;
+import org.logicng.formulas.CardinalityConstraint;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BEST;
 import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BIMANDER;
 import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BINARY;
@@ -56,84 +55,92 @@ import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.SQ
 
 /**
  * Unit tests for the exactly-one encoders.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-public class CCEXOTest {
+public class CCEXOTest implements LogicNGTest {
 
-  private CCConfig[] configs;
+    private final CCConfig[] configs;
 
-  public CCEXOTest() {
-    configs = new CCConfig[11];
-    configs[0] = new CCConfig.Builder().amoEncoding(PURE).build();
-    configs[1] = new CCConfig.Builder().amoEncoding(LADDER).build();
-    configs[2] = new CCConfig.Builder().amoEncoding(PRODUCT).build();
-    configs[3] = new CCConfig.Builder().amoEncoding(BINARY).build();
-    configs[4] = new CCConfig.Builder().amoEncoding(NESTED).build();
-    configs[5] = new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(3).build();
-    configs[6] = new CCConfig.Builder().amoEncoding(COMMANDER).commanderGroupSize(7).build();
-    configs[7] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build();
-    configs[8] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build();
-    configs[9] = new CCConfig.Builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build();
-    configs[10] = new CCConfig.Builder().amoEncoding(BEST).build();
-  }
+    public CCEXOTest() {
+        this.configs = new CCConfig[11];
+        this.configs[0] = CCConfig.builder().amoEncoding(PURE).build();
+        this.configs[1] = CCConfig.builder().amoEncoding(LADDER).build();
+        this.configs[2] = CCConfig.builder().amoEncoding(PRODUCT).build();
+        this.configs[3] = CCConfig.builder().amoEncoding(BINARY).build();
+        this.configs[4] = CCConfig.builder().amoEncoding(NESTED).build();
+        this.configs[5] = CCConfig.builder().amoEncoding(COMMANDER).commanderGroupSize(3).build();
+        this.configs[6] = CCConfig.builder().amoEncoding(COMMANDER).commanderGroupSize(7).build();
+        this.configs[7] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build();
+        this.configs[8] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build();
+        this.configs[9] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build();
+        this.configs[10] = CCConfig.builder().amoEncoding(BEST).build();
+    }
 
-  @Test
-  public void testEXO0() {
-    final FormulaFactory f = new FormulaFactory();
-    final PBConstraint cc = f.exo();
-    for (final CCConfig config : this.configs)
-      Assert.assertEquals(f.falsum(), new CCEncoder(f, config).encode(cc).formula(f).cnf());
-    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
-  }
+    @Test
+    public void testEXO0() {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula cc = f.exo();
+        assertThat(cc).isEqualTo(f.falsum());
+    }
 
-  @Test
-  public void testEXO1() {
-    final FormulaFactory f = new FormulaFactory();
-    final PBConstraint cc = f.exo(f.variable("v0"));
-    final ImmutableFormulaList expected = new ImmutableFormulaList(FType.AND, f.variable("v0"));
-    for (final CCConfig config : this.configs)
-      Assert.assertEquals(expected, new CCEncoder(f, config).encode(cc));
-    Assert.assertTrue(f.newCCVariable().name().endsWith("_0"));
-  }
+    @Test
+    public void testEXO1() {
+        final FormulaFactory f = new FormulaFactory();
+        final CardinalityConstraint cc = (CardinalityConstraint) f.exo(f.variable("v0"));
+        for (final CCConfig config : this.configs) {
+            assertThat(new CCEncoder(f, config).encode(cc)).containsExactly(f.variable("v0"));
+        }
+        assertThat(f.newCCVariable().name()).endsWith("_0");
+    }
 
-  @Test
-  public void testEXOK() {
-    final FormulaFactory f = new FormulaFactory();
-    int counter = 0;
-    for (final CCConfig config : this.configs)
-      if (config != null) {
-        f.putConfiguration(config);
-        testEXO(2, f);
-        testEXO(10, f);
-        testEXO(100, f);
-        testEXO(250, f);
-        testEXO(500, f);
-        Assert.assertTrue(f.newCCVariable().name().endsWith("_" + counter++));
-      }
-  }
+    @Test
+    public void testEXOK() {
+        final FormulaFactory f = new FormulaFactory();
+        int counter = 0;
+        for (final CCConfig config : this.configs) {
+            if (config != null) {
+                f.putConfiguration(config);
+                testEXO(2, f);
+                testEXO(10, f);
+                testEXO(100, f);
+                testEXO(250, f);
+                testEXO(500, f);
+                assertThat(f.newCCVariable().name()).endsWith("_" + counter++);
+            }
+        }
+    }
 
-  @Test
-  public void testToString() {
-    Assert.assertEquals("PURE", configs[0].amoEncoder.toString());
-    Assert.assertEquals("LADDER", configs[1].amoEncoder.toString());
-    Assert.assertEquals("PRODUCT", configs[2].amoEncoder.toString());
-    Assert.assertEquals("BINARY", configs[3].amoEncoder.toString());
-    Assert.assertEquals("NESTED", configs[4].amoEncoder.toString());
-    Assert.assertEquals("COMMANDER", configs[5].amoEncoder.toString());
-    Assert.assertEquals("BIMANDER", configs[7].amoEncoder.toString());
-  }
+    @Test
+    public void testEncodingSetting() {
+        final FormulaFactory f = new FormulaFactory();
+        f.putConfiguration(CCConfig.builder().amoEncoding(PURE).build());
+        final CardinalityConstraint exo = (CardinalityConstraint) f.exo(IntStream.range(0, 100).mapToObj(i -> f.variable("v" + i)).collect(Collectors.toList()));
+        assertThat(exo.cnf().variables()).hasSize(100);
+        assertThat(exo.cnf().numberOfOperands()).isEqualTo(4951);
+    }
 
-  private void testEXO(int numLits, final FormulaFactory f) {
-    final Variable[] problemLits = new Variable[numLits];
-    for (int i = 0; i < numLits; i++)
-      problemLits[i] = f.variable("v" + i);
-    final SATSolver solver = MiniSat.miniSat(f);
-    solver.add(f.exo(problemLits));
-    Assert.assertEquals(Tristate.TRUE, solver.sat());
-    final List<Assignment> models = solver.enumerateAllModels(problemLits);
-    Assert.assertEquals(numLits, models.size());
-    for (final Assignment model : models)
-      Assert.assertEquals(1, model.positiveLiterals().size());
-  }
+    @Test
+    public void testToString() {
+        assertThat(this.configs[0].amoEncoder.toString()).isEqualTo("PURE");
+        assertThat(this.configs[1].amoEncoder.toString()).isEqualTo("LADDER");
+        assertThat(this.configs[2].amoEncoder.toString()).isEqualTo("PRODUCT");
+        assertThat(this.configs[3].amoEncoder.toString()).isEqualTo("BINARY");
+        assertThat(this.configs[4].amoEncoder.toString()).isEqualTo("NESTED");
+        assertThat(this.configs[5].amoEncoder.toString()).isEqualTo("COMMANDER");
+        assertThat(this.configs[7].amoEncoder.toString()).isEqualTo("BIMANDER");
+    }
+
+    private void testEXO(final int numLits, final FormulaFactory f) {
+        final Variable[] problemLits = new Variable[numLits];
+        for (int i = 0; i < numLits; i++) {
+            problemLits[i] = f.variable("v" + i);
+        }
+        final SATSolver solver = MiniSat.miniSat(f);
+        solver.add(f.exo(problemLits));
+        assertSolverSat(solver);
+        assertThat(solver.enumerateAllModels(problemLits))
+                .hasSize(numLits)
+                .allMatch(m -> m.positiveVariables().size() == 1);
+    }
 }

@@ -28,9 +28,8 @@
 
 package org.logicng.transformations.cnf;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.logicng.LongRunningTag;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -40,9 +39,12 @@ import org.logicng.predicates.satisfiability.TautologyPredicate;
 
 import java.io.IOException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 /**
  * Unit tests for {@link CNFSubsumption}.
- * @version 1.5.0
+ * @version 2.0.0
  * @since 1.5.0
  */
 public class CNFSubsumptionTest {
@@ -51,9 +53,9 @@ public class CNFSubsumptionTest {
     private final PropositionalParser p = new PropositionalParser(this.f);
     private final CNFSubsumption s = new CNFSubsumption();
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNotInCNF() throws ParserException {
-        this.s.apply(this.p.parse("a => b"), false);
+    @Test
+    public void testNotInCNF() {
+        assertThatThrownBy(() -> this.s.apply(this.p.parse("a => b"), false)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -82,6 +84,7 @@ public class CNFSubsumptionTest {
     }
 
     @Test
+    @LongRunningTag
     public void testEvenLargerFormula() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);

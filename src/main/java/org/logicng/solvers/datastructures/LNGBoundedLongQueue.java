@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-/***************************************************************************************
+/*
  * Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon
  * CRIL - Univ. Artois, France
  * LRI  - Univ. Paris Sud, France (2009-2013)
@@ -73,7 +73,7 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
  * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- **************************************************************************************************/
+ */
 
 package org.logicng.solvers.datastructures;
 
@@ -85,94 +85,96 @@ import org.logicng.collections.LNGLongVector;
  * @since 1.0
  */
 public final class LNGBoundedLongQueue {
-  private final LNGLongVector elems;
-  private int first;
-  private int last;
-  private long sumOfQueue;
-  private int maxSize;
-  private int queueSize;
+    private final LNGLongVector elems;
+    private int first;
+    private int last;
+    private long sumOfQueue;
+    private int maxSize;
+    private int queueSize;
 
-  /**
-   * Constructs a new bounded long queue.
-   */
-  public LNGBoundedLongQueue() {
-    this.elems = new LNGLongVector();
-    this.first = 0;
-    this.last = 0;
-    this.sumOfQueue = 0;
-    this.maxSize = 0;
-    this.queueSize = 0;
-  }
-
-  /**
-   * Initializes the size of this queue.
-   * @param size the size
-   */
-  public void initSize(int size) {
-    this.growTo(size);
-  }
-
-  /**
-   * Pushes a new element to the queue.
-   * @param x the new element
-   */
-  public void push(long x) {
-    if (this.queueSize == this.maxSize) {
-      assert this.last == this.first;
-      this.sumOfQueue -= this.elems.get(this.last);
-      if ((++this.last) == this.maxSize)
+    /**
+     * Constructs a new bounded long queue.
+     */
+    public LNGBoundedLongQueue() {
+        this.elems = new LNGLongVector();
+        this.first = 0;
         this.last = 0;
-    } else
-      this.queueSize++;
-    this.sumOfQueue += x;
-    this.elems.set(this.first, x);
-    if ((++this.first) == this.maxSize) {
-      this.first = 0;
-      this.last = 0;
+        this.sumOfQueue = 0;
+        this.maxSize = 0;
+        this.queueSize = 0;
     }
-  }
 
-  /**
-   * Returns the average value of this queue.
-   * @return the average value of this queue
-   */
-  public int avg() {
-    return (int) (this.sumOfQueue / this.queueSize);
-  }
+    /**
+     * Initializes the size of this queue.
+     * @param size the size
+     */
+    public void initSize(final int size) {
+        this.growTo(size);
+    }
 
-  /**
-   * Returns {@code true} if this queue is valid (the queue is filled completely) or {@code false} if it is not.
-   * @return {@code true} if this queue is valid
-   */
-  public boolean valid() {
-    return this.queueSize == this.maxSize;
-  }
+    /**
+     * Pushes a new element to the queue.
+     * @param x the new element
+     */
+    public void push(final long x) {
+        if (this.queueSize == this.maxSize) {
+            assert this.last == this.first;
+            this.sumOfQueue -= this.elems.get(this.last);
+            if ((++this.last) == this.maxSize) {
+                this.last = 0;
+            }
+        } else {
+            this.queueSize++;
+        }
+        this.sumOfQueue += x;
+        this.elems.set(this.first, x);
+        if ((++this.first) == this.maxSize) {
+            this.first = 0;
+            this.last = 0;
+        }
+    }
 
-  /**
-   * Grows this queue to a given size.
-   * @param size the size
-   */
-  private void growTo(int size) {
-    this.elems.growTo(size, 0);
-    this.first = 0;
-    this.maxSize = size;
-    this.queueSize = 0;
-    this.last = 0;
-  }
+    /**
+     * Returns the average value of this queue.
+     * @return the average value of this queue
+     */
+    public int avg() {
+        return (int) (this.sumOfQueue / this.queueSize);
+    }
 
-  /**
-   * Performs a fast clear of this queue (the elements are left untouched).
-   */
-  public void fastClear() {
-    this.first = 0;
-    this.last = 0;
-    this.queueSize = 0;
-    this.sumOfQueue = 0;
-  }
+    /**
+     * Returns {@code true} if this queue is valid (the queue is filled completely) or {@code false} if it is not.
+     * @return {@code true} if this queue is valid
+     */
+    public boolean valid() {
+        return this.queueSize == this.maxSize;
+    }
 
-  @Override
-  public String toString() {
-    return String.format("LNGBoundedLongQueue{first=%d, last=%d, sumOfQueue=%d, maxSize=%d, queueSize=%d, elems=%s}",
-            this.first, this.last, this.sumOfQueue, this.maxSize, this.queueSize, this.elems);
-  }
+    /**
+     * Grows this queue to a given size.
+     * @param size the size
+     */
+    private void growTo(final int size) {
+        this.elems.growTo(size, 0);
+        this.first = 0;
+        this.maxSize = size;
+        this.queueSize = 0;
+        this.last = 0;
+    }
+
+    /**
+     * Performs a fast clear of this queue (the elements are left untouched).
+     */
+    public void fastClear() {
+        this.first = 0;
+        this.last = 0;
+        this.queueSize = 0;
+        this.sumOfQueue = 0;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("LNGBoundedLongQueue{first=%d, last=%d, sumOfQueue=%d, maxSize=%d, queueSize=%d, elems=%s}",
+                this.first, this.last, this.sumOfQueue, this.maxSize, this.queueSize, this.elems);
+    }
 }

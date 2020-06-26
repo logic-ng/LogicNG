@@ -28,8 +28,9 @@
 
 package org.logicng.solvers.maxsat;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.solvers.maxsat.algorithms.IncWBO;
 import org.logicng.solvers.maxsat.algorithms.LinearSU;
 import org.logicng.solvers.maxsat.algorithms.LinearUS;
@@ -43,41 +44,41 @@ import java.util.Arrays;
 
 /**
  * Unit tests for the package {@link org.logicng.solvers.maxsat}.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
 public class MaxSATClassTest {
 
-  @Test
-  public void testMaxSATConfig() {
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.SolverType.values()).contains(MaxSATConfig.SolverType.valueOf("GLUCOSE")));
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.IncrementalStrategy.values()).contains(MaxSATConfig.IncrementalStrategy.valueOf("ITERATIVE")));
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.AMOEncoding.values()).contains(MaxSATConfig.AMOEncoding.valueOf("LADDER")));
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.PBEncoding.values()).contains(MaxSATConfig.PBEncoding.valueOf("SWC")));
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.CardinalityEncoding.values()).contains(MaxSATConfig.CardinalityEncoding.valueOf("TOTALIZER")));
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.WeightStrategy.values()).contains(MaxSATConfig.WeightStrategy.valueOf("DIVERSIFY")));
-    Assert.assertTrue(Arrays.asList(MaxSATConfig.Verbosity.values()).contains(MaxSATConfig.Verbosity.valueOf("SOME")));
-  }
+    @Test
+    public void testMaxSATConfig() {
+        assertThat(Arrays.asList(MaxSATConfig.SolverType.values()).contains(MaxSATConfig.SolverType.valueOf("GLUCOSE"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.IncrementalStrategy.values()).contains(MaxSATConfig.IncrementalStrategy.valueOf("ITERATIVE"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.AMOEncoding.values()).contains(MaxSATConfig.AMOEncoding.valueOf("LADDER"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.PBEncoding.values()).contains(MaxSATConfig.PBEncoding.valueOf("SWC"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.CardinalityEncoding.values()).contains(MaxSATConfig.CardinalityEncoding.valueOf("TOTALIZER"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.WeightStrategy.values()).contains(MaxSATConfig.WeightStrategy.valueOf("DIVERSIFY"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.Verbosity.values()).contains(MaxSATConfig.Verbosity.valueOf("SOME"))).isTrue();
+    }
 
-  @Test
-  public void testMaxSATenum() {
-    Assert.assertTrue(Arrays.asList(MaxSAT.ProblemType.values()).contains(MaxSAT.ProblemType.valueOf("UNWEIGHTED")));
-    Assert.assertTrue(Arrays.asList(MaxSAT.MaxSATResult.values()).contains(MaxSAT.MaxSATResult.valueOf("OPTIMUM")));
-  }
+    @Test
+    public void testMaxSATenum() {
+        assertThat(Arrays.asList(MaxSAT.ProblemType.values()).contains(MaxSAT.ProblemType.valueOf("UNWEIGHTED"))).isTrue();
+        assertThat(Arrays.asList(MaxSAT.MaxSATResult.values()).contains(MaxSAT.MaxSATResult.valueOf("OPTIMUM"))).isTrue();
+    }
 
-  @Test
-  public void testMaxSATtoString() {
-    MaxSAT wmsu3 = new WMSU3();
-    Assert.assertEquals("WMSU3", wmsu3.toString());
-    MaxSAT wbo = new WBO();
-    Assert.assertEquals("WBO", wbo.toString());
-    MaxSAT incWbo = new IncWBO();
-    Assert.assertEquals("IncWBO", incWbo.toString());
-    MaxSAT msu3 = new MSU3();
-    Assert.assertEquals("MSU3", msu3.toString());
-    MaxSAT linearSu = new LinearSU();
-    Assert.assertEquals("LinearSU", linearSu.toString());
-    MaxSAT linearUs = new LinearUS();
-    Assert.assertEquals("LinearUS", linearUs.toString());
-  }
+    @Test
+    public void testMaxSATtoString() {
+        final MaxSAT wmsu3 = new WMSU3();
+        assertThat(wmsu3.toString()).isEqualTo("WMSU3");
+        final MaxSAT wbo = new WBO();
+        assertThat(wbo.toString()).isEqualTo("WBO");
+        final MaxSAT incWbo = new IncWBO();
+        assertThat(incWbo.toString()).isEqualTo("IncWBO");
+        final MaxSAT msu3 = new MSU3();
+        assertThat(msu3.toString()).isEqualTo("MSU3");
+        final MaxSAT linearSu = new LinearSU();
+        assertThat(linearSu.toString()).isEqualTo("LinearSU");
+        final MaxSAT linearUs = new LinearUS();
+        assertThat(linearUs.toString()).isEqualTo("LinearUS");
+    }
 }

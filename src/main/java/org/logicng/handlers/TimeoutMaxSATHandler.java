@@ -37,67 +37,67 @@ import org.logicng.datastructures.Assignment;
  */
 public final class TimeoutMaxSATHandler extends TimeoutHandler implements MaxSATHandler {
 
-  private final TimeoutSATHandler satHandler;
-  private int currentLb;
-  private int currentUb;
+    private final TimeoutSATHandler satHandler;
+    private int currentLb;
+    private int currentUb;
 
-  /**
-   * Constructs a new instance with a given timeout in milliseconds.
-   * <p>
-   * Note that it might take a few milliseconds more until the solver is actually canceled,
-   * since the handler depends on the solvers call to {@code foundApproximation()} or {@link SATHandler#detectedConflict()}.
-   * @param timeout the timeout in milliseconds
-   */
-  public TimeoutMaxSATHandler(final long timeout) {
-    super(timeout);
-    this.satHandler = new TimeoutSATHandler(timeout);
-    this.currentLb = -1;
-    this.currentUb = -1;
-  }
+    /**
+     * Constructs a new instance with a given timeout in milliseconds.
+     * <p>
+     * Note that it might take a few milliseconds more until the solver is actually canceled,
+     * since the handler depends on the solvers call to {@code foundApproximation()} or {@link SATHandler#detectedConflict()}.
+     * @param timeout the timeout in milliseconds
+     */
+    public TimeoutMaxSATHandler(final long timeout) {
+        super(timeout);
+        this.satHandler = new TimeoutSATHandler(timeout);
+        this.currentLb = -1;
+        this.currentUb = -1;
+    }
 
-  @Override
-  public void started() {
-    super.started();
-    this.satHandler.started();
-    this.currentLb = -1;
-    this.currentUb = -1;
-  }
+    @Override
+    public void started() {
+        super.started();
+        this.satHandler.started();
+        this.currentLb = -1;
+        this.currentUb = -1;
+    }
 
-  @Override
-  public SATHandler satHandler() {
-    return this.satHandler;
-  }
+    @Override
+    public SATHandler satHandler() {
+        return this.satHandler;
+    }
 
-  @Override
-  public boolean foundLowerBound(final int lowerBound, final Assignment model) {
-    this.currentLb = lowerBound;
-    return timeLimitExceeded();
-  }
+    @Override
+    public boolean foundLowerBound(final int lowerBound, final Assignment model) {
+        this.currentLb = lowerBound;
+        return timeLimitExceeded();
+    }
 
-  @Override
-  public boolean foundUpperBound(final int upperBound, final Assignment model) {
-    this.currentUb = upperBound;
-    return timeLimitExceeded();
-  }
+    @Override
+    public boolean foundUpperBound(final int upperBound, final Assignment model) {
+        this.currentUb = upperBound;
+        return timeLimitExceeded();
+    }
 
-  @Override
-  public boolean satSolverFinished() {
-    this.aborted = this.satHandler.aborted();
-    return !this.aborted;
-  }
+    @Override
+    public boolean satSolverFinished() {
+        this.aborted = this.satHandler.aborted();
+        return !this.aborted;
+    }
 
-  @Override
-  public void finishedSolving() {
-    // nothing to do here
-  }
+    @Override
+    public void finishedSolving() {
+        // nothing to do here
+    }
 
-  @Override
-  public int lowerBoundApproximation() {
-    return this.currentLb;
-  }
+    @Override
+    public int lowerBoundApproximation() {
+        return this.currentLb;
+    }
 
-  @Override
-  public int upperBoundApproximation() {
-    return this.currentUb;
-  }
+    @Override
+    public int upperBoundApproximation() {
+        return this.currentUb;
+    }
 }

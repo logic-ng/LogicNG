@@ -46,71 +46,73 @@ import java.nio.charset.StandardCharsets;
  */
 public final class FormulaWriter {
 
-  /**
-   * Private constructor.
-   */
-  private FormulaWriter() {
-    // Intentionally left empty.
-  }
-
-  /**
-   * Writes a given formula to a file.
-   * @param fileName          the file name of the file
-   * @param formula           the formula to write
-   * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
-   *                          written to different lines without a conjoining operator
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline) throws IOException {
-    write(new File(fileName), formula, splitAndMultiline, formula.factory().stringRepresentation());
-  }
-
-  /**
-   * Writes a given formula to a file with a given formula formatter.
-   * @param fileName          the file name of the file
-   * @param formula           the formula to write
-   * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
-   *                          written to different lines without a conjoining operator
-   * @param formatter         the formatter for the formula
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline,
-                           final FormulaStringRepresentation formatter) throws IOException {
-    write(new File(fileName), formula, splitAndMultiline, formatter);
-  }
-
-  /**
-   * Writes a given formula to a file.
-   * @param file              the file
-   * @param formula           the formula to write
-   * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
-   *                          written to different lines without a conjoining operator
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final File file, final Formula formula, final boolean splitAndMultiline) throws IOException {
-    write(file, formula, splitAndMultiline, formula.factory().stringRepresentation());
-  }
-
-  /**
-   * Writes a given formula to a file  with a given formula formatter.
-   * @param file              the file
-   * @param formula           the formula to write
-   * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
-   *                          written to different lines without a conjoining operator
-   * @param formatter         the formatter for the formula
-   * @throws IOException if there was a problem writing the file
-   */
-  public static void write(final File file, final Formula formula, final boolean splitAndMultiline,
-                           final FormulaStringRepresentation formatter) throws IOException {
-    final StringBuilder sb = new StringBuilder();
-    if (splitAndMultiline && formula.type() == FType.AND)
-      for (final Formula f : formula)
-        sb.append(formatter.toString(f)).append(System.lineSeparator());
-    else
-      sb.append(formatter.toString(formula));
-    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      writer.append(sb);
-      writer.flush();
+    /**
+     * Private constructor.
+     */
+    private FormulaWriter() {
+        // Intentionally left empty.
     }
-  }
+
+    /**
+     * Writes a given formula to a file.
+     * @param fileName          the file name of the file
+     * @param formula           the formula to write
+     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     *                          written to different lines without a conjoining operator
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline) throws IOException {
+        write(new File(fileName), formula, splitAndMultiline, formula.factory().stringRepresentation());
+    }
+
+    /**
+     * Writes a given formula to a file with a given formula formatter.
+     * @param fileName          the file name of the file
+     * @param formula           the formula to write
+     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     *                          written to different lines without a conjoining operator
+     * @param formatter         the formatter for the formula
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline,
+                             final FormulaStringRepresentation formatter) throws IOException {
+        write(new File(fileName), formula, splitAndMultiline, formatter);
+    }
+
+    /**
+     * Writes a given formula to a file.
+     * @param file              the file
+     * @param formula           the formula to write
+     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     *                          written to different lines without a conjoining operator
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final File file, final Formula formula, final boolean splitAndMultiline) throws IOException {
+        write(file, formula, splitAndMultiline, formula.factory().stringRepresentation());
+    }
+
+    /**
+     * Writes a given formula to a file  with a given formula formatter.
+     * @param file              the file
+     * @param formula           the formula to write
+     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     *                          written to different lines without a conjoining operator
+     * @param formatter         the formatter for the formula
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final File file, final Formula formula, final boolean splitAndMultiline,
+                             final FormulaStringRepresentation formatter) throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        if (splitAndMultiline && formula.type() == FType.AND) {
+            for (final Formula f : formula) {
+                sb.append(formatter.toString(f)).append(System.lineSeparator());
+            }
+        } else {
+            sb.append(formatter.toString(formula));
+        }
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            writer.append(sb);
+            writer.flush();
+        }
+    }
 }

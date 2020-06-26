@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-/*****************************************************************************************
+/*
  * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -45,7 +45,7 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *****************************************************************************************/
+ */
 
 package org.logicng.solvers.datastructures;
 
@@ -58,90 +58,92 @@ import org.logicng.collections.LNGIntVector;
  */
 public final class MSSoftClause {
 
-  private final LNGIntVector clause;
-  private final LNGIntVector relaxationVars;
-  private int weight;
-  private int assumptionVar;
+    private final LNGIntVector clause;
+    private final LNGIntVector relaxationVars;
+    private int weight;
+    private int assumptionVar;
 
-  /**
-   * Constructs a new soft clause.
-   * @param clause         the clause
-   * @param weight         the weight of this clause
-   * @param assumptionVar  the assumption variables of this clause
-   * @param relaxationVars the relaxation variables
-   */
-  public MSSoftClause(final LNGIntVector clause, int weight, int assumptionVar, final LNGIntVector relaxationVars) {
-    this.clause = new LNGIntVector(clause);
-    this.weight = weight;
-    this.assumptionVar = assumptionVar;
-    this.relaxationVars = new LNGIntVector(relaxationVars);
-  }
-
-  /**
-   * Returns the clause of this soft clause.
-   * @return the clause
-   */
-  public LNGIntVector clause() {
-    return this.clause;
-  }
-
-  /**
-   * Returns the weight of this soft clause.
-   * @return the weight
-   */
-  public int weight() {
-    return this.weight;
-  }
-
-  /**
-   * Sets the weight
-   * @param weight the weight
-   */
-  public void setWeight(int weight) {
-    this.weight = weight;
-  }
-
-  /**
-   * Returns the relaxation variables of this soft clause.
-   * @return the relaxation variables
-   */
-  public LNGIntVector relaxationVars() {
-    return this.relaxationVars;
-  }
-
-  /**
-   * Returns the assumption variable.
-   * @return the assumption variable
-   */
-  public int assumptionVar() {
-    return this.assumptionVar;
-  }
-
-  /**
-   * Sets the assumption variable.
-   * @param assumptionVar the assumption variable
-   */
-  public void setAssumptionVar(int assumptionVar) {
-    this.assumptionVar = assumptionVar;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder(String.format("MSSoftClause{weight=%d, assumption=%d lits=[", this.weight, this.assumptionVar));
-    for (int i = 0; i < this.clause.size(); i++) {
-      int lit = this.clause.get(i);
-      sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
-      if (i != this.clause.size() - 1)
-        sb.append(", ");
+    /**
+     * Constructs a new soft clause.
+     * @param clause         the clause
+     * @param weight         the weight of this clause
+     * @param assumptionVar  the assumption variables of this clause
+     * @param relaxationVars the relaxation variables
+     */
+    public MSSoftClause(final LNGIntVector clause, final int weight, final int assumptionVar, final LNGIntVector relaxationVars) {
+        this.clause = new LNGIntVector(clause);
+        this.weight = weight;
+        this.assumptionVar = assumptionVar;
+        this.relaxationVars = new LNGIntVector(relaxationVars);
     }
-    sb.append("] relax[");
-    for (int i = 0; i < this.relaxationVars.size(); i++) {
-      int lit = this.relaxationVars.get(i);
-      sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
-      if (i != this.relaxationVars.size() - 1)
-        sb.append(", ");
+
+    /**
+     * Returns the clause of this soft clause.
+     * @return the clause
+     */
+    public LNGIntVector clause() {
+        return this.clause;
     }
-    sb.append("]}");
-    return sb.toString();
-  }
+
+    /**
+     * Returns the weight of this soft clause.
+     * @return the weight
+     */
+    public int weight() {
+        return this.weight;
+    }
+
+    /**
+     * Sets the weight
+     * @param weight the weight
+     */
+    public void setWeight(final int weight) {
+        this.weight = weight;
+    }
+
+    /**
+     * Returns the relaxation variables of this soft clause.
+     * @return the relaxation variables
+     */
+    public LNGIntVector relaxationVars() {
+        return this.relaxationVars;
+    }
+
+    /**
+     * Returns the assumption variable.
+     * @return the assumption variable
+     */
+    public int assumptionVar() {
+        return this.assumptionVar;
+    }
+
+    /**
+     * Sets the assumption variable.
+     * @param assumptionVar the assumption variable
+     */
+    public void setAssumptionVar(final int assumptionVar) {
+        this.assumptionVar = assumptionVar;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder(String.format("MSSoftClause{weight=%d, assumption=%d lits=[", this.weight, this.assumptionVar));
+        for (int i = 0; i < this.clause.size(); i++) {
+            final int lit = this.clause.get(i);
+            sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
+            if (i != this.clause.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("] relax[");
+        for (int i = 0; i < this.relaxationVars.size(); i++) {
+            final int lit = this.relaxationVars.get(i);
+            sb.append((lit & 1) == 1 ? "-" : "").append(lit >> 1);
+            if (i != this.relaxationVars.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
 }

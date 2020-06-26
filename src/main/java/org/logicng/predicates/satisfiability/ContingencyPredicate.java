@@ -31,7 +31,6 @@ package org.logicng.predicates.satisfiability;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
-import org.logicng.solvers.SATSolver;
 
 /**
  * Contingency predicate.  Indicates whether a formula is contingent
@@ -41,34 +40,25 @@ import org.logicng.solvers.SATSolver;
  */
 public final class ContingencyPredicate implements FormulaPredicate {
 
-  private final SATPredicate satPredicate;
-  private final TautologyPredicate tautologyPredicate;
+    private final SATPredicate satPredicate;
+    private final TautologyPredicate tautologyPredicate;
 
-  /**
-   * Constructs a new contingency predicate with a given formula factory.
-   * @param f the formula factory
-   */
-  public ContingencyPredicate(final FormulaFactory f) {
-    this.satPredicate = new SATPredicate(f);
-    this.tautologyPredicate = new TautologyPredicate(f);
-  }
+    /**
+     * Constructs a new contingency predicate with a given formula factory.
+     * @param f the formula factory
+     */
+    public ContingencyPredicate(final FormulaFactory f) {
+        this.satPredicate = new SATPredicate(f);
+        this.tautologyPredicate = new TautologyPredicate(f);
+    }
 
-  /**
-   * Constructs a new contingency predicate with a given SAT solver.
-   * @param solver the SAT solver
-   */
-  public ContingencyPredicate(final SATSolver solver) {
-    this.satPredicate = new SATPredicate(solver);
-    this.tautologyPredicate = new TautologyPredicate(solver);
-  }
+    @Override
+    public boolean test(final Formula formula, final boolean cache) {
+        return formula.holds(this.satPredicate, cache) && !formula.holds(this.tautologyPredicate, cache);
+    }
 
-  @Override
-  public boolean test(final Formula formula, boolean cache) {
-    return formula.holds(this.satPredicate, cache) && !formula.holds(this.tautologyPredicate, cache);
-  }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName();
-  }
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

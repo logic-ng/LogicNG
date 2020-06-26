@@ -35,24 +35,24 @@ package org.logicng.handlers;
  */
 public final class TimeoutSATHandler extends TimeoutHandler implements SATHandler {
 
-  /**
-   * Constructs a new instance with a given timeout in milliseconds.
-   * <p>
-   * Note that it might take a few milliseconds more until the sat solver is actually
-   * canceled, since the handler depends on the solvers call to {@code detectedConflict()}.
-   * @param timeout the timeout in milliseconds
-   */
-  public TimeoutSATHandler(final long timeout) {
-    super(timeout);
-  }
+    /**
+     * Constructs a new instance with a given timeout in milliseconds.
+     * <p>
+     * Note that it might take a few milliseconds more until the sat solver is actually
+     * canceled, since the handler depends on the solvers call to {@code detectedConflict()}.
+     * @param timeout the timeout in milliseconds
+     */
+    public TimeoutSATHandler(final long timeout) {
+        super(timeout);
+    }
 
-  @Override
-  public boolean detectedConflict() {
-    return timeLimitExceeded();
-  }
+    @Override
+    public boolean detectedConflict() {
+        return timeLimitExceeded();
+    }
 
-  @Override
-  public void finishedSolving() {
-    // nothing to do here
-  }
+    @Override
+    public void finishedSolving() {
+        // nothing to do here
+    }
 }

@@ -28,8 +28,9 @@
 
 package org.logicng.formulas;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -38,62 +39,62 @@ import java.util.Arrays;
 
 /**
  * Unit tests for formula restriction.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public class RestrictionTest {
 
-  private Assignment ass = new Assignment(Arrays.asList(F.A, F.NB, F.NX));
+    private final Assignment ass = new Assignment(Arrays.asList(F.A, F.NB, F.NX));
 
-  @Test
-  public void testConstantRestrict() {
-    Assert.assertEquals(F.TRUE, F.TRUE.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.FALSE.restrict(ass));
-  }
+    @Test
+    public void testConstantRestrict() {
+        assertThat(F.TRUE.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.FALSE.restrict(this.ass)).isEqualTo(F.FALSE);
+    }
 
-  @Test
-  public void testLiteralRestrict() {
-    Assert.assertEquals(F.TRUE, F.A.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.NA.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.X.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.NX.restrict(ass));
-    Assert.assertEquals(F.C, F.C.restrict(ass));
-    Assert.assertEquals(F.NY, F.NY.restrict(ass));
-  }
+    @Test
+    public void testLiteralRestrict() {
+        assertThat(F.A.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.NA.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.X.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.NX.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.C.restrict(this.ass)).isEqualTo(F.C);
+        assertThat(F.NY.restrict(this.ass)).isEqualTo(F.NY);
+    }
 
-  @Test
-  public void testNotRestrict() {
-    Assert.assertEquals(F.TRUE, F.NOT1.restrict(ass));
-    Assert.assertEquals(F.NY, F.NOT2.restrict(ass));
-  }
+    @Test
+    public void testNotRestrict() {
+        assertThat(F.NOT1.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.NOT2.restrict(this.ass)).isEqualTo(F.NY);
+    }
 
-  @Test
-  public void testBinaryRestrict() {
-    Assert.assertEquals(F.FALSE, F.IMP1.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.IMP2.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.f.implication(F.NA, F.C).restrict(ass));
-    Assert.assertEquals(F.TRUE, F.IMP3.restrict(ass));
-    Assert.assertEquals(F.C, F.f.implication(F.A, F.C).restrict(ass));
+    @Test
+    public void testBinaryRestrict() {
+        assertThat(F.IMP1.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.IMP2.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.f.implication(F.NA, F.C).restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.IMP3.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.f.implication(F.A, F.C).restrict(this.ass)).isEqualTo(F.C);
 
-    Assert.assertEquals(F.FALSE, F.EQ1.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.EQ2.restrict(ass));
-    Assert.assertEquals(F.NY, F.EQ3.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.EQ4.restrict(ass));
-  }
+        assertThat(F.EQ1.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.EQ2.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.EQ3.restrict(this.ass)).isEqualTo(F.NY);
+        assertThat(F.EQ4.restrict(this.ass)).isEqualTo(F.FALSE);
+    }
 
-  @Test
-  public void testNAryRestrict() throws ParserException {
-    PropositionalParser p = new PropositionalParser(F.f);
-    Assert.assertEquals(F.Y, F.OR1.restrict(ass));
-    Assert.assertEquals(F.TRUE, F.OR2.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.OR3.restrict(ass));
-    Assert.assertEquals(p.parse("~c | y"), p.parse("~a | b | ~c | x | y").restrict(ass));
-    Assert.assertEquals(F.TRUE, p.parse("~a | b | ~c | ~x | ~y").restrict(ass));
+    @Test
+    public void testNAryRestrict() throws ParserException {
+        final PropositionalParser p = new PropositionalParser(F.f);
+        assertThat(F.OR1.restrict(this.ass)).isEqualTo(F.Y);
+        assertThat(F.OR2.restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(F.OR3.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(p.parse("~a | b | ~c | x | y").restrict(this.ass)).isEqualTo(p.parse("~c | y"));
+        assertThat(p.parse("~a | b | ~c | ~x | ~y").restrict(this.ass)).isEqualTo(F.TRUE);
 
-    Assert.assertEquals(F.FALSE, F.AND1.restrict(ass));
-    Assert.assertEquals(F.FALSE, F.AND2.restrict(ass));
-    Assert.assertEquals(F.Y, F.AND3.restrict(ass));
-    Assert.assertEquals(p.parse("c & ~y"), p.parse("a & ~b & c & ~x & ~y").restrict(ass));
-    Assert.assertEquals(F.FALSE, p.parse("a & b & c & ~x & y").restrict(ass));
-  }
+        assertThat(F.AND1.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.AND2.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(F.AND3.restrict(this.ass)).isEqualTo(F.Y);
+        assertThat(p.parse("a & ~b & c & ~x & ~y").restrict(this.ass)).isEqualTo(p.parse("c & ~y"));
+        assertThat(p.parse("a & b & c & ~x & y").restrict(this.ass)).isEqualTo(F.FALSE);
+    }
 }
