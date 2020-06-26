@@ -28,6 +28,8 @@
 
 package org.logicng.transformations;
 
+import static org.logicng.formulas.FType.dual;
+
 import org.logicng.formulas.Equivalence;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -42,14 +44,12 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.logicng.formulas.FType.dual;
-
 /**
  * A formula transformation which performs simplifications by applying the distributive laws.
  * @version 2.0.0
  * @since 1.3
  */
-public class DistributiveSimplifier implements FormulaTransformation {
+public final class DistributiveSimplifier implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

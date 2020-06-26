@@ -101,6 +101,7 @@ public class NotTest {
         assertThat(F.f.not(F.OR1)).isEqualTo(F.NOT2);
         assertThat(F.NOT1).isEqualTo(F.NOT1);
         assertThat(F.NOT2).isNotEqualTo(F.NOT1);
+        assertThat(F.NOT2).isNotEqualTo("String");
     }
 
     @Test
@@ -120,6 +121,7 @@ public class NotTest {
 
     @Test
     public void testNumberOfAtoms() {
+        assertThat(F.NOT1.numberOfAtoms()).isEqualTo(2);
         assertThat(F.NOT1.numberOfAtoms()).isEqualTo(2);
         assertThat(F.NOT2.numberOfAtoms()).isEqualTo(2);
         assertThat(F.OR1.numberOfAtoms()).isEqualTo(2);

@@ -123,6 +123,7 @@ public class ImplicationTest {
         assertThat(F.f.implication(F.AND1, F.OR1)).isEqualTo(F.IMP3);
         assertThat(F.IMP2).isEqualTo(F.IMP2);
         assertThat(F.IMP2).isNotEqualTo(F.IMP1);
+        assertThat(F.IMP2).isNotEqualTo("String");
     }
 
     @Test

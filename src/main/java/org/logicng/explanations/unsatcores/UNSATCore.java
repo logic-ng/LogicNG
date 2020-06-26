@@ -39,7 +39,7 @@ import java.util.Objects;
  * @version 1.3
  * @since 1.1
  */
-final public class UNSATCore<T extends Proposition> {
+public final class UNSATCore<T extends Proposition> {
 
     private final List<T> propositions;
     private final boolean isMUS;

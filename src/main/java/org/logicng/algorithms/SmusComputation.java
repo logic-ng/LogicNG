@@ -30,9 +30,16 @@ import java.util.stream.Collectors;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class SmusComputation {
+public final class SmusComputation {
 
     private static final String PROPOSITION_SELECTOR = "@PROPOSITION_SEL_";
+
+    /**
+     * Private empty constructor.  Class only contains static utility methods.
+     */
+    private SmusComputation() {
+        // Intentionally left empty
+    }
 
     /**
      * TODO: Adjust input and output?

@@ -28,6 +28,9 @@
 
 package org.logicng.formulas;
 
+import static org.logicng.formulas.FType.dual;
+import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
+
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
@@ -37,9 +40,6 @@ import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.stream.Stream;
-
-import static org.logicng.formulas.FType.dual;
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * Boolean negation.
@@ -171,7 +171,7 @@ public final class Not extends Formula {
                     nnf = this.operand.negate().nnf();
                     break;
                 default:
-                    nnf = this;
+                    throw new IllegalStateException("Did not expect formula of type: " + this.operand.type());
             }
             this.transformationCache.put(NNF, nnf);
         }

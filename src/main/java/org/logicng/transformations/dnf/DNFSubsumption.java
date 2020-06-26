@@ -48,7 +48,7 @@ import java.util.SortedSet;
  * @version 2.0.0
  * @since 1.5.0
  */
-public class DNFSubsumption extends Subsumption implements FormulaTransformation {
+public final class DNFSubsumption extends Subsumption implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

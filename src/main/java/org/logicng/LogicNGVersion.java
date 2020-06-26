@@ -6,8 +6,7 @@ package org.logicng;
  * @version 2.0.0
  * @since 2.0.0
  */
-
-public class LogicNGVersion {
+public interface LogicNGVersion {
 
     /**
      * Returns the version string from the POM.

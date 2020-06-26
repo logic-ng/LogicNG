@@ -23,7 +23,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class MinimumPrimeImplicantFunction implements FormulaFunction<SortedSet<Literal>> {
+public final class MinimumPrimeImplicantFunction implements FormulaFunction<SortedSet<Literal>> {
 
     private static final String POS = "_POS";
     private static final String NEG = "_NEG";

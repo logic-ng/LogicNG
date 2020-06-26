@@ -11,7 +11,8 @@ import org.logicng.formulas.FormulaFunction;
  * @version 2.0
  * @since 2.0
  */
-public class FormulaDepthFunction implements FormulaFunction<Integer> {
+public final class FormulaDepthFunction implements FormulaFunction<Integer> {
+
     @Override
     public Integer apply(final Formula formula, final boolean cache) {
         final Object cached = formula.functionCacheEntry(DEPTH);

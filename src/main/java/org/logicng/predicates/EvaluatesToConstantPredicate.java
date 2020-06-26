@@ -40,7 +40,7 @@ import java.util.Map;
  * @version 2.0.0
  * @since 2.0.0
  */
-final public class EvaluatesToConstantPredicate implements FormulaPredicate {
+public final class EvaluatesToConstantPredicate implements FormulaPredicate {
 
     private final boolean evaluatesToTrue;
     private final Map<Variable, Boolean> mapping;

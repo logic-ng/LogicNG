@@ -44,7 +44,8 @@ import org.logicng.solvers.functions.BackboneFunction;
  * @version 1.5.0
  * @since 1.5.0
  */
-public class BackboneSimplifier implements FormulaTransformation {
+public final class BackboneSimplifier implements FormulaTransformation {
+
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
         final SATSolver solver = MiniSat.miniSat(formula.factory());

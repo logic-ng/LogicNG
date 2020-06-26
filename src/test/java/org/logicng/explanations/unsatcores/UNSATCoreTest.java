@@ -63,6 +63,7 @@ public class UNSATCoreTest {
         assertThat(new UNSATCore<>(this.props1, false)).isNotEqualTo(this.core1);
         assertThat(new UNSATCore<>(this.props2, true)).isNotEqualTo(this.core1);
         assertThat("String").isNotEqualTo(this.core1);
+        assertThat(this.core1).isNotEqualTo("String");
     }
 
     @Test

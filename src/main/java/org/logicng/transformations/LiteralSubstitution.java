@@ -23,7 +23,7 @@ import java.util.Map;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class LiteralSubstitution implements FormulaTransformation {
+public final class LiteralSubstitution implements FormulaTransformation {
 
     private final Map<Literal, Literal> substitution;
 

@@ -1,5 +1,7 @@
 package org.logicng.functions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.formulas.Formula;
@@ -12,8 +14,6 @@ import org.logicng.predicates.satisfiability.TautologyPredicate;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit Tests for the class {@link MinimumPrimeImplicantFunction}.
@@ -39,6 +39,10 @@ public class MinimumPrimeImplicantTest {
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
+
+        formula = this.f.parse("a & b & (~a|~b)");
+        pi = formula.apply(MinimumPrimeImplicantFunction.get());
+        assertThat(pi).isNull();
 
         formula = this.f.parse("a & b & c");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());

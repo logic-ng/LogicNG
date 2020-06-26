@@ -24,7 +24,14 @@ import java.util.Set;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class SetCover {
+public final class SetCover {
+
+    /**
+     * Private empty constructor.  Class only contains static utility methods.
+     */
+    private SetCover() {
+        // Intentionally left empty
+    }
 
     /**
      * Computes the minimum set cover for the given collection of sets,

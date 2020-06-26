@@ -12,7 +12,7 @@ import org.logicng.formulas.Variable;
  * @version 1.4.0
  * @since 1.4.0
  */
-public class Anonymizer implements FormulaTransformation {
+public final class Anonymizer implements FormulaTransformation {
 
     private final Substitution substitution;
     private final String prefix;

@@ -10,7 +10,7 @@ import org.logicng.formulas.Not;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class ContainsPBCPredicate implements FormulaPredicate {
+public final class ContainsPBCPredicate implements FormulaPredicate {
 
     private final static ContainsPBCPredicate INSTANCE = new ContainsPBCPredicate();
 
