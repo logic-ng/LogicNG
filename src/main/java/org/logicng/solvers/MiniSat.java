@@ -28,6 +28,9 @@
 
 package org.logicng.solvers;
 
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -52,7 +55,6 @@ import org.logicng.solvers.sat.MiniCard;
 import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
-import org.logicng.transformations.cnf.DirectPlaistedGreenbaumTransformationSolver;
 import org.logicng.transformations.cnf.PlaistedGreenbaumTransformationSolver;
 
 import java.util.Arrays;
@@ -61,9 +63,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
@@ -83,7 +82,6 @@ public final class MiniSat extends SATSolver {
     private final boolean incremental;
     private int nextStateId;
     private final PlaistedGreenbaumTransformationSolver pgTransformation;
-    private final DirectPlaistedGreenbaumTransformationSolver directPgTransformation;
     private boolean lastComputationWithAssumptions;
 
     /**
@@ -117,7 +115,6 @@ public final class MiniSat extends SATSolver {
         this.nextStateId = 0;
         this.ccEncoder = new CCEncoder(f);
         this.pgTransformation = new PlaistedGreenbaumTransformationSolver(this.underlyingSolver(), this.initialPhase);
-        this.directPgTransformation = new DirectPlaistedGreenbaumTransformationSolver(this.underlyingSolver(), this.initialPhase);
     }
 
     /**
@@ -213,8 +210,6 @@ public final class MiniSat extends SATSolver {
             this.addClauseSet(formula.cnf(), proposition);
         } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.PG_ON_SOLVER) {
             this.pgTransformation.addCNFtoSolver(formula, proposition);
-        } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER) {
-            this.directPgTransformation.addCNFtoSolver(formula, proposition);
         } else {
             throw new IllegalStateException("Unknown Solver CNF method: " + this.config.getCnfMethod());
         }
@@ -289,7 +284,7 @@ public final class MiniSat extends SATSolver {
         this.solver.reset();
         this.lastComputationWithAssumptions = false;
         this.pgTransformation.clearCache();
-        this.directPgTransformation.clearCache();
+        this.pgTransformation.clearCache();
         this.result = UNDEF;
     }
 
@@ -334,7 +329,7 @@ public final class MiniSat extends SATSolver {
         this.solver.loadState(state.state());
         this.result = UNDEF;
         this.pgTransformation.clearCache();
-        this.directPgTransformation.clearCache();
+        this.pgTransformation.clearCache();
     }
 
     @Override

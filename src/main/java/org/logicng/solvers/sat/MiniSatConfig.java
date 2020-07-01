@@ -64,7 +64,7 @@ public final class MiniSatConfig extends Configuration {
      * </ul>
      */
     public enum CNFMethod {
-        FACTORY_CNF, PG_ON_SOLVER, DIRECT_PG_ON_SOLVER
+        FACTORY_CNF, PG_ON_SOLVER
     }
 
     final double varDecay;
@@ -200,7 +200,7 @@ public final class MiniSatConfig extends Configuration {
         private boolean incremental = true;
         private boolean initialPhase = false;
         private boolean proofGeneration = false;
-        private CNFMethod cnfMethod = CNFMethod.DIRECT_PG_ON_SOLVER;
+        private CNFMethod cnfMethod = CNFMethod.PG_ON_SOLVER;
         private boolean auxiliaryVariablesInModels = false;
         private boolean bbInitialUBCheckForRotatableLiterals = true;
         private boolean bbCheckForComplementModelLiterals = true;
