@@ -70,9 +70,6 @@ public final class MiniCard extends MiniSatStyleSolver {
     private static final int LIT_ERROR = -2;
 
     private LNGIntVector unitClauses;
-    private double learntsizeAdjustConfl;
-    private int learntsizeAdjustStartConfl;
-    private double maxLearnts;
 
     /**
      * Constructs a new MiniSAT 2 solver with the default values for solver configuration.  By default, incremental mode
