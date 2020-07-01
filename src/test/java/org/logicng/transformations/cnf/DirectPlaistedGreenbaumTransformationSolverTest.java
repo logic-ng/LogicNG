@@ -1,8 +1,5 @@
 package org.logicng.transformations.cnf;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.datastructures.Tristate.TRUE;
-
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
 import org.logicng.datastructures.Assignment;
@@ -24,8 +21,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.datastructures.Tristate.TRUE;
+
 /**
- * Unit Tests for the class {@link PlaistedGreenbaumTransformationSolver}.
+ * Unit Tests for the class {@link DirectPlaistedGreenbaumTransformationSolver}.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -39,7 +39,7 @@ public class DirectPlaistedGreenbaumTransformationSolverTest {
         final FormulaCornerCases cornerCases = new FormulaCornerCases(f);
         for (final Formula formula : cornerCases.cornerCases()) {
             final SATSolver solverFactorization = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FACTORY_CNF).build());
-            final SATSolver solverDirectPG = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+            final SATSolver solverDirectPG = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER).build());
             solverFactorization.add(formula);
             solverDirectPG.add(formula);
             assertThat(solverFactorization.sat() == solverDirectPG.sat()).isTrue();
@@ -51,7 +51,7 @@ public class DirectPlaistedGreenbaumTransformationSolverTest {
     public void random() {
         for (int i = 0; i < 1000; i++) {
             final FormulaFactory f = new FormulaFactory();
-            final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+            final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(42).build());
 
             final Formula randomFormula01 = randomSATFormula(randomizer, 4, f);
@@ -119,7 +119,7 @@ public class DirectPlaistedGreenbaumTransformationSolverTest {
 
     private static void computeAndVerify(final Formula formula) {
         final FormulaFactory f = formula.factory();
-        final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
         solver.add(formula);
         final List<Assignment> models = solver.enumerateAllModels();
         final Formula dnf = f.or(models.stream().map(model -> f.and(model.literals())).collect(Collectors.toList()));

@@ -28,14 +28,6 @@
 
 package org.logicng.solvers.sat;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
-
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
 import org.logicng.LongRunningTag;
@@ -81,6 +73,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
+
 /**
  * Unit tests for the SAT solvers.
  * @version 1.6
@@ -98,22 +98,26 @@ public class SATTest implements LogicNGTest {
         this.f = new FormulaFactory();
         this.pg = new PigeonHoleGenerator(this.f);
         this.parser = new PropositionalParser(this.f);
-        this.solvers = new SATSolver[6];
+        this.solvers = new SATSolver[8];
         this.solvers[0] = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(true).build());
         this.solvers[1] = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(false).build());
         this.solvers[2] = MiniSat.glucose(this.f, MiniSatConfig.builder().incremental(false).build(),
                 GlucoseConfig.builder().build());
         this.solvers[3] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(true).build());
         this.solvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(false).build());
-        this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(true).build());
+        this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
 
-        this.testStrings = new String[6];
+        this.testStrings = new String[8];
         this.testStrings[0] = "MiniSat2Solver{result=UNDEF, incremental=true}";
         this.testStrings[1] = "MiniSat2Solver{result=UNDEF, incremental=false}";
         this.testStrings[2] = "GlucoseSyrup{result=UNDEF, incremental=false}";
         this.testStrings[3] = "MiniCard{result=UNDEF, incremental=true}";
         this.testStrings[4] = "MiniCard{result=UNDEF, incremental=false}";
         this.testStrings[5] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+        this.testStrings[6] = "MiniSat2Solver{result=UNDEF, incremental=true}";
+        this.testStrings[7] = "MiniSat2Solver{result=UNDEF, incremental=true}";
     }
 
     @Test
@@ -200,15 +204,10 @@ public class SATTest implements LogicNGTest {
 
     @Test
     public void testFormula1() throws ParserException {
-        for (int i = 0; i < this.solvers.length; i++) {
-            final SATSolver s = this.solvers[i];
+        for (final SATSolver s : this.solvers) {
             s.add(this.parser.parse("(x => y) & (~x => y) & (y => z) & (z => ~x)"));
             assertSolverSat(s);
-            if (i == 5) {
-                assertThat(s.model().size()).isEqualTo(8);
-            } else {
-                assertThat(s.model().size()).isEqualTo(3);
-            }
+            assertThat(s.model().size()).isEqualTo(3);
             assertThat(s.model().evaluateLit(this.f.variable("x"))).isFalse();
             assertThat(s.model().evaluateLit(this.f.variable("y"))).isTrue();
             assertThat(s.model().evaluateLit(this.f.variable("z"))).isTrue();
@@ -947,7 +946,7 @@ public class SATTest implements LogicNGTest {
             List<Literal> selectionOrder = Arrays.asList(F.X, F.Y);
             assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
             Assignment assignment = solver.model();
-            assertThat(assignment.literals()).contains(F.X, F.NY);
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
             testLocalMinimum(solver, assignment, selectionOrder);
             testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
 
@@ -955,7 +954,7 @@ public class SATTest implements LogicNGTest {
             selectionOrder = Arrays.asList(F.Y, F.X);
             assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
             assignment = solver.model();
-            assertThat(assignment.literals()).contains(F.Y, F.NX);
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
             testLocalMinimum(solver, assignment, selectionOrder);
             testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
 
@@ -963,7 +962,7 @@ public class SATTest implements LogicNGTest {
             selectionOrder = Collections.singletonList(F.NX);
             assertThat(solver.sat(selectionOrder)).isEqualTo(TRUE);
             assignment = solver.model();
-            assertThat(assignment.literals()).contains(F.Y, F.NX);
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.Y, F.NX);
             testLocalMinimum(solver, assignment, selectionOrder);
             testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
 
@@ -971,7 +970,7 @@ public class SATTest implements LogicNGTest {
             selectionOrder = Arrays.asList(F.NY, F.NX);
             assertThat(solver.satWithSelectionOrder(selectionOrder)).isEqualTo(TRUE);
             assignment = solver.model();
-            assertThat(assignment.literals()).contains(F.X, F.NY);
+            assertThat(assignment.literals()).containsExactlyInAnyOrder(F.X, F.NY);
             testLocalMinimum(solver, assignment, selectionOrder);
             testHighestLexicographicalAssignment(solver, assignment, selectionOrder);
 
