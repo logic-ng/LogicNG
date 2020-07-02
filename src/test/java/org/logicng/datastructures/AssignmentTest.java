@@ -66,13 +66,10 @@ public class AssignmentTest {
         final Variable[] a = {F.A, F.B, F.X, F.Y};
         Assignment ass1 = new Assignment(Arrays.asList(a), false);
         assertThat(ass1.positiveVariables()).containsExactly(a);
-        assertThat(ass1.positiveLiterals()).containsExactly(a);
         ass1 = new Assignment(Arrays.asList(F.A, F.B, F.NX, F.NY));
         assertThat(ass1.positiveVariables()).containsExactly(F.A, F.B);
-        assertThat(ass1.positiveLiterals()).containsExactly(F.A, F.B);
         ass1 = new Assignment(Arrays.asList(F.NA, F.NB, F.NX, F.NY));
         assertThat(ass1.positiveVariables().size()).isEqualTo(0);
-        assertThat(ass1.positiveLiterals().size()).isEqualTo(0);
     }
 
     @Test

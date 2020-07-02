@@ -172,15 +172,6 @@ public class Assignment {
     }
 
     /**
-     * Returns the positive literals of this assignment.
-     * @return the positive literals of this assignment
-     * @deprecated Deprecated because the name of the method is misleading regarding its return value. Use the new method {@link #positiveVariables()} instead. The functionality is the same, only the return value has changed.
-     */
-    public List<Variable> positiveLiterals() {
-        return this.fastEvaluable ? Collections.unmodifiableList(new ArrayList<>(this.pos)) : Collections.unmodifiableList((List<Variable>) this.pos);
-    }
-
-    /**
      * Returns the negative literals of this assignment.
      * @return the negative literals of this assignment
      */
