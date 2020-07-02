@@ -1,10 +1,15 @@
 package org.logicng.util;
 
+import org.logicng.formulas.And;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Supplier;
@@ -116,5 +121,22 @@ public final class FormulaHelper {
             vars[i] = literals[i].variable();
         }
         return vars;
+    }
+
+    /**
+     * Splits the top level {@link And} if possible.
+     * @param formula the formula
+     * @return list of the operands if the formula is a {@link And}, otherwise the formula itself
+     */
+    public static List<Formula> splitTopLevelAnd(final Formula formula) {
+        if (formula.type() == FType.AND) {
+            final List<Formula> ops = new ArrayList<>();
+            for (final Formula op : formula) {
+                ops.add(op);
+            }
+            return ops;
+        } else {
+            return Collections.singletonList(formula);
+        }
     }
 }

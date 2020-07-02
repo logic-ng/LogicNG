@@ -37,6 +37,7 @@ import org.logicng.formulas.Or;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
+import org.logicng.util.FormulaHelper;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,12 +72,13 @@ public final class PlaistedGreenbaumTransformationSolver {
      * @param proposition the optional proposition of the formula
      */
     public void addCNFtoSolver(final Formula formula, final Proposition proposition) {
-        final Formula nnf = formula.nnf();
-        if (nnf.holds(CNFPredicate.get())) {
-            addCNF(nnf, proposition);
-        } else {
-            final int topLevelVar = computeTransformation(nnf, proposition);
-            this.solver.addClause(topLevelVar, proposition);
+        for (final Formula op : FormulaHelper.splitTopLevelAnd(formula.nnf())) {
+            if (op.holds(CNFPredicate.get())) {
+                addCNF(op, proposition);
+            } else {
+                final int topLevelVar = computeTransformation(op, proposition);
+                this.solver.addClause(topLevelVar, proposition);
+            }
         }
     }
 

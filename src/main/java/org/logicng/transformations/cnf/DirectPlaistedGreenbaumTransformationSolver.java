@@ -41,6 +41,7 @@ import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.ContainsPBCPredicate;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
+import org.logicng.util.FormulaHelper;
 import org.logicng.util.Pair;
 
 import java.util.Collection;
@@ -76,12 +77,14 @@ public final class DirectPlaistedGreenbaumTransformationSolver {
      * @param proposition the optional proposition of the formula
      */
     public void addCNFtoSolver(final Formula formula, final Proposition proposition) {
-        final Formula withoutPBCs = formula.holds(ContainsPBCPredicate.get()) ? formula.nnf() : formula;
-        if (withoutPBCs.holds(CNFPredicate.get())) {
-            addCNF(withoutPBCs, proposition);
-        } else {
-            final int topLevelVar = computeTransformation(withoutPBCs, true, proposition);
-            this.solver.addClause(topLevelVar, proposition);
+        for (final Formula op : FormulaHelper.splitTopLevelAnd(formula)) {
+            final Formula withoutPBCs = op.holds(ContainsPBCPredicate.get()) ? op.nnf() : op;
+            if (withoutPBCs.holds(CNFPredicate.get())) {
+                addCNF(withoutPBCs, proposition);
+            } else {
+                final int topLevelVar = computeTransformation(withoutPBCs, true, proposition);
+                this.solver.addClause(topLevelVar, proposition);
+            }
         }
     }
 

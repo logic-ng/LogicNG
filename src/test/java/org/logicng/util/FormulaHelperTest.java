@@ -95,4 +95,15 @@ public class FormulaHelperTest {
         assertThat((HashSet<Formula>) FormulaHelper.negate(Arrays.asList(F.A, F.TRUE, F.NB, F.AND1), HashSet::new))
                 .isEqualTo(new HashSet<>(Arrays.asList(F.NA, F.FALSE, F.B, F.f.not(F.AND1))));
     }
+
+    @Test
+    public void testSplitTopLevelAnd() {
+        assertThat(FormulaHelper.splitTopLevelAnd(F.TRUE)).isEqualTo(Collections.singletonList(F.TRUE));
+        assertThat(FormulaHelper.splitTopLevelAnd(F.FALSE)).isEqualTo(Collections.singletonList(F.FALSE));
+        assertThat(FormulaHelper.splitTopLevelAnd(F.OR1)).isEqualTo(Collections.singletonList(F.OR1));
+        assertThat(FormulaHelper.splitTopLevelAnd(F.IMP1)).isEqualTo(Collections.singletonList(F.IMP1));
+
+        assertThat(FormulaHelper.splitTopLevelAnd(F.AND1)).isEqualTo(Arrays.asList(F.A, F.B));
+        assertThat(FormulaHelper.splitTopLevelAnd(F.AND3)).isEqualTo(Arrays.asList(F.OR1, F.OR2));
+    }
 }

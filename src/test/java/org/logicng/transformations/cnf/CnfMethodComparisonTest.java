@@ -53,6 +53,7 @@ public class CnfMethodComparisonTest {
 
     @ParameterizedTest
     @MethodSource("cnfConfigurations")
+    @LongRunningTag
     public void compareFullBackbonesOnLargeFormulas(final CNFConfig cnfConfig, final MiniSatConfig.CNFMethod cnfMethod) throws IOException, ParserException {
         final String baseDir = "src/test/resources/formulas/";
         final List<String> fileNames = Arrays.asList("formula1.txt", "formula2.txt", "formula3.txt", "large_formula.txt", "small_formulas.txt");
@@ -68,6 +69,7 @@ public class CnfMethodComparisonTest {
     @LongRunningTag
     public void compareBackbonesForVariablesOnLargeFormulas() throws IOException, ParserException {
         compareBackbonePerVariable("src/test/resources/formulas/formula1.txt");
+        compareBackbonePerVariable("src/test/resources/formulas/formula3.txt");
         compareBackbonePerVariable("src/test/resources/formulas/large_formula.txt");
         compareBackbonePerVariable("src/test/resources/formulas/small_formulas.txt");
     }
@@ -82,17 +84,20 @@ public class CnfMethodComparisonTest {
     }
 
     private void compareBackbonePerVariable(final String fileName) throws IOException, ParserException {
-        final Map<Variable, Backbone> backboneFactory = computeBackbonePerVariable(fileName, MiniSatConfig.CNFMethod.FACTORY_CNF);
-        final Map<Variable, Backbone> backbonePg = computeBackbonePerVariable(fileName, MiniSatConfig.CNFMethod.PG_ON_SOLVER);
-        final Map<Variable, Backbone> backboneDirectPg = computeBackbonePerVariable(fileName, MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER);
+        final Map<Variable, Backbone> backboneFactory = computeBackbonePerVariable(fileName,
+                CNFConfig.builder().algorithm(CNFConfig.Algorithm.ADVANCED).fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.TSEITIN).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF);
+        final Map<Variable, Backbone> backbonePg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.PG_ON_SOLVER);
+        final Map<Variable, Backbone> backboneDirectPg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER);
         assertThat(backboneFactory).isEqualTo(backbonePg);
         assertThat(backboneFactory).isEqualTo(backboneDirectPg);
     }
 
-    private Map<Variable, Backbone> computeBackbonePerVariable(final String fileName, final MiniSatConfig.CNFMethod cnfMethod)
+    private Map<Variable, Backbone> computeBackbonePerVariable(final String fileName, final CNFConfig cnfConfig, final MiniSatConfig.CNFMethod cnfMethod)
             throws IOException, ParserException {
         final long start = System.currentTimeMillis();
         final FormulaFactory f = new FormulaFactory();
+        f.putConfiguration(cnfConfig);
         final Formula formula = FormulaReader.readPseudoBooleanFormula(fileName, f);
         final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(cnfMethod).build());
         solver.add(formula);
