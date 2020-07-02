@@ -115,7 +115,7 @@ public class CnfMethodComparisonTest {
             }
         }
         final long stop = System.currentTimeMillis();
-        System.out.println(fileName + " " + cnfMethod + ": " + (stop - start) + " ms.");
+        System.out.println(fileName + " " + cnfConfig.algorithm + " " + cnfConfig.fallbackAlgorithmForAdvancedEncoding + " " + cnfMethod + ": " + (stop - start) + " ms.");
         return result;
     }
 

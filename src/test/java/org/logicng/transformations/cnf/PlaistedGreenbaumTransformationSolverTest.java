@@ -1,5 +1,8 @@
 package org.logicng.transformations.cnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.datastructures.Tristate.TRUE;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
 import org.logicng.datastructures.Assignment;
@@ -21,15 +24,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.datastructures.Tristate.TRUE;
-
 /**
- * Unit Tests for the class {@link DirectPlaistedGreenbaumTransformationSolver}.
+ * Unit Tests for the class {@link PlaistedGreenbaumTransformationSolver}.
  * @version 2.0.0
  * @since 2.0.0
  */
-public class DirectPlaistedGreenbaumTransformationSolverTest {
+public class PlaistedGreenbaumTransformationSolverTest {
 
     private final FormulaFactory f = F.f;
 

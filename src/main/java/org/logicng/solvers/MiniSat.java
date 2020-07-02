@@ -28,6 +28,9 @@
 
 package org.logicng.solvers;
 
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.collections.LNGBooleanVector;
@@ -52,7 +55,6 @@ import org.logicng.solvers.sat.MiniCard;
 import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
-import org.logicng.transformations.cnf.DirectPlaistedGreenbaumTransformationSolver;
 import org.logicng.transformations.cnf.PlaistedGreenbaumTransformationSolver;
 
 import java.util.Arrays;
@@ -61,9 +63,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
@@ -83,7 +82,7 @@ public final class MiniSat extends SATSolver {
     private final boolean incremental;
     private int nextStateId;
     private final PlaistedGreenbaumTransformationSolver pgTransformation;
-    private final DirectPlaistedGreenbaumTransformationSolver directPgTransformation;
+    private final PlaistedGreenbaumTransformationSolver directPgTransformation;
     private boolean lastComputationWithAssumptions;
 
     /**
@@ -116,8 +115,8 @@ public final class MiniSat extends SATSolver {
         this.validStates = new LNGIntVector();
         this.nextStateId = 0;
         this.ccEncoder = new CCEncoder(f);
-        this.pgTransformation = new PlaistedGreenbaumTransformationSolver(this.underlyingSolver(), this.initialPhase);
-        this.directPgTransformation = new DirectPlaistedGreenbaumTransformationSolver(this.underlyingSolver(), this.initialPhase);
+        this.pgTransformation = new PlaistedGreenbaumTransformationSolver(true, this.underlyingSolver(), this.initialPhase);
+        this.directPgTransformation = new PlaistedGreenbaumTransformationSolver(false, this.underlyingSolver(), this.initialPhase);
     }
 
     /**
