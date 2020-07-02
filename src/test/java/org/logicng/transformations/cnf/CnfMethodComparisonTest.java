@@ -54,12 +54,10 @@ public class CnfMethodComparisonTest {
     @ParameterizedTest
     @MethodSource("cnfConfigurations")
     public void compareFullBackbonesOnLargeFormulas(final CNFConfig cnfConfig, final MiniSatConfig.CNFMethod cnfMethod) throws IOException, ParserException {
-        final List<String> filePaths = Arrays.asList("src/test/resources/formulas/formula1.txt",
-                "src/test/resources/formulas/formula2.txt",
-                "src/test/resources/formulas/formula3.txt",
-                "src/test/resources/formulas/large_formula.txt",
-                "src/test/resources/formulas/small_formulas.txt");
-        for (final String filePath : filePaths) {
+        final String baseDir = "src/test/resources/formulas/";
+        final List<String> fileNames = Arrays.asList("formula1.txt", "formula2.txt", "formula3.txt", "large_formula.txt", "small_formulas.txt");
+        for (final String fileName : fileNames) {
+            final String filePath = baseDir + fileName;
             final Backbone backboneReference = computeBackbone(filePath, CNFConfig.builder().build(), MiniSatConfig.builder().build().getCnfMethod());
             final Backbone backbone = computeBackbone(filePath, cnfConfig, cnfMethod);
             assertThat(backboneReference).isEqualTo(backbone);
