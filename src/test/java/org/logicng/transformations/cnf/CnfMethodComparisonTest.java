@@ -3,6 +3,8 @@ package org.logicng.transformations.cnf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.logicng.LongRunningTag;
 import org.logicng.backbones.Backbone;
 import org.logicng.datastructures.Tristate;
@@ -17,16 +19,51 @@ import org.logicng.solvers.SolverState;
 import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class CnfMethodComparisonTest {
 
-    @Test
-    public void compareFullBackbonesOnLargeFormulas() throws IOException, ParserException {
-        compareBackbone("src/test/resources/formulas/formula1.txt");
-        compareBackbone("src/test/resources/formulas/large_formula.txt");
-        compareBackbone("src/test/resources/formulas/small_formulas.txt");
+    public static Collection<Object[]> cnfConfigurations() {
+        final List<Object[]> configs = new ArrayList<>();
+        configs.add(new Object[]{CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).atomBoundary(12).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF});
+        configs.add(new Object[]{CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).atomBoundary(0).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF});
+        configs.add(new Object[]{CNFConfig.builder().algorithm(CNFConfig.Algorithm.TSEITIN).atomBoundary(0).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF});
+        configs.add(new Object[]{CNFConfig.builder().algorithm(CNFConfig.Algorithm.TSEITIN).atomBoundary(12).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF});
+        configs.add(new Object[]{CNFConfig.builder()
+                .algorithm(CNFConfig.Algorithm.ADVANCED).fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF});
+        configs.add(new Object[]{CNFConfig.builder()
+                .algorithm(CNFConfig.Algorithm.ADVANCED).fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.TSEITIN).build(),
+                MiniSatConfig.CNFMethod.FACTORY_CNF});
+        configs.add(new Object[]{CNFConfig.builder().build(),
+                MiniSatConfig.CNFMethod.PG_ON_SOLVER});
+        configs.add(new Object[]{CNFConfig.builder().build(),
+                MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER});
+        return configs;
+    }
+
+    @ParameterizedTest
+    @MethodSource("cnfConfigurations")
+    public void compareFullBackbonesOnLargeFormulas(final CNFConfig cnfConfig, final MiniSatConfig.CNFMethod cnfMethod) throws IOException, ParserException {
+        final List<String> filePaths = Arrays.asList("src/test/resources/formulas/formula1.txt",
+                "src/test/resources/formulas/formula2.txt",
+                "src/test/resources/formulas/formula3.txt",
+                "src/test/resources/formulas/large_formula.txt",
+                "src/test/resources/formulas/small_formulas.txt");
+        for (final String filePath : filePaths) {
+            final Backbone backboneReference = computeBackbone(filePath, CNFConfig.builder().build(), MiniSatConfig.builder().build().getCnfMethod());
+            final Backbone backbone = computeBackbone(filePath, cnfConfig, cnfMethod);
+            assertThat(backboneReference).isEqualTo(backbone);
+        }
     }
 
     @Test
@@ -37,16 +74,9 @@ public class CnfMethodComparisonTest {
         compareBackbonePerVariable("src/test/resources/formulas/small_formulas.txt");
     }
 
-    private void compareBackbone(final String fileName) throws IOException, ParserException {
-        final Backbone backboneFactory = computeBackbone(fileName, MiniSatConfig.CNFMethod.FACTORY_CNF);
-        final Backbone backbonePg = computeBackbone(fileName, MiniSatConfig.CNFMethod.PG_ON_SOLVER);
-        final Backbone backboneDirectPg = computeBackbone(fileName, MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER);
-        assertThat(backboneFactory).isEqualTo(backbonePg);
-        assertThat(backboneFactory).isEqualTo(backboneDirectPg);
-    }
-
-    private Backbone computeBackbone(final String fileName, final MiniSatConfig.CNFMethod cnfMethod) throws IOException, ParserException {
+    private Backbone computeBackbone(final String fileName, final CNFConfig cnfConfig, final MiniSatConfig.CNFMethod cnfMethod) throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
+        f.putConfiguration(cnfConfig);
         final Formula formula = FormulaReader.readPseudoBooleanFormula(fileName, f);
         final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(cnfMethod).build());
         solver.add(formula);
