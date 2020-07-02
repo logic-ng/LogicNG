@@ -29,9 +29,11 @@
 package org.logicng.transformations.cnf;
 
 import org.logicng.collections.LNGIntVector;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Or;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
@@ -127,8 +129,19 @@ public final class PlaistedGreenbaumTransformationSolver {
         switch (formula.type()) {
             case AND: {
                 for (final Formula op : formula) {
-                    final int opPgVar = computeTransformation(op, proposition);
-                    this.solver.addClause(new LNGIntVector(new int[]{pgVar ^ 1, opPgVar}), proposition);
+                    // Speed Up: Skip additional auxiliary variables for nested ORs
+                    if (op.type() == FType.OR) {
+                        final Or or = (Or) op;
+                        final LNGIntVector clause = new LNGIntVector(or.numberOfOperands() + 1);
+                        clause.push(pgVar ^ 1);
+                        for (final Formula opOr : or) {
+                            clause.push(computeTransformation(opOr, proposition));
+                        }
+                        this.solver.addClause(clause, proposition);
+                    } else {
+                        final int opPgVar = computeTransformation(op, proposition);
+                        this.solver.addClause(new LNGIntVector(new int[]{pgVar ^ 1, opPgVar}), proposition);
+                    }
                 }
                 break;
             }

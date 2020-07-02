@@ -189,8 +189,8 @@ public final class DirectPlaistedGreenbaumTransformationSolver {
                 if (polarity) {
                     // pg => (v1 & ... & vk) = (~pg | v1) & ... & (~pg | vk)
                     for (final Formula op : formula) {
+                        // Speed Up: Skip additional auxiliary variables for nested ORs
                         if (op.type() == FType.OR) {
-                            // Speed Up: Flatten ORs if possible
                             final Or or = (Or) op;
                             final LNGIntVector clause = new LNGIntVector(or.numberOfOperands() + 1);
                             clause.push(pgVar ^ 1);
