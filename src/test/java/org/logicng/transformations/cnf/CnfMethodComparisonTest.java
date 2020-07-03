@@ -68,7 +68,9 @@ public class CnfMethodComparisonTest {
     @Test
     @LongRunningTag
     public void compareBackbonesForVariablesOnLargeFormulas() throws IOException, ParserException {
+        //compareBackbonePerVariable("src/test/resources/formulas/debug.txt");
         compareBackbonePerVariable("src/test/resources/formulas/formula1.txt");
+        //compareBackbonePerVariable("src/test/resources/formulas/formula2.txt");
         compareBackbonePerVariable("src/test/resources/formulas/formula3.txt");
         compareBackbonePerVariable("src/test/resources/formulas/large_formula.txt");
         compareBackbonePerVariable("src/test/resources/formulas/small_formulas.txt");
@@ -89,6 +91,11 @@ public class CnfMethodComparisonTest {
                 MiniSatConfig.CNFMethod.FACTORY_CNF);
         final Map<Variable, Backbone> backbonePg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.PG_ON_SOLVER);
         final Map<Variable, Backbone> backboneDirectPg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER);
+        //for (final Map.Entry<Variable, Backbone> entry : backboneFactory.entrySet()) {
+        //    System.out.println(entry.getKey());
+        //    System.out.println("ref = " + entry.getValue());
+        //    assertThat(entry.getValue()).isEqualTo(backboneDirectPg.get(entry.getKey()));
+        //}
         assertThat(backboneFactory).isEqualTo(backbonePg);
         assertThat(backboneFactory).isEqualTo(backboneDirectPg);
     }
@@ -101,6 +108,12 @@ public class CnfMethodComparisonTest {
         final Formula formula = FormulaReader.readPseudoBooleanFormula(fileName, f);
         final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(cnfMethod).build());
         solver.add(formula);
+        //final Set<Formula> cnf = solver.execute(new FormulaOnSolverFunction());
+        //final SortedSet<Variable> vars = FormulaHelper.variables(cnf);
+        //final long numAuxVars = vars.stream().filter(v -> v.name().startsWith("@RESERVED_CNF_MINISAT")).count();
+        //System.out.println("numAuxVars = " + numAuxVars);
+        //System.out.println("cnf.size() = " + cnf.size());
+        ////cnf.forEach(System.out::println);
         final SolverState solverState = solver.saveState();
         final Map<Variable, Backbone> result = new TreeMap<>();
         int counter = 1000;

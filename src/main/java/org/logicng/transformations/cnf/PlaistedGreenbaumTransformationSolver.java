@@ -36,12 +36,11 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Implication;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
-import org.logicng.formulas.Or;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.ContainsPBCPredicate;
 import org.logicng.propositions.Proposition;
+import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
-import org.logicng.util.FormulaHelper;
 import org.logicng.util.Pair;
 
 import java.util.Collection;
@@ -81,13 +80,13 @@ public final class PlaistedGreenbaumTransformationSolver {
      */
     public void addCNFtoSolver(final Formula formula, final Proposition proposition) {
         final Formula workingFormula = this.performNNF ? formula.nnf() : formula;
-        for (final Formula op : FormulaHelper.splitTopLevelAnd(workingFormula)) {
-            final Formula withoutPBCs = !this.performNNF && op.holds(ContainsPBCPredicate.get()) ? op.nnf() : op;
-            if (withoutPBCs.holds(CNFPredicate.get())) {
-                addCNF(withoutPBCs, proposition);
-            } else {
-                final int topLevelVar = computeTransformation(withoutPBCs, true, proposition);
-                this.solver.addClause(topLevelVar, proposition);
+        final Formula withoutPBCs = !this.performNNF && workingFormula.holds(ContainsPBCPredicate.get()) ? workingFormula.nnf() : workingFormula;
+        if (withoutPBCs.holds(CNFPredicate.get())) {
+            addCNF(withoutPBCs, proposition);
+        } else {
+            final LNGIntVector topLevelVars = computeTransformation(withoutPBCs, true, proposition, true);
+            if (topLevelVars != null) {
+                this.solver.addClause(topLevelVars, proposition);
             }
         }
     }
@@ -118,125 +117,198 @@ public final class PlaistedGreenbaumTransformationSolver {
         }
     }
 
-    private int computeTransformation(final Formula formula, final boolean polarity, final Proposition proposition) {
+    private LNGIntVector computeTransformation(final Formula formula, final boolean polarity, final Proposition proposition, final boolean topLevel) {
         switch (formula.type()) {
             case LITERAL:
                 final Literal lit = (Literal) formula;
-                return polarity ? solverLiteral(lit.name(), lit.phase()) : solverLiteral(lit.name(), lit.phase()) ^ 1;
+                return polarity ? vector(solverLiteral(lit.name(), lit.phase())) : vector(solverLiteral(lit.name(), lit.phase()) ^ 1);
             case NOT:
-                return computeTransformation(((Not) formula).operand(), !polarity, proposition);
+                return computeTransformation(((Not) formula).operand(), !polarity, proposition, topLevel);
             case OR:
             case AND:
-                return handleNary(formula, polarity, proposition);
+                return handleNary(formula, polarity, proposition, topLevel);
             case IMPL:
-                return handleImplication((Implication) formula, polarity, proposition);
+                return handleImplication((Implication) formula, polarity, proposition, topLevel);
             case EQUIV:
-                return handleEquivalence((Equivalence) formula, polarity, proposition);
+                return handleEquivalence((Equivalence) formula, polarity, proposition, topLevel);
             default:
                 throw new IllegalArgumentException("Could not process the formula type " + formula.type());
         }
     }
 
-    private int handleImplication(final Implication formula, final boolean polarity, final Proposition proposition) {
-        final Pair<Boolean, Integer> pgVarResult = getPgVar(formula, polarity);
+    private LNGIntVector handleImplication(final Implication formula, final boolean polarity, final Proposition proposition, final boolean topLevel) {
+        final boolean skipPg = polarity || topLevel;
+        final Pair<Boolean, Integer> pgVarResult = skipPg ? new Pair<>(false, null) : getPgVar(formula, polarity);
         if (pgVarResult.first()) {
-            return polarity ? pgVarResult.second() : pgVarResult.second() ^ 1;
+            return polarity ? vector(pgVarResult.second()) : vector(pgVarResult.second() ^ 1);
         }
-        final int pgVar = pgVarResult.second();
+        final int pgVar = skipPg ? -1 : pgVarResult.second();
         if (polarity) {
             // pg => (~left | right) = ~pg | ~left | right
-            final int leftPgVarNeg = computeTransformation(formula.left(), false, proposition);
-            final int rightPgVarPos = computeTransformation(formula.right(), true, proposition);
-            this.solver.addClause(new LNGIntVector(pgVar ^ 1, leftPgVarNeg, rightPgVarPos), proposition);
+            final LNGIntVector leftPgVarNeg = computeTransformation(formula.left(), false, proposition, false);
+            final LNGIntVector rightPgVarPos = computeTransformation(formula.right(), true, proposition, false);
+            //this.solver.addClause(new LNGIntVector(pgVar ^ 1, leftPgVarNeg, rightPgVarPos), proposition);
+            return vector(leftPgVarNeg, rightPgVarPos);
         } else {
             // (~left | right) => pg = (left & ~right) | pg = (left | pg) & (~right | pg)
-            final int leftPgVarPos = computeTransformation(formula.left(), true, proposition);
-            final int rightPgVarNeg = computeTransformation(formula.right(), false, proposition);
-            this.solver.addClause(new LNGIntVector(new int[]{pgVar, leftPgVarPos}), proposition);
-            this.solver.addClause(new LNGIntVector(new int[]{pgVar, rightPgVarNeg}), proposition);
+            final LNGIntVector leftPgVarPos = computeTransformation(formula.left(), true, proposition, topLevel);
+            final LNGIntVector rightPgVarNeg = computeTransformation(formula.right(), false, proposition, topLevel);
+            if (topLevel) {
+                if (leftPgVarPos != null) {
+                    this.solver.addClause(leftPgVarPos, proposition);
+                }
+                if (rightPgVarNeg != null) {
+                    this.solver.addClause(rightPgVarNeg, proposition);
+                }
+                return null;
+                //return vector(pgVar ^ 1);
+            } else {
+                this.solver.addClause(vector(pgVar, leftPgVarPos), proposition);
+                this.solver.addClause(vector(pgVar, rightPgVarNeg), proposition);
+                return vector(pgVar ^ 1);
+            }
         }
-        return polarity ? pgVar : pgVar ^ 1;
+        //return polarity ? vector(pgVar) : vector(pgVar ^ 1);
     }
 
-    private int handleEquivalence(final Equivalence formula, final boolean polarity, final Proposition proposition) {
-        final Pair<Boolean, Integer> pgVarResult = getPgVar(formula, polarity);
+    private LNGIntVector handleEquivalence(final Equivalence formula, final boolean polarity, final Proposition proposition, final boolean topLevel) {
+        final boolean skipPg = topLevel;
+        final Pair<Boolean, Integer> pgVarResult = skipPg ? new Pair<>(false, null) : getPgVar(formula, polarity);
         if (pgVarResult.first()) {
-            return polarity ? pgVarResult.second() : pgVarResult.second() ^ 1;
+            return polarity ? vector(pgVarResult.second()) : vector(pgVarResult.second() ^ 1);
         }
-        final int pgVar = pgVarResult.second();
-        final int leftPgVarPos = computeTransformation(formula.left(), true, proposition);
-        final int leftPgVarNeg = computeTransformation(formula.left(), false, proposition);
-        final int rightPgVarPos = computeTransformation(formula.right(), true, proposition);
-        final int rightPgVarNeg = computeTransformation(formula.right(), false, proposition);
+        final int pgVar = skipPg ? -1 : pgVarResult.second();
+        final LNGIntVector leftPgVarPos = computeTransformation(formula.left(), true, proposition, false);
+        final LNGIntVector leftPgVarNeg = computeTransformation(formula.left(), false, proposition, false);
+        final LNGIntVector rightPgVarPos = computeTransformation(formula.right(), true, proposition, false);
+        final LNGIntVector rightPgVarNeg = computeTransformation(formula.right(), false, proposition, false);
         if (polarity) {
             // pg => (left => right) & (right => left)
             // = (pg & left => right) & (pg & right => left)
             // = (~pg | ~left | right) & (~pg | ~right | left)
-            this.solver.addClause(new LNGIntVector(pgVar ^ 1, leftPgVarNeg, rightPgVarPos), proposition);
-            this.solver.addClause(new LNGIntVector(pgVar ^ 1, leftPgVarPos, rightPgVarNeg), proposition);
+            if (topLevel) {
+                this.solver.addClause(vector(leftPgVarNeg, rightPgVarPos), proposition);
+                this.solver.addClause(vector(leftPgVarPos, rightPgVarNeg), proposition);
+                return null;
+            } else {
+                this.solver.addClause(vector(pgVar ^ 1, leftPgVarNeg, rightPgVarPos), proposition);
+                this.solver.addClause(vector(pgVar ^ 1, leftPgVarPos, rightPgVarNeg), proposition);
+            }
         } else {
             // (left => right) & (right => left) => pg
             // = ~(left => right) | ~(right => left) | pg
             // = left & ~right | right & ~left | pg
             // = (left | right | pg) & (~right | ~left | pg)
-            this.solver.addClause(new LNGIntVector(pgVar, leftPgVarPos, rightPgVarPos), proposition);
-            this.solver.addClause(new LNGIntVector(pgVar, leftPgVarNeg, rightPgVarNeg), proposition);
+            if (topLevel) {
+                this.solver.addClause(vector(leftPgVarPos, rightPgVarPos), proposition);
+                this.solver.addClause(vector(leftPgVarNeg, rightPgVarNeg), proposition);
+                return null;
+            } else {
+                this.solver.addClause(vector(pgVar, leftPgVarPos, rightPgVarPos), proposition);
+                this.solver.addClause(vector(pgVar, leftPgVarNeg, rightPgVarNeg), proposition);
+            }
         }
-        return polarity ? pgVar : pgVar ^ 1;
+        return polarity ? vector(pgVar) : vector(pgVar ^ 1);
     }
 
-    private int handleNary(final Formula formula, final boolean polarity, final Proposition proposition) {
-        final Pair<Boolean, Integer> pgVarResult = getPgVar(formula, polarity);
+    private LNGIntVector handleNary(final Formula formula, final boolean polarity, final Proposition proposition, final boolean topLevel) {
+        final boolean skipPg = topLevel || formula.type() == FType.AND && !polarity || formula.type() == FType.OR && polarity;
+        final Pair<Boolean, Integer> pgVarResult = skipPg ? new Pair<>(false, null) : getPgVar(formula, polarity);
         if (pgVarResult.first()) {
-            return polarity ? pgVarResult.second() : pgVarResult.second() ^ 1;
+            return polarity ? vector(pgVarResult.second()) : vector(pgVarResult.second() ^ 1);
         }
-        final int pgVar = pgVarResult.second();
+        final int pgVar = skipPg ? -1 : pgVarResult.second();
         switch (formula.type()) {
             case AND: {
                 if (polarity) {
                     // pg => (v1 & ... & vk) = (~pg | v1) & ... & (~pg | vk)
                     for (final Formula op : formula) {
                         // Speed Up: Skip additional auxiliary variables for nested ORs
-                        if (op.type() == FType.OR) {
-                            final Or or = (Or) op;
-                            final LNGIntVector clause = new LNGIntVector(or.numberOfOperands() + 1);
-                            clause.push(pgVar ^ 1);
-                            for (final Formula opOr : or) {
-                                clause.push(computeTransformation(opOr, true, proposition));
+                        //if (op.type() == FType.OR) {
+                        //    final Or or = (Or) op;
+                        //    final LNGIntVector clause = new LNGIntVector(or.numberOfOperands() + 1); // TODO unsafe push possible?
+                        //    clause.push(pgVar ^ 1);
+                        //    for (final Formula opOr : or) {
+                        //        final LNGIntVector pgLits = computeTransformation(opOr, true, proposition, false);
+                        //        for (int i = 0; i < pgLits.size(); i++) {
+                        //            clause.push(pgLits.get(i));
+                        //        }
+                        //    }
+                        //    this.solver.addClause(clause, proposition);
+                        //} else {
+                        final LNGIntVector opPgVars = computeTransformation(op, true, proposition, topLevel);
+                        if (topLevel) {
+                            if (opPgVars != null) {
+                                this.solver.addClause(opPgVars, proposition);
                             }
-                            this.solver.addClause(clause, proposition);
                         } else {
-                            final int opPgVar = computeTransformation(op, true, proposition);
-                            this.solver.addClause(new LNGIntVector(new int[]{pgVar ^ 1, opPgVar}), proposition);
+                            this.solver.addClause(vector(pgVar ^ 1, opPgVars), proposition);
                         }
+                        //}
+                    }
+                    if (topLevel) {
+                        return null;
                     }
                 } else {
-                    // (v1 & ... & vk) => pg = ~v1 | ... | ~vk | pg
+                    // NEW: skip pg var
                     final LNGIntVector singleClause = new LNGIntVector();
-                    singleClause.push(pgVar);
                     for (final Formula op : formula) {
-                        final int opPgVar = computeTransformation(op, false, proposition);
-                        singleClause.push(opPgVar);
+                        final LNGIntVector opPgVars = computeTransformation(op, false, proposition, false);
+                        for (int i = 0; i < opPgVars.size(); i++) {
+                            singleClause.push(opPgVars.get(i));
+                        }
                     }
-                    this.solver.addClause(singleClause, proposition);
+                    return singleClause;
+
+                    // (v1 & ... & vk) => pg = ~v1 | ... | ~vk | pg
+                    //final LNGIntVector singleClause = new LNGIntVector();
+                    //singleClause.push(pgVar);
+                    //for (final Formula op : formula) {
+                    //    final LNGIntVector opPgVars = computeTransformation(op, false, proposition);
+                    //    for (int i = 0; i < opPgVars.size(); i++) {
+                    //        singleClause.push(opPgVars.get(i));
+                    //    }
+                    //}
+                    //this.solver.addClause(singleClause, proposition);
                 }
                 break;
             }
             case OR: {
                 if (polarity) {
-                    // pg => (v1 | ... | vk) = ~pg | v1 | ... | vk
+                    // NEW: skip pg var
                     final LNGIntVector singleClause = new LNGIntVector();
-                    singleClause.push(pgVar ^ 1);
                     for (final Formula op : formula) {
-                        final int opPgVar = computeTransformation(op, true, proposition);
-                        singleClause.push(opPgVar);
+                        final LNGIntVector opPgVars = computeTransformation(op, true, proposition, false);
+                        for (int i = 0; i < opPgVars.size(); i++) {
+                            singleClause.push(opPgVars.get(i));
+                        }
                     }
-                    this.solver.addClause(singleClause, proposition);
+                    return singleClause;
+
+                    // pg => (v1 | ... | vk) = ~pg | v1 | ... | vk
+                    //final LNGIntVector singleClause = new LNGIntVector();
+                    //singleClause.push(pgVar ^ 1);
+                    //for (final Formula op : formula) {
+                    //    final LNGIntVector opPgVars = computeTransformation(op, true, proposition);
+                    //    for (int i = 0; i < opPgVars.size(); i++) {
+                    //        singleClause.push(opPgVars.get(i));
+                    //    }
+                    //}
+                    //this.solver.addClause(singleClause, proposition);
                 } else {
                     // (v1 | ... | vk) => pg = (~v1 | pg) & ... & (~vk | pg)
                     for (final Formula op : formula) {
-                        final int opPgVar = computeTransformation(op, false, proposition);
-                        this.solver.addClause(new LNGIntVector(new int[]{pgVar, opPgVar}), proposition);
+                        final LNGIntVector opPgVars = computeTransformation(op, false, proposition, topLevel);
+                        if (topLevel) {
+                            if (opPgVars != null) {
+                                this.solver.addClause(opPgVars, proposition);
+                            }
+                        } else {
+                            this.solver.addClause(vector(pgVar, opPgVars), proposition);
+                        }
+                    }
+                    if (topLevel) {
+                        return null;
                     }
                 }
                 break;
@@ -244,7 +316,7 @@ public final class PlaistedGreenbaumTransformationSolver {
             default:
                 throw new IllegalArgumentException("Unexpected type: " + formula.type());
         }
-        return polarity ? pgVar : pgVar ^ 1;
+        return polarity ? vector(pgVar) : vector(pgVar ^ 1);
     }
 
     private Pair<Boolean, Integer> getPgVar(final Formula formula, final boolean polarity) {
@@ -278,6 +350,42 @@ public final class PlaistedGreenbaumTransformationSolver {
         return index * 2;
     }
 
+    private static LNGIntVector vector(final int... elts) {
+        return new LNGIntVector(elts);
+    }
+
+    private static LNGIntVector vector(final LNGIntVector a, final LNGIntVector b) {
+        final LNGIntVector result = new LNGIntVector(a.size() + b.size());
+        for (int i = 0; i < a.size(); i++) {
+            result.unsafePush(a.get(i));
+        }
+        for (int i = 0; i < b.size(); i++) {
+            result.unsafePush(b.get(i));
+        }
+        return result;
+    }
+
+    private static LNGIntVector vector(final int elt, final LNGIntVector a) {
+        final LNGIntVector result = new LNGIntVector(a.size() + 1);
+        result.unsafePush(elt);
+        for (int i = 0; i < a.size(); i++) {
+            result.unsafePush(a.get(i));
+        }
+        return result;
+    }
+
+    private static LNGIntVector vector(final int elt, final LNGIntVector a, final LNGIntVector b) {
+        final LNGIntVector result = new LNGIntVector(a.size() + b.size() + 1);
+        result.unsafePush(elt);
+        for (int i = 0; i < a.size(); i++) {
+            result.unsafePush(a.get(i));
+        }
+        for (int i = 0; i < b.size(); i++) {
+            result.unsafePush(b.get(i));
+        }
+        return result;
+    }
+
     private static class VarCacheEntry {
         private final Integer pgVar;
         private boolean posPolarityCached = false;
@@ -298,5 +406,40 @@ public final class PlaistedGreenbaumTransformationSolver {
             }
             return wasCached;
         }
+    }
+
+    private static LNGIntVector condensedClause(final LNGIntVector literals) {
+        if (literals == null) {
+            return null;
+        }
+        final LNGIntVector ops = new LNGIntVector();
+        for (int i = 0; i < literals.size(); i++) {
+            final int lit = literals.get(i);
+            final boolean containsComplement = addLiteralOr(ops, lit);
+            if (containsComplement) {
+                return null;
+            }
+        }
+        return ops;
+    }
+
+    private static boolean addLiteralOr(final LNGIntVector ops, final int lit) {
+        if (containsComplement(ops, lit)) {
+            return true;
+        } else {
+            ops.push(lit); // TODO dont add duplicates
+            return false;
+        }
+    }
+
+    private static boolean containsComplement(final LNGIntVector ops, final int lit) {
+        for (int i = 0; i < ops.size(); i++) {
+            final int elt = ops.get(i);
+            if (MiniSat2Solver.var(elt) == MiniSat2Solver.var(lit) &&
+                    MiniSat2Solver.sign(elt) != MiniSat2Solver.sign(lit)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

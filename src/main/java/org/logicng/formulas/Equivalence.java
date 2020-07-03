@@ -51,19 +51,20 @@ public final class Equivalence extends BinaryOperator {
 
     @Override
     public boolean evaluate(final Assignment assignment) {
-        return left.evaluate(assignment) == right.evaluate(assignment);
+        return this.left.evaluate(assignment) == this.right.evaluate(assignment);
     }
 
     @Override
     public Formula restrict(final Assignment assignment) {
-        return f.equivalence(left.restrict(assignment), right.restrict(assignment));
+        return this.f.equivalence(this.left.restrict(assignment), this.right.restrict(assignment));
     }
 
     @Override
     public Formula nnf() {
         Formula nnf = this.transformationCache.get(NNF);
         if (nnf == null) {
-            nnf = f.or(f.and(left.nnf(), right.nnf()), f.and(f.not(left).nnf(), f.not(right).nnf()));
+            //nnf = this.f.or(this.f.and(this.left.nnf(), this.right.nnf()), this.f.and(this.f.not(this.left).nnf(), this.f.not(this.right).nnf()));
+            nnf = this.f.and(this.f.or(this.f.not(this.left).nnf(), this.right.nnf()), this.f.or(this.f.not(this.right).nnf(), this.left.nnf()));
             this.transformationCache.put(NNF, nnf);
         }
         return nnf;
@@ -72,7 +73,7 @@ public final class Equivalence extends BinaryOperator {
     @Override
     public int hashCode() {
         if (this.hashCode == 0) {
-            this.hashCode = 41 * (left.hashCode() + right.hashCode());
+            this.hashCode = 41 * (this.left.hashCode() + this.right.hashCode());
         }
         return this.hashCode;
     }
@@ -86,7 +87,7 @@ public final class Equivalence extends BinaryOperator {
             return false; // the same formula factory would have produced a == object
         }
         if (other instanceof Equivalence) {
-            Equivalence otherEq = (Equivalence) other;
+            final Equivalence otherEq = (Equivalence) other;
             return this.left.equals(otherEq.left) && this.right.equals(otherEq.right) ||
                     this.left.equals(otherEq.right) && this.right.equals(otherEq.left);
         }

@@ -113,6 +113,12 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
 
     @Override
     public boolean addClause(final LNGIntVector ps, final Proposition proposition) {
+        //for (int i = 0; i < ps.size(); i++) {
+        //    final int lit = ps.get(i);
+        //    System.out.print(" " + (sign(lit) ? "-" : "") + this.idx2name.get(var(lit)));
+        //}
+        //System.out.println();
+
         assert decisionLevel() == 0;
         int p;
         int i;
