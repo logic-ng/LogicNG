@@ -415,7 +415,7 @@ public final class PlaistedGreenbaumTransformationSolver {
         final LNGIntVector ops = new LNGIntVector();
         for (int i = 0; i < literals.size(); i++) {
             final int lit = literals.get(i);
-            final boolean containsComplement = addLiteralOr(ops, lit);
+            final boolean containsComplement = addLiteralToClause(ops, lit);
             if (containsComplement) {
                 return null;
             }
@@ -423,20 +423,31 @@ public final class PlaistedGreenbaumTransformationSolver {
         return ops;
     }
 
-    private static boolean addLiteralOr(final LNGIntVector ops, final int lit) {
-        if (containsComplement(ops, lit)) {
+    private static boolean addLiteralToClause(final LNGIntVector literals, final int lit) {
+        if (containsComplement(literals, lit)) {
             return true;
         } else {
-            ops.push(lit); // TODO dont add duplicates
+            if (containsElement(literals, lit)) {
+                literals.push(lit);
+            }
             return false;
         }
     }
 
-    private static boolean containsComplement(final LNGIntVector ops, final int lit) {
-        for (int i = 0; i < ops.size(); i++) {
-            final int elt = ops.get(i);
+    private static boolean containsComplement(final LNGIntVector literals, final int lit) {
+        for (int i = 0; i < literals.size(); i++) {
+            final int elt = literals.get(i);
             if (MiniSat2Solver.var(elt) == MiniSat2Solver.var(lit) &&
                     MiniSat2Solver.sign(elt) != MiniSat2Solver.sign(lit)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsElement(final LNGIntVector elements, final int elt) {
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i) == elt) {
                 return true;
             }
         }
