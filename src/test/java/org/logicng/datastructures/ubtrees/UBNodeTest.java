@@ -3,9 +3,9 @@ package org.logicng.datastructures.ubtrees;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.algorithms.primecomputation.PrimeResult;
 import org.logicng.formulas.F;
 import org.logicng.formulas.Literal;
+import org.logicng.primecomputation.PrimeResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
