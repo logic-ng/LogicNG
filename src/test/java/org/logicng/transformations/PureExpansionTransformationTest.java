@@ -28,9 +28,11 @@
 
 package org.logicng.transformations;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
-import org.logicng.algorithms.ModelCounter;
 import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.F;
 import org.logicng.formulas.FType;
@@ -39,15 +41,13 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.modelcounting.ModelCounter;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
 import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit Tests for {@link PureExpansionTransformation}.

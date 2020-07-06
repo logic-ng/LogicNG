@@ -33,7 +33,7 @@ import org.logicng.backbones.BackboneType;
 import org.logicng.cardinalityconstraints.CCIncrementalData;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
-import org.logicng.explanations.unsatcores.UNSATCore;
+import org.logicng.explanations.UNSATCore;
 import org.logicng.formulas.CardinalityConstraint;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;

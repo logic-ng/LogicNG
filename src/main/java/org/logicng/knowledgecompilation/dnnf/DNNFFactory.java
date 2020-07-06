@@ -4,8 +4,8 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.dnnf.datastructures.DNNF;
 import org.logicng.knowledgecompilation.dnnf.datastructures.dtree.MinFillDTreeGenerator;
-import org.logicng.transformations.BackboneSimplifier;
 import org.logicng.transformations.cnf.CNFSubsumption;
+import org.logicng.transformations.simplification.BackboneSimplifier;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
