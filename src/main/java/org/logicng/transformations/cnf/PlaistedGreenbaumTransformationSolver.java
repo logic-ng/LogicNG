@@ -292,7 +292,7 @@ public final class PlaistedGreenbaumTransformationSolver {
     private LNGIntVector generateClauseVector(final Collection<Literal> literals) {
         final LNGIntVector clauseVec = new LNGIntVector(literals.size());
         for (final Literal lit : literals) {
-            clauseVec.push(solverLiteral(lit.name(), lit.phase()));
+            clauseVec.unsafePush(solverLiteral(lit.name(), lit.phase()));
         }
         return clauseVec;
     }
