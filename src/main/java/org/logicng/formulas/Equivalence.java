@@ -63,7 +63,6 @@ public final class Equivalence extends BinaryOperator {
     public Formula nnf() {
         Formula nnf = this.transformationCache.get(NNF);
         if (nnf == null) {
-            //nnf = this.f.or(this.f.and(this.left.nnf(), this.right.nnf()), this.f.and(this.f.not(this.left).nnf(), this.f.not(this.right).nnf()));
             nnf = this.f.and(this.f.or(this.f.not(this.left).nnf(), this.right.nnf()), this.f.or(this.f.not(this.right).nnf(), this.left.nnf()));
             this.transformationCache.put(NNF, nnf);
         }
