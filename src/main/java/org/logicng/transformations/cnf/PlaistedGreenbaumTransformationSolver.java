@@ -39,7 +39,6 @@ import org.logicng.formulas.Not;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.ContainsPBCPredicate;
 import org.logicng.propositions.Proposition;
-import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 import org.logicng.util.Pair;
 
@@ -145,9 +144,9 @@ public final class PlaistedGreenbaumTransformationSolver {
         final int pgVar = skipPg ? -1 : pgVarResult.second();
         if (polarity) {
             // pg => (~left | right) = ~pg | ~left | right
+            // Speed-Up: Skip pg var
             final LNGIntVector leftPgVarNeg = computeTransformation(formula.left(), false, proposition, false);
             final LNGIntVector rightPgVarPos = computeTransformation(formula.right(), true, proposition, false);
-            //this.solver.addClause(new LNGIntVector(pgVar ^ 1, leftPgVarNeg, rightPgVarPos), proposition);
             return vector(leftPgVarNeg, rightPgVarPos);
         } else {
             // (~left | right) => pg = (left & ~right) | pg = (left | pg) & (~right | pg)
@@ -161,14 +160,12 @@ public final class PlaistedGreenbaumTransformationSolver {
                     this.solver.addClause(rightPgVarNeg, proposition);
                 }
                 return null;
-                //return vector(pgVar ^ 1);
             } else {
                 this.solver.addClause(vector(pgVar, leftPgVarPos), proposition);
                 this.solver.addClause(vector(pgVar, rightPgVarNeg), proposition);
                 return vector(pgVar ^ 1);
             }
         }
-        //return polarity ? vector(pgVar) : vector(pgVar ^ 1);
     }
 
     private LNGIntVector handleEquivalence(final Equivalence formula, final boolean polarity, final Proposition proposition, final boolean topLevel) {
@@ -223,19 +220,6 @@ public final class PlaistedGreenbaumTransformationSolver {
                 if (polarity) {
                     // pg => (v1 & ... & vk) = (~pg | v1) & ... & (~pg | vk)
                     for (final Formula op : formula) {
-                        // Speed Up: Skip additional auxiliary variables for nested ORs
-                        //if (op.type() == FType.OR) {
-                        //    final Or or = (Or) op;
-                        //    final LNGIntVector clause = new LNGIntVector(or.numberOfOperands() + 1); // TODO unsafe push possible?
-                        //    clause.push(pgVar ^ 1);
-                        //    for (final Formula opOr : or) {
-                        //        final LNGIntVector pgLits = computeTransformation(opOr, true, proposition, false);
-                        //        for (int i = 0; i < pgLits.size(); i++) {
-                        //            clause.push(pgLits.get(i));
-                        //        }
-                        //    }
-                        //    this.solver.addClause(clause, proposition);
-                        //} else {
                         final LNGIntVector opPgVars = computeTransformation(op, true, proposition, topLevel);
                         if (topLevel) {
                             if (opPgVars != null) {
@@ -244,13 +228,13 @@ public final class PlaistedGreenbaumTransformationSolver {
                         } else {
                             this.solver.addClause(vector(pgVar ^ 1, opPgVars), proposition);
                         }
-                        //}
                     }
                     if (topLevel) {
                         return null;
                     }
                 } else {
-                    // NEW: skip pg var
+                    // (v1 & ... & vk) => pg = ~v1 | ... | ~vk | pg
+                    // Speed-Up: Skip pg var
                     final LNGIntVector singleClause = new LNGIntVector();
                     for (final Formula op : formula) {
                         final LNGIntVector opPgVars = computeTransformation(op, false, proposition, false);
@@ -259,23 +243,13 @@ public final class PlaistedGreenbaumTransformationSolver {
                         }
                     }
                     return singleClause;
-
-                    // (v1 & ... & vk) => pg = ~v1 | ... | ~vk | pg
-                    //final LNGIntVector singleClause = new LNGIntVector();
-                    //singleClause.push(pgVar);
-                    //for (final Formula op : formula) {
-                    //    final LNGIntVector opPgVars = computeTransformation(op, false, proposition);
-                    //    for (int i = 0; i < opPgVars.size(); i++) {
-                    //        singleClause.push(opPgVars.get(i));
-                    //    }
-                    //}
-                    //this.solver.addClause(singleClause, proposition);
                 }
                 break;
             }
             case OR: {
                 if (polarity) {
-                    // NEW: skip pg var
+                    // pg => (v1 | ... | vk) = ~pg | v1 | ... | vk
+                    // Speed-Up: Skip pg var
                     final LNGIntVector singleClause = new LNGIntVector();
                     for (final Formula op : formula) {
                         final LNGIntVector opPgVars = computeTransformation(op, true, proposition, false);
@@ -284,17 +258,6 @@ public final class PlaistedGreenbaumTransformationSolver {
                         }
                     }
                     return singleClause;
-
-                    // pg => (v1 | ... | vk) = ~pg | v1 | ... | vk
-                    //final LNGIntVector singleClause = new LNGIntVector();
-                    //singleClause.push(pgVar ^ 1);
-                    //for (final Formula op : formula) {
-                    //    final LNGIntVector opPgVars = computeTransformation(op, true, proposition);
-                    //    for (int i = 0; i < opPgVars.size(); i++) {
-                    //        singleClause.push(opPgVars.get(i));
-                    //    }
-                    //}
-                    //this.solver.addClause(singleClause, proposition);
                 } else {
                     // (v1 | ... | vk) => pg = (~v1 | pg) & ... & (~vk | pg)
                     for (final Formula op : formula) {
@@ -406,51 +369,5 @@ public final class PlaistedGreenbaumTransformationSolver {
             }
             return wasCached;
         }
-    }
-
-    private static LNGIntVector condensedClause(final LNGIntVector literals) {
-        if (literals == null) {
-            return null;
-        }
-        final LNGIntVector ops = new LNGIntVector();
-        for (int i = 0; i < literals.size(); i++) {
-            final int lit = literals.get(i);
-            final boolean containsComplement = addLiteralToClause(ops, lit);
-            if (containsComplement) {
-                return null;
-            }
-        }
-        return ops;
-    }
-
-    private static boolean addLiteralToClause(final LNGIntVector literals, final int lit) {
-        if (containsComplement(literals, lit)) {
-            return true;
-        } else {
-            if (containsElement(literals, lit)) {
-                literals.push(lit);
-            }
-            return false;
-        }
-    }
-
-    private static boolean containsComplement(final LNGIntVector literals, final int lit) {
-        for (int i = 0; i < literals.size(); i++) {
-            final int elt = literals.get(i);
-            if (MiniSat2Solver.var(elt) == MiniSat2Solver.var(lit) &&
-                    MiniSat2Solver.sign(elt) != MiniSat2Solver.sign(lit)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean containsElement(final LNGIntVector elements, final int elt) {
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i) == elt) {
-                return true;
-            }
-        }
-        return false;
     }
 }
