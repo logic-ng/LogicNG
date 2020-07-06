@@ -82,7 +82,7 @@ public final class MiniSat extends SATSolver {
     private final boolean incremental;
     private int nextStateId;
     private final PlaistedGreenbaumTransformationSolver pgTransformation;
-    private final PlaistedGreenbaumTransformationSolver directPgTransformation;
+    private final PlaistedGreenbaumTransformationSolver fullPgTransformation;
     private boolean lastComputationWithAssumptions;
 
     /**
@@ -116,7 +116,7 @@ public final class MiniSat extends SATSolver {
         this.nextStateId = 0;
         this.ccEncoder = new CCEncoder(f);
         this.pgTransformation = new PlaistedGreenbaumTransformationSolver(true, this.underlyingSolver(), this.initialPhase);
-        this.directPgTransformation = new PlaistedGreenbaumTransformationSolver(false, this.underlyingSolver(), this.initialPhase);
+        this.fullPgTransformation = new PlaistedGreenbaumTransformationSolver(false, this.underlyingSolver(), this.initialPhase);
     }
 
     /**
@@ -212,8 +212,8 @@ public final class MiniSat extends SATSolver {
             this.addClauseSet(formula.cnf(), proposition);
         } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.PG_ON_SOLVER) {
             this.pgTransformation.addCNFtoSolver(formula, proposition);
-        } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER) {
-            this.directPgTransformation.addCNFtoSolver(formula, proposition);
+        } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER) {
+            this.fullPgTransformation.addCNFtoSolver(formula, proposition);
         } else {
             throw new IllegalStateException("Unknown Solver CNF method: " + this.config.getCnfMethod());
         }
@@ -288,7 +288,7 @@ public final class MiniSat extends SATSolver {
         this.solver.reset();
         this.lastComputationWithAssumptions = false;
         this.pgTransformation.clearCache();
-        this.directPgTransformation.clearCache();
+        this.fullPgTransformation.clearCache();
         this.result = UNDEF;
     }
 
@@ -333,7 +333,7 @@ public final class MiniSat extends SATSolver {
         this.solver.loadState(state.state());
         this.result = UNDEF;
         this.pgTransformation.clearCache();
-        this.directPgTransformation.clearCache();
+        this.fullPgTransformation.clearCache();
     }
 
     @Override

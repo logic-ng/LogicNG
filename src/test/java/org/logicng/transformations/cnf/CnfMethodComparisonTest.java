@@ -47,7 +47,7 @@ public class CnfMethodComparisonTest {
         configs.add(new Object[]{CNFConfig.builder().build(),
                 MiniSatConfig.CNFMethod.PG_ON_SOLVER});
         configs.add(new Object[]{CNFConfig.builder().build(),
-                MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER});
+                MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER});
         return configs;
     }
 
@@ -87,9 +87,9 @@ public class CnfMethodComparisonTest {
                 CNFConfig.builder().algorithm(CNFConfig.Algorithm.ADVANCED).fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.TSEITIN).build(),
                 MiniSatConfig.CNFMethod.FACTORY_CNF);
         final Map<Variable, Backbone> backbonePg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.PG_ON_SOLVER);
-        final Map<Variable, Backbone> backboneDirectPg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER);
+        final Map<Variable, Backbone> backboneFullPg = computeBackbonePerVariable(fileName, CNFConfig.builder().build(), MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER);
         assertThat(backboneFactory).isEqualTo(backbonePg);
-        assertThat(backboneFactory).isEqualTo(backboneDirectPg);
+        assertThat(backboneFactory).isEqualTo(backboneFullPg);
     }
 
     private Map<Variable, Backbone> computeBackbonePerVariable(final String fileName, final CNFConfig cnfConfig, final MiniSatConfig.CNFMethod cnfMethod)

@@ -28,6 +28,14 @@
 
 package org.logicng.solvers.sat;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
+import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
+import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
 import org.logicng.LongRunningTag;
@@ -73,14 +81,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.logicng.datastructures.Tristate.FALSE;
-import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
-import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
-
 /**
  * Unit tests for the SAT solvers.
  * @version 1.6
@@ -107,7 +107,7 @@ public class SATTest implements LogicNGTest {
         this.solvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(false).build());
         this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
-        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.DIRECT_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
 
         this.testStrings = new String[8];
         this.testStrings[0] = "MiniSat2Solver{result=UNDEF, incremental=true}";
@@ -532,7 +532,7 @@ public class SATTest implements LogicNGTest {
         while (reader.ready()) {
             tokens = reader.readLine().split("\\s+");
             if (tokens.length >= 2) {
-                assert "0".equals(tokens[tokens.length - 1]);
+                assert "0" .equals(tokens[tokens.length - 1]);
                 literals.clear();
                 for (int i = 0; i < tokens.length - 1; i++) {
                     if (!tokens[i].isEmpty()) {
