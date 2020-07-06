@@ -61,6 +61,15 @@ public final class MiniSatConfig extends Configuration {
      * <li> {@code PG_ON_SOLVER} uses a solver-internal implementation of Plaisted-Greenbaum.
      * Auxiliary variables are only added on the solver, not on the factory.  This usually
      * leads to a reduced heap usage and often faster performance.
+     * Before applying Plaisted-Greenbaum, this method performs an NNF transformation on the
+     * input formula first.
+     * <li> {@code FULL_PG_ON_SOLVER} uses a solver-internal implementation of Plaisted-Greenbaum.
+     * Auxiliary variables are only added on the solver, not on the factory.  This usually
+     * leads to a reduced heap usage and often faster performance.
+     * In contrast to {@code PG_ON_SOLVER}, this method does not transform the input formula to
+     * NNF first. The Plaisted-Greenbaum transformation is applied directly to all operators of
+     * the formula, hence prefix {@code FULL}. Without the NNF transformation the formula factory
+     * and the heap will not be polluted with intermediate formulas.
      * </ul>
      */
     public enum CNFMethod {
