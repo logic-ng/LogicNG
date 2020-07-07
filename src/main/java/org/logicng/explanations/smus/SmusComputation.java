@@ -42,7 +42,6 @@ public final class SmusComputation {
     }
 
     /**
-     * TODO: Adjust input and output?
      * Computes the SMUS for the given list of propositions modulo some additional constraint.
      * @param propositions          the propositions
      * @param additionalConstraints the additional constraints
