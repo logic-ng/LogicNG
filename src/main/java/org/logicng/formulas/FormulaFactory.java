@@ -28,6 +28,13 @@
 
 package org.logicng.formulas;
 
+import static org.logicng.formulas.FType.AND;
+import static org.logicng.formulas.FType.FALSE;
+import static org.logicng.formulas.FType.LITERAL;
+import static org.logicng.formulas.FType.NOT;
+import static org.logicng.formulas.FType.OR;
+import static org.logicng.formulas.FType.TRUE;
+
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.printer.DefaultStringRepresentation;
@@ -51,13 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import static org.logicng.formulas.FType.AND;
-import static org.logicng.formulas.FType.FALSE;
-import static org.logicng.formulas.FType.LITERAL;
-import static org.logicng.formulas.FType.NOT;
-import static org.logicng.formulas.FType.OR;
-import static org.logicng.formulas.FType.TRUE;
 
 /**
  * The formula factory for LogicNG.
@@ -1446,8 +1446,12 @@ public class FormulaFactory {
             return this.pbcs;
         }
 
+        /**
+         * Returns the number of cardinality constraints in the factory.
+         * @return the number of cardinality constraints in the factory
+         */
         public int ccs() {
-            return this.pbcs;
+            return this.ccs;
         }
 
         /**

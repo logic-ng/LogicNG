@@ -26,6 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Unit Tests for the CNF transformations in {@link CNFConfig} and {@link org.logicng.solvers.sat.MiniSatConfig.CNFMethod}.
+ * @version 2.0.0
+ * @since 2.0.0
+ */
 public class CnfMethodComparisonTest {
 
     public static Collection<Object[]> cnfConfigurations() {

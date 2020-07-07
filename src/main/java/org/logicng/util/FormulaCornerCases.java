@@ -44,6 +44,10 @@ public class FormulaCornerCases {
         this.nc = this.c.negate();
     }
 
+    /**
+     * Returns the set of variables used for creating the corner cases.
+     * @return the set of variables
+     */
     public SortedSet<Variable> getVariables() {
         return new TreeSet<>(Arrays.asList(this.a, this.b, this.c));
     }
