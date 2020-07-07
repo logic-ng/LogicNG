@@ -172,6 +172,7 @@
         <version>${version.surefire}</version>
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
     </plugins>
