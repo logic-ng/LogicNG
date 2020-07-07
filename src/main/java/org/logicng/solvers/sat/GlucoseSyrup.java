@@ -646,7 +646,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
             return true;
         }
         removeSatisfied(this.learnts);
-        if (this.removeSatisfied) {
+        if (this.shouldRemoveSatsisfied) {
             removeSatisfied(this.clauses);
         }
         rebuildOrderHeap();

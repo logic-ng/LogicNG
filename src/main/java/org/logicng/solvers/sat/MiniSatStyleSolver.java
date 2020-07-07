@@ -116,7 +116,7 @@ public abstract class MiniSatStyleSolver {
     protected int restartFirst;
     protected double restartInc;
     protected double clauseDecay;
-    protected boolean removeSatisfied;
+    protected boolean shouldRemoveSatsisfied;
     protected double learntsizeFactor;
     protected double learntsizeInc;
     protected boolean incremental;
@@ -273,7 +273,7 @@ public abstract class MiniSatStyleSolver {
         this.restartFirst = this.config.restartFirst;
         this.restartInc = this.config.restartInc;
         this.clauseDecay = this.config.clauseDecay;
-        this.removeSatisfied = this.config.removeSatisfied;
+        this.shouldRemoveSatsisfied = this.config.removeSatisfied;
         this.learntsizeFactor = this.config.learntsizeFactor;
         this.learntsizeInc = this.config.learntsizeInc;
         this.incremental = this.config.incremental;

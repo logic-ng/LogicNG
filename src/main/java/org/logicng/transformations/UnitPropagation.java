@@ -146,6 +146,7 @@ public final class UnitPropagation implements FormulaTransformation {
                         return f.verum();
                     case UNDEF:
                         literals.add(solverLiteralToFormula(lit, f));
+                        break;
                     case FALSE:
                         // ignore this literal
                 }
