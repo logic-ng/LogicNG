@@ -105,7 +105,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
 
         List<Variable> getMinFillOrdering() {
             final boolean[][] fillAdjMatrix = getCopyOfAdjMatrix();
-            final List<LNGIntVector> fillEdgeList = getCopyOfEdgeList(); // TODO: replace by List<BitSet> ?
+            final List<LNGIntVector> fillEdgeList = getCopyOfEdgeList();
 
             final Variable[] ordering = new Variable[this.numberOfVertices];
             final boolean[] processed = new boolean[this.numberOfVertices];
