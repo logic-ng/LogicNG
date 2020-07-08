@@ -28,10 +28,13 @@
 
 package org.logicng.functions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaFactoryConfig;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
@@ -42,8 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit tests for {@link VariableProfileFunction}.
  * @version 2.0.0
@@ -51,8 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class VariableProfileTest {
 
-    private final FormulaFactory f = new FormulaFactory();
-    private final FormulaFactory f2 = new FormulaFactory();
+    private final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+    private final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
 
     private final VariableProfileFunction varProfile = new VariableProfileFunction();
 

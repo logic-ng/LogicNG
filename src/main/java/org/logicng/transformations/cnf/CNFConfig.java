@@ -55,7 +55,7 @@ public final class CNFConfig extends Configuration {
      * Constructs a new configuration with a given type.
      * @param builder the builder
      */
-    public CNFConfig(final Builder builder) {
+    private CNFConfig(final Builder builder) {
         super(ConfigurationType.CNF);
         this.algorithm = builder.algorithm;
         this.fallbackAlgorithmForAdvancedEncoding = builder.fallbackAlgorithmForAdvancedEncoding;

@@ -28,6 +28,8 @@
 
 package org.logicng.formulas;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
@@ -39,8 +41,6 @@ import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test some basic formula factory functionality.
@@ -58,7 +58,7 @@ public class FormulaFactoryTest {
 
     @Test
     public void testToString() {
-        final FormulaFactory f = new FormulaFactory("MyFormulaFactory");
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().name("MyFormulaFactory").build());
         f.variable("a");
         f.literal("b", false);
         f.and(f.variable("a"), f.literal("b", false));
@@ -117,7 +117,7 @@ public class FormulaFactoryTest {
         assertThat(pbVar.name()).isEqualTo("@RESERVED_PB_0");
         assertThat(cnfVar.name()).isEqualTo("@RESERVED_CNF_0");
 
-        f = new FormulaFactory("f");
+        f = new FormulaFactory(FormulaFactoryConfig.builder().name("f").build());
         ccVar = f.newCCVariable();
         cnfVar = f.newCNFVariable();
         pbVar = f.newPBVariable();
@@ -159,8 +159,8 @@ public class FormulaFactoryTest {
 
     @Test
     public void testImportFormula() throws ParserException {
-        final FormulaFactory f = new FormulaFactory("Factory F");
-        final FormulaFactory g = new FormulaFactory("Factory G");
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory F").build());
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory G").build());
         final PropositionalParser pf = new PropositionalParser(f);
         final String formula = "x1 & x2 & ~x3 => (x4 | (x5 <=> ~x1))";
         final Formula ff = pf.parse(formula);

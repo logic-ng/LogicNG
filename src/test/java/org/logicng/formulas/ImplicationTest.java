@@ -129,11 +129,12 @@ public class ImplicationTest extends TestWithExampleFormulas {
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        assertThat(this.g.implication(this.g.variable("a"), this.g.variable("b"))).isEqualTo(this.IMP1);
-        assertThat(this.g.implication(this.AND1, this.OR1)).isEqualTo(this.IMP3);
-        assertThat(this.g.implication(this.g.variable("b"), this.g.variable("a"))).isNotEqualTo(this.IMP1);
-        assertThat(this.g.implication(this.g.literal("a", false), this.g.variable("b"))).isNotEqualTo(this.IMP1);
-        assertThat(this.g.implication(this.g.variable("a"), this.g.literal("b", false))).isNotEqualTo(this.IMP1);
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        assertThat(g.implication(g.variable("a"), g.variable("b"))).isEqualTo(this.IMP1);
+        assertThat(g.implication(this.AND1, this.OR1)).isEqualTo(this.IMP3);
+        assertThat(g.implication(g.variable("b"), g.variable("a"))).isNotEqualTo(this.IMP1);
+        assertThat(g.implication(g.literal("a", false), g.variable("b"))).isNotEqualTo(this.IMP1);
+        assertThat(g.implication(g.variable("a"), g.literal("b", false))).isNotEqualTo(this.IMP1);
     }
 
     @Test

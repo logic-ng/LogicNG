@@ -37,7 +37,6 @@ import static org.logicng.formulas.FType.TRUE;
 
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
-import org.logicng.formulas.printer.DefaultStringRepresentation;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
@@ -81,6 +80,7 @@ public class FormulaFactory {
     private final CFalse cFalse;
     private final CTrue cTrue;
     private final FormulaStringRepresentation stringRepresentation;
+    private final FormulaFactoryConfig.FormulaMergeStrategy formulaMergeStrategy;
     private final Map<ConfigurationType, Configuration> configurations;
     private final String ccPrefix;
     private final String pbPrefix;
@@ -113,47 +113,36 @@ public class FormulaFactory {
 
     /**
      * Constructor for a new formula factory.
-     * @param name                 the name of the factory
-     * @param stringRepresentation the string representation of the formulas
+     * @param config the configuration for this formula factory
      */
-    public FormulaFactory(final String name, final FormulaStringRepresentation stringRepresentation) {
-        this.name = name;
+    public FormulaFactory(final FormulaFactoryConfig config) {
+        this.name = config.name;
+        this.stringRepresentation = config.stringRepresentation.get();
+        this.formulaMergeStrategy = config.formulaMergeStrategy;
         this.cFalse = new CFalse(this);
         this.cTrue = new CTrue(this);
         this.clear();
-        this.stringRepresentation = stringRepresentation;
         this.configurations = new EnumMap<>(ConfigurationType.class);
         this.cnfEncoder = new CNFEncoder(this);
         this.subformulaFunction = new SubNodeFunction();
-        if (!name.isEmpty()) {
-            this.ccPrefix = CC_PREFIX + name + "_";
-            this.pbPrefix = PB_PREFIX + name + "_";
-            this.cnfPrefix = CNF_PREFIX + name + "_";
+        if (!this.name.isEmpty()) {
+            this.ccPrefix = FormulaFactory.CC_PREFIX + this.name + "_";
+            this.pbPrefix = FormulaFactory.PB_PREFIX + this.name + "_";
+            this.cnfPrefix = FormulaFactory.CNF_PREFIX + this.name + "_";
         } else {
-            this.ccPrefix = CC_PREFIX;
-            this.pbPrefix = PB_PREFIX;
-            this.cnfPrefix = CNF_PREFIX;
+            this.ccPrefix = FormulaFactory.CC_PREFIX;
+            this.pbPrefix = FormulaFactory.PB_PREFIX;
+            this.cnfPrefix = FormulaFactory.CNF_PREFIX;
         }
         this.pbEncoder = new PBEncoder(this);
         this.parser = new PseudoBooleanParser(this);
     }
 
     /**
-     * Constructor for a new formula factory with a given name. This name is included in generated variables.
-     * If you intent to mix formulas from different factories, you have to choose different names for the factories
-     * to avoid name clashing of generated variables.
-     * @param name the name of the factory
-     */
-    public FormulaFactory(final String name) {
-        this(name, new DefaultStringRepresentation());
-    }
-
-    /**
-     * Constructor for a new formula factory with a default empty name.
-     * You should not mix formulas from formula factories without a name, since the names of generated variables will clash.
+     * Constructor for a new formula factory with the default configuration.
      */
     public FormulaFactory() {
-        this("", new DefaultStringRepresentation());
+        this(FormulaFactoryConfig.builder().build());
     }
 
     /**
@@ -212,6 +201,9 @@ public class FormulaFactory {
     /**
      * Puts a new configuration into the configuration database.  If there is already a configuration present for this
      * type, it will be overwritten.
+     * <p>
+     * Note that configurations with type {@link ConfigurationType#FORMULA_FACTORY} will be ignored. Configurations
+     * for the formula factory can only be passed to the constructor and never be changed thereafter.
      * @param configuration the configuration
      */
     public void putConfiguration(final Configuration configuration) {
@@ -283,7 +275,7 @@ public class FormulaFactory {
         final Pair<Formula, Formula> key = new Pair<>(left, right);
         Implication implication = this.implications.get(key);
         if (implication == null) {
-            implication = new Implication(left, right, this);
+            implication = new Implication(importOrPanic(left), importOrPanic(right), this);
             this.implications.put(key, implication);
         }
         return implication;
@@ -317,7 +309,7 @@ public class FormulaFactory {
         final LinkedHashSet<Formula> key = new LinkedHashSet<>(Arrays.asList(left, right));
         Equivalence equivalence = this.equivalences.get(key);
         if (equivalence == null) {
-            equivalence = new Equivalence(left, right, this);
+            equivalence = new Equivalence(importOrPanic(left), importOrPanic(right), this);
             this.equivalences.put(key, equivalence);
         }
         return equivalence;
@@ -341,12 +333,13 @@ public class FormulaFactory {
      */
     public Formula not(final Formula operand) {
         if (operand.type() == LITERAL || operand.type() == FALSE || operand.type() == TRUE || operand.type() == NOT) {
-            return operand.negate();
+            return importOrPanic(operand).negate();
         }
         Not not = this.nots.get(operand);
         if (not == null) {
-            not = new Not(operand, this);
-            this.nots.put(operand, not);
+            final Formula importedOperand = importOrPanic(operand);
+            not = new Not(importedOperand, this);
+            this.nots.put(importedOperand, not);
         }
         return not;
     }
@@ -421,6 +414,88 @@ public class FormulaFactory {
     }
 
     /**
+     * Checks if the given formula was created by this formula factory. If this is the case,
+     * the formula is returned. Otherwise, depending on the {@link #formulaMergeStrategy}
+     * the formula is either imported or an exception is thrown.
+     * @param formula the formula to check
+     * @return the (possibly imported) formula
+     * @throws UnsupportedOperationException if the formula was created by another factory
+     *                                       and the formula merge strategy is
+     *                                       {@link FormulaFactoryConfig.FormulaMergeStrategy#PANIC}.
+     */
+    private Formula importOrPanic(final Formula formula) {
+        if (formula.factory() == this) {
+            return formula;
+        }
+        switch (this.formulaMergeStrategy) {
+            case IMPORT:
+                return importFormula(formula);
+            case PANIC:
+            default:
+                throw new UnsupportedOperationException("Found an operand with a different formula factory.");
+        }
+    }
+
+    /**
+     * Checks if the given formulas were created by this formula factory. If this is the case,
+     * the same list is returned. Otherwise, depending on the {@link #formulaMergeStrategy}
+     * the formulas are either imported or an exception is thrown.
+     * @param formulas the formulas to check
+     * @return the (possibly imported) formulas
+     * @throws UnsupportedOperationException if one of the formulas was created by another factory
+     *                                       and the formula merge strategy is
+     *                                       {@link FormulaFactoryConfig.FormulaMergeStrategy#PANIC}.
+     */
+    private LinkedHashSet<? extends Formula> importOrPanic(final LinkedHashSet<? extends Formula> formulas) {
+        boolean foundAnotherFormulaFactory = false;
+        for (final Formula formula : formulas) {
+            if (formula.factory() != this) {
+                foundAnotherFormulaFactory = true;
+                break;
+            }
+        }
+        if (!foundAnotherFormulaFactory) {
+            return formulas;
+        }
+        switch (this.formulaMergeStrategy) {
+            case IMPORT:
+                final LinkedHashSet<Formula> result = new LinkedHashSet<>();
+                for (final Formula formula : formulas) {
+                    result.add(formula.factory() != this ? importFormula(formula) : formula);
+                }
+                return result;
+            case PANIC:
+            default:
+                throw new UnsupportedOperationException("Found an operand with a different formula factory.");
+        }
+    }
+
+    private Literal[] importOrPanic(final Literal[] literals) {
+        boolean foundAnotherFormulaFactory = false;
+        for (final Literal lit : literals) {
+            if (lit.factory() != this) {
+                foundAnotherFormulaFactory = true;
+                break;
+            }
+        }
+        if (!foundAnotherFormulaFactory) {
+            return literals;
+        }
+        switch (this.formulaMergeStrategy) {
+            case IMPORT:
+                final Literal[] result = new Literal[literals.length];
+                for (int i = 0; i < literals.length; i++) {
+                    final Literal lit = literals[i];
+                    result[i] = lit.factory() != this ? this.literal(lit.name(), lit.phase()) : lit;
+                }
+                return result;
+            case PANIC:
+            default:
+                throw new UnsupportedOperationException("Found an operand with a different formula factory.");
+        }
+    }
+
+    /**
      * Creates a new conjunction.
      * @param operands the formulas
      * @return a new conjunction
@@ -476,9 +551,10 @@ public class FormulaFactory {
         }
         and = condAndMap.get(condensedOperands);
         if (and == null) {
-            tempAnd = new And(condensedOperands, this, this.cnfCheck);
+            final LinkedHashSet<? extends Formula> importedCondensedOperands = importOrPanic(condensedOperands);
+            tempAnd = new And(importedCondensedOperands, this, this.cnfCheck);
             opAndMap.put(operands, tempAnd);
-            condAndMap.put(condensedOperands, tempAnd);
+            condAndMap.put(importedCondensedOperands, tempAnd);
             return tempAnd;
         }
         opAndMap.put(operands, and);
@@ -544,8 +620,9 @@ public class FormulaFactory {
         if (tempAnd != null) {
             return tempAnd;
         }
-        tempAnd = new And(clauses, this, true);
-        opAndMap.put(clauses, tempAnd);
+        final LinkedHashSet<? extends Formula> importedClauses = importOrPanic(clauses);
+        tempAnd = new And(importedClauses, this, true);
+        opAndMap.put(importedClauses, tempAnd);
         return tempAnd;
     }
 
@@ -628,9 +705,10 @@ public class FormulaFactory {
         }
         or = condOrMap.get(condensedOperands);
         if (or == null) {
-            tempOr = new Or(condensedOperands, this, this.cnfCheck);
+            final LinkedHashSet<? extends Formula> importedCondensedOperands = importOrPanic(condensedOperands);
+            tempOr = new Or(importedCondensedOperands, this, this.cnfCheck);
             opOrMap.put(operands, tempOr);
-            condOrMap.put(condensedOperands, tempOr);
+            condOrMap.put(importedCondensedOperands, tempOr);
             return tempOr;
         }
         opOrMap.put(operands, or);
@@ -694,8 +772,9 @@ public class FormulaFactory {
         if (tempOr != null) {
             return tempOr;
         }
-        tempOr = new Or(literals, this, true);
-        opOrMap.put(literals, tempOr);
+        final LinkedHashSet<? extends Formula> importedLiterals = importOrPanic(literals);
+        tempOr = new Or(importedLiterals, this, true);
+        opOrMap.put(importedLiterals, tempOr);
         return tempOr;
     }
 
@@ -766,15 +845,15 @@ public class FormulaFactory {
 
     private Formula constructPBC(final CType comparator, final int rhs, final Literal[] literals, final int[] coefficients) {
         if (literals.length == 0) {
-            return this.constant(evaluateTrivialPBConstraint(comparator, rhs));
+            return this.constant(FormulaFactory.evaluateTrivialPBConstraint(comparator, rhs));
         }
-        if (isCC(comparator, rhs, literals, coefficients)) {
+        if (FormulaFactory.isCC(comparator, rhs, literals, coefficients)) {
             return constructCCUnsafe(comparator, rhs, literals);
         }
         final PBOperands operands = new PBOperands(literals, coefficients, comparator, rhs);
         PBConstraint constraint = this.pbConstraints.get(operands);
         if (constraint == null) {
-            constraint = new PBConstraint(literals, coefficients, comparator, rhs, this);
+            constraint = new PBConstraint(importOrPanic(literals), coefficients, comparator, rhs, this);
             this.pbConstraints.put(operands, constraint);
         }
         return constraint;
@@ -865,7 +944,7 @@ public class FormulaFactory {
     }
 
     private Formula constructCC(final CType comparator, final int rhs, final Literal[] literals) {
-        if (!isCC(comparator, rhs, literals, null)) {
+        if (!FormulaFactory.isCC(comparator, rhs, literals, null)) {
             throw new IllegalArgumentException("Given values do not represent a cardinality constraint.");
         }
         return constructCCUnsafe(comparator, rhs, literals);
@@ -873,12 +952,12 @@ public class FormulaFactory {
 
     private Formula constructCCUnsafe(final CType comparator, final int rhs, final Literal[] literals) {
         if (literals.length == 0) {
-            return this.constant(evaluateTrivialPBConstraint(comparator, rhs));
+            return this.constant(FormulaFactory.evaluateTrivialPBConstraint(comparator, rhs));
         }
         final CCOperands operands = new CCOperands(literals, comparator, rhs);
         CardinalityConstraint constraint = this.cardinalityConstraints.get(operands);
         if (constraint == null) {
-            constraint = new CardinalityConstraint(literals, comparator, rhs, this);
+            constraint = new CardinalityConstraint(importOrPanic(literals), comparator, rhs, this);
             this.cardinalityConstraints.put(operands, constraint);
         }
         return constraint;

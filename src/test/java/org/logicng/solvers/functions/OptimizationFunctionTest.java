@@ -15,6 +15,7 @@ import org.logicng.formulas.CType;
 import org.logicng.formulas.CardinalityConstraint;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaFactoryConfig;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
@@ -52,7 +53,7 @@ import java.util.TreeSet;
 public class OptimizationFunctionTest extends TestWithExampleFormulas implements LogicNGTest {
 
     public static Collection<Object[]> solvers() {
-        final FormulaFactory f = new FormulaFactory();
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
         final List<Object[]> solvers = new ArrayList<>();
         solvers.add(new Object[]{MiniSat.miniSat(f, MiniSatConfig.builder().initialPhase(true).build())});
         solvers.add(new Object[]{MiniSat.miniSat(f, MiniSatConfig.builder().initialPhase(false).build())});
@@ -89,7 +90,8 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testExoModel(final SATSolver solver) {
-        final CardinalityConstraint exo = (CardinalityConstraint) this.f.exo(this.f.variable("a"), this.f.variable("b"), this.f.variable("c"));
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final CardinalityConstraint exo = (CardinalityConstraint) f.exo(this.f.variable("a"), this.f.variable("b"), this.f.variable("c"));
         final Assignment minimumModel = optimize(Collections.singleton(exo), exo.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(exo, minimumModel, exo.variables());
         final Assignment maximumModel = optimize(Collections.singleton(exo), exo.variables(), Collections.emptyList(), true, solver);
@@ -99,7 +101,7 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testCornerCases(final SATSolver solver) {
-        final FormulaFactory f = new FormulaFactory();
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
         final FormulaCornerCases cornerCases = new FormulaCornerCases(f);
         for (final Formula formula : cornerCases.cornerCases()) {
             final Set<Variable> targetLiterals = cornerCases.getVariables();
@@ -238,7 +240,8 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testLargeFormulaMinimize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(formula, minimumModel, formula.variables());
     }
@@ -246,7 +249,8 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testLargeFormulaMaximize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
         testMaximumModel(formula, maximumModel, formula.variables());
     }
@@ -255,7 +259,8 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @MethodSource("solvers")
     @LongRunningTag
     public void testLargerFormulaMinimize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(formula, minimumModel, formula.variables());
     }
@@ -264,7 +269,8 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @MethodSource("solvers")
     @LongRunningTag
     public void testLargerFormulaMaximize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
         testMaximumModel(formula, maximumModel, formula.variables());
     }

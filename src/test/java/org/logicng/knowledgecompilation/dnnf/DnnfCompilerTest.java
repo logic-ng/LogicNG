@@ -1,5 +1,7 @@
 package org.logicng.knowledgecompilation.dnnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LongRunningTag;
 import org.logicng.cardinalityconstraints.CCConfig;
@@ -31,8 +33,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit Tests for the class {@link DNNFCompiler}.
@@ -122,8 +122,8 @@ public class DnnfCompilerTest {
         final DNNF dnnf = dnnfFactory.compile(formula);
         final BigInteger dnnfCount = dnnf.execute(DNNFModelCountFunction.get());
         if (withEquivalence) {
-            final Formula equivalence = this.f.equivalence(formula, dnnf.formula());
-            assertThat(equivalence.holds(new TautologyPredicate(this.f))).isTrue();
+            final Formula equivalence = formula.factory().equivalence(formula, dnnf.formula());
+            assertThat(equivalence.holds(new TautologyPredicate(formula.factory()))).isTrue();
         }
         final BigInteger bddCount = countWithBdd(formula);
         assertThat(dnnfCount).isEqualTo(bddCount);

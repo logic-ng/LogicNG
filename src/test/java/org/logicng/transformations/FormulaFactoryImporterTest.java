@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaFactoryConfig;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.transformations.cnf.TseitinTransformation;
@@ -53,7 +54,7 @@ public class FormulaFactoryImporterTest extends TestWithExampleFormulas {
     @BeforeEach
     public void initialize() {
         this.myF = this.f;
-        this.myG = new FormulaFactory("Factory G");
+        this.myG = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory G").build());
         this.importer = new FormulaFactoryImporter(this.myG);
     }
 
@@ -219,7 +220,7 @@ public class FormulaFactoryImporterTest extends TestWithExampleFormulas {
 
     @Test
     public void testAdjustCounters() throws ParserException {
-        final FormulaFactory f = new FormulaFactory("Factory");
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory").build());
         final PseudoBooleanParser p = new PseudoBooleanParser(f);
         final Formula cc = p.parse("A + B + C + D + E <= 2").cnf();
         final Formula pbc = p.parse("2*A + -2*B + 3*C + D + 2*E <= 3").cnf();

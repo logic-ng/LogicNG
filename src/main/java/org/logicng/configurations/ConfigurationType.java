@@ -34,6 +34,7 @@ package org.logicng.configurations;
  * @since 1.1
  */
 public enum ConfigurationType {
+    FORMULA_FACTORY,
     CNF,
     MINISAT,
     GLUCOSE,

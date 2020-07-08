@@ -107,9 +107,10 @@ public class NotTest extends TestWithExampleFormulas {
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        assertThat(this.g.not(this.AND1)).isEqualTo(this.NOT1);
-        assertThat(this.g.not(this.g.or(this.g.variable("x"), this.g.variable("y")))).isEqualTo(this.NOT2);
-        assertThat(this.g.not(this.g.or(this.g.variable("a"), this.g.variable("b")))).isNotEqualTo(this.NOT2);
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        assertThat(g.not(this.AND1)).isEqualTo(this.NOT1);
+        assertThat(g.not(g.or(g.variable("x"), g.variable("y")))).isEqualTo(this.NOT2);
+        assertThat(g.not(g.or(g.variable("a"), g.variable("b")))).isNotEqualTo(this.NOT2);
     }
 
     @Test

@@ -127,11 +127,13 @@ public class EquivalenceTest extends TestWithExampleFormulas {
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        assertThat(this.g.equivalence(this.g.variable("a"), this.g.variable("b"))).isEqualTo(this.EQ1);
-        assertThat(this.g.equivalence(this.B, this.A)).isEqualTo(this.EQ1);
-        assertThat(this.g.equivalence(this.AND1, this.OR1)).isEqualTo(this.EQ3);
-        assertThat(this.g.equivalence(this.g.literal("a", false), this.g.variable("b"))).isNotEqualTo(this.EQ1);
-        assertThat(this.g.equivalence(this.g.variable("a"), this.g.literal("b", false))).isNotEqualTo(this.EQ1);
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        assertThat(g.equivalence(g.variable("a"), g.variable("b"))).isEqualTo(this.EQ1);
+        assertThat(g.equivalence(this.B, this.A)).isEqualTo(this.EQ1);
+        assertThat(g.equivalence(this.AND1, this.OR1)).isEqualTo(this.EQ3);
+        assertThat(g.equivalence(g.literal("a", false), g.variable("b"))).isNotEqualTo(this.EQ1);
+        assertThat(g.equivalence(g.variable("a"), g.literal("b", false))).isNotEqualTo(this.EQ1);
     }
 
     @Test

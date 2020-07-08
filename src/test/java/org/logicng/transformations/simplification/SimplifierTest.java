@@ -29,8 +29,7 @@ public class SimplifierTest extends TestWithExampleFormulas {
 
     @Test
     public void testCornerCases() {
-        final FormulaFactory f = new FormulaFactory();
-        final FormulaCornerCases cornerCases = new FormulaCornerCases(f);
+        final FormulaCornerCases cornerCases = new FormulaCornerCases(this.f);
         cornerCases.cornerCases().forEach(this::computeAndVerify);
     }
 
