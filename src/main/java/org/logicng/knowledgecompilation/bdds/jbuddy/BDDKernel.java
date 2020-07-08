@@ -1546,13 +1546,7 @@ public class BDDKernel {
     private LevelData[] levels; /* Indexed by variable! */
 
     /* Interaction matrix */
-    private InteractionMatrix iactmtx; //TODO init
-
-    /* Reordering information for the user */
-    private int verbose;
-    //private bddinthandler reorder_handler; TODO handler
-    //private bddfilehandler reorder_filehandler; TODO handler
-    //private bddsizehandler reorder_nodenum; TODO handler
+    private InteractionMatrix iactmtx;
 
     /* Number of live nodes before and after a reordering session */
     private int usednum_before;
@@ -1565,7 +1559,6 @@ public class BDDKernel {
         this.reorderdisabled = false;
         this.vartree = null;
         bdd_clrvarblocks();
-        //bdd_reorder_hook(bdd_default_reohandler); //TODO handler
         bdd_autoreorder_times(BDDReordering.BDD_REORDER_NONE, 0);
         this.usednum_before = this.usednum_after = 0;
         this.blockid = 0;
@@ -2265,25 +2258,13 @@ public class BDDKernel {
         /* No existing node -> build one */
         /* Any free nodes to use ? */
         if (this.freepos == 0) {
-            //TODO cannot happen?
-            //if (bdderrorcond) {
-            //    return 0;
-            //}
-
             /* Try to allocate more nodes - call noderesize without
              * enabling rehashing.
              * Note: if ever rehashing is allowed here, then remember to
              * update local variable "hash" */
             nodeResize(false);
             this.resizedInMakenode = true;
-
-            /* Panic if that is not possible */
-            //TODO cannot happen?
-            //if (this.bddfreepos == 0) {
-            //    bdd_error(BDD_NODENUM);
-            //    bdderrorcond = abs(BDD_NODENUM);
-            //    return 0;
-            //}
+            assert freepos > 0;
         }
 
         /* Build new node */
@@ -2404,16 +2385,8 @@ public class BDDKernel {
         if (!bdd_reorder_ready()) {
             return;
         }
-        //TODO handler
-        //if (reorder_handler != NULL) {
-        //    reorder_handler(1);
-        //}
         bdd_reorder(this.bddreordermethod);
         this.bddreordertimes--;
-        //TODO handler
-        //if (reorder_handler != NULL) {
-        //    reorder_handler(0);
-        //}
     }
 
     private int reorder_init() {
