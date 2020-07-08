@@ -27,7 +27,7 @@ import java.util.Set;
  * @version 2.0.0
  * @since 2.0.0
  */
-class ConstraintGraphGeneratorTest {
+public class ConstraintGraphGeneratorTest {
 
     @Test
     public void testSimple() throws ParserException {

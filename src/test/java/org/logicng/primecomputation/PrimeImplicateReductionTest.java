@@ -59,10 +59,10 @@ public class PrimeImplicateReductionTest {
         final NaivePrimeReduction naive = new NaivePrimeReduction(formula);
         final SortedSet<Literal> primeImplicate = naive.reduceImplicate(falsifyingAssignment);
         assertThat(falsifyingAssignment).containsAll(primeImplicate);
-        testPrimeImplicantProperty(formula, primeImplicate);
+        testPrimeImplicateProperty(formula, primeImplicate);
     }
 
-    public static void testPrimeImplicantProperty(final Formula formula, final SortedSet<Literal> primeImplicate) {
+    public static void testPrimeImplicateProperty(final Formula formula, final SortedSet<Literal> primeImplicate) {
         final FormulaFactory f = formula.factory();
         final MiniSat solver = MiniSat.miniSat(f);
         solver.add(formula);

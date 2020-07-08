@@ -1485,7 +1485,7 @@ public class FormulaFactory {
         public int formulas() {
             return this.positiveLiterals + this.negativeLiterals + this.negations + this.implications + this.equivalences
                     + this.conjunctions2 + this.conjunctions3 + this.conjunctions4 + this.conjunctionsN + this.disjunctions2
-                    + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN + this.pbcs;
+                    + this.disjunctions3 + this.disjunctions4 + this.disjunctionsN + this.pbcs + this.ccs;
         }
 
         @Override
@@ -1511,6 +1511,7 @@ public class FormulaFactory {
                     this.disjunctions4 == that.disjunctions4 &&
                     this.disjunctionsN == that.disjunctionsN &&
                     this.pbcs == that.pbcs &&
+                    this.ccs == that.ccs &&
                     this.ccCounter == that.ccCounter &&
                     this.pbCounter == that.pbCounter &&
                     this.cnfCounter == that.cnfCounter &&
@@ -1521,7 +1522,7 @@ public class FormulaFactory {
         public int hashCode() {
             return Objects.hash(this.name, this.positiveLiterals, this.negativeLiterals, this.negations, this.implications, this.equivalences, this.conjunctions2,
                     this.conjunctions3, this.conjunctions4, this.conjunctionsN, this.disjunctions2, this.disjunctions3, this.disjunctions4, this.disjunctionsN,
-                    this.pbcs, this.ccCounter, this.pbCounter, this.cnfCounter);
+                    this.pbcs, this.ccs, this.ccCounter, this.pbCounter, this.cnfCounter);
         }
 
         @Override
@@ -1542,6 +1543,7 @@ public class FormulaFactory {
                     ", disjunctions4=" + this.disjunctions4 +
                     ", disjunctionsN=" + this.disjunctionsN +
                     ", pbcs=" + this.pbcs +
+                    ", ccs=" + this.ccs +
                     ", ccCounter=" + this.ccCounter +
                     ", pbCounter=" + this.pbCounter +
                     ", cnfCounter=" + this.cnfCounter +

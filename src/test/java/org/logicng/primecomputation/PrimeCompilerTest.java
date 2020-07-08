@@ -119,23 +119,25 @@ public class PrimeCompilerTest {
     }
 
     private void verifyImplicants(final List<SortedSet<Literal>> implicantSets, final Formula formula) {
+        final FormulaFactory f = formula.factory();
         final List<Formula> implicants = new ArrayList<>();
         for (final SortedSet<Literal> implicant : implicantSets) {
-            implicants.add(this.f.and(implicant));
+            implicants.add(f.and(implicant));
             PrimeImplicantReductionTest.testPrimeImplicantProperty(formula, implicant);
         }
-        assertThat(this.f.equivalence(this.f.or(implicants), formula).holds(new TautologyPredicate(this.f)))
+        assertThat(f.equivalence(f.or(implicants), formula).holds(new TautologyPredicate(f)))
                 .as("Disjunction of implicants should be equivalent to the original formula.")
                 .isTrue();
     }
 
     private void verifyImplicates(final List<SortedSet<Literal>> implicateSets, final Formula formula) {
+        final FormulaFactory f = formula.factory();
         final List<Formula> implicates = new ArrayList<>();
         for (final SortedSet<Literal> implicate : implicateSets) {
-            implicates.add(this.f.or(implicate));
-            PrimeImplicateReductionTest.testPrimeImplicantProperty(formula, implicate);
+            implicates.add(f.or(implicate));
+            PrimeImplicateReductionTest.testPrimeImplicateProperty(formula, implicate);
         }
-        assertThat(this.f.equivalence(this.f.and(implicates), formula).holds(new TautologyPredicate(this.f)))
+        assertThat(f.equivalence(f.and(implicates), formula).holds(new TautologyPredicate(f)))
                 .as("Conjunction of implicates should be equivalent to the original formula.")
                 .isTrue();
     }

@@ -16,7 +16,7 @@ import java.util.Map;
  * @version 2.0.0
  * @since 2.0.0
  */
-class LiteralSubstitutionTest {
+public class LiteralSubstitutionTest {
 
     private final FormulaFactory f = new FormulaFactory();
     private LiteralSubstitution s1;
