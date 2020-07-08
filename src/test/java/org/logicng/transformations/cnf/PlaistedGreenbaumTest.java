@@ -28,9 +28,11 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
-import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
@@ -44,53 +46,51 @@ import org.logicng.solvers.SATSolver;
 import java.util.List;
 import java.util.SortedSet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit Tests for {@link PlaistedGreenbaumTransformation}.
  * @version 2.0.0
  * @since 1.0
  */
-public class PlaistedGreenbaumTest {
+public class PlaistedGreenbaumTest extends TestWithExampleFormulas {
 
     private final PlaistedGreenbaumTransformation pg = new PlaistedGreenbaumTransformation(0);
     private final CNFPredicate cnfPredicate = CNFPredicate.get();
 
     @Test
     public void testConstants() {
-        assertThat(F.TRUE.transform(this.pg)).isEqualTo(F.TRUE);
-        assertThat(F.FALSE.transform(this.pg)).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.transform(this.pg)).isEqualTo(this.TRUE);
+        assertThat(this.FALSE.transform(this.pg)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.transform(this.pg)).isEqualTo(F.A);
-        assertThat(F.NA.transform(this.pg)).isEqualTo(F.NA);
+        assertThat(this.A.transform(this.pg)).isEqualTo(this.A);
+        assertThat(this.NA.transform(this.pg)).isEqualTo(this.NA);
     }
 
     @Test
     public void testBinaryOperators() {
-        assertThat(F.IMP1.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.IMP1, F.IMP1.transform(this.pg), F.IMP1.variables())).isTrue();
-        assertThat(F.IMP2.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.IMP2, F.IMP2.transform(this.pg), F.IMP2.variables())).isTrue();
-        assertThat(F.IMP3.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.IMP3, F.IMP3.transform(this.pg), F.IMP3.variables())).isTrue();
-        assertThat(F.EQ1.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ1, F.EQ1.transform(this.pg), F.EQ1.variables())).isTrue();
-        assertThat(F.EQ2.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ2, F.EQ2.transform(this.pg), F.EQ2.variables())).isTrue();
-        assertThat(F.EQ3.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ3, F.EQ3.transform(this.pg), F.EQ3.variables())).isTrue();
-        assertThat(F.EQ4.transform(this.pg).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ4, F.EQ4.transform(this.pg), F.EQ4.variables())).isTrue();
+        assertThat(this.IMP1.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.IMP1, this.IMP1.transform(this.pg), this.IMP1.variables())).isTrue();
+        assertThat(this.IMP2.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.IMP2, this.IMP2.transform(this.pg), this.IMP2.variables())).isTrue();
+        assertThat(this.IMP3.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.IMP3, this.IMP3.transform(this.pg), this.IMP3.variables())).isTrue();
+        assertThat(this.EQ1.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ1, this.EQ1.transform(this.pg), this.EQ1.variables())).isTrue();
+        assertThat(this.EQ2.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ2, this.EQ2.transform(this.pg), this.EQ2.variables())).isTrue();
+        assertThat(this.EQ3.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ3, this.EQ3.transform(this.pg), this.EQ3.variables())).isTrue();
+        assertThat(this.EQ4.transform(this.pg).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ4, this.EQ4.transform(this.pg), this.EQ4.variables())).isTrue();
     }
 
     @Test
     public void testNAryOperators() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.AND1.transform(this.pg)).isEqualTo(F.AND1);
-        assertThat(F.OR1.transform(this.pg)).isEqualTo(F.OR1);
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.AND1.transform(this.pg)).isEqualTo(this.AND1);
+        assertThat(this.OR1.transform(this.pg)).isEqualTo(this.OR1);
         final Formula f1 = p.parse("(a & b & x) | (c & d & ~y)");
         final Formula f2 = p.parse("(a & b & x) | (c & d & ~y) | (~z | (c & d & ~y)) ");
         final Formula f3 = p.parse("a | b | (~x & ~y)");
@@ -104,7 +104,7 @@ public class PlaistedGreenbaumTest {
 
     @Test
     public void testNotNary() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(p.parse("~a").transform(this.pg)).isEqualTo(p.parse("~a"));
         assertThat(p.parse("~~a").transform(this.pg)).isEqualTo(p.parse("a"));
         final Formula f0 = p.parse("~(~a | b)");
@@ -134,7 +134,7 @@ public class PlaistedGreenbaumTest {
 
     @Test
     public void testNotBinary() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(p.parse("~a").transform(this.pg)).isEqualTo(p.parse("~a"));
         assertThat(p.parse("~~a").transform(this.pg)).isEqualTo(p.parse("a"));
         final Formula f1 = p.parse("~(~(a | b) => ~(x | y))");
@@ -189,7 +189,7 @@ public class PlaistedGreenbaumTest {
 
     @Test
     public void testFactorization() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         final PlaistedGreenbaumTransformation pgf = new PlaistedGreenbaumTransformation();
         final Formula f1 = p.parse("(a | b) => c");
         final Formula f2 = p.parse("~x & ~y");

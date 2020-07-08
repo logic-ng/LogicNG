@@ -28,37 +28,36 @@
 
 package org.logicng.predicates;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit Tests for {@link ContainsPBCPredicate}.
  * @version 2.0.0
  * @since 2.0.0
  */
-public class ContainsPBCPredicateTest {
+public class ContainsPBCPredicateTest extends TestWithExampleFormulas {
 
-    private final FormulaFactory f = F.f;
     private final ContainsPBCPredicate predicate = ContainsPBCPredicate.get();
 
     @Test
     public void testConstants() {
-        assertThat(F.f.falsum().holds(this.predicate)).isFalse();
-        assertThat(F.f.verum().holds(this.predicate)).isFalse();
+        assertThat(this.f.falsum().holds(this.predicate)).isFalse();
+        assertThat(this.f.verum().holds(this.predicate)).isFalse();
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.holds(this.predicate)).isFalse();
-        assertThat(F.NA.holds(this.predicate)).isFalse();
+        assertThat(this.A.holds(this.predicate)).isFalse();
+        assertThat(this.NA.holds(this.predicate)).isFalse();
     }
 
     @Test

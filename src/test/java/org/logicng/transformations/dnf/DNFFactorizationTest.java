@@ -28,8 +28,10 @@
 
 package org.logicng.transformations.dnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.handlers.FactorizationHandler;
 import org.logicng.io.parsers.ParserException;
@@ -37,14 +39,12 @@ import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit Tests for DNF conversion.
  * @version 2.0.0
  * @since 1.0
  */
-public class DNFFactorizationTest {
+public class DNFFactorizationTest extends TestWithExampleFormulas {
 
     private final DNFFactorization dnfFactorization = new DNFFactorization();
     private final DNFPredicate dnfPredicate = DNFPredicate.get();
@@ -52,43 +52,43 @@ public class DNFFactorizationTest {
 
     @Test
     public void testConstants() {
-        assertThat(F.TRUE.transform(this.dnfFactorization)).isEqualTo(F.TRUE);
-        assertThat(F.FALSE.transform(this.dnfFactorization)).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.transform(this.dnfFactorization)).isEqualTo(this.TRUE);
+        assertThat(this.FALSE.transform(this.dnfFactorization)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.transform(this.dnfFactorization)).isEqualTo(F.A);
-        assertThat(F.NA.transform(this.dnfFactorization)).isEqualTo(F.NA);
+        assertThat(this.A.transform(this.dnfFactorization)).isEqualTo(this.A);
+        assertThat(this.NA.transform(this.dnfFactorization)).isEqualTo(this.NA);
     }
 
     @Test
     public void testBinaryOperators() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.IMP1.transform(this.dnfFactorization)).isEqualTo(p.parse("~a | b"));
-        assertThat(F.IMP2.transform(this.dnfFactorization)).isEqualTo(p.parse("a | ~b"));
-        assertThat(F.IMP3.transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | x | y"));
-        assertThat(F.EQ1.transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
-        assertThat(F.EQ2.transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
-        assertThat(F.IMP1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.IMP2.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.IMP3.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.EQ1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.EQ1.transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
-        assertThat(F.EQ2.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.EQ2.transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.IMP1.transform(this.dnfFactorization)).isEqualTo(p.parse("~a | b"));
+        assertThat(this.IMP2.transform(this.dnfFactorization)).isEqualTo(p.parse("a | ~b"));
+        assertThat(this.IMP3.transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | x | y"));
+        assertThat(this.EQ1.transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
+        assertThat(this.EQ2.transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
+        assertThat(this.IMP1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.IMP2.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.IMP3.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.EQ1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.EQ1.transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
+        assertThat(this.EQ2.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.EQ2.transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
     }
 
     @Test
     public void testNAryOperators() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.AND1.transform(this.dnfFactorization)).isEqualTo(F.AND1);
-        assertThat(F.OR1.transform(this.dnfFactorization)).isEqualTo(F.OR1);
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.AND1.transform(this.dnfFactorization)).isEqualTo(this.AND1);
+        assertThat(this.OR1.transform(this.dnfFactorization)).isEqualTo(this.OR1);
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | c | (~x & y)"));
         assertThat(p.parse("~(a | b) & c & ~(x & ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("(~a & ~b & c & ~x) | (~a & ~b & c & y)"));
         assertThat(p.parse("a & b & (~x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b & ~x) | (a & b & ~y)"));
-        assertThat(F.AND1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.OR1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.AND1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.OR1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
@@ -99,7 +99,7 @@ public class DNFFactorizationTest {
 
     @Test
     public void testNot() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(p.parse("~a").transform(this.dnfFactorization)).isEqualTo(p.parse("~a"));
         assertThat(p.parse("~~a").transform(this.dnfFactorization)).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(a => b)").transform(this.dnfFactorization)).isEqualTo(p.parse("a & ~b"));
@@ -112,16 +112,16 @@ public class DNFFactorizationTest {
 
     @Test
     public void testCDNF() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        final Formula f = p.parse("x0 & x1 & x3 | ~x1 & ~x2 | x2 & ~x3");
+        final PropositionalParser p = new PropositionalParser(this.f);
+        final Formula formula = p.parse("x0 & x1 & x3 | ~x1 & ~x2 | x2 & ~x3");
         final Formula cdnf = p.parse("x0 & x1 & x2 & x3 | x0 & x1 & x2 & ~x3 | x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & x3 | x0 & x1 & ~x2 & x3 | ~x0 & x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & x3");
-        assertThat(f.transform(new CanonicalDNFEnumeration())).isEqualTo(cdnf);
-        assertThat(F.f.and(F.A, F.NA).transform(new CanonicalDNFEnumeration())).isEqualTo(F.f.falsum());
+        assertThat(formula.transform(new CanonicalDNFEnumeration())).isEqualTo(cdnf);
+        assertThat(this.f.and(this.A, this.NA).transform(new CanonicalDNFEnumeration())).isEqualTo(this.f.falsum());
     }
 
     @Test
     public void testWithHandler() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         Formula formula = p.parse("(~(~(a | b) => ~(x | y))) & ((a | x) => ~(b | y))");
         final FactorizationHandler handler = new FactorizationHandler() {
             private boolean aborted;

@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -42,59 +43,59 @@ import java.util.Arrays;
  * @version 2.0.0
  * @since 1.0
  */
-public class RestrictionTest {
+public class RestrictionTest extends TestWithExampleFormulas {
 
-    private final Assignment ass = new Assignment(Arrays.asList(F.A, F.NB, F.NX));
+    private final Assignment ass = new Assignment(Arrays.asList(this.A, this.NB, this.NX));
 
     @Test
     public void testConstantRestrict() {
-        assertThat(F.TRUE.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.FALSE.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.FALSE.restrict(this.ass)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testLiteralRestrict() {
-        assertThat(F.A.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.NA.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.X.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.NX.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.C.restrict(this.ass)).isEqualTo(F.C);
-        assertThat(F.NY.restrict(this.ass)).isEqualTo(F.NY);
+        assertThat(this.A.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.NA.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.X.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.NX.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.C.restrict(this.ass)).isEqualTo(this.C);
+        assertThat(this.NY.restrict(this.ass)).isEqualTo(this.NY);
     }
 
     @Test
     public void testNotRestrict() {
-        assertThat(F.NOT1.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.NOT2.restrict(this.ass)).isEqualTo(F.NY);
+        assertThat(this.NOT1.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.NOT2.restrict(this.ass)).isEqualTo(this.NY);
     }
 
     @Test
     public void testBinaryRestrict() {
-        assertThat(F.IMP1.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.IMP2.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.f.implication(F.NA, F.C).restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.IMP3.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.f.implication(F.A, F.C).restrict(this.ass)).isEqualTo(F.C);
+        assertThat(this.IMP1.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.IMP2.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.f.implication(this.NA, this.C).restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.IMP3.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.f.implication(this.A, this.C).restrict(this.ass)).isEqualTo(this.C);
 
-        assertThat(F.EQ1.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.EQ2.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.EQ3.restrict(this.ass)).isEqualTo(F.NY);
-        assertThat(F.EQ4.restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(this.EQ1.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.EQ2.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.EQ3.restrict(this.ass)).isEqualTo(this.NY);
+        assertThat(this.EQ4.restrict(this.ass)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testNAryRestrict() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.OR1.restrict(this.ass)).isEqualTo(F.Y);
-        assertThat(F.OR2.restrict(this.ass)).isEqualTo(F.TRUE);
-        assertThat(F.OR3.restrict(this.ass)).isEqualTo(F.FALSE);
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.OR1.restrict(this.ass)).isEqualTo(this.Y);
+        assertThat(this.OR2.restrict(this.ass)).isEqualTo(this.TRUE);
+        assertThat(this.OR3.restrict(this.ass)).isEqualTo(this.FALSE);
         assertThat(p.parse("~a | b | ~c | x | y").restrict(this.ass)).isEqualTo(p.parse("~c | y"));
-        assertThat(p.parse("~a | b | ~c | ~x | ~y").restrict(this.ass)).isEqualTo(F.TRUE);
+        assertThat(p.parse("~a | b | ~c | ~x | ~y").restrict(this.ass)).isEqualTo(this.TRUE);
 
-        assertThat(F.AND1.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.AND2.restrict(this.ass)).isEqualTo(F.FALSE);
-        assertThat(F.AND3.restrict(this.ass)).isEqualTo(F.Y);
+        assertThat(this.AND1.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.AND2.restrict(this.ass)).isEqualTo(this.FALSE);
+        assertThat(this.AND3.restrict(this.ass)).isEqualTo(this.Y);
         assertThat(p.parse("a & ~b & c & ~x & ~y").restrict(this.ass)).isEqualTo(p.parse("c & ~y"));
-        assertThat(p.parse("a & b & c & ~x & y").restrict(this.ass)).isEqualTo(F.FALSE);
+        assertThat(p.parse("a & b & c & ~x & y").restrict(this.ass)).isEqualTo(this.FALSE);
     }
 }

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.formulas.cache.FunctionCacheEntry.SUBFORMULAS;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -44,133 +44,133 @@ import java.util.LinkedHashSet;
  * @version 2.0.0
  * @since 1.0
  */
-public class SubformulaTest {
+public class SubformulaTest extends TestWithExampleFormulas {
 
     @Test
     public void testConstants() {
-        assertThat(F.TRUE.containsNode(F.TRUE)).isTrue();
-        assertThat(F.FALSE.containsNode(F.FALSE)).isTrue();
-        assertThat(F.TRUE.containsNode(F.FALSE)).isFalse();
-        assertThat(F.FALSE.containsNode(F.TRUE)).isFalse();
-        assertThat(F.FALSE.containsNode(F.A)).isFalse();
+        assertThat(this.TRUE.containsNode(this.TRUE)).isTrue();
+        assertThat(this.FALSE.containsNode(this.FALSE)).isTrue();
+        assertThat(this.TRUE.containsNode(this.FALSE)).isFalse();
+        assertThat(this.FALSE.containsNode(this.TRUE)).isFalse();
+        assertThat(this.FALSE.containsNode(this.A)).isFalse();
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.containsNode(F.A)).isTrue();
-        assertThat(F.A.containsNode(F.f.variable("a"))).isTrue();
-        assertThat(F.NA.containsNode(F.A)).isFalse();
-        assertThat(F.NA.containsNode(F.f.literal("a", false))).isTrue();
-        assertThat(F.A.containsNode(F.NA)).isFalse();
-        assertThat(F.A.containsNode(F.B)).isFalse();
-        assertThat(F.NA.containsNode(F.NB)).isFalse();
-        assertThat(F.A.containsNode(F.FALSE)).isFalse();
-        assertThat(F.NA.containsNode(F.TRUE)).isFalse();
+        assertThat(this.A.containsNode(this.A)).isTrue();
+        assertThat(this.A.containsNode(this.f.variable("a"))).isTrue();
+        assertThat(this.NA.containsNode(this.A)).isFalse();
+        assertThat(this.NA.containsNode(this.f.literal("a", false))).isTrue();
+        assertThat(this.A.containsNode(this.NA)).isFalse();
+        assertThat(this.A.containsNode(this.B)).isFalse();
+        assertThat(this.NA.containsNode(this.NB)).isFalse();
+        assertThat(this.A.containsNode(this.FALSE)).isFalse();
+        assertThat(this.NA.containsNode(this.TRUE)).isFalse();
     }
 
     @Test
     public void testNot() {
-        assertThat(F.NOT1.containsNode(F.NOT1)).isTrue();
-        assertThat(F.NOT1.containsNode(F.f.not(F.AND1))).isTrue();
-        assertThat(F.NOT1.containsNode(F.AND1)).isTrue();
-        assertThat(F.NOT1.containsNode(F.A)).isTrue();
-        assertThat(F.NOT1.containsNode(F.f.variable("b"))).isTrue();
-        assertThat(F.NOT2.containsNode(F.NOT2)).isTrue();
-        assertThat(F.NOT2.containsNode(F.OR1)).isTrue();
-        assertThat(F.NOT2.containsNode(F.X)).isTrue();
-        assertThat(F.NOT2.containsNode(F.Y)).isTrue();
+        assertThat(this.NOT1.containsNode(this.NOT1)).isTrue();
+        assertThat(this.NOT1.containsNode(this.f.not(this.AND1))).isTrue();
+        assertThat(this.NOT1.containsNode(this.AND1)).isTrue();
+        assertThat(this.NOT1.containsNode(this.A)).isTrue();
+        assertThat(this.NOT1.containsNode(this.f.variable("b"))).isTrue();
+        assertThat(this.NOT2.containsNode(this.NOT2)).isTrue();
+        assertThat(this.NOT2.containsNode(this.OR1)).isTrue();
+        assertThat(this.NOT2.containsNode(this.X)).isTrue();
+        assertThat(this.NOT2.containsNode(this.Y)).isTrue();
 
-        assertThat(F.NOT1.containsNode(F.OR1)).isFalse();
-        assertThat(F.NOT1.containsNode(F.X)).isFalse();
-        assertThat(F.NOT2.containsNode(F.NOT1)).isFalse();
-        assertThat(F.NOT2.containsNode(F.AND1)).isFalse();
+        assertThat(this.NOT1.containsNode(this.OR1)).isFalse();
+        assertThat(this.NOT1.containsNode(this.X)).isFalse();
+        assertThat(this.NOT2.containsNode(this.NOT1)).isFalse();
+        assertThat(this.NOT2.containsNode(this.AND1)).isFalse();
     }
 
     @Test
     public void testImplication() {
-        assertThat(F.IMP1.containsNode(F.IMP1)).isTrue();
-        assertThat(F.IMP1.containsNode(F.f.implication(F.A, F.B))).isTrue();
-        assertThat(F.IMP2.containsNode(F.IMP2)).isTrue();
-        assertThat(F.IMP3.containsNode(F.IMP3)).isTrue();
-        assertThat(F.IMP4.containsNode(F.IMP4)).isTrue();
-        assertThat(F.IMP1.containsNode(F.A)).isTrue();
-        assertThat(F.IMP1.containsNode(F.B)).isTrue();
-        assertThat(F.IMP2.containsNode(F.NA)).isTrue();
-        assertThat(F.IMP2.containsNode(F.NB)).isTrue();
-        assertThat(F.IMP2.containsNode(F.A)).isFalse();
-        assertThat(F.IMP2.containsNode(F.B)).isFalse();
-        assertThat(F.IMP3.containsNode(F.AND1)).isTrue();
-        assertThat(F.IMP3.containsNode(F.OR1)).isTrue();
-        assertThat(F.IMP3.containsNode(F.A)).isTrue();
-        assertThat(F.IMP3.containsNode(F.B)).isTrue();
-        assertThat(F.IMP3.containsNode(F.X)).isTrue();
-        assertThat(F.IMP3.containsNode(F.Y)).isTrue();
-        assertThat(F.IMP4.containsNode(F.f.equivalence(F.A, F.B))).isTrue();
-        assertThat(F.IMP4.containsNode(F.f.equivalence(F.NX, F.NY))).isTrue();
+        assertThat(this.IMP1.containsNode(this.IMP1)).isTrue();
+        assertThat(this.IMP1.containsNode(this.f.implication(this.A, this.B))).isTrue();
+        assertThat(this.IMP2.containsNode(this.IMP2)).isTrue();
+        assertThat(this.IMP3.containsNode(this.IMP3)).isTrue();
+        assertThat(this.IMP4.containsNode(this.IMP4)).isTrue();
+        assertThat(this.IMP1.containsNode(this.A)).isTrue();
+        assertThat(this.IMP1.containsNode(this.B)).isTrue();
+        assertThat(this.IMP2.containsNode(this.NA)).isTrue();
+        assertThat(this.IMP2.containsNode(this.NB)).isTrue();
+        assertThat(this.IMP2.containsNode(this.A)).isFalse();
+        assertThat(this.IMP2.containsNode(this.B)).isFalse();
+        assertThat(this.IMP3.containsNode(this.AND1)).isTrue();
+        assertThat(this.IMP3.containsNode(this.OR1)).isTrue();
+        assertThat(this.IMP3.containsNode(this.A)).isTrue();
+        assertThat(this.IMP3.containsNode(this.B)).isTrue();
+        assertThat(this.IMP3.containsNode(this.X)).isTrue();
+        assertThat(this.IMP3.containsNode(this.Y)).isTrue();
+        assertThat(this.IMP4.containsNode(this.f.equivalence(this.A, this.B))).isTrue();
+        assertThat(this.IMP4.containsNode(this.f.equivalence(this.NX, this.NY))).isTrue();
 
-        assertThat(F.IMP4.containsNode(F.C)).isFalse();
-        assertThat(F.IMP4.containsNode(F.NOT1)).isFalse();
-        assertThat(F.IMP4.containsNode(F.f.equivalence(F.X, F.NY))).isFalse();
-        assertThat(F.IMP4.containsNode(F.f.equivalence(F.NY, F.X))).isFalse();
+        assertThat(this.IMP4.containsNode(this.C)).isFalse();
+        assertThat(this.IMP4.containsNode(this.NOT1)).isFalse();
+        assertThat(this.IMP4.containsNode(this.f.equivalence(this.X, this.NY))).isFalse();
+        assertThat(this.IMP4.containsNode(this.f.equivalence(this.NY, this.X))).isFalse();
     }
 
     @Test
     public void testEquivalence() {
-        assertThat(F.EQ1.containsNode(F.EQ1)).isTrue();
-        assertThat(F.EQ1.containsNode(F.f.equivalence(F.A, F.B))).isTrue();
-        assertThat(F.EQ4.containsNode(F.IMP1)).isTrue();
-        assertThat(F.EQ4.containsNode(F.IMP2)).isTrue();
-        assertThat(F.EQ4.containsNode(F.A)).isTrue();
-        assertThat(F.EQ4.containsNode(F.B)).isTrue();
+        assertThat(this.EQ1.containsNode(this.EQ1)).isTrue();
+        assertThat(this.EQ1.containsNode(this.f.equivalence(this.A, this.B))).isTrue();
+        assertThat(this.EQ4.containsNode(this.IMP1)).isTrue();
+        assertThat(this.EQ4.containsNode(this.IMP2)).isTrue();
+        assertThat(this.EQ4.containsNode(this.A)).isTrue();
+        assertThat(this.EQ4.containsNode(this.B)).isTrue();
 
-        assertThat(F.EQ2.containsNode(F.C)).isFalse();
-        assertThat(F.EQ2.containsNode(F.NOT1)).isFalse();
+        assertThat(this.EQ2.containsNode(this.C)).isFalse();
+        assertThat(this.EQ2.containsNode(this.NOT1)).isFalse();
     }
 
     @Test
     public void testOr() {
-        assertThat(F.OR1.containsNode(F.f.or(F.X, F.Y))).isTrue();
-        assertThat(F.OR1.containsNode(F.X)).isTrue();
-        assertThat(F.OR1.containsNode(F.f.variable("y"))).isTrue();
-        assertThat(F.OR3.containsNode(F.AND1)).isTrue();
-        assertThat(F.OR3.containsNode(F.AND2)).isTrue();
-        assertThat(F.OR3.containsNode(F.NA)).isTrue();
-        assertThat(F.OR3.containsNode(F.NB)).isTrue();
-        assertThat(F.OR3.containsNode(F.A)).isTrue();
-        assertThat(F.OR3.containsNode(F.B)).isTrue();
-        assertThat(F.f.or(F.A, F.B, F.NX, F.NY, F.C).containsNode(F.f.or(F.A, F.NX, F.C))).isTrue();
-        assertThat(F.f.or(F.A, F.B, F.OR1, F.C, F.AND1).containsNode(F.f.or(F.X, F.Y, F.AND1))).isTrue();
-        assertThat(F.f.or(F.A, F.B, F.OR1, F.C, F.AND1).containsNode(F.f.or(F.A, F.AND1, F.X))).isTrue();
+        assertThat(this.OR1.containsNode(this.f.or(this.X, this.Y))).isTrue();
+        assertThat(this.OR1.containsNode(this.X)).isTrue();
+        assertThat(this.OR1.containsNode(this.f.variable("y"))).isTrue();
+        assertThat(this.OR3.containsNode(this.AND1)).isTrue();
+        assertThat(this.OR3.containsNode(this.AND2)).isTrue();
+        assertThat(this.OR3.containsNode(this.NA)).isTrue();
+        assertThat(this.OR3.containsNode(this.NB)).isTrue();
+        assertThat(this.OR3.containsNode(this.A)).isTrue();
+        assertThat(this.OR3.containsNode(this.B)).isTrue();
+        assertThat(this.f.or(this.A, this.B, this.NX, this.NY, this.C).containsNode(this.f.or(this.A, this.NX, this.C))).isTrue();
+        assertThat(this.f.or(this.A, this.B, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.X, this.Y, this.AND1))).isTrue();
+        assertThat(this.f.or(this.A, this.B, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.AND1, this.X))).isTrue();
 
-        assertThat(F.f.or(F.NX, F.OR1, F.C, F.AND1).containsNode(F.f.or(F.A, F.B))).isFalse();
-        assertThat(F.f.or(F.NX, F.OR1, F.C, F.AND1).containsNode(F.NY)).isFalse();
-        assertThat(F.f.or(F.NX, F.OR1, F.C, F.AND1).containsNode(F.f.or(F.A, F.C))).isFalse();
+        assertThat(this.f.or(this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.B))).isFalse();
+        assertThat(this.f.or(this.NX, this.OR1, this.C, this.AND1).containsNode(this.NY)).isFalse();
+        assertThat(this.f.or(this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.C))).isFalse();
     }
 
     @Test
     public void testAnd() {
-        assertThat(F.AND1.containsNode(F.f.and(F.A, F.B))).isTrue();
-        assertThat(F.AND1.containsNode(F.A)).isTrue();
-        assertThat(F.AND1.containsNode(F.f.variable("b"))).isTrue();
-        assertThat(F.AND3.containsNode(F.OR1)).isTrue();
-        assertThat(F.AND3.containsNode(F.OR2)).isTrue();
-        assertThat(F.AND3.containsNode(F.NX)).isTrue();
-        assertThat(F.AND3.containsNode(F.NY)).isTrue();
-        assertThat(F.AND3.containsNode(F.X)).isTrue();
-        assertThat(F.AND3.containsNode(F.Y)).isTrue();
-        assertThat(F.f.and(F.A, F.B, F.NX, F.NY, F.C).containsNode(F.f.and(F.A, F.NX, F.C))).isTrue();
-        assertThat(F.f.and(F.X, F.Y, F.OR1, F.C, F.AND1).containsNode(F.f.and(F.A, F.B, F.C))).isTrue();
-        assertThat(F.f.and(F.A, F.B, F.NX, F.OR1, F.C, F.AND1).containsNode(F.f.and(F.A, F.OR1, F.NX))).isTrue();
-        assertThat(F.f.and(F.A, F.B, F.NX, F.IMP1, F.C).containsNode(F.IMP1)).isTrue();
+        assertThat(this.AND1.containsNode(this.f.and(this.A, this.B))).isTrue();
+        assertThat(this.AND1.containsNode(this.A)).isTrue();
+        assertThat(this.AND1.containsNode(this.f.variable("b"))).isTrue();
+        assertThat(this.AND3.containsNode(this.OR1)).isTrue();
+        assertThat(this.AND3.containsNode(this.OR2)).isTrue();
+        assertThat(this.AND3.containsNode(this.NX)).isTrue();
+        assertThat(this.AND3.containsNode(this.NY)).isTrue();
+        assertThat(this.AND3.containsNode(this.X)).isTrue();
+        assertThat(this.AND3.containsNode(this.Y)).isTrue();
+        assertThat(this.f.and(this.A, this.B, this.NX, this.NY, this.C).containsNode(this.f.and(this.A, this.NX, this.C))).isTrue();
+        assertThat(this.f.and(this.X, this.Y, this.OR1, this.C, this.AND1).containsNode(this.f.and(this.A, this.B, this.C))).isTrue();
+        assertThat(this.f.and(this.A, this.B, this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.and(this.A, this.OR1, this.NX))).isTrue();
+        assertThat(this.f.and(this.A, this.B, this.NX, this.IMP1, this.C).containsNode(this.IMP1)).isTrue();
 
-        assertThat(F.f.and(F.NX, F.OR1, F.C, F.AND1).containsNode(F.f.or(F.A, F.B))).isFalse();
-        assertThat(F.f.and(F.NX, F.OR1, F.C, F.AND1).containsNode(F.NY)).isFalse();
-        assertThat(F.f.and(F.NX, F.OR1, F.C, F.AND1).containsNode(F.f.or(F.A, F.C))).isFalse();
+        assertThat(this.f.and(this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.B))).isFalse();
+        assertThat(this.f.and(this.NX, this.OR1, this.C, this.AND1).containsNode(this.NY)).isFalse();
+        assertThat(this.f.and(this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.C))).isFalse();
     }
 
     @Test
     public void subformulasTest() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         final Formula f1 = p.parse("((a & ~b & c) | (d & (~e | c))) & (a => (~x | y) & (x | ~z))");
         final LinkedHashSet<Formula> expected = new LinkedHashSet<>();
         expected.add(p.parse("a"));
@@ -196,7 +196,7 @@ public class SubformulaTest {
 
     @Test
     public void testNotCache() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         final Formula f1 = p.parse("(d | (a & b)) & (c | (a & b)) | (a & b )");
         f1.apply(new SubNodeFunction(), false);
         assertThat(f1.functionCacheEntry(SUBFORMULAS)).isNull();

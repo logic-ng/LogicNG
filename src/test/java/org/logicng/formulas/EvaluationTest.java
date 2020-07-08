@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -42,55 +43,55 @@ import java.util.Arrays;
  * @version 2.0.0
  * @since 1.0
  */
-public class EvaluationTest {
+public class EvaluationTest extends TestWithExampleFormulas {
 
-    private final Assignment ass = new Assignment(Arrays.asList(F.A, F.B, F.C, F.NX, F.NY));
+    private final Assignment ass = new Assignment(Arrays.asList(this.A, this.B, this.C, this.NX, this.NY));
 
     @Test
     public void testConstantEval() {
-        assertThat(F.TRUE.evaluate(this.ass)).isTrue();
-        assertThat(F.FALSE.evaluate(this.ass)).isFalse();
+        assertThat(this.TRUE.evaluate(this.ass)).isTrue();
+        assertThat(this.FALSE.evaluate(this.ass)).isFalse();
     }
 
     @Test
     public void testLiteralEval() {
-        assertThat(F.A.evaluate(this.ass)).isTrue();
-        assertThat(F.NA.evaluate(this.ass)).isFalse();
-        assertThat(F.X.evaluate(this.ass)).isFalse();
-        assertThat(F.NX.evaluate(this.ass)).isTrue();
+        assertThat(this.A.evaluate(this.ass)).isTrue();
+        assertThat(this.NA.evaluate(this.ass)).isFalse();
+        assertThat(this.X.evaluate(this.ass)).isFalse();
+        assertThat(this.NX.evaluate(this.ass)).isTrue();
     }
 
     @Test
     public void testNotEval() {
-        assertThat(F.NOT1.evaluate(this.ass)).isFalse();
-        assertThat(F.NOT2.evaluate(this.ass)).isTrue();
+        assertThat(this.NOT1.evaluate(this.ass)).isFalse();
+        assertThat(this.NOT2.evaluate(this.ass)).isTrue();
     }
 
     @Test
     public void testBinaryEval() {
-        assertThat(F.IMP1.evaluate(this.ass)).isTrue();
-        assertThat(F.IMP2.evaluate(this.ass)).isTrue();
-        assertThat(F.IMP3.evaluate(this.ass)).isFalse();
-        assertThat(F.IMP4.evaluate(this.ass)).isTrue();
+        assertThat(this.IMP1.evaluate(this.ass)).isTrue();
+        assertThat(this.IMP2.evaluate(this.ass)).isTrue();
+        assertThat(this.IMP3.evaluate(this.ass)).isFalse();
+        assertThat(this.IMP4.evaluate(this.ass)).isTrue();
 
-        assertThat(F.EQ1.evaluate(this.ass)).isTrue();
-        assertThat(F.EQ2.evaluate(this.ass)).isTrue();
-        assertThat(F.EQ3.evaluate(this.ass)).isFalse();
-        assertThat(F.EQ4.evaluate(this.ass)).isTrue();
+        assertThat(this.EQ1.evaluate(this.ass)).isTrue();
+        assertThat(this.EQ2.evaluate(this.ass)).isTrue();
+        assertThat(this.EQ3.evaluate(this.ass)).isFalse();
+        assertThat(this.EQ4.evaluate(this.ass)).isTrue();
     }
 
     @Test
     public void testNAryEval() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.OR1.evaluate(this.ass)).isFalse();
-        assertThat(F.OR2.evaluate(this.ass)).isTrue();
-        assertThat(F.OR3.evaluate(this.ass)).isTrue();
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.OR1.evaluate(this.ass)).isFalse();
+        assertThat(this.OR2.evaluate(this.ass)).isTrue();
+        assertThat(this.OR3.evaluate(this.ass)).isTrue();
         assertThat(p.parse("~a | ~b | ~c | x | y").evaluate(this.ass)).isFalse();
         assertThat(p.parse("~a | ~b | ~c | x | ~y").evaluate(this.ass)).isTrue();
 
-        assertThat(F.AND1.evaluate(this.ass)).isTrue();
-        assertThat(F.AND2.evaluate(this.ass)).isFalse();
-        assertThat(F.AND3.evaluate(this.ass)).isFalse();
+        assertThat(this.AND1.evaluate(this.ass)).isTrue();
+        assertThat(this.AND2.evaluate(this.ass)).isFalse();
+        assertThat(this.AND3.evaluate(this.ass)).isFalse();
         assertThat(p.parse("a & b & c & ~x & ~y").evaluate(this.ass)).isTrue();
         assertThat(p.parse("a & b & c & ~x & y").evaluate(this.ass)).isFalse();
     }

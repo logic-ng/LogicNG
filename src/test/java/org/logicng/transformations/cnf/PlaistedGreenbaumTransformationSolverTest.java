@@ -1,12 +1,12 @@
 package org.logicng.transformations.cnf;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.datastructures.Tristate.TRUE;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
-import org.logicng.formulas.F;
+import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -29,9 +29,7 @@ import java.util.stream.Stream;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class PlaistedGreenbaumTransformationSolverTest {
-
-    private final FormulaFactory f = F.f;
+public class PlaistedGreenbaumTransformationSolverTest extends TestWithExampleFormulas {
 
     @Test
     public void testCornerCases() {
@@ -58,26 +56,26 @@ public class PlaistedGreenbaumTransformationSolverTest {
             final Formula randomFormula02 = randomSATFormula(randomizer, 4, f);
             solver.reset();
             solver.add(randomFormula01);
-            if (solver.sat() == TRUE) {
+            if (solver.sat() == Tristate.TRUE) {
                 final List<Assignment> models = solver.enumerateAllModels();
                 final Formula dnf = f.or(models.stream().map(model -> f.and(model.literals())).collect(Collectors.toList()));
                 assertThat(f.equivalence(randomFormula01, dnf).holds(new TautologyPredicate(f))).isTrue();
             }
             final SolverState state = solver.saveState();
             solver.add(randomFormula02);
-            if (solver.sat() == TRUE) {
+            if (solver.sat() == Tristate.TRUE) {
                 final List<Assignment> models = solver.enumerateAllModels();
                 final Formula dnf = f.or(models.stream().map(model -> f.and(model.literals())).collect(Collectors.toList()));
                 assertThat(f.equivalence(f.and(randomFormula01, randomFormula02), dnf).holds(new TautologyPredicate(f))).isTrue();
             }
             solver.loadState(state);
-            if (solver.sat() == TRUE) {
+            if (solver.sat() == Tristate.TRUE) {
                 final List<Assignment> models = solver.enumerateAllModels();
                 final Formula dnf = f.or(models.stream().map(model -> f.and(model.literals())).collect(Collectors.toList()));
                 assertThat(f.equivalence(randomFormula01, dnf).holds(new TautologyPredicate(f))).isTrue();
             }
             solver.add(randomFormula02);
-            if (solver.sat() == TRUE) {
+            if (solver.sat() == Tristate.TRUE) {
                 final List<Assignment> models = solver.enumerateAllModels();
                 final Formula dnf = f.or(models.stream().map(model -> f.and(model.literals())).collect(Collectors.toList()));
                 assertThat(f.equivalence(f.and(randomFormula01, randomFormula02), dnf).holds(new TautologyPredicate(f))).isTrue();

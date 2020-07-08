@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -27,37 +27,35 @@ import java.util.SortedSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class PrimeCompilerTest {
-
-    private final FormulaFactory f = F.f;
+public class PrimeCompilerTest extends TestWithExampleFormulas {
 
     @Test
     public void testSimple() {
-        computeAndVerify(F.TRUE);
-        computeAndVerify(F.FALSE);
-        computeAndVerify(F.A);
-        computeAndVerify(F.NA);
-        computeAndVerify(F.AND1);
-        computeAndVerify(F.AND2);
-        computeAndVerify(F.AND3);
-        computeAndVerify(F.OR1);
-        computeAndVerify(F.OR2);
-        computeAndVerify(F.OR3);
-        computeAndVerify(F.NOT1);
-        computeAndVerify(F.NOT2);
-        computeAndVerify(F.IMP1);
-        computeAndVerify(F.IMP2);
-        computeAndVerify(F.IMP3);
-        computeAndVerify(F.IMP4);
-        computeAndVerify(F.EQ1);
-        computeAndVerify(F.EQ2);
-        computeAndVerify(F.EQ3);
-        computeAndVerify(F.EQ4);
-        computeAndVerify(F.PBC1);
-        computeAndVerify(F.PBC2);
-        computeAndVerify(F.PBC3);
-        computeAndVerify(F.PBC4);
-        computeAndVerify(F.PBC5);
+        computeAndVerify(this.TRUE);
+        computeAndVerify(this.FALSE);
+        computeAndVerify(this.A);
+        computeAndVerify(this.NA);
+        computeAndVerify(this.AND1);
+        computeAndVerify(this.AND2);
+        computeAndVerify(this.AND3);
+        computeAndVerify(this.OR1);
+        computeAndVerify(this.OR2);
+        computeAndVerify(this.OR3);
+        computeAndVerify(this.NOT1);
+        computeAndVerify(this.NOT2);
+        computeAndVerify(this.IMP1);
+        computeAndVerify(this.IMP2);
+        computeAndVerify(this.IMP3);
+        computeAndVerify(this.IMP4);
+        computeAndVerify(this.EQ1);
+        computeAndVerify(this.EQ2);
+        computeAndVerify(this.EQ3);
+        computeAndVerify(this.EQ4);
+        computeAndVerify(this.PBC1);
+        computeAndVerify(this.PBC2);
+        computeAndVerify(this.PBC3);
+        computeAndVerify(this.PBC4);
+        computeAndVerify(this.PBC5);
     }
 
     @Test

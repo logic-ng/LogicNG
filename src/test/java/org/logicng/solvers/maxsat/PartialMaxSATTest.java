@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -55,7 +55,7 @@ import java.util.List;
  * @version 2.0.0
  * @since 1.0
  */
-public class PartialMaxSATTest {
+public class PartialMaxSATTest extends TestWithExampleFormulas {
 
     private static final String[] files = new String[]{
             "c1355_F176gat-1278gat@1.wcnf",
@@ -223,8 +223,8 @@ public class PartialMaxSATTest {
         assertThat(result).isEqualTo(MaxSAT.MaxSATResult.UNDEF);
 
         solver.reset();
-        solver.addHardFormula(F.IMP1);
-        solver.addSoftFormula(F.AND1, 1);
+        solver.addHardFormula(this.IMP1);
+        solver.addSoftFormula(this.AND1, 1);
         result = solver.solve(handler);
         assertThat(handler.aborted()).isFalse();
         assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);

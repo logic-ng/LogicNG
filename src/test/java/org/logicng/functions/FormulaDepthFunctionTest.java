@@ -1,61 +1,61 @@
 package org.logicng.functions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.formulas.cache.FunctionCacheEntry;
 import org.logicng.io.parsers.ParserException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit Tests for the class {@link FormulaDepthFunction}.
  * @version 2.0.0
  * @since 2.0.0
  */
-public class FormulaDepthFunctionTest {
+public class FormulaDepthFunctionTest extends TestWithExampleFormulas {
 
     @Test
     public void testAtoms() {
-        assertThat(F.TRUE.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.FALSE.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.A.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.NA.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.PBC1.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.PBC2.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.PBC3.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.PBC4.apply(new FormulaDepthFunction())).isEqualTo(0);
-        assertThat(F.PBC5.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.TRUE.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.FALSE.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.A.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.NA.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.PBC1.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.PBC2.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.PBC3.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.PBC4.apply(new FormulaDepthFunction())).isEqualTo(0);
+        assertThat(this.PBC5.apply(new FormulaDepthFunction())).isEqualTo(0);
     }
 
     @Test
     public void testDeepFormulas() {
-        assertThat(F.AND1.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.AND2.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.AND3.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.OR1.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.OR2.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.OR3.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.NOT1.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.NOT2.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.IMP1.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.IMP2.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.IMP3.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.IMP4.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.EQ1.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.EQ2.apply(new FormulaDepthFunction())).isEqualTo(1);
-        assertThat(F.EQ3.apply(new FormulaDepthFunction())).isEqualTo(2);
-        assertThat(F.EQ4.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.AND1.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.AND2.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.AND3.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.OR1.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.OR2.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.OR3.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.NOT1.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.NOT2.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.IMP1.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.IMP2.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.IMP3.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.IMP4.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.EQ1.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.EQ2.apply(new FormulaDepthFunction())).isEqualTo(1);
+        assertThat(this.EQ3.apply(new FormulaDepthFunction())).isEqualTo(2);
+        assertThat(this.EQ4.apply(new FormulaDepthFunction())).isEqualTo(2);
     }
 
     @Test
     public void testDeeperFormulas() {
-        Formula formula = F.PBC1;
+        Formula formula = this.PBC1;
         for (int i = 0; i < 10; i++) {
-            final Variable var = F.f.variable("X" + i);
-            formula = i % 2 == 0 ? F.f.or(formula, var) : F.f.and(formula, var);
+            final Variable var = this.f.variable("X" + i);
+            formula = i % 2 == 0 ? this.f.or(formula, var) : this.f.and(formula, var);
         }
         assertThat(formula.apply(new FormulaDepthFunction())).isEqualTo(10);
     }

@@ -31,7 +31,7 @@ package org.logicng.util;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 
@@ -46,64 +46,64 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 1.5.1
  */
-public class FormulaHelperTest {
+public class FormulaHelperTest extends TestWithExampleFormulas {
 
     @Test
     public void testVariables() {
-        assertThat(FormulaHelper.variables(F.TRUE)).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.variables(F.FALSE)).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.variables(F.A)).isEqualTo(new TreeSet<>(Collections.singletonList(F.A)));
-        assertThat(FormulaHelper.variables(F.NA)).isEqualTo(new TreeSet<>(Collections.singletonList(F.A)));
-        assertThat(FormulaHelper.variables(F.IMP1, F.IMP2, F.IMP3)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y)));
-        assertThat(FormulaHelper.variables(F.IMP1, F.Y)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.Y)));
+        assertThat(FormulaHelper.variables(this.TRUE)).isEqualTo(new TreeSet<>());
+        assertThat(FormulaHelper.variables(this.FALSE)).isEqualTo(new TreeSet<>());
+        assertThat(FormulaHelper.variables(this.A)).isEqualTo(new TreeSet<>(Collections.singletonList(this.A)));
+        assertThat(FormulaHelper.variables(this.NA)).isEqualTo(new TreeSet<>(Collections.singletonList(this.A)));
+        assertThat(FormulaHelper.variables(this.IMP1, this.IMP2, this.IMP3)).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y)));
+        assertThat(FormulaHelper.variables(this.IMP1, this.Y)).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.Y)));
 
-        assertThat(FormulaHelper.variables(Arrays.asList(F.TRUE, F.FALSE))).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.variables(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y)));
-        assertThat(FormulaHelper.variables(Arrays.asList(F.IMP1, F.Y))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.Y)));
+        assertThat(FormulaHelper.variables(Arrays.asList(this.TRUE, this.FALSE))).isEqualTo(new TreeSet<>());
+        assertThat(FormulaHelper.variables(Arrays.asList(this.IMP1, this.IMP2, this.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y)));
+        assertThat(FormulaHelper.variables(Arrays.asList(this.IMP1, this.Y))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.Y)));
     }
 
     @Test
     public void testLiterals() {
-        assertThat(FormulaHelper.literals(F.TRUE)).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.literals(F.FALSE)).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.literals(F.A)).isEqualTo(new TreeSet<>(Collections.singletonList(F.A)));
-        assertThat(FormulaHelper.literals(F.NA)).isEqualTo(new TreeSet<>(Collections.singletonList(F.NA)));
-        assertThat(FormulaHelper.literals(F.IMP1, F.IMP2, F.IMP3)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
-        assertThat(FormulaHelper.literals(F.IMP1, F.NY)).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
+        assertThat(FormulaHelper.literals(this.TRUE)).isEqualTo(new TreeSet<>());
+        assertThat(FormulaHelper.literals(this.FALSE)).isEqualTo(new TreeSet<>());
+        assertThat(FormulaHelper.literals(this.A)).isEqualTo(new TreeSet<>(Collections.singletonList(this.A)));
+        assertThat(FormulaHelper.literals(this.NA)).isEqualTo(new TreeSet<>(Collections.singletonList(this.NA)));
+        assertThat(FormulaHelper.literals(this.IMP1, this.IMP2, this.IMP3)).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y, this.NA, this.NB)));
+        assertThat(FormulaHelper.literals(this.IMP1, this.NY)).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.NY)));
 
-        assertThat(FormulaHelper.literals(Arrays.asList(F.TRUE, F.FALSE))).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.IMP2, F.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y, F.NA, F.NB)));
-        assertThat(FormulaHelper.literals(Arrays.asList(F.IMP1, F.NY))).isEqualTo(new TreeSet<>(Arrays.asList(F.A, F.B, F.NY)));
+        assertThat(FormulaHelper.literals(Arrays.asList(this.TRUE, this.FALSE))).isEqualTo(new TreeSet<>());
+        assertThat(FormulaHelper.literals(Arrays.asList(this.IMP1, this.IMP2, this.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y, this.NA, this.NB)));
+        assertThat(FormulaHelper.literals(Arrays.asList(this.IMP1, this.NY))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.NY)));
     }
 
     @Test
     public void testNegateLiterals() {
         assertThat((ArrayList<Literal>) FormulaHelper.negateLiterals(Collections.emptyList(), ArrayList::new))
                 .isEqualTo(new ArrayList<Formula>());
-        assertThat((ArrayList<Literal>) FormulaHelper.negateLiterals(Arrays.asList(F.A, F.NB), ArrayList::new))
-                .isEqualTo(Arrays.asList(F.NA, F.B));
-        assertThat((HashSet<Literal>) FormulaHelper.negateLiterals(Arrays.asList(F.A, F.NB), HashSet::new))
-                .isEqualTo(new HashSet<>(Arrays.asList(F.NA, F.B)));
+        assertThat((ArrayList<Literal>) FormulaHelper.negateLiterals(Arrays.asList(this.A, this.NB), ArrayList::new))
+                .isEqualTo(Arrays.asList(this.NA, this.B));
+        assertThat((HashSet<Literal>) FormulaHelper.negateLiterals(Arrays.asList(this.A, this.NB), HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(this.NA, this.B)));
     }
 
     @Test
     public void testNegate() {
         assertThat((ArrayList<Formula>) FormulaHelper.negate(Collections.emptyList(), ArrayList::new))
                 .isEqualTo(new ArrayList<Formula>());
-        assertThat((ArrayList<Formula>) FormulaHelper.negate(Arrays.asList(F.A, F.TRUE, F.NB, F.AND1), ArrayList::new))
-                .isEqualTo(Arrays.asList(F.NA, F.FALSE, F.B, F.f.not(F.AND1)));
-        assertThat((HashSet<Formula>) FormulaHelper.negate(Arrays.asList(F.A, F.TRUE, F.NB, F.AND1), HashSet::new))
-                .isEqualTo(new HashSet<>(Arrays.asList(F.NA, F.FALSE, F.B, F.f.not(F.AND1))));
+        assertThat((ArrayList<Formula>) FormulaHelper.negate(Arrays.asList(this.A, this.TRUE, this.NB, this.AND1), ArrayList::new))
+                .isEqualTo(Arrays.asList(this.NA, this.FALSE, this.B, this.f.not(this.AND1)));
+        assertThat((HashSet<Formula>) FormulaHelper.negate(Arrays.asList(this.A, this.TRUE, this.NB, this.AND1), HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(this.NA, this.FALSE, this.B, this.f.not(this.AND1))));
     }
 
     @Test
     public void testSplitTopLevelAnd() {
-        assertThat(FormulaHelper.splitTopLevelAnd(F.TRUE)).isEqualTo(Collections.singletonList(F.TRUE));
-        assertThat(FormulaHelper.splitTopLevelAnd(F.FALSE)).isEqualTo(Collections.singletonList(F.FALSE));
-        assertThat(FormulaHelper.splitTopLevelAnd(F.OR1)).isEqualTo(Collections.singletonList(F.OR1));
-        assertThat(FormulaHelper.splitTopLevelAnd(F.IMP1)).isEqualTo(Collections.singletonList(F.IMP1));
+        assertThat(FormulaHelper.splitTopLevelAnd(this.TRUE)).isEqualTo(Collections.singletonList(this.TRUE));
+        assertThat(FormulaHelper.splitTopLevelAnd(this.FALSE)).isEqualTo(Collections.singletonList(this.FALSE));
+        assertThat(FormulaHelper.splitTopLevelAnd(this.OR1)).isEqualTo(Collections.singletonList(this.OR1));
+        assertThat(FormulaHelper.splitTopLevelAnd(this.IMP1)).isEqualTo(Collections.singletonList(this.IMP1));
 
-        assertThat(FormulaHelper.splitTopLevelAnd(F.AND1)).isEqualTo(Arrays.asList(F.A, F.B));
-        assertThat(FormulaHelper.splitTopLevelAnd(F.AND3)).isEqualTo(Arrays.asList(F.OR1, F.OR2));
+        assertThat(FormulaHelper.splitTopLevelAnd(this.AND1)).isEqualTo(Arrays.asList(this.A, this.B));
+        assertThat(FormulaHelper.splitTopLevelAnd(this.AND3)).isEqualTo(Arrays.asList(this.OR1, this.OR2));
     }
 }

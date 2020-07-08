@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.LongRunningTag;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class BDDReorderingTest {
+public class BDDReorderingTest extends TestWithExampleFormulas {
 
     private final SwapStats stats = new SwapStats();
     private static final List<BDDReordering> REORDER_METHODS =
@@ -47,48 +47,46 @@ public class BDDReorderingTest {
 
     @Test
     public void testSwapping() throws ParserException {
-        final FormulaFactory f = F.f;
-        final BDDKernel kernel = new BDDKernel(f, Arrays.asList(F.A, F.B, F.C), 100, 100);
-        final Formula formula = f.parse("a | b | c");
+        final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B, this.C), 100, 100);
+        final Formula formula = this.f.parse("a | b | c");
         final BDD bdd = BDDFactory.build(formula, kernel);
-        assertThat(bdd.getVariableOrder()).containsExactly(F.A, F.B, F.C);
-        bdd.swapVariables(F.A, F.B);
-        assertThat(bdd.getVariableOrder()).containsExactly(F.B, F.A, F.C);
-        bdd.swapVariables(F.A, F.B);
-        assertThat(bdd.getVariableOrder()).containsExactly(F.A, F.B, F.C);
-        bdd.swapVariables(F.A, F.C);
-        assertThat(bdd.getVariableOrder()).containsExactly(F.C, F.B, F.A);
-        bdd.swapVariables(F.B, F.C);
-        assertThat(bdd.getVariableOrder()).containsExactly(F.B, F.C, F.A);
-        assertThat(f.equivalence(formula, bdd.cnf()).holds(new TautologyPredicate(f))).isTrue();
+        assertThat(bdd.getVariableOrder()).containsExactly(this.A, this.B, this.C);
+        bdd.swapVariables(this.A, this.B);
+        assertThat(bdd.getVariableOrder()).containsExactly(this.B, this.A, this.C);
+        bdd.swapVariables(this.A, this.B);
+        assertThat(bdd.getVariableOrder()).containsExactly(this.A, this.B, this.C);
+        bdd.swapVariables(this.A, this.C);
+        assertThat(bdd.getVariableOrder()).containsExactly(this.C, this.B, this.A);
+        bdd.swapVariables(this.B, this.C);
+        assertThat(bdd.getVariableOrder()).containsExactly(this.B, this.C, this.A);
+        assertThat(this.f.equivalence(formula, bdd.cnf()).holds(new TautologyPredicate(this.f))).isTrue();
         assertThat(bdd.apply(new LngBDDFunction())).isEqualTo(
-                new BDDInnerNode(F.B,
-                        new BDDInnerNode(F.C,
-                                new BDDInnerNode(F.A, BDDConstant.getFalsumNode(f), BDDConstant.getVerumNode(f)),
-                                BDDConstant.getVerumNode(f)),
-                        BDDConstant.getVerumNode(f)));
-        assertThatThrownBy(() -> bdd.swapVariables(F.B, F.X)).isInstanceOf(IllegalArgumentException.class);
+                new BDDInnerNode(this.B,
+                        new BDDInnerNode(this.C,
+                                new BDDInnerNode(this.A, BDDConstant.getFalsumNode(this.f), BDDConstant.getVerumNode(this.f)),
+                                BDDConstant.getVerumNode(this.f)),
+                        BDDConstant.getVerumNode(this.f)));
+        assertThatThrownBy(() -> bdd.swapVariables(this.B, this.X)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void testSwappingMultipleBdds() throws ParserException {
-        final FormulaFactory f = F.f;
-        final BDDKernel kernel = new BDDKernel(f, Arrays.asList(F.A, F.B, F.C), 100, 100);
-        final Formula formula1 = f.parse("a | b | c");
-        final Formula formula2 = f.parse("a & b");
+        final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B, this.C), 100, 100);
+        final Formula formula1 = this.f.parse("a | b | c");
+        final Formula formula2 = this.f.parse("a & b");
         final BDD bdd1 = BDDFactory.build(formula1, kernel);
         final BDD bdd2 = BDDFactory.build(formula2, kernel);
-        assertThat(bdd1.getVariableOrder()).containsExactly(F.A, F.B, F.C);
-        assertThat(bdd2.getVariableOrder()).containsExactly(F.A, F.B, F.C);
+        assertThat(bdd1.getVariableOrder()).containsExactly(this.A, this.B, this.C);
+        assertThat(bdd2.getVariableOrder()).containsExactly(this.A, this.B, this.C);
         assertThat(bdd2.apply(new LngBDDFunction())).isEqualTo(
-                new BDDInnerNode(F.A, BDDConstant.getFalsumNode(f),
-                        new BDDInnerNode(F.B, BDDConstant.getFalsumNode(f), BDDConstant.getVerumNode(f))));
-        bdd1.swapVariables(F.A, F.B);
-        assertThat(bdd1.getVariableOrder()).containsExactly(F.B, F.A, F.C);
-        assertThat(bdd2.getVariableOrder()).containsExactly(F.B, F.A, F.C);
+                new BDDInnerNode(this.A, BDDConstant.getFalsumNode(this.f),
+                        new BDDInnerNode(this.B, BDDConstant.getFalsumNode(this.f), BDDConstant.getVerumNode(this.f))));
+        bdd1.swapVariables(this.A, this.B);
+        assertThat(bdd1.getVariableOrder()).containsExactly(this.B, this.A, this.C);
+        assertThat(bdd2.getVariableOrder()).containsExactly(this.B, this.A, this.C);
         assertThat(bdd2.apply(new LngBDDFunction())).isEqualTo(
-                new BDDInnerNode(F.B, BDDConstant.getFalsumNode(f),
-                        new BDDInnerNode(F.A, BDDConstant.getFalsumNode(f), BDDConstant.getVerumNode(f))));
+                new BDDInnerNode(this.B, BDDConstant.getFalsumNode(this.f),
+                        new BDDInnerNode(this.A, BDDConstant.getFalsumNode(this.f), BDDConstant.getVerumNode(this.f))));
     }
 
     @Test

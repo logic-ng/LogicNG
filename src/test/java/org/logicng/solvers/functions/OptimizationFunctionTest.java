@@ -1,15 +1,18 @@
 package org.logicng.solvers.functions;
 
+import static java.util.stream.Collectors.toCollection;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.logicng.LogicNGTest;
 import org.logicng.LongRunningTag;
 import org.logicng.RandomTag;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.CardinalityConstraint;
-import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -41,17 +44,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static java.util.stream.Collectors.toCollection;
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit tests for {@link OptimizationFunction}.
  * @version 2.0.0
  * @since 2.0.0
  */
-public class OptimizationFunctionTest implements LogicNGTest {
-
-    private static final FormulaFactory f = F.f;
+public class OptimizationFunctionTest extends TestWithExampleFormulas implements LogicNGTest {
 
     public static Collection<Object[]> solvers() {
         final FormulaFactory f = new FormulaFactory();
@@ -71,7 +69,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @ParameterizedTest
     @MethodSource("solvers")
     public void testUnsatFormula(final SATSolver solver) throws ParserException {
-        final Formula formula = f.parse("a & b & (a => ~b)");
+        final Formula formula = this.f.parse("a & b & (a => ~b)");
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         assertThat(minimumModel).isNull();
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
@@ -81,7 +79,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @ParameterizedTest
     @MethodSource("solvers")
     public void testSingleModel(final SATSolver solver) throws ParserException {
-        final Formula formula = f.parse("~a & ~b & ~c");
+        final Formula formula = this.f.parse("~a & ~b & ~c");
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(formula, minimumModel, formula.variables());
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
@@ -91,7 +89,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @ParameterizedTest
     @MethodSource("solvers")
     public void testExoModel(final SATSolver solver) {
-        final CardinalityConstraint exo = (CardinalityConstraint) f.exo(f.variable("a"), f.variable("b"), f.variable("c"));
+        final CardinalityConstraint exo = (CardinalityConstraint) this.f.exo(this.f.variable("a"), this.f.variable("b"), this.f.variable("c"));
         final Assignment minimumModel = optimize(Collections.singleton(exo), exo.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(exo, minimumModel, exo.variables());
         final Assignment maximumModel = optimize(Collections.singleton(exo), exo.variables(), Collections.emptyList(), true, solver);
@@ -158,7 +156,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
             return;
         }
         solver.reset();
-        Formula formula = f.parse("(a|b|c|d|e) & (p|q) & (x|y|z)");
+        Formula formula = this.f.parse("(a|b|c|d|e) & (p|q) & (x|y|z)");
         final SortedSet<Variable> vars = new TreeSet<>(formula.variables());
         solver.add(formula);
 
@@ -167,35 +165,35 @@ public class OptimizationFunctionTest implements LogicNGTest {
         assertThat(minimumModel.positiveVariables()).hasSize(3);
         assertThat(maximumModel.positiveVariables()).hasSize(10);
 
-        formula = f.parse("~p");
+        formula = this.f.parse("~p");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
         maximumModel = solver.execute(OptimizationFunction.builder().maximize().literals(vars).build());
-        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(f.variable("q"));
-        assertThat(maximumModel.positiveVariables()).hasSize(9).contains(f.variable("q"));
+        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(this.f.variable("q"));
+        assertThat(maximumModel.positiveVariables()).hasSize(9).contains(this.f.variable("q"));
 
-        formula = f.parse("(x => n) & (y => m) & (a => ~b & ~c)");
+        formula = this.f.parse("(x => n) & (y => m) & (a => ~b & ~c)");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
         maximumModel = solver.execute(OptimizationFunction.builder().maximize().literals(vars).build());
-        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(f.variable("q"), f.variable("z"));
+        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(this.f.variable("q"), this.f.variable("z"));
         assertThat(maximumModel.positiveVariables()).hasSize(10)
-                .contains(f.variable("q"), f.variable("z"))
-                .doesNotContain(f.variable("a"));
+                .contains(this.f.variable("q"), this.f.variable("z"))
+                .doesNotContain(this.f.variable("a"));
 
-        formula = f.parse("(z => v & w) & (m => v) & (b => ~c & ~d & ~e)");
+        formula = this.f.parse("(z => v & w) & (m => v) & (b => ~c & ~d & ~e)");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
         maximumModel = solver.execute(OptimizationFunction.builder().maximize().literals(vars).build());
-        assertThat(minimumModel.positiveVariables()).hasSize(4).contains(f.variable("q"), f.variable("x"), f.variable("n"));
+        assertThat(minimumModel.positiveVariables()).hasSize(4).contains(this.f.variable("q"), this.f.variable("x"), this.f.variable("n"));
         assertThat(maximumModel.positiveVariables()).hasSize(11)
-                .contains(f.variable("q"), f.variable("x"), f.variable("n"), f.variable("v"), f.variable("w"))
-                .doesNotContain(f.variable("b"));
+                .contains(this.f.variable("q"), this.f.variable("x"), this.f.variable("n"), this.f.variable("v"), this.f.variable("w"))
+                .doesNotContain(this.f.variable("b"));
 
-        formula = f.parse("~q");
+        formula = this.f.parse("~q");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
@@ -240,7 +238,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @ParameterizedTest
     @MethodSource("solvers")
     public void testLargeFormulaMinimize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(formula, minimumModel, formula.variables());
     }
@@ -248,7 +246,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @ParameterizedTest
     @MethodSource("solvers")
     public void testLargeFormulaMaximize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
         testMaximumModel(formula, maximumModel, formula.variables());
     }
@@ -257,7 +255,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @MethodSource("solvers")
     @LongRunningTag
     public void testLargerFormulaMinimize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(formula, minimumModel, formula.variables());
     }
@@ -266,7 +264,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @MethodSource("solvers")
     @LongRunningTag
     public void testLargerFormulaMaximize(final SATSolver solver) throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
         testMaximumModel(formula, maximumModel, formula.variables());
     }

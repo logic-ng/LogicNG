@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
@@ -44,150 +45,150 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 1.0
  */
-public class ImplicationTest {
+public class ImplicationTest extends TestWithExampleFormulas {
 
     @Test
     public void testType() {
-        assertThat(F.IMP1.type()).isEqualTo(FType.IMPL);
+        assertThat(this.IMP1.type()).isEqualTo(FType.IMPL);
     }
 
     @Test
     public void testCreator() {
-        assertThat(F.f.implication(F.FALSE, F.A)).isEqualTo(F.TRUE);
-        assertThat(F.f.implication(F.A, F.TRUE)).isEqualTo(F.TRUE);
-        assertThat(F.f.implication(F.TRUE, F.A)).isEqualTo(F.A);
-        assertThat(F.f.implication(F.A, F.FALSE)).isEqualTo(F.NA);
-        assertThat(F.f.implication(F.A, F.A)).isEqualTo(F.TRUE);
-        assertThat(F.f.binaryOperator(FType.IMPL, F.AND1, F.OR1)).isEqualTo(F.IMP3);
+        assertThat(this.f.implication(this.FALSE, this.A)).isEqualTo(this.TRUE);
+        assertThat(this.f.implication(this.A, this.TRUE)).isEqualTo(this.TRUE);
+        assertThat(this.f.implication(this.TRUE, this.A)).isEqualTo(this.A);
+        assertThat(this.f.implication(this.A, this.FALSE)).isEqualTo(this.NA);
+        assertThat(this.f.implication(this.A, this.A)).isEqualTo(this.TRUE);
+        assertThat(this.f.binaryOperator(FType.IMPL, this.AND1, this.OR1)).isEqualTo(this.IMP3);
     }
 
     @Test
     public void testIllegalCreation() {
-        assertThatThrownBy(() -> F.f.binaryOperator(FType.NOT, F.AND1, F.OR1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> this.f.binaryOperator(FType.NOT, this.AND1, this.OR1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void testGetters() {
-        assertThat(((Implication) F.IMP2).left()).isEqualTo(F.NA);
-        assertThat(((Implication) F.IMP2).right()).isEqualTo(F.NB);
+        assertThat(((Implication) this.IMP2).left()).isEqualTo(this.NA);
+        assertThat(((Implication) this.IMP2).right()).isEqualTo(this.NB);
     }
 
     @Test
     public void testVariables() {
-        assertThat(F.IMP3.variables().size()).isEqualTo(4);
-        SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
-        assertThat(F.IMP3.variables()).isEqualTo(lits);
+        assertThat(this.IMP3.variables().size()).isEqualTo(4);
+        SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y));
+        assertThat(this.IMP3.variables()).isEqualTo(lits);
 
-        final Formula imp = F.f.implication(F.AND1, F.AND2);
+        final Formula imp = this.f.implication(this.AND1, this.AND2);
         assertThat(imp.variables().size()).isEqualTo(2);
-        lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+        lits = new TreeSet<>(Arrays.asList(this.A, this.B));
         assertThat(imp.variables()).isEqualTo(lits);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.IMP3.literals().size()).isEqualTo(4);
-        SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.X, F.Y));
-        assertThat(F.IMP3.literals()).isEqualTo(lits);
+        assertThat(this.IMP3.literals().size()).isEqualTo(4);
+        SortedSet<Literal> lits = new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y));
+        assertThat(this.IMP3.literals()).isEqualTo(lits);
 
-        Formula imp = F.f.implication(F.AND1, F.AND2);
+        Formula imp = this.f.implication(this.AND1, this.AND2);
         assertThat(imp.literals().size()).isEqualTo(4);
-        lits = new TreeSet<>(Arrays.asList(F.A, F.B, F.NA, F.NB));
+        lits = new TreeSet<>(Arrays.asList(this.A, this.B, this.NA, this.NB));
         assertThat(imp.literals()).isEqualTo(lits);
 
-        imp = F.f.implication(F.AND1, F.A);
+        imp = this.f.implication(this.AND1, this.A);
         assertThat(imp.literals().size()).isEqualTo(2);
-        lits = new TreeSet<>(Arrays.asList(F.A, F.B));
+        lits = new TreeSet<>(Arrays.asList(this.A, this.B));
         assertThat(imp.literals()).isEqualTo(lits);
     }
 
     @Test
     public void testNegation() {
-        assertThat(F.IMP1.negate()).isEqualTo(F.f.not(F.IMP1));
-        assertThat(F.IMP2.negate()).isEqualTo(F.f.not(F.IMP2));
-        assertThat(F.IMP3.negate()).isEqualTo(F.f.not(F.IMP3));
-        assertThat(F.IMP4.negate()).isEqualTo(F.f.not(F.IMP4));
+        assertThat(this.IMP1.negate()).isEqualTo(this.f.not(this.IMP1));
+        assertThat(this.IMP2.negate()).isEqualTo(this.f.not(this.IMP2));
+        assertThat(this.IMP3.negate()).isEqualTo(this.f.not(this.IMP3));
+        assertThat(this.IMP4.negate()).isEqualTo(this.f.not(this.IMP4));
     }
 
     @Test
     public void testToString() {
-        assertThat(F.IMP1.toString()).isEqualTo("a => b");
-        assertThat(F.IMP2.toString()).isEqualTo("~a => ~b");
-        assertThat(F.IMP3.toString()).isEqualTo("a & b => x | y");
-        assertThat(F.IMP4.toString()).isEqualTo("(a <=> b) => (~x <=> ~y)");
+        assertThat(this.IMP1.toString()).isEqualTo("a => b");
+        assertThat(this.IMP2.toString()).isEqualTo("~a => ~b");
+        assertThat(this.IMP3.toString()).isEqualTo("a & b => x | y");
+        assertThat(this.IMP4.toString()).isEqualTo("(a <=> b) => (~x <=> ~y)");
     }
 
     @Test
     public void testEquals() {
-        assertThat(F.f.implication(F.A, F.B)).isEqualTo(F.IMP1);
-        assertThat(F.f.implication(F.AND1, F.OR1)).isEqualTo(F.IMP3);
-        assertThat(F.IMP2).isEqualTo(F.IMP2);
-        assertThat(F.IMP2).isNotEqualTo(F.IMP1);
-        assertThat(F.IMP2).isNotEqualTo("String");
+        assertThat(this.f.implication(this.A, this.B)).isEqualTo(this.IMP1);
+        assertThat(this.f.implication(this.AND1, this.OR1)).isEqualTo(this.IMP3);
+        assertThat(this.IMP2).isEqualTo(this.IMP2);
+        assertThat(this.IMP2).isNotEqualTo(this.IMP1);
+        assertThat(this.IMP2).isNotEqualTo("String");
     }
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        assertThat(F.g.implication(F.g.variable("a"), F.g.variable("b"))).isEqualTo(F.IMP1);
-        assertThat(F.g.implication(F.AND1, F.OR1)).isEqualTo(F.IMP3);
-        assertThat(F.g.implication(F.g.variable("b"), F.g.variable("a"))).isNotEqualTo(F.IMP1);
-        assertThat(F.g.implication(F.g.literal("a", false), F.g.variable("b"))).isNotEqualTo(F.IMP1);
-        assertThat(F.g.implication(F.g.variable("a"), F.g.literal("b", false))).isNotEqualTo(F.IMP1);
+        assertThat(this.g.implication(this.g.variable("a"), this.g.variable("b"))).isEqualTo(this.IMP1);
+        assertThat(this.g.implication(this.AND1, this.OR1)).isEqualTo(this.IMP3);
+        assertThat(this.g.implication(this.g.variable("b"), this.g.variable("a"))).isNotEqualTo(this.IMP1);
+        assertThat(this.g.implication(this.g.literal("a", false), this.g.variable("b"))).isNotEqualTo(this.IMP1);
+        assertThat(this.g.implication(this.g.variable("a"), this.g.literal("b", false))).isNotEqualTo(this.IMP1);
     }
 
     @Test
     public void testHash() {
-        final Formula imp = F.f.implication(F.NA, F.NB);
-        assertThat(imp.hashCode()).isEqualTo(F.IMP2.hashCode());
-        assertThat(imp.hashCode()).isEqualTo(F.IMP2.hashCode());
-        assertThat(F.f.implication(F.AND1, F.OR1).hashCode()).isEqualTo(F.IMP3.hashCode());
+        final Formula imp = this.f.implication(this.NA, this.NB);
+        assertThat(imp.hashCode()).isEqualTo(this.IMP2.hashCode());
+        assertThat(imp.hashCode()).isEqualTo(this.IMP2.hashCode());
+        assertThat(this.f.implication(this.AND1, this.OR1).hashCode()).isEqualTo(this.IMP3.hashCode());
     }
 
     @Test
     public void testNumberOfAtoms() {
-        assertThat(F.IMP1.numberOfAtoms()).isEqualTo(2);
-        assertThat(F.IMP3.numberOfAtoms()).isEqualTo(4);
-        assertThat(F.IMP3.numberOfAtoms()).isEqualTo(4);
+        assertThat(this.IMP1.numberOfAtoms()).isEqualTo(2);
+        assertThat(this.IMP3.numberOfAtoms()).isEqualTo(4);
+        assertThat(this.IMP3.numberOfAtoms()).isEqualTo(4);
     }
 
     @Test
     public void testNumberOfNodes() {
-        assertThat(F.IMP1.numberOfNodes()).isEqualTo(3);
-        assertThat(F.IMP4.numberOfNodes()).isEqualTo(7);
-        assertThat(F.IMP4.numberOfNodes()).isEqualTo(7);
+        assertThat(this.IMP1.numberOfNodes()).isEqualTo(3);
+        assertThat(this.IMP4.numberOfNodes()).isEqualTo(7);
+        assertThat(this.IMP4.numberOfNodes()).isEqualTo(7);
     }
 
     @Test
     public void testNumberOfInternalNodes() throws ParserException {
-        final Formula imp = new PropositionalParser(F.f).parse("a & (b | c) => (d <=> (b | c))");
-        assertThat(F.IMP4.numberOfInternalNodes()).isEqualTo(7);
+        final Formula imp = new PropositionalParser(this.f).parse("a & (b | c) => (d <=> (b | c))");
+        assertThat(this.IMP4.numberOfInternalNodes()).isEqualTo(7);
         assertThat(imp.numberOfInternalNodes()).isEqualTo(8);
     }
 
     @Test
     public void testNumberOfOperands() {
-        assertThat(F.IMP1.numberOfOperands()).isEqualTo(2);
-        assertThat(F.IMP3.numberOfOperands()).isEqualTo(2);
-        assertThat(F.IMP4.numberOfOperands()).isEqualTo(2);
+        assertThat(this.IMP1.numberOfOperands()).isEqualTo(2);
+        assertThat(this.IMP3.numberOfOperands()).isEqualTo(2);
+        assertThat(this.IMP4.numberOfOperands()).isEqualTo(2);
     }
 
     @Test
     public void testIsConstantFormula() {
-        assertThat(F.IMP1.isConstantFormula()).isFalse();
-        assertThat(F.IMP2.isConstantFormula()).isFalse();
-        assertThat(F.IMP3.isConstantFormula()).isFalse();
-        assertThat(F.IMP4.isConstantFormula()).isFalse();
+        assertThat(this.IMP1.isConstantFormula()).isFalse();
+        assertThat(this.IMP2.isConstantFormula()).isFalse();
+        assertThat(this.IMP3.isConstantFormula()).isFalse();
+        assertThat(this.IMP4.isConstantFormula()).isFalse();
     }
 
     @Test
     public void testAtomicFormula() {
-        assertThat(F.IMP1.isAtomicFormula()).isFalse();
-        assertThat(F.IMP4.isAtomicFormula()).isFalse();
+        assertThat(this.IMP1.isAtomicFormula()).isFalse();
+        assertThat(this.IMP4.isAtomicFormula()).isFalse();
     }
 
     @Test
     public void testContains() {
-        assertThat(F.IMP4.containsVariable(F.f.variable("a"))).isTrue();
-        assertThat(F.IMP4.containsVariable(F.f.variable("c"))).isFalse();
+        assertThat(this.IMP4.containsVariable(this.f.variable("a"))).isTrue();
+        assertThat(this.IMP4.containsVariable(this.f.variable("c"))).isFalse();
     }
 }

@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.BinaryOperator;
-import org.logicng.formulas.F;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -54,86 +54,85 @@ import java.util.Collections;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class PureExpansionTransformationTest {
+public class PureExpansionTransformationTest extends TestWithExampleFormulas {
 
-    private static final FormulaFactory f = F.f;
     private static final PureExpansionTransformation transformation = new PureExpansionTransformation();
 
     @Test
     public void testConstants() {
-        computeAndVerify(F.FALSE, transformation);
-        computeAndVerify(F.TRUE, transformation);
+        computeAndVerify(this.FALSE, transformation);
+        computeAndVerify(this.TRUE, transformation);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.transform(transformation)).isEqualTo(F.A);
-        assertThat(F.NA.transform(transformation)).isEqualTo(F.NA);
+        assertThat(this.A.transform(transformation)).isEqualTo(this.A);
+        assertThat(this.NA.transform(transformation)).isEqualTo(this.NA);
     }
 
     @Test
     public void testNot() throws ParserException {
-        assertThat(F.NOT1.transform(transformation)).isEqualTo(F.NOT1);
-        assertThat(F.NOT2.transform(transformation)).isEqualTo(F.NOT2);
+        assertThat(this.NOT1.transform(transformation)).isEqualTo(this.NOT1);
+        assertThat(this.NOT2.transform(transformation)).isEqualTo(this.NOT2);
 
-        assertThat(f.parse("~a").transform(transformation)).isEqualTo(f.parse("~a"));
-        assertThat(f.parse("~(a => b)").transform(transformation)).isEqualTo(f.parse("~(a => b)"));
-        assertThat(f.parse("~(~(a | b) => ~(x | y))").transform(transformation)).isEqualTo(f.parse("~(~(a | b) => ~(x | y))"));
-        assertThat(f.parse("~(a <=> b)").transform(transformation)).isEqualTo(f.parse("~(a <=> b)"));
-        assertThat(f.parse("~(a & b & ~x & ~y)").transform(transformation)).isEqualTo(f.parse("~(a & b & ~x & ~y)"));
-        assertThat(f.parse("~(a | b | (a + b <= 1) | ~y)").transform(transformation)).isEqualTo(f.parse("~(a | b | (~a | ~b) | ~y)"));
+        assertThat(this.f.parse("~a").transform(transformation)).isEqualTo(this.f.parse("~a"));
+        assertThat(this.f.parse("~(a => b)").transform(transformation)).isEqualTo(this.f.parse("~(a => b)"));
+        assertThat(this.f.parse("~(~(a | b) => ~(x | y))").transform(transformation)).isEqualTo(this.f.parse("~(~(a | b) => ~(x | y))"));
+        assertThat(this.f.parse("~(a <=> b)").transform(transformation)).isEqualTo(this.f.parse("~(a <=> b)"));
+        assertThat(this.f.parse("~(a & b & ~x & ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b & ~x & ~y)"));
+        assertThat(this.f.parse("~(a | b | (a + b <= 1) | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a | b | (~a | ~b) | ~y)"));
     }
 
     @Test
     public void testBinaryOperators() throws ParserException {
-        assertThat(F.IMP1.transform(transformation)).isEqualTo(F.IMP1);
-        assertThat(F.IMP2.transform(transformation)).isEqualTo(F.IMP2);
-        assertThat(F.IMP3.transform(transformation)).isEqualTo(F.IMP3);
-        assertThat(F.IMP4.transform(transformation)).isEqualTo(F.IMP4);
-        assertThat(F.EQ1.transform(transformation)).isEqualTo(F.EQ1);
-        assertThat(F.EQ2.transform(transformation)).isEqualTo(F.EQ2);
-        assertThat(F.EQ3.transform(transformation)).isEqualTo(F.EQ3);
-        assertThat(F.EQ4.transform(transformation)).isEqualTo(F.EQ4);
+        assertThat(this.IMP1.transform(transformation)).isEqualTo(this.IMP1);
+        assertThat(this.IMP2.transform(transformation)).isEqualTo(this.IMP2);
+        assertThat(this.IMP3.transform(transformation)).isEqualTo(this.IMP3);
+        assertThat(this.IMP4.transform(transformation)).isEqualTo(this.IMP4);
+        assertThat(this.EQ1.transform(transformation)).isEqualTo(this.EQ1);
+        assertThat(this.EQ2.transform(transformation)).isEqualTo(this.EQ2);
+        assertThat(this.EQ3.transform(transformation)).isEqualTo(this.EQ3);
+        assertThat(this.EQ4.transform(transformation)).isEqualTo(this.EQ4);
 
-        assertThat(f.parse("~(a => (a + b = 1))").transform(transformation)).isEqualTo(f.parse("~(a => (a | b) & (~a | ~b))"));
+        assertThat(this.f.parse("~(a => (a + b = 1))").transform(transformation)).isEqualTo(this.f.parse("~(a => (a | b) & (~a | ~b))"));
     }
 
     @Test
     public void testNAryOperators() throws ParserException {
-        assertThat(F.AND1.transform(transformation)).isEqualTo(F.AND1);
-        assertThat(F.AND2.transform(transformation)).isEqualTo(F.AND2);
-        assertThat(F.AND3.transform(transformation)).isEqualTo(F.AND3);
-        assertThat(F.OR1.transform(transformation)).isEqualTo(F.OR1);
-        assertThat(F.OR2.transform(transformation)).isEqualTo(F.OR2);
-        assertThat(F.OR3.transform(transformation)).isEqualTo(F.OR3);
+        assertThat(this.AND1.transform(transformation)).isEqualTo(this.AND1);
+        assertThat(this.AND2.transform(transformation)).isEqualTo(this.AND2);
+        assertThat(this.AND3.transform(transformation)).isEqualTo(this.AND3);
+        assertThat(this.OR1.transform(transformation)).isEqualTo(this.OR1);
+        assertThat(this.OR2.transform(transformation)).isEqualTo(this.OR2);
+        assertThat(this.OR3.transform(transformation)).isEqualTo(this.OR3);
 
-        assertThat(f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(f.parse("~(a & b) | c | ~(x | ~y)"));
-        assertThat(f.parse("~(a | b) & (a + b = 1) & ~(x & ~(z + x = 1))").transform(transformation))
-                .isEqualTo(f.parse("~(a | b) & ((a | b) & (~a | ~b)) & ~(x & ~((z | x) & (~z | ~x)))"));
-        assertThat(f.parse("a & b & (~x | ~y)").transform(transformation)).isEqualTo(f.parse("a & b & (~x | ~y)"));
-        assertThat(f.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(transformation)).isEqualTo(f.parse("~(a | b) & c & ~(x & ~y) & (w => z)"));
-        assertThat(f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(f.parse("~(a & b) | c | ~(x | ~y)"));
-        assertThat(f.parse("a | b | (~x & ~y)").transform(transformation)).isEqualTo(f.parse("a | b | (~x & ~y)"));
+        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
+        assertThat(this.f.parse("~(a | b) & (a + b = 1) & ~(x & ~(z + x = 1))").transform(transformation))
+                .isEqualTo(this.f.parse("~(a | b) & ((a | b) & (~a | ~b)) & ~(x & ~((z | x) & (~z | ~x)))"));
+        assertThat(this.f.parse("a & b & (~x | ~y)").transform(transformation)).isEqualTo(this.f.parse("a & b & (~x | ~y)"));
+        assertThat(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(transformation)).isEqualTo(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)"));
+        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
+        assertThat(this.f.parse("a | b | (~x & ~y)").transform(transformation)).isEqualTo(this.f.parse("a | b | (~x & ~y)"));
     }
 
     @Test
     public void testPBCs() throws ParserException {
-        assertThat(f.parse("a + b <= 1").transform(transformation)).isEqualTo(f.parse("~a | ~b"));
-        assertThat(f.parse("a + b < 2").transform(transformation)).isEqualTo(f.parse("~a | ~b"));
-        assertThat(f.parse("a + b = 1").transform(transformation)).isEqualTo(f.parse("(a | b) & (~a | ~b)"));
+        assertThat(this.f.parse("a + b <= 1").transform(transformation)).isEqualTo(this.f.parse("~a | ~b"));
+        assertThat(this.f.parse("a + b < 2").transform(transformation)).isEqualTo(this.f.parse("~a | ~b"));
+        assertThat(this.f.parse("a + b = 1").transform(transformation)).isEqualTo(this.f.parse("(a | b) & (~a | ~b)"));
     }
 
     @Test
     public void testExceptionalBehavior() {
-        assertThatThrownBy(() -> F.PBC1.transform(transformation))
+        assertThatThrownBy(() -> this.PBC1.transform(transformation))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> F.PBC2.transform(transformation))
+        assertThatThrownBy(() -> this.PBC2.transform(transformation))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> F.PBC3.transform(transformation))
+        assertThatThrownBy(() -> this.PBC3.transform(transformation))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> F.PBC4.transform(transformation))
+        assertThatThrownBy(() -> this.PBC4.transform(transformation))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> F.PBC5.transform(transformation))
+        assertThatThrownBy(() -> this.PBC5.transform(transformation))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 

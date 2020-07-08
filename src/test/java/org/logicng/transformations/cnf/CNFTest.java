@@ -28,8 +28,10 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.FactorizationHandler;
@@ -39,14 +41,12 @@ import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit Tests for CNF conversion.
  * @version 2.0.0
  * @since 1.0
  */
-public class CNFTest {
+public class CNFTest extends TestWithExampleFormulas {
 
     private final FactorizationHandler handler = new TestFactorizationHandler();
     private final CNFFactorization cnf = new CNFFactorization(this.handler);
@@ -55,43 +55,43 @@ public class CNFTest {
 
     @Test
     public void testConstants() {
-        assertThat(F.TRUE.transform(this.cnf)).isEqualTo(F.TRUE);
-        assertThat(F.FALSE.transform(this.cnf)).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.transform(this.cnf)).isEqualTo(this.TRUE);
+        assertThat(this.FALSE.transform(this.cnf)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.transform(this.cnf)).isEqualTo(F.A);
-        assertThat(F.NA.transform(this.cnf)).isEqualTo(F.NA);
+        assertThat(this.A.transform(this.cnf)).isEqualTo(this.A);
+        assertThat(this.NA.transform(this.cnf)).isEqualTo(this.NA);
     }
 
     @Test
     public void testBinaryOperators() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.IMP1.transform(this.cnf)).isEqualTo(p.parse("~a | b"));
-        assertThat(F.IMP2.transform(this.cnf)).isEqualTo(p.parse("a | ~b"));
-        assertThat(F.IMP3.transform(this.cnf)).isEqualTo(p.parse("~a | ~b | x | y"));
-        assertThat(F.EQ1.transform(this.cnf)).isEqualTo(p.parse("(a | ~b) & (~a | b)"));
-        assertThat(F.EQ2.transform(this.cnf)).isEqualTo(p.parse("(~a | b) & (a | ~b)"));
-        assertThat(F.IMP1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(F.IMP2.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(F.IMP3.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(F.EQ1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(F.EQ1.transform(this.cnf).holds(this.dnfPredicate)).isFalse();
-        assertThat(F.EQ2.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(F.EQ2.transform(this.cnf).holds(this.dnfPredicate)).isFalse();
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.IMP1.transform(this.cnf)).isEqualTo(p.parse("~a | b"));
+        assertThat(this.IMP2.transform(this.cnf)).isEqualTo(p.parse("a | ~b"));
+        assertThat(this.IMP3.transform(this.cnf)).isEqualTo(p.parse("~a | ~b | x | y"));
+        assertThat(this.EQ1.transform(this.cnf)).isEqualTo(p.parse("(a | ~b) & (~a | b)"));
+        assertThat(this.EQ2.transform(this.cnf)).isEqualTo(p.parse("(~a | b) & (a | ~b)"));
+        assertThat(this.IMP1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.IMP2.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.IMP3.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ1.transform(this.cnf).holds(this.dnfPredicate)).isFalse();
+        assertThat(this.EQ2.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ2.transform(this.cnf).holds(this.dnfPredicate)).isFalse();
     }
 
     @Test
     public void testNAryOperators() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.AND1.transform(this.cnf)).isEqualTo(F.AND1);
-        assertThat(F.OR1.transform(this.cnf)).isEqualTo(F.OR1);
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.AND1.transform(this.cnf)).isEqualTo(this.AND1);
+        assertThat(this.OR1.transform(this.cnf)).isEqualTo(this.OR1);
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf)).isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf)).isEqualTo(p.parse("(~a | ~b | c | ~x) & (~a  | ~b | c | y)"));
         assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf)).isEqualTo(p.parse("(a | b | ~x) & (a | b | ~y)"));
-        assertThat(F.AND1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(F.OR1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.AND1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.OR1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf).holds(this.cnfPredicate)).isTrue();
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf).holds(this.dnfPredicate)).isFalse();
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf).holds(this.cnfPredicate)).isTrue();
@@ -104,7 +104,7 @@ public class CNFTest {
     public void testNot() throws ParserException {
         final TestFactorizationHandler handler2 = new TestFactorizationHandler();
         final CNFFactorization cnf2 = new CNFFactorization(handler2);
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(p.parse("~a2").transform(this.cnf)).isEqualTo(p.parse("~a2"));
         assertThat(p.parse("~~a2").transform(this.cnf)).isEqualTo(p.parse("a2"));
         assertThat(p.parse("~(a2 => b2)").transform(this.cnf)).isEqualTo(p.parse("a2 & ~b2"));
@@ -170,7 +170,7 @@ public class CNFTest {
 
     @Test
     public void testWithHandler() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         Formula formula = p.parse("(~(~(a | b) => ~(x | y))) & ((a | x) => ~(b | y))");
         final FactorizationHandler handler = new FactorizationHandler() {
             private boolean aborted;

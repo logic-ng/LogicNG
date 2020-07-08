@@ -28,37 +28,37 @@
 
 package org.logicng.predicates;
 
-import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 
 /**
  * Unit tests for the dnf predicate.
  * @version 2.0.0
  * @since 1.0
  */
-public class DNFPredicateTest {
+public class DNFPredicateTest extends TestWithExampleFormulas {
 
     private final DNFPredicate dnfPredicate = DNFPredicate.get();
 
     @Test
     public void test() {
-        assertThat(F.f.verum().holds(this.dnfPredicate)).isTrue();
-        assertThat(F.f.falsum().holds(this.dnfPredicate)).isTrue();
-        assertThat(F.A.holds(this.dnfPredicate)).isTrue();
-        assertThat(F.NA.holds(this.dnfPredicate)).isTrue();
-        assertThat(F.AND1.holds(this.dnfPredicate)).isTrue();
-        assertThat(F.OR1.holds(this.dnfPredicate)).isTrue();
-        assertThat(F.OR3.holds(this.dnfPredicate)).isTrue();
-        assertThat(F.f.or(F.AND1, F.AND2, F.A, F.NY).holds(this.dnfPredicate)).isTrue();
-        assertThat(F.PBC1.holds(this.dnfPredicate)).isFalse();
-        assertThat(F.AND3.holds(this.dnfPredicate)).isFalse();
-        assertThat(F.IMP1.holds(this.dnfPredicate)).isFalse();
-        assertThat(F.EQ1.holds(this.dnfPredicate)).isFalse();
-        assertThat(F.NOT1.holds(this.dnfPredicate)).isFalse();
-        assertThat(F.NOT2.holds(this.dnfPredicate)).isFalse();
-        assertThat(F.f.or(F.AND1, F.EQ1).holds(this.dnfPredicate)).isFalse();
+        assertThat(this.f.verum().holds(this.dnfPredicate)).isTrue();
+        assertThat(this.f.falsum().holds(this.dnfPredicate)).isTrue();
+        assertThat(this.A.holds(this.dnfPredicate)).isTrue();
+        assertThat(this.NA.holds(this.dnfPredicate)).isTrue();
+        assertThat(this.AND1.holds(this.dnfPredicate)).isTrue();
+        assertThat(this.OR1.holds(this.dnfPredicate)).isTrue();
+        assertThat(this.OR3.holds(this.dnfPredicate)).isTrue();
+        assertThat(this.f.or(this.AND1, this.AND2, this.A, this.NY).holds(this.dnfPredicate)).isTrue();
+        assertThat(this.PBC1.holds(this.dnfPredicate)).isFalse();
+        assertThat(this.AND3.holds(this.dnfPredicate)).isFalse();
+        assertThat(this.IMP1.holds(this.dnfPredicate)).isFalse();
+        assertThat(this.EQ1.holds(this.dnfPredicate)).isFalse();
+        assertThat(this.NOT1.holds(this.dnfPredicate)).isFalse();
+        assertThat(this.NOT2.holds(this.dnfPredicate)).isFalse();
+        assertThat(this.f.or(this.AND1, this.EQ1).holds(this.dnfPredicate)).isFalse();
     }
 
     @Test

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -29,30 +29,30 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class PrimeImplicantReductionTest {
+public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
 
     @Test
     public void testSimple() throws ParserException {
-        final NaivePrimeReduction naiveTautology = new NaivePrimeReduction(F.f.verum());
-        assertThat(naiveTautology.reduceImplicant(new TreeSet<>(Arrays.asList(F.A, F.B)))).isEmpty();
+        final NaivePrimeReduction naiveTautology = new NaivePrimeReduction(this.f.verum());
+        assertThat(naiveTautology.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B)))).isEmpty();
 
-        final NaivePrimeReduction naive01 = new NaivePrimeReduction(F.f.parse("a&b|c&d"));
-        assertThat(naive01.reduceImplicant(new TreeSet<>(Arrays.asList(F.A, F.B, F.C, F.D.negate()))))
-                .containsExactlyInAnyOrder(F.A, F.B);
-        assertThat(naive01.reduceImplicant(new TreeSet<>(Arrays.asList(F.A.negate(), F.B, F.C, F.D))))
-                .containsExactlyInAnyOrder(F.C, F.D);
+        final NaivePrimeReduction naive01 = new NaivePrimeReduction(this.f.parse("a&b|c&d"));
+        assertThat(naive01.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B, this.C, this.D.negate()))))
+                .containsExactlyInAnyOrder(this.A, this.B);
+        assertThat(naive01.reduceImplicant(new TreeSet<>(Arrays.asList(this.A.negate(), this.B, this.C, this.D))))
+                .containsExactlyInAnyOrder(this.C, this.D);
 
-        final NaivePrimeReduction naive02 = new NaivePrimeReduction(F.f.parse("a|b|~a&~b"));
-        assertThat(naive02.reduceImplicant(new TreeSet<>(Arrays.asList(F.A.negate(), F.B))))
+        final NaivePrimeReduction naive02 = new NaivePrimeReduction(this.f.parse("a|b|~a&~b"));
+        assertThat(naive02.reduceImplicant(new TreeSet<>(Arrays.asList(this.A.negate(), this.B))))
                 .containsExactlyInAnyOrder();
-        assertThat(naive02.reduceImplicant(new TreeSet<>(Arrays.asList(F.A.negate(), F.B))))
+        assertThat(naive02.reduceImplicant(new TreeSet<>(Arrays.asList(this.A.negate(), this.B))))
                 .containsExactlyInAnyOrder();
 
-        final NaivePrimeReduction naive03 = new NaivePrimeReduction(F.f.parse("(a => b) | b | c"));
-        assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(F.A, F.B, F.C.negate()))))
-                .containsExactlyInAnyOrder(F.B);
-        assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(F.A, F.B.negate(), F.C))))
-                .containsExactlyInAnyOrder(F.C);
+        final NaivePrimeReduction naive03 = new NaivePrimeReduction(this.f.parse("(a => b) | b | c"));
+        assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B, this.C.negate()))))
+                .containsExactlyInAnyOrder(this.B);
+        assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B.negate(), this.C))))
+                .containsExactlyInAnyOrder(this.C);
     }
 
     private void testFormula(final Formula formula) {
@@ -84,19 +84,19 @@ public class PrimeImplicantReductionTest {
 
     @Test
     public void testFormula1() throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/formula1.txt", F.f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/formula1.txt", this.f);
         testFormula(formula);
     }
 
     @Test
     public void testSimplifyFormulas() throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/simplify_formulas.txt", F.f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/simplify_formulas.txt", this.f);
         testFormula(formula);
     }
 
     @Test
     public void testLargeFormula() throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", F.f);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         testFormula(formula);
     }
 
@@ -104,7 +104,7 @@ public class PrimeImplicantReductionTest {
     public void testSmallFormulas() throws IOException, ParserException {
         final List<String> lines = Files.readAllLines(Paths.get("src/test/resources/formulas/small_formulas.txt"));
         for (final String line : lines) {
-            testFormula(F.f.parse(line));
+            testFormula(this.f.parse(line));
         }
     }
 

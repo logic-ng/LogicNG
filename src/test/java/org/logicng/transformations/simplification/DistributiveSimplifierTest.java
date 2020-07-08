@@ -31,7 +31,7 @@ package org.logicng.transformations.simplification;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -41,66 +41,66 @@ import org.logicng.io.parsers.PropositionalParser;
  * @version 2.0.0
  * @since 1.3
  */
-public class DistributiveSimplifierTest {
+public class DistributiveSimplifierTest extends TestWithExampleFormulas {
 
     private final DistributiveSimplifier distributiveSimplifier = new DistributiveSimplifier();
 
     @Test
     public void testConstants() {
-        assertThat(F.TRUE.transform(this.distributiveSimplifier)).isEqualTo(F.TRUE);
-        assertThat(F.FALSE.transform(this.distributiveSimplifier)).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.transform(this.distributiveSimplifier)).isEqualTo(this.TRUE);
+        assertThat(this.FALSE.transform(this.distributiveSimplifier)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.transform(this.distributiveSimplifier)).isEqualTo(F.A);
-        assertThat(F.NA.transform(this.distributiveSimplifier)).isEqualTo(F.NA);
+        assertThat(this.A.transform(this.distributiveSimplifier)).isEqualTo(this.A);
+        assertThat(this.NA.transform(this.distributiveSimplifier)).isEqualTo(this.NA);
     }
 
     @Test
     public void testNoPropagation() {
-        assertThat(F.AND1.transform(this.distributiveSimplifier)).isEqualTo(F.AND1);
-        assertThat(F.AND2.transform(this.distributiveSimplifier)).isEqualTo(F.AND2);
-        assertThat(F.OR1.transform(this.distributiveSimplifier)).isEqualTo(F.OR1);
-        assertThat(F.OR2.transform(this.distributiveSimplifier)).isEqualTo(F.OR2);
+        assertThat(this.AND1.transform(this.distributiveSimplifier)).isEqualTo(this.AND1);
+        assertThat(this.AND2.transform(this.distributiveSimplifier)).isEqualTo(this.AND2);
+        assertThat(this.OR1.transform(this.distributiveSimplifier)).isEqualTo(this.OR1);
+        assertThat(this.OR2.transform(this.distributiveSimplifier)).isEqualTo(this.OR2);
     }
 
     @Test
     public void testPropagations() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
-        assertThat(F.f.and(F.AND1, F.A).transform(this.distributiveSimplifier)).isEqualTo(F.AND1);
-        assertThat(F.f.and(F.AND2, F.A).transform(this.distributiveSimplifier)).isEqualTo(F.FALSE);
-        assertThat(F.f.and(F.OR1, F.X).transform(this.distributiveSimplifier)).isEqualTo(F.f.and(F.OR1, F.X));
-        assertThat(F.f.and(F.OR2, F.X).transform(this.distributiveSimplifier)).isEqualTo(F.f.and(F.OR2, F.X));
-        assertThat(F.f.or(F.AND1, F.A).transform(this.distributiveSimplifier)).isEqualTo(F.f.or(F.AND1, F.A));
-        assertThat(F.f.or(F.AND2, F.A).transform(this.distributiveSimplifier)).isEqualTo(F.f.or(F.AND2, F.A));
-        assertThat(F.f.or(F.OR1, F.X).transform(this.distributiveSimplifier)).isEqualTo(F.OR1);
+        final PropositionalParser p = new PropositionalParser(this.f);
+        assertThat(this.f.and(this.AND1, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.AND1);
+        assertThat(this.f.and(this.AND2, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.FALSE);
+        assertThat(this.f.and(this.OR1, this.X).transform(this.distributiveSimplifier)).isEqualTo(this.f.and(this.OR1, this.X));
+        assertThat(this.f.and(this.OR2, this.X).transform(this.distributiveSimplifier)).isEqualTo(this.f.and(this.OR2, this.X));
+        assertThat(this.f.or(this.AND1, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.f.or(this.AND1, this.A));
+        assertThat(this.f.or(this.AND2, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.f.or(this.AND2, this.A));
+        assertThat(this.f.or(this.OR1, this.X).transform(this.distributiveSimplifier)).isEqualTo(this.OR1);
         assertThat(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c").transform(this.distributiveSimplifier)).isEqualTo(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & f & c & (e | (~b | ~f | g) & (f | g | h) & (~f | ~g | h))"));
     }
 
     @Test
     public void testFormulaTypes() {
-        assertThat(F.IMP1.transform(this.distributiveSimplifier)).isEqualTo(F.IMP1);
-        assertThat(F.EQ1.transform(this.distributiveSimplifier)).isEqualTo(F.EQ1);
-        assertThat(F.NOT1.transform(this.distributiveSimplifier)).isEqualTo(F.NOT1);
+        assertThat(this.IMP1.transform(this.distributiveSimplifier)).isEqualTo(this.IMP1);
+        assertThat(this.EQ1.transform(this.distributiveSimplifier)).isEqualTo(this.EQ1);
+        assertThat(this.NOT1.transform(this.distributiveSimplifier)).isEqualTo(this.NOT1);
     }
 
     @Test
     public void testComplexExamples() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         final Formula cAnd = p.parse("(a | b | ~c) & (~a | ~d) & (~c | d | b) & (~c | ~b)");
         final Formula cAndD1 = cAnd.transform(this.distributiveSimplifier);
         assertThat(cAndD1).isEqualTo(p.parse("(~a | ~d) & (~c | (a | b) & (d | b) & ~b)"));
         assertThat(cAndD1.transform(this.distributiveSimplifier)).isEqualTo(p.parse("(~a | ~d) & (~c | ~b & (b | a & d))"));
 
-        assertThat(F.f.not(cAnd).transform(this.distributiveSimplifier)).isEqualTo(F.f.not(cAndD1));
+        assertThat(this.f.not(cAnd).transform(this.distributiveSimplifier)).isEqualTo(this.f.not(cAndD1));
 
         final Formula cOr = p.parse("(x & y & z) | (x & y & ~z) | (x & ~y & z)");
         final Formula cOrD1 = cOr.transform(this.distributiveSimplifier);
         assertThat(cOrD1).isEqualTo(p.parse("x & (y & z | y & ~z | ~y & z)"));
         assertThat(cOrD1.transform(this.distributiveSimplifier)).isEqualTo(p.parse("x & (~y & z | y)"));
 
-        assertThat(F.f.equivalence(cOr, cAnd).transform(this.distributiveSimplifier)).isEqualTo(F.f.equivalence(cOrD1, cAndD1));
-        assertThat(F.f.implication(cOr, cAnd).transform(this.distributiveSimplifier)).isEqualTo(F.f.implication(cOrD1, cAndD1));
+        assertThat(this.f.equivalence(cOr, cAnd).transform(this.distributiveSimplifier)).isEqualTo(this.f.equivalence(cOrD1, cAndD1));
+        assertThat(this.f.implication(cOr, cAnd).transform(this.distributiveSimplifier)).isEqualTo(this.f.implication(cOrD1, cAndD1));
     }
 }

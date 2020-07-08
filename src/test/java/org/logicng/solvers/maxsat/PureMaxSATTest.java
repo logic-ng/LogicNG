@@ -28,10 +28,15 @@
 
 package org.logicng.solvers.maxsat;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
+import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
+
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
-import org.logicng.formulas.F;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
@@ -48,17 +53,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
-import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
-
 /**
  * Unit tests for the MaxSAT solvers.
  * @version 2.0.0
  * @since 1.0
  */
-public class PureMaxSATTest {
+public class PureMaxSATTest extends TestWithExampleFormulas {
 
     private static final String[] files = new String[]{
             "c5315-bug-gate-0.dimacs.seq.filtered.cnf",
@@ -245,12 +245,12 @@ public class PureMaxSATTest {
 
         for (int i = 0; i < 6; i++) {
             final MaxSATSolver s = solvers[i];
-            s.addHardFormula(F.OR3);
-            s.addSoftFormula(F.A, 1);
+            s.addHardFormula(this.OR3);
+            s.addSoftFormula(this.A, 1);
             if (i == 2 || i == 3) {
-                s.addSoftFormula(F.NA, 1);
+                s.addSoftFormula(this.NA, 1);
             } else {
-                s.addSoftFormula(F.NA, 2);
+                s.addSoftFormula(this.NA, 2);
             }
             s.solve();
             assertThat(s.toString()).isEqualTo(expected);

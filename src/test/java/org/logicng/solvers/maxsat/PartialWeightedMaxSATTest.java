@@ -33,7 +33,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEnco
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -56,7 +56,7 @@ import java.util.List;
  * @version 2.0.0
  * @since 1.0
  */
-public class PartialWeightedMaxSATTest {
+public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
 
     private static final String[] files = new String[]{
             "8.wcsp.log.wcnf",
@@ -257,8 +257,8 @@ public class PartialWeightedMaxSATTest {
         assertThat(result).isEqualTo(MaxSAT.MaxSATResult.UNDEF);
 
         solver.reset();
-        solver.addHardFormula(F.IMP1);
-        solver.addSoftFormula(F.AND1, 10);
+        solver.addHardFormula(this.IMP1);
+        solver.addSoftFormula(this.AND1, 10);
         result = solver.solve(handler);
         assertThat(handler.aborted()).isFalse();
         assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);

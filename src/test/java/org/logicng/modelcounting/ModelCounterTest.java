@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
-import org.logicng.formulas.F;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -37,68 +37,66 @@ import java.util.stream.IntStream;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class ModelCounterTest {
-
-    private static final FormulaFactory f = F.f;
+public class ModelCounterTest extends TestWithExampleFormulas {
 
     private SortedSet<Variable> vars(final String... vars) {
-        return Arrays.stream(vars).map(f::variable).collect(Collectors.toCollection(TreeSet::new));
+        return Arrays.stream(vars).map(this.f::variable).collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Test
     public void testWrongArgument() {
         assertThrows(IllegalArgumentException.class, () ->
-                ModelCounter.count(Collections.singletonList(f.parse("a & b")), new TreeSet<>(Collections.singletonList(F.A))));
+                ModelCounter.count(Collections.singletonList(this.f.parse("a & b")), new TreeSet<>(Collections.singletonList(this.A))));
     }
 
     @Test
     public void testConstants() {
-        assertThat(ModelCounter.count(Collections.singleton(f.falsum()), Collections.emptySortedSet()))
+        assertThat(ModelCounter.count(Collections.singleton(this.f.falsum()), Collections.emptySortedSet()))
                 .isEqualTo(BigInteger.valueOf(0));
-        assertThat(ModelCounter.count(Collections.singleton(f.falsum()), vars("a", "b")))
+        assertThat(ModelCounter.count(Collections.singleton(this.f.falsum()), vars("a", "b")))
                 .isEqualTo(BigInteger.valueOf(0));
 
-        assertThat(ModelCounter.count(Collections.singleton(f.verum()), Collections.emptySortedSet()))
+        assertThat(ModelCounter.count(Collections.singleton(this.f.verum()), Collections.emptySortedSet()))
                 .isEqualTo(BigInteger.valueOf(1));
-        assertThat(ModelCounter.count(Collections.singleton(f.verum()), vars("a", "b")))
+        assertThat(ModelCounter.count(Collections.singleton(this.f.verum()), vars("a", "b")))
                 .isEqualTo(BigInteger.valueOf(4));
     }
 
     @Test
     public void testSimple() throws ParserException {
-        final Formula formula01 = f.parse("(~v1 => ~v0) | ~v1 | v0");
+        final Formula formula01 = this.f.parse("(~v1 => ~v0) | ~v1 | v0");
         assertThat(ModelCounter.count(Collections.singletonList(formula01), formula01.variables())).isEqualTo(BigInteger.valueOf(4));
 
-        final List<Formula> formulas02 = Arrays.asList(f.parse("(a & b) | ~b"), f.parse("a"));
+        final List<Formula> formulas02 = Arrays.asList(this.f.parse("(a & b) | ~b"), this.f.parse("a"));
         assertThat(ModelCounter.count(formulas02, FormulaHelper.variables(formulas02))).isEqualTo(BigInteger.valueOf(2));
 
-        final List<Formula> formulas03 = Arrays.asList(f.parse("a & b & c"), f.parse("c & d"));
+        final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & b & c"), this.f.parse("c & d"));
         assertThat(ModelCounter.count(formulas03, FormulaHelper.variables(formulas03))).isEqualTo(BigInteger.valueOf(1));
     }
 
     @Test
     public void testAmoAndExo() throws ParserException {
-        final List<Formula> formulas01 = Arrays.asList(f.parse("a & b"), f.parse("a + b + c + d <= 1"));
+        final List<Formula> formulas01 = Arrays.asList(this.f.parse("a & b"), this.f.parse("a + b + c + d <= 1"));
         assertThat(ModelCounter.count(formulas01, FormulaHelper.variables(formulas01))).isEqualTo(BigInteger.valueOf(0));
 
-        final List<Formula> formulas02 = Arrays.asList(f.parse("a & b & (a + b + c + d <= 1)"), f.parse("a | b"));
+        final List<Formula> formulas02 = Arrays.asList(this.f.parse("a & b & (a + b + c + d <= 1)"), this.f.parse("a | b"));
         assertThat(ModelCounter.count(formulas02, FormulaHelper.variables(formulas02))).isEqualTo(BigInteger.valueOf(0));
 
-        final List<Formula> formulas03 = Arrays.asList(f.parse("a & (a + b + c + d <= 1)"), f.parse("a | b"));
+        final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & (a + b + c + d <= 1)"), this.f.parse("a | b"));
         assertThat(ModelCounter.count(formulas03, FormulaHelper.variables(formulas03))).isEqualTo(BigInteger.valueOf(1));
 
-        final List<Formula> formulas04 = Arrays.asList(f.parse("a & (a + b + c + d = 1)"), f.parse("a | b"));
+        final List<Formula> formulas04 = Arrays.asList(this.f.parse("a & (a + b + c + d = 1)"), this.f.parse("a | b"));
         assertThat(ModelCounter.count(formulas04, FormulaHelper.variables(formulas04))).isEqualTo(BigInteger.valueOf(1));
     }
 
     @Test
     public void testNonAmoAndExo() throws ParserException {
-        final List<Formula> formulas01 = Arrays.asList(f.parse("a & b"), f.parse("a + b + c + d = 2"));
+        final List<Formula> formulas01 = Arrays.asList(this.f.parse("a & b"), this.f.parse("a + b + c + d = 2"));
         assertThatThrownBy(() -> ModelCounter.count(formulas01, FormulaHelper.variables(formulas01)))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessage("Pure encoding for a PBC of type other than AMO or EXO is currently not supported.");
 
-        final List<Formula> formulas02 = Arrays.asList(f.parse("a & b"), f.parse("c | a & (b + c + d <= 4)"));
+        final List<Formula> formulas02 = Arrays.asList(this.f.parse("a & b"), this.f.parse("c | a & (b + c + d <= 4)"));
         assertThatThrownBy(() -> ModelCounter.count(formulas02, FormulaHelper.variables(formulas02)))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessage("Pure encoding for a PBC of type other than AMO or EXO is currently not supported.");
@@ -106,7 +104,7 @@ public class ModelCounterTest {
 
     @Test
     public void testQueens() {
-        final NQueensGenerator generator = new NQueensGenerator(f);
+        final NQueensGenerator generator = new NQueensGenerator(this.f);
         testQueens(generator, 4, 2);
         testQueens(generator, 5, 10);
         testQueens(generator, 6, 4);

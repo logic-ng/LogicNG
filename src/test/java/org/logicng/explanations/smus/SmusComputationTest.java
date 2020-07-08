@@ -3,9 +3,8 @@ package org.logicng.explanations.smus;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 
 import java.util.Arrays;
@@ -17,9 +16,7 @@ import java.util.List;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class SmusComputationTest {
-
-    private final FormulaFactory f = F.f;
+public class SmusComputationTest extends TestWithExampleFormulas {
 
     @Test
     public void testFromPaper() throws ParserException {

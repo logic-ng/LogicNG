@@ -28,7 +28,11 @@
 
 package org.logicng.formulas;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
@@ -40,15 +44,12 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 /**
  * Unit Tests for the class {@link PBConstraint}.
  * @version 2.0.0
  * @since 1.0
  */
-public class PBConstraintTest {
+public class PBConstraintTest extends TestWithExampleFormulas {
 
     private static final FormulaFactory f = new FormulaFactory();
     private static final FormulaFactory f2 = new FormulaFactory();
@@ -366,11 +367,11 @@ public class PBConstraintTest {
 
     @Test
     public void testContains() {
-        assertThat(this.pb2.containsVariable(F.f.variable("a"))).isTrue();
-        assertThat(this.pb2.containsVariable(F.f.variable("b"))).isTrue();
-        assertThat(this.pb2.containsVariable(F.f.variable("c"))).isTrue();
-        assertThat(this.pb2.containsVariable(F.f.variable("d"))).isFalse();
-        assertThat(this.pb2.containsVariable(F.f.variable("x"))).isFalse();
+        assertThat(this.pb2.containsVariable(f.variable("a"))).isTrue();
+        assertThat(this.pb2.containsVariable(f.variable("b"))).isTrue();
+        assertThat(this.pb2.containsVariable(f.variable("c"))).isTrue();
+        assertThat(this.pb2.containsVariable(f.variable("d"))).isFalse();
+        assertThat(this.pb2.containsVariable(f.variable("x"))).isFalse();
     }
 
     @Test

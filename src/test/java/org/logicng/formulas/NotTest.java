@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
@@ -43,126 +44,126 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 1.0
  */
-public class NotTest {
+public class NotTest extends TestWithExampleFormulas {
 
     @Test
     public void testType() {
-        assertThat(F.NOT1.type()).isEqualTo(FType.NOT);
+        assertThat(this.NOT1.type()).isEqualTo(FType.NOT);
     }
 
     @Test
     public void testCreator() {
-        assertThat(F.f.not(F.FALSE)).isEqualTo(F.TRUE);
-        assertThat(F.f.not(F.TRUE)).isEqualTo(F.FALSE);
-        assertThat(F.f.not(F.NA)).isEqualTo(F.A);
-        assertThat(F.f.not(F.A)).isEqualTo(F.NA);
-        assertThat(F.f.not(F.f.not(F.IMP3))).isEqualTo(F.IMP3);
-        assertThat(F.f.not(F.AND1)).isEqualTo(F.NOT1);
+        assertThat(this.f.not(this.FALSE)).isEqualTo(this.TRUE);
+        assertThat(this.f.not(this.TRUE)).isEqualTo(this.FALSE);
+        assertThat(this.f.not(this.NA)).isEqualTo(this.A);
+        assertThat(this.f.not(this.A)).isEqualTo(this.NA);
+        assertThat(this.f.not(this.f.not(this.IMP3))).isEqualTo(this.IMP3);
+        assertThat(this.f.not(this.AND1)).isEqualTo(this.NOT1);
     }
 
     @Test
     public void testGetters() {
-        assertThat(((Not) F.NOT1).operand()).isEqualTo(F.AND1);
-        assertThat(((Not) F.NOT2).operand()).isEqualTo(F.OR1);
+        assertThat(((Not) this.NOT1).operand()).isEqualTo(this.AND1);
+        assertThat(((Not) this.NOT2).operand()).isEqualTo(this.OR1);
     }
 
     @Test
     public void testVariables() {
-        assertThat(F.NOT1.variables().size()).isEqualTo(2);
-        SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
-        assertThat(F.NOT1.variables()).isEqualTo(lits);
+        assertThat(this.NOT1.variables().size()).isEqualTo(2);
+        SortedSet<Variable> lits = new TreeSet<>(Arrays.asList(this.A, this.B));
+        assertThat(this.NOT1.variables()).isEqualTo(lits);
 
-        assertThat(F.NOT2.variables().size()).isEqualTo(2);
-        lits = new TreeSet<>(Arrays.asList(F.X, F.Y));
-        assertThat(F.NOT2.variables()).isEqualTo(lits);
+        assertThat(this.NOT2.variables().size()).isEqualTo(2);
+        lits = new TreeSet<>(Arrays.asList(this.X, this.Y));
+        assertThat(this.NOT2.variables()).isEqualTo(lits);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.NOT1.literals().size()).isEqualTo(2);
-        SortedSet<? extends Literal> lits = new TreeSet<>(Arrays.asList(F.A, F.B));
-        assertThat(F.NOT1.literals()).isEqualTo(lits);
+        assertThat(this.NOT1.literals().size()).isEqualTo(2);
+        SortedSet<? extends Literal> lits = new TreeSet<>(Arrays.asList(this.A, this.B));
+        assertThat(this.NOT1.literals()).isEqualTo(lits);
 
-        final Formula not = F.f.not(F.f.and(F.A, F.NB, F.f.implication(F.B, F.NA)));
+        final Formula not = this.f.not(this.f.and(this.A, this.NB, this.f.implication(this.B, this.NA)));
         assertThat(not.literals().size()).isEqualTo(4);
-        lits = new TreeSet<>(Arrays.asList(F.A, F.NA, F.B, F.NB));
+        lits = new TreeSet<>(Arrays.asList(this.A, this.NA, this.B, this.NB));
         assertThat(not.literals()).isEqualTo(lits);
     }
 
     @Test
     public void testToString() {
-        assertThat(F.NOT1.toString()).isEqualTo("~(a & b)");
-        assertThat(F.NOT2.toString()).isEqualTo("~(x | y)");
+        assertThat(this.NOT1.toString()).isEqualTo("~(a & b)");
+        assertThat(this.NOT2.toString()).isEqualTo("~(x | y)");
     }
 
     @Test
     public void testEquals() {
-        assertThat(F.f.not(F.AND1)).isEqualTo(F.NOT1);
-        assertThat(F.f.not(F.OR1)).isEqualTo(F.NOT2);
-        assertThat(F.NOT1).isEqualTo(F.NOT1);
-        assertThat(F.NOT2).isNotEqualTo(F.NOT1);
-        assertThat(F.NOT2).isNotEqualTo("String");
+        assertThat(this.f.not(this.AND1)).isEqualTo(this.NOT1);
+        assertThat(this.f.not(this.OR1)).isEqualTo(this.NOT2);
+        assertThat(this.NOT1).isEqualTo(this.NOT1);
+        assertThat(this.NOT2).isNotEqualTo(this.NOT1);
+        assertThat(this.NOT2).isNotEqualTo("String");
     }
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        assertThat(F.g.not(F.AND1)).isEqualTo(F.NOT1);
-        assertThat(F.g.not(F.g.or(F.g.variable("x"), F.g.variable("y")))).isEqualTo(F.NOT2);
-        assertThat(F.g.not(F.g.or(F.g.variable("a"), F.g.variable("b")))).isNotEqualTo(F.NOT2);
+        assertThat(this.g.not(this.AND1)).isEqualTo(this.NOT1);
+        assertThat(this.g.not(this.g.or(this.g.variable("x"), this.g.variable("y")))).isEqualTo(this.NOT2);
+        assertThat(this.g.not(this.g.or(this.g.variable("a"), this.g.variable("b")))).isNotEqualTo(this.NOT2);
     }
 
     @Test
     public void testHash() {
-        final Formula not = F.f.not(F.AND1);
-        assertThat(not.hashCode()).isEqualTo(F.NOT1.hashCode());
-        assertThat(not.hashCode()).isEqualTo(F.NOT1.hashCode());
-        assertThat(F.f.not(F.OR1).hashCode()).isEqualTo(F.NOT2.hashCode());
+        final Formula not = this.f.not(this.AND1);
+        assertThat(not.hashCode()).isEqualTo(this.NOT1.hashCode());
+        assertThat(not.hashCode()).isEqualTo(this.NOT1.hashCode());
+        assertThat(this.f.not(this.OR1).hashCode()).isEqualTo(this.NOT2.hashCode());
     }
 
     @Test
     public void testNumberOfAtoms() {
-        assertThat(F.NOT1.numberOfAtoms()).isEqualTo(2);
-        assertThat(F.NOT1.numberOfAtoms()).isEqualTo(2);
-        assertThat(F.NOT2.numberOfAtoms()).isEqualTo(2);
-        assertThat(F.OR1.numberOfAtoms()).isEqualTo(2);
-        assertThat(F.OR1.numberOfAtoms()).isEqualTo(2);
+        assertThat(this.NOT1.numberOfAtoms()).isEqualTo(2);
+        assertThat(this.NOT1.numberOfAtoms()).isEqualTo(2);
+        assertThat(this.NOT2.numberOfAtoms()).isEqualTo(2);
+        assertThat(this.OR1.numberOfAtoms()).isEqualTo(2);
+        assertThat(this.OR1.numberOfAtoms()).isEqualTo(2);
     }
 
     @Test
     public void testNumberOfNodes() {
-        assertThat(F.NOT1.numberOfNodes()).isEqualTo(4);
-        assertThat(F.NOT2.numberOfNodes()).isEqualTo(4);
-        assertThat(F.NOT2.numberOfNodes()).isEqualTo(4);
+        assertThat(this.NOT1.numberOfNodes()).isEqualTo(4);
+        assertThat(this.NOT2.numberOfNodes()).isEqualTo(4);
+        assertThat(this.NOT2.numberOfNodes()).isEqualTo(4);
     }
 
     @Test
     public void testNumberOfInternalNodes() throws ParserException {
-        final Formula eq = new PropositionalParser(F.f).parse("a & (b | c) <=> ~(d => (b | c))");
-        assertThat(F.NOT1.numberOfInternalNodes()).isEqualTo(4);
+        final Formula eq = new PropositionalParser(this.f).parse("a & (b | c) <=> ~(d => (b | c))");
+        assertThat(this.NOT1.numberOfInternalNodes()).isEqualTo(4);
         assertThat(eq.numberOfInternalNodes()).isEqualTo(9);
     }
 
     @Test
     public void testNumberOfOperands() {
-        assertThat(F.NOT1.numberOfOperands()).isEqualTo(1);
-        assertThat(F.f.not(F.EQ1).numberOfOperands()).isEqualTo(1);
+        assertThat(this.NOT1.numberOfOperands()).isEqualTo(1);
+        assertThat(this.f.not(this.EQ1).numberOfOperands()).isEqualTo(1);
     }
 
     @Test
     public void testIsConstantFormula() {
-        assertThat(F.NOT1.isConstantFormula()).isFalse();
-        assertThat(F.NOT2.isConstantFormula()).isFalse();
+        assertThat(this.NOT1.isConstantFormula()).isFalse();
+        assertThat(this.NOT2.isConstantFormula()).isFalse();
     }
 
     @Test
     public void testAtomicFormula() {
-        assertThat(F.NOT1.isAtomicFormula()).isFalse();
-        assertThat(F.NOT2.isAtomicFormula()).isFalse();
+        assertThat(this.NOT1.isAtomicFormula()).isFalse();
+        assertThat(this.NOT2.isAtomicFormula()).isFalse();
     }
 
     @Test
     public void testContains() {
-        assertThat(F.NOT1.containsVariable(F.f.variable("a"))).isTrue();
-        assertThat(F.NOT1.containsVariable(F.f.variable("x"))).isFalse();
+        assertThat(this.NOT1.containsVariable(this.f.variable("a"))).isTrue();
+        assertThat(this.NOT1.containsVariable(this.f.variable("x"))).isFalse();
     }
 }

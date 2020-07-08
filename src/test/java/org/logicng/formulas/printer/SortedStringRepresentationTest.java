@@ -28,9 +28,11 @@
 
 package org.logicng.formulas.printer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.CType;
-import org.logicng.formulas.F;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
@@ -38,72 +40,70 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Unit tests for {@link SortedStringRepresentation}
  * @version 2.0.0
  * @since 1.5
  */
-public class SortedStringRepresentationTest {
+public class SortedStringRepresentationTest extends TestWithExampleFormulas {
 
-    private final List<Variable> varOrder = new ArrayList<>(Arrays.asList(F.Y, F.X, F.B, F.A, F.C));
+    private final List<Variable> varOrder = new ArrayList<>(Arrays.asList(this.Y, this.X, this.B, this.A, this.C));
 
     private final FormulaStringRepresentation sr = new SortedStringRepresentation(this.varOrder);
 
     @Test
     public void testFormulaComparator() {
         final SortedStringRepresentation.FormulaComparator comparator = new SortedStringRepresentation.FormulaComparator(this.varOrder);
-        assertThat(comparator.compare(F.FALSE, F.TRUE)).isZero();
-        assertThat(comparator.compare(F.A, F.A)).isZero();
-        assertThat(comparator.compare(F.A, F.B)).isPositive();
-        assertThat(comparator.compare(F.A, F.C)).isNegative();
-        assertThat(comparator.compare(F.A, F.AND1)).isPositive();
-        assertThat(comparator.compare(F.B, F.AND1)).isNegative();
-        assertThat(comparator.compare(F.EQ4, F.IMP4)).isPositive();
-        assertThat(comparator.compare(F.AND3, F.IMP4)).isNegative();
-        assertThat(comparator.compare(F.AND3, F.IMP4)).isNegative();
-        assertThat(comparator.compare(F.NOT1, F.NOT2)).isPositive();
-        assertThat(comparator.compare(F.OR1, F.PBC2)).isNegative();
-        assertThat(comparator.compare(F.PBC1, F.PBC2)).isZero();
+        assertThat(comparator.compare(this.FALSE, this.TRUE)).isZero();
+        assertThat(comparator.compare(this.A, this.A)).isZero();
+        assertThat(comparator.compare(this.A, this.B)).isPositive();
+        assertThat(comparator.compare(this.A, this.C)).isNegative();
+        assertThat(comparator.compare(this.A, this.AND1)).isPositive();
+        assertThat(comparator.compare(this.B, this.AND1)).isNegative();
+        assertThat(comparator.compare(this.EQ4, this.IMP4)).isPositive();
+        assertThat(comparator.compare(this.AND3, this.IMP4)).isNegative();
+        assertThat(comparator.compare(this.AND3, this.IMP4)).isNegative();
+        assertThat(comparator.compare(this.NOT1, this.NOT2)).isPositive();
+        assertThat(comparator.compare(this.OR1, this.PBC2)).isNegative();
+        assertThat(comparator.compare(this.PBC1, this.PBC2)).isZero();
     }
 
     @Test
     public void testSortedPrinter() {
-        assertThat(F.f.string(F.FALSE, this.sr)).isEqualTo("$false");
-        assertThat(F.f.string(F.TRUE, this.sr)).isEqualTo("$true");
-        assertThat(F.f.string(F.X, this.sr)).isEqualTo("x");
-        assertThat(F.f.string(F.NA, this.sr)).isEqualTo("~a");
-        assertThat(F.f.string(F.IMP2, this.sr)).isEqualTo("~a => ~b");
-        assertThat(F.f.string(F.f.not(F.f.equivalence(F.A, F.B)), this.sr)).isEqualTo("~(b <=> a)");
-        assertThat(F.f.string(F.IMP3, this.sr)).isEqualTo("b & a => y | x");
-        assertThat(F.f.string(F.EQ3, this.sr)).isEqualTo("y | x <=> b & a");
-        assertThat(F.f.string(F.EQ4, this.sr)).isEqualTo("a => b <=> ~a => ~b");
-        assertThat(F.f.string(F.AND3, this.sr)).isEqualTo("(y | x) & (~y | ~x)");
-        assertThat(F.f.string(F.f.and(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("x & b & a & c");
-        assertThat(F.f.string(F.f.or(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("x | b | a | c");
-        assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("3*x + -4*b + 2*a > 2");
-        assertThat(F.f.string(F.f.and(F.NB, F.PBC1), this.sr)).isEqualTo("(3*x + -4*b + 2*a = 2) & ~b");
-        assertThat(F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<Literal>(Arrays.asList(F.A, F.B)), new ArrayList<>(Arrays.asList(1, 1))), this.sr)).isEqualTo("b + a = 42");
-        assertThat(F.f.string(F.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$true");
-        assertThat(F.f.string(F.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$false");
-        assertThat(F.f.string(F.f.implication(F.A, F.f.exo()), this.sr)).isEqualTo("~a");
-        assertThat(F.f.string(F.f.equivalence(F.A, F.f.exo()), this.sr)).isEqualTo("~a");
-        assertThat(F.f.string(F.f.and(F.A, F.f.exo()), this.sr)).isEqualTo("$false");
-        assertThat(F.f.string(F.f.or(F.A, F.f.exo()), this.sr)).isEqualTo("a");
-        assertThat(F.f.string(F.f.implication(F.A, F.f.amo()), this.sr)).isEqualTo("$true");
-        assertThat(F.f.string(F.f.equivalence(F.A, F.f.amo()), this.sr)).isEqualTo("a");
-        assertThat(F.f.string(F.f.and(F.A, F.f.amo()), this.sr)).isEqualTo("a");
-        assertThat(F.f.string(F.f.or(F.A, F.f.amo()), this.sr)).isEqualTo("$true");
-        assertThat(F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(this.FALSE, this.sr)).isEqualTo("$false");
+        assertThat(this.f.string(this.TRUE, this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(this.X, this.sr)).isEqualTo("x");
+        assertThat(this.f.string(this.NA, this.sr)).isEqualTo("~a");
+        assertThat(this.f.string(this.IMP2, this.sr)).isEqualTo("~a => ~b");
+        assertThat(this.f.string(this.f.not(this.f.equivalence(this.A, this.B)), this.sr)).isEqualTo("~(b <=> a)");
+        assertThat(this.f.string(this.IMP3, this.sr)).isEqualTo("b & a => y | x");
+        assertThat(this.f.string(this.EQ3, this.sr)).isEqualTo("y | x <=> b & a");
+        assertThat(this.f.string(this.EQ4, this.sr)).isEqualTo("a => b <=> ~a => ~b");
+        assertThat(this.f.string(this.AND3, this.sr)).isEqualTo("(y | x) & (~y | ~x)");
+        assertThat(this.f.string(this.f.and(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("x & b & a & c");
+        assertThat(this.f.string(this.f.or(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("x | b | a | c");
+        assertThat(this.f.string(this.PBC2, this.sr)).isEqualTo("3*x + -4*b + 2*a > 2");
+        assertThat(this.f.string(this.f.and(this.NB, this.PBC1), this.sr)).isEqualTo("(3*x + -4*b + 2*a = 2) & ~b");
+        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<Literal>(Arrays.asList(this.A, this.B)), new ArrayList<>(Arrays.asList(1, 1))), this.sr)).isEqualTo("b + a = 42");
+        assertThat(this.f.string(this.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$false");
+        assertThat(this.f.string(this.f.implication(this.A, this.f.exo()), this.sr)).isEqualTo("~a");
+        assertThat(this.f.string(this.f.equivalence(this.A, this.f.exo()), this.sr)).isEqualTo("~a");
+        assertThat(this.f.string(this.f.and(this.A, this.f.exo()), this.sr)).isEqualTo("$false");
+        assertThat(this.f.string(this.f.or(this.A, this.f.exo()), this.sr)).isEqualTo("a");
+        assertThat(this.f.string(this.f.implication(this.A, this.f.amo()), this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(this.f.equivalence(this.A, this.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(this.f.string(this.f.and(this.A, this.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(this.f.string(this.f.or(this.A, this.f.amo()), this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr)).isEqualTo("$true");
 
         // some variables not in varOrder
-        this.varOrder.remove(F.X);
-        assertThat(F.f.string(F.f.or(F.f.variable("x"), F.f.variable("a")), this.sr)).isEqualTo("a | x");
-        assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("-4*b + 2*a + 3*x > 2");
+        this.varOrder.remove(this.X);
+        assertThat(this.f.string(this.f.or(this.f.variable("x"), this.f.variable("a")), this.sr)).isEqualTo("a | x");
+        assertThat(this.f.string(this.PBC2, this.sr)).isEqualTo("-4*b + 2*a + 3*x > 2");
 
         // empty varOrder
-        assertThat(F.f.string(F.EQ3, new SortedStringRepresentation(new ArrayList<>()))).isEqualTo("a & b <=> x | y");
+        assertThat(this.f.string(this.EQ3, new SortedStringRepresentation(new ArrayList<>()))).isEqualTo("a & b <=> x | y");
     }
 
     @Test

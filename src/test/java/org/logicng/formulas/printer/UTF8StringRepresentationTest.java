@@ -28,57 +28,57 @@
 
 package org.logicng.formulas.printer;
 
-import org.junit.jupiter.api.Test;
-import org.logicng.formulas.F;
-import org.logicng.formulas.Variable;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
+import org.logicng.formulas.Variable;
 
 /**
  * Unit tests for {@link UTF8StringRepresentation}
  * @version 2.0.0
  * @since 1.0
  */
-public class UTF8StringRepresentationTest {
+public class UTF8StringRepresentationTest extends TestWithExampleFormulas {
     private final FormulaStringRepresentation sr = new UTF8StringRepresentation();
 
     @Test
     public void testUTF8Printer() {
-        assertThat(F.f.string(F.FALSE, this.sr)).isEqualTo("⊥");
-        assertThat(F.f.string(F.TRUE, this.sr)).isEqualTo("⊤");
-        assertThat(F.f.string(F.X, this.sr)).isEqualTo("x");
-        assertThat(F.f.string(F.NA, this.sr)).isEqualTo("¬a");
-        assertThat(F.f.string(F.f.variable("x1"), this.sr)).isEqualTo("x₁");
-        assertThat(F.f.string(F.f.variable("x190"), this.sr)).isEqualTo("x₁₉₀");
-        assertThat(F.f.string(F.f.variable("x234"), this.sr)).isEqualTo("x₂₃₄");
-        assertThat(F.f.string(F.f.variable("x567"), this.sr)).isEqualTo("x₅₆₇");
-        assertThat(F.f.string(F.f.variable("abc8"), this.sr)).isEqualTo("abc₈");
-        assertThat(F.f.string(F.IMP2, this.sr)).isEqualTo("¬a ⇒ ¬b");
-        assertThat(F.f.string(F.IMP3, this.sr)).isEqualTo("a ∧ b ⇒ x ∨ y");
-        assertThat(F.f.string(F.EQ4, this.sr)).isEqualTo("a ⇒ b ⇔ ¬a ⇒ ¬b");
-        assertThat(F.f.string(F.AND3, this.sr)).isEqualTo("(x ∨ y) ∧ (¬x ∨ ¬y)");
-        assertThat(F.f.string(F.f.and(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("a ∧ b ∧ c ∧ x");
-        assertThat(F.f.string(F.f.or(F.A, F.B, F.C, F.X), this.sr)).isEqualTo("a ∨ b ∨ c ∨ x");
-        assertThat(F.f.string(F.PBC1, this.sr)).isEqualTo("2a + -4b + 3x = 2");
-        assertThat(F.f.string(F.PBC2, this.sr)).isEqualTo("2a + -4b + 3x > 2");
-        assertThat(F.f.string(F.PBC3, this.sr)).isEqualTo("2a + -4b + 3x ≥ 2");
-        assertThat(F.f.string(F.PBC4, this.sr)).isEqualTo("2a + -4b + 3x < 2");
-        assertThat(F.f.string(F.PBC5, this.sr)).isEqualTo("2a + -4b + 3x ≤ 2");
-        assertThat(F.f.string(F.f.implication(F.A, F.f.exo()), this.sr)).isEqualTo("¬a");
-        assertThat(F.f.string(F.f.equivalence(F.A, F.f.exo()), this.sr)).isEqualTo("¬a");
-        assertThat(F.f.string(F.f.and(F.A, F.f.exo()), this.sr)).isEqualTo("⊥");
-        assertThat(F.f.string(F.f.or(F.A, F.f.exo()), this.sr)).isEqualTo("a");
-        assertThat(F.f.string(F.f.implication(F.A, F.f.amo()), this.sr)).isEqualTo("⊤");
-        assertThat(F.f.string(F.f.equivalence(F.A, F.f.amo()), this.sr)).isEqualTo("a");
-        assertThat(F.f.string(F.f.and(F.A, F.f.amo()), this.sr)).isEqualTo("a");
-        assertThat(F.f.string(F.f.or(F.A, F.f.amo()), this.sr)).isEqualTo("⊤");
-        assertThat(F.f.string(F.f.or(F.A, F.f.amo(), F.f.exo(), F.f.equivalence(F.f.amo(), F.B)), this.sr)).isEqualTo("⊤");
+        assertThat(this.f.string(this.FALSE, this.sr)).isEqualTo("⊥");
+        assertThat(this.f.string(this.TRUE, this.sr)).isEqualTo("⊤");
+        assertThat(this.f.string(this.X, this.sr)).isEqualTo("x");
+        assertThat(this.f.string(this.NA, this.sr)).isEqualTo("¬a");
+        assertThat(this.f.string(this.f.variable("x1"), this.sr)).isEqualTo("x₁");
+        assertThat(this.f.string(this.f.variable("x190"), this.sr)).isEqualTo("x₁₉₀");
+        assertThat(this.f.string(this.f.variable("x234"), this.sr)).isEqualTo("x₂₃₄");
+        assertThat(this.f.string(this.f.variable("x567"), this.sr)).isEqualTo("x₅₆₇");
+        assertThat(this.f.string(this.f.variable("abc8"), this.sr)).isEqualTo("abc₈");
+        assertThat(this.f.string(this.IMP2, this.sr)).isEqualTo("¬a ⇒ ¬b");
+        assertThat(this.f.string(this.IMP3, this.sr)).isEqualTo("a ∧ b ⇒ x ∨ y");
+        assertThat(this.f.string(this.EQ4, this.sr)).isEqualTo("a ⇒ b ⇔ ¬a ⇒ ¬b");
+        assertThat(this.f.string(this.AND3, this.sr)).isEqualTo("(x ∨ y) ∧ (¬x ∨ ¬y)");
+        assertThat(this.f.string(this.f.and(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("a ∧ b ∧ c ∧ x");
+        assertThat(this.f.string(this.f.or(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("a ∨ b ∨ c ∨ x");
+        assertThat(this.f.string(this.PBC1, this.sr)).isEqualTo("2a + -4b + 3x = 2");
+        assertThat(this.f.string(this.PBC2, this.sr)).isEqualTo("2a + -4b + 3x > 2");
+        assertThat(this.f.string(this.PBC3, this.sr)).isEqualTo("2a + -4b + 3x ≥ 2");
+        assertThat(this.f.string(this.PBC4, this.sr)).isEqualTo("2a + -4b + 3x < 2");
+        assertThat(this.f.string(this.PBC5, this.sr)).isEqualTo("2a + -4b + 3x ≤ 2");
+        assertThat(this.f.string(this.f.implication(this.A, this.f.exo()), this.sr)).isEqualTo("¬a");
+        assertThat(this.f.string(this.f.equivalence(this.A, this.f.exo()), this.sr)).isEqualTo("¬a");
+        assertThat(this.f.string(this.f.and(this.A, this.f.exo()), this.sr)).isEqualTo("⊥");
+        assertThat(this.f.string(this.f.or(this.A, this.f.exo()), this.sr)).isEqualTo("a");
+        assertThat(this.f.string(this.f.implication(this.A, this.f.amo()), this.sr)).isEqualTo("⊤");
+        assertThat(this.f.string(this.f.equivalence(this.A, this.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(this.f.string(this.f.and(this.A, this.f.amo()), this.sr)).isEqualTo("a");
+        assertThat(this.f.string(this.f.or(this.A, this.f.amo()), this.sr)).isEqualTo("⊤");
+        assertThat(this.f.string(this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr)).isEqualTo("⊤");
     }
 
     @Test
     public void testSpecialCases() {
-        final Variable var = F.f.variable("\ntest9t");
-        assertThat(F.f.string(var, this.sr)).isEqualTo("\ntest9t");
+        final Variable var = this.f.variable("\ntest9t");
+        assertThat(this.f.string(var, this.sr)).isEqualTo("\ntest9t");
         assertThat(this.sr.toString()).isEqualTo("UTF8StringRepresentation");
     }
 }

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
@@ -46,17 +46,16 @@ import org.logicng.util.FormulaRandomizerConfig;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class NegationMinimizerTest {
+public class NegationMinimizerTest extends TestWithExampleFormulas {
 
-    private final FormulaFactory f = F.f;
     private final NegationSimplifier minimizer = new NegationSimplifier();
 
     @Test
     public void testSimple() throws ParserException {
         assertThat(this.f.falsum().transform(this.minimizer)).isEqualTo(this.f.falsum());
         assertThat(this.f.verum().transform(this.minimizer)).isEqualTo(this.f.verum());
-        assertThat(F.A.transform(this.minimizer)).isEqualTo(F.A);
-        assertThat(F.NA.transform(this.minimizer)).isEqualTo(F.NA);
+        assertThat(this.A.transform(this.minimizer)).isEqualTo(this.A);
+        assertThat(this.NA.transform(this.minimizer)).isEqualTo(this.NA);
 
         assertThat(this.f.parse("A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("A&~B&~C&~D"));
         assertThat(this.f.parse("~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("~(A|B|C|D)"));

@@ -31,8 +31,8 @@ package org.logicng.transformations.cnf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
-import org.logicng.formulas.F;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
@@ -52,47 +52,47 @@ import java.util.SortedSet;
  * @version 2.0.0
  * @since 1.4.0
  */
-public class BDDCNFTest {
+public class BDDCNFTest extends TestWithExampleFormulas {
 
     private final BDDCNFTransformation bddcnf = new BDDCNFTransformation();
     private final CNFPredicate cnfPredicate = CNFPredicate.get();
 
     @Test
     public void testConstants() {
-        assertThat(F.TRUE.transform(this.bddcnf)).isEqualTo(F.TRUE);
-        assertThat(F.FALSE.transform(this.bddcnf)).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.transform(this.bddcnf)).isEqualTo(this.TRUE);
+        assertThat(this.FALSE.transform(this.bddcnf)).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.A.transform(this.bddcnf)).isEqualTo(F.A);
-        assertThat(F.NA.transform(this.bddcnf)).isEqualTo(F.NA);
+        assertThat(this.A.transform(this.bddcnf)).isEqualTo(this.A);
+        assertThat(this.NA.transform(this.bddcnf)).isEqualTo(this.NA);
     }
 
     @Test
     public void testBinaryOperators() {
-        assertThat(F.IMP1.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.IMP1, F.IMP1.transform(this.bddcnf), F.IMP1.variables())).isTrue();
-        assertThat(F.IMP2.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.IMP2, F.IMP2.transform(this.bddcnf), F.IMP2.variables())).isTrue();
-        assertThat(F.IMP3.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.IMP3, F.IMP3.transform(this.bddcnf), F.IMP3.variables())).isTrue();
-        assertThat(F.EQ1.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ1, F.EQ1.transform(this.bddcnf), F.EQ1.variables())).isTrue();
-        assertThat(F.EQ2.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ2, F.EQ2.transform(this.bddcnf), F.EQ2.variables())).isTrue();
-        assertThat(F.EQ3.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ3, F.EQ3.transform(this.bddcnf), F.EQ3.variables())).isTrue();
-        assertThat(F.EQ4.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(equivalentModels(F.EQ4, F.EQ4.transform(this.bddcnf), F.EQ4.variables())).isTrue();
+        assertThat(this.IMP1.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.IMP1, this.IMP1.transform(this.bddcnf), this.IMP1.variables())).isTrue();
+        assertThat(this.IMP2.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.IMP2, this.IMP2.transform(this.bddcnf), this.IMP2.variables())).isTrue();
+        assertThat(this.IMP3.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.IMP3, this.IMP3.transform(this.bddcnf), this.IMP3.variables())).isTrue();
+        assertThat(this.EQ1.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ1, this.EQ1.transform(this.bddcnf), this.EQ1.variables())).isTrue();
+        assertThat(this.EQ2.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ2, this.EQ2.transform(this.bddcnf), this.EQ2.variables())).isTrue();
+        assertThat(this.EQ3.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ3, this.EQ3.transform(this.bddcnf), this.EQ3.variables())).isTrue();
+        assertThat(this.EQ4.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
+        assertThat(equivalentModels(this.EQ4, this.EQ4.transform(this.bddcnf), this.EQ4.variables())).isTrue();
     }
 
     @Test
     public void testNAryOperators() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        assertThat(F.AND1.transform(this.bddcnf)).isEqualTo(F.AND1);
-        assertThat(F.OR1.transform(this.bddcnf)).isEqualTo(F.OR1);
+        assertThat(this.AND1.transform(this.bddcnf)).isEqualTo(this.AND1);
+        assertThat(this.OR1.transform(this.bddcnf)).isEqualTo(this.OR1);
         final Formula f1 = p.parse("~(a | b) & c & ~(x & ~y) & (w => z)");
         final Formula f2 = p.parse("~(a & b) | c | ~(x | ~y)");
         final Formula f3 = p.parse("a | b | (~x & ~y)");
@@ -108,9 +108,9 @@ public class BDDCNFTest {
     public void testNAryOperatorsWithExternalFactory() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final BDDCNFTransformation transformation = new BDDCNFTransformation(F.f, 7);
-        assertThat(F.AND1.transform(this.bddcnf)).isEqualTo(F.AND1);
-        assertThat(F.OR1.transform(this.bddcnf)).isEqualTo(F.OR1);
+        final BDDCNFTransformation transformation = new BDDCNFTransformation(f, 7);
+        assertThat(this.AND1.transform(this.bddcnf)).isEqualTo(this.AND1);
+        assertThat(this.OR1.transform(this.bddcnf)).isEqualTo(this.OR1);
         final Formula f1 = p.parse("~(a | b) & c & ~(x & ~y) & (w => z)");
         final Formula f2 = p.parse("~(a & b) | c | ~(x | ~y)");
         final Formula f3 = p.parse("a | b | (~x & ~y)");
@@ -126,9 +126,9 @@ public class BDDCNFTest {
     public void testNAryOperatorsWithExternalFactory2() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final BDDCNFTransformation transformation = new BDDCNFTransformation(new BDDKernel(F.f, 7, 50, 50));
-        assertThat(F.AND1.transform(this.bddcnf)).isEqualTo(F.AND1);
-        assertThat(F.OR1.transform(this.bddcnf)).isEqualTo(F.OR1);
+        final BDDCNFTransformation transformation = new BDDCNFTransformation(new BDDKernel(f, 7, 50, 50));
+        assertThat(this.AND1.transform(this.bddcnf)).isEqualTo(this.AND1);
+        assertThat(this.OR1.transform(this.bddcnf)).isEqualTo(this.OR1);
         final Formula f1 = p.parse("~(a | b) & c & ~(x & ~y) & (w => z)");
         final Formula f2 = p.parse("~(a & b) | c | ~(x | ~y)");
         final Formula f3 = p.parse("a | b | (~x & ~y)");
@@ -142,7 +142,7 @@ public class BDDCNFTest {
 
     @Test
     public void testNot() throws ParserException {
-        final PropositionalParser p = new PropositionalParser(F.f);
+        final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(p.parse("~a").transform(this.bddcnf)).isEqualTo(p.parse("~a"));
         assertThat(p.parse("~~a").transform(this.bddcnf)).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(a => b)").transform(this.bddcnf)).isEqualTo(p.parse("a & ~b"));
@@ -167,7 +167,7 @@ public class BDDCNFTest {
 
     @Test
     public void testCC() throws ParserException {
-        final PseudoBooleanParser p = new PseudoBooleanParser(F.f);
+        final PseudoBooleanParser p = new PseudoBooleanParser(this.f);
         final Formula f1 = p.parse("a <=> (1 * b <= 1)");
         final Formula f2 = p.parse("~(1 * b <= 1)");
         final Formula f3 = p.parse("(1 * b + 1 * c + 1 * d <= 1)");

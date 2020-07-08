@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
-import org.logicng.formulas.F;
+import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
@@ -17,9 +17,8 @@ import org.logicng.util.FormulaRandomizerConfig;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class SimplifierTest {
+public class SimplifierTest extends TestWithExampleFormulas {
 
-    private final FormulaFactory f = F.f;
     private final AdvancedSimplifier simplifier = new AdvancedSimplifier(new DefaultRatingFunction());
 
     @Test

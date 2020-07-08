@@ -31,89 +31,90 @@ package org.logicng.formulas;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
 
 /**
  * Unit Tests for the class {@link CTrue}.
  * @version 2.0.0
  * @since 1.0
  */
-public class CTrueTest {
+public class CTrueTest extends TestWithExampleFormulas {
 
     @Test
     public void testType() {
-        assertThat(F.TRUE.type()).isEqualTo(FType.TRUE);
+        assertThat(this.TRUE.type()).isEqualTo(FType.TRUE);
     }
 
     @Test
     public void testNumberOfAtoms() {
-        assertThat(F.TRUE.numberOfAtoms()).isEqualTo(1);
-        assertThat(F.TRUE.numberOfAtoms()).isEqualTo(1);
+        assertThat(this.TRUE.numberOfAtoms()).isEqualTo(1);
+        assertThat(this.TRUE.numberOfAtoms()).isEqualTo(1);
     }
 
     @Test
     public void testNegation() {
-        assertThat(F.TRUE.negate()).isEqualTo(F.FALSE);
+        assertThat(this.TRUE.negate()).isEqualTo(this.FALSE);
     }
 
     @Test
     public void testVariables() {
-        assertThat(F.TRUE.variables().size()).isEqualTo(0);
+        assertThat(this.TRUE.variables().size()).isEqualTo(0);
     }
 
     @Test
     public void testLiterals() {
-        assertThat(F.TRUE.literals().size()).isEqualTo(0);
+        assertThat(this.TRUE.literals().size()).isEqualTo(0);
     }
 
     @Test
     public void testToString() {
-        assertThat(F.TRUE.toString()).isEqualTo("$true");
+        assertThat(this.TRUE.toString()).isEqualTo("$true");
     }
 
     @Test
     public void testEquals() {
-        assertThat(F.f.verum()).isEqualTo(F.TRUE);
-        assertThat(F.f.falsum()).isNotEqualTo(F.TRUE);
+        assertThat(this.f.verum()).isEqualTo(this.TRUE);
+        assertThat(this.f.falsum()).isNotEqualTo(this.TRUE);
     }
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        assertThat(F.g.verum()).isEqualTo(F.TRUE);
-        assertThat(F.g.falsum()).isNotEqualTo(F.TRUE);
+        assertThat(this.g.verum()).isEqualTo(this.TRUE);
+        assertThat(this.g.falsum()).isNotEqualTo(this.TRUE);
     }
 
     @Test
     public void testHash() {
-        assertThat(F.TRUE.hashCode()).isEqualTo(F.f.verum().hashCode());
+        assertThat(this.TRUE.hashCode()).isEqualTo(this.f.verum().hashCode());
     }
 
     @Test
     public void testNumberOfNodes() {
-        assertThat(F.TRUE.numberOfNodes()).isEqualTo(1);
+        assertThat(this.TRUE.numberOfNodes()).isEqualTo(1);
     }
 
     @Test
     public void testNumberOfInternalNodes() {
-        assertThat(F.TRUE.numberOfInternalNodes()).isEqualTo(1);
+        assertThat(this.TRUE.numberOfInternalNodes()).isEqualTo(1);
     }
 
     @Test
     public void testNumberOfOperands() {
-        assertThat(F.TRUE.numberOfOperands()).isEqualTo(0);
+        assertThat(this.TRUE.numberOfOperands()).isEqualTo(0);
     }
 
     @Test
     public void testIsConstantFormula() {
-        assertThat(F.TRUE.isConstantFormula()).isTrue();
+        assertThat(this.TRUE.isConstantFormula()).isTrue();
     }
 
     @Test
     public void testAtomicFormula() {
-        assertThat(F.TRUE.isAtomicFormula()).isTrue();
+        assertThat(this.TRUE.isAtomicFormula()).isTrue();
     }
 
     @Test
     public void testContains() {
-        assertThat(F.TRUE.containsVariable(F.f.variable("a"))).isFalse();
+        assertThat(this.TRUE.containsVariable(this.f.variable("a"))).isFalse();
     }
 }
