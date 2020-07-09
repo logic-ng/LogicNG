@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.logicng.LogicNGTest;
 import org.logicng.LongRunningTag;
 import org.logicng.RandomTag;
-import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.CardinalityConstraint;
@@ -50,7 +49,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class OptimizationFunctionTest extends TestWithExampleFormulas implements LogicNGTest {
+public class OptimizationFunctionTest implements LogicNGTest {
 
     public static Collection<Object[]> solvers() {
         final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
@@ -70,7 +69,7 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testUnsatFormula(final SATSolver solver) throws ParserException {
-        final Formula formula = this.f.parse("a & b & (a => ~b)");
+        final Formula formula = solver.factory().parse("a & b & (a => ~b)");
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         assertThat(minimumModel).isNull();
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
@@ -80,7 +79,7 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testSingleModel(final SATSolver solver) throws ParserException {
-        final Formula formula = this.f.parse("~a & ~b & ~c");
+        final Formula formula = solver.factory().parse("~a & ~b & ~c");
         final Assignment minimumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(formula, minimumModel, formula.variables());
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver);
@@ -90,8 +89,8 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testExoModel(final SATSolver solver) {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-        final CardinalityConstraint exo = (CardinalityConstraint) f.exo(this.f.variable("a"), this.f.variable("b"), this.f.variable("c"));
+        final FormulaFactory f = solver.factory();
+        final CardinalityConstraint exo = (CardinalityConstraint) f.exo(f.variable("a"), f.variable("b"), f.variable("c"));
         final Assignment minimumModel = optimize(Collections.singleton(exo), exo.variables(), Collections.emptyList(), false, solver);
         testMinimumModel(exo, minimumModel, exo.variables());
         final Assignment maximumModel = optimize(Collections.singleton(exo), exo.variables(), Collections.emptyList(), true, solver);
@@ -101,8 +100,7 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testCornerCases(final SATSolver solver) {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-        final FormulaCornerCases cornerCases = new FormulaCornerCases(f);
+        final FormulaCornerCases cornerCases = new FormulaCornerCases(solver.factory());
         for (final Formula formula : cornerCases.cornerCases()) {
             final Set<Variable> targetLiterals = cornerCases.getVariables();
 
@@ -154,11 +152,12 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
     @ParameterizedTest
     @MethodSource("solvers")
     public void testIncrementalityMinimizeAndMaximize(final MiniSat solver) throws ParserException {
+        final FormulaFactory f = solver.factory();
         if (solver.getStyle() != MiniSat.SolverStyle.MINISAT || !solver.isIncremental()) {
             return;
         }
         solver.reset();
-        Formula formula = this.f.parse("(a|b|c|d|e) & (p|q) & (x|y|z)");
+        Formula formula = f.parse("(a|b|c|d|e) & (p|q) & (x|y|z)");
         final SortedSet<Variable> vars = new TreeSet<>(formula.variables());
         solver.add(formula);
 
@@ -167,35 +166,35 @@ public class OptimizationFunctionTest extends TestWithExampleFormulas implements
         assertThat(minimumModel.positiveVariables()).hasSize(3);
         assertThat(maximumModel.positiveVariables()).hasSize(10);
 
-        formula = this.f.parse("~p");
+        formula = f.parse("~p");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
         maximumModel = solver.execute(OptimizationFunction.builder().maximize().literals(vars).build());
-        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(this.f.variable("q"));
-        assertThat(maximumModel.positiveVariables()).hasSize(9).contains(this.f.variable("q"));
+        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(f.variable("q"));
+        assertThat(maximumModel.positiveVariables()).hasSize(9).contains(f.variable("q"));
 
-        formula = this.f.parse("(x => n) & (y => m) & (a => ~b & ~c)");
+        formula = f.parse("(x => n) & (y => m) & (a => ~b & ~c)");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
         maximumModel = solver.execute(OptimizationFunction.builder().maximize().literals(vars).build());
-        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(this.f.variable("q"), this.f.variable("z"));
+        assertThat(minimumModel.positiveVariables()).hasSize(3).contains(f.variable("q"), f.variable("z"));
         assertThat(maximumModel.positiveVariables()).hasSize(10)
-                .contains(this.f.variable("q"), this.f.variable("z"))
-                .doesNotContain(this.f.variable("a"));
+                .contains(f.variable("q"), f.variable("z"))
+                .doesNotContain(f.variable("a"));
 
-        formula = this.f.parse("(z => v & w) & (m => v) & (b => ~c & ~d & ~e)");
+        formula = f.parse("(z => v & w) & (m => v) & (b => ~c & ~d & ~e)");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());
         maximumModel = solver.execute(OptimizationFunction.builder().maximize().literals(vars).build());
-        assertThat(minimumModel.positiveVariables()).hasSize(4).contains(this.f.variable("q"), this.f.variable("x"), this.f.variable("n"));
+        assertThat(minimumModel.positiveVariables()).hasSize(4).contains(f.variable("q"), f.variable("x"), f.variable("n"));
         assertThat(maximumModel.positiveVariables()).hasSize(11)
-                .contains(this.f.variable("q"), this.f.variable("x"), this.f.variable("n"), this.f.variable("v"), this.f.variable("w"))
-                .doesNotContain(this.f.variable("b"));
+                .contains(f.variable("q"), f.variable("x"), f.variable("n"), f.variable("v"), f.variable("w"))
+                .doesNotContain(f.variable("b"));
 
-        formula = this.f.parse("~q");
+        formula = f.parse("~q");
         vars.addAll(formula.variables());
         solver.add(formula);
         minimumModel = solver.execute(OptimizationFunction.builder().minimize().literals(vars).build());

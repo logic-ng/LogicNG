@@ -20,7 +20,7 @@ public final class FormulaFactoryConfig extends Configuration {
      * <ul>
      *     <li>{@link #PANIC}: If an operand of a formula comes from a different formula factory
      *     an {@link UnsupportedOperationException} is thrown</li>
-     *     <li>{@link #IMPORT}: Operands from different formula factories are {@link FormulaFactory#importFormula(Formula)} imported
+     *     <li>{@link #IMPORT}: Operands from different formula factories are {@link FormulaFactory#importFormula(Formula) imported}
      *     before the new formula is constructed</li>
      * </ul>
      */

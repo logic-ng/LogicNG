@@ -72,25 +72,4 @@ public class FormulaMergeTest {
         assertThat(f1.exo(a1, b2, c1)).isNotNull();
         assertThat(f1.exo(a2, b2, c2)).isNotNull();
     }
-
-    /* these cases do not throw errors because a syntactically equal formula is already cached */
-    @Test
-    public void testNoPanicTrick() {
-        final FormulaFactory f1 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.PANIC).build());
-        final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-
-        final Variable a1 = f1.variable("A");
-        final Variable b1 = f1.variable("B");
-        final Variable c1 = f1.variable("C");
-        final Variable a2 = f2.variable("A");
-        final Variable b2 = f2.variable("B");
-        final Variable c2 = f2.variable("C");
-        f1.and(a1, b1);
-        assertThat(f1.and(b2, a2)).isNotNull();
-        f1.or(a1, b1, c1);
-        assertThatThrownBy(() -> f1.or(a2, b2)).isInstanceOf(UnsupportedOperationException.class);
-        assertThat(f1.or(c2, a2, b2)).isNotNull();
-        f1.equivalence(a1, f1.and(b1, c1));
-        assertThat(f1.equivalence(a2, f2.and(b2, c2))).isNotNull();
-    }
 }

@@ -202,11 +202,15 @@ public class FormulaFactory {
      * Puts a new configuration into the configuration database.  If there is already a configuration present for this
      * type, it will be overwritten.
      * <p>
-     * Note that configurations with type {@link ConfigurationType#FORMULA_FACTORY} will be ignored. Configurations
-     * for the formula factory can only be passed to the constructor and never be changed thereafter.
+     * Note that is not allowed to pass configurations of type {@link ConfigurationType#FORMULA_FACTORY}. Such
+     * configurations can only be passed to the constructor and never be changed thereafter.
      * @param configuration the configuration
+     * @throws IllegalArgumentException if a configuration of type {@link ConfigurationType#FORMULA_FACTORY} was passed
      */
     public void putConfiguration(final Configuration configuration) {
+        if (configuration.type() == ConfigurationType.FORMULA_FACTORY) {
+            throw new IllegalArgumentException("Configurations for the formula factory can only be passed in the constructor!");
+        }
         this.configurations.put(configuration.type(), configuration);
     }
 
@@ -255,11 +259,13 @@ public class FormulaFactory {
 
     /**
      * Creates a new implication.
-     * @param left  the left-hand side operand
-     * @param right the right-hand side operand
+     * @param leftIn  the left-hand side operand
+     * @param rightIn the right-hand side operand
      * @return a new implication
      */
-    public Formula implication(final Formula left, final Formula right) {
+    public Formula implication(final Formula leftIn, final Formula rightIn) {
+        final Formula left = importOrPanic(leftIn);
+        final Formula right = importOrPanic(rightIn);
         if (left.type() == FALSE || right.type() == TRUE) {
             return this.verum();
         }
@@ -275,7 +281,7 @@ public class FormulaFactory {
         final Pair<Formula, Formula> key = new Pair<>(left, right);
         Implication implication = this.implications.get(key);
         if (implication == null) {
-            implication = new Implication(importOrPanic(left), importOrPanic(right), this);
+            implication = new Implication(left, right, this);
             this.implications.put(key, implication);
         }
         return implication;
@@ -283,11 +289,13 @@ public class FormulaFactory {
 
     /**
      * Creates a new equivalence.
-     * @param left  the left-hand side operand
-     * @param right the right-hand side operand
+     * @param leftIn  the left-hand side operand
+     * @param rightIn the right-hand side operand
      * @return a new equivalence
      */
-    public Formula equivalence(final Formula left, final Formula right) {
+    public Formula equivalence(final Formula leftIn, final Formula rightIn) {
+        final Formula left = importOrPanic(leftIn);
+        final Formula right = importOrPanic(rightIn);
         if (left.type() == TRUE) {
             return right;
         }
@@ -309,7 +317,7 @@ public class FormulaFactory {
         final LinkedHashSet<Formula> key = new LinkedHashSet<>(Arrays.asList(left, right));
         Equivalence equivalence = this.equivalences.get(key);
         if (equivalence == null) {
-            equivalence = new Equivalence(importOrPanic(left), importOrPanic(right), this);
+            equivalence = new Equivalence(left, right, this);
             this.equivalences.put(key, equivalence);
         }
         return equivalence;
@@ -328,18 +336,18 @@ public class FormulaFactory {
      * <p>
      * Constants, literals and negations are negated directly and returned.
      * For all other formulas a new {@code Not} object is returned.
-     * @param operand the given formula
+     * @param operandIn the given formula
      * @return the negated formula
      */
-    public Formula not(final Formula operand) {
+    public Formula not(final Formula operandIn) {
+        final Formula operand = importOrPanic(operandIn);
         if (operand.type() == LITERAL || operand.type() == FALSE || operand.type() == TRUE || operand.type() == NOT) {
-            return importOrPanic(operand).negate();
+            return operand.negate();
         }
         Not not = this.nots.get(operand);
         if (not == null) {
-            final Formula importedOperand = importOrPanic(operand);
-            not = new Not(importedOperand, this);
-            this.nots.put(importedOperand, not);
+            not = new Not(operand, this);
+            this.nots.put(operand, not);
         }
         return not;
     }
@@ -470,6 +478,16 @@ public class FormulaFactory {
         }
     }
 
+    /**
+     * Checks if the given literals were created by this formula factory. If this is the case,
+     * the same array is returned. Otherwise, depending on the {@link #formulaMergeStrategy}
+     * the formulas are either imported or an exception is thrown.
+     * @param literals the literals to check
+     * @return the (possibly imported) literals
+     * @throws UnsupportedOperationException if one of the literals was created by another factory
+     *                                       and the formula merge strategy is
+     *                                       {@link FormulaFactoryConfig.FormulaMergeStrategy#PANIC}.
+     */
     private Literal[] importOrPanic(final Literal[] literals) {
         boolean foundAnotherFormulaFactory = false;
         for (final Literal lit : literals) {
@@ -497,10 +515,11 @@ public class FormulaFactory {
 
     /**
      * Creates a new conjunction.
-     * @param operands the formulas
+     * @param operandsIn the formulas
      * @return a new conjunction
      */
-    private Formula constructAnd(final LinkedHashSet<? extends Formula> operands) {
+    private Formula constructAnd(final LinkedHashSet<? extends Formula> operandsIn) {
+        final LinkedHashSet<? extends Formula> operands = importOrPanic(operandsIn);
         And tempAnd = null;
         Map<LinkedHashSet<? extends Formula>, And> opAndMap = this.andsN;
         if (operands.size() > 1) {
@@ -551,10 +570,9 @@ public class FormulaFactory {
         }
         and = condAndMap.get(condensedOperands);
         if (and == null) {
-            final LinkedHashSet<? extends Formula> importedCondensedOperands = importOrPanic(condensedOperands);
-            tempAnd = new And(importedCondensedOperands, this, this.cnfCheck);
+            tempAnd = new And(condensedOperands, this, this.cnfCheck);
             opAndMap.put(operands, tempAnd);
-            condAndMap.put(importedCondensedOperands, tempAnd);
+            condAndMap.put(condensedOperands, tempAnd);
             return tempAnd;
         }
         opAndMap.put(operands, and);
@@ -592,10 +610,11 @@ public class FormulaFactory {
 
     /**
      * Creates a new CNF.
-     * @param clauses the clauses
+     * @param clausesIn the clauses
      * @return a new CNF
      */
-    private Formula constructCNF(final LinkedHashSet<? extends Formula> clauses) {
+    private Formula constructCNF(final LinkedHashSet<? extends Formula> clausesIn) {
+        final LinkedHashSet<? extends Formula> clauses = importOrPanic(clausesIn);
         if (clauses.isEmpty()) {
             return this.verum();
         }
@@ -620,9 +639,8 @@ public class FormulaFactory {
         if (tempAnd != null) {
             return tempAnd;
         }
-        final LinkedHashSet<? extends Formula> importedClauses = importOrPanic(clauses);
-        tempAnd = new And(importedClauses, this, true);
-        opAndMap.put(importedClauses, tempAnd);
+        tempAnd = new And(clauses, this, true);
+        opAndMap.put(clauses, tempAnd);
         return tempAnd;
     }
 
@@ -651,10 +669,11 @@ public class FormulaFactory {
 
     /**
      * Creates a new disjunction.
-     * @param operands the formulas
+     * @param operandsIn the formulas
      * @return a new disjunction
      */
-    private Formula constructOr(final LinkedHashSet<? extends Formula> operands) {
+    private Formula constructOr(final LinkedHashSet<? extends Formula> operandsIn) {
+        final LinkedHashSet<? extends Formula> operands = importOrPanic(operandsIn);
         Or tempOr = null;
         Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
         if (operands.size() > 1) {
@@ -705,10 +724,9 @@ public class FormulaFactory {
         }
         or = condOrMap.get(condensedOperands);
         if (or == null) {
-            final LinkedHashSet<? extends Formula> importedCondensedOperands = importOrPanic(condensedOperands);
-            tempOr = new Or(importedCondensedOperands, this, this.cnfCheck);
+            tempOr = new Or(condensedOperands, this, this.cnfCheck);
             opOrMap.put(operands, tempOr);
-            condOrMap.put(importedCondensedOperands, tempOr);
+            condOrMap.put(condensedOperands, tempOr);
             return tempOr;
         }
         opOrMap.put(operands, or);
@@ -744,10 +762,11 @@ public class FormulaFactory {
 
     /**
      * Creates a new clause.
-     * @param literals the literals
+     * @param literalsIn the literals
      * @return a new clause
      */
-    private Formula constructClause(final LinkedHashSet<Literal> literals) {
+    private Formula constructClause(final LinkedHashSet<Literal> literalsIn) {
+        final LinkedHashSet<? extends Formula> literals = importOrPanic(literalsIn);
         if (literals.isEmpty()) {
             return this.falsum();
         }
@@ -772,9 +791,8 @@ public class FormulaFactory {
         if (tempOr != null) {
             return tempOr;
         }
-        final LinkedHashSet<? extends Formula> importedLiterals = importOrPanic(literals);
-        tempOr = new Or(importedLiterals, this, true);
-        opOrMap.put(importedLiterals, tempOr);
+        tempOr = new Or(literals, this, true);
+        opOrMap.put(literals, tempOr);
         return tempOr;
     }
 
@@ -843,7 +861,8 @@ public class FormulaFactory {
         return constructPBC(comparator, rhs, Arrays.copyOf(literals, literals.length), Arrays.copyOf(coefficients, coefficients.length));
     }
 
-    private Formula constructPBC(final CType comparator, final int rhs, final Literal[] literals, final int[] coefficients) {
+    private Formula constructPBC(final CType comparator, final int rhs, final Literal[] literalsIn, final int[] coefficients) {
+        final Literal[] literals = importOrPanic(literalsIn);
         if (literals.length == 0) {
             return this.constant(FormulaFactory.evaluateTrivialPBConstraint(comparator, rhs));
         }
@@ -853,7 +872,7 @@ public class FormulaFactory {
         final PBOperands operands = new PBOperands(literals, coefficients, comparator, rhs);
         PBConstraint constraint = this.pbConstraints.get(operands);
         if (constraint == null) {
-            constraint = new PBConstraint(importOrPanic(literals), coefficients, comparator, rhs, this);
+            constraint = new PBConstraint(literals, coefficients, comparator, rhs, this);
             this.pbConstraints.put(operands, constraint);
         }
         return constraint;
@@ -950,7 +969,8 @@ public class FormulaFactory {
         return constructCCUnsafe(comparator, rhs, literals);
     }
 
-    private Formula constructCCUnsafe(final CType comparator, final int rhs, final Literal[] literals) {
+    private Formula constructCCUnsafe(final CType comparator, final int rhs, final Literal[] literalsIn) {
+        final Literal[] literals = importOrPanic(literalsIn);
         if (literals.length == 0) {
             return this.constant(FormulaFactory.evaluateTrivialPBConstraint(comparator, rhs));
         }
