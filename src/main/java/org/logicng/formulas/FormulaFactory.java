@@ -126,13 +126,13 @@ public class FormulaFactory {
         this.cnfEncoder = new CNFEncoder(this);
         this.subformulaFunction = new SubNodeFunction();
         if (!this.name.isEmpty()) {
-            this.ccPrefix = FormulaFactory.CC_PREFIX + this.name + "_";
-            this.pbPrefix = FormulaFactory.PB_PREFIX + this.name + "_";
-            this.cnfPrefix = FormulaFactory.CNF_PREFIX + this.name + "_";
+            this.ccPrefix = CC_PREFIX + this.name + "_";
+            this.pbPrefix = PB_PREFIX + this.name + "_";
+            this.cnfPrefix = CNF_PREFIX + this.name + "_";
         } else {
-            this.ccPrefix = FormulaFactory.CC_PREFIX;
-            this.pbPrefix = FormulaFactory.PB_PREFIX;
-            this.cnfPrefix = FormulaFactory.CNF_PREFIX;
+            this.ccPrefix = CC_PREFIX;
+            this.pbPrefix = PB_PREFIX;
+            this.cnfPrefix = CNF_PREFIX;
         }
         this.pbEncoder = new PBEncoder(this);
         this.parser = new PseudoBooleanParser(this);
@@ -864,9 +864,9 @@ public class FormulaFactory {
     private Formula constructPBC(final CType comparator, final int rhs, final Literal[] literalsIn, final int[] coefficients) {
         final Literal[] literals = importOrPanic(literalsIn);
         if (literals.length == 0) {
-            return this.constant(FormulaFactory.evaluateTrivialPBConstraint(comparator, rhs));
+            return this.constant(evaluateTrivialPBConstraint(comparator, rhs));
         }
-        if (FormulaFactory.isCC(comparator, rhs, literals, coefficients)) {
+        if (isCC(comparator, rhs, literals, coefficients)) {
             return constructCCUnsafe(comparator, rhs, literals);
         }
         final PBOperands operands = new PBOperands(literals, coefficients, comparator, rhs);
@@ -963,7 +963,7 @@ public class FormulaFactory {
     }
 
     private Formula constructCC(final CType comparator, final int rhs, final Literal[] literals) {
-        if (!FormulaFactory.isCC(comparator, rhs, literals, null)) {
+        if (!isCC(comparator, rhs, literals, null)) {
             throw new IllegalArgumentException("Given values do not represent a cardinality constraint.");
         }
         return constructCCUnsafe(comparator, rhs, literals);
@@ -972,7 +972,7 @@ public class FormulaFactory {
     private Formula constructCCUnsafe(final CType comparator, final int rhs, final Literal[] literalsIn) {
         final Literal[] literals = importOrPanic(literalsIn);
         if (literals.length == 0) {
-            return this.constant(FormulaFactory.evaluateTrivialPBConstraint(comparator, rhs));
+            return this.constant(evaluateTrivialPBConstraint(comparator, rhs));
         }
         final CCOperands operands = new CCOperands(literals, comparator, rhs);
         CardinalityConstraint constraint = this.cardinalityConstraints.get(operands);

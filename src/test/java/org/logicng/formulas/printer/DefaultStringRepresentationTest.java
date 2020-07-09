@@ -85,4 +85,8 @@ public class DefaultStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.sr.toString()).isEqualTo("DefaultStringRepresentation");
     }
 
+    @Test
+    public void testFFDefaultStringRepresentation() {
+        assertThat(this.EQ4.toString()).isEqualTo("a => b <=> ~a => ~b");
+    }
 }

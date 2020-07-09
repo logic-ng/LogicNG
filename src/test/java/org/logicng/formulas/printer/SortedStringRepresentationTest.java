@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.CType;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaFactoryConfig;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
@@ -109,5 +111,11 @@ public class SortedStringRepresentationTest extends TestWithExampleFormulas {
     @Test
     public void testToString() {
         assertThat(this.sr.toString()).isEqualTo("SortedStringRepresentation");
+    }
+
+    @Test
+    public void testViaFormulaFactoryConfig() {
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
+        assertThat(f.importFormula(this.EQ4).toString()).isEqualTo("a => b <=> ~a => ~b");
     }
 }
