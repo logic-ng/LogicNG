@@ -81,6 +81,7 @@ public class FormulaFactory {
     private final CTrue cTrue;
     private final FormulaStringRepresentation stringRepresentation;
     private final FormulaFactoryConfig.FormulaMergeStrategy formulaMergeStrategy;
+    private final boolean allowContradictionsAndTautologies;
     private final Map<ConfigurationType, Configuration> configurations;
     private final String ccPrefix;
     private final String pbPrefix;
@@ -119,6 +120,7 @@ public class FormulaFactory {
         this.name = config.name;
         this.stringRepresentation = config.stringRepresentation.get();
         this.formulaMergeStrategy = config.formulaMergeStrategy;
+        this.allowContradictionsAndTautologies = config.allowContradictionsAndTautologies;
         this.cFalse = new CFalse(this);
         this.cTrue = new CTrue(this);
         this.clear();
@@ -147,13 +149,14 @@ public class FormulaFactory {
 
     /**
      * Returns {@code true} if a given list of formulas contains the negation of a  given formula,
-     * {@code false} otherwise.
+     * {@code false} otherwise.  Always returns {@code false} if the formula factory is configured
+     * to allow contradictions and tautologies.
      * @param formulas the list of formulas
      * @param f        the formula
      * @return {@code true} if a given list of formulas contains a given formula, {@code false} otherwise
      */
-    private static boolean containsComplement(final LinkedHashSet<Formula> formulas, final Formula f) {
-        return formulas.contains(f.negate());
+    private boolean containsComplement(final LinkedHashSet<Formula> formulas, final Formula f) {
+        return !this.allowContradictionsAndTautologies && formulas.contains(f.negate());
     }
 
     /**

@@ -32,12 +32,14 @@ public final class FormulaFactoryConfig extends Configuration {
     final String name;
     final FormulaMergeStrategy formulaMergeStrategy;
     final Supplier<FormulaStringRepresentation> stringRepresentation;
+    final boolean allowContradictionsAndTautologies;
 
     private FormulaFactoryConfig(final Builder builder) {
         super(ConfigurationType.FORMULA_FACTORY);
         this.name = builder.name;
         this.formulaMergeStrategy = builder.formulaMergeStrategy;
         this.stringRepresentation = builder.stringRepresentation;
+        this.allowContradictionsAndTautologies = builder.allowContradictionsAndTautologies;
     }
 
     /**
@@ -57,6 +59,7 @@ public final class FormulaFactoryConfig extends Configuration {
         private String name = "";
         private FormulaMergeStrategy formulaMergeStrategy = FormulaMergeStrategy.PANIC;
         private Supplier<FormulaStringRepresentation> stringRepresentation = DefaultStringRepresentation::new;
+        private boolean allowContradictionsAndTautologies = false;
 
         /**
          * Sets the name of this formula factory. The default is an empty string.
@@ -91,6 +94,20 @@ public final class FormulaFactoryConfig extends Configuration {
          */
         public Builder stringRepresentation(final Supplier<FormulaStringRepresentation> stringRepresentation) {
             this.stringRepresentation = stringRepresentation;
+            return this;
+        }
+
+        /**
+         * Sets the flag whether contradictions and tautologies are allowed in formulas.
+         * If allowed, a formula like {@code A & ~A} or {@code A | ~A} can be generated.
+         * If not allowed, the formula will be simplified to {@code $false} or {@code true}
+         * respectively.  The default is {@code false}.
+         * @param allowContradictionsAndTautologies the flag whether to allow contradictions
+         *                                          and tautologies or not
+         * @return the builder
+         */
+        public Builder allowContradictionsAndTautologies(final boolean allowContradictionsAndTautologies) {
+            this.allowContradictionsAndTautologies = allowContradictionsAndTautologies;
             return this;
         }
 
