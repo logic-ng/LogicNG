@@ -32,14 +32,14 @@ public final class FormulaFactoryConfig extends Configuration {
     final String name;
     final FormulaMergeStrategy formulaMergeStrategy;
     final Supplier<FormulaStringRepresentation> stringRepresentation;
-    final boolean allowContradictionsAndTautologies;
+    final boolean allowTrivialContradictionsAndTautologies;
 
     private FormulaFactoryConfig(final Builder builder) {
         super(ConfigurationType.FORMULA_FACTORY);
         this.name = builder.name;
         this.formulaMergeStrategy = builder.formulaMergeStrategy;
         this.stringRepresentation = builder.stringRepresentation;
-        this.allowContradictionsAndTautologies = builder.allowContradictionsAndTautologies;
+        this.allowTrivialContradictionsAndTautologies = builder.allowTrivialContradictionsAndTautologies;
     }
 
     /**
@@ -59,7 +59,7 @@ public final class FormulaFactoryConfig extends Configuration {
         private String name = "";
         private FormulaMergeStrategy formulaMergeStrategy = FormulaMergeStrategy.PANIC;
         private Supplier<FormulaStringRepresentation> stringRepresentation = DefaultStringRepresentation::new;
-        private boolean allowContradictionsAndTautologies = false;
+        private boolean allowTrivialContradictionsAndTautologies = false;
 
         /**
          * Sets the name of this formula factory. The default is an empty string.
@@ -98,16 +98,16 @@ public final class FormulaFactoryConfig extends Configuration {
         }
 
         /**
-         * Sets the flag whether contradictions and tautologies are allowed in formulas.
+         * Sets the flag whether trivial contradictions and tautologies are allowed in formulas.
          * If allowed, a formula like {@code A & ~A} or {@code A | ~A} can be generated.
          * If not allowed, the formula will be simplified to {@code $false} or {@code true}
-         * respectively.  The default is {@code false}.
-         * @param allowContradictionsAndTautologies the flag whether to allow contradictions
-         *                                          and tautologies or not
+         * respectively when constructing the formula on the factory.  The default is {@code false}.
+         * @param allowTrivialContradictionsAndTautologies the flag whether to allow trivial
+         *                                                 contradictions and tautologies or not
          * @return the builder
          */
-        public Builder allowContradictionsAndTautologies(final boolean allowContradictionsAndTautologies) {
-            this.allowContradictionsAndTautologies = allowContradictionsAndTautologies;
+        public Builder allowTrivialContradictionsAndTautologies(final boolean allowTrivialContradictionsAndTautologies) {
+            this.allowTrivialContradictionsAndTautologies = allowTrivialContradictionsAndTautologies;
             return this;
         }
 
