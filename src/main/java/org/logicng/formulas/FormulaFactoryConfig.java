@@ -32,14 +32,14 @@ public final class FormulaFactoryConfig extends Configuration {
     final String name;
     final FormulaMergeStrategy formulaMergeStrategy;
     final Supplier<FormulaStringRepresentation> stringRepresentation;
-    final boolean allowTrivialContradictionsAndTautologies;
+    final boolean simplifyComplementaryOperands;
 
     private FormulaFactoryConfig(final Builder builder) {
         super(ConfigurationType.FORMULA_FACTORY);
         this.name = builder.name;
         this.formulaMergeStrategy = builder.formulaMergeStrategy;
         this.stringRepresentation = builder.stringRepresentation;
-        this.allowTrivialContradictionsAndTautologies = builder.allowTrivialContradictionsAndTautologies;
+        this.simplifyComplementaryOperands = builder.simplifyComplementaryOperands;
     }
 
     /**
@@ -59,7 +59,7 @@ public final class FormulaFactoryConfig extends Configuration {
         private String name = "";
         private FormulaMergeStrategy formulaMergeStrategy = FormulaMergeStrategy.PANIC;
         private Supplier<FormulaStringRepresentation> stringRepresentation = DefaultStringRepresentation::new;
-        private boolean allowTrivialContradictionsAndTautologies = false;
+        private boolean simplifyComplementaryOperands = true;
 
         /**
          * Sets the name of this formula factory. The default is an empty string.
@@ -98,16 +98,16 @@ public final class FormulaFactoryConfig extends Configuration {
         }
 
         /**
-         * Sets the flag whether trivial contradictions and tautologies are allowed in formulas.
-         * If allowed, a formula like {@code A & ~A} or {@code A | ~A} can be generated.
-         * If not allowed, the formula will be simplified to {@code $false} or {@code true}
-         * respectively when constructing the formula on the factory.  The default is {@code false}.
-         * @param allowTrivialContradictionsAndTautologies the flag whether to allow trivial
-         *                                                 contradictions and tautologies or not
+         * Sets the flag whether trivial contradictions and tautologies are simplified in formulas.
+         * If set to false, a formula like {@code A & ~A} or {@code A | ~A} can be generated on the
+         * formula factory.  If set to true, the formulas will be simplified to {@code $false} or
+         * {@code true} respectively.  The default is {@code true}.
+         * @param simplifyComplementaryOperands the flag whether to simplify trivial
+         *                                      contradictions and tautologies or not
          * @return the builder
          */
-        public Builder allowTrivialContradictionsAndTautologies(final boolean allowTrivialContradictionsAndTautologies) {
-            this.allowTrivialContradictionsAndTautologies = allowTrivialContradictionsAndTautologies;
+        public Builder simplifyComplementaryOperands(final boolean simplifyComplementaryOperands) {
+            this.simplifyComplementaryOperands = simplifyComplementaryOperands;
             return this;
         }
 

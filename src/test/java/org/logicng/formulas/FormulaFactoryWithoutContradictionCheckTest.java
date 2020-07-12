@@ -21,7 +21,7 @@ import java.util.List;
 
 public class FormulaFactoryWithoutContradictionCheckTest {
 
-    private final FormulaFactoryConfig config = FormulaFactoryConfig.builder().allowTrivialContradictionsAndTautologies(true).build();
+    private final FormulaFactoryConfig config = FormulaFactoryConfig.builder().simplifyComplementaryOperands(false).build();
     private final FormulaFactory f = new FormulaFactory(this.config);
     private final Variable a = this.f.variable("A");
     private final Literal notA = this.f.literal("A", false);
