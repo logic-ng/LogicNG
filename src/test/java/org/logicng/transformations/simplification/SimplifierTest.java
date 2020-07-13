@@ -46,7 +46,7 @@ public class SimplifierTest extends TestWithExampleFormulas {
 
     private void computeAndVerify(final Formula formula) {
         final Formula simplified = formula.transform(this.simplifier);
-        assertThat(this.f.equivalence(formula, simplified).holds(new TautologyPredicate(this.f)))
+        assertThat(formula.factory().equivalence(formula, simplified).holds(new TautologyPredicate(this.f)))
                 .as("Minimized formula is equivalent to original Formula")
                 .isTrue();
     }

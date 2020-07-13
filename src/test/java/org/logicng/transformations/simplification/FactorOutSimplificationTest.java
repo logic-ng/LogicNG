@@ -96,7 +96,7 @@ public class FactorOutSimplificationTest extends TestWithExampleFormulas {
 
     private void computeAndVerify(final Formula formula) {
         final Formula simplified = formula.transform(this.factorOut);
-        assertThat(this.f.equivalence(formula, simplified).holds(new TautologyPredicate(this.f))).isTrue();
+        assertThat(formula.factory().equivalence(formula, simplified).holds(new TautologyPredicate(this.f))).isTrue();
         assertThat(simplified.toString().length() <= formula.toString().length());
     }
 }
