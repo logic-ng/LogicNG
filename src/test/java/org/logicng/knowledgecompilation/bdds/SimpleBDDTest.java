@@ -207,8 +207,6 @@ public class SimpleBDDTest {
         assertThat(bdd.isTautology()).isFalse();
         assertThat(bdd.isContradiction()).isFalse();
         assertThat(bdd.modelCount()).isEqualTo(BigInteger.valueOf(6));
-        assertThat(bdd.modelCount(1)).isEqualTo(BigInteger.valueOf(3));
-        assertThat(bdd.modelCount(1)).isEqualTo(BigInteger.valueOf(3));
         assertThat(bdd.underlyingKernel().factory()).isSameAs(f);
         assertThat(bdd.enumerateAllModels()).hasSize(6);
         assertThat(bdd.enumerateAllModels(f.variable("A"))).hasSize(2);

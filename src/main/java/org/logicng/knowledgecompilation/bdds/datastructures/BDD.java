@@ -125,16 +125,6 @@ public final class BDD {
     }
 
     /**
-     * Returns the model count of this BDD with a given number of unimportant variables.
-     * // TODO: better explanation for this method
-     * @param unimportantVars the number of unimportant variables
-     * @return the model count
-     */
-    public BigInteger modelCount(final int unimportantVars) {
-        return modelCount().divide(BigInteger.valueOf((int) Math.pow(2, unimportantVars)));
-    }
-
-    /**
      * Enumerates all models of this BDD.
      * @return the list of all models
      */
