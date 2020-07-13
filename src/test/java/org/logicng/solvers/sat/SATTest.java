@@ -948,7 +948,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                 solver.add(this.f.parse("A <=> B"));
                 solver.add(this.f.parse("B <=> ~A"));
                 assertThat(solver.execute(new FormulaOnSolverFunction()))
-                        .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | ~A"));
+                        .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"));
                 solver.sat();
                 assertThat(solver.execute(new FormulaOnSolverFunction()))
                         .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"),
