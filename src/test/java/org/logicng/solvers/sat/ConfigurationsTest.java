@@ -72,7 +72,7 @@ public class ConfigurationsTest extends TestWithExampleFormulas {
                 "incremental=false%n" +
                 "initialPhase=true%n" +
                 "proofGeneration=false%n" +
-                "cnfMethod=FULL_PG_ON_SOLVER%n" +
+                "cnfMethod=PG_ON_SOLVER%n" +
                 "auxiliaryVariablesInModels=false%n" +
                 "bbInitialUBCheckForRotatableLiterals=true%n" +
                 "bbCheckForComplementModelLiterals=true%n" +

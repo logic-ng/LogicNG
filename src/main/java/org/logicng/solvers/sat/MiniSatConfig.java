@@ -209,7 +209,7 @@ public final class MiniSatConfig extends Configuration {
         private boolean incremental = true;
         private boolean initialPhase = false;
         private boolean proofGeneration = false;
-        private CNFMethod cnfMethod = CNFMethod.FULL_PG_ON_SOLVER;
+        private CNFMethod cnfMethod = CNFMethod.PG_ON_SOLVER;
         private boolean auxiliaryVariablesInModels = false;
         private boolean bbInitialUBCheckForRotatableLiterals = true;
         private boolean bbCheckForComplementModelLiterals = true;
