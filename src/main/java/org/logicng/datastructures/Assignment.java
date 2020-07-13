@@ -53,10 +53,10 @@ import java.util.TreeSet;
  */
 public final class Assignment {
 
-    protected final List<Variable> negVars;
-    protected Collection<Variable> pos;
-    protected Collection<Literal> neg;
-    protected boolean fastEvaluable;
+    private final List<Variable> negVars;
+    private Collection<Variable> pos;
+    private Collection<Literal> neg;
+    private boolean fastEvaluable;
 
     /**
      * Constructs a new empty assignment (without fast evaluation).

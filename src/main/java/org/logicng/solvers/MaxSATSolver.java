@@ -56,7 +56,7 @@ import java.util.TreeMap;
  * @version 2.0.0
  * @since 1.0
  */
-public final class MaxSATSolver {
+public class MaxSATSolver {
 
     protected enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
 

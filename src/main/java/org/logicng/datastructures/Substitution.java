@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public final class Substitution {
 
-    protected final Map<Variable, Formula> subst;
+    private final Map<Variable, Formula> subst;
 
     /**
      * Constructs a new empty substitution.

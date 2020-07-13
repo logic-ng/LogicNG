@@ -1431,7 +1431,7 @@ public class BDDKernel {
     /**
      * A class for BDD statistics.
      */
-    public static final class BDDStatistics {
+    public static class BDDStatistics {
         protected long produced;
         protected int nodesize;
         protected int freenum;

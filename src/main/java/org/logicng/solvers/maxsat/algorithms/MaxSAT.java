@@ -454,7 +454,7 @@ public abstract class MaxSAT {
     /**
      * The MaxSAT solver statistics.
      */
-    public final class Stats {
+    public class Stats {
         protected final int ubC;
         protected final int nbS;
         protected final int nbC;
