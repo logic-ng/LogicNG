@@ -62,21 +62,21 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 /**
  * Encodes that at most 'rhs' literals can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-final class Totalizer extends Encoding {
+public class Totalizer extends Encoding {
 
-    private final LNGVector<LNGIntVector> totalizerIterativeLeft;
-    private final LNGVector<LNGIntVector> totalizerIterativeRight;
-    private final LNGVector<LNGIntVector> totalizerIterativeOutput;
-    private final LNGIntVector totalizerIterativeRhs;
-    private final int blocking;
-    private final LNGIntVector cardinalityOutlits;
-    private LNGIntVector cardinalityInlits;
-    private MaxSATConfig.IncrementalStrategy incrementalStrategy;
-    private int currentCardinalityRhs;
-    private boolean joinMode;
+    protected final LNGVector<LNGIntVector> totalizerIterativeLeft;
+    protected final LNGVector<LNGIntVector> totalizerIterativeRight;
+    protected final LNGVector<LNGIntVector> totalizerIterativeOutput;
+    protected final LNGIntVector totalizerIterativeRhs;
+    protected final int blocking;
+    protected final LNGIntVector cardinalityOutlits;
+    protected LNGIntVector cardinalityInlits;
+    protected MaxSATConfig.IncrementalStrategy incrementalStrategy;
+    protected int currentCardinalityRhs;
+    protected boolean joinMode;
 
     /**
      * Constructs a new totalizer with a given incremental strategy.
@@ -222,7 +222,7 @@ final class Totalizer extends Encoding {
         this.hasEncoding = true;
     }
 
-    private void toCNF(final MiniSatStyleSolver s, final LNGIntVector lits) {
+    protected void toCNF(final MiniSatStyleSolver s, final LNGIntVector lits) {
         final LNGIntVector left = new LNGIntVector();
         final LNGIntVector right = new LNGIntVector();
         assert lits.size() > 1;
@@ -259,7 +259,7 @@ final class Totalizer extends Encoding {
         }
     }
 
-    private void adder(final MiniSatStyleSolver s, final LNGIntVector left, final LNGIntVector right, final LNGIntVector output) {
+    protected void adder(final MiniSatStyleSolver s, final LNGIntVector left, final LNGIntVector right, final LNGIntVector output) {
         assert output.size() == left.size() + right.size();
         if (this.incrementalStrategy == MaxSATConfig.IncrementalStrategy.ITERATIVE) {
             this.totalizerIterativeLeft.push(new LNGIntVector(left));
@@ -286,7 +286,7 @@ final class Totalizer extends Encoding {
         }
     }
 
-    private void incremental(final MiniSatStyleSolver s, final int rhs) {
+    protected void incremental(final MiniSatStyleSolver s, final int rhs) {
         for (int z = 0; z < this.totalizerIterativeRhs.size(); z++) {
             for (int i = 0; i <= this.totalizerIterativeLeft.get(z).size(); i++) {
                 for (int j = 0; j <= this.totalizerIterativeRight.get(z).size(); j++) {

@@ -36,10 +36,10 @@ import java.util.Set;
 /**
  * A simple data structure for a hypergraph.
  * @param <T> the content type of the graph's nodes
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-public class Hypergraph<T> {
+public final class Hypergraph<T> {
 
     private final LinkedHashSet<HypergraphNode<T>> nodes;
     private final LinkedHashSet<HypergraphEdge<T>> edges;

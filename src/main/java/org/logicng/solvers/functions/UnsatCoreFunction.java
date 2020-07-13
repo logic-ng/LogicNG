@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class UnsatCoreFunction implements SolverFunction<UNSATCore<Proposition>> {
+public final class UnsatCoreFunction implements SolverFunction<UNSATCore<Proposition>> {
 
     @Override
     public UNSATCore<Proposition> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {

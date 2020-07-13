@@ -46,17 +46,17 @@ import java.util.List;
  */
 public class CNFEncoder {
 
-    private final FormulaFactory f;
-    private final CNFConfig config;
-    private final CNFConfig defaultConfig;
+    protected final FormulaFactory f;
+    protected final CNFConfig config;
+    protected final CNFConfig defaultConfig;
 
-    private CNFFactorization factorization;
-    private CNFFactorization advancedFactorization;
-    private BDDCNFTransformation bddCnfTransformation;
-    private TseitinTransformation tseitin;
-    private PlaistedGreenbaumTransformation plaistedGreenbaum;
-    private int currentAtomBoundary;
-    private AdvancedFactorizationHandler factorizationHandler;
+    protected CNFFactorization factorization;
+    protected CNFFactorization advancedFactorization;
+    protected BDDCNFTransformation bddCnfTransformation;
+    protected TseitinTransformation tseitin;
+    protected PlaistedGreenbaumTransformation plaistedGreenbaum;
+    protected int currentAtomBoundary;
+    protected AdvancedFactorizationHandler factorizationHandler;
 
     /**
      * Constructs a new CNF encoder with a given configuration.
@@ -124,7 +124,7 @@ public class CNFEncoder {
      * @param formula the formula
      * @return the CNF encoding of the formula
      */
-    private Formula advancedEncoding(final Formula formula) {
+    protected Formula advancedEncoding(final Formula formula) {
         if (formula.type() == FType.AND) {
             final List<Formula> operands = new ArrayList<>(formula.numberOfOperands());
             for (final Formula op : formula) {
@@ -135,7 +135,7 @@ public class CNFEncoder {
         return singleAdvancedEncoding(formula);
     }
 
-    private Formula singleAdvancedEncoding(final Formula formula) {
+    protected Formula singleAdvancedEncoding(final Formula formula) {
         Formula result = formula.transform(this.advancedFactorization);
         if (result == null) {
             switch (this.config().fallbackAlgorithmForAdvancedEncoding) {
@@ -182,14 +182,14 @@ public class CNFEncoder {
     /**
      * The factorization handler for the advanced CNF encoding.
      */
-    private static class AdvancedFactorizationHandler extends ComputationHandler implements FactorizationHandler {
+    protected static class AdvancedFactorizationHandler extends ComputationHandler implements FactorizationHandler {
 
-        private int distributionBoundary;
-        private int createdClauseBoundary;
-        private int currentDistributions;
-        private int currentClauses;
+        protected int distributionBoundary;
+        protected int createdClauseBoundary;
+        protected int currentDistributions;
+        protected int currentClauses;
 
-        private void setBounds(final int distributionBoundary, final int createdClauseBoundary) {
+        protected void setBounds(final int distributionBoundary, final int createdClauseBoundary) {
             this.distributionBoundary = distributionBoundary;
             this.createdClauseBoundary = createdClauseBoundary;
         }

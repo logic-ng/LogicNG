@@ -73,17 +73,17 @@ public final class MiniSat extends SATSolver {
 
     public enum SolverStyle {MINISAT, GLUCOSE, MINICARD}
 
-    private final MiniSatConfig config;
-    private final MiniSatStyleSolver solver;
-    private final CCEncoder ccEncoder;
-    private final SolverStyle style;
-    private final LNGIntVector validStates;
-    private final boolean initialPhase;
-    private final boolean incremental;
-    private int nextStateId;
-    private final PlaistedGreenbaumTransformationSolver pgTransformation;
-    private final PlaistedGreenbaumTransformationSolver fullPgTransformation;
-    private boolean lastComputationWithAssumptions;
+    protected final MiniSatConfig config;
+    protected final MiniSatStyleSolver solver;
+    protected final CCEncoder ccEncoder;
+    protected final SolverStyle style;
+    protected final LNGIntVector validStates;
+    protected final boolean initialPhase;
+    protected final boolean incremental;
+    protected int nextStateId;
+    protected final PlaistedGreenbaumTransformationSolver pgTransformation;
+    protected final PlaistedGreenbaumTransformationSolver fullPgTransformation;
+    protected boolean lastComputationWithAssumptions;
 
     /**
      * Constructs a new SAT solver instance.
@@ -91,8 +91,8 @@ public final class MiniSat extends SATSolver {
      * @param solverStyle the solver style
      * @throws IllegalArgumentException if the solver style is unknown
      */
-    private MiniSat(final FormulaFactory f, final SolverStyle solverStyle, final MiniSatConfig miniSatConfig,
-                    final GlucoseConfig glucoseConfig) {
+    protected MiniSat(final FormulaFactory f, final SolverStyle solverStyle, final MiniSatConfig miniSatConfig,
+                      final GlucoseConfig glucoseConfig) {
         super(f);
         this.config = miniSatConfig;
         this.style = solverStyle;
@@ -207,7 +207,7 @@ public final class MiniSat extends SATSolver {
         }
     }
 
-    private void addFormulaAsCNF(final Formula formula, final Proposition proposition) {
+    protected void addFormulaAsCNF(final Formula formula, final Proposition proposition) {
         if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.FACTORY_CNF) {
             this.addClauseSet(formula.cnf(), proposition);
         } else if (this.config.getCnfMethod() == MiniSatConfig.CNFMethod.PG_ON_SOLVER) {
@@ -353,7 +353,7 @@ public final class MiniSat extends SATSolver {
      * @param literals the literals
      * @return the clause vector
      */
-    private LNGIntVector generateClauseVector(final Collection<? extends Literal> literals) {
+    protected LNGIntVector generateClauseVector(final Collection<? extends Literal> literals) {
         final LNGIntVector clauseVec = new LNGIntVector(literals.size());
         for (final Literal lit : literals) {
             final int index = getOrAddIndex(lit);
@@ -363,7 +363,7 @@ public final class MiniSat extends SATSolver {
         return clauseVec;
     }
 
-    private int getOrAddIndex(final Literal lit) {
+    protected int getOrAddIndex(final Literal lit) {
         int index = this.solver.idxForName(lit.name());
         if (index == -1) {
             index = this.solver.newVar(!this.initialPhase, true);
@@ -436,7 +436,7 @@ public final class MiniSat extends SATSolver {
         return String.format("%s{result=%s, incremental=%s}", this.solver.getClass().getSimpleName(), this.result, this.incremental);
     }
 
-    private boolean lastResultIsUsable() {
+    protected boolean lastResultIsUsable() {
         return this.result != UNDEF && !this.lastComputationWithAssumptions;
     }
 
@@ -482,7 +482,7 @@ public final class MiniSat extends SATSolver {
         return this.result;
     }
 
-    private void setResult(final Tristate tristate) {
+    protected void setResult(final Tristate tristate) {
         this.result = tristate;
     }
 

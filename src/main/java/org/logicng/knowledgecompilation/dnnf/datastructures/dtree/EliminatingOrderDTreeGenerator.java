@@ -56,7 +56,7 @@ public abstract class EliminatingOrderDTreeGenerator implements DTreeGenerator {
         return compose(sigma);
     }
 
-    private DTree compose(final List<DTree> trees) {
+    protected DTree compose(final List<DTree> trees) {
         assert !trees.isEmpty();
 
         if (trees.size() == 1) {

@@ -28,6 +28,8 @@
 
 package org.logicng.cardinalityconstraints;
 
+import static org.logicng.util.FormulaHelper.literalsAsVariables;
+
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.EncodingResult;
@@ -39,8 +41,6 @@ import org.logicng.util.Pair;
 
 import java.util.Collections;
 import java.util.List;
-
-import static org.logicng.util.FormulaHelper.literalsAsVariables;
 
 /**
  * An encoder for cardinality constraints.
@@ -59,28 +59,28 @@ import static org.logicng.util.FormulaHelper.literalsAsVariables;
  */
 public class CCEncoder {
 
-    private final FormulaFactory f;
-    private final CCConfig config;
-    private final CCConfig defaultConfig;
+    protected final FormulaFactory f;
+    protected final CCConfig config;
+    protected final CCConfig defaultConfig;
 
-    private CCAMOPure amoPure;
-    private CCAMOLadder amoLadder;
-    private CCAMOProduct amoProduct;
-    private CCAMONested amoNested;
-    private CCAMOCommander amoCommander;
-    private CCAMOBinary amoBinary;
-    private CCAMOBimander amoBimander;
+    protected CCAMOPure amoPure;
+    protected CCAMOLadder amoLadder;
+    protected CCAMOProduct amoProduct;
+    protected CCAMONested amoNested;
+    protected CCAMOCommander amoCommander;
+    protected CCAMOBinary amoBinary;
+    protected CCAMOBimander amoBimander;
 
-    private CCAMKCardinalityNetwork amkCardinalityNetwork;
-    private CCAMKModularTotalizer amkModularTotalizer;
-    private CCAMKTotalizer amkTotalizer;
+    protected CCAMKCardinalityNetwork amkCardinalityNetwork;
+    protected CCAMKModularTotalizer amkModularTotalizer;
+    protected CCAMKTotalizer amkTotalizer;
 
-    private CCALKTotalizer alkTotalizer;
-    private CCALKModularTotalizer alkModularTotalizer;
-    private CCALKCardinalityNetwork alkCardinalityNetwork;
+    protected CCALKTotalizer alkTotalizer;
+    protected CCALKModularTotalizer alkModularTotalizer;
+    protected CCALKCardinalityNetwork alkCardinalityNetwork;
 
-    private CCEXKTotalizer exkTotalizer;
-    private CCEXKCardinalityNetwork exkCardinalityNetwork;
+    protected CCEXKTotalizer exkTotalizer;
+    protected CCEXKCardinalityNetwork exkCardinalityNetwork;
 
     /**
      * Constructs a new cardinality constraint encoder with a given configuration.
@@ -142,7 +142,7 @@ public class CCEncoder {
         return this.encodeIncrementalConstraint(cc, result);
     }
 
-    private CCIncrementalData encodeIncrementalConstraint(final CardinalityConstraint cc, final EncodingResult result) {
+    protected CCIncrementalData encodeIncrementalConstraint(final CardinalityConstraint cc, final EncodingResult result) {
         final Variable[] ops = literalsAsVariables(cc.operands());
         if (cc.isAmo()) {
             throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
@@ -180,7 +180,7 @@ public class CCEncoder {
      * @param cc     the constraint
      * @param result the result
      */
-    private void encodeConstraint(final CardinalityConstraint cc, final EncodingResult result) {
+    protected void encodeConstraint(final CardinalityConstraint cc, final EncodingResult result) {
         final Variable[] ops = literalsAsVariables(cc.operands());
         switch (cc.comparator()) {
             case LE:
@@ -220,7 +220,7 @@ public class CCEncoder {
      * @param result the result
      * @param vars   the variables of the constraint
      */
-    private void amo(final EncodingResult result, final Variable... vars) {
+    protected void amo(final EncodingResult result, final Variable... vars) {
         if (vars.length <= 1) {
             return;
         }
@@ -294,7 +294,7 @@ public class CCEncoder {
      * @param result the result
      * @param vars   the variables of the constraint
      */
-    private void exo(final EncodingResult result, final Variable... vars) {
+    protected void exo(final EncodingResult result, final Variable... vars) {
         if (vars.length == 0) {
             result.addClause();
             return;
@@ -313,7 +313,7 @@ public class CCEncoder {
      * @param vars   the variables of the constraint
      * @param rhs    the right hand side of the constraint
      */
-    private void amk(final EncodingResult result, final Variable[] vars, final int rhs) {
+    protected void amk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
             throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
         }
@@ -361,7 +361,7 @@ public class CCEncoder {
      * @param rhs    the right hand side of the constraint
      * @return the incremental data
      */
-    private CCIncrementalData amkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
+    protected CCIncrementalData amkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
             throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
         }
@@ -408,7 +408,7 @@ public class CCEncoder {
      * @param vars   the variables of the constraint
      * @param rhs    the right hand side of the constraint
      */
-    private void alk(final EncodingResult result, final Variable[] vars, final int rhs) {
+    protected void alk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
             throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
         }
@@ -463,7 +463,7 @@ public class CCEncoder {
      * @param rhs    the right hand side of the constraint
      * @return the incremental data
      */
-    private CCIncrementalData alkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
+    protected CCIncrementalData alkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
             throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
         }
@@ -517,7 +517,7 @@ public class CCEncoder {
      * @param vars   the variables of the constraint
      * @param rhs    the right hand side of the constraint
      */
-    private void exk(final EncodingResult result, final Variable[] vars, final int rhs) {
+    protected void exk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
             throw new IllegalArgumentException("Invalid right hand side of cardinality constraint: " + rhs);
         }
@@ -565,7 +565,7 @@ public class CCEncoder {
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
-    private CCAtMostOne bestAMO(final int n) {
+    protected CCAtMostOne bestAMO(final int n) {
         if (n <= 10) {
             if (this.amoPure == null) {
                 this.amoPure = new CCAMOPure();
@@ -586,7 +586,7 @@ public class CCEncoder {
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
-    private CCAtMostK bestAMK(final int n) {
+    protected CCAtMostK bestAMK(final int n) {
         if (this.amkModularTotalizer == null) {
             this.amkModularTotalizer = new CCAMKModularTotalizer(this.f);
         }
@@ -600,7 +600,7 @@ public class CCEncoder {
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
-    private CCAtLeastK bestALK(final int n) {
+    protected CCAtLeastK bestALK(final int n) {
         if (this.alkModularTotalizer == null) {
             this.alkModularTotalizer = new CCALKModularTotalizer(this.f);
         }
@@ -614,7 +614,7 @@ public class CCEncoder {
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
-    private CCExactlyK bestEXK(final int n) {
+    protected CCExactlyK bestEXK(final int n) {
         if (this.exkTotalizer == null) {
             this.exkTotalizer = new CCEXKTotalizer();
         }

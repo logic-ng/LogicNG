@@ -41,7 +41,7 @@ import java.util.function.Consumer;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class FormulaOnSolverFunction implements SolverFunction<Set<Formula>> {
+public final class FormulaOnSolverFunction implements SolverFunction<Set<Formula>> {
 
     @Override
     public Set<Formula> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {

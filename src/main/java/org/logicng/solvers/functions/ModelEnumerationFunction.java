@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
+public final class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
 
     private final ModelEnumerationHandler handler;
     private final Collection<Variable> variables;

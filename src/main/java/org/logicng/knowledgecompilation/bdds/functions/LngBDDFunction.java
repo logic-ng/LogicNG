@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class LngBDDFunction implements BDDFunction<BDDNode> {
+public final class LngBDDFunction implements BDDFunction<BDDNode> {
 
     @Override
     public BDDNode apply(final BDD bdd) {

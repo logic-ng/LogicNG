@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class BackboneFunction implements SolverFunction<Backbone> {
+public final class BackboneFunction implements SolverFunction<Backbone> {
 
     private final Collection<Variable> variables;
     private final BackboneType type;

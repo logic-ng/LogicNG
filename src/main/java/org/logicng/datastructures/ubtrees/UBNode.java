@@ -8,10 +8,10 @@ import java.util.TreeMap;
 /**
  * A node in a UBTree, holding a comparable element.
  * @param <T> The element type of the node, must be comparable
- * @version 1.5.0
+ * @version 2.0.0
  * @since 1.5.0
  */
-public class UBNode<T extends Comparable<T>> {
+public final class UBNode<T extends Comparable<T>> {
 
     private final T element;
     private final SortedMap<T, UBNode<T>> children;
@@ -21,7 +21,7 @@ public class UBNode<T extends Comparable<T>> {
      * Constructs a new UB Tree node with the given element.
      * @param element the node's element
      */
-    UBNode(T element) {
+    UBNode(final T element) {
         this.element = element;
         this.children = new TreeMap<>();
     }
@@ -69,30 +69,30 @@ public class UBNode<T extends Comparable<T>> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UBNode<?> ubNode = (UBNode<?>) o;
-        return Objects.equals(element, ubNode.element) &&
-                Objects.equals(children, ubNode.children) &&
-                Objects.equals(set, ubNode.set);
+        final UBNode<?> ubNode = (UBNode<?>) o;
+        return Objects.equals(this.element, ubNode.element) &&
+                Objects.equals(this.children, ubNode.children) &&
+                Objects.equals(this.set, ubNode.set);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(element, children, set);
+        return Objects.hash(this.element, this.children, this.set);
     }
 
     @Override
     public String toString() {
         return "UBNode{" +
-                "element=" + element +
-                ", children=" + children +
-                ", set=" + set +
+                "element=" + this.element +
+                ", children=" + this.children +
+                ", set=" + this.set +
                 '}';
     }
 }

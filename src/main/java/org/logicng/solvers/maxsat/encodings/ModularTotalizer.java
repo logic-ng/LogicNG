@@ -60,19 +60,19 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 /**
  * Encodes that at most 'rhs' literals can be assigned value true.  Uses the modular totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-final class ModularTotalizer extends Encoding {
+public class ModularTotalizer extends Encoding {
 
-    private static final int LIT_ERROR = -2;
+    protected static final int LIT_ERROR = -2;
 
-    private final int h0;
-    private final LNGIntVector cardinalityUpoutlits;
-    private final LNGIntVector cardinalityLwoutlits;
-    private int modulo;
-    private LNGIntVector cardinalityInlits;
-    private int currentCardinalityRhs;
+    protected final int h0;
+    protected final LNGIntVector cardinalityUpoutlits;
+    protected final LNGIntVector cardinalityLwoutlits;
+    protected int modulo;
+    protected LNGIntVector cardinalityInlits;
+    protected int currentCardinalityRhs;
 
     /**
      * Constructs a new modular totalizer.
@@ -162,7 +162,7 @@ final class ModularTotalizer extends Encoding {
         this.currentCardinalityRhs = rhs + 1;
     }
 
-    private void encodeOutput(final MiniSatStyleSolver s, final int rhs) {
+    protected void encodeOutput(final MiniSatStyleSolver s, final int rhs) {
         assert this.hasEncoding;
         assert this.cardinalityUpoutlits.size() != 0 || this.cardinalityLwoutlits.size() != 0;
         final int mod = this.modulo;
@@ -189,7 +189,7 @@ final class ModularTotalizer extends Encoding {
         }
     }
 
-    private void toCNF(final MiniSatStyleSolver s, final int mod, final LNGIntVector ublits, final LNGIntVector lwlits, final int rhs) {
+    protected void toCNF(final MiniSatStyleSolver s, final int mod, final LNGIntVector ublits, final LNGIntVector lwlits, final int rhs) {
         final LNGIntVector lupper = new LNGIntVector();
         final LNGIntVector llower = new LNGIntVector();
         final LNGIntVector rupper = new LNGIntVector();
@@ -257,9 +257,9 @@ final class ModularTotalizer extends Encoding {
         }
     }
 
-    private void adder(final MiniSatStyleSolver s, final int mod, final LNGIntVector upper, final LNGIntVector lower,
-                       final LNGIntVector lupper, final LNGIntVector llower, final LNGIntVector rupper,
-                       final LNGIntVector rlower) {
+    protected void adder(final MiniSatStyleSolver s, final int mod, final LNGIntVector upper, final LNGIntVector lower,
+                         final LNGIntVector lupper, final LNGIntVector llower, final LNGIntVector rupper,
+                         final LNGIntVector rlower) {
         assert upper.size() != 0;
         assert lower.size() >= llower.size() && lower.size() >= rlower.size();
         int carry = LIT_UNDEF;

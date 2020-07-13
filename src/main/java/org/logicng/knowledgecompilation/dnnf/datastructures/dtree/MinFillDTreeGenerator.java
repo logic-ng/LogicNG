@@ -29,7 +29,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
     /**
      * Undirected Graph
      */
-    private static class Graph {
+    protected static class Graph {
         final int numberOfVertices;
         final int numberOfEdges;
 
@@ -87,7 +87,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
             this.numberOfEdges = numberOfEdges;
         }
 
-        private List<LNGIntVector> getCopyOfEdgeList() {
+        protected List<LNGIntVector> getCopyOfEdgeList() {
             final List<LNGIntVector> result = new ArrayList<>();
             for (final LNGIntVector edge : this.edgeList) {
                 result.add(new LNGIntVector(edge));
@@ -95,7 +95,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
             return result;
         }
 
-        private boolean[][] getCopyOfAdjMatrix() {
+        protected boolean[][] getCopyOfAdjMatrix() {
             final boolean[][] result = new boolean[this.numberOfVertices][this.numberOfVertices];
             for (int i = 0; i < this.numberOfVertices; i++) {
                 result[i] = Arrays.copyOf(this.adjMatrix[i], this.numberOfVertices);

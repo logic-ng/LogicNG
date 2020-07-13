@@ -74,7 +74,7 @@ import java.util.Iterator;
  * @version 2.0.0
  * @since 1.4.0
  */
-public class BDDFactory {
+public final class BDDFactory {
 
     private BDDFactory() {
         // not to be instantiated

@@ -91,54 +91,54 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * Glucose 4.0 solver.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class GlucoseSyrup extends MiniSatStyleSolver {
+public class GlucoseSyrup extends MiniSatStyleSolver {
 
     /**
      * the ratio of clauses which will be removed
      */
-    private static final int RATIO_REMOVE_CLAUSES = 2;
+    protected static final int RATIO_REMOVE_CLAUSES = 2;
 
     /**
      * the lower bound for blocking restarts
      */
-    private static final int LB_BLOCKING_RESTART = 10000;
+    protected static final int LB_BLOCKING_RESTART = 10000;
 
     // external solver configuration
-    private final GlucoseConfig glucoseConfig;
+    protected final GlucoseConfig glucoseConfig;
 
     // internal solver state
-    private LNGVector<LNGVector<MSWatcher>> watchesBin;
-    private LNGIntVector permDiff;
-    private LNGIntVector lastDecisionLevel;
-    private LNGBoundedLongQueue lbdQueue;
-    private LNGBoundedIntQueue trailQueue;
-    private LNGBooleanVector assump;
-    private int myflag;
-    private long analyzeLBD;
-    private int analyzeSzWithoutSelectors;
-    private int nbclausesbeforereduce;
-    private int conflicts;
-    private int conflictsRestarts;
-    private double sumLBD;
-    private int curRestart;
+    protected LNGVector<LNGVector<MSWatcher>> watchesBin;
+    protected LNGIntVector permDiff;
+    protected LNGIntVector lastDecisionLevel;
+    protected LNGBoundedLongQueue lbdQueue;
+    protected LNGBoundedIntQueue trailQueue;
+    protected LNGBooleanVector assump;
+    protected int myflag;
+    protected long analyzeLBD;
+    protected int analyzeSzWithoutSelectors;
+    protected int nbclausesbeforereduce;
+    protected int conflicts;
+    protected int conflictsRestarts;
+    protected double sumLBD;
+    protected int curRestart;
 
     // solver configuration
-    private int lbLBDMinimizingClause;
-    private int lbLBDFrozenClause;
-    private int lbSizeMinimizingClause;
-    private int firstReduceDB;
-    private int specialIncReduceDB;
-    private int incReduceDB;
-    private double factorK;
-    private double factorR;
-    private int sizeLBDQueue;
-    private int sizeTrailQueue;
-    private boolean reduceOnSize;
-    private int reduceOnSizeSize;
-    private double maxVarDecay;
+    protected int lbLBDMinimizingClause;
+    protected int lbLBDFrozenClause;
+    protected int lbSizeMinimizingClause;
+    protected int firstReduceDB;
+    protected int specialIncReduceDB;
+    protected int incReduceDB;
+    protected double factorK;
+    protected double factorR;
+    protected int sizeLBDQueue;
+    protected int sizeTrailQueue;
+    protected boolean reduceOnSize;
+    protected int reduceOnSizeSize;
+    protected double maxVarDecay;
 
     /**
      * Constructs a new Glucose 2 solver with the default values for solver configuration.  By default, incremental mode
@@ -162,7 +162,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     /**
      * Initializes the additional parameters.
      */
-    private void initializeGlucose() {
+    protected void initializeGlucose() {
         this.initializeGlucoseConfig();
         this.watchesBin = new LNGVector<>();
         this.permDiff = new LNGIntVector();
@@ -186,7 +186,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
     /**
      * Initializes the glucose configuration.
      */
-    private void initializeGlucoseConfig() {
+    protected void initializeGlucoseConfig() {
         this.lbLBDMinimizingClause = this.glucoseConfig.lbLBDMinimizingClause;
         this.lbLBDFrozenClause = this.glucoseConfig.lbLBDFrozenClause;
         this.lbSizeMinimizingClause = this.glucoseConfig.lbSizeMinimizingClause;
@@ -661,7 +661,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * @param e    parameter for incremental mode
      * @return the LBD
      */
-    private long computeLBD(final LNGIntVector lits, final int e) {
+    protected long computeLBD(final LNGIntVector lits, final int e) {
         int end = e;
         long nblevels = 0;
         this.myflag++;
@@ -707,7 +707,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * @param c the clause
      * @return the LBD
      */
-    private long computeLBD(final MSClause c) {
+    protected long computeLBD(final MSClause c) {
         long nblevels = 0;
         this.myflag++;
         if (this.incremental) {
@@ -749,7 +749,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * @param v the variable
      * @return {@code true} if the given variable is a selector variable
      */
-    private boolean isSelector(final int v) {
+    protected boolean isSelector(final int v) {
         return this.incremental && this.assump.get(v);
     }
 
@@ -757,7 +757,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * A special clause minimization by binary resolution for small clauses.
      * @param outLearnt the vector where the new learnt 1-UIP clause is stored
      */
-    private void minimisationWithBinaryResolution(final LNGIntVector outLearnt) {
+    protected void minimisationWithBinaryResolution(final LNGIntVector outLearnt) {
         final long lbd = computeLBD(outLearnt, -1);
         int p = not(outLearnt.get(0));
         if (lbd <= this.lbLBDMinimizingClause) {
@@ -794,7 +794,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
      * formula is SAT, and {@code UNKNOWN} if the state is not known yet (restart)
      */
-    private Tristate search() {
+    protected Tristate search() {
         assert this.ok;
         final LNGIntVector learntClause = new LNGIntVector();
         final LNGIntVector selectors = new LNGIntVector();
@@ -905,8 +905,8 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * @param outLearnt      the vector where the new learnt 1-UIP clause is stored
      * @param selectors      a vector of selector variables
      */
-    private void analyze(final MSClause conflictClause, final LNGIntVector outLearnt,
-                         final LNGIntVector selectors) {
+    protected void analyze(final MSClause conflictClause, final LNGIntVector outLearnt,
+                           final LNGIntVector selectors) {
         MSClause c = conflictClause;
         int pathC = 0;
         int p = LIT_UNDEF;
@@ -974,7 +974,7 @@ public final class GlucoseSyrup extends MiniSatStyleSolver {
      * @param outLearnt the learnt clause which should be minimized
      * @param selectors a vector of selector variables
      */
-    private void simplifyClause(final LNGIntVector outLearnt, final LNGIntVector selectors) {
+    protected void simplifyClause(final LNGIntVector outLearnt, final LNGIntVector selectors) {
         int i;
         int j;
         for (i = 0; i < selectors.size(); i++) {

@@ -19,17 +19,17 @@ import java.util.SortedSet;
  */
 public class DTreeLeaf extends DTree {
 
-    private final int id;
-    private final Formula clause;
-    private final int clauseSize;
+    protected final int id;
+    protected final Formula clause;
+    protected final int clauseSize;
 
-    private int[] literals;
-    private int[] dynamicVarSetHelper;
+    protected int[] literals;
+    protected int[] dynamicVarSetHelper;
 
-    private final BitSet separatorBitSet = new BitSet();
+    protected final BitSet separatorBitSet = new BitSet();
 
-    private DNNFSATSolver solver;
-    private final int[] staticClauseIds;
+    protected DNNFSATSolver solver;
+    protected final int[] staticClauseIds;
 
     /**
      * Constructs a new leaf with the given id and clause.
@@ -86,7 +86,7 @@ public class DTreeLeaf extends DTree {
         }
     }
 
-    private boolean dynamicVarSet2(final BitSet vars) {
+    protected boolean dynamicVarSet2(final BitSet vars) {
         final int lit0 = this.literals[0];
         final Tristate lit0Val = this.solver.valueOf(lit0);
         if (lit0Val == Tristate.TRUE) {
@@ -106,7 +106,7 @@ public class DTreeLeaf extends DTree {
         return false;
     }
 
-    private boolean dynamicVarSetN(final BitSet vars) {
+    protected boolean dynamicVarSetN(final BitSet vars) {
         int toAdd = 0;
         for (int i = 0; i < this.literals.length; i++) {
             final int literal = this.literals[i];
@@ -145,7 +145,7 @@ public class DTreeLeaf extends DTree {
         }
     }
 
-    private boolean isSubsumed() {
+    protected boolean isSubsumed() {
         for (final int literal : this.literals) {
             if (this.solver.valueOf(literal) == Tristate.TRUE) {
                 return true;

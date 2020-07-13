@@ -17,10 +17,10 @@ import java.util.SortedSet;
 
 /**
  * A generator for hypergraphs from formulas.
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-public class HypergraphGenerator {
+public final class HypergraphGenerator {
 
     /**
      * Generates a hypergraph from a CNF given as a list of clauses.  Each variable is represented by a node in the

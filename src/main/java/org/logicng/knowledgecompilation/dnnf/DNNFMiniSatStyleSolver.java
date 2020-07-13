@@ -21,14 +21,14 @@ import java.util.List;
  * @version 2.0.0
  * @since 2.0.0
  */
-public final class DNNFMiniSatStyleSolver extends MiniSat2Solver implements DNNFSATSolver {
+public class DNNFMiniSatStyleSolver extends MiniSat2Solver implements DNNFSATSolver {
 
-    private boolean newlyImpliedDirty = false;
-    private int assertionLevel = -1;
-    private LNGIntVector lastLearnt = null;
-    private final FormulaFactory f;
-    private final Tristate[] assignment;
-    private final List<Literal> impliedOperands;
+    protected boolean newlyImpliedDirty = false;
+    protected int assertionLevel = -1;
+    protected LNGIntVector lastLearnt = null;
+    protected final FormulaFactory f;
+    protected final Tristate[] assignment;
+    protected final List<Literal> impliedOperands;
 
     /**
      * Constructs a new DNNF MiniSat solver with the given number of variables.
@@ -103,7 +103,7 @@ public final class DNNFMiniSatStyleSolver extends MiniSat2Solver implements DNNF
         }
     }
 
-    private LNGIntVector generateClauseVector(final Collection<Literal> literals) {
+    protected LNGIntVector generateClauseVector(final Collection<Literal> literals) {
         final LNGIntVector clauseVec = new LNGIntVector(literals.size());
         for (final Literal lit : literals) {
             int index = idxForName(lit.name());
@@ -176,12 +176,12 @@ public final class DNNFMiniSatStyleSolver extends MiniSat2Solver implements DNNF
         return this.f.and(this.impliedOperands);
     }
 
-    private Literal intToLiteral(final int lit) {
+    protected Literal intToLiteral(final int lit) {
         final String name = nameForIdx(var(lit));
         return this.f.literal(name, !sign(lit));
     }
 
-    private boolean propagateAfterDecide() {
+    protected boolean propagateAfterDecide() {
         final MSClause conflict = propagate();
         if (conflict != null) {
             handleConflict(conflict);
@@ -216,7 +216,7 @@ public final class DNNFMiniSatStyleSolver extends MiniSat2Solver implements DNNF
         }
     }
 
-    private void handleConflict(final MSClause conflict) {
+    protected void handleConflict(final MSClause conflict) {
         if (decisionLevel() > 0) {
             this.lastLearnt = new LNGIntVector();
             analyze(conflict, this.lastLearnt);

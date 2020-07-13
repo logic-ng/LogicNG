@@ -36,10 +36,10 @@ import java.util.Map;
 
 /**
  * A Boolean substitution.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
-public class Substitution {
+public final class Substitution {
 
     protected final Map<Variable, Formula> subst;
 

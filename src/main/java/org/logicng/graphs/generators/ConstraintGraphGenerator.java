@@ -12,7 +12,7 @@ import java.util.Collection;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class ConstraintGraphGenerator {
+public final class ConstraintGraphGenerator {
 
     /**
      * Constructs the constraint graph.

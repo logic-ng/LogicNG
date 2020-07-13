@@ -15,7 +15,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class DNNFModelCountFunction implements DNNFFunction<BigInteger> {
+public final class DNNFModelCountFunction implements DNNFFunction<BigInteger> {
 
     private static final DNNFModelCountFunction INSTANCE = new DNNFModelCountFunction();
 

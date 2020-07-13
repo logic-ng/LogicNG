@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class UpZeroLiteralsFunction implements SolverFunction<SortedSet<Literal>> {
+public final class UpZeroLiteralsFunction implements SolverFunction<SortedSet<Literal>> {
 
     @Override
     public SortedSet<Literal> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {

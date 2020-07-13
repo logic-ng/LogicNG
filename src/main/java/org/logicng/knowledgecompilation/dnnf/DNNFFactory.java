@@ -15,10 +15,10 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public final class DNNFFactory {
+public class DNNFFactory {
 
-    private final BackboneSimplifier backboneSimplifier;
-    private final CNFSubsumption subsumption;
+    protected final BackboneSimplifier backboneSimplifier;
+    protected final CNFSubsumption subsumption;
 
     /**
      * Constructs a new DNNF factory instance.
@@ -43,7 +43,7 @@ public final class DNNFFactory {
         return new DNNF(originalVariables, dnnf);
     }
 
-    private Formula simplifyFormula(final Formula formula) {
+    protected Formula simplifyFormula(final Formula formula) {
         return formula.transform(this.backboneSimplifier).transform(this.subsumption);
     }
 }

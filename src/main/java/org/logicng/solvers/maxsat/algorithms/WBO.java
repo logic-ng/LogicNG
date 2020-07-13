@@ -73,12 +73,12 @@ import java.util.TreeSet;
 
 /**
  * Weighted Boolean Optimization solver.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public class WBO extends MaxSAT {
 
-    private final PrintStream output;
+    protected final PrintStream output;
     protected MiniSatStyleSolver solver;
     protected int nbCurrentSoft;
     protected WeightStrategy weightStrategy;
@@ -137,7 +137,7 @@ public class WBO extends MaxSAT {
         throw new IllegalArgumentException("Unknown problem type.");
     }
 
-    private MiniSatStyleSolver rebuildWeightSolver(final WeightStrategy strategy) {
+    protected MiniSatStyleSolver rebuildWeightSolver(final WeightStrategy strategy) {
         assert strategy == WeightStrategy.NORMAL || strategy == WeightStrategy.DIVERSIFY;
         final MiniSatStyleSolver s = newSATSolver();
         for (int i = 0; i < nVars(); i++) {
@@ -191,7 +191,7 @@ public class WBO extends MaxSAT {
         return s;
     }
 
-    private MiniSatStyleSolver rebuildHardSolver() {
+    protected MiniSatStyleSolver rebuildHardSolver() {
         final MiniSatStyleSolver s = newSATSolver();
         for (int i = 0; i < nVars(); i++) {
             newSATVariable(s);
@@ -211,7 +211,7 @@ public class WBO extends MaxSAT {
         }
     }
 
-    private int findNextWeight(final int weight) {
+    protected int findNextWeight(final int weight) {
         int nextWeight = 1;
         for (int i = 0; i < nSoft(); i++) {
             if (this.softClauses.get(i).weight() > nextWeight && this.softClauses.get(i).weight() < weight) {
@@ -221,7 +221,7 @@ public class WBO extends MaxSAT {
         return nextWeight;
     }
 
-    private int findNextWeightDiversity(final int weight) {
+    protected int findNextWeightDiversity(final int weight) {
         assert this.weightStrategy == WeightStrategy.DIVERSIFY;
         assert this.nbSatisfiable > 0;
         int nextWeight = weight;
@@ -251,7 +251,7 @@ public class WBO extends MaxSAT {
         return nextWeight;
     }
 
-    private void encodeEO(final LNGIntVector lits) {
+    protected void encodeEO(final LNGIntVector lits) {
         assert lits.size() != 0;
         final LNGIntVector clause = new LNGIntVector();
         if (lits.size() == 1) {
@@ -304,7 +304,7 @@ public class WBO extends MaxSAT {
         }
     }
 
-    private void relaxCore(final LNGIntVector conflict, final int weightCore, final LNGIntVector assumps) {
+    protected void relaxCore(final LNGIntVector conflict, final int weightCore, final LNGIntVector assumps) {
         assert conflict.size() > 0;
         assert weightCore > 0;
         final LNGIntVector lits = new LNGIntVector();
@@ -376,7 +376,7 @@ public class WBO extends MaxSAT {
         }
     }
 
-    private void symmetryBreaking() {
+    protected void symmetryBreaking() {
         if (this.indexSoftCore.size() != 0 && this.nbSymmetryClauses < this.symmetryBreakingLimit) {
             final LNGIntVector[] coreIntersection = new LNGIntVector[this.nbCores];
             final LNGIntVector[] coreIntersectionCurrent = new LNGIntVector[this.nbCores];
@@ -461,7 +461,7 @@ public class WBO extends MaxSAT {
         return res;
     }
 
-    private MaxSATResult weightSearch() {
+    protected MaxSATResult weightSearch() {
         assert this.weightStrategy == WeightStrategy.NORMAL || this.weightStrategy == WeightStrategy.DIVERSIFY;
         final Tristate unsatResult = this.unsatSearch();
         if (unsatResult == UNDEF) {
@@ -529,7 +529,7 @@ public class WBO extends MaxSAT {
         }
     }
 
-    private MaxSATResult normalSearch() {
+    protected MaxSATResult normalSearch() {
         final Tristate unsatResult = this.unsatSearch();
         if (unsatResult == UNDEF) {
             return MaxSATResult.UNDEF;

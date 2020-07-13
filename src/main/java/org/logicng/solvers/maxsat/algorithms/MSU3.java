@@ -66,18 +66,18 @@ import java.util.TreeMap;
 
 /**
  * Non-incremental MSU3 solver.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class MSU3 extends MaxSAT {
+public class MSU3 extends MaxSAT {
 
-    private final Encoder encoder;
-    private final IncrementalStrategy incrementalStrategy;
-    private final LNGIntVector objFunction;
-    private final SortedMap<Integer, Integer> coreMapping;
-    private final LNGBooleanVector activeSoft;
-    private final PrintStream output;
-    private MiniSatStyleSolver solver;
+    protected final Encoder encoder;
+    protected final IncrementalStrategy incrementalStrategy;
+    protected final LNGIntVector objFunction;
+    protected final SortedMap<Integer, Integer> coreMapping;
+    protected final LNGBooleanVector activeSoft;
+    protected final PrintStream output;
+    protected MiniSatStyleSolver solver;
 
     /**
      * Constructs a new solver with default values.
@@ -120,7 +120,7 @@ public final class MSU3 extends MaxSAT {
         }
     }
 
-    private MaxSATResult none() {
+    protected MaxSATResult none() {
         this.nbInitialVariables = nVars();
         Tristate res;
         this.initRelaxation();
@@ -195,7 +195,7 @@ public final class MSU3 extends MaxSAT {
         }
     }
 
-    private MaxSATResult iterative() {
+    protected MaxSATResult iterative() {
         if (this.encoder.cardEncoding() != CardinalityEncoding.TOTALIZER) {
             throw new IllegalStateException("Error: Currently algorithm MSU3 with iterative encoding only  supports the totalizer encoding.");
         }
@@ -295,7 +295,7 @@ public final class MSU3 extends MaxSAT {
         }
     }
 
-    private MiniSatStyleSolver rebuildSolver() {
+    protected MiniSatStyleSolver rebuildSolver() {
         final MiniSatStyleSolver s = newSATSolver();
         for (int i = 0; i < nVars(); i++) {
             newSATVariable(s);
@@ -314,7 +314,7 @@ public final class MSU3 extends MaxSAT {
         return s;
     }
 
-    private void initRelaxation() {
+    protected void initRelaxation() {
         for (int i = 0; i < this.nbSoft; i++) {
             final int l = newLiteral(false);
             this.softClauses.get(i).relaxationVars().push(l);

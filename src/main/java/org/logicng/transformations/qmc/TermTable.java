@@ -40,15 +40,15 @@ import java.util.Vector;
 /**
  * A term table in the Quine–McCluskey algorithm.  The term table is used
  * for the line and column dominance checks.
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-class TermTable {
+public class TermTable {
 
-    private final Vector<Formula> columnHeaders;
-    private final Vector<Term> lineHeaders;
-    private final Vector<Vector<Boolean>> matrixLines;
-    private final Vector<Vector<Boolean>> matrixColumns;
+    protected final Vector<Formula> columnHeaders;
+    protected final Vector<Term> lineHeaders;
+    protected final Vector<Vector<Boolean>> matrixLines;
+    protected final Vector<Vector<Boolean>> matrixColumns;
 
     /**
      * Constructs a prime term table from a given list of terms.
@@ -89,7 +89,7 @@ class TermTable {
      * @param terms the terms
      * @return the column headers
      */
-    private Vector<Formula> initializeColumnHeaders(final LinkedHashSet<Term> terms) {
+    protected Vector<Formula> initializeColumnHeaders(final LinkedHashSet<Term> terms) {
         final LinkedHashSet<Formula> header = new LinkedHashSet<>();
         for (final Term term : terms) {
             header.addAll(term.minterms());
@@ -113,7 +113,7 @@ class TermTable {
      * Performs elimination of columns by dominance.
      * @return {@code true} if a elimination was performed, {@code false} otherwise
      */
-    private boolean eliminateColumnDominance() {
+    protected boolean eliminateColumnDominance() {
         final SortedSet<Integer> toEliminate = new TreeSet<>();
         for (int i = 0; i < this.matrixColumns.size(); i++) {
             for (int j = i + 1; j < this.matrixColumns.size(); j++) {
@@ -135,7 +135,7 @@ class TermTable {
      * Performs elimination of lines by dominance.
      * @return {@code true} if a elimination was performed, {@code false} otherwise
      */
-    private boolean eliminateLineDominance() {
+    protected boolean eliminateLineDominance() {
         final SortedSet<Integer> toEliminate = new TreeSet<>();
         for (int i = 0; i < this.matrixLines.size(); i++) {
             for (int j = i + 1; j < this.matrixLines.size(); j++) {
@@ -172,7 +172,7 @@ class TermTable {
      * Deletes a column at a given index.
      * @param colIndex the index
      */
-    private void deleteColumn(final int colIndex) {
+    protected void deleteColumn(final int colIndex) {
         this.columnHeaders.removeElementAt(colIndex);
         this.matrixColumns.removeElementAt(colIndex);
         for (final Vector<Boolean> line : this.matrixLines) {
@@ -184,7 +184,7 @@ class TermTable {
      * Deletes a line at a given index.
      * @param lineIndex the index
      */
-    private void deleteLine(final int lineIndex) {
+    protected void deleteLine(final int lineIndex) {
         this.lineHeaders.removeElementAt(lineIndex);
         this.matrixLines.removeElementAt(lineIndex);
         for (final Vector<Boolean> column : this.matrixColumns) {
@@ -256,7 +256,7 @@ class TermTable {
         return sb.toString();
     }
 
-    private String formatMatrixLine(final Vector<Boolean> booleans, final int size) {
+    protected String formatMatrixLine(final Vector<Boolean> booleans, final int size) {
         final StringBuilder sb = new StringBuilder();
         for (final Boolean entry : booleans) {
             sb.append(padRight((entry ? "X" : " "), size)).append(" | ");
@@ -264,7 +264,7 @@ class TermTable {
         return sb.toString();
     }
 
-    private String formatBits(final Tristate[] bits) {
+    protected String formatBits(final Tristate[] bits) {
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < bits.length; i++) {
@@ -283,7 +283,7 @@ class TermTable {
         return sb.toString();
     }
 
-    private static String padRight(final String s, final int n) {
+    protected static String padRight(final String s, final int n) {
         return String.format("%1$-" + n + "s", s);
     }
 }

@@ -51,7 +51,7 @@ import java.util.Map;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class FactorOutSimplifier implements FormulaTransformation {
+public final class FactorOutSimplifier implements FormulaTransformation {
 
     private final RatingFunction<? extends Number> ratingFunction;
 

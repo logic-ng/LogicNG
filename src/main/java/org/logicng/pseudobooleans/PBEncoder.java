@@ -51,13 +51,13 @@ import java.util.List;
  */
 public class PBEncoder {
 
-    private final FormulaFactory f;
-    private final PBConfig config;
-    private final PBConfig defaultConfig;
-    private final CCEncoder ccEncoder;
+    protected final FormulaFactory f;
+    protected final PBConfig config;
+    protected final PBConfig defaultConfig;
+    protected final CCEncoder ccEncoder;
 
-    private PBSWC swc;
-    private PBAdderNetworks adderNetworks;
+    protected PBSWC swc;
+    protected PBAdderNetworks adderNetworks;
 
     /**
      * Constructs a new pseudo-Boolean encoder with given configurations.
@@ -158,7 +158,7 @@ public class PBEncoder {
      * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative or
      *                                  larger than the number of literals
      */
-    private List<Formula> encode(final Literal[] lits, final int[] coeffs, final int rhs) {
+    protected List<Formula> encode(final Literal[] lits, final int[] coeffs, final int rhs) {
         if (rhs == Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Overflow in the Encoding");
         }

@@ -62,14 +62,13 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * A cardinality solver based on MiniCard.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class MiniCard extends MiniSatStyleSolver {
+public class MiniCard extends MiniSatStyleSolver {
 
-    private static final int LIT_ERROR = -2;
-
-    private LNGIntVector unitClauses;
+    protected static final int LIT_ERROR = -2;
+    protected LNGIntVector unitClauses;
 
     /**
      * Constructs a new MiniSAT 2 solver with the default values for solver configuration.  By default, incremental mode
@@ -91,7 +90,7 @@ public final class MiniCard extends MiniSatStyleSolver {
     /**
      * Initializes the additional parameters.
      */
-    private void initializeMiniSAT() {
+    protected void initializeMiniSAT() {
         this.unitClauses = new LNGIntVector();
         this.learntsizeAdjustConfl = 0;
         this.learntsizeAdjustCnt = 0;
@@ -615,7 +614,7 @@ public final class MiniCard extends MiniSatStyleSolver {
      * Detaches a given at-most clause.
      * @param c the at-most clause.
      */
-    private void detachAtMost(final MSClause c) {
+    protected void detachAtMost(final MSClause c) {
         for (int i = 0; i < c.atMostWatchers(); i++) {
             this.watches.get(c.get(i)).remove(new MSWatcher(c, c.get(i)));
         }
@@ -628,7 +627,7 @@ public final class MiniCard extends MiniSatStyleSolver {
      * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
      * formula is SAT, and {@code UNKNOWN} if the state is not known yet (restart)
      */
-    private Tristate search(final int nofConflicts) {
+    protected Tristate search(final int nofConflicts) {
         if (!this.ok) {
             return Tristate.FALSE;
         }
@@ -702,7 +701,7 @@ public final class MiniCard extends MiniSatStyleSolver {
         }
     }
 
-    private int findNewWatch(final MSClause c, final int p) {
+    protected int findNewWatch(final MSClause c, final int p) {
         assert c.isAtMost();
         int newWatch = LIT_ERROR;
         int numFalse = 0;
@@ -751,7 +750,7 @@ public final class MiniCard extends MiniSatStyleSolver {
      * @param conflictClause the conflict clause to start the resolution analysis with
      * @param outLearnt      the vector where the new learnt 1-UIP clause is stored
      */
-    private void analyze(final MSClause conflictClause, final LNGIntVector outLearnt) {
+    protected void analyze(final MSClause conflictClause, final LNGIntVector outLearnt) {
         MSClause c = conflictClause;
         int pathC = 0;
         int p = LIT_UNDEF;
@@ -807,7 +806,7 @@ public final class MiniCard extends MiniSatStyleSolver {
      * Minimizes a given learnt clause depending on the minimization method of the solver configuration.
      * @param outLearnt the learnt clause which should be minimized
      */
-    private void simplifyClause(final LNGIntVector outLearnt) {
+    protected void simplifyClause(final LNGIntVector outLearnt) {
         int i;
         int j;
         this.analyzeToClear = new LNGIntVector(outLearnt);
@@ -861,7 +860,7 @@ public final class MiniCard extends MiniSatStyleSolver {
     /**
      * Performs an unconditional backtrack to level zero.
      */
-    private void completeBacktrack() {
+    protected void completeBacktrack() {
         for (int v = 0; v < this.vars.size(); v++) {
             final MSVariable var = this.vars.get(v);
             var.assign(Tristate.UNDEF);
@@ -879,7 +878,7 @@ public final class MiniCard extends MiniSatStyleSolver {
      * Performs a simple removal of clauses used during the loading of an older state.
      * @param c the clause to remove
      */
-    private void simpleRemoveClause(final MSClause c) {
+    protected void simpleRemoveClause(final MSClause c) {
         if (c.isAtMost()) {
             for (int i = 0; i < c.atMostWatchers(); i++) {
                 this.watches.get(c.get(i)).remove(new MSWatcher(c, c.get(i)));

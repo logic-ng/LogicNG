@@ -29,22 +29,22 @@ import java.util.concurrent.TimeoutException;
  */
 public class DNNFCompiler {
 
-    private final FormulaFactory f;
+    protected final FormulaFactory f;
 
-    private final Formula cnf;
-    private final Formula unitClauses;
-    private final Formula nonUnitClauses;
-    private final DNNFSATSolver solver;
+    protected final Formula cnf;
+    protected final Formula unitClauses;
+    protected final Formula nonUnitClauses;
+    protected final DNNFSATSolver solver;
 
-    private final int numberOfVariables;
+    protected final int numberOfVariables;
 
-    private final Map<BitSet, Formula> cache;
-    private DnnfCompilationHandler handler;
+    protected final Map<BitSet, Formula> cache;
+    protected DnnfCompilationHandler handler;
 
-    private BitSet[][] localCacheKeys;
-    private int[][][] localOccurrences;
-    private final List<Formula> leafResultOperands;
-    private final List<Literal> leafCurrentLiterals;
+    protected BitSet[][] localCacheKeys;
+    protected int[][][] localOccurrences;
+    protected final List<Formula> leafResultOperands;
+    protected final List<Literal> leafCurrentLiterals;
 
     /**
      * Constructs a new DNNF compiler for the given formula.
@@ -88,7 +88,7 @@ public class DNNFCompiler {
         return compile(dTree, handler);
     }
 
-    private int computeMaxClauseSize(final Formula cnf) {
+    protected int computeMaxClauseSize(final Formula cnf) {
         switch (cnf.type()) {
             case OR:
                 return cnf.numberOfOperands();
@@ -105,7 +105,7 @@ public class DNNFCompiler {
         }
     }
 
-    private Pair<Formula, Formula> initializeClauses() {
+    protected Pair<Formula, Formula> initializeClauses() {
         final List<Formula> units = new ArrayList<>();
         final List<Formula> nonUnits = new ArrayList<>();
         switch (this.cnf.type()) {
@@ -127,7 +127,7 @@ public class DNNFCompiler {
         return new Pair<>(this.f.and(units), this.f.and(nonUnits));
     }
 
-    private DTree generateDTree(final DTreeGenerator generator) {
+    protected DTree generateDTree(final DTreeGenerator generator) {
         if (this.nonUnitClauses.isAtomicFormula()) {
             return null;
         }
@@ -136,7 +136,7 @@ public class DNNFCompiler {
         return tree;
     }
 
-    private Formula compile(final DTree dTree, final DnnfCompilationHandler handler) {
+    protected Formula compile(final DTree dTree, final DnnfCompilationHandler handler) {
         if (this.nonUnitClauses.isAtomicFormula()) {
             return this.cnf;
         }
@@ -159,7 +159,7 @@ public class DNNFCompiler {
         return result == null ? null : this.f.and(this.unitClauses, result);
     }
 
-    private void initializeCaches(final DTree dTree) {
+    protected void initializeCaches(final DTree dTree) {
         final int depth = dTree.depth() + 1;
         final int sep = dTree.widestSeparator() + 1;
         final int variables = this.cnf.variables().size();
@@ -174,11 +174,11 @@ public class DNNFCompiler {
         }
     }
 
-    private Formula cnf2Ddnnf(final DTree tree) throws TimeoutException {
+    protected Formula cnf2Ddnnf(final DTree tree) throws TimeoutException {
         return cnf2Ddnnf(tree, 0);
     }
 
-    private Formula cnf2Ddnnf(final DTree tree, final int currentShannons) throws TimeoutException {
+    protected Formula cnf2Ddnnf(final DTree tree, final int currentShannons) throws TimeoutException {
         final BitSet separator = tree.dynamicSeparator();
         final Formula implied = this.newlyImpliedLiterals(tree.staticVarSet());
 
@@ -230,7 +230,7 @@ public class DNNFCompiler {
         }
     }
 
-    private int chooseShannonVariable(final DTree tree, final BitSet separator, final int currentShannons) {
+    protected int chooseShannonVariable(final DTree tree, final BitSet separator, final int currentShannons) {
         final int[] occurrences = this.localOccurrences[tree.depth()][currentShannons];
         for (int i = 0; i < occurrences.length; i++) {
             occurrences[i] = separator.get(i) ? 0 : -1;
@@ -249,7 +249,7 @@ public class DNNFCompiler {
         return max;
     }
 
-    private Formula conjoin(final Formula implied, final DTreeNode tree, final int currentShannons) throws TimeoutException {
+    protected Formula conjoin(final Formula implied, final DTreeNode tree, final int currentShannons) throws TimeoutException {
         final Formula left;
         final Formula right;
         if (implied == this.f.falsum() ||
@@ -261,7 +261,7 @@ public class DNNFCompiler {
         }
     }
 
-    private Formula cnfAux(final DTree tree, final int currentShannons) throws TimeoutException {
+    protected Formula cnfAux(final DTree tree, final int currentShannons) throws TimeoutException {
         if (tree instanceof DTreeLeaf) {
             return leaf2Ddnnf((DTreeLeaf) tree);
         } else {
@@ -278,14 +278,14 @@ public class DNNFCompiler {
         }
     }
 
-    private BitSet computeCacheKey(final DTree tree, final int currentShannons) {
+    protected BitSet computeCacheKey(final DTree tree, final int currentShannons) {
         final BitSet key = this.localCacheKeys[tree.depth()][currentShannons];
         key.clear();
         tree.cacheKey(key, this.numberOfVariables);
         return key;
     }
 
-    private Formula leaf2Ddnnf(final DTreeLeaf leaf) {
+    protected Formula leaf2Ddnnf(final DTreeLeaf leaf) {
         final Iterator<Literal> literals = leaf.clause().literals().iterator();
         this.leafResultOperands.clear();
         this.leafCurrentLiterals.clear();
@@ -306,7 +306,7 @@ public class DNNFCompiler {
         return this.f.or(this.leafResultOperands);
     }
 
-    private Formula newlyImpliedLiterals(final BitSet knownVariables) {
+    protected Formula newlyImpliedLiterals(final BitSet knownVariables) {
         return this.solver.newlyImplied(knownVariables);
     }
 }

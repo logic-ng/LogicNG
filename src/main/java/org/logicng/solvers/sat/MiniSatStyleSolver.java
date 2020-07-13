@@ -73,7 +73,7 @@ import java.util.TreeSet;
 
 /**
  * The super class for all MiniSAT-style solvers.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public abstract class MiniSatStyleSolver {
@@ -134,10 +134,10 @@ public abstract class MiniSatStyleSolver {
     protected LNGVector<LNGIntVector> pgProof;
 
     // backbone computation
-    private Stack<Integer> backboneCandidates;
-    private LNGIntVector backboneAssumptions;
-    private HashMap<Integer, Tristate> backboneMap;
-    private boolean computingBackbone;
+    protected Stack<Integer> backboneCandidates;
+    protected LNGIntVector backboneAssumptions;
+    protected HashMap<Integer, Tristate> backboneMap;
+    protected boolean computingBackbone;
 
     // Selection order
     protected LNGIntVector selectionOrder;
@@ -266,7 +266,7 @@ public abstract class MiniSatStyleSolver {
     /**
      * Initializes the solver configuration.
      */
-    private void initializeConfig() {
+    protected void initializeConfig() {
         this.varDecay = this.config.varDecay;
         this.varInc = this.config.varInc;
         this.ccminMode = this.config.clauseMin;
@@ -410,7 +410,7 @@ public abstract class MiniSatStyleSolver {
      * @return {@code false} if this solver is known to be in a conflicting state, otherwise {@code true}
      */
     public boolean ok() {
-        return ok;
+        return this.ok;
     }
 
     /**
@@ -757,8 +757,8 @@ public abstract class MiniSatStyleSolver {
      * Class containing the information required for generating a proof.
      */
     public static class ProofInformation {
-        private final LNGIntVector clause;
-        private final Proposition proposition;
+        protected final LNGIntVector clause;
+        protected final Proposition proposition;
 
         /**
          * Constructor.
@@ -840,7 +840,7 @@ public abstract class MiniSatStyleSolver {
      * @param variables variables to convert and filter
      * @return list of relevant variable indices
      */
-    private List<Integer> getRelevantVarIndices(final Collection<Variable> variables) {
+    protected List<Integer> getRelevantVarIndices(final Collection<Variable> variables) {
         final List<Integer> relevantVarIndices = new ArrayList<>(variables.size());
         for (final Variable var : variables) {
             final Integer idx = this.name2idx.get(var.name());
@@ -857,7 +857,7 @@ public abstract class MiniSatStyleSolver {
      * Initializes the internal solver state for backbones.
      * @param variables to test
      */
-    private void initBackboneDS(final List<Integer> variables) {
+    protected void initBackboneDS(final List<Integer> variables) {
         this.backboneCandidates = new Stack<>();
         this.backboneAssumptions = new LNGIntVector(variables.size());
         this.backboneMap = new HashMap<>();
@@ -870,7 +870,7 @@ public abstract class MiniSatStyleSolver {
      * Computes the backbone for the given variables.
      * @param variables variables to test
      */
-    private void computeBackbone(final List<Integer> variables, final BackboneType type) {
+    protected void computeBackbone(final List<Integer> variables, final BackboneType type) {
         final Stack<Integer> candidates = createInitialCandidates(variables, type);
         while (candidates.size() > 0) {
             final int lit = candidates.pop();
@@ -887,7 +887,7 @@ public abstract class MiniSatStyleSolver {
      * @param variables variables to test
      * @return initial candidates
      */
-    private Stack<Integer> createInitialCandidates(final List<Integer> variables, final BackboneType type) {
+    protected Stack<Integer> createInitialCandidates(final List<Integer> variables, final BackboneType type) {
         for (final Integer var : variables) {
             if (isUPZeroLit(var)) {
                 final int backboneLit = mkLit(var, !this.model.get(var));
@@ -908,7 +908,7 @@ public abstract class MiniSatStyleSolver {
     /**
      * Refines the upper bound by optional checks (UP zero literal, complement model literal, rotatable literal).
      */
-    private void refineUpperBound() {
+    protected void refineUpperBound() {
         for (final Integer lit : new ArrayList<>(this.backboneCandidates)) {
             final int var = var(lit);
             if (isUPZeroLit(var)) {
@@ -927,7 +927,7 @@ public abstract class MiniSatStyleSolver {
      * @param lit literal to test
      * @return {@code true} if satisfiable, otherwise {@code false}
      */
-    private boolean solveWithLit(final int lit) {
+    protected boolean solveWithLit(final int lit) {
         this.backboneAssumptions.push(not(lit));
         final boolean sat = solve(null, this.backboneAssumptions) == Tristate.TRUE;
         this.backboneAssumptions.pop();
@@ -939,7 +939,7 @@ public abstract class MiniSatStyleSolver {
      * @param variables relevant variables
      * @return backbone
      */
-    private Backbone buildBackbone(final Collection<Variable> variables, final BackboneType type) {
+    protected Backbone buildBackbone(final Collection<Variable> variables, final BackboneType type) {
         final SortedSet<Variable> posBackboneVars = isBothOrPositiveType(type) ? new TreeSet<>() : null;
         final SortedSet<Variable> negBackboneVars = isBothOrNegativeType(type) ? new TreeSet<>() : null;
         final SortedSet<Variable> optionalVars = isBothType(type) ? new TreeSet<>() : null;
@@ -981,7 +981,7 @@ public abstract class MiniSatStyleSolver {
      * @param var variable index to test
      * @return {@code true} if the variable is a unit propagated literal on level 0, otherwise {@code false}
      */
-    private boolean isUPZeroLit(final int var) {
+    protected boolean isUPZeroLit(final int var) {
         return this.vars.get(var).level() == 0;
     }
 
@@ -1024,20 +1024,20 @@ public abstract class MiniSatStyleSolver {
      * Adds the given literal to the backbone result and optionally adds the literal to the solver.
      * @param lit literal to add
      */
-    private void addBackboneLiteral(final int lit) {
+    protected void addBackboneLiteral(final int lit) {
         this.backboneMap.put(var(lit), sign(lit) ? Tristate.FALSE : Tristate.TRUE);
         this.backboneAssumptions.push(lit);
     }
 
-    private boolean isBothOrPositiveType(final BackboneType type) {
+    protected boolean isBothOrPositiveType(final BackboneType type) {
         return type == BackboneType.POSITIVE_AND_NEGATIVE || type == BackboneType.ONLY_POSITIVE;
     }
 
-    private boolean isBothOrNegativeType(final BackboneType type) {
+    protected boolean isBothOrNegativeType(final BackboneType type) {
         return type == BackboneType.POSITIVE_AND_NEGATIVE || type == BackboneType.ONLY_NEGATIVE;
     }
 
-    private boolean isBothType(final BackboneType type) {
+    protected boolean isBothType(final BackboneType type) {
         return type == BackboneType.POSITIVE_AND_NEGATIVE;
     }
 

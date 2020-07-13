@@ -38,7 +38,6 @@ import java.util.Arrays;
 public final class SolverState {
 
     private final int id;
-
     private final int[] state;
 
     /**
@@ -56,7 +55,7 @@ public final class SolverState {
      * @return the id of this state
      */
     int id() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -69,6 +68,6 @@ public final class SolverState {
 
     @Override
     public String toString() {
-        return String.format("SolverState{id=%d, state=%s}", id, Arrays.toString(state));
+        return String.format("SolverState{id=%d, state=%s}", this.id, Arrays.toString(this.state));
     }
 }

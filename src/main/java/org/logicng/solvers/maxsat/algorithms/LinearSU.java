@@ -64,18 +64,18 @@ import java.io.PrintStream;
 
 /**
  * Linear search solver with Boolean Multilevel Optimization (BMO)
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class LinearSU extends MaxSAT {
+public class LinearSU extends MaxSAT {
 
-    private final Encoder encoder;
-    private final boolean bmoMode;  // Enables BMO mode.
-    private final LNGIntVector objFunction; // Literals to be used in the constraint that excludes models.
-    private final LNGIntVector coeffs; // Coefficients of the literals that are used in the constraint that excludes models.
-    private final PrintStream output;
-    private MiniSatStyleSolver solver;
-    private boolean isBmo; // Stores if the formula is BMO or not.
+    protected final Encoder encoder;
+    protected final boolean bmoMode;  // Enables BMO mode.
+    protected final LNGIntVector objFunction; // Literals to be used in the constraint that excludes models.
+    protected final LNGIntVector coeffs; // Coefficients of the literals that are used in the constraint that excludes models.
+    protected final PrintStream output;
+    protected MiniSatStyleSolver solver;
+    protected boolean isBmo; // Stores if the formula is BMO or not.
 
     /**
      * Constructs a new solver with default values.
@@ -120,7 +120,7 @@ public final class LinearSU extends MaxSAT {
         }
     }
 
-    private MaxSATResult bmoSearch() {
+    protected MaxSATResult bmoSearch() {
         assert this.orderWeights.size() > 0;
         Tristate res;
         this.initRelaxation();
@@ -204,7 +204,7 @@ public final class LinearSU extends MaxSAT {
         }
     }
 
-    private MaxSATResult normalSearch() {
+    protected MaxSATResult normalSearch() {
         Tristate res;
         this.initRelaxation();
         this.solver = this.rebuildSolver(1);
@@ -259,7 +259,7 @@ public final class LinearSU extends MaxSAT {
      * @param minWeight the minimal weight
      * @return the rebuilt solver
      */
-    private MiniSatStyleSolver rebuildSolver(final int minWeight) {
+    protected MiniSatStyleSolver rebuildSolver(final int minWeight) {
         final LNGBooleanVector seen = new LNGBooleanVector(nVars());
         seen.growTo(nVars(), false);
         final MiniSatStyleSolver s = newSATSolver();
@@ -289,7 +289,7 @@ public final class LinearSU extends MaxSAT {
      * @param currentWeight the current weight
      * @return the rebuilt solver
      */
-    private MiniSatStyleSolver rebuildBMO(final LNGVector<LNGIntVector> functions, final LNGIntVector rhs, final int currentWeight) {
+    protected MiniSatStyleSolver rebuildBMO(final LNGVector<LNGIntVector> functions, final LNGIntVector rhs, final int currentWeight) {
         assert functions.size() == rhs.size();
         final MiniSatStyleSolver s = this.rebuildSolver(currentWeight);
         this.objFunction.clear();
@@ -309,7 +309,7 @@ public final class LinearSU extends MaxSAT {
     /**
      * Initializes the relaxation variables by adding a fresh variable to the 'relaxationVars' of each soft clause.
      */
-    private void initRelaxation() {
+    protected void initRelaxation() {
         for (final MSSoftClause softClause : this.softClauses) {
             final int l = newLiteral(false);
             softClause.relaxationVars().push(l);

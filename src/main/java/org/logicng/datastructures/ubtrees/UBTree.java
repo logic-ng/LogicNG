@@ -13,10 +13,10 @@ import java.util.TreeSet;
  * A data structure for storing sets with efficient sub- and superset queries.
  * C.f. `A New Method to Index and Query Sets`, Hoffmann and Koehler, 1999
  * @param <T> the type of the elements (must be comparable)
- * @version 1.5.0
+ * @version 2.0.0
  * @since 1.5.0
  */
-public class UBTree<T extends Comparable<T>> {
+public final class UBTree<T extends Comparable<T>> {
     private final SortedMap<T, UBNode<T>> rootNodes;
 
     /**

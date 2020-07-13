@@ -14,7 +14,7 @@ import java.util.SortedSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class PrimeResult {
+public final class PrimeResult {
     private final List<SortedSet<Literal>> primeImplicants;
     private final List<SortedSet<Literal>> primeImplicates;
     private final CoverageType coverageType;

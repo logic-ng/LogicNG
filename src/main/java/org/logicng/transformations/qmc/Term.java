@@ -43,16 +43,16 @@ import java.util.List;
  * minterms of a canonical DNF and has its own representation as a vector
  * of tristates.  Two minterms are considered equals if their bit representation
  * is equals (independent of their associated minterms)
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-class Term {
+public class Term {
 
-    private final Tristate[] bits;
-    private final List<Formula> minterms;
-    private final int termClass;
-    private boolean used;
-    private final long undefNum;
+    protected final Tristate[] bits;
+    protected final List<Formula> minterms;
+    protected final int termClass;
+    protected boolean used;
+    protected final long undefNum;
 
     /**
      * Constructs a new term with a given set of bits and the related minterms.
@@ -71,7 +71,7 @@ class Term {
      * @param bits the tristate vector
      * @return the number of non-negative bits
      */
-    private int countNonNegativeBits(final Tristate[] bits) {
+    protected int countNonNegativeBits(final Tristate[] bits) {
         int result = 0;
         for (final Tristate bit : bits) {
             if (bit != Tristate.FALSE) {
@@ -86,7 +86,7 @@ class Term {
      * @param bits the bit array
      * @return the computed number
      */
-    private long computeUndefNum(final Tristate[] bits) {
+    protected long computeUndefNum(final Tristate[] bits) {
         long sum = 0;
         for (int i = bits.length - 1; i >= 0; i--) {
             if (bits[i] == Tristate.UNDEF) {

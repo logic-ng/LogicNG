@@ -60,16 +60,16 @@ import java.io.PrintStream;
 
 /**
  * Linear search solver.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class LinearUS extends MaxSAT {
+public class LinearUS extends MaxSAT {
 
-    private final Encoder encoder;
-    private final MaxSATConfig.IncrementalStrategy incrementalStrategy;
-    private final LNGIntVector objFunction;
-    private final PrintStream output;
-    private MiniSatStyleSolver solver;
+    protected final Encoder encoder;
+    protected final MaxSATConfig.IncrementalStrategy incrementalStrategy;
+    protected final LNGIntVector objFunction;
+    protected final PrintStream output;
+    protected MiniSatStyleSolver solver;
 
     /**
      * Constructs a new solver with default values.
@@ -110,7 +110,7 @@ public final class LinearUS extends MaxSAT {
         }
     }
 
-    private MaxSATResult none() {
+    protected MaxSATResult none() {
         this.nbInitialVariables = nVars();
         Tristate res;
         this.initRelaxation();
@@ -166,7 +166,7 @@ public final class LinearUS extends MaxSAT {
         }
     }
 
-    private MaxSATResult iterative() {
+    protected MaxSATResult iterative() {
         assert this.encoder.cardEncoding() == MaxSATConfig.CardinalityEncoding.TOTALIZER;
         this.nbInitialVariables = nVars();
         Tristate res;
@@ -229,7 +229,7 @@ public final class LinearUS extends MaxSAT {
         }
     }
 
-    private MiniSatStyleSolver rebuildSolver() {
+    protected MiniSatStyleSolver rebuildSolver() {
         final MiniSatStyleSolver s = newSATSolver();
         for (int i = 0; i < nVars(); i++) {
             newSATVariable(s);
@@ -248,7 +248,7 @@ public final class LinearUS extends MaxSAT {
         return s;
     }
 
-    private void initRelaxation() {
+    protected void initRelaxation() {
         for (int i = 0; i < this.nbSoft; i++) {
             final int l = newLiteral(false);
             this.softClauses.get(i).relaxationVars().push(l);

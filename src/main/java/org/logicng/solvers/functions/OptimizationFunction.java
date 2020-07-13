@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class OptimizationFunction implements SolverFunction<Assignment> {
+public final class OptimizationFunction implements SolverFunction<Assignment> {
 
     private static final String SEL_PREFIX = "@SEL_OPT_";
 

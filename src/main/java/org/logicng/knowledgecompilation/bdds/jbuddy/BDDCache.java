@@ -59,11 +59,11 @@ package org.logicng.knowledgecompilation.bdds.jbuddy;
 
 /**
  * BDD Cache.
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-final class BDDCache {
-    private BDDCacheEntry[] table;
+public class BDDCache {
+    protected BDDCacheEntry[] table;
 
     /**
      * Constructs a new BDD cache of a given size (number of entries in the cache).
@@ -77,7 +77,7 @@ final class BDDCache {
      * Resizes the cache to a new number of entries.  The old cache entries are removed in this process.
      * @param ns the new number of entries
      */
-    private void resize(final int ns) {
+    protected void resize(final int ns) {
         final int size = BDDPrime.primeGTE(ns);
         this.table = new BDDCacheEntry[size];
         for (int n = 0; n < size; n++) {
@@ -88,7 +88,7 @@ final class BDDCache {
     /**
      * Resets (clears) the cache.
      */
-    void reset() {
+    protected void reset() {
         for (final BDDCacheEntry ce : this.table) {
             ce.reset();
         }

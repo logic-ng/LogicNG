@@ -18,28 +18,28 @@ import java.util.TreeSet;
  */
 public class DTreeNode extends DTree {
 
-    private final DTree left;
-    private final DTree right;
-    private final int size;
+    protected final DTree left;
+    protected final DTree right;
+    protected final int size;
 
-    private DNNFSATSolver solver;
+    protected DNNFSATSolver solver;
 
-    private final SortedSet<Variable> staticVariableSet;
-    private final BitSet staticSeparatorBitSet;
-    private final int[] staticClauseIds;
-    private final int depth;
-    private int widestSeparator;
+    protected final SortedSet<Variable> staticVariableSet;
+    protected final BitSet staticSeparatorBitSet;
+    protected final int[] staticClauseIds;
+    protected final int depth;
+    protected int widestSeparator;
 
-    private final DTreeLeaf[] leafs; // all leafs
-    private final DTreeLeaf[] leftLeafs;
-    private final DTreeLeaf[] rightLeafs;
+    protected final DTreeLeaf[] leafs; // all leafs
+    protected final DTreeLeaf[] leftLeafs;
+    protected final DTreeLeaf[] rightLeafs;
 
-    private int[] clauseContents; // content of all clauses under this node, e.g. clause {1,3} with id 0, {2,6,8} with id 1, {4,6} with id 6 --> [1,3,-1,2,6,-2,4,6,-7]
-    private int[] leftClauseContents;
-    private int[] rightClauseContents;
+    protected int[] clauseContents; // content of all clauses under this node, e.g. clause {1,3} with id 0, {2,6,8} with id 1, {4,6} with id 6 --> [1,3,-1,2,6,-2,4,6,-7]
+    protected int[] leftClauseContents;
+    protected int[] rightClauseContents;
 
-    private BitSet localLeftVarSet;
-    private BitSet localRightVarSet;
+    protected BitSet localLeftVarSet;
+    protected BitSet localRightVarSet;
 
     /**
      * Constructs a new DTree node with the given left and right DTree.
@@ -152,7 +152,7 @@ public class DTreeNode extends DTree {
         return this.localLeftVarSet;
     }
 
-    private void varSet(final int[] clausesContents, final BitSet localVarSet) {
+    protected void varSet(final int[] clausesContents, final BitSet localVarSet) {
         int i = 0;
         while (i < clausesContents.length) {
             int j = i;
@@ -232,11 +232,11 @@ public class DTreeNode extends DTree {
         return String.format("DTreeNode: [%s, %s]", this.left, this.right);
     }
 
-    private void excludeUnitLeafs(final List<DTreeLeaf> leafs) {
+    protected void excludeUnitLeafs(final List<DTreeLeaf> leafs) {
         leafs.removeIf(dTreeLeaf -> dTreeLeaf.clauseSize() == 1);
     }
 
-    private static int[] toArray(final BitSet bits) {
+    protected static int[] toArray(final BitSet bits) {
         final int[] result = new int[bits.cardinality()];
         int n = 0;
         for (int i = bits.nextSetBit(0); i != -1; i = bits.nextSetBit(i + 1)) {
@@ -245,7 +245,7 @@ public class DTreeNode extends DTree {
         return result;
     }
 
-    private static int[] sortedIntersect(final int[] left, final int[] right) {
+    protected static int[] sortedIntersect(final int[] left, final int[] right) {
         final SortedSet<Integer> l = new TreeSet<>();
         final SortedSet<Integer> intersection = new TreeSet<>();
         for (final int i : left) {

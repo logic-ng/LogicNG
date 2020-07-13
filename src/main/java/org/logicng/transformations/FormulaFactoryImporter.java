@@ -45,10 +45,10 @@ import java.util.LinkedHashSet;
 /**
  * A formula transformation which imports a given formula into a new formula factory.  If the current factory of the
  * formula and the new formula factory are equal, no action is performed.
- * @version 1.3.1
+ * @version 2.0.0
  * @since 1.3.1
  */
-public class FormulaFactoryImporter implements FormulaTransformation {
+public final class FormulaFactoryImporter implements FormulaTransformation {
 
     private final FormulaFactory newFormulaFactory;
 

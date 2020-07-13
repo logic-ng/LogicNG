@@ -20,7 +20,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class FormulaCornerCases {
+public final class FormulaCornerCases {
 
     private final FormulaFactory f;
     private final Variable a;

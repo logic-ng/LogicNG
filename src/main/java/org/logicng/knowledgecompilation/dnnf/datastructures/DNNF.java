@@ -13,7 +13,7 @@ import java.util.SortedSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class DNNF {
+public final class DNNF {
 
     private final SortedSet<Variable> originalVariables;
     private final Formula formula;

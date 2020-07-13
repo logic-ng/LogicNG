@@ -42,10 +42,10 @@ import java.util.Set;
 
 /**
  * A dot file writer for a graph.  Writes the internal data structure of the formula to a dot file.
- * @version 1.2
+ * @version 2.0.0
  * @since 1.2
  */
-public class GraphDotFileWriter {
+public final class GraphDotFileWriter {
 
     /**
      * Private constructor.
@@ -75,23 +75,23 @@ public class GraphDotFileWriter {
     public static <T> void write(final File file, final Graph<T> graph) throws IOException {
         final StringBuilder sb = new StringBuilder(String.format("strict graph {%n"));
 
-        Set<Node<T>> doneNodes = new LinkedHashSet<>();
-        for (Node<T> d : graph.nodes()) {
-            for (Node<T> n : d.neighbours()) {
+        final Set<Node<T>> doneNodes = new LinkedHashSet<>();
+        for (final Node<T> d : graph.nodes()) {
+            for (final Node<T> n : d.neighbours()) {
                 if (!doneNodes.contains(n)) {
                     sb.append("  ").append(d.content()).append(" -- ").append(n.content()).append(System.lineSeparator());
                 }
             }
             doneNodes.add(d);
         }
-        for (Node<T> d : graph.nodes()) {
+        for (final Node<T> d : graph.nodes()) {
             if (d.neighbours().isEmpty()) {
                 sb.append("  ").append(d.content()).append(System.lineSeparator());
             }
         }
         sb.append("}");
 
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

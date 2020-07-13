@@ -50,10 +50,10 @@ import java.util.Locale;
 
 /**
  * A variable of the SAT solver for MiniSAT-style solvers.
- * @version 1.0
+ * @version 2.0.0
  * @since 1.0
  */
-public class MSVariable {
+public final class MSVariable {
     private Tristate assignment;
     private int level;
     private MSClause reason;

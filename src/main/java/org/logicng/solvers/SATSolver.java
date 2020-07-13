@@ -199,7 +199,7 @@ public abstract class SATSolver {
      * @param relaxationVar the relaxation variable
      * @param formula       the formula in CNF
      */
-    private void addClauseSetWithRelaxation(final Variable relaxationVar, final Formula formula) {
+    protected void addClauseSetWithRelaxation(final Variable relaxationVar, final Formula formula) {
         switch (formula.type()) {
             case TRUE:
                 break;

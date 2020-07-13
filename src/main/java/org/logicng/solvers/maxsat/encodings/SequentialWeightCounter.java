@@ -60,19 +60,19 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * A sequential weight counter for the encoding of pseudo-Boolean constraints in CNF.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-final class SequentialWeightCounter extends Encoding {
+public class SequentialWeightCounter extends Encoding {
 
-    private final LNGIntVector pbOutlits;
-    private final LNGIntVector unitLits;
-    private final LNGIntVector unitCoeffs;
-    private int currentPbRhs;
-    private int currentLitBlocking;
-    private LNGVector<LNGIntVector> seqAuxiliaryInc;
-    private LNGIntVector litsInc;
-    private LNGIntVector coeffsInc;
+    protected final LNGIntVector pbOutlits;
+    protected final LNGIntVector unitLits;
+    protected final LNGIntVector unitCoeffs;
+    protected int currentPbRhs;
+    protected int currentLitBlocking;
+    protected LNGVector<LNGIntVector> seqAuxiliaryInc;
+    protected LNGIntVector litsInc;
+    protected LNGIntVector coeffsInc;
 
     /**
      * Constructs a new sequential weight counter encoder.

@@ -79,7 +79,7 @@ import java.util.TreeSet;
 
 /**
  * Super class for the MaxSAT solvers.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public abstract class MaxSAT {
@@ -455,13 +455,13 @@ public abstract class MaxSAT {
      * The MaxSAT solver statistics.
      */
     public final class Stats {
-        private final int ubC;
-        private final int nbS;
-        private final int nbC;
-        private final double avgCS;
-        private final int nbSC;
+        protected final int ubC;
+        protected final int nbS;
+        protected final int nbC;
+        protected final double avgCS;
+        protected final int nbSC;
 
-        private Stats() {
+        protected Stats() {
             this.ubC = MaxSAT.this.model.size() == 0 ? -1 : MaxSAT.this.ubCost;
             this.nbS = MaxSAT.this.nbSatisfiable;
             this.nbC = MaxSAT.this.nbCores;

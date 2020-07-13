@@ -15,9 +15,9 @@ import java.util.SortedSet;
  */
 public abstract class DTree {
 
-    int[] staticVariables;
-    BitSet staticVarSet;
-    int[] staticSeparator;
+    protected int[] staticVariables;
+    protected BitSet staticVarSet;
+    protected int[] staticSeparator;
 
     /**
      * Initializes the DTree.

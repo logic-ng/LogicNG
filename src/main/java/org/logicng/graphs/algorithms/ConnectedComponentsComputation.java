@@ -49,7 +49,7 @@ import java.util.TreeMap;
  * @version 2.0.0
  * @since 1.2
  */
-public class ConnectedComponentsComputation {
+public final class ConnectedComponentsComputation {
 
     /**
      * Computes the set of connected components of a graph, where each component is represented by a set of nodes.

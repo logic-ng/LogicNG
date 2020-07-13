@@ -12,7 +12,7 @@ import java.util.List;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class BDDCNFFunction implements BDDFunction<Formula> {
+public final class BDDCNFFunction implements BDDFunction<Formula> {
 
     @Override
     public Formula apply(final BDD bdd) {

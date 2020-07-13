@@ -70,15 +70,15 @@ import java.util.TreeMap;
 
 /**
  * Incremental WBO solver.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class IncWBO extends WBO {
+public class IncWBO extends WBO {
 
-    private final Encoder encoder;
-    private final LNGBooleanVector incSoft;
-    private final PrintStream output;
-    private boolean firstBuild;
+    protected final Encoder encoder;
+    protected final LNGBooleanVector incSoft;
+    protected final PrintStream output;
+    protected boolean firstBuild;
 
     /**
      * Constructs a new solver with default values.
@@ -135,7 +135,7 @@ public final class IncWBO extends WBO {
         return this.getClass().getSimpleName();
     }
 
-    private void incrementalBuildWeightSolver(final WeightStrategy strategy) {
+    protected void incrementalBuildWeightSolver(final WeightStrategy strategy) {
         assert strategy == WeightStrategy.NORMAL || strategy == WeightStrategy.DIVERSIFY;
         if (this.firstBuild) {
             this.solver = newSATSolver();
@@ -165,7 +165,7 @@ public final class IncWBO extends WBO {
         }
     }
 
-    private void relaxCore(final LNGIntVector conflict, final int weightCore) {
+    protected void relaxCore(final LNGIntVector conflict, final int weightCore) {
         assert conflict.size() > 0;
         assert weightCore > 0;
         final LNGIntVector lits = new LNGIntVector();
@@ -260,7 +260,8 @@ public final class IncWBO extends WBO {
         this.sumSizeCores += conflict.size();
     }
 
-    private void symmetryBreaking() {
+    @Override
+    protected void symmetryBreaking() {
         if (this.indexSoftCore.size() != 0 && this.nbSymmetryClauses < this.symmetryBreakingLimit) {
             final LNGIntVector[] coreIntersection = new LNGIntVector[this.nbCores];
             final LNGIntVector[] coreIntersectionCurrent = new LNGIntVector[this.nbCores];
@@ -324,7 +325,8 @@ public final class IncWBO extends WBO {
         this.indexSoftCore.clear();
     }
 
-    private MaxSATResult weightSearch() {
+    @Override
+    protected MaxSATResult weightSearch() {
         assert this.weightStrategy == WeightStrategy.NORMAL || this.weightStrategy == WeightStrategy.DIVERSIFY;
         final Tristate unsatResult = unsatSearch();
         if (unsatResult == UNDEF) {
@@ -399,7 +401,7 @@ public final class IncWBO extends WBO {
         }
     }
 
-    private int incComputeCostModel(final LNGBooleanVector currentModel) {
+    protected int incComputeCostModel(final LNGBooleanVector currentModel) {
         assert currentModel.size() != 0;
         int currentCost = 0;
         for (int i = 0; i < nSoft(); i++) {
@@ -423,7 +425,8 @@ public final class IncWBO extends WBO {
         return currentCost;
     }
 
-    private MaxSATResult normalSearch() {
+    @Override
+    protected MaxSATResult normalSearch() {
         final Tristate unsatResult = unsatSearch();
         if (unsatResult == UNDEF) {
             return MaxSATResult.UNDEF;

@@ -36,10 +36,10 @@ import java.util.Set;
 /**
  * A node in an hypergraph.
  * @param <T> the content type of the graph's nodes
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-public class HypergraphNode<T> {
+public final class HypergraphNode<T> {
 
     private final Hypergraph<T> graph;
     private final T content;

@@ -6,15 +6,15 @@ package org.logicng.knowledgecompilation.bdds.jbuddy;
  * @since 2.0.0
  */
 public class BDDTree {
-    private int first;
-    private int last;  /* First and last variable in this block */
-    private int pos;          /* Sifting position */
-    private int[] seq;        /* Sequence of first...last in the current order */
-    private boolean fixed;       /* Are the sub-blocks fixed or may they be reordered */
-    private final int id;           /* A sequential id number given by addblock */
-    private BDDTree next;
-    private BDDTree prev;
-    private BDDTree nextlevel;
+    protected int first;
+    protected int last;  /* First and last variable in this block */
+    protected int pos;          /* Sifting position */
+    protected int[] seq;        /* Sequence of first...last in the current order */
+    protected boolean fixed;       /* Are the sub-blocks fixed or may they be reordered */
+    protected final int id;           /* A sequential id number given by addblock */
+    protected BDDTree next;
+    protected BDDTree prev;
+    protected BDDTree nextlevel;
 
     /**
      * Constructs a new BDD tree with the given id.
@@ -181,7 +181,7 @@ public class BDDTree {
         this.nextlevel = nextlevel;
     }
 
-    private static BDDTree addRangeRec(BDDTree t, final BDDTree prev, final int first, final int last, final boolean fixed, final int id, final int[] level2var) {
+    protected static BDDTree addRangeRec(BDDTree t, final BDDTree prev, final int first, final int last, final boolean fixed, final int id, final int[] level2var) {
         if (first < 0 || last < 0 || last < first) {
             return null;
         }
@@ -269,7 +269,7 @@ public class BDDTree {
         return null;
     }
 
-    private void updateSeq(final int[] bddvar2level) {
+    protected void updateSeq(final int[] bddvar2level) {
         int n;
         int low = this.first;
 

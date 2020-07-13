@@ -64,7 +64,7 @@ public class QuineMcCluskeyAlgorithm {
      * is computed.
      * @param formula           the formula
      * @param relevantVariables the relevant formulas for the projected canonical DNF
-     * @return the minimized DNF due to Quine-McCluskey
+     * @return the minimized DNF due to Qune-McCluskey
      */
     public static Formula compute(final Formula formula, final Collection<Variable> relevantVariables) {
         final FormulaFactory f = formula.factory();
@@ -117,8 +117,8 @@ public class QuineMcCluskeyAlgorithm {
      * @param f        the formula factory
      * @return the list of terms
      */
-    private static List<Term> transformModels2Terms(final List<Assignment> models, final List<Variable> varOrder,
-                                                    final FormulaFactory f) {
+    protected static List<Term> transformModels2Terms(final List<Assignment> models, final List<Variable> varOrder,
+                                                      final FormulaFactory f) {
         final List<Term> terms = new ArrayList<>(models.size());
         for (final Assignment model : models) {
             final List<Literal> minterm = new ArrayList<>();
@@ -178,7 +178,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param termsInClasses the terms sorted in term classes
      * @return the unused terms in the given set of terms
      */
-    private static LinkedHashSet<Term> getUnusedTerms(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
+    protected static LinkedHashSet<Term> getUnusedTerms(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
         final LinkedHashSet<Term> unusedTerms = new LinkedHashSet<>();
         for (final Map.Entry<Integer, LinkedHashSet<Term>> entry : termsInClasses.entrySet()) {
             for (final Term term : entry.getValue()) {
@@ -209,7 +209,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param varOrder    the variable order
      * @return the formula for this term list and variable ordering
      */
-    private static Formula computeFormula(final List<Term> chosenTerms, final List<Variable> varOrder) {
+    protected static Formula computeFormula(final List<Term> chosenTerms, final List<Variable> varOrder) {
         final FormulaFactory f = varOrder.get(0).factory();
         final List<Formula> operands = new ArrayList<>(chosenTerms.size());
         for (final Term term : chosenTerms) {
@@ -258,7 +258,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param formula2VarMapping a mapping form minterm to variable
      * @return the initialized SAT solver
      */
-    private static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term, final LinkedHashMap<Formula, Variable> formula2VarMapping) {
+    protected static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term, final LinkedHashMap<Formula, Variable> formula2VarMapping) {
         final LinkedHashMap<Variable, List<Variable>> minterm2Variants = new LinkedHashMap<>();
         int count = 0;
         String prefix = "@MINTERM_SEL_";
@@ -311,7 +311,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param f         the formula factory
      * @return a minimal set of prime implicants to cover all minterms
      */
-    private static List<Term> minimize(final SATSolver satSolver, final LinkedHashMap<Variable, Term> var2Term, final FormulaFactory f) {
+    protected static List<Term> minimize(final SATSolver satSolver, final LinkedHashMap<Variable, Term> var2Term, final FormulaFactory f) {
         final Assignment initialModel = satSolver.model();
         List<Variable> currentTermVars = computeCurrentTermVars(initialModel, var2Term.keySet());
         if (currentTermVars.size() == 2) {
@@ -337,7 +337,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param var2Term        a mapping from selector variable to prime implicant
      * @return the terms for the given list
      */
-    private static List<Term> computeTerms(final List<Variable> currentTermVars, final LinkedHashMap<Variable, Term> var2Term) {
+    protected static List<Term> computeTerms(final List<Variable> currentTermVars, final LinkedHashMap<Variable, Term> var2Term) {
         final List<Term> terms = new ArrayList<>(currentTermVars.size());
         for (final Variable currentTermVar : currentTermVars) {
             terms.add(var2Term.get(currentTermVar));
@@ -351,7 +351,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param vars  the list of selector variables
      * @return the selector variables in the given model
      */
-    private static List<Variable> computeCurrentTermVars(final Assignment model, final Collection<Variable> vars) {
+    protected static List<Variable> computeCurrentTermVars(final Assignment model, final Collection<Variable> vars) {
         final List<Variable> result = new ArrayList<>();
         for (final Variable var : vars) {
             if (model.evaluateLit(var)) {

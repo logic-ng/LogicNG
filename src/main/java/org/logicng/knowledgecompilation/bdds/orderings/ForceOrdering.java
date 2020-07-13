@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * @version 2.0.0
  * @since 1.4.0
  */
-public class ForceOrdering implements VariableOrderingProvider {
+public final class ForceOrdering implements VariableOrderingProvider {
 
     private static final Comparator<? super Map.Entry<HypergraphNode<Variable>, Double>> COMPARATOR = Map.Entry.comparingByValue();
 

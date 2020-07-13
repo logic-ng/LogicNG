@@ -39,7 +39,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class PrimeCompiler {
+public final class PrimeCompiler {
 
     private static final String POS = "_POS";
     private static final String NEG = "_NEG";

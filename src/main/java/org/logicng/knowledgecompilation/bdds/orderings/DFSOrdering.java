@@ -42,10 +42,10 @@ import java.util.List;
 /**
  * A depth-first-search BDD variable ordering.  Traverses the formula in a DFS manner
  * and gathers all variables in the occurrence.
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-public class DFSOrdering implements VariableOrderingProvider {
+public final class DFSOrdering implements VariableOrderingProvider {
 
     @Override
     public List<Variable> getOrder(final Formula formula) {

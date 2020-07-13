@@ -42,10 +42,10 @@ import java.util.Map;
  * A BDD variable ordering sorting the variables from minimal to maximal occurrence
  * in the input formula.  If two variables have the same number of occurrences, their
  * ordering according to their DFS ordering will be considered.
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-public class MinToMaxOrdering implements VariableOrderingProvider {
+public final class MinToMaxOrdering implements VariableOrderingProvider {
 
     private final VariableProfileFunction profileFunction = new VariableProfileFunction();
     private final DFSOrdering dfsOrdering = new DFSOrdering();

@@ -22,7 +22,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class NaivePrimeReduction {
+public final class NaivePrimeReduction {
 
     private final SATSolver implicantSolver;
     private final SATSolver implicateSolver;

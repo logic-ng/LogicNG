@@ -46,7 +46,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 1.2
  */
-public class BronKerbosch<T extends Comparable<T>> {
+public final class BronKerbosch<T extends Comparable<T>> {
 
     private final Graph<T> g;
     private final Comparator<Node<T>> nodeComparator;

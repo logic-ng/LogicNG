@@ -35,10 +35,10 @@ import java.util.Set;
 /**
  * A generic node of a graph.
  * @param <T> the element type of the node
- * @version 1.3
+ * @version 2.0.0
  * @since 1.2
  */
-public class Node<T> {
+public final class Node<T> {
 
     private final Graph<T> graph;
     private final T content;

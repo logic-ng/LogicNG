@@ -51,7 +51,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 1.0
  */
-public class Assignment {
+public final class Assignment {
 
     protected final List<Variable> negVars;
     protected Collection<Variable> pos;

@@ -62,7 +62,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
  * Therefore clause deletion and simplifications are deactivated in this mode.  This mode is most efficient on small
  * to mid-size industrial formulas (up to 50,000 variables, 100,000 clauses).  Whenever you have lots of small formulas
  * to solve or need the ability to add and delete formulas from the solver, we recommend to consider this mode.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public class MiniSat2Solver extends MiniSatStyleSolver {
@@ -89,7 +89,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
     /**
      * Initializes the additional parameters.
      */
-    private void initializeMiniSAT() {
+    protected void initializeMiniSAT() {
         this.unitClauses = new LNGIntVector();
         this.learntsizeAdjustConfl = 0;
         this.learntsizeAdjustCnt = 0;
@@ -548,7 +548,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
      * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
      * formula is SAT, and {@code UNDEF} if the state is not known yet (restart) or the handler canceled the computation
      */
-    private Tristate search(final int nofConflicts) {
+    protected Tristate search(final int nofConflicts) {
         if (!this.ok) {
             return Tristate.FALSE;
         }
@@ -676,7 +676,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
      * Minimizes a given learnt clause depending on the minimization method of the solver configuration.
      * @param outLearnt the learnt clause which should be minimized
      */
-    private void simplifyClause(final LNGIntVector outLearnt) {
+    protected void simplifyClause(final LNGIntVector outLearnt) {
         int i;
         int j;
         this.analyzeToClear = new LNGIntVector(outLearnt);
@@ -729,7 +729,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
     /**
      * Performs an unconditional backtrack to level zero.
      */
-    private void completeBacktrack() {
+    protected void completeBacktrack() {
         for (int v = 0; v < this.vars.size(); v++) {
             final MSVariable var = this.vars.get(v);
             var.assign(Tristate.UNDEF);
@@ -747,7 +747,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
      * Performs a simple removal of clauses used during the loading of an older state.
      * @param c the clause to remove
      */
-    private void simpleRemoveClause(final MSClause c) {
+    protected void simpleRemoveClause(final MSClause c) {
         this.watches.get(not(c.get(0))).remove(new MSWatcher(c, c.get(1)));
         this.watches.get(not(c.get(1))).remove(new MSWatcher(c, c.get(0)));
     }

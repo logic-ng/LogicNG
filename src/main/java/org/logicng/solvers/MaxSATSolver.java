@@ -58,14 +58,14 @@ import java.util.TreeMap;
  */
 public final class MaxSATSolver {
 
-    private enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
+    protected enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
 
-    private final MaxSATConfig configuration;
-    private final Algorithm algorithm;
-    private MaxSAT.MaxSATResult result;
-    private MaxSAT solver;
-    private SortedMap<Variable, Integer> var2index;
-    private SortedMap<Integer, Variable> index2var;
+    protected final MaxSATConfig configuration;
+    protected final Algorithm algorithm;
+    protected MaxSAT.MaxSATResult result;
+    protected MaxSAT solver;
+    protected SortedMap<Variable, Integer> var2index;
+    protected SortedMap<Integer, Variable> index2var;
 
     /**
      * Constructs a new MaxSAT solver with a given configuration.
@@ -73,7 +73,7 @@ public final class MaxSATSolver {
      * @param algorithm     the algorithm
      * @throws IllegalArgumentException if the algorithm was unknown
      */
-    private MaxSATSolver(final MaxSATConfig configuration, final Algorithm algorithm) {
+    protected MaxSATSolver(final MaxSATConfig configuration, final Algorithm algorithm) {
         this.algorithm = algorithm;
         this.configuration = configuration;
         this.reset();
@@ -247,7 +247,7 @@ public final class MaxSATSolver {
      * @param formula the formula in CNF
      * @param weight  the weight of this CNF (or -1 for a hard constraint)
      */
-    private void addCNF(final Formula formula, final int weight) {
+    protected void addCNF(final Formula formula, final int weight) {
         switch (formula.type()) {
             case TRUE:
                 break;
@@ -271,7 +271,7 @@ public final class MaxSATSolver {
      * @param formula the clause
      * @param weight  the weight of the clause (or -1 for a hard clause)
      */
-    private void addClause(final Formula formula, final int weight) {
+    protected void addClause(final Formula formula, final int weight) {
         this.result = UNDEF;
         final LNGIntVector clauseVec = new LNGIntVector((int) formula.numberOfAtoms());
         for (final Literal lit : formula.literals()) {
@@ -349,7 +349,7 @@ public final class MaxSATSolver {
      * @param vec the vector of the solver
      * @return the assignment
      */
-    private Assignment createAssignment(final LNGBooleanVector vec) {
+    protected Assignment createAssignment(final LNGBooleanVector vec) {
         final Assignment model = new Assignment();
         for (int i = 0; i < vec.size(); i++) {
             final Literal lit = this.index2var.get(i);

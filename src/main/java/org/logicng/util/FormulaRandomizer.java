@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class FormulaRandomizer {
+public final class FormulaRandomizer {
 
     private final FormulaFactory f;
     private final FormulaRandomizerConfig config;

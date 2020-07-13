@@ -69,22 +69,22 @@ import java.util.TreeMap;
 
 /**
  * The weighted MSU3 algorithm.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-public final class WMSU3 extends MaxSAT {
+public class WMSU3 extends MaxSAT {
 
     final boolean bmoStrategy;
-    final private Encoder encoder;
-    final private IncrementalStrategy incrementalStrategy;
-    final private LNGIntVector assumptions;
-    final private LNGIntVector objFunction;
-    final private LNGIntVector coeffs;
-    final private SortedMap<Integer, Integer> coreMapping;
-    final private LNGBooleanVector activeSoft;
-    final private PrintStream output;
+    final protected Encoder encoder;
+    final protected IncrementalStrategy incrementalStrategy;
+    final protected LNGIntVector assumptions;
+    final protected LNGIntVector objFunction;
+    final protected LNGIntVector coeffs;
+    final protected SortedMap<Integer, Integer> coreMapping;
+    final protected LNGBooleanVector activeSoft;
+    final protected PrintStream output;
     boolean isBmo;
-    private MiniSatStyleSolver solver;
+    protected MiniSatStyleSolver solver;
 
     /**
      * Constructs a new solver with default values.
@@ -114,7 +114,7 @@ public final class WMSU3 extends MaxSAT {
         this.output = config.output;
     }
 
-    private static boolean subsetSum(final LNGIntVector set, final int sum) {
+    protected static boolean subsetSum(final LNGIntVector set, final int sum) {
         final int n = set.size();
         final boolean[][] subset = new boolean[sum + 1][];
         for (int i = 0; i <= sum; i++) {
@@ -165,7 +165,7 @@ public final class WMSU3 extends MaxSAT {
         }
     }
 
-    private MaxSATResult iterative() {
+    protected MaxSATResult iterative() {
         this.nbInitialVariables = nVars();
         Tristate res;
         this.initRelaxation();
@@ -262,7 +262,7 @@ public final class WMSU3 extends MaxSAT {
         }
     }
 
-    private MaxSATResult none() {
+    protected MaxSATResult none() {
         this.nbInitialVariables = nVars();
         Tristate res;
         this.initRelaxation();
@@ -345,7 +345,7 @@ public final class WMSU3 extends MaxSAT {
         }
     }
 
-    private MaxSATResult iterativeBmo() {
+    protected MaxSATResult iterativeBmo() {
         assert this.isBmo;
         this.nbInitialVariables = nVars();
         Tristate res;
@@ -510,7 +510,7 @@ public final class WMSU3 extends MaxSAT {
         }
     }
 
-    private MiniSatStyleSolver rebuildSolver() {
+    protected MiniSatStyleSolver rebuildSolver() {
         final MiniSatStyleSolver s = newSATSolver();
         for (int i = 0; i < nVars(); i++) {
             newSATVariable(s);
@@ -529,7 +529,7 @@ public final class WMSU3 extends MaxSAT {
         return s;
     }
 
-    private void initRelaxation() {
+    protected void initRelaxation() {
         for (int i = 0; i < this.nbSoft; i++) {
             final int l = newLiteral(false);
             this.softClauses.get(i).relaxationVars().push(l);

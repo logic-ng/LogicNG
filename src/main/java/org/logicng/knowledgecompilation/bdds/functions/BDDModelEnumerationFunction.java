@@ -19,7 +19,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class BDDModelEnumerationFunction implements BDDFunction<List<Assignment>> {
+public final class BDDModelEnumerationFunction implements BDDFunction<List<Assignment>> {
 
     private final Collection<Variable> variables;
 

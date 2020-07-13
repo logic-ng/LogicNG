@@ -38,10 +38,10 @@ import java.util.Set;
 /**
  * An edge in a hypergraph.
  * @param <T> the content type of the graph's nodes
- * @version 1.4.0
+ * @version 2.0.0
  * @since 1.4.0
  */
-public class HypergraphEdge<T> {
+public final class HypergraphEdge<T> {
 
     private final LinkedHashSet<HypergraphNode<T>> nodes;
 

@@ -50,7 +50,7 @@ import java.util.List;
  * @version 2.0.0
  * @since 2.0.0
  */
-public class NegationSimplifier implements FormulaTransformation {
+public final class NegationSimplifier implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

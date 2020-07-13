@@ -83,23 +83,23 @@ public class BDDKernel {
     public static final int BDD_TRUE = 1;
     public static final int BDD_FALSE = 0;
 
-    private static final int MAXVAR = 0x1FFFFF;
-    private static final int MAXREF = 0x3FF;
-    private static final int MARKON = 0x200000;
-    private static final int MARKOFF = 0x1FFFFF;
-    private static final int MARKHIDE = 0x1FFFFF;
+    protected static final int MAXVAR = 0x1FFFFF;
+    protected static final int MAXREF = 0x3FF;
+    protected static final int MARKON = 0x200000;
+    protected static final int MARKOFF = 0x1FFFFF;
+    protected static final int MARKHIDE = 0x1FFFFF;
 
-    private byte[] allunsatProfile;
+    protected byte[] allunsatProfile;
 
-    private enum Operand {
+    protected enum Operand {
         AND(0, new int[]{0, 0, 0, 1}),
         OR(2, new int[]{0, 1, 1, 1}),
         IMP(5, new int[]{1, 1, 0, 1}),
         EQUIV(6, new int[]{1, 0, 0, 1}),
         NOT(10, new int[]{1, 1, 0, 0});
 
-        private final int v;
-        private final int[] tt;
+        protected final int v;
+        protected final int[] tt;
 
         Operand(final int value, final int[] truthTable) {
             this.v = value;
@@ -107,48 +107,48 @@ public class BDDKernel {
         }
     }
 
-    private static final int CACHEID_RESTRICT = 0x1;
-    private static final int CACHEID_SATCOU = 0x2;
-    private static final int CACHEID_PATHCOU_ONE = 0x4;
-    private static final int CACHEID_PATHCOU_ZERO = 0x8;
-    private static final int CACHEID_FORALL = 0x1;
+    protected static final int CACHEID_RESTRICT = 0x1;
+    protected static final int CACHEID_SATCOU = 0x2;
+    protected static final int CACHEID_PATHCOU_ONE = 0x4;
+    protected static final int CACHEID_PATHCOU_ZERO = 0x8;
+    protected static final int CACHEID_FORALL = 0x1;
 
-    private final FormulaFactory f;
-    private final SortedMap<Variable, Integer> var2idx;
-    private final SortedMap<Integer, Variable> idx2var;
+    protected final FormulaFactory f;
+    protected final SortedMap<Variable, Integer> var2idx;
+    protected final SortedMap<Integer, Variable> idx2var;
 
-    private int[] nodes; // All of the bdd nodes
-    private int[] vars; // Set of defined BDD variables
-    private final int minfreenodes; // Minimal % of nodes that has to be left after a garbage collection
-    private int gbcollectnum; // Number of garbage collections
-    private final int cachesize; // Size of the operator caches
-    private int nodesize; // Number of allocated nodes
-    private final int maxnodeincrease; // Max. # of nodes used to inc. table
-    private int freepos; // First free node
-    private int freenum; // Number of free nodes
-    private long produced; // Number of new nodes ever produced
+    protected int[] nodes; // All of the bdd nodes
+    protected int[] vars; // Set of defined BDD variables
+    protected final int minfreenodes; // Minimal % of nodes that has to be left after a garbage collection
+    protected int gbcollectnum; // Number of garbage collections
+    protected final int cachesize; // Size of the operator caches
+    protected int nodesize; // Number of allocated nodes
+    protected final int maxnodeincrease; // Max. # of nodes used to inc. table
+    protected int freepos; // First free node
+    protected int freenum; // Number of free nodes
+    protected long produced; // Number of new nodes ever produced
     protected int varnum; // Number of defined BDD variables
-    private int[] refstack; // Internal node reference stack
-    private int refstacktop; // Internal node reference stack top
+    protected int[] refstack; // Internal node reference stack
+    protected int refstacktop; // Internal node reference stack top
     protected int[] level2var; // Level -> variable table
     protected int[] var2level; // Variable -> level table
 
-    private int[] quantvarset; // Current variable set for quant.
-    private int quantvarsetID; // Current id used in quantvarset
-    private int quantlast; // Current last variable to be quant.
-    private int supportID; // Current ID (true value) for support
-    private int supportMax; // Max. used level in support calc.
-    private int[] supportSet; // The found support set
+    protected int[] quantvarset; // Current variable set for quant.
+    protected int quantvarsetID; // Current id used in quantvarset
+    protected int quantlast; // Current last variable to be quant.
+    protected int supportID; // Current ID (true value) for support
+    protected int supportMax; // Max. used level in support calc.
+    protected int[] supportSet; // The found support set
 
-    private BDDCache applycache; // Cache for apply results
-    private BDDCache itecache; // Cache for ITE results
-    private BDDCache quantcache; // Cache for exist/forall results
-    private BDDCache appexcache; // Cache for appex/appall results
-    private BDDCache replacecache; // Cache for replace results
-    private BDDCache misccache; // Cache for other results
+    protected BDDCache applycache; // Cache for apply results
+    protected BDDCache itecache; // Cache for ITE results
+    protected BDDCache quantcache; // Cache for exist/forall results
+    protected BDDCache appexcache; // Cache for appex/appall results
+    protected BDDCache replacecache; // Cache for replace results
+    protected BDDCache misccache; // Cache for other results
 
-    //    private final BDDPairs pairs;
-    private int usednodes_nextreorder;
+    //    protected final BDDPairs pairs;
+    protected int usednodes_nextreorder;
 
     /**
      * Constructor for the BDD kernel.
@@ -397,7 +397,7 @@ public class BDDKernel {
         return apply(l, r, Operand.EQUIV);
     }
 
-    private int doWithPotentialReordering(final BddOperation operation) {
+    protected int doWithPotentialReordering(final BddOperation operation) {
         try {
             initRef();
             return operation.perform();
@@ -415,11 +415,11 @@ public class BDDKernel {
         }
     }
 
-    private int apply(final int l, final int r, final Operand op) {
+    protected int apply(final int l, final int r, final Operand op) {
         return doWithPotentialReordering(() -> applyRec(l, r, op));
     }
 
-    private int applyRec(final int l, final int r, final Operand op) throws BddReorderRequest {
+    protected int applyRec(final int l, final int r, final Operand op) throws BddReorderRequest {
         final int res;
         switch (op) {
             case AND:
@@ -500,7 +500,7 @@ public class BDDKernel {
         return doWithPotentialReordering(() -> notRec(r));
     }
 
-    private int notRec(final int r) throws BddReorderRequest {
+    protected int notRec(final int r) throws BddReorderRequest {
         if (isZero(r)) {
             return BDDKernel.BDD_TRUE;
         }
@@ -570,13 +570,13 @@ public class BDDKernel {
         this.decRef(root);
     }
 
-    private void decRef(final int n) {
+    protected void decRef(final int n) {
         if (refcou(n) != MAXREF && refcou(n) > 0) {
             setRefcou(n, refcou(n) - 1);
         }
     }
 
-    private void incRef(final int n) {
+    protected void incRef(final int n) {
         if (refcou(n) < MAXREF) {
             setRefcou(n, refcou(n) + 1);
         }
@@ -603,7 +603,7 @@ public class BDDKernel {
         return result;
     }
 
-    private int makeNode(final int level, final int low, final int high) throws BddReorderRequest {
+    protected int makeNode(final int level, final int low, final int high) throws BddReorderRequest {
         if (low == high) {
             return low;
         }
@@ -640,7 +640,7 @@ public class BDDKernel {
         return res;
     }
 
-    private void unmark(final int i) {
+    protected void unmark(final int i) {
         if (i < 2) {
             return;
         }
@@ -652,7 +652,7 @@ public class BDDKernel {
         unmark(high(i));
     }
 
-    private int markCount(final int i) {
+    protected int markCount(final int i) {
         if (i < 2) {
             return 0;
         }
@@ -666,7 +666,7 @@ public class BDDKernel {
         return count;
     }
 
-    private void gbc() {
+    protected void gbc() {
         for (int r = 0; r < this.refstacktop; r++) {
             mark(this.refstack[r]);
         }
@@ -695,7 +695,7 @@ public class BDDKernel {
         this.gbcollectnum++;
     }
 
-    private void gbcRehash() {
+    protected void gbcRehash() {
         this.freepos = 0;
         this.freenum = 0;
         for (int n = this.nodesize - 1; n >= 2; n--) {
@@ -711,7 +711,7 @@ public class BDDKernel {
         }
     }
 
-    private void mark(final int i) {
+    protected void mark(final int i) {
         if (i < 2) {
             return;
         }
@@ -723,7 +723,7 @@ public class BDDKernel {
         mark(high(i));
     }
 
-    private void nodeResize(final boolean doRehash) {
+    protected void nodeResize(final boolean doRehash) {
         final int oldsize = this.nodesize;
         int n;
         this.nodesize = this.nodesize << 1;
@@ -817,24 +817,24 @@ public class BDDKernel {
         this.refstacktop = 0;
     }
 
-    private int pushRef(final int n) {
+    protected int pushRef(final int n) {
         this.refstack[this.refstacktop++] = n;
         return n;
     }
 
-    private int readRef(final int n) {
+    protected int readRef(final int n) {
         return this.refstack[this.refstacktop - n];
     }
 
-    private void popref(final int n) {
+    protected void popref(final int n) {
         this.refstacktop -= n;
     }
 
-    private boolean hasref(final int n) {
+    protected boolean hasref(final int n) {
         return refcou(n) > 0;
     }
 
-    private boolean isConst(final int n) {
+    protected boolean isConst(final int n) {
         return n < 2;
     }
 
@@ -846,35 +846,35 @@ public class BDDKernel {
         return n == 0;
     }
 
-    private boolean marked(final int n) {
+    protected boolean marked(final int n) {
         return (level(n) & MARKON) != 0;
     }
 
-    private void setMark(final int n) {
+    protected void setMark(final int n) {
         setLevel(n, level(n) | MARKON);
     }
 
-    private void unmarkNode(final int n) {
+    protected void unmarkNode(final int n) {
         setLevel(n, level(n) & MARKOFF);
     }
 
-    private int nodehash(final int lvl, final int l, final int h) {
+    protected int nodehash(final int lvl, final int l, final int h) {
         return Math.abs(triple(lvl, l, h) % this.nodesize);
     }
 
-    private int nodehash_reorder(final int var, final int l, final int h) {
+    protected int nodehash_reorder(final int var, final int l, final int h) {
         return Math.abs(pair(l, h) % this.levels[var].size) + this.levels[var].start;
     }
 
-    private int pair(final int a, final int b) {
+    protected int pair(final int a, final int b) {
         return (a + b) * (a + b + 1) / 2 + a;
     }
 
-    private int triple(final int a, final int b, final int c) {
+    protected int triple(final int a, final int b, final int c) {
         return pair(c, pair(a, b));
     }
 
-    private void initOperators(final int cachesize) {
+    protected void initOperators(final int cachesize) {
         this.applycache = new BDDCache(cachesize);
         this.itecache = new BDDCache(cachesize);
         this.quantcache = new BDDCache(cachesize);
@@ -886,7 +886,7 @@ public class BDDKernel {
         this.supportSet = null;
     }
 
-    private void resetCaches() {
+    protected void resetCaches() {
         this.applycache.reset();
         this.itecache.reset();
         this.quantcache.reset();
@@ -895,7 +895,7 @@ public class BDDKernel {
         this.misccache.reset();
     }
 
-    private void varResize() {
+    protected void varResize() {
         this.quantvarset = new int[this.varnum];
         this.quantvarsetID = 0;
     }
@@ -915,7 +915,7 @@ public class BDDKernel {
         return doWithPotentialReordering(() -> restrictRec(r, (var << 3) | CACHEID_RESTRICT));
     }
 
-    private int restrictRec(final int r, final int miscid) throws BddReorderRequest {
+    protected int restrictRec(final int r, final int miscid) throws BddReorderRequest {
         final int res;
         if (isConst(r) || level(r) > this.quantlast) {
             return r;
@@ -971,7 +971,7 @@ public class BDDKernel {
         return doWithPotentialReordering(() -> quantRec(r, Operand.AND, (var << 3) | CACHEID_FORALL));
     }
 
-    private int quantRec(final int r, final Operand op, final int quantid) throws BddReorderRequest {
+    protected int quantRec(final int r, final Operand op, final int quantid) throws BddReorderRequest {
         final int res;
         if (r < 2 || level(r) > this.quantlast) {
             return r;
@@ -1010,7 +1010,7 @@ public class BDDKernel {
         return res;
     }
 
-    private int satOneRec(final int r) throws BddReorderRequest {
+    protected int satOneRec(final int r) throws BddReorderRequest {
         if (isConst(r)) {
             return r;
         }
@@ -1045,7 +1045,7 @@ public class BDDKernel {
         return res;
     }
 
-    private int satOneSetRec(final int r, final int var, final int satPolarity) throws BddReorderRequest {
+    protected int satOneSetRec(final int r, final int var, final int satPolarity) throws BddReorderRequest {
         if (isConst(r) && isConst(var)) {
             return r;
         }
@@ -1094,7 +1094,7 @@ public class BDDKernel {
         return res;
     }
 
-    private int fullSatOneRec(final int r) throws BddReorderRequest {
+    protected int fullSatOneRec(final int r) throws BddReorderRequest {
         if (r < 2) {
             return r;
         }
@@ -1129,7 +1129,7 @@ public class BDDKernel {
         return allSat;
     }
 
-    private void allSatRec(final int r, final List<byte[]> models, final byte[] allsatProfile) {
+    protected void allSatRec(final int r, final List<byte[]> models, final byte[] allsatProfile) {
         if (isOne(r)) {
             models.add(Arrays.copyOf(allsatProfile, allsatProfile.length));
             return;
@@ -1163,7 +1163,7 @@ public class BDDKernel {
         return satCountRec(r, CACHEID_SATCOU).multiply(size);
     }
 
-    private BigInteger satCountRec(final int root, final int miscid) {
+    protected BigInteger satCountRec(final int root, final int miscid) {
         if (root < 2) {
             return BigInteger.valueOf(root);
         }
@@ -1193,7 +1193,7 @@ public class BDDKernel {
         return pathCountRecOne(r, CACHEID_PATHCOU_ONE);
     }
 
-    private BigInteger pathCountRecOne(final int r, final int miscid) {
+    protected BigInteger pathCountRecOne(final int r, final int miscid) {
         final BigInteger size;
         if (isZero(r)) {
             return BigInteger.ZERO;
@@ -1221,7 +1221,7 @@ public class BDDKernel {
         return pathCountRecZero(r, CACHEID_PATHCOU_ZERO);
     }
 
-    private BigInteger pathCountRecZero(final int r, final int miscid) {
+    protected BigInteger pathCountRecZero(final int r, final int miscid) {
         final BigInteger size;
         if (isZero(r)) {
             return BigInteger.ONE;
@@ -1256,7 +1256,7 @@ public class BDDKernel {
         return allUnsat;
     }
 
-    private void allUnsatRec(final int r, final List<byte[]> models) {
+    protected void allUnsatRec(final int r, final List<byte[]> models) {
         if (isZero(r)) {
             models.add(Arrays.copyOf(this.allunsatProfile, this.allunsatProfile.length));
             return;
@@ -1317,7 +1317,7 @@ public class BDDKernel {
         return res;
     }
 
-    private void supportRec(final int r, final int[] support) {
+    protected void supportRec(final int r, final int[] support) {
         if (r < 2) {
             return;
         }
@@ -1356,7 +1356,7 @@ public class BDDKernel {
         return varprofile;
     }
 
-    private void varProfileRec(final int r, final int[] varprofile) {
+    protected void varProfileRec(final int r, final int[] varprofile) {
         if (r < 2) {
             return;
         }
@@ -1369,7 +1369,7 @@ public class BDDKernel {
         varProfileRec(high(r), varprofile);
     }
 
-    private void varset2svartable(final int r) {
+    protected void varset2svartable(final int r) {
         if (r < 2) {
             throw new IllegalArgumentException("Illegal variable: " + r);
         }
@@ -1390,7 +1390,7 @@ public class BDDKernel {
         }
     }
 
-    private void varset2vartable(final int r) {
+    protected void varset2vartable(final int r) {
         if (r < 2) {
             throw new IllegalArgumentException("Illegal variable: " + r);
         }
@@ -1405,11 +1405,11 @@ public class BDDKernel {
         }
     }
 
-    private boolean insvarset(final int a) {
+    protected boolean insvarset(final int a) {
         return Math.abs(this.quantvarset[a]) == this.quantvarsetID;
     }
 
-    private boolean invarset(final int a) {
+    protected boolean invarset(final int a) {
         return this.quantvarset[a] == this.quantvarsetID;
     }
 
@@ -1432,12 +1432,12 @@ public class BDDKernel {
      * A class for BDD statistics.
      */
     public static final class BDDStatistics {
-        private long produced;
-        private int nodesize;
-        private int freenum;
-        private int varnum;
-        private int cachesize;
-        private int gbcollectnum;
+        protected long produced;
+        protected int nodesize;
+        protected int freenum;
+        protected int varnum;
+        protected int cachesize;
+        protected int gbcollectnum;
 
         /**
          * Returns the number of produced nodes.
@@ -1518,44 +1518,44 @@ public class BDDKernel {
      */
 
     /* Change macros to reflect the above idea */
-    private int VAR(final int n) {
+    protected int VAR(final int n) {
         return level(n);
     }
 
-    //    private int VARp(final BddNode p) {
+    //    protected int VARp(final BddNode p) {
     //        return p.level;
     //    }
 
     /*=== Reordering algorithms ============================================*/
 
     /* Current auto reord. method and number of automatic reorderings left */
-    private BDDReordering bddreordermethod;
-    private int bddreordertimes;
+    protected BDDReordering bddreordermethod;
+    protected int bddreordertimes;
 
     /* Flag for disabling reordering temporarily */
-    private boolean reorderdisabled;
+    protected boolean reorderdisabled;
 
     /* Store for the variable relationships */
-    private BDDTree vartree;
-    private int blockid;
+    protected BDDTree vartree;
+    protected int blockid;
 
     /* Store for the ref.cou. of the external roots */
-    private int[] extroots;
-    private int extrootsize;
+    protected int[] extroots;
+    protected int extrootsize;
 
-    private LevelData[] levels; /* Indexed by variable! */
+    protected LevelData[] levels; /* Indexed by variable! */
 
     /* Interaction matrix */
-    private InteractionMatrix iactmtx;
+    protected InteractionMatrix iactmtx;
 
     /* Number of live nodes before and after a reordering session */
-    private int usednum_before;
-    private int usednum_after;
+    protected int usednum_before;
+    protected int usednum_after;
 
     /* Flag telling us when a node table resize is done */
-    private boolean resizedInMakenode;
+    protected boolean resizedInMakenode;
 
-    private void bdd_reorder_init() {
+    protected void bdd_reorder_init() {
         this.reorderdisabled = false;
         this.vartree = null;
         bdd_clrvarblocks();
@@ -1564,7 +1564,7 @@ public class BDDKernel {
         this.blockid = 0;
     }
 
-    private int reorder_nodenum() {
+    protected int reorder_nodenum() {
         return this.nodesize - this.freenum;
     }
 
@@ -1603,7 +1603,7 @@ public class BDDKernel {
         this.bddreordertimes = savetimes;
     }
 
-    private BDDTree reorder_block(final BDDTree t, final BDDReordering method) {
+    protected BDDTree reorder_block(final BDDTree t, final BDDReordering method) {
         BDDTree thisTree;
         if (t == null) {
             return null;
@@ -1646,13 +1646,13 @@ public class BDDKernel {
         return t;
     }
 
-    private int varseqCmp(final Integer aa, final Integer bb) {
+    protected int varseqCmp(final Integer aa, final Integer bb) {
         final int a = this.var2level[aa];
         final int b = this.var2level[bb];
         return Integer.compare(a, b);
     }
 
-    private void reorder_done() {
+    protected void reorder_done() {
         for (int n = 0; n < this.extrootsize; n++) {
             setMark(this.extroots[n]);
         }
@@ -1668,7 +1668,7 @@ public class BDDKernel {
         gbc();
     }
 
-    private BDDTree reorder_win2(final BDDTree t) {
+    protected BDDTree reorder_win2(final BDDTree t) {
         BDDTree thisTree = t;
         BDDTree first = t;
         if (t == null) {
@@ -1687,7 +1687,7 @@ public class BDDKernel {
         return first;
     }
 
-    private BDDTree reorder_win2ite(final BDDTree t) {
+    protected BDDTree reorder_win2ite(final BDDTree t) {
         BDDTree thisTree = t;
         BDDTree first = t;
         if (t == null) {
@@ -1716,7 +1716,7 @@ public class BDDKernel {
         return first;
     }
 
-    private BDDTree reorder_win3(final BDDTree t) {
+    protected BDDTree reorder_win3(final BDDTree t) {
         BDDTree thisTree = t;
         BDDTree first = t;
 
@@ -1733,7 +1733,7 @@ public class BDDKernel {
         return first;
     }
 
-    private BDDTree reorder_win3ite(final BDDTree t) {
+    protected BDDTree reorder_win3ite(final BDDTree t) {
         BDDTree thisTree = t;
         BDDTree first = t;
         int lastsize;
@@ -1756,7 +1756,7 @@ public class BDDKernel {
         return first;
     }
 
-    private Pair<BDDTree, BDDTree> reorder_swapwin3(BDDTree thisTree) {
+    protected Pair<BDDTree, BDDTree> reorder_swapwin3(BDDTree thisTree) {
         BDDTree first = null;
         final boolean setfirst = thisTree.getPrev() == null;
         BDDTree next = thisTree;
@@ -1862,7 +1862,7 @@ public class BDDKernel {
     /**
      * Do sifting iteratively until no more improvement can be found
      */
-    private BDDTree reorder_siftite(final BDDTree t) {
+    protected BDDTree reorder_siftite(final BDDTree t) {
         BDDTree first = t;
         int lastsize;
 
@@ -1882,7 +1882,7 @@ public class BDDKernel {
     /**
      * Find sifting sequence based on the number of nodes at each level
      */
-    private BDDTree reorder_sift(BDDTree t) {
+    protected BDDTree reorder_sift(BDDTree t) {
         BDDTree thisTree;
         final BDDTree[] seq;
         final BDDSizePair[] p;
@@ -1928,7 +1928,7 @@ public class BDDKernel {
      * Go through all blocks in a specific sequence and find best
      * position for each of them
      */
-    private BDDTree reorder_sift_seq(final BDDTree t, final BDDTree[] seq, final int num) {
+    protected BDDTree reorder_sift_seq(final BDDTree t, final BDDTree[] seq, final int num) {
         BDDTree thisTree;
         int n;
 
@@ -1952,7 +1952,7 @@ public class BDDKernel {
      * Move a specific block up and down in the order and place at last in
      * the best position
      */
-    private void reorder_sift_bestpos(final BDDTree blk, final int middlePos) {
+    protected void reorder_sift_bestpos(final BDDTree blk, final int middlePos) {
         int best = reorder_nodenum();
         int maxAllowed = best / 5 + best;
         int bestpos = 0;
@@ -2009,14 +2009,14 @@ public class BDDKernel {
         }
     }
 
-    private int siftTestCmp(final BDDSizePair a, final BDDSizePair b) {
+    protected int siftTestCmp(final BDDSizePair a, final BDDSizePair b) {
         return Integer.compare(a.val, b.val);
     }
 
     /**
      * === Random reordering (mostly for debugging and test ) =============
      */
-    private BDDTree reorder_random(final BDDTree t) {
+    protected BDDTree reorder_random(final BDDTree t) {
         BDDTree thisTree;
         final BDDTree[] seq;
         int n, num = 0;
@@ -2049,12 +2049,11 @@ public class BDDKernel {
         return thisTree;
     }
 
-
     /**
      * Swaps adjacent blocks
      * @param left the left BDD tree
      */
-    private void blockdown(final BDDTree left) {
+    protected void blockdown(final BDDTree left) {
         final BDDTree right = left.getNext();
         int n;
         final int leftsize = left.getLast() - left.getFirst();
@@ -2106,7 +2105,7 @@ public class BDDKernel {
         right.setPos(n);
     }
 
-    private void reorder_varup(final int var) {
+    protected void reorder_varup(final int var) {
         if (var < 0 || var >= this.varnum) {
             throw new IllegalStateException("Illegal variable in reordering");
         }
@@ -2115,7 +2114,7 @@ public class BDDKernel {
         }
     }
 
-    private void reorder_vardown(final int var) {
+    protected void reorder_vardown(final int var) {
         int n;
         final int level;
         if (var < 0 || var >= this.varnum) {
@@ -2148,7 +2147,7 @@ public class BDDKernel {
         }
     }
 
-    private int reorder_downSimple(final int var0) {
+    protected int reorder_downSimple(final int var0) {
         int toBeProcessed = 0;
         final int var1 = this.level2var[this.var2level[var0] + 1];
         final int vl0 = this.levels[var0].start;
@@ -2179,7 +2178,7 @@ public class BDDKernel {
         return toBeProcessed;
     }
 
-    private void reorder_swap(int toBeProcessed, final int var0) {
+    protected void reorder_swap(int toBeProcessed, final int var0) {
         final int var1 = this.level2var[this.var2level[var0] + 1];
         while (toBeProcessed > 0) {
             final int next = next(toBeProcessed);
@@ -2233,7 +2232,7 @@ public class BDDKernel {
         }
     }
 
-    private int reorder_makenode(final int var, final int low, final int high) {
+    protected int reorder_makenode(final int var, final int low, final int high) {
         final int hash;
         int res;
 
@@ -2264,7 +2263,7 @@ public class BDDKernel {
              * update local variable "hash" */
             nodeResize(false);
             this.resizedInMakenode = true;
-            assert freepos > 0;
+            assert this.freepos > 0;
         }
 
         /* Build new node */
@@ -2289,7 +2288,7 @@ public class BDDKernel {
         return res;
     }
 
-    private void reorder_localGbc(final int var0) {
+    protected void reorder_localGbc(final int var0) {
         final int var1 = this.level2var[this.var2level[var0] + 1];
         final int vl1 = this.levels[var1].start;
         final int size1 = this.levels[var1].size;
@@ -2319,7 +2318,7 @@ public class BDDKernel {
         }
     }
 
-    private void reorder_rehashAll() {
+    protected void reorder_rehashAll() {
         int n;
         reorder_setLevellookup();
         this.freepos = 0;
@@ -2338,7 +2337,7 @@ public class BDDKernel {
         }
     }
 
-    private void reorder_setLevellookup() {
+    protected void reorder_setLevellookup() {
         int n;
         for (n = 0; n < this.varnum; n++) {
             this.levels[n].maxsize = this.nodesize / this.varnum;
@@ -2350,7 +2349,7 @@ public class BDDKernel {
         }
     }
 
-    private void bdd_clrvarblocks() {
+    protected void bdd_clrvarblocks() {
         this.vartree = null;
         this.blockid = 0;
     }
@@ -2369,19 +2368,19 @@ public class BDDKernel {
         this.bddreordertimes = num;
     }
 
-    private void bdd_disable_reorder() {
+    protected void bdd_disable_reorder() {
         this.reorderdisabled = true;
     }
 
-    private void bdd_enable_reorder() {
+    protected void bdd_enable_reorder() {
         this.reorderdisabled = false;
     }
 
-    private boolean bdd_reorder_ready() {
+    protected boolean bdd_reorder_ready() {
         return this.bddreordermethod != BDDReordering.BDD_REORDER_NONE && this.vartree != null && this.bddreordertimes != 0 && !this.reorderdisabled;
     }
 
-    private void bdd_reorder_auto() {
+    protected void bdd_reorder_auto() {
         if (!bdd_reorder_ready()) {
             return;
         }
@@ -2389,7 +2388,7 @@ public class BDDKernel {
         this.bddreordertimes--;
     }
 
-    private int reorder_init() {
+    protected int reorder_init() {
         this.levels = new LevelData[this.varnum];
         for (int n = 0; n < this.varnum; n++) {
             this.levels[n] = new LevelData();
@@ -2409,7 +2408,7 @@ public class BDDKernel {
         return 0;
     }
 
-    private int mark_roots() {
+    protected int mark_roots() {
         final int[] dep = new int[this.varnum];
         this.extrootsize = 0;
         for (int n = 2; n < this.nodesize; n++) {
@@ -2441,7 +2440,7 @@ public class BDDKernel {
         return 0;
     }
 
-    private void reorder_gbc() {
+    protected void reorder_gbc() {
         this.freepos = 0;
         this.freenum = 0;
         /* No need to zero all hash fields - this is done in mark_roots */
@@ -2459,7 +2458,7 @@ public class BDDKernel {
         }
     }
 
-    private void addref_rec(final int r, final int[] dep) {
+    protected void addref_rec(final int r, final int[] dep) {
         if (r < 2) {
             return;
         }
@@ -2486,7 +2485,7 @@ public class BDDKernel {
         incRef(r);
     }
 
-    private void addDependencies(final int[] dep) {
+    protected void addDependencies(final int[] dep) {
         for (int n = 0; n < this.varnum; n++) {
             for (int m = n; m < this.varnum; m++) {
                 if (dep[n] > 0 && dep[m] > 0) {
@@ -2618,7 +2617,7 @@ public class BDDKernel {
         }
     }
 
-    private int[] scanset(final int r) {
+    protected int[] scanset(final int r) {
         if (r < 0 || (r) >= this.nodesize || r >= 2 && low(r) == -1) {
             throw new IllegalArgumentException("Invalid BDD " + r + " as input");
         }
@@ -2637,7 +2636,7 @@ public class BDDKernel {
         return varset;
     }
 
-    private int bdd_reorder_gain() {
+    protected int bdd_reorder_gain() {
         if (this.usednum_before == 0) {
             return 0;
         }
@@ -2645,20 +2644,20 @@ public class BDDKernel {
     }
 
     /* Level data */
-    private static class LevelData {
+    protected static class LevelData {
         int start;    /* Start of this sub-table (entry in "bddnodes") */
         int size;     /* Size of this sub-table */
         int maxsize;  /* Max. allowed size of sub-table */
         int nodenum;  /* Number of nodes in this level */
     }
 
-    private static class BDDSizePair {
-        private int val;
-        private BDDTree block;
+    protected static class BDDSizePair {
+        protected int val;
+        protected BDDTree block;
     }
 
-    private static class InteractionMatrix {
-        private final int[][] rows;
+    protected static class InteractionMatrix {
+        protected final int[][] rows;
 
         InteractionMatrix(final int size) {
             this.rows = new int[size][];
@@ -2675,7 +2674,6 @@ public class BDDKernel {
             return this.rows[a][b / 8] & (1 << (b % 8));
         }
     }
-
 
     /////////////////// Reordering SwapVar /////////////////////////////////
 
@@ -2730,7 +2728,6 @@ public class BDDKernel {
         }
         reorder_done();
     }
-
 
     /////////////////// Verification /////////////////////////////////
 
@@ -2803,7 +2800,7 @@ public class BDDKernel {
         return verifyTreeRec(root, new long[this.nodes.length]);
     }
 
-    private long verifyTreeRec(final int root, final long[] cache) {
+    protected long verifyTreeRec(final int root, final long[] cache) {
         if (cache[root] > 0) {
             return cache[root];
         }
@@ -2870,11 +2867,11 @@ public class BDDKernel {
     /**
      * Replaces the calls in Buddy for setjmp and longjmp.
      */
-    private static class BddReorderRequest extends RuntimeException {
+    protected static class BddReorderRequest extends RuntimeException {
     }
 
     @FunctionalInterface
-    private interface BddOperation {
+    protected interface BddOperation {
         int perform() throws BddReorderRequest;
     }
 }

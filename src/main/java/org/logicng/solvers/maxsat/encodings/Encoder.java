@@ -59,19 +59,19 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * Encoders for cardinality constraints, pseudo Booleans and AMO constraints.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
 public class Encoder {
 
-    private final CardinalityEncoding cardinalityEncoding;
-    private final Ladder ladder;
-    private final ModularTotalizer mtotalizer;
-    private final Totalizer totalizer;
-    private final SequentialWeightCounter swc;
-    private IncrementalStrategy incrementalStrategy;
-    private PBEncoding pbEncoding;
-    private AMOEncoding amoEncoding;
+    protected final CardinalityEncoding cardinalityEncoding;
+    protected final Ladder ladder;
+    protected final ModularTotalizer mtotalizer;
+    protected final Totalizer totalizer;
+    protected final SequentialWeightCounter swc;
+    protected IncrementalStrategy incrementalStrategy;
+    protected PBEncoding pbEncoding;
+    protected AMOEncoding amoEncoding;
 
     /**
      * Constructs a new Encoder.
@@ -88,8 +88,8 @@ public class Encoder {
      * @param amo         the AMO constraint encoder
      * @param pb          the pseudo Boolean encoder
      */
-    private Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
-                    final AMOEncoding amo, final PBEncoding pb) {
+    protected Encoder(final IncrementalStrategy incremental, final CardinalityEncoding cardinality,
+                      final AMOEncoding amo, final PBEncoding pb) {
         this.incrementalStrategy = incremental;
         this.cardinalityEncoding = cardinality;
         this.amoEncoding = amo;

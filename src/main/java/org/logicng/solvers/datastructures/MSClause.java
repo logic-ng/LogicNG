@@ -53,7 +53,7 @@ import java.util.Comparator;
  * @version 2.0.0
  * @since 1.0
  */
-public class MSClause {
+public final class MSClause {
 
     /**
      * A comparator for clauses based on LBD and activity (used for the Glucose solver).
