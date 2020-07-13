@@ -936,6 +936,28 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    public void testFormulaOnSolverWithContradiction() throws ParserException {
+        for (final SATSolver solver : this.solvers) {
+            if (solver instanceof MiniSat) {
+                solver.add(this.f.variable("A"));
+                solver.add(this.f.variable("B"));
+                solver.add(this.f.parse("C & (~A | ~B)"));
+                assertThat(solver.execute(new FormulaOnSolverFunction()))
+                        .containsExactlyInAnyOrder(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"), this.f.falsum());
+                solver.reset();
+                solver.add(this.f.parse("A <=> B"));
+                solver.add(this.f.parse("B <=> ~A"));
+                assertThat(solver.execute(new FormulaOnSolverFunction()))
+                        .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | ~A"));
+                solver.sat();
+                assertThat(solver.execute(new FormulaOnSolverFunction()))
+                        .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"),
+                                this.f.variable("A"), this.f.variable("B"), this.f.falsum());
+            }
+        }
+    }
+
+    @Test
     public void testSelectionOrderSimple01() throws ParserException {
         for (final SATSolver solver : this.solvers) {
             final Formula formula = this.parser.parse("~(x <=> y)");

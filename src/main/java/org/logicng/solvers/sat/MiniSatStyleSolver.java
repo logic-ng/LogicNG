@@ -406,6 +406,14 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
+     * Returns {@code false} if this solver is known to be in a conflicting state, otherwise {@code true}.
+     * @return {@code false} if this solver is known to be in a conflicting state, otherwise {@code true}
+     */
+    public boolean ok() {
+        return ok;
+    }
+
+    /**
      * Returns the current conflict of the solver or an empty vector if there is none.
      * @return the current conflict of the solver
      */
