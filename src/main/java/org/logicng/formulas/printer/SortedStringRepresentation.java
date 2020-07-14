@@ -234,11 +234,11 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
         return String.format("%s%s%s", leftString, equivalence(), rightString);
     }
 
-    protected static class FormulaComparator implements Comparator<Formula> {
+    static class FormulaComparator implements Comparator<Formula> {
 
-        private final List<Variable> varOrder;
+        final List<Variable> varOrder;
 
-        protected FormulaComparator(final List<Variable> varOrder) {
+        FormulaComparator(final List<Variable> varOrder) {
             this.varOrder = varOrder;
         }
 

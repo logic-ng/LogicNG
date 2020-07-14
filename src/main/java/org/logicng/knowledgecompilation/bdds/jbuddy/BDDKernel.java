@@ -83,11 +83,11 @@ public class BDDKernel {
     public static final int BDD_TRUE = 1;
     public static final int BDD_FALSE = 0;
 
-    protected static final int MAXVAR = 0x1FFFFF;
-    protected static final int MAXREF = 0x3FF;
-    protected static final int MARKON = 0x200000;
-    protected static final int MARKOFF = 0x1FFFFF;
-    protected static final int MARKHIDE = 0x1FFFFF;
+    public static final int MAXVAR = 0x1FFFFF;
+    public static final int MAXREF = 0x3FF;
+    public static final int MARKON = 0x200000;
+    public static final int MARKOFF = 0x1FFFFF;
+    public static final int MARKHIDE = 0x1FFFFF;
 
     protected byte[] allunsatProfile;
 
@@ -107,11 +107,11 @@ public class BDDKernel {
         }
     }
 
-    protected static final int CACHEID_RESTRICT = 0x1;
-    protected static final int CACHEID_SATCOU = 0x2;
-    protected static final int CACHEID_PATHCOU_ONE = 0x4;
-    protected static final int CACHEID_PATHCOU_ZERO = 0x8;
-    protected static final int CACHEID_FORALL = 0x1;
+    public static final int CACHEID_RESTRICT = 0x1;
+    public static final int CACHEID_SATCOU = 0x2;
+    public static final int CACHEID_PATHCOU_ONE = 0x4;
+    public static final int CACHEID_PATHCOU_ZERO = 0x8;
+    public static final int CACHEID_FORALL = 0x1;
 
     protected final FormulaFactory f;
     protected final SortedMap<Variable, Integer> var2idx;
@@ -2645,10 +2645,10 @@ public class BDDKernel {
 
     /* Level data */
     protected static class LevelData {
-        int start;    /* Start of this sub-table (entry in "bddnodes") */
-        int size;     /* Size of this sub-table */
-        int maxsize;  /* Max. allowed size of sub-table */
-        int nodenum;  /* Number of nodes in this level */
+        protected int start;    /* Start of this sub-table (entry in "bddnodes") */
+        protected int size;     /* Size of this sub-table */
+        protected int maxsize;  /* Max. allowed size of sub-table */
+        protected int nodenum;  /* Number of nodes in this level */
     }
 
     protected static class BDDSizePair {
@@ -2659,18 +2659,18 @@ public class BDDKernel {
     protected static class InteractionMatrix {
         protected final int[][] rows;
 
-        InteractionMatrix(final int size) {
+        protected InteractionMatrix(final int size) {
             this.rows = new int[size][];
             for (int n = 0; n < size; n++) {
                 this.rows[n] = new int[size / 8 + 1];
             }
         }
 
-        void set(final int a, final int b) {
+        protected void set(final int a, final int b) {
             this.rows[a][b / 8] |= 1 << (b % 8);
         }
 
-        int depends(final int a, final int b) {
+        protected int depends(final int a, final int b) {
             return this.rows[a][b / 8] & (1 << (b % 8));
         }
     }

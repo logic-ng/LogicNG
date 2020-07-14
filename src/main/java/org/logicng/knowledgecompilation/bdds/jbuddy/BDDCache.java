@@ -69,7 +69,7 @@ public class BDDCache {
      * Constructs a new BDD cache of a given size (number of entries in the cache).
      * @param cs the cache size
      */
-    BDDCache(final int cs) {
+    protected BDDCache(final int cs) {
         resize(cs);
     }
 
@@ -102,7 +102,7 @@ public class BDDCache {
      * @param hash the hash value.
      * @return the respective entry in the cache
      */
-    BDDCacheEntry lookup(final int hash) {
+    protected BDDCacheEntry lookup(final int hash) {
         return this.table[Math.abs(hash % this.table.length)];
     }
 }

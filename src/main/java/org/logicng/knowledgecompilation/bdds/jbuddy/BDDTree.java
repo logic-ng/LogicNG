@@ -181,7 +181,18 @@ public class BDDTree {
         this.nextlevel = nextlevel;
     }
 
-    protected static BDDTree addRangeRec(BDDTree t, final BDDTree prev, final int first, final int last, final boolean fixed, final int id, final int[] level2var) {
+    /**
+     * Adds a new range in the tree.
+     * @param t         the tree in which the range should be added
+     * @param prev      the predecessor if t is {@code null}
+     * @param first     the start of the range
+     * @param last      the end of the range
+     * @param fixed     whether the range should be fixed or not
+     * @param id        the id of the tree
+     * @param level2var the level to variable mapping
+     * @return the (possibly changed) BDD tree
+     */
+    public static BDDTree addRangeRec(BDDTree t, final BDDTree prev, final int first, final int last, final boolean fixed, final int id, final int[] level2var) {
         if (first < 0 || last < 0 || last < first) {
             return null;
         }

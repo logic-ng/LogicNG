@@ -66,15 +66,15 @@ import java.util.Random;
  */
 public class BDDPrime {
 
-    protected static final int CHECKTIMES = 20;
-    protected static final Random rng = new Random();
+    static final int CHECKTIMES = 20;
+    static final Random rng = new Random();
 
     /**
      * Returns the next prime greater than the given number.
      * @param num the number
      * @return the next prime greater than the given number
      */
-    static int primeGTE(int num) {
+    public static int primeGTE(int num) {
         if (isEven(num)) {
             ++num;
         }
@@ -89,7 +89,7 @@ public class BDDPrime {
      * @param num the number
      * @return the next prime less than the given number
      */
-    static int primeLTE(int num) {
+    public static int primeLTE(int num) {
         if (isEven(num)) {
             --num;
         }
@@ -99,20 +99,33 @@ public class BDDPrime {
         return num;
     }
 
-    protected static int numberOfBits(final int src) {
-        int b;
-        if (src == 0) {
-            return 0;
-        }
-        for (b = 31; b > 0; --b) {
-            if (bitIsSet(src, b)) {
-                return b + 1;
-            }
-        }
-        return 1;
+    static boolean isEven(final int src) {
+        return (src & 0x1) == 0;
     }
 
-    protected static boolean isWitness(final int witness, final int src) {
+    static boolean isPrime(final int src) {
+        return !hasEasyFactors(src) && isMillerRabinPrime(src);
+    }
+
+    static boolean hasEasyFactors(final int src) {
+        return hasFactor(src, 3)
+                || hasFactor(src, 5)
+                || hasFactor(src, 7)
+                || hasFactor(src, 11)
+                || hasFactor(src, 13);
+    }
+
+    static boolean isMillerRabinPrime(final int src) {
+        for (int n = 0; n < CHECKTIMES; ++n) {
+            final int witness = random(src - 1);
+            if (isWitness(witness, src)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean isWitness(final int witness, final int src) {
         final int bitNum = numberOfBits(src - 1) - 1;
         int d = 1;
         for (int i = bitNum; i >= 0; --i) {
@@ -128,45 +141,32 @@ public class BDDPrime {
         return d != 1;
     }
 
-    protected static boolean isMillerRabinPrime(final int src) {
-        for (int n = 0; n < CHECKTIMES; ++n) {
-            final int witness = random(src - 1);
-            if (isWitness(witness, src)) {
-                return false;
+    static int numberOfBits(final int src) {
+        int b;
+        if (src == 0) {
+            return 0;
+        }
+        for (b = 31; b > 0; --b) {
+            if (bitIsSet(src, b)) {
+                return b + 1;
             }
         }
-        return true;
+        return 1;
     }
 
-    protected static boolean hasEasyFactors(final int src) {
-        return hasFactor(src, 3)
-                || hasFactor(src, 5)
-                || hasFactor(src, 7)
-                || hasFactor(src, 11)
-                || hasFactor(src, 13);
-    }
-
-    protected static boolean isPrime(final int src) {
-        return !hasEasyFactors(src) && isMillerRabinPrime(src);
-    }
-
-    protected static boolean bitIsSet(final int src, final int b) {
+    static boolean bitIsSet(final int src, final int b) {
         return (src & (1 << b)) != 0;
     }
 
-    protected static int mulmod(final int a, final int b, final int c) {
+    static int mulmod(final int a, final int b, final int c) {
         return (int) (((long) a * (long) b) % (long) c);
     }
 
-    protected static int random(final int i) {
+    static int random(final int i) {
         return rng.nextInt(i) + 1;
     }
 
-    protected static boolean hasFactor(final int src, final int n) {
+    static boolean hasFactor(final int src, final int n) {
         return (src != n) && (src % n == 0);
-    }
-
-    protected static boolean isEven(final int src) {
-        return (src & 0x1) == 0;
     }
 }

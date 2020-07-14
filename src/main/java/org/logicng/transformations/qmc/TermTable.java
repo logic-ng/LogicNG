@@ -283,7 +283,7 @@ public class TermTable {
         return sb.toString();
     }
 
-    protected static String padRight(final String s, final int n) {
+    private static String padRight(final String s, final int n) {
         return String.format("%1$-" + n + "s", s);
     }
 }

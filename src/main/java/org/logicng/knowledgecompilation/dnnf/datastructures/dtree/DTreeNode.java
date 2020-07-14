@@ -236,7 +236,7 @@ public class DTreeNode extends DTree {
         leafs.removeIf(dTreeLeaf -> dTreeLeaf.clauseSize() == 1);
     }
 
-    protected static int[] toArray(final BitSet bits) {
+    static int[] toArray(final BitSet bits) {
         final int[] result = new int[bits.cardinality()];
         int n = 0;
         for (int i = bits.nextSetBit(0); i != -1; i = bits.nextSetBit(i + 1)) {
@@ -245,7 +245,7 @@ public class DTreeNode extends DTree {
         return result;
     }
 
-    protected static int[] sortedIntersect(final int[] left, final int[] right) {
+    static int[] sortedIntersect(final int[] left, final int[] right) {
         final SortedSet<Integer> l = new TreeSet<>();
         final SortedSet<Integer> intersection = new TreeSet<>();
         for (final int i : left) {

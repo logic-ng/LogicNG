@@ -29,24 +29,24 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
     /**
      * Undirected Graph
      */
-    protected static class Graph {
-        final int numberOfVertices;
-        final int numberOfEdges;
+    public static class Graph {
+        protected final int numberOfVertices;
+        protected final int numberOfEdges;
 
         /**
          * The adjacency matrix (which is symmetric since the graph is undirected)
          */
-        final boolean[][] adjMatrix;
+        protected final boolean[][] adjMatrix;
 
         /**
          * The list of vertices
          */
-        final List<Variable> vertices;
+        protected final List<Variable> vertices;
 
         /**
          * The edges of the graph as a list of edges per node ({{2,3},{1},{1}} means that there are the edges 1-2 and 1-3)
          */
-        final List<LNGIntVector> edgeList;
+        protected final List<LNGIntVector> edgeList;
 
         public Graph(final Formula cnf) {
             /* build vertices */
@@ -103,7 +103,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
             return result;
         }
 
-        List<Variable> getMinFillOrdering() {
+        protected List<Variable> getMinFillOrdering() {
             final boolean[][] fillAdjMatrix = getCopyOfAdjMatrix();
             final List<LNGIntVector> fillEdgeList = getCopyOfEdgeList();
 
