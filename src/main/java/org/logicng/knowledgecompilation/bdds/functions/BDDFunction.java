@@ -1,7 +1,7 @@
 package org.logicng.knowledgecompilation.bdds.functions;
 
 
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
+import org.logicng.knowledgecompilation.bdds.BDD;
 
 /**
  * A function on a BDD.

@@ -35,7 +35,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.NumberOfNodesBDDHandler;
 import org.logicng.handlers.TimeoutBDDHandler;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.testutils.NQueensGenerator;

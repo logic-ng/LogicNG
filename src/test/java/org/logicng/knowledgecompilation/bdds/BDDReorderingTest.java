@@ -10,13 +10,15 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDConstant;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDInnerNode;
 import org.logicng.knowledgecompilation.bdds.functions.LngBDDFunction;
 import org.logicng.knowledgecompilation.bdds.io.BDDDotFileWriter;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDReordering;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDReorderingMethod;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDVerification;
 import org.logicng.predicates.satisfiability.SATPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaRandomizer;
@@ -41,9 +43,10 @@ import java.util.stream.Stream;
 public class BDDReorderingTest extends TestWithExampleFormulas {
 
     private final SwapStats stats = new SwapStats();
-    private static final List<BDDReordering> REORDER_METHODS =
-            Arrays.asList(BDDReordering.BDD_REORDER_WIN2, BDDReordering.BDD_REORDER_WIN2ITE, BDDReordering.BDD_REORDER_WIN3, BDDReordering.BDD_REORDER_WIN3ITE, BDDReordering.BDD_REORDER_SIFT,
-                    BDDReordering.BDD_REORDER_SIFTITE, BDDReordering.BDD_REORDER_RANDOM);
+    private static final List<BDDReorderingMethod> REORDER_METHODS =
+            Arrays.asList(BDDReorderingMethod.BDD_REORDER_WIN2, BDDReorderingMethod.BDD_REORDER_WIN2ITE, BDDReorderingMethod.BDD_REORDER_WIN3, BDDReorderingMethod.BDD_REORDER_WIN3ITE,
+                    BDDReorderingMethod.BDD_REORDER_SIFT,
+                    BDDReorderingMethod.BDD_REORDER_SIFTITE, BDDReorderingMethod.BDD_REORDER_RANDOM);
 
     @Test
     public void testSwapping() throws ParserException {
@@ -119,10 +122,10 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                 if (verbose) {
                     System.out.println(String.format("vars = %2d, depth = %2d, nodes = %5d", vars, depth, formula.numberOfNodes()));
                 }
-                for (final BDDReordering method : REORDER_METHODS) {
+                for (final BDDReorderingMethod method : REORDER_METHODS) {
                     performReorder(f, formula, method, true, verbose);
                 }
-                for (final BDDReordering method : REORDER_METHODS) {
+                for (final BDDReorderingMethod method : REORDER_METHODS) {
                     performReorder(f, formula, method, false, verbose);
                 }
             }
@@ -138,19 +141,19 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                 .findAny().get();
     }
 
-    private void performReorder(final FormulaFactory f, final Formula formula, final BDDReordering reorderMethod, final boolean withBlocks, final boolean verbose) {
+    private void performReorder(final FormulaFactory f, final Formula formula, final BDDReorderingMethod reorderMethod, final boolean withBlocks, final boolean verbose) {
         final BDDKernel kernel = new BDDKernel(f, new ArrayList<>(formula.variables()), 1000, 10000);
         final BDD bdd = BDDFactory.build(formula, kernel);
         final BigInteger count = bdd.modelCount();
-        final int usedBefore = kernel.nodeCount(bdd.index());
+        final int usedBefore = new BDDOperations(kernel).nodeCount(bdd.index());
         final long start = System.currentTimeMillis();
         addVariableBlocks(formula.variables().size(), withBlocks, kernel);
-        kernel.bdd_reorder(reorderMethod);
+        kernel.getReordering().reorder(reorderMethod);
         final long duration = System.currentTimeMillis() - start;
-        final int usedAfter = kernel.nodeCount(bdd.index());
+        final int usedAfter = new BDDOperations(kernel).nodeCount(bdd.index());
         assertThat(verifyBddConsistency(f, formula, bdd, count)).isTrue();
         verifyVariableBlocks(f, formula, withBlocks, bdd);
-        if (reorderMethod != BDDReordering.BDD_REORDER_RANDOM) {
+        if (reorderMethod != BDDReorderingMethod.BDD_REORDER_RANDOM) {
             assertThat(usedAfter).isLessThanOrEqualTo(usedBefore);
         }
         final double reduction = (usedBefore - usedAfter) / (double) usedBefore * 100;
@@ -160,20 +163,21 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     private void addVariableBlocks(final int numVars, final boolean withBlocks, final BDDKernel kernel) {
+        final BDDReordering reordering = kernel.getReordering();
         if (withBlocks) {
-            kernel.addVariableBlockAll();
-            kernel.addVariableBlock(0, 20, true);
-            kernel.addVariableBlock(0, 10, false);
-            kernel.addVariableBlock(11, 20, false);
-            kernel.addVariableBlock(15, 19, false);
-            kernel.addVariableBlock(15, 17, true);
-            kernel.addVariableBlock(18, 19, false);
-            kernel.addVariableBlock(21, numVars - 1, false);
+            reordering.addVariableBlockAll();
+            reordering.addVariableBlock(0, 20, true);
+            reordering.addVariableBlock(0, 10, false);
+            reordering.addVariableBlock(11, 20, false);
+            reordering.addVariableBlock(15, 19, false);
+            reordering.addVariableBlock(15, 17, true);
+            reordering.addVariableBlock(18, 19, false);
+            reordering.addVariableBlock(21, numVars - 1, false);
             if (numVars > 33) {
-                kernel.addVariableBlock(30, 33, false);
+                reordering.addVariableBlock(30, 33, false);
             }
         } else {
-            kernel.addVariableBlockAll();
+            reordering.addVariableBlockAll();
         }
     }
 
@@ -187,27 +191,27 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                 }
                 final BDDKernel kernel = new BDDKernel(f, new ArrayList<>(formula.variables()), 1000, 10000);
                 final BDD bdd = BDDFactory.build(formula, kernel);
-                final int nodeCount = kernel.nodeCount(bdd.index());
+                final int nodeCount = new BDDOperations(kernel).nodeCount(bdd.index());
                 final BigInteger modelCount = bdd.modelCount();
-                for (final BDDReordering method : REORDER_METHODS) {
+                for (final BDDReorderingMethod method : REORDER_METHODS) {
                     reorderOnBuild(f, formula, method, modelCount, nodeCount, true, verbose);
                 }
-                for (final BDDReordering method : REORDER_METHODS) {
+                for (final BDDReorderingMethod method : REORDER_METHODS) {
                     reorderOnBuild(f, formula, method, modelCount, nodeCount, false, verbose);
                 }
             }
         }
     }
 
-    private void reorderOnBuild(final FormulaFactory f, final Formula formula, final BDDReordering method, final BigInteger originalCount, final int originalUsedNodes, final boolean withBlocks,
+    private void reorderOnBuild(final FormulaFactory f, final Formula formula, final BDDReorderingMethod method, final BigInteger originalCount, final int originalUsedNodes, final boolean withBlocks,
                                 final boolean verbose) {
         final BDDKernel kernel = new BDDKernel(f, new ArrayList<>(formula.variables()), 1000, 10000);
         addVariableBlocks(formula.variables().size(), withBlocks, kernel);
-        kernel.bdd_autoreorder_times(method, 10000);
+        kernel.getReordering().setReorderDuringConstruction(method, 10000);
         final long start = System.currentTimeMillis();
         final BDD bdd = BDDFactory.build(formula, kernel);
         final long duration = System.currentTimeMillis() - start;
-        final int usedAfter = kernel.nodeCount(bdd.index());
+        final int usedAfter = new BDDOperations(kernel).nodeCount(bdd.index());
         verifyVariableBlocks(f, formula, withBlocks, bdd);
         verifyBddConsistency(f, formula, bdd, originalCount);
         final double reduction = (originalUsedNodes - usedAfter) / (double) originalUsedNodes * 100;
@@ -217,10 +221,11 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     private boolean verifyBddConsistency(final FormulaFactory f, final Formula f1, final BDD bdd, final BigInteger modelCount) {
-        if (!bdd.underlyingKernel().verify(bdd.index())) {
+        final BDDVerification verification = new BDDVerification(bdd.underlyingKernel());
+        if (!verification.verify(bdd.index())) {
             return false;
         }
-        final long nodes = bdd.underlyingKernel().verifyTree(bdd.index());
+        final long nodes = verification.verifyTree(bdd.index());
         if (nodes < 0) {
             return false;
         }

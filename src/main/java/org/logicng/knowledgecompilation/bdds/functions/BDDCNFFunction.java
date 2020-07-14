@@ -1,8 +1,9 @@
 package org.logicng.knowledgecompilation.bdds.functions;
 
 import org.logicng.formulas.Formula;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
+import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public final class BDDCNFFunction implements BDDFunction<Formula> {
     @Override
     public Formula apply(final BDD bdd) {
         final BDDKernel kernel = bdd.underlyingKernel();
-        final List<byte[]> unsatPaths = kernel.allUnsat(bdd.index());
+        final List<byte[]> unsatPaths = new BDDOperations(kernel).allUnsat(bdd.index());
         final List<Formula> clauses = new ArrayList<>();
         List<Formula> literals;
         for (final byte[] path : unsatPaths) {

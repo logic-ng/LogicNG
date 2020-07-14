@@ -36,7 +36,6 @@ import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.testutils.NQueensGenerator;
 

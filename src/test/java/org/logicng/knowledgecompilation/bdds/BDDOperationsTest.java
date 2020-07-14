@@ -38,7 +38,6 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 import java.math.BigInteger;

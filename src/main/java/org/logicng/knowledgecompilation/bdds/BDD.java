@@ -26,19 +26,21 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.knowledgecompilation.bdds.datastructures;
+package org.logicng.knowledgecompilation.bdds;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-import org.logicng.knowledgecompilation.bdds.BDDFactory;
+import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;
 import org.logicng.knowledgecompilation.bdds.functions.BDDCNFFunction;
 import org.logicng.knowledgecompilation.bdds.functions.BDDFunction;
 import org.logicng.knowledgecompilation.bdds.functions.BDDModelEnumerationFunction;
 import org.logicng.knowledgecompilation.bdds.functions.LngBDDFunction;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDReordering;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public final class BDD {
 
     private final int index;
     protected final BDDKernel kernel;
+    protected final BDDOperations operations;
 
     /**
      * Constructs a new BDD with a given index.
@@ -70,6 +73,7 @@ public final class BDD {
     public BDD(final int index, final BDDKernel kernel) {
         this.index = index;
         this.kernel = kernel;
+        this.operations = new BDDOperations(kernel);
     }
 
     /**
@@ -121,7 +125,7 @@ public final class BDD {
      * @return the model count
      */
     public BigInteger modelCount() {
-        return this.kernel.satCount(this.index);
+        return this.operations.satCount(this.index);
     }
 
     /**
@@ -163,7 +167,7 @@ public final class BDD {
      * @return the number of clauses for the CNF formula of the BDD
      */
     public BigInteger numberOfClausesCNF() {
-        return this.kernel.pathCountZero(this.index);
+        return this.operations.pathCountZero(this.index);
     }
 
     /**
@@ -241,7 +245,7 @@ public final class BDD {
      * @return an arbitrary model of this BDD
      */
     public Assignment model() {
-        return createAssignment(this.kernel.satOne(this.index));
+        return createAssignment(this.operations.satOne(this.index));
     }
 
     /**
@@ -254,7 +258,7 @@ public final class BDD {
     public Assignment model(final boolean defaultValue, final Collection<Variable> variables) {
         final int varBDD = BDDFactory.build(this.kernel.factory().and(variables), this.kernel, null).index;
         final int pol = defaultValue ? BDDKernel.BDD_TRUE : BDDKernel.BDD_FALSE;
-        final int modelBDD = this.kernel.satOneSet(this.index, varBDD, pol);
+        final int modelBDD = this.operations.satOneSet(this.index, varBDD, pol);
         return createAssignment(modelBDD);
     }
 
@@ -274,7 +278,7 @@ public final class BDD {
      * @return an full model of this BDD
      */
     public Assignment fullModel() {
-        return createAssignment(this.kernel.fullSatOne(this.index));
+        return createAssignment(this.operations.fullSatOne(this.index));
     }
 
     /**
@@ -282,7 +286,7 @@ public final class BDD {
      * @return the number of paths leading to the terminal 'one' node
      */
     public BigInteger pathCountOne() {
-        return this.kernel.pathCountOne(this.index);
+        return this.operations.pathCountOne(this.index);
     }
 
     /**
@@ -290,7 +294,7 @@ public final class BDD {
      * @return the number of paths leading to the terminal 'zero' node
      */
     public BigInteger pathCountZero() {
-        return this.kernel.pathCountZero(this.index);
+        return this.operations.pathCountZero(this.index);
     }
 
     /**
@@ -298,7 +302,7 @@ public final class BDD {
      * @return all the variables that this BDD depends on
      */
     public SortedSet<Variable> support() {
-        final int supportBDD = this.kernel.support(this.index);
+        final int supportBDD = this.operations.support(this.index);
         final Assignment assignment = createAssignment(supportBDD);
         assert assignment == null || assignment.negativeLiterals().isEmpty();
         return assignment == null ? Collections.emptySortedSet() : new TreeSet<>(assignment.positiveVariables());
@@ -309,7 +313,7 @@ public final class BDD {
      * @return the number of distinct nodes
      */
     public int nodeCount() {
-        return this.kernel.nodeCount(this.index);
+        return this.operations.nodeCount(this.index);
     }
 
     /**
@@ -317,7 +321,7 @@ public final class BDD {
      * @return how often each variable occurs in the BDD
      */
     public SortedMap<Variable, Integer> variableProfile() {
-        final int[] varProfile = this.kernel.varProfile(this.index);
+        final int[] varProfile = this.operations.varProfile(this.index);
         final SortedMap<Variable, Integer> profile = new TreeMap<>();
         for (int i = 0; i < varProfile.length; i++) {
             profile.put(this.kernel.idx2var().get(i), varProfile[i]);
@@ -352,7 +356,15 @@ public final class BDD {
         } else if (secondVar == null) {
             throw new IllegalArgumentException("Unknown variable: " + second);
         }
-        this.kernel.bdd_swapvar(firstVar, secondVar);
+        this.kernel.getReordering().swapVariables(firstVar, secondVar);
+    }
+
+    /**
+     * Returns the reordering object for the BDD kernel.
+     * @return the reordering object
+     */
+    public BDDReordering getReordering() {
+        return this.kernel.getReordering();
     }
 
     /**

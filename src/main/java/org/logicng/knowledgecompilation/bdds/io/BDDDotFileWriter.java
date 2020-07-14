@@ -28,7 +28,7 @@
 
 package org.logicng.knowledgecompilation.bdds.io;
 
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
+import org.logicng.knowledgecompilation.bdds.BDD;
 
 import java.io.BufferedWriter;
 import java.io.File;

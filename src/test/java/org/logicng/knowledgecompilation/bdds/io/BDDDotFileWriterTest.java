@@ -36,8 +36,8 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 import java.io.File;

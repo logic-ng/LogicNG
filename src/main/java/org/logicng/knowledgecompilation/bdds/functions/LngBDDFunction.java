@@ -1,7 +1,7 @@
 package org.logicng.knowledgecompilation.bdds.functions;
 
 import org.logicng.formulas.Variable;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
+import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDConstant;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDInnerNode;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;

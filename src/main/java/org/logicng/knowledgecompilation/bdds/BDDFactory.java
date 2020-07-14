@@ -64,7 +64,6 @@ import org.logicng.formulas.Implication;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
 import org.logicng.handlers.BDDHandler;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 import java.util.Iterator;

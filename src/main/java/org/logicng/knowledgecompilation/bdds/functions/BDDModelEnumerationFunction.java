@@ -2,8 +2,9 @@ package org.logicng.knowledgecompilation.bdds.functions;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Variable;
-import org.logicng.knowledgecompilation.bdds.datastructures.BDD;
+import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +37,7 @@ public final class BDDModelEnumerationFunction implements BDDFunction<List<Assig
     public List<Assignment> apply(final BDD bdd) {
         final Set<Assignment> res = new HashSet<>();
         final BDDKernel kernel = bdd.underlyingKernel();
-        final List<byte[]> models = kernel.allSat(bdd.index());
+        final List<byte[]> models = new BDDOperations(kernel).allSat(bdd.index());
         final SortedSet<Integer> temp;
         if (this.variables == null) {
             temp = new TreeSet<>(kernel.var2idx().values());
