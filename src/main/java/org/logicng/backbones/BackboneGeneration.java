@@ -46,7 +46,7 @@ import java.util.Collections;
  * @version 1.6.0
  * @since 1.5.0
  */
-public class BackboneGeneration {
+public final class BackboneGeneration {
 
     /**
      * Private constructor.
