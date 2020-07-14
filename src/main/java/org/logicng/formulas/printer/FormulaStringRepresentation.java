@@ -94,8 +94,7 @@ public abstract class FormulaStringRepresentation {
     }
 
     /**
-     * Returns a bracketed string version of a given formula. Exception: If the formula is a trivial pseudo-Boolean
-     * constraint, then the string version of the formula is returned without brackets.
+     * Returns a bracketed string version of a given formula.
      * @param formula the formula
      * @return {@code "(" + formula.toString() + ")"}
      */
