@@ -34,10 +34,10 @@ import org.logicng.formulas.Variable;
 /**
  * Encodes that at least 'rhs' variables are assigned value true.  Uses the cardinality network
  * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
-final class CCALKCardinalityNetwork implements CCAtLeastK {
+public final class CCALKCardinalityNetwork implements CCAtLeastK {
 
     private final CCCardinalityNetworks cardinalityNetwork;
 
@@ -49,13 +49,13 @@ final class CCALKCardinalityNetwork implements CCAtLeastK {
     }
 
     @Override
-    public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-        cardinalityNetwork.buildALK(result, vars, rhs);
+    public void build(final EncodingResult result, final Variable[] vars, final int rhs) {
+        this.cardinalityNetwork.buildALK(result, vars, rhs);
     }
 
     @Override
     public CCIncrementalData incrementalData() {
-        return cardinalityNetwork.incrementalData();
+        return this.cardinalityNetwork.incrementalData();
     }
 
     /**
@@ -64,8 +64,8 @@ final class CCALKCardinalityNetwork implements CCAtLeastK {
      * @param vars   the variables
      * @param rhs    the right-hand side
      */
-    void buildForIncremental(final EncodingResult result, final Variable[] vars, int rhs) {
-        cardinalityNetwork.buildALKForIncremental(result, vars, rhs);
+    void buildForIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
+        this.cardinalityNetwork.buildALKForIncremental(result, vars, rhs);
     }
 
     @Override

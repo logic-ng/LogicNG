@@ -33,17 +33,17 @@ import org.logicng.formulas.Variable;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the 2-product method due to Chen.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-final class CCAMOProduct implements CCAtMostOne {
+public final class CCAMOProduct implements CCAtMostOne {
     private final int recursiveBound;
     private EncodingResult result;
 
     /**
      * Constructs the naive AMO encoder.
      */
-    CCAMOProduct(int recursiveBound) {
+    CCAMOProduct(final int recursiveBound) {
         this.recursiveBound = recursiveBound;
     }
 
@@ -55,16 +55,16 @@ final class CCAMOProduct implements CCAtMostOne {
     }
 
     private void productRec(final Variable... vars) {
-        int n = vars.length;
-        int p = (int) Math.ceil(Math.sqrt(n));
-        int q = (int) Math.ceil((double) n / (double) p);
+        final int n = vars.length;
+        final int p = (int) Math.ceil(Math.sqrt(n));
+        final int q = (int) Math.ceil((double) n / (double) p);
         final Variable[] us = new Variable[p];
         for (int i = 0; i < us.length; i++) {
-            us[i] = result.newVariable();
+            us[i] = this.result.newVariable();
         }
         final Variable[] vs = new Variable[q];
         for (int i = 0; i < vs.length; i++) {
-            vs[i] = result.newVariable();
+            vs[i] = this.result.newVariable();
         }
         if (us.length <= this.recursiveBound) {
             buildPure(us);
@@ -80,8 +80,8 @@ final class CCAMOProduct implements CCAtMostOne {
             for (int j = 0; j < q; j++) {
                 final int k = i * q + j;
                 if (k >= 0 && k < n) {
-                    result.addClause(vars[k].negate(), us[i]);
-                    result.addClause(vars[k].negate(), vs[j]);
+                    this.result.addClause(vars[k].negate(), us[i]);
+                    this.result.addClause(vars[k].negate(), vs[j]);
                 }
             }
         }
@@ -90,7 +90,7 @@ final class CCAMOProduct implements CCAtMostOne {
     private void buildPure(final Variable... vars) {
         for (int i = 0; i < vars.length; i++) {
             for (int j = i + 1; j < vars.length; j++) {
-                result.addClause(vars[i].negate(), vars[j].negate());
+                this.result.addClause(vars[i].negate(), vars[j].negate());
             }
         }
     }

@@ -62,7 +62,7 @@ import org.logicng.formulas.Variable;
 
 /**
  * Implementation of a sorting network.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
 public final class CCSorting {

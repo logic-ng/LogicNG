@@ -60,7 +60,7 @@ import java.util.TreeSet;
  * @version 2.0.0
  * @since 1.5.0
  */
-public class Backbone {
+public final class Backbone {
     private final boolean sat;
     private final SortedSet<Variable> positiveBackbone;
     private final SortedSet<Variable> negativeBackbone;

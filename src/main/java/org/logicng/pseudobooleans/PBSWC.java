@@ -59,10 +59,10 @@ import java.util.List;
 
 /**
  * A sequential weight counter for the encoding of pseudo-Boolean constraints in CNF.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-final class PBSWC implements PBEncoding {
+public final class PBSWC implements PBEncoding {
 
     private final FormulaFactory f;
 

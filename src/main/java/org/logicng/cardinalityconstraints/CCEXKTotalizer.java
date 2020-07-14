@@ -34,10 +34,10 @@ import org.logicng.formulas.Variable;
 /**
  * Encodes that exactly 'rhs' variables can be assigned value true.  Uses the totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
-final class CCEXKTotalizer implements CCExactlyK {
+public final class CCEXKTotalizer implements CCExactlyK {
 
     private final CCTotalizer totalizer;
 
@@ -49,7 +49,7 @@ final class CCEXKTotalizer implements CCExactlyK {
     }
 
     @Override
-    public void build(final EncodingResult result, final Variable[] vars, int rhs) {
+    public void build(final EncodingResult result, final Variable[] vars, final int rhs) {
         this.totalizer.buildEXK(result, vars, rhs);
     }
 

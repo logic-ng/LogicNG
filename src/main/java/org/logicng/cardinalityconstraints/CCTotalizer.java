@@ -55,10 +55,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * Totalizer due to Bailleux and Boufkhad.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-final class CCTotalizer {
+public final class CCTotalizer {
 
     private enum Bound {LOWER, UPPER, BOTH}
 

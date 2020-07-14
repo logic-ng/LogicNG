@@ -33,10 +33,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * The interface for at-least-k (ALK) cardinality constraints.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-interface CCAtLeastK {
+public interface CCAtLeastK {
     /**
      * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n >= k}.
      * @param result the result of the encoding

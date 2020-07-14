@@ -58,10 +58,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the nested encoding.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.1
  */
-final class CCAMONested implements CCAtMostOne {
+public final class CCAMONested implements CCAtMostOne {
 
     private final int groupSize;
     private EncodingResult result;

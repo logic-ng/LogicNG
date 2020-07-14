@@ -64,10 +64,10 @@ import java.util.List;
 
 /**
  * The adder networks encoding for pseudo-Boolean constraints to CNF.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
-final class PBAdderNetworks implements PBEncoding {
+public final class PBAdderNetworks implements PBEncoding {
 
     private final FormulaFactory f;
     private List<Formula> formula;

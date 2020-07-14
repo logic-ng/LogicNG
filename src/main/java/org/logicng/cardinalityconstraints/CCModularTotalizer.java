@@ -57,10 +57,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * Modular Totalizer.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.0
  */
-final class CCModularTotalizer {
+public final class CCModularTotalizer {
 
     private final Variable varUndef;
     private final Variable varError;

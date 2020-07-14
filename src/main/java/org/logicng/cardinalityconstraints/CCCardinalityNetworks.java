@@ -62,10 +62,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * Implementation of cardinality networks due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.1
  */
-final class CCCardinalityNetworks {
+public final class CCCardinalityNetworks {
 
     private final CCSorting sorting;
     private CCIncrementalData incData;

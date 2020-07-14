@@ -33,10 +33,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * The interface for at-most-k (AMK) cardinality constraints.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-interface CCAtMostK {
+public interface CCAtMostK {
 
     /**
      * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= k}.

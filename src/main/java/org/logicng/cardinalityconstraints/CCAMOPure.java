@@ -34,7 +34,7 @@ import org.logicng.formulas.Variable;
 /**
  * Encodes that at most one variable is assigned value true.  Uses the 'naive' encoding with no introduction
  * of new variables but quadratic size.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
 public final class CCAMOPure implements CCAtMostOne {

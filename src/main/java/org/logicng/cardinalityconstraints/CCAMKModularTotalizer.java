@@ -35,10 +35,10 @@ import org.logicng.formulas.Variable;
 /**
  * Encodes that at most 'rhs' variables can be assigned value true.  Uses the modular totalizer encoding for
  * translating the cardinality constraint into CNF.
- * @version 1.1
+ * @version 2.0.0
  * @since 1.0
  */
-final class CCAMKModularTotalizer implements CCAtMostK {
+public final class CCAMKModularTotalizer implements CCAtMostK {
 
     private final CCModularTotalizer totalizer;
 
@@ -51,7 +51,7 @@ final class CCAMKModularTotalizer implements CCAtMostK {
     }
 
     @Override
-    public void build(final EncodingResult result, Variable[] vars, int rhs) {
+    public void build(final EncodingResult result, final Variable[] vars, final int rhs) {
         this.totalizer.buildAMK(result, vars, rhs);
     }
 

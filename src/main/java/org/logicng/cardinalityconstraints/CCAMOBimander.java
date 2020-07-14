@@ -58,10 +58,10 @@ import org.logicng.formulas.Variable;
 
 /**
  * Encodes that at most one variable is assigned value true.  Uses the bimander encoding due to Hölldobler and Nguyen.
- * @version 1.3
+ * @version 2.0.0
  * @since 1.1
  */
-final class CCAMOBimander implements CCAtMostOne {
+public final class CCAMOBimander implements CCAtMostOne {
 
     private final LNGVector<LNGVector<Literal>> groups;
     private final LNGVector<Literal> bits;

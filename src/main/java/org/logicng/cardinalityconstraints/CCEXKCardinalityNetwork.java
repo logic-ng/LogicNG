@@ -37,7 +37,7 @@ import org.logicng.formulas.Variable;
  * @version 1.1
  * @since 1.1
  */
-final class CCEXKCardinalityNetwork implements CCAtMostK {
+public final class CCEXKCardinalityNetwork implements CCAtMostK {
 
     private final CCCardinalityNetworks cardinalityNetwork;
 
@@ -49,13 +49,13 @@ final class CCEXKCardinalityNetwork implements CCAtMostK {
     }
 
     @Override
-    public void build(final EncodingResult result, final Variable[] vars, int rhs) {
-        cardinalityNetwork.buildEXK(result, vars, rhs);
+    public void build(final EncodingResult result, final Variable[] vars, final int rhs) {
+        this.cardinalityNetwork.buildEXK(result, vars, rhs);
     }
 
     @Override
     public CCIncrementalData incrementalData() {
-        return cardinalityNetwork.incrementalData();
+        return this.cardinalityNetwork.incrementalData();
     }
 
     @Override
