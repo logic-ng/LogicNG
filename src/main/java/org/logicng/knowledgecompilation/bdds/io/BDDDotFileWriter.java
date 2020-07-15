@@ -29,6 +29,7 @@
 package org.logicng.knowledgecompilation.bdds.io;
 
 import org.logicng.knowledgecompilation.bdds.BDD;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -79,8 +80,8 @@ public final class BDDDotFileWriter {
         if (!bdd.isTautology()) {
             sb.append(String.format("  %s [shape=box, label=\"$false\", style = bold, color = red];%n", CONST_FALSE));
         }
-        for (final int[] internalNode : bdd.underlyingKernel().allNodes(bdd.index())) {
-            sb.append(String.format("  %s%d [shape=ellipse, label=\"%s\"];%n", NODE_PREFIX, internalNode[0], bdd.underlyingKernel().idx2var().get(internalNode[1]).name()));
+        for (final int[] internalNode : new BDDOperations(bdd.underlyingKernel()).allNodes(bdd.index())) {
+            sb.append(String.format("  %s%d [shape=ellipse, label=\"%s\"];%n", NODE_PREFIX, internalNode[0], bdd.underlyingKernel().getVariableForIndex(internalNode[1]).name()));
             sb.append(String.format("  %s%d -> %s [style = dotted, color = red];%n", NODE_PREFIX, internalNode[0], getNodeString(internalNode[2])));
             sb.append(String.format("  %s%d -> %s [color = darkgreen];%n", NODE_PREFIX, internalNode[0], getNodeString(internalNode[3])));
         }

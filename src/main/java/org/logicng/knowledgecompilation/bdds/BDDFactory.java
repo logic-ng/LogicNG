@@ -64,6 +64,7 @@ import org.logicng.formulas.Implication;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
 import org.logicng.handlers.BDDHandler;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDConstruction;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 import java.util.Iterator;
@@ -129,7 +130,7 @@ public final class BDDFactory {
         final BDDKernel bddKernel = kernel == null
                 ? new BDDKernel(formula.factory(), varNum, varNum * 30, varNum * 20)
                 : kernel;
-        return new BDD(buildRec(formula, bddKernel, handler), bddKernel);
+        return new BDD(buildRec(formula, bddKernel, new BDDConstruction(bddKernel), handler), bddKernel);
     }
 
     /**
@@ -138,12 +139,13 @@ public final class BDDFactory {
      * If a BDD handler is given and the BDD generation is aborted due to the handler, the method will return
      * {@link BDDKernel#BDD_ABORT} as result. If {@code null} is passed as handler, the generation will continue without
      * interruption.
-     * @param formula the formula
-     * @param kernel  the BDD kernel
-     * @param handler the BDD handler
+     * @param formula      the formula
+     * @param kernel       the BDD kernel
+     * @param construction
+     * @param handler      the BDD handler
      * @return the BDD index or {@link BDDKernel#BDD_ABORT} if the computation was aborted
      */
-    private static int buildRec(final Formula formula, final BDDKernel kernel, final BDDHandler handler) {
+    private static int buildRec(final Formula formula, final BDDKernel kernel, final BDDConstruction construction, final BDDHandler handler) {
         switch (formula.type()) {
             case FALSE:
                 return BDDKernel.BDD_FALSE;
@@ -152,55 +154,55 @@ public final class BDDFactory {
             case LITERAL:
                 final Literal lit = (Literal) formula;
                 final int idx = kernel.getOrAddVarIndex(lit.variable());
-                return lit.phase() ? kernel.ithVar(idx) : kernel.nithVar(idx);
+                return lit.phase() ? construction.ithVar(idx) : construction.nithVar(idx);
             case NOT: {
                 final Not not = (Not) formula;
-                final int operand = buildRec(not.operand(), kernel, handler);
+                final int operand = buildRec(not.operand(), kernel, construction, handler);
                 if (operand == BDDKernel.BDD_ABORT) {
                     return BDDKernel.BDD_ABORT;
                 }
-                final int res = kernel.addRef(kernel.not(operand), handler);
+                final int res = kernel.addRef(construction.not(operand), handler);
                 kernel.delRef(operand);
                 return res;
             }
             case IMPL:
             case EQUIV:
                 final BinaryOperator binary = (BinaryOperator) formula;
-                final int left = buildRec(binary.left(), kernel, handler);
+                final int left = buildRec(binary.left(), kernel, construction, handler);
                 if (left == BDDKernel.BDD_ABORT) {
                     return BDDKernel.BDD_ABORT;
                 }
-                final int right = buildRec(binary.right(), kernel, handler);
+                final int right = buildRec(binary.right(), kernel, construction, handler);
                 if (right == BDDKernel.BDD_ABORT) {
                     return BDDKernel.BDD_ABORT;
                 }
-                int res = kernel.addRef(binary instanceof Implication ? kernel.implication(left, right) : kernel.equivalence(left, right), handler);
+                int res = kernel.addRef(binary instanceof Implication ? construction.implication(left, right) : construction.equivalence(left, right), handler);
                 kernel.delRef(left);
                 kernel.delRef(right);
                 return res;
             case AND:
             case OR: {
                 final Iterator<Formula> it = formula.iterator();
-                res = buildRec(it.next(), kernel, handler);
+                res = buildRec(it.next(), kernel, construction, handler);
                 if (res == BDDKernel.BDD_ABORT) {
                     return BDDKernel.BDD_ABORT;
                 }
                 while (it.hasNext()) {
-                    final int operand = buildRec(it.next(), kernel, handler);
+                    final int operand = buildRec(it.next(), kernel, construction, handler);
                     if (operand == BDDKernel.BDD_ABORT) {
                         return BDDKernel.BDD_ABORT;
                     }
                     final int previous = res;
                     res = formula instanceof And
-                            ? kernel.addRef(kernel.and(res, operand), handler)
-                            : kernel.addRef(kernel.or(res, operand), handler);
+                            ? kernel.addRef(construction.and(res, operand), handler)
+                            : kernel.addRef(construction.or(res, operand), handler);
                     kernel.delRef(previous);
                     kernel.delRef(operand);
                 }
                 return res;
             }
             case PBC:
-                return buildRec(formula.nnf(), kernel, handler);
+                return buildRec(formula.nnf(), kernel, construction, handler);
             default:
                 throw new IllegalArgumentException("Unsupported operator for BDD generation: " + formula.type());
         }

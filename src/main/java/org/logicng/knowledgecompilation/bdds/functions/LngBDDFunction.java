@@ -6,6 +6,7 @@ import org.logicng.knowledgecompilation.bdds.datastructures.BDDConstant;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDInnerNode;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public final class LngBDDFunction implements BDDFunction<BDDNode> {
     public BDDNode apply(final BDD bdd) {
         final BDDKernel kernel = bdd.underlyingKernel();
         final int index = bdd.index();
-        final Map<Integer, int[]> kernelNodeMap = kernel.allNodes(index).stream()
+        final Map<Integer, int[]> kernelNodeMap = new BDDOperations(kernel).allNodes(index).stream()
                 .collect(Collectors.toMap(node -> node[0], node -> node));
         return buildBDDNode(index, kernel, kernelNodeMap, new HashMap<>());
     }
@@ -39,7 +40,7 @@ public final class LngBDDFunction implements BDDFunction<BDDNode> {
             node = BDDConstant.getVerumNode(kernel.factory());
         } else {
             final int[] kernelNode = kernelNodeMap.get(index);
-            final Variable variable = kernel.idx2var().get(kernelNode[1]);
+            final Variable variable = kernel.getVariableForIndex(kernelNode[1]);
             final BDDNode lowNode = buildBDDNode(kernelNode[2], kernel, kernelNodeMap, nodeMap);
             final BDDNode highNode = buildBDDNode(kernelNode[3], kernel, kernelNodeMap, nodeMap);
             node = new BDDInnerNode(variable, lowNode, highNode);

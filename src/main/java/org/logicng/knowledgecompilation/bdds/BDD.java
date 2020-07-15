@@ -38,6 +38,7 @@ import org.logicng.knowledgecompilation.bdds.functions.BDDCNFFunction;
 import org.logicng.knowledgecompilation.bdds.functions.BDDFunction;
 import org.logicng.knowledgecompilation.bdds.functions.BDDModelEnumerationFunction;
 import org.logicng.knowledgecompilation.bdds.functions.LngBDDFunction;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDConstruction;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDReordering;
@@ -63,6 +64,7 @@ public final class BDD {
 
     private final int index;
     protected final BDDKernel kernel;
+    protected final BDDConstruction construction;
     protected final BDDOperations operations;
 
     /**
@@ -73,6 +75,7 @@ public final class BDD {
     public BDD(final int index, final BDDKernel kernel) {
         this.index = index;
         this.kernel = kernel;
+        this.construction = new BDDConstruction(kernel);
         this.operations = new BDDOperations(kernel);
     }
 
@@ -190,7 +193,7 @@ public final class BDD {
      */
     public BDD restrict(final Collection<Literal> restriction) {
         final BDD resBDD = BDDFactory.build(this.kernel.factory().and(restriction), this.kernel, null);
-        return new BDD(this.kernel.restrict(this.index, resBDD.index), this.kernel);
+        return new BDD(this.construction.restrict(this.index, resBDD.index), this.kernel);
     }
 
     /**
@@ -209,7 +212,7 @@ public final class BDD {
      */
     public BDD exists(final Collection<Variable> variables) {
         final BDD resBDD = BDDFactory.build(this.kernel.factory().and(variables), this.kernel);
-        return new BDD(this.kernel.exists(this.index, resBDD.index), this.kernel);
+        return new BDD(this.construction.exists(this.index, resBDD.index), this.kernel);
     }
 
     /**
@@ -228,7 +231,7 @@ public final class BDD {
      */
     public BDD forall(final Collection<Variable> variables) {
         final BDD resBDD = BDDFactory.build(this.kernel.factory().and(variables), this.kernel);
-        return new BDD(this.kernel.forAll(this.index, resBDD.index), this.kernel);
+        return new BDD(this.construction.forAll(this.index, resBDD.index), this.kernel);
     }
 
     /**
@@ -324,7 +327,7 @@ public final class BDD {
         final int[] varProfile = this.operations.varProfile(this.index);
         final SortedMap<Variable, Integer> profile = new TreeMap<>();
         for (int i = 0; i < varProfile.length; i++) {
-            profile.put(this.kernel.idx2var().get(i), varProfile[i]);
+            profile.put(this.kernel.getVariableForIndex(i), varProfile[i]);
         }
         return profile;
     }
@@ -336,7 +339,7 @@ public final class BDD {
     public List<Variable> getVariableOrder() {
         final List<Variable> order = new ArrayList<>();
         for (final int i : this.kernel.getCurrentVarOrder()) {
-            order.add(this.kernel.idx2var().get(i));
+            order.add(this.kernel.getVariableForIndex(i));
         }
         return order;
     }
@@ -349,11 +352,11 @@ public final class BDD {
      * @param second the second variable to swap
      */
     public void swapVariables(final Variable first, final Variable second) {
-        final Integer firstVar = this.kernel.var2idx().get(first);
-        final Integer secondVar = this.kernel.var2idx().get(second);
-        if (firstVar == null) {
+        final int firstVar = this.kernel.getIndexForVariable(first);
+        final int secondVar = this.kernel.getIndexForVariable(second);
+        if (firstVar < 0) {
             throw new IllegalArgumentException("Unknown variable: " + first);
-        } else if (secondVar == null) {
+        } else if (secondVar < 0) {
             throw new IllegalArgumentException("Unknown variable: " + second);
         }
         this.kernel.getReordering().swapVariables(firstVar, secondVar);
@@ -388,10 +391,10 @@ public final class BDD {
         if (modelBDD == BDDKernel.BDD_TRUE) {
             return new Assignment();
         }
-        final List<int[]> nodes = this.kernel.allNodes(modelBDD);
+        final List<int[]> nodes = this.operations.allNodes(modelBDD);
         final Assignment assignment = new Assignment();
         for (final int[] node : nodes) {
-            final Variable variable = this.kernel.idx2var().get(node[1]);
+            final Variable variable = this.kernel.getVariableForIndex(node[1]);
             if (node[2] == BDDKernel.BDD_FALSE) {
                 assignment.addLiteral(variable);
             } else if (node[3] == BDDKernel.BDD_FALSE) {

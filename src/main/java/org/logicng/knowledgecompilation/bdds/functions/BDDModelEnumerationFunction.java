@@ -66,7 +66,7 @@ public final class BDDModelEnumerationFunction implements BDDFunction<List<Assig
         if (position == relevantIndices.length) {
             final Assignment assignment = new Assignment();
             for (final int i : relevantIndices) {
-                assignment.addLiteral(model[i] == 0 ? kernel.idx2var().get(i).negate() : kernel.idx2var().get(i));
+                assignment.addLiteral(model[i] == 0 ? kernel.getVariableForIndex(i).negate() : kernel.getVariableForIndex(i));
             }
             assignments.add(assignment);
         } else if (model[relevantIndices[position]] != -1) {

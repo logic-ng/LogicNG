@@ -3,6 +3,8 @@ package org.logicng.knowledgecompilation.bdds.jbuddy;
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.CACHEID_PATHCOU_ONE;
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.CACHEID_PATHCOU_ZERO;
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.CACHEID_SATCOU;
+import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.MARKOFF;
+import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.MARKON;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -357,14 +359,14 @@ public class BDDOperations {
         if (r < 2) {
             return;
         }
-        if ((this.k.level(r) & BDDKernel.MARKON) != 0 || this.k.low(r) == -1) {
+        if ((this.k.level(r) & MARKON) != 0 || this.k.low(r) == -1) {
             return;
         }
         support[this.k.level(r)] = this.supportID;
         if (this.k.level(r) > this.supportMax) {
             this.supportMax = this.k.level(r);
         }
-        this.k.setLevel(r, this.k.level(r) | BDDKernel.MARKON);
+        this.k.setLevel(r, this.k.level(r) | MARKON);
         supportRec(this.k.low(r), support);
         supportRec(this.k.high(r), support);
     }
@@ -387,8 +389,43 @@ public class BDDOperations {
      */
     public int[] varProfile(final int r) {
         final int[] varprofile = new int[this.k.varnum];
-        this.k.varProfileRec(r, varprofile);
+        this.varProfileRec(r, varprofile);
         this.k.unmark(r);
         return varprofile;
+    }
+
+    protected void varProfileRec(final int r, final int[] varprofile) {
+        if (r < 2) {
+            return;
+        }
+        if ((this.k.level(r) & BDDKernel.MARKON) != 0) {
+            return;
+        }
+        varprofile[this.k.level2var[this.k.level(r)]]++;
+        this.k.setLevel(r, this.k.level(r) | BDDKernel.MARKON);
+        varProfileRec(this.k.low(r), varprofile);
+        varProfileRec(this.k.high(r), varprofile);
+    }
+
+
+    /**
+     * Returns all nodes for a given root node in their internal representation.  The internal representation is stored
+     * in an array: {@code [node number, variable, low, high]}
+     * @param r the BDD root node
+     * @return all Nodes in their internal representation
+     */
+    public List<int[]> allNodes(final int r) {
+        final List<int[]> result = new ArrayList<>();
+        if (r < 2) {
+            return result;
+        }
+        this.k.mark(r);
+        for (int n = 0; n < this.k.nodesize; n++) {
+            if ((this.k.level(n) & MARKON) != 0) {
+                this.k.setLevel(n, this.k.level(n) & MARKOFF);
+                result.add(new int[]{n, this.k.level2var[this.k.level(n)], this.k.low(n), this.k.high(n)});
+            }
+        }
+        return result;
     }
 }

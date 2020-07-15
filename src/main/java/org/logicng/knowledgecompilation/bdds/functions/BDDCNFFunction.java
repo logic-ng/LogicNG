@@ -25,9 +25,9 @@ public final class BDDCNFFunction implements BDDFunction<Formula> {
             literals = new ArrayList<>();
             for (int i = 0; i < path.length; i++) {
                 if (path[i] == 0) {
-                    literals.add(kernel.idx2var().get(i));
+                    literals.add(kernel.getVariableForIndex(i));
                 } else if (path[i] == 1) {
-                    literals.add(kernel.idx2var().get(i).negate());
+                    literals.add(kernel.getVariableForIndex(i).negate());
                 }
             }
             clauses.add(kernel.factory().or(literals));

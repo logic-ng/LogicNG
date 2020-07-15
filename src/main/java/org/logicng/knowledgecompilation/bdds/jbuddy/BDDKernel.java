@@ -61,7 +61,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.BDDHandler;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
@@ -233,7 +232,7 @@ public class BDDKernel {
      * If no free variables are left, an illegal argument exception is thrown.
      * @param variable the variable
      * @return the index for the variable
-     * @throws IllegalArgumentException if the variable does not yet exist in the kernel and there are no free variable indizes left
+     * @throws IllegalArgumentException if the variable does not yet exist in the kernel and there are no free variable indices left
      */
     public int getOrAddVarIndex(final Variable variable) {
         Integer index = this.var2idx.get(variable);
@@ -266,19 +265,48 @@ public class BDDKernel {
     }
 
     /**
-     * Returns the mapping from variables to indizes.
-     * @return the mapping from variables to indizes
+     * Returns the mapping from variables to indices.
+     * @return the mapping from variables to indices
      */
     public SortedMap<Variable, Integer> var2idx() {
         return this.var2idx;
     }
 
     /**
-     * Returns the mapping from indizes to variables.
-     * @return the mapping from indizes to variables
+     * Returns the mapping from indices to variables.
+     * @return the mapping from indices to variables
      */
     public SortedMap<Integer, Variable> idx2var() {
         return this.idx2var;
+    }
+
+    /**
+     * Returns the index for the given variable or -1 if the variable is unknown.
+     * @param var the variable
+     * @return the index for the given variable
+     */
+    public int getIndexForVariable(final Variable var) {
+        final Integer index = this.var2idx.get(var);
+        return index == null ? -1 : index;
+    }
+
+    /**
+     * Returns the the variable for the given index or {@code null} if no such index exists.
+     * @param idx the index
+     * @return the the variable for the given index
+     */
+    public Variable getVariableForIndex(final int idx) {
+        return this.idx2var.get(idx);
+    }
+
+    /**
+     * Returns the level of the given variable or -1 if the variable is unknown.
+     * @param var the variable
+     * @return the level of the given variable
+     */
+    public int getLevel(final Variable var) {
+        final Integer idx = this.var2idx.get(var);
+        return idx != null && idx >= 0 && idx < this.var2level.length ? this.var2level[idx] : -1;
     }
 
     /**
@@ -287,108 +315,6 @@ public class BDDKernel {
      */
     public int[] getCurrentVarOrder() {
         return Arrays.copyOf(this.level2var, this.level2var.length - 1); // last var is always 0
-    }
-
-    /**
-     * Returns a BDD representing the i-th variable (one node with the children true and false).
-     * @param i the index i
-     * @return the BDD representing the i-th variable
-     * @throws IllegalArgumentException if the index is not within the range of variables
-     */
-    public int ithVar(final int i) {
-        if (i < 0 || i >= this.varnum) {
-            throw new IllegalArgumentException("Illegal variable number: " + i);
-        }
-        return this.vars[i * 2];
-    }
-
-    /**
-     * Returns a BDD representing the negation of the i-th variable (one node with the children true and false).
-     * @param i the index i
-     * @return the BDD representing the negated i-th variable
-     * @throws IllegalArgumentException if the index is not within the range of variables
-     */
-    public int nithVar(final int i) {
-        if (i < 0 || i >= this.varnum) {
-            throw new IllegalArgumentException("Illegal variable number: " + i);
-        }
-        return this.vars[i * 2 + 1];
-    }
-
-    /**
-     * Returns the variable index labeling the given root node.
-     * @param root the root node of the BDD
-     * @return the variable index
-     */
-    public int bddVar(final int root) {
-        if (root < 2) {
-            throw new IllegalArgumentException("Illegal node number: " + root);
-        }
-        return this.level2var[level(root)];
-    }
-
-    /**
-     * Returns the false branch of the given root node.
-     * @param root the root node of the BDD
-     * @return the false branch
-     */
-    public int bddLow(final int root) {
-        if (root < 2) {
-            throw new IllegalArgumentException("Illegal node number: " + root);
-        }
-        return low(root);
-    }
-
-    /**
-     * Returns the true branch of the given root node.
-     * @param root the root node of the BDD
-     * @return the true branch
-     */
-    public int bddHigh(final int root) {
-        if (root < 2) {
-            throw new IllegalArgumentException("Illegal node number: " + root);
-        }
-        return (high(root));
-    }
-
-    /**
-     * Returns the conjunction of two BDDs.
-     * @param l the first BDD
-     * @param r the second BDD
-     * @return the conjunction of the two BDDs
-     */
-    public int and(final int l, final int r) {
-        return apply(l, r, Operand.AND);
-    }
-
-    /**
-     * Returns the disjunction of two BDDs.
-     * @param l the first BDD
-     * @param r the second BDD
-     * @return the disjunction of the two BDDs
-     */
-    public int or(final int l, final int r) {
-        return apply(l, r, Operand.OR);
-    }
-
-    /**
-     * Returns the implication of two BDDs.
-     * @param l the first BDD
-     * @param r the second BDD
-     * @return the implication of the two BDDs
-     */
-    public int implication(final int l, final int r) {
-        return apply(l, r, Operand.IMP);
-    }
-
-    /**
-     * Returns the equivalence of two BDDs.
-     * @param l the first BDD
-     * @param r the second BDD
-     * @return the equivalence of the two BDDs
-     */
-    public int equivalence(final int l, final int r) {
-        return apply(l, r, Operand.EQUIV);
     }
 
     protected int doWithPotentialReordering(final BddOperation operation) {
@@ -486,36 +412,6 @@ public class BDDKernel {
     }
 
     /**
-     * Returns the negation of a BDD.
-     * @param r the BDD
-     * @return the negation of the BDD
-     */
-    public int not(final int r) {
-        return doWithPotentialReordering(() -> notRec(r));
-    }
-
-    protected int notRec(final int r) throws BddReorderRequest {
-        if (isZero(r)) {
-            return BDDKernel.BDD_TRUE;
-        }
-        if (isOne(r)) {
-            return BDDKernel.BDD_FALSE;
-        }
-        final BDDCacheEntry entry = this.applycache.lookup(r);
-        if (entry.a == r && entry.c == Operand.NOT.v) {
-            return entry.res;
-        }
-        pushRef(notRec(low(r)));
-        pushRef(notRec(high(r)));
-        final int res = makeNode(level(r), readRef(2), readRef(1));
-        popref(2);
-        entry.a = r;
-        entry.c = Operand.NOT.v;
-        entry.res = res;
-        return res;
-    }
-
-    /**
      * Adds a reference for a given node.  Reference counting is done on externally referenced nodes only and the count for
      * a specific node {@code r} can and must be increased using this function to avoid loosing the node in the next
      * garbage collection.  If a BDD handler is given, the handler's {@link BDDHandler#newRefAdded()} method is called.
@@ -574,27 +470,6 @@ public class BDDKernel {
         if (refcou(n) < MAXREF) {
             setRefcou(n, refcou(n) + 1);
         }
-    }
-
-    /**
-     * Returns all nodes for a given root node in their internal representation.  The internal representation is stored
-     * in an array: {@code [node number, variable, low, high]}
-     * @param r the BDD root node
-     * @return all Nodes in their internal representation
-     */
-    public List<int[]> allNodes(final int r) {
-        final List<int[]> result = new ArrayList<>();
-        if (r < 2) {
-            return result;
-        }
-        mark(r);
-        for (int n = 0; n < this.nodesize; n++) {
-            if ((level(n) & MARKON) != 0) {
-                setLevel(n, level(n) & MARKOFF);
-                result.add(new int[]{n, this.level2var[level(n)], low(n), high(n)});
-            }
-        }
-        return result;
     }
 
     protected int makeNode(final int level, final int low, final int high) throws BddReorderRequest {
@@ -877,157 +752,7 @@ public class BDDKernel {
         this.quantvarset = new int[this.varnum];
         this.quantvarsetID = 0;
     }
-
-    /**
-     * Restricts the variables in the BDD {@code r} to constants true or false.  The restriction is submitted in the BDD
-     * {@code var}.
-     * @param r   the BDD to be restricted
-     * @param var the variable mapping as a BDD
-     * @return the restricted BDD
-     */
-    public int restrict(final int r, final int var) {
-        if (var < 2) {
-            return r;
-        }
-        varset2svartable(var);
-        return doWithPotentialReordering(() -> restrictRec(r, (var << 3) | CACHEID_RESTRICT));
-    }
-
-    protected int restrictRec(final int r, final int miscid) throws BddReorderRequest {
-        final int res;
-        if (isConst(r) || level(r) > this.quantlast) {
-            return r;
-        }
-        final BDDCacheEntry entry = this.misccache.lookup(pair(r, miscid));
-        if (entry.a == r && entry.c == miscid) {
-            return entry.res;
-        }
-        if (insvarset(level(r))) {
-            if (this.quantvarset[level(r)] > 0) {
-                res = restrictRec(high(r), miscid);
-            } else {
-                res = restrictRec(low(r), miscid);
-            }
-        } else {
-            pushRef(restrictRec(low(r), miscid));
-            pushRef(restrictRec(high(r), miscid));
-            res = makeNode(level(r), readRef(2), readRef(1));
-            popref(2);
-        }
-        entry.a = r;
-        entry.c = miscid;
-        entry.res = res;
-        return res;
-    }
-
-    /**
-     * Existential quantifier elimination for the variables in {@code var}.
-     * @param r   the BDD root node
-     * @param var the variables to eliminate
-     * @return the BDD with the eliminated variables
-     */
-    public int exists(final int r, final int var) {
-        if (var < 2) {
-            return r;
-        }
-        varset2vartable(var);
-        return doWithPotentialReordering(() -> quantRec(r, Operand.OR, var << 3));
-    }
-
-    /**
-     * Universal quantifier elimination for the variables in {@code var}.
-     * @param r   the BDD root node
-     * @param var the variables to eliminate
-     * @return the BDD with the eliminated variables
-     */
-    public int forAll(final int r, final int var) {
-        if (var < 2) {
-            return r;
-        }
-        varset2vartable(var);
-        return doWithPotentialReordering(() -> quantRec(r, Operand.AND, (var << 3) | CACHEID_FORALL));
-    }
-
-    protected int quantRec(final int r, final Operand op, final int quantid) throws BddReorderRequest {
-        final int res;
-        if (r < 2 || level(r) > this.quantlast) {
-            return r;
-        }
-        final BDDCacheEntry entry = this.quantcache.lookup(r);
-        if (entry.a == r && entry.c == quantid) {
-            return entry.res;
-        }
-        pushRef(quantRec(low(r), op, quantid));
-        pushRef(quantRec(high(r), op, quantid));
-        if (invarset(level(r))) {
-            res = applyRec(readRef(2), readRef(1), op);
-        } else {
-            res = makeNode(level(r), readRef(2), readRef(1));
-        }
-        popref(2);
-        entry.a = r;
-        entry.c = quantid;
-        entry.res = res;
-        return res;
-    }
-
-    protected void varProfileRec(final int r, final int[] varprofile) {
-        if (r < 2) {
-            return;
-        }
-        if ((level(r) & BDDKernel.MARKON) != 0) {
-            return;
-        }
-        varprofile[this.level2var[level(r)]]++;
-        setLevel(r, level(r) | BDDKernel.MARKON);
-        varProfileRec(low(r), varprofile);
-        varProfileRec(high(r), varprofile);
-    }
-
-    protected void varset2svartable(final int r) {
-        if (r < 2) {
-            throw new IllegalArgumentException("Illegal variable: " + r);
-        }
-        this.quantvarsetID++;
-        if (this.quantvarsetID == Integer.MAX_VALUE / 2) {
-            this.quantvarset = new int[this.varnum];
-            this.quantvarsetID = 1;
-        }
-        for (int n = r; !isConst(n); ) {
-            if (isZero(low(n))) {
-                this.quantvarset[level(n)] = this.quantvarsetID;
-                n = high(n);
-            } else {
-                this.quantvarset[level(n)] = -this.quantvarsetID;
-                n = low(n);
-            }
-            this.quantlast = level(n);
-        }
-    }
-
-    protected void varset2vartable(final int r) {
-        if (r < 2) {
-            throw new IllegalArgumentException("Illegal variable: " + r);
-        }
-        this.quantvarsetID++;
-        if (this.quantvarsetID == Integer.MAX_VALUE) {
-            this.quantvarset = new int[this.varnum];
-            this.quantvarsetID = 1;
-        }
-        for (int n = r; n > 1; n = high(n)) {
-            this.quantvarset[level(n)] = this.quantvarsetID;
-            this.quantlast = level(n);
-        }
-    }
-
-    protected boolean insvarset(final int a) {
-        return Math.abs(this.quantvarset[a]) == this.quantvarsetID;
-    }
-
-    protected boolean invarset(final int a) {
-        return this.quantvarset[a] == this.quantvarsetID;
-    }
-
+    
     /**
      * Returns the statistics for this BDD Kernel.
      * @return the statistics

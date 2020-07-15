@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDConstruction;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
@@ -48,7 +49,7 @@ public class BDDLowLevelTest {
 
     @Test
     public void kernelTests() {
-        final BDDKernel kernel = this.bdd.underlyingKernel();
+        final BDDConstruction kernel = new BDDConstruction(this.bdd.underlyingKernel());
         assertThat(kernel.ithVar(0)).isEqualTo(2);
         assertThat(kernel.nithVar(0)).isEqualTo(3);
         assertThat(kernel.bddVar(2)).isEqualTo(0);
@@ -59,31 +60,31 @@ public class BDDLowLevelTest {
 
     @Test
     public void illegalKernel1() {
-        final BDDKernel kernel = this.bdd.underlyingKernel();
+        final BDDConstruction kernel = new BDDConstruction(this.bdd.underlyingKernel());
         assertThatThrownBy(() -> kernel.ithVar(-1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void illegalKernel2() {
-        final BDDKernel kernel = this.bdd.underlyingKernel();
+        final BDDConstruction kernel = new BDDConstruction(this.bdd.underlyingKernel());
         assertThatThrownBy(() -> kernel.nithVar(-1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void illegalKernel3() {
-        final BDDKernel kernel = this.bdd.underlyingKernel();
+        final BDDConstruction kernel = new BDDConstruction(this.bdd.underlyingKernel());
         assertThatThrownBy(() -> kernel.bddVar(1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void illegalKernel4() {
-        final BDDKernel kernel = this.bdd.underlyingKernel();
+        final BDDConstruction kernel = new BDDConstruction(this.bdd.underlyingKernel());
         assertThatThrownBy(() -> kernel.bddLow(1)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void illegalKernel5() {
-        final BDDKernel kernel = this.bdd.underlyingKernel();
+        final BDDConstruction kernel = new BDDConstruction(this.bdd.underlyingKernel());
         assertThatThrownBy(() -> kernel.bddHigh(1)).isInstanceOf(IllegalArgumentException.class);
     }
 

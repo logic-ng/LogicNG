@@ -131,7 +131,7 @@ public class BDDReordering {
     }
 
     /**
-     * Reorders the levels in this kernel using the given reordering method.
+     * Reorders the levels in the kernel using the given reordering method.
      * Only blocks of variables will be reordered. See the documentation of
      * {@link #addVariableBlock} to learn more about such variable blocks.
      * Without the definition of any block, nothing will be reordered.
@@ -243,7 +243,7 @@ public class BDDReordering {
      * Each block (including all nested blocks) must be defined by a separate call to this method. The blocks
      * may be added in an arbitrary order, so it is not required to add them top-down or buttom-up.
      * However, the blocks <b>must not intersect</b>, except of one block containing the other. Furthermore
-     * both the {@code first} and the {@code last} variable must be known by this kernel and the level {@code first}
+     * both the {@code first} and the {@code last} variable must be known by the kernel and the level {@code first}
      * must be lower than the level of {@code last}.
      * @param first the variable at which the block starts (inclusive)
      * @param last  the variable at which the block ends (inclusive)
@@ -262,37 +262,7 @@ public class BDDReordering {
     }
 
     /**
-     * Adds a variable block for all the variables which can be reached from the given bdd.
-     * For details, see the documentation of {@link #addVariableBlock(int, int, boolean)}.
-     * @param bdd   the bdd
-     * @param fixed whether the block should be fixed or not
-     */
-    public void addVariableBlock(final int bdd, final boolean fixed) {
-        int first;
-        int last;
-        final int[] v = scanset(bdd);
-        if (v.length < 1) {
-            throw new IllegalStateException("Constant BDD in variable block");
-        }
-        first = last = v[0];
-        for (final int n : v) {
-            if (n < first) {
-                first = n;
-            }
-            if (n > last) {
-                last = n;
-            }
-        }
-        final BDDTree t = addRange(this.varTree, first, last, fixed, this.blockId, this.k.level2var);
-        if (t == null) {
-            throw new IllegalStateException("Could not add range to tree");
-        }
-        this.varTree = t;
-        this.blockId++;
-    }
-
-    /**
-     * Adds a single variable block or all variables known by this kernel.
+     * Adds a single variable block for all variables known by the kernel.
      */
     public void addVariableBlockAll() {
         for (int n = 0; n < this.k.varnum; n++) {
@@ -403,7 +373,7 @@ public class BDDReordering {
     }
 
     protected BDDTree reorderWin2ite(final BDDTree t) {
-        BDDTree thisTree = t;
+        BDDTree thisTree;
         BDDTree first = t;
         if (t == null) {
             return t;
@@ -449,7 +419,7 @@ public class BDDReordering {
     }
 
     protected BDDTree reorderWin3ite(final BDDTree t) {
-        BDDTree thisTree = t;
+        BDDTree thisTree;
         BDDTree first = t;
         int lastsize;
 
@@ -525,7 +495,6 @@ public class BDDReordering {
             pos++;
             if (best > reorderNodenum()) {
                 pos = 0;
-                best = reorderNodenum();
             }
 
             if (pos >= 1)  /* A C B -> C A* B */ {
