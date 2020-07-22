@@ -560,7 +560,7 @@ public class CCEncoder {
 
     /**
      * Returns the best at-most-one encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  For <= 10 the pure encoding without introduction of new variables is used, otherwise
+     * practical observations.  For &lt;= 10 the pure encoding without introduction of new variables is used, otherwise
      * the product encoding is chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder

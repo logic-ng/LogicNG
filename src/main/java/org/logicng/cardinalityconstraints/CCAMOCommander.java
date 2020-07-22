@@ -57,7 +57,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most one variable is assigned value true.  Uses the commander encoding due to Klieber & Kwon.
+ * Encodes that at most one variable is assigned value true.  Uses the commander encoding due to Klieber &amp; Kwon.
  * @version 2.0.0
  * @since 1.1
  */

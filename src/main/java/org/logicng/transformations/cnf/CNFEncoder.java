@@ -120,7 +120,7 @@ public class CNFEncoder {
 
     /**
      * Encodes the given formula to CNF by first trying to use Factorization for the single sub-formulas.  When certain
-     * user-provided boundaries are met, the method is switched to Tseitin or Plaisted & Greenbaum.
+     * user-provided boundaries are met, the method is switched to Tseitin or Plaisted &amp; Greenbaum.
      * @param formula the formula
      * @return the CNF encoding of the formula
      */

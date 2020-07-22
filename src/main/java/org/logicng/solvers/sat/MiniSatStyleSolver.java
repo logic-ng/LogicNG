@@ -869,6 +869,7 @@ public abstract class MiniSatStyleSolver {
     /**
      * Computes the backbone for the given variables.
      * @param variables variables to test
+     * @param type      the type of the backbone
      */
     protected void computeBackbone(final List<Integer> variables, final BackboneType type) {
         final Stack<Integer> candidates = createInitialCandidates(variables, type);
@@ -885,6 +886,7 @@ public abstract class MiniSatStyleSolver {
     /**
      * Creates the initial candidate literals for the backbone computation.
      * @param variables variables to test
+     * @param type      the type of the backbone
      * @return initial candidates
      */
     protected Stack<Integer> createInitialCandidates(final List<Integer> variables, final BackboneType type) {
@@ -937,6 +939,7 @@ public abstract class MiniSatStyleSolver {
     /**
      * Builds the backbone object from the computed backbone literals.
      * @param variables relevant variables
+     * @param type      the type of the backbone
      * @return backbone
      */
     protected Backbone buildBackbone(final Collection<Variable> variables, final BackboneType type) {

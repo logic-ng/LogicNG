@@ -274,8 +274,10 @@ public class BDDReordering {
      * IMPORTANT:
      * The semantics of the "level" field in the BddNode struct changes during
      * variable reordering in order to make a fast variable swap possible when
-     * two variables are independent. Instead of refering to the level of the node
+     * two variables are independent. Instead of referring to the level of the node
      * it refers to the *variable* !!!
+     * @param n the variable number
+     * @return the level of this variable
      */
     protected int var(final int n) {
         return this.k.level(n);
@@ -545,6 +547,8 @@ public class BDDReordering {
 
     /**
      * Do sifting iteratively until no more improvement can be found
+     * @param t the input BDD tree
+     * @return the sifted BDD tree
      */
     protected BDDTree reorderSiftite(final BDDTree t) {
         BDDTree first = t;
@@ -565,6 +569,8 @@ public class BDDReordering {
 
     /**
      * Find sifting sequence based on the number of nodes at each level
+     * @param t the input BDD tree
+     * @return the sifted BDD tree
      */
     protected BDDTree reorderSift(BDDTree t) {
         BDDTree thisTree;
@@ -611,6 +617,10 @@ public class BDDReordering {
     /**
      * Go through all blocks in a specific sequence and find best
      * position for each of them
+     * @param t   the input BDD tree
+     * @param seq the sequence
+     * @param num the current position in the sequence
+     * @return the sifted BDD tree
      */
     protected BDDTree reorderSiftSeq(final BDDTree t, final BDDTree[] seq, final int num) {
         BDDTree thisTree;
@@ -635,6 +645,8 @@ public class BDDReordering {
     /**
      * Move a specific block up and down in the order and place at last in
      * the best position
+     * @param blk       the block
+     * @param middlePos the middle position in the block
      */
     protected void reorderSiftBestpos(final BDDTree blk, final int middlePos) {
         int best = reorderNodenum();
@@ -697,7 +709,7 @@ public class BDDReordering {
         return Integer.compare(a.val, b.val);
     }
 
-    /**
+    /*
      * === Random reordering (mostly for debugging and test ) =============
      */
     protected BDDTree reorderRandom(final BDDTree t) {
