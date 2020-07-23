@@ -4,10 +4,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.0.0] - 2020-07-xx
 ### Added
-- DNNF datastructure and compilation
+- DNNF data structure and compilation
 - DNNF-based model counting
 - BDD Reordering
-- Computation of shortes MUSes
+- Computation of shortest MUSes
 - Computation of prime implicant and implicates
 - New algorithms for simplifying Boolean formulas including the possibility to define an own rating function for the formula complexity
 - A new method for generation constraint graphs of formulas
@@ -23,8 +23,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - Literal substitution
   - Expansion of pseudo-Boolean constraints
 - New solver function for optimizing the current formula on the solver (wrt. the number of positive/negative literals)
-- New formula randomizer and corner case generator, especially usefull for testing
-- Configuration object for formula factory which can be used to allow trivial contraditions and tautologies in formulas and to specify
+- New formula randomizer and corner case generator, especially useful for testing
+- Configuration object for formula factory which can be used to allow trivial contradictions and tautologies in formulas and to specify
   a default merge strategy for formulas from different factories 
 - New helper classes for collections
 - Stream operators on formulas
