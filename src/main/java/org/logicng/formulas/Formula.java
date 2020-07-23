@@ -250,12 +250,8 @@ public abstract class Formula implements Iterable<Formula> {
         if (variableOrdering == null) {
             kernel = new BDDKernel(this.factory(), varNum, varNum * 30, varNum * 20);
         } else {
-            try {
-                final VariableOrderingProvider provider = variableOrdering.provider().newInstance();
-                kernel = new BDDKernel(this.f, provider.getOrder(this), varNum * 30, varNum * 20);
-            } catch (final InstantiationException | IllegalAccessException e) {
-                throw new IllegalStateException("Could not generate the BDD variable ordering provider", e);
-            }
+            final VariableOrderingProvider provider = variableOrdering.provider();
+            kernel = new BDDKernel(this.f, provider.getOrder(this), varNum * 30, varNum * 20);
         }
         return BDDFactory.build(this, kernel, null);
     }

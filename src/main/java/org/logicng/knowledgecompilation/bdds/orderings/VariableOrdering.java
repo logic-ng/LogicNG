@@ -28,6 +28,8 @@
 
 package org.logicng.knowledgecompilation.bdds.orderings;
 
+import java.util.function.Supplier;
+
 /**
  * An enumeration for the different BDD variable orderings.  A variable ordering is associated
  * with its own provider which can generate orderings for this ordering.
@@ -36,19 +38,19 @@ package org.logicng.knowledgecompilation.bdds.orderings;
  */
 public enum VariableOrdering {
 
-    DFS(DFSOrdering.class),
-    BFS(BFSOrdering.class),
-    MIN2MAX(MinToMaxOrdering.class),
-    MAX2MIN(MaxToMinOrdering.class),
-    FORCE(ForceOrdering.class);
+    DFS(DFSOrdering::new),
+    BFS(BFSOrdering::new),
+    MIN2MAX(MinToMaxOrdering::new),
+    MAX2MIN(MaxToMinOrdering::new),
+    FORCE(ForceOrdering::new);
 
-    private final Class<? extends VariableOrderingProvider> provider;
+    private final Supplier<? extends VariableOrderingProvider> provider;
 
     /**
      * Constructs a new variable ordering with a given provider.
      * @param provider the provider
      */
-    VariableOrdering(final Class<? extends VariableOrderingProvider> provider) {
+    VariableOrdering(final Supplier<? extends VariableOrderingProvider> provider) {
         this.provider = provider;
     }
 
@@ -56,7 +58,7 @@ public enum VariableOrdering {
      * Returns the provider for this variable ordering.
      * @return the provider for this variable ordering
      */
-    public Class<? extends VariableOrderingProvider> provider() {
-        return this.provider;
+    public VariableOrderingProvider provider() {
+        return this.provider.get();
     }
 }
