@@ -29,6 +29,7 @@
 package org.logicng.solvers.maxsat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 import org.junit.jupiter.api.Test;
@@ -75,6 +76,27 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
 
     public PartialMaxSATTest() throws FileNotFoundException {
         this.logStream = new PrintStream("src/test/resources/partialmaxsat/log.txt");
+    }
+
+    @Test
+    public void testExceptionalBehaviorForMSU3() {
+        assertThatThrownBy(() -> {
+            final MaxSATSolver solver = MaxSATSolver.msu3();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 2);
+            solver.solve();
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error: Currently algorithm MSU3 does not support weighted MaxSAT instances.");
+        assertThatThrownBy(() -> {
+            final MaxSATSolver solver = MaxSATSolver.msu3(MaxSATConfig.builder()
+                    .incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                    .cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER)
+                    .build());
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
+            solver.solve();
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error: Currently iterative encoding in MSU3 only supports the Totalizer encoding.");
     }
 
     @Test

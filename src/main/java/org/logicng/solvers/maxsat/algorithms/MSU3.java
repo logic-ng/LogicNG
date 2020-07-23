@@ -105,14 +105,14 @@ public class MSU3 extends MaxSAT {
     @Override
     public MaxSATResult search() {
         if (this.problemType == ProblemType.WEIGHTED) {
-            throw new IllegalStateException("Error: Currently algorithm MSU3 does not support weighted MaxSAT instances");
+            throw new IllegalStateException("Error: Currently algorithm MSU3 does not support weighted MaxSAT instances.");
         }
         switch (this.incrementalStrategy) {
             case NONE:
                 return this.none();
             case ITERATIVE:
                 if (this.encoder.cardEncoding() != CardinalityEncoding.TOTALIZER) {
-                    throw new IllegalStateException("Error: Currently iterative encoding in MSU3 only supports the totalizer encoding.");
+                    throw new IllegalStateException("Error: Currently iterative encoding in MSU3 only supports the Totalizer encoding.");
                 }
                 return this.iterative();
             default:

@@ -29,6 +29,7 @@
 package org.logicng.solvers.maxsat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
@@ -83,6 +84,28 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
 
     public PartialWeightedMaxSATTest() throws FileNotFoundException {
         this.logStream = new PrintStream("src/test/resources/partialweightedmaxsat/log.txt");
+    }
+
+    @Test
+    public void testExceptionalBehaviorForWMSU3() {
+        assertThatThrownBy(() -> {
+            final MaxSATSolver solver = MaxSATSolver.wmsu3();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
+            solver.solve();
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error: Currently algorithm WMSU3 does not support unweighted MaxSAT instances.");
+        assertThatThrownBy(() -> {
+            final MaxSATSolver solver = MaxSATSolver.wmsu3(MaxSATConfig.builder()
+                    .bmo(true)
+                    .incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                    .cardinality(CardinalityEncoding.MTOTALIZER)
+                    .build());
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 2);
+            solver.solve();
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error: Currently iterative encoding in WMSU3 only supports the Totalizer encoding.");
     }
 
     @Test

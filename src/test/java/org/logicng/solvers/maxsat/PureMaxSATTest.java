@@ -115,6 +115,10 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
             solver.model();
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get a model as long as the formula is not solved.  Call 'solver' first.");
+    }
+
+    @Test
+    public void testExceptionalBehaviorForLinearUS() {
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.linearUS();
             solver.addHardFormula(this.f.parse("a | b"));
