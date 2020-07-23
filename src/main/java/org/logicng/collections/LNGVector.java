@@ -365,14 +365,6 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Returns this vector's contents as an array.
-     * @return the array
-     */
-    public T[] toArray() {
-        return Arrays.copyOf(this.elements, this.size);
-    }
-
-    /**
      * Ensures that this vector has the given size.  If not - the size is doubled and the old elements are copied.
      * @param newSize the size to ensure
      */

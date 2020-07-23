@@ -398,7 +398,9 @@ public class LNGVectorTest {
             }
         }
         v1.shrinkTo(500);
-        assertThat(v1.toArray()).containsExactly(expected);
+        for (int i = 0; i < expected.length; i++) {
+            assertThat(v1.get(i)).isEqualTo(expected[i]);
+        }
     }
 
     @Test
