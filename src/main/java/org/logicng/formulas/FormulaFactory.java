@@ -212,7 +212,7 @@ public class FormulaFactory {
      */
     public void putConfiguration(final Configuration configuration) {
         if (configuration.type() == ConfigurationType.FORMULA_FACTORY) {
-            throw new IllegalArgumentException("Configurations for the formula factory can only be passed in the constructor!");
+            throw new IllegalArgumentException("Configurations for the formula factory itself can only be passed in the constructor.");
         }
         this.configurations.put(configuration.type(), configuration);
     }

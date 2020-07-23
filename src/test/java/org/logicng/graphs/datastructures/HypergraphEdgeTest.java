@@ -88,4 +88,25 @@ public class HypergraphEdgeTest {
         final HypergraphEdge<Variable> edge = hypergraph.edges().iterator().next();
         assertThatThrownBy(() -> edge.centerOfGravity(new HashMap<>())).isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    public void testEquals() {
+        final Hypergraph<String> hypergraph = new Hypergraph<>();
+        final HypergraphNode<String> node1 = new HypergraphNode<>(hypergraph, "A");
+        final HypergraphNode<String> node2 = new HypergraphNode<>(hypergraph, "B");
+        final HypergraphNode<String> node3 = new HypergraphNode<>(hypergraph, "C");
+        final HypergraphEdge<String> edge1 = new HypergraphEdge<>(node1, node2);
+        final HypergraphEdge<String> edge2 = new HypergraphEdge<>(node2, node3);
+        final HypergraphEdge<String> edge3 = new HypergraphEdge<>(node1, node2);
+
+        assertThat(edge1.equals(null)).isFalse();
+        assertThat(edge1).isNotEqualTo(42);
+
+        assertThat(edge1).isEqualTo(edge1);
+        assertThat(edge1.equals(edge1)).isTrue();
+        assertThat(edge1).isEqualTo(edge3);
+        assertThat(edge3).isEqualTo(edge1);
+        assertThat(edge1).isNotEqualTo(edge2);
+        assertThat(edge2).isNotEqualTo(edge1);
+    }
 }

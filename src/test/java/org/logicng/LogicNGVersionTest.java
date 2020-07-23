@@ -4,7 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class LogicNGVersionTest {
+/**
+ * Unit tests for {@link LogicNGVersion}.
+ * @version 2.0.0
+ * @since 2.0.0
+ */
+public class LogicNGVersionTest {
     @Test
     public void testMajor() {
         assertThat(LogicNGVersion.major("2.0.0")).isEqualTo(2);

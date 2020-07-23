@@ -52,6 +52,13 @@ import java.util.TreeMap;
 public final class ConnectedComponentsComputation {
 
     /**
+     * Private constructor.
+     */
+    private ConnectedComponentsComputation() {
+        // Intentionally left empty.
+    }
+
+    /**
      * Computes the set of connected components of a graph, where each component is represented by a set of nodes.
      * @param graph the graph
      * @param <T>   the type of the graph content

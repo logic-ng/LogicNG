@@ -29,6 +29,7 @@
 package org.logicng.formulas;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.configurations.Configuration;
@@ -48,6 +49,15 @@ import java.util.List;
  * @since 1.0
  */
 public class FormulaFactoryTest {
+
+    @Test
+    public void testPutConfigurationWithInvalidArgument() {
+        assertThatThrownBy(() -> {
+            final FormulaFactory f = new FormulaFactory();
+            f.putConfiguration(FormulaFactoryConfig.builder().build());
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Configurations for the formula factory itself can only be passed in the constructor.");
+    }
 
     @Test
     public void testConstant() {

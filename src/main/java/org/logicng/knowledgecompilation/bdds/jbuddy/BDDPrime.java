@@ -64,10 +64,17 @@ import java.util.Random;
  * @version 2.0.0
  * @since 1.4.0
  */
-public class BDDPrime {
+public final class BDDPrime {
 
     static final int CHECKTIMES = 20;
     static final Random rng = new Random();
+
+    /**
+     * Private constructor.
+     */
+    private BDDPrime() {
+        // Intentionally left empty.
+    }
 
     /**
      * Returns the next prime greater than the given number.

@@ -49,6 +49,26 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                     BDDReorderingMethod.BDD_REORDER_SIFTITE, BDDReorderingMethod.BDD_REORDER_RANDOM);
 
     @Test
+    public void testExceptionalBehavior() throws ParserException {
+        assertThatThrownBy(() -> {
+            final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B), 100, 100);
+            final BDDReordering reordering = new BDDReordering(kernel);
+            final Formula formula = this.f.parse("a | b");
+            BDDFactory.build(formula, kernel);
+            reordering.swapVariables(0, 2);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unknown variable number: " + 2);
+        assertThatThrownBy(() -> {
+            final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B), 100, 100);
+            final BDDReordering reordering = new BDDReordering(kernel);
+            final Formula formula = this.f.parse("a | b");
+            BDDFactory.build(formula, kernel);
+            reordering.swapVariables(3, 0);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unknown variable number: " + 3);
+    }
+
+    @Test
     public void testSwapping() throws ParserException {
         final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B, this.C), 100, 100);
         final Formula formula = this.f.parse("a | b | c");
@@ -57,6 +77,8 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
         bdd.swapVariables(this.A, this.B);
         assertThat(bdd.getVariableOrder()).containsExactly(this.B, this.A, this.C);
         bdd.swapVariables(this.A, this.B);
+        assertThat(bdd.getVariableOrder()).containsExactly(this.A, this.B, this.C);
+        bdd.swapVariables(this.A, this.A);
         assertThat(bdd.getVariableOrder()).containsExactly(this.A, this.B, this.C);
         bdd.swapVariables(this.A, this.C);
         assertThat(bdd.getVariableOrder()).containsExactly(this.C, this.B, this.A);

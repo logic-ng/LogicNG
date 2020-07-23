@@ -49,4 +49,22 @@ public class HypergraphNodeTest {
         assertThat(node1.content()).isEqualTo("A");
         assertThat(node1.edges()).containsExactlyInAnyOrder(edge1);
     }
+
+    @Test
+    public void testEquals() {
+        final Hypergraph<String> hypergraph = new Hypergraph<>();
+        final HypergraphNode<String> node1 = new HypergraphNode<>(hypergraph, "A");
+        final HypergraphNode<String> node2 = new HypergraphNode<>(hypergraph, "B");
+        final HypergraphNode<String> node3 = new HypergraphNode<>(hypergraph, "A");
+
+        assertThat(node1.equals(null)).isFalse();
+        assertThat(node1).isNotEqualTo(42);
+
+        assertThat(node1).isEqualTo(node1);
+        assertThat(node1.equals(node1)).isTrue();
+        assertThat(node1).isEqualTo(node3);
+        assertThat(node3).isEqualTo(node1);
+        assertThat(node1).isNotEqualTo(node2);
+        assertThat(node2).isNotEqualTo(node1);
+    }
 }

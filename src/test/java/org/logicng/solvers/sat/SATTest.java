@@ -233,6 +233,20 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    public void testFormula3() throws ParserException {
+        for (int i = 0; i < this.solvers.length - 1; i++) {
+            final SATSolver s = this.solvers[i];
+            s.add(this.parser.parse("a | b"));
+            final List<Assignment> models = s.execute(ModelEnumerationFunction.builder().additionalVariables(this.f.variable("c")).build());
+            assertThat(models.size()).isEqualTo(3);
+            assertThat(models.get(0).size()).isEqualTo(2);
+            assertThat(models.get(1).size()).isEqualTo(2);
+            assertThat(models.get(2).size()).isEqualTo(2);
+            s.reset();
+        }
+    }
+
+    @Test
     public void testCC1() {
         for (int i = 0; i < this.solvers.length - 1; i++) {
             final SATSolver s = this.solvers[i];
@@ -864,8 +878,8 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     @Test
     public void testUPZeroLiteralsForUndefState() {
         assertThatThrownBy(() -> {
-            SATSolver solver = MiniSat.miniSat(f);
-            solver.add(f.parse("a & b"));
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(this.f.parse("a & b"));
             solver.execute(UpZeroLiteralsFunction.get());
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");

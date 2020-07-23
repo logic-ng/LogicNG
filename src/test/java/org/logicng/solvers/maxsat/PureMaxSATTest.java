@@ -268,6 +268,8 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         final MaxSATSolver solver = MaxSATSolver.incWBO(MaxSATConfig.builder().cardinality(CardinalityEncoding.MTOTALIZER)
                 .solver(MaxSATConfig.SolverType.GLUCOSE).verbosity(SOME).output(this.logStream).build());
         final PropositionalParser p = new PropositionalParser(this.f);
+        solver.addHardFormula(p.parse("y"));
+        solver.addHardFormula(p.parse("~z"));
         solver.addSoftFormula(p.parse("a => b"), 1);
         solver.addSoftFormula(p.parse("b => c"), 1);
         solver.addSoftFormula(p.parse("c => d"), 1);
@@ -276,18 +278,17 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         solver.addSoftFormula(p.parse("~e"), 1);
         solver.addSoftFormula(p.parse("~x"), 1);
         solver.addSoftFormula(p.parse("a"), 1);
+        solver.addSoftFormula(p.parse("~y"), 1);
+        solver.addSoftFormula(p.parse("z"), 1);
         assertThat(solver.solve()).isEqualTo(OPTIMUM);
-        assertThat(solver.result()).isEqualTo(1);
+        assertThat(solver.result()).isEqualTo(3);
         final Assignment model = solver.model();
-        assertThat(model.size()).isEqualTo(6);
-        assertThat(model.positiveVariables().size()).isEqualTo(0);
-        assertThat(model.negativeLiterals().size()).isEqualTo(6);
-        assertThat(model.negativeLiterals().contains(this.f.literal("a", false))).isTrue();
-        assertThat(model.negativeLiterals().contains(this.f.literal("b", false))).isTrue();
-        assertThat(model.negativeLiterals().contains(this.f.literal("c", false))).isTrue();
-        assertThat(model.negativeLiterals().contains(this.f.literal("d", false))).isTrue();
-        assertThat(model.negativeLiterals().contains(this.f.literal("e", false))).isTrue();
-        assertThat(model.negativeLiterals().contains(this.f.literal("x", false))).isTrue();
+        System.out.println("model = " + model);
+        assertThat(model.size()).isEqualTo(8);
+        assertThat(model.positiveVariables()).hasSize(1);
+        assertThat(model.positiveVariables()).extracting("name").containsExactlyInAnyOrder("y");
+        assertThat(model.negativeLiterals()).hasSize(7);
+        assertThat(model.negativeVariables()).extracting("name").containsExactlyInAnyOrder("a", "b", "c", "d", "e", "x", "z");
     }
 
     @Test

@@ -183,6 +183,7 @@ public class AssignmentTest extends TestWithExampleFormulas {
         ass.addLiteral(this.NX);
         ass.addLiteral(this.NY);
         assertThat(ass).isNotEqualTo(null);
+        assertThat(ass.equals(null)).isFalse();
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true));
@@ -190,6 +191,7 @@ public class AssignmentTest extends TestWithExampleFormulas {
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY))).isEqualTo(ass);
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY))).isEqualTo(ass);
         assertThat(ass).isEqualTo(ass);
+        assertThat(ass.equals(ass)).isTrue();
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX))).isNotEqualTo(ass);
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY, this.C))).isNotEqualTo(ass);
         assertThat(this.TRUE).isNotEqualTo(ass);
