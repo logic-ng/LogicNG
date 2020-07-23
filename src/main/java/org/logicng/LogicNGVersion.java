@@ -6,13 +6,13 @@ package org.logicng;
  * @version 2.0.0
  * @since 2.0.0
  */
-public interface LogicNGVersion {
+public final class LogicNGVersion {
 
     /**
      * Returns the version string from the POM.
      * @return the version string from the POM
      */
-    static String version() {
+    public static String version() {
         final Package mainPackage = LogicNGVersion.class.getPackage();
         return mainPackage.getImplementationVersion();
     }
@@ -21,9 +21,13 @@ public interface LogicNGVersion {
      * Returns the major version or -1 if the version could not be parsed.
      * @return the major version
      */
-    static int major() {
+    public static int major() {
+        return major(version());
+    }
+
+    static int major(final String version) {
         try {
-            return Integer.parseInt(version().split("\\.")[0]);
+            return Integer.parseInt(version.split("\\.")[0]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
             return -1;
         }
@@ -33,9 +37,13 @@ public interface LogicNGVersion {
      * Returns the minor version or -1 if the version could not be parsed.
      * @return the minor version
      */
-    static int minor() {
+    public static int minor() {
+        return minor(version());
+    }
+
+    static int minor(final String version) {
         try {
-            return Integer.parseInt(version().split("\\.")[1]);
+            return Integer.parseInt(version.split("\\.")[1]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
             return -1;
         }
@@ -45,10 +53,13 @@ public interface LogicNGVersion {
      * Returns the patch version or -1 if the version could not be parsed.
      * @return the patch version
      */
-    static int patch() {
+    public static int patch() {
+        return patch(version());
+    }
+
+    static int patch(final String version) {
         try {
-            final String patchVersion = version().split("\\.")[2];
-            return Integer.parseInt(patchVersion.split("-")[0]);
+            return Integer.parseInt(version.split("\\.")[2].split("-")[0]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
             return -1;
         }
@@ -58,7 +69,11 @@ public interface LogicNGVersion {
      * Returns whether this is a snapshot version or not.
      * @return true if it is a snapshot version, false otherwise
      */
-    static boolean snapshot() {
-        return version().contains("-SNAPSHOT");
+    public static boolean snapshot() {
+        return snapshot(version());
+    }
+
+    static boolean snapshot(final String version) {
+        return version.contains("-SNAPSHOT");
     }
 }
