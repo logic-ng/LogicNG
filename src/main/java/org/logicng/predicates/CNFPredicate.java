@@ -74,7 +74,9 @@ public final class CNFPredicate implements FormulaPredicate {
             case EQUIV:
             case PBC:
                 return false;
-            // AND and OR always have a cached CNF predicate (set in the constructor)
+            case OR:
+            case AND:
+                throw new IllegalStateException("Formula of type AND/OR has no cached CNF predicate, but should have.");
             default:
                 throw new IllegalArgumentException("Cannot compute CNF predicate on " + formula.type());
         }

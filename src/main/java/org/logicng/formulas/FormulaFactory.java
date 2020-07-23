@@ -442,8 +442,9 @@ public class FormulaFactory {
             case IMPORT:
                 return importFormula(formula);
             case PANIC:
-            default:
                 throw new UnsupportedOperationException("Found an operand with a different formula factory.");
+            default:
+                throw new IllegalStateException("Unknown formula merge strategy: " + this.formulaMergeStrategy);
         }
     }
 
@@ -476,8 +477,9 @@ public class FormulaFactory {
                 }
                 return result;
             case PANIC:
-            default:
                 throw new UnsupportedOperationException("Found an operand with a different formula factory.");
+            default:
+                throw new IllegalStateException("Unknown formula merge strategy: " + this.formulaMergeStrategy);
         }
     }
 
@@ -511,8 +513,9 @@ public class FormulaFactory {
                 }
                 return result;
             case PANIC:
-            default:
                 throw new UnsupportedOperationException("Found an operand with a different formula factory.");
+            default:
+                throw new IllegalStateException("Unknown formula merge strategy: " + this.formulaMergeStrategy);
         }
     }
 

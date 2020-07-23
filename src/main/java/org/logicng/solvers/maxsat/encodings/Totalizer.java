@@ -181,7 +181,7 @@ public class Totalizer extends Encoding {
                 }
                 break;
             default:
-                throw new IllegalStateException("Unknwon incremental strategy: " + this.incrementalStrategy);
+                throw new IllegalStateException("Unknown incremental strategy: " + this.incrementalStrategy);
         }
     }
 

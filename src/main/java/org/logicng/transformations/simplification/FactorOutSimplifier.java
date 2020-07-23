@@ -93,8 +93,15 @@ public final class FactorOutSimplifier implements FormulaTransformation {
                 return newFormula instanceof NAryOperator ? simplify((NAryOperator) newFormula) : newFormula;
             case NOT:
                 return apply(((Not) formula).operand(), cache).negate();
-            default:
+            case FALSE:
+            case TRUE:
+            case LITERAL:
+            case IMPL:
+            case EQUIV:
+            case PBC:
                 return formula;
+            default:
+                throw new IllegalStateException("Unknown formula type: " + formula.type());
         }
     }
 

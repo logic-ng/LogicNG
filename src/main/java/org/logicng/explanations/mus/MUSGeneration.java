@@ -79,8 +79,9 @@ public final class MUSGeneration {
             case PLAIN_INSERTION:
                 return this.insertion.computeMUS(propositions, f, config);
             case DELETION:
-            default:
                 return this.deletion.computeMUS(propositions, f, config);
+            default:
+                throw new IllegalStateException("Unknown MUS algorithm: " + config.algorithm);
         }
     }
 

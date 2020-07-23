@@ -157,7 +157,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
                 return result;
             }
             default:
-                throw new IllegalArgumentException("not yet implemented");
+                throw new IllegalArgumentException("Unknown or unexpected formula type. Expected AND or OR formula type only.");
         }
     }
 

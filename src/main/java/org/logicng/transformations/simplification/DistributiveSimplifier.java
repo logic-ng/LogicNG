@@ -56,6 +56,12 @@ public final class DistributiveSimplifier implements FormulaTransformation {
         final FormulaFactory f = formula.factory();
         final Formula result;
         switch (formula.type()) {
+            case FALSE:
+            case TRUE:
+            case LITERAL:
+            case PBC:
+                result = formula;
+                break;
             case EQUIV:
                 final Equivalence equiv = (Equivalence) formula;
                 result = f.equivalence(this.apply(equiv.left(), cache), this.apply(equiv.right(), cache));
@@ -73,7 +79,7 @@ public final class DistributiveSimplifier implements FormulaTransformation {
                 result = distributeNAry(formula, cache, f);
                 break;
             default:
-                result = formula;
+                throw new IllegalStateException("Unknown formula type: " + formula.type());
         }
         if (cache) {
             formula.setTransformationCacheEntry(TransformationCacheEntry.DISTRIBUTIVE_SIMPLIFICATION, result);

@@ -158,7 +158,7 @@ public class PBConstraint extends Formula {
             case GT:
                 return status < 1 ? Tristate.TRUE : (status >= 3 ? Tristate.FALSE : Tristate.UNDEF);
             default:
-                throw new IllegalStateException("Unknown pseudo-Boolean comparator");
+                throw new IllegalStateException("Unknown pseudo-Boolean comparator: " + comparator);
         }
     }
 
@@ -505,7 +505,7 @@ public class PBConstraint extends Formula {
                         newCoeffs.add(this.coefficients[i]);
                         break;
                     default:
-                        throw new IllegalArgumentException("Cannnot substitute a formula for a literal in a pseudo-Boolean constraint");
+                        throw new IllegalArgumentException("Cannot substitute a formula for a literal in a pseudo-Boolean constraint");
                 }
             }
         }

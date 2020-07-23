@@ -29,6 +29,7 @@
 package org.logicng.formulas.printer;
 
 import org.logicng.formulas.CType;
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 
@@ -62,13 +63,11 @@ public final class LatexStringRepresentation extends FormulaStringRepresentation
 
     @Override
     public String toInnerString(final Formula formula) {
-        switch (formula.type()) {
-            case LITERAL:
-                final Literal lit = (Literal) formula;
-                return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
-            default:
-                return super.toInnerString(formula);
+        if (formula.type() == FType.LITERAL) {
+            final Literal lit = (Literal) formula;
+            return lit.phase() ? latexName(lit.name()) : this.negation() + " " + latexName(lit.name());
         }
+        return super.toInnerString(formula);
     }
 
     @Override
