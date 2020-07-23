@@ -57,7 +57,7 @@ public class ExtendedFormulaFactory extends FormulaFactory {
      * @param map     the map to be shrunk
      * @param newSize the new size, the map shall be shrunk to
      */
-    private static <T, U> void shrinkMap(final Map<T, U> map, final int newSize) {
+    static <T, U> void shrinkMap(final Map<T, U> map, final int newSize) {
         if (!(map instanceof LinkedHashMap)) {
             throw new IllegalStateException("Cannot shrink a map which is not of type LinkedHashMap");
         }
@@ -81,7 +81,7 @@ public class ExtendedFormulaFactory extends FormulaFactory {
      * @param set     the set to be shrunk
      * @param newSize the new size, the set shall be shrunk to
      */
-    private static <T> void shrinkSet(final Set<T> set, final int newSize) {
+    static <T> void shrinkSet(final Set<T> set, final int newSize) {
         if (!(set instanceof LinkedHashSet)) {
             throw new IllegalStateException("Cannot shrink a set which is not of type LinkedHashSet");
         }

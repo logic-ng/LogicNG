@@ -34,15 +34,23 @@ import org.logicng.LongRunningTag;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.PredicateCacheEntry;
 import org.logicng.formulas.cache.TransformationCacheEntry;
+import org.logicng.io.parsers.ParserException;
 import org.logicng.testutils.PigeonHoleGenerator;
 import org.logicng.transformations.cnf.CNFFactorization;
+import org.logicng.transformations.cnf.PlaistedGreenbaumTransformation;
 import org.logicng.transformations.dnf.DNFFactorization;
+import sun.awt.image.ImageWatched;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.data.MapEntry.entry;
 
 /**
  * Unit tests for the class {@link ExtendedFormulaFactory}.
@@ -52,7 +60,59 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ExtendedFormulaFactoryTest {
 
     @Test
-    public void testLoad() {
+    public void testShrinkMapWithWrongArguments() {
+        assertThatThrownBy(() -> ExtendedFormulaFactory.shrinkMap(new TreeMap<>(), 4))
+                .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Cannot shrink a map which is not of type LinkedHashMap");
+        assertThatThrownBy(() -> ExtendedFormulaFactory.shrinkMap(new LinkedHashMap<>(), 4))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot shrink a map of size 0 to new size 4");
+    }
+
+    @Test
+    public void testShrinkMap() {
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("a", "A");
+        map.put("b", "B");
+        map.put("c", "C");
+        ExtendedFormulaFactory.shrinkMap(map, 2);
+        assertThat(map).containsExactly(entry("a", "A"), entry("b", "B"));
+        map.put("c", "C");
+        map.put("d", "D");
+        ExtendedFormulaFactory.shrinkMap(map, 1);
+        assertThat(map).containsExactly(entry("a", "A"));
+        ExtendedFormulaFactory.shrinkMap(map, 0);
+        assertThat(map).isEmpty();
+    }
+
+    @Test
+    public void testShrinkSetWithWrongArguments() {
+        assertThatThrownBy(() -> ExtendedFormulaFactory.shrinkSet(new HashSet<>(), 4))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot shrink a set which is not of type LinkedHashSet");
+        assertThatThrownBy(() -> ExtendedFormulaFactory.shrinkSet(new LinkedHashSet<>(), 4))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot shrink a set of size 0 to new size 4");
+    }
+
+    @Test
+    public void testShrinkSet() {
+        LinkedHashSet<String> set = new LinkedHashSet<>();
+        set.add("a");
+        set.add("b");
+        set.add("c");
+        ExtendedFormulaFactory.shrinkSet(set, 2);
+        assertThat(set).containsExactly("a", "b");
+        set.add("c");
+        set.add("d");
+        ExtendedFormulaFactory.shrinkSet(set, 1);
+        assertThat(set).containsExactly("a");
+        ExtendedFormulaFactory.shrinkSet(set, 0);
+        assertThat(set).isEmpty();
+    }
+
+    @Test
+    public void testLoad01() {
         final SoftAssertions softly = new SoftAssertions();
         final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
         final Variable a = eff.variable("A");
@@ -70,6 +130,66 @@ public class ExtendedFormulaFactoryTest {
         softly.assertThat(eff.posLiterals).doesNotContainValue(b);
         softly.assertThat(eff.negLiterals).isEmpty();
         softly.assertThat(eff.ands2).isEmpty();
+        softly.assertAll();
+    }
+
+    @Test
+    public void testLoad02() throws ParserException {
+        final SoftAssertions softly = new SoftAssertions();
+        final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
+        final Variable a = eff.variable("A");
+        final int preSaveFormulaAmount = eff.statistics().formulas();
+        final FormulaFactoryState state01 = eff.save();
+        final Variable b = eff.variable("B");
+        final Variable c = eff.variable("C");
+        final Variable d = eff.variable("D");
+        final Variable e = eff.variable("E");
+        final And and = (And) eff.and(a, b);
+        final And and3 = (And) eff.and(a, b, c);
+        final And and4 = (And) eff.and(a, b, c, d);
+        final And and5 = (And) eff.and(a, b, c, d, e);
+        final Or or2 = (Or) eff.or(a, b);
+        final Or or3 = (Or) eff.or(a, b, c);
+        final Or or4 = (Or) eff.or(a, b, c, d);
+        final Or or5 = (Or) eff.or(a, b, c, d, e);
+        eff.parse("A | B & C").transform(new PlaistedGreenbaumTransformation(0));
+        softly.assertThat(eff.posLiterals).containsValue(b);
+        softly.assertThat(eff.ands2).containsValue(and);
+        softly.assertThat(eff.ands3).containsValue(and3);
+        softly.assertThat(eff.ands4).containsValue(and4);
+        softly.assertThat(eff.andsN).containsValue(and5);
+        softly.assertThat(eff.ors2).containsValue(or2);
+        softly.assertThat(eff.ors3).containsValue(or3);
+        softly.assertThat(eff.ors4).containsValue(or4);
+        softly.assertThat(eff.orsN).containsValue(or5);
+
+        final FormulaFactoryState state02 = eff.save();
+        eff.load(state02);
+
+        softly.assertThat(eff.posLiterals).containsValue(b);
+        softly.assertThat(eff.ands2).containsValue(and);
+        softly.assertThat(eff.ands3).containsValue(and3);
+        softly.assertThat(eff.ands4).containsValue(and4);
+        softly.assertThat(eff.andsN).containsValue(and5);
+        softly.assertThat(eff.ors2).containsValue(or2);
+        softly.assertThat(eff.ors3).containsValue(or3);
+        softly.assertThat(eff.ors4).containsValue(or4);
+        softly.assertThat(eff.orsN).containsValue(or5);
+
+        eff.load(state01);
+
+        softly.assertThat(eff.statistics().formulas()).isEqualTo(preSaveFormulaAmount);
+        softly.assertThat(eff.posLiterals).containsValue(a);
+        softly.assertThat(eff.posLiterals).doesNotContainValue(b);
+        softly.assertThat(eff.negLiterals).isEmpty();
+        softly.assertThat(eff.ands2).isEmpty();
+        softly.assertThat(eff.ands3).isEmpty();
+        softly.assertThat(eff.ands4).isEmpty();
+        softly.assertThat(eff.andsN).isEmpty();
+        softly.assertThat(eff.ors2).isEmpty();
+        softly.assertThat(eff.ors3).isEmpty();
+        softly.assertThat(eff.ors4).isEmpty();
+        softly.assertThat(eff.orsN).isEmpty();
         softly.assertAll();
     }
 
