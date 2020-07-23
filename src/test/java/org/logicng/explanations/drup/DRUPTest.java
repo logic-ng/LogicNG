@@ -28,6 +28,9 @@
 
 package org.logicng.explanations.drup;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.datastructures.Tristate.FALSE;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
@@ -52,9 +55,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.datastructures.Tristate.FALSE;
 
 /**
  * Unit tests for {@link DRUPTrim}.
@@ -156,9 +156,7 @@ public class DRUPTest implements LogicNGTest {
         propositions.add(new StandardProposition("P8", this.f.parse("(x => ~y | z) & (z | w)")));
 
         for (final SATSolver solver : this.solvers) {
-            for (final Proposition proposition : propositions) {
-                solver.add(proposition);
-            }
+            solver.addPropositions(propositions);
             assertThat(solver.sat()).isEqualTo(FALSE);
             final UNSATCore<Proposition> unsatCore = solver.unsatCore();
             assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(propositions.get(0), propositions.get(1),
@@ -182,16 +180,11 @@ public class DRUPTest implements LogicNGTest {
         final StandardProposition p10 = new StandardProposition("P10", this.f.parse("(p => q) & p"));
         final StandardProposition p11 = new StandardProposition("P11", this.f.parse("a & ~q"));
 
-        solver.add(p1);
-        solver.add(p2);
-        solver.add(p3);
-        solver.add(p4);
+        solver.addPropositions(p1, p2, p3, p4);
         final SolverState state1 = solver.saveState();
-        solver.add(p5);
-        solver.add(p6);
+        solver.addPropositions(p5, p6);
         final SolverState state2 = solver.saveState();
-        solver.add(p7);
-        solver.add(p8);
+        solver.addPropositions(p7, p8);
 
         assertThat(solver.sat()).isEqualTo(FALSE);
         UNSATCore<Proposition> unsatCore = solver.unsatCore();

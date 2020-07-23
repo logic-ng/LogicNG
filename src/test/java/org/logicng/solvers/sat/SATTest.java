@@ -382,6 +382,19 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    public void testRelexationFormulas() throws ParserException {
+        for (final SATSolver s : this.solvers) {
+            s.add(this.f.parse("a & (b | c)"));
+            assertSolverSat(s);
+            s.addWithRelaxation(this.f.variable("x"), this.f.parse("~a & ~b"));
+            assertSolverSat(s);
+            assertThat(s.model().positiveVariables()).contains(this.f.variable("x"));
+            s.add(this.f.variable("x").negate());
+            assertSolverUnsat(s);
+        }
+    }
+
+    @Test
     public void testPigeonHole1() {
         for (final SATSolver s : this.solvers) {
             s.add(this.pg.generate(1));
