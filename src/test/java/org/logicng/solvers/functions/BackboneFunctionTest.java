@@ -135,6 +135,25 @@ public class BackboneFunctionTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
+    public void testSimpleFormulasWithBuilderUsage(final MiniSat solver) throws ParserException {
+        solver.reset();
+        solver.add(f.parse("(a => c | d) & (b => d | ~e) & (a | b)"));
+        Backbone backbone = solver.execute(BackboneFunction.builder().variables(
+                f.variable("a"), f.variable("b"), f.variable("c"), f.variable("d"), f.variable("e"), f.variable("f"))
+                .build());
+        assertThat(backbone.isSat()).isTrue();
+        assertThat(backbone.getCompleteBackbone()).isEmpty();
+        solver.add(f.parse("a => b"));
+        solver.add(f.parse("b => a"));
+        solver.add(f.parse("~d"));
+        backbone = solver.backbone(v("a b c d e f g h"));
+        assertThat(backbone.isSat()).isTrue();
+        assertThat(backbone.getCompleteBackbone()).containsExactly(f.variable("a"), f.variable("b"), f.variable("c"),
+                f.literal("d", false), f.literal("e", false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("solvers")
     public void testRealFormulaIncremental1(final MiniSat solver) throws IOException, ParserException {
         solver.reset();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);

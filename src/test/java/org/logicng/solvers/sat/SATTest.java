@@ -862,6 +862,16 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    public void testUPZeroLiteralsForUndefState() {
+        assertThatThrownBy(() -> {
+            SATSolver solver = MiniSat.miniSat(f);
+            solver.add(f.parse("a & b"));
+            solver.execute(new UpZeroLiteralsFunction());
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
+    }
+
+    @Test
     public void testUPZeroLiteralsUNSAT() throws ParserException {
         final Formula formula = this.parser.parse("a & (a => b) & (b => c) & (c => ~a)");
         for (final SATSolver solver : this.solvers) {

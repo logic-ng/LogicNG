@@ -327,7 +327,7 @@ public class MaxSATSolver {
      */
     public int result() {
         if (this.result == UNDEF) {
-            throw new IllegalStateException("Cannot get a result as long as the formula is not solved.  Call 'solve' first.");
+            throw new IllegalStateException("Cannot get a result as long as the formula is not solved.  Call 'solver' first.");
         }
         return this.result == OPTIMUM ? this.solver.result() : -1;
     }
@@ -339,7 +339,7 @@ public class MaxSATSolver {
      */
     public Assignment model() {
         if (this.result == UNDEF) {
-            throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'solve' first.");
+            throw new IllegalStateException("Cannot get a model as long as the formula is not solved.  Call 'solver' first.");
         }
         return this.result != UNSATISFIABLE ? this.createAssignment(this.solver.model()) : null;
     }
