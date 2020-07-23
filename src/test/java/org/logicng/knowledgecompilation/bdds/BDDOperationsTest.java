@@ -87,6 +87,8 @@ public class BDDOperationsTest {
         final Literal a = this.f.literal("A", true);
         final List<Literal> resNotA = Collections.singletonList(this.f.literal("A", false));
         final List<Literal> resAB = Arrays.asList(this.f.literal("A", true), this.f.literal("B", true));
+        assertThat(this.bddPosLit.construction.restrict(0, 1)).isEqualTo(0);
+        assertThat(this.bddPosLit.construction.restrict(1, 1)).isEqualTo(1);
         assertThat(this.bddVerum.restrict(a)).isEqualTo(this.bddVerum);
         assertThat(this.bddVerum.restrict(resNotA)).isEqualTo(this.bddVerum);
         assertThat(this.bddVerum.restrict(resAB)).isEqualTo(this.bddVerum);
@@ -117,6 +119,8 @@ public class BDDOperationsTest {
     public void testExistentialQuantification() throws ParserException {
         final Variable a = this.f.variable("A");
         final List<Variable> resAB = Arrays.asList(this.f.variable("A"), this.f.variable("B"));
+        assertThat(this.bddPosLit.construction.exists(0, 1)).isEqualTo(0);
+        assertThat(this.bddPosLit.construction.exists(1, 1)).isEqualTo(1);
         assertThat(this.bddVerum.exists(a)).isEqualTo(this.bddVerum);
         assertThat(this.bddVerum.exists(resAB)).isEqualTo(this.bddVerum);
         assertThat(this.bddFalsum.exists(a)).isEqualTo(this.bddFalsum);
@@ -139,6 +143,8 @@ public class BDDOperationsTest {
     public void testUniversalQuantification() throws ParserException {
         final Variable a = this.f.variable("A");
         final List<Variable> resAB = Arrays.asList(this.f.variable("A"), this.f.variable("B"));
+        assertThat(this.bddPosLit.construction.forAll(0, 1)).isEqualTo(0);
+        assertThat(this.bddPosLit.construction.forAll(1, 1)).isEqualTo(1);
         assertThat(this.bddVerum.forall(a)).isEqualTo(this.bddVerum);
         assertThat(this.bddVerum.forall(resAB)).isEqualTo(this.bddVerum);
         assertThat(this.bddFalsum.forall(a)).isEqualTo(this.bddFalsum);

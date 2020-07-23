@@ -85,7 +85,7 @@ public final class DimacsReader {
                 if (!line.startsWith("c") && !line.startsWith("p") && !line.trim().isEmpty()) {
                     final String[] split = line.split("\\s+");
                     if (!"0".equals(split[split.length - 1].trim())) {
-                        throw new IllegalArgumentException("Line " + line + " did not end with 0.");
+                        throw new IllegalArgumentException("Line '" + line + "' did not end with 0.");
                     }
                     final LinkedHashSet<Literal> vars = new LinkedHashSet<>(split.length - 1);
                     for (int i = 0; i < split.length - 1; i++) {
