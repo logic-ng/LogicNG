@@ -31,6 +31,23 @@ import java.util.function.Consumer;
  */
 public final class UnsatCoreFunction implements SolverFunction<UNSATCore<Proposition>> {
 
+    private final static UnsatCoreFunction INSTANCE = new UnsatCoreFunction();
+
+    /**
+     * Private empty constructor.  Singleton class.
+     */
+    private UnsatCoreFunction() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton of the function.
+     * @return the function instance
+     */
+    public static UnsatCoreFunction get() {
+        return INSTANCE;
+    }
+
     @Override
     public UNSATCore<Proposition> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         if (!solver.getConfig().proofGeneration()) {

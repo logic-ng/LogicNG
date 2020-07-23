@@ -43,6 +43,23 @@ import java.util.function.Consumer;
  */
 public final class FormulaOnSolverFunction implements SolverFunction<Set<Formula>> {
 
+    private final static FormulaOnSolverFunction INSTANCE = new FormulaOnSolverFunction();
+
+    /**
+     * Private empty constructor.  Singleton class.
+     */
+    private FormulaOnSolverFunction() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton of the function.
+     * @return the function instance
+     */
+    public static FormulaOnSolverFunction get() {
+        return INSTANCE;
+    }
+
     @Override
     public Set<Formula> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         final FormulaFactory f = solver.factory();

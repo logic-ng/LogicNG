@@ -574,6 +574,7 @@ public final class DRUPTrim {
                         break;
                     }
                     while (this.DB.get(--lemmasPtr) != 0) {
+                        // empty on purpose
                     }
                 }
             }
@@ -585,6 +586,7 @@ public final class DRUPTrim {
                     this.count++;
                 }
                 while (this.DB.get(lemmasPtr++) != 0) {
+                    // empty on purpose
                 }
             }
             lemmasPtr = 0;

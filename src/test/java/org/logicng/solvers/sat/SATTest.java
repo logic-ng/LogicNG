@@ -866,7 +866,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
         assertThatThrownBy(() -> {
             SATSolver solver = MiniSat.miniSat(f);
             solver.add(f.parse("a & b"));
-            solver.execute(new UpZeroLiteralsFunction());
+            solver.execute(UpZeroLiteralsFunction.get());
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
     }
@@ -878,7 +878,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
             solver.reset();
             solver.add(formula);
             solver.sat();
-            final SortedSet<Literal> upLiterals = solver.execute(new UpZeroLiteralsFunction());
+            final SortedSet<Literal> upLiterals = solver.execute(UpZeroLiteralsFunction.get());
             assertThat(upLiterals).isNull();
         }
     }
@@ -901,7 +901,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                 solver.add(formula);
                 final boolean res = solver.sat() == Tristate.TRUE;
                 assertThat(res).isTrue();
-                final SortedSet<Literal> upLiterals = solver.execute(new UpZeroLiteralsFunction());
+                final SortedSet<Literal> upLiterals = solver.execute(UpZeroLiteralsFunction.get());
                 assertThat(upLiterals).containsAll(expectedSubsets.get(formula));
             }
         }
@@ -919,7 +919,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                     readCNF(solver, file);
                     final boolean res = solver.sat() == Tristate.TRUE;
                     if (res) {
-                        final SortedSet<Literal> upZeroLiterals = solver.execute(new UpZeroLiteralsFunction());
+                        final SortedSet<Literal> upZeroLiterals = solver.execute(UpZeroLiteralsFunction.get());
                         final List<Literal> negations = new ArrayList<>(upZeroLiterals.size());
                         for (final Literal lit : upZeroLiterals) {
                             negations.add(lit.negate());
@@ -945,15 +945,15 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                 formulas.add(p.parse("A | ~B"));
                 formulas.add(p.parse("A"));
                 solver.add(formulas);
-                compareFormulas(formulas, solver.execute(new FormulaOnSolverFunction()));
+                compareFormulas(formulas, solver.execute(FormulaOnSolverFunction.get()));
                 formulas.add(p.parse("~A | C"));
                 solver.reset();
                 solver.add(formulas);
-                compareFormulas(formulas, solver.execute(new FormulaOnSolverFunction()));
+                compareFormulas(formulas, solver.execute(FormulaOnSolverFunction.get()));
                 final Formula formula = p.parse("C + D + E <= 2");
                 formulas.add(formula);
                 solver.add(formula);
-                compareFormulas(formulas, solver.execute(new FormulaOnSolverFunction()));
+                compareFormulas(formulas, solver.execute(FormulaOnSolverFunction.get()));
             }
         }
     }
@@ -965,15 +965,15 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                 solver.add(this.f.variable("A"));
                 solver.add(this.f.variable("B"));
                 solver.add(this.f.parse("C & (~A | ~B)"));
-                assertThat(solver.execute(new FormulaOnSolverFunction()))
+                assertThat(solver.execute(FormulaOnSolverFunction.get()))
                         .containsExactlyInAnyOrder(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"), this.f.falsum());
                 solver.reset();
                 solver.add(this.f.parse("A <=> B"));
                 solver.add(this.f.parse("B <=> ~A"));
-                assertThat(solver.execute(new FormulaOnSolverFunction()))
+                assertThat(solver.execute(FormulaOnSolverFunction.get()))
                         .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"));
                 solver.sat();
-                assertThat(solver.execute(new FormulaOnSolverFunction()))
+                assertThat(solver.execute(FormulaOnSolverFunction.get()))
                         .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"),
                                 this.f.variable("A"), this.f.variable("B"), this.f.falsum());
             }
@@ -1076,7 +1076,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                 if (fileName.endsWith(".cnf")) {
                     readCNF(solver, file);
                     final List<Literal> selectionOrder = new ArrayList<>();
-                    for (final Variable var : FormulaHelper.variables(solver.execute(new FormulaOnSolverFunction()))) {
+                    for (final Variable var : FormulaHelper.variables(solver.execute(FormulaOnSolverFunction.get()))) {
                         if (selectionOrder.size() < 10) {
                             selectionOrder.add(var.negate());
                         }

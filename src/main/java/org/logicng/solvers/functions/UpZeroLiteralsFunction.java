@@ -21,6 +21,23 @@ import java.util.function.Consumer;
  */
 public final class UpZeroLiteralsFunction implements SolverFunction<SortedSet<Literal>> {
 
+    private final static UpZeroLiteralsFunction INSTANCE = new UpZeroLiteralsFunction();
+
+    /**
+     * Private empty constructor.  Singleton class.
+     */
+    private UpZeroLiteralsFunction() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton of the function.
+     * @return the function instance
+     */
+    public static UpZeroLiteralsFunction get() {
+        return INSTANCE;
+    }
+
     @Override
     public SortedSet<Literal> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         if (solver.getResult() == UNDEF) {

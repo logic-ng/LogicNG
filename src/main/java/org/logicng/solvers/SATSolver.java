@@ -440,7 +440,7 @@ public abstract class SATSolver {
      * @return the unsat core
      */
     public UNSATCore<Proposition> unsatCore() {
-        return execute(new UnsatCoreFunction());
+        return execute(UnsatCoreFunction.get());
     }
 
     /**
