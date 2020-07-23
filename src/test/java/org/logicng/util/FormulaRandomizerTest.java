@@ -1,5 +1,7 @@
 package org.logicng.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.And;
 import org.logicng.formulas.CType;
@@ -23,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit Tests for the class {@link FormulaRandomizer}.
@@ -508,5 +508,49 @@ public class FormulaRandomizerTest {
         formulas.add(random.formula(3));
         formulas.addAll(random.constraintSet(5, 3));
         return formulas;
+    }
+
+    @Test
+    public void testMaximumOperandsAnd() {
+        final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().maximumOperandsAnd(10).seed(42).build());
+        for (int i = 0; i < 100; i++) {
+            final Formula formula = random.and(1);
+            assertThat(formula.type()).isEqualTo(FType.AND);
+            final And and = (And) formula;
+            assertThat(and.numberOfOperands()).isLessThanOrEqualTo(10);
+        }
+    }
+
+    @Test
+    public void testMaximumOperandsOr() {
+        final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().maximumOperandsOr(10).seed(42).build());
+        for (int i = 0; i < 100; i++) {
+            final Formula formula = random.or(1);
+            assertThat(formula.type()).isEqualTo(FType.OR);
+            final Or or = (Or) formula;
+            assertThat(or.numberOfOperands()).isLessThanOrEqualTo(10);
+        }
+    }
+
+    @Test
+    public void testMaximumOperandsPbc() {
+        final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().maximumOperandsPbc(10).seed(42).build());
+        for (int i = 0; i < 100; i++) {
+            final Formula formula = random.pbc();
+            assertThat(formula.type()).isEqualTo(FType.PBC);
+            final PBConstraint pbc = (PBConstraint) formula;
+            assertThat(pbc.literals().size()).isLessThanOrEqualTo(10);
+        }
+    }
+
+    @Test
+    public void testMaximumOperandsCc() {
+        final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().maximumOperandsOr(10).seed(42).build());
+        for (int i = 0; i < 100; i++) {
+            final Formula formula = random.cc();
+            assertThat(formula.type()).isEqualTo(FType.PBC);
+            final CardinalityConstraint cc = (CardinalityConstraint) formula;
+            assertThat(cc.literals().size()).isLessThanOrEqualTo(10);
+        }
     }
 }

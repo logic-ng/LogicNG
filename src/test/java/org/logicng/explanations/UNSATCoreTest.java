@@ -58,6 +58,7 @@ public class UNSATCoreTest {
     @Test
     public void testEquals() {
         assertThat(this.core1).isEqualTo(this.core1);
+        assertThat(this.core1.equals(this.core1)).isTrue();
         assertThat(new UNSATCore<>(this.props1, true)).isEqualTo(this.core1);
         assertThat(this.core2).isNotEqualTo(this.core1);
         assertThat(new UNSATCore<>(this.props1, false)).isNotEqualTo(this.core1);
