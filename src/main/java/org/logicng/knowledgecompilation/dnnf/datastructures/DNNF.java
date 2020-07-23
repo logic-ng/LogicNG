@@ -4,8 +4,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.dnnf.functions.DNNFFunction;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -52,25 +50,5 @@ public final class DNNF {
      */
     public SortedSet<Variable> getOriginalVariables() {
         return this.originalVariables;
-    }
-
-    /**
-     * Returns the number of physical nodes of this DNNF.
-     * @return the number of physical nodes
-     */
-    public int numberOfPhysicalNodes() {
-        return numberOfPhysicalNodesImpl(this.formula, new HashSet<>());
-    }
-
-    private int numberOfPhysicalNodesImpl(final Formula formula, final Set<Formula> seen) {
-        if (seen.contains(formula)) {
-            return 0;
-        }
-        int result = 1;
-        for (final Formula op : formula) {
-            result += numberOfPhysicalNodesImpl(op, seen);
-        }
-        seen.add(formula);
-        return result;
     }
 }
