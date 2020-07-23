@@ -116,7 +116,7 @@ public class SequentialWeightCounter extends Encoding {
      */
     public void encode(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs, final int rhs) {
         if (rhs == Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Overflow in the Encoding");
+            throw new IllegalArgumentException("Overflow in the encoding.");
         }
         this.hasEncoding = false;
         final LNGIntVector simpLits = new LNGIntVector(lits);
@@ -187,7 +187,7 @@ public class SequentialWeightCounter extends Encoding {
     public void encode(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs,
                        final int rhs, final LNGIntVector assumptions, final int size) {
         if (rhs == Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Overflow in the Encoding");
+            throw new IllegalArgumentException("Overflow in the encoding.");
         }
         this.hasEncoding = false;
         final LNGIntVector simpLits = new LNGIntVector(lits);
@@ -349,7 +349,7 @@ public class SequentialWeightCounter extends Encoding {
         assert this.currentLitBlocking != LIT_UNDEF;
         final int rhs = this.currentPbRhs;
         if (rhs == Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Overflow in the Encoding");
+            throw new IllegalArgumentException("Overflow in the encoding.");
         }
         final LNGIntVector simpUnitLits = new LNGIntVector(this.unitLits);
         final LNGIntVector simpUnitCoeffs = new LNGIntVector(this.unitCoeffs);

@@ -339,12 +339,14 @@ public class Encoder {
      * @return {@code true} if the cardinality encoding was built
      */
     public boolean hasCardEncoding() {
-        if (this.cardinalityEncoding == CardinalityEncoding.TOTALIZER) {
-            return this.totalizer.hasCreatedEncoding();
-        } else if (this.cardinalityEncoding == CardinalityEncoding.MTOTALIZER) {
-            return this.mtotalizer.hasCreatedEncoding();
+        switch (this.cardinalityEncoding) {
+            case TOTALIZER:
+                return this.totalizer.hasCreatedEncoding();
+            case MTOTALIZER:
+                return this.mtotalizer.hasCreatedEncoding();
+            default:
+                throw new IllegalStateException("Unknown cardinality encoding: " + this.cardinalityEncoding);
         }
-        return false;
     }
 
     /**

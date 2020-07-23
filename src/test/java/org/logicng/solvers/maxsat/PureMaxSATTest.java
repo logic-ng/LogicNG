@@ -80,49 +80,66 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testExceptionalBehavior() {
         assertThatThrownBy(() -> {
-            MaxSATSolver solver = MaxSATSolver.incWBO();
-            solver.addHardFormula(f.parse("a | b"));
-            solver.addSoftFormula(A, 1);
+            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
             solver.solve();
-            solver.addHardFormula(B);
+            solver.addHardFormula(this.B);
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         assertThatThrownBy(() -> {
-            MaxSATSolver solver = MaxSATSolver.incWBO();
-            solver.addHardFormula(f.parse("a | b"));
-            solver.addSoftFormula(A, 1);
+            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
             solver.solve();
-            solver.addSoftFormula(B, 1);
+            solver.addSoftFormula(this.B, 1);
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         assertThatThrownBy(() -> {
-            MaxSATSolver solver = MaxSATSolver.incWBO();
-            solver.addHardFormula(f.parse("a | b"));
-            solver.addSoftFormula(A, -1);
+            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, -1);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The weight of a formula must be > 0");
         assertThatThrownBy(() -> {
-            MaxSATSolver solver = MaxSATSolver.incWBO();
-            solver.addHardFormula(f.parse("a | b"));
-            solver.addSoftFormula(A, 1);
+            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
             solver.result();
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get a result as long as the formula is not solved.  Call 'solver' first.");
         assertThatThrownBy(() -> {
-            MaxSATSolver solver = MaxSATSolver.incWBO();
-            solver.addHardFormula(f.parse("a | b"));
-            solver.addSoftFormula(A, 1);
+            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
             solver.model();
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get a model as long as the formula is not solved.  Call 'solver' first.");
+        assertThatThrownBy(() -> {
+            final MaxSATSolver solver = MaxSATSolver.linearUS();
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 3);
+            solver.solve();
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error: Currently LinearUS does not support weighted MaxSAT instances.");
+        assertThatThrownBy(() -> {
+            final MaxSATSolver solver = MaxSATSolver.linearUS(MaxSATConfig.builder()
+                    .incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                    .cardinality(CardinalityEncoding.MTOTALIZER)
+                    .build());
+            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addSoftFormula(this.A, 1);
+            solver.solve();
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Error: Currently iterative encoding in LinearUS only supports the Totalizer encoding.");
     }
 
     @Test
     public void testCornerCase() throws ParserException {
-            MaxSATSolver solver = MaxSATSolver.incWBO();
-            solver.addHardFormula(f.parse("a | b"));
-        solver.addHardFormula(f.verum());
-            solver.addSoftFormula(A, 1);
+        final MaxSATSolver solver = MaxSATSolver.incWBO();
+        solver.addHardFormula(this.f.parse("a | b"));
+        solver.addHardFormula(this.f.verum());
+        solver.addSoftFormula(this.A, 1);
         MaxSAT.MaxSATResult result = solver.solve();
         assertThat(result).isEqualTo(OPTIMUM);
         result = solver.solve();
