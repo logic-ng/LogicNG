@@ -75,59 +75,6 @@ public class DTreeLeaf extends DTree {
     }
 
     @Override
-    public void dynamicVarSet(final BitSet vars) {
-        if (this.clauseSize < 2) {
-            return;
-        }
-        if (this.clauseSize == 2) {
-            dynamicVarSet2(vars);
-        } else {
-            dynamicVarSetN(vars);
-        }
-    }
-
-    protected boolean dynamicVarSet2(final BitSet vars) {
-        final int lit0 = this.literals[0];
-        final Tristate lit0Val = this.solver.valueOf(lit0);
-        if (lit0Val == Tristate.TRUE) {
-            return true;
-        }
-        final int lit1 = this.literals[1];
-        final Tristate lit1Val = this.solver.valueOf(lit1);
-        if (lit1Val == Tristate.TRUE) {
-            return true;
-        }
-        if (lit0Val == Tristate.UNDEF) {
-            vars.set(MiniSatStyleSolver.var(lit0));
-        }
-        if (lit1Val == Tristate.UNDEF) {
-            vars.set(MiniSatStyleSolver.var(lit1));
-        }
-        return false;
-    }
-
-    protected boolean dynamicVarSetN(final BitSet vars) {
-        int toAdd = 0;
-        for (int i = 0; i < this.literals.length; i++) {
-            final int literal = this.literals[i];
-            switch (this.solver.valueOf(literal)) {
-                case TRUE:
-                    if (i > 0) {
-                        this.literals[i] = this.literals[0];
-                        this.literals[0] = literal;
-                    }
-                    return true;
-                case UNDEF:
-                    this.dynamicVarSetHelper[toAdd++] = MiniSatStyleSolver.var(literal);
-            }
-        }
-        for (int i = 0; i < toAdd; i++) {
-            vars.set(this.dynamicVarSetHelper[i]);
-        }
-        return false;
-    }
-
-    @Override
     public BitSet dynamicSeparator() {
         return this.separatorBitSet;
     }
@@ -135,14 +82,6 @@ public class DTreeLeaf extends DTree {
     @Override
     public int[] staticClauseIds() {
         return this.staticClauseIds;
-    }
-
-    @Override
-    public void cacheKey(final BitSet key, final int numberOfVariables) {
-        final boolean subsumed = this.clauseSize == 2 ? dynamicVarSet2(key) : dynamicVarSetN(key);
-        if (!subsumed) {
-            key.set(numberOfVariables + this.id);
-        }
     }
 
     protected boolean isSubsumed() {

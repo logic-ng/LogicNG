@@ -60,16 +60,6 @@ public abstract class DTree {
     abstract SortedSet<Variable> staticVariableSet();
 
     /**
-     * Computes the dynamic variable set of this DTree.  "Dynamic" means that subsumed clauses are ignored during the computation.
-     * The dynamic variable set includes all variables which:
-     * - are contained in the given set (interestingVars)
-     * - are not yet assigned and
-     * - occur in clauses that are currently not subsumed
-     * @param vars the bitset in which the variables should be stored
-     */
-    abstract void dynamicVarSet(final BitSet vars);
-
-    /**
      * The dynamic separator of this DTree.  "Dynamic" means that subsumed clauses are ignored during the separator computation.
      * @return The dynamic separator of this DTree
      */
@@ -80,13 +70,6 @@ public abstract class DTree {
      * @return The clause ids
      */
     abstract int[] staticClauseIds();
-
-    /**
-     * Sets the cache key according to this tree.
-     * @param key               the key to set
-     * @param numberOfVariables the number of variables
-     */
-    public abstract void cacheKey(final BitSet key, final int numberOfVariables);
 
     /**
      * Counts the number of unsubsumed occurrences for each variable in occurrences.

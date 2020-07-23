@@ -136,13 +136,6 @@ public class DTreeNode extends DTree {
     }
 
     @Override
-    public void dynamicVarSet(final BitSet vars) {
-        for (final DTreeLeaf leaf : this.leafs) {
-            leaf.dynamicVarSet(vars);
-        }
-    }
-
-    @Override
     public BitSet dynamicSeparator() {
         this.localLeftVarSet.clear();
         this.localRightVarSet.clear();
@@ -179,7 +172,11 @@ public class DTreeNode extends DTree {
         return this.staticClauseIds;
     }
 
-    @Override
+    /**
+     * Sets the cache key according to this tree.
+     * @param key               the key to set
+     * @param numberOfVariables the number of variables
+     */
     public void cacheKey(final BitSet key, final int numberOfVariables) {
         int i = 0;
         while (i < this.clauseContents.length) {

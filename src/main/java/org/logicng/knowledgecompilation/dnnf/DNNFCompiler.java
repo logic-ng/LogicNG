@@ -265,7 +265,7 @@ public class DNNFCompiler {
         if (tree instanceof DTreeLeaf) {
             return leaf2Ddnnf((DTreeLeaf) tree);
         } else {
-            final BitSet key = computeCacheKey(tree, currentShannons);
+            final BitSet key = computeCacheKey((DTreeNode) tree, currentShannons);
             if (this.cache.containsKey(key)) {
                 return this.cache.get(key);
             } else {
@@ -278,7 +278,7 @@ public class DNNFCompiler {
         }
     }
 
-    protected BitSet computeCacheKey(final DTree tree, final int currentShannons) {
+    protected BitSet computeCacheKey(final DTreeNode tree, final int currentShannons) {
         final BitSet key = this.localCacheKeys[tree.depth()][currentShannons];
         key.clear();
         tree.cacheKey(key, this.numberOfVariables);
