@@ -1,9 +1,9 @@
-[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-1.6.2-ff69b4.svg)
+[![wercker status](https://app.wercker.com/status/24c4765f3a0d79520ad80a1e4c20cfa2/s/master "wercker status")](https://app.wercker.com/project/bykey/24c4765f3a0d79520ad80a1e4c20cfa2) [![Coverage Status](https://coveralls.io/repos/logic-ng/LogicNG/badge.svg?branch=master&service=github)](https://coveralls.io/github/logic-ng/LogicNG?branch=master) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.0.0-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
 ## Introduction
-LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like [MiniSAT](http://minisat.se), [CleaneLing](http://fmv.jku.at/cleaneling/), [Glucose](http://www.labri.fr/perso/lsimon/glucose/), [PBLib](http://tools.computational-logic.org/content/pblib.php), or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
+LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools like [MiniSAT](http://minisat.se), [Glucose](http://www.labri.fr/perso/lsimon/glucose/), [PBLib](http://tools.computational-logic.org/content/pblib.php), or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
 
 Its main focus lies on memory-efficient data-structures for Boolean formulas and efficient algorithms for manipulating and solving them.
 The library is designed to be used in industrial systems which have to manipulate and solve millions of formulas per day.
@@ -19,7 +19,7 @@ LogicNG is released in the Maven Central Repository.  To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>1.6.2</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 to your Maven POM.
@@ -60,84 +60,3 @@ We recently started a Wiki section for a [FAQ](https://github.com/logic-ng/Logic
 
 ## License & Commercial Support
 The library is released under the Apache License and therefore is free to use in any private, educational, or commercial projects.  Commercial support is available through the German company [BooleWorks GmbH](http://www.booleworks.com) - the company behind LogicNG.  Please contact Christoph Zengler at christoph@logicng.org for further details.
-
-## Changelog
-
-### Version 1.6.2 (Release January 2020)
-* Some improvements to handlers for computations
-* New BDD handlers
-
-### Version 1.6.1 (Release September 2019)
-* A new method for solving a formula with a given literal ordering.
-* Minor refactoring of the Formatter super class (no effects on callers).
-* Fixed the behaviour of model enumeration with additional variables.
-
-### Version 1.6.0 (Release September 2019)
-* A new method for generating CNFs directly on the solver instead of using the formula factory.
-  This often leads to a faster generation and reduced Heap consumption but with the loss of 
-  caching
-* The standard MiniSat-based solvers can now directly efficiently compute a backone.  No extra solver 
-  is required anymore
-* The current formula on a MiniSat-based solver can be extracted
-* BDD factory can now be extended externally
-
-### Version 1.5.2 (Release July 2019)
-* Fixed caching behaviour when using a `sat()` call without assumptions after a call with assumptions
-* Clarified behaviour of the `Backbone` object
-
-### Version 1.5.1 (Release May 2019)
-* Introduced a new `FormulaHelper` class for small utility methods on formulas
-* Added a new NNF predicate
-* Fixed an unspecified behaviour in `SATPredicate`
-* Fixed a small performance issue in the new backbone solver
-* Fixed a bug in a special case of the CNF transformation of a pseudo-Boolean constraint
-
-### Version 1.5.0 (Release March 2019)
-* Algorithm & data structures for efficiently computing backbones of formulas
-* Data structures for UBTrees in order to efficiently identify sub- and supersets
-* CNF and DNF subsumption as formula transformations
-* Backbone simplifier (compute and propagate the backbone of a formula)
-* A new sorted formula formatter which respects a given variable ordering when printing formulas
-* Minor code refactorings and improvements
-* Deprecation of CleaneLing - this solver will be removed in future versions.
-
-### Version 1.4.1 (Release December 2018)
-* Some refactorings for unit tests on Windows regarding encodings
-* The Quine-McCluskey implementation does not yield CNF auxiliary variables anymore
-* Fixed a minor bug in the generation of incremental cardinality constraints
-
-### Version 1.4.0 (Release June 2018)
-* BDD package (based on Buddy) for creating, manipulating, and writing BDDs
-  * Creation of BDDs from LogicNG formulas
-  * CNF, DNF transformation of BDDs
-  * Restriction, existential & universal quantifier elimination
-  * Model counting & enumeration
-  * Different static variable ordering heuristics (FORCE, DFS, BFS, MinMax)
-  * Writing BDDs in the GraphViz .dot format
-* Quine-McCluskey Implementation for minimizing canonical DNFs
-* New formula transformation for anonymizing formulas
-* Internal parser and IO improvements.  Variables can now start with a digit.
-
-### Version 1.3.1 (Release January 2018)
-* Huge performance boost in the model enumeration of MiniSat
-* New formula transformation which imports formulas in another formula factory
-* Small bugfix for a trivial case in DRUP
-
-### Version 1.3 (Release October 2017)
-* MiniSat and Glucose have a new option for proof tracing.  A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable formulas after solving them.  The new method can be found in the SAT solver class: `unsatCore()`
-* Unsat Cores are now parametrized with the proposition type
-* A new simplifier which applies the distributive law was added: `DistributiveSimplifier`
-* Some minor bug-fixes in handling corner cases of cardinality and pseudo-Boolean constraints 
-
-### Version 1.2 (Release July 2017)
-* Introduced an extended formula factory which is able to return to a previously saved state and delete old formulas (and get them garbage collected)
-* A simple data structure for generic graphs including algorithms for connected components and maximal cliques
-* Improved IO (Writers for formulas, Dimacs CNFs, and graphs)
-* SAT solvers can now track the currently known variables
-* Updated to ANTLR 4.7
-* Various smaller bugfixes
-
-### Version 1.1 (Release August 2016)
-* Implemented cardinality constraint encodings and pseudo-Boolean constraints encodings of PBLib
-* Incremental cardinality constraints, including the possibility to add cardinaliy constraints to the solver without introducing new formula factory variables
-* Different MUS algorithms
