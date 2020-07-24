@@ -9,6 +9,13 @@ package org.logicng;
 public final class LogicNGVersion {
 
     /**
+     * Private constructor.
+     */
+    private LogicNGVersion() {
+        // Intentionally left empty.
+    }
+
+    /**
      * Returns the version string from the POM.
      * @return the version string from the POM
      */

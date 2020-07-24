@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 public class LogicNGVersionTest {
+
     @Test
     public void testMajor() {
         assertThat(LogicNGVersion.major("2.0.0")).isEqualTo(2);
@@ -17,6 +18,8 @@ public class LogicNGVersionTest {
         assertThat(LogicNGVersion.major("2.1.3")).isEqualTo(2);
         assertThat(LogicNGVersion.major("42.7.19")).isEqualTo(42);
         assertThat(LogicNGVersion.major("0.0.0")).isEqualTo(0);
+
+        assertThat(LogicNGVersion.major("A.0.1")).isEqualTo(-1);
     }
 
     @Test
@@ -26,6 +29,8 @@ public class LogicNGVersionTest {
         assertThat(LogicNGVersion.minor("2.1.3")).isEqualTo(1);
         assertThat(LogicNGVersion.minor("42.7.19")).isEqualTo(7);
         assertThat(LogicNGVersion.minor("0.123.0")).isEqualTo(123);
+
+        assertThat(LogicNGVersion.minor("2.A.1")).isEqualTo(-1);
     }
 
     @Test
@@ -35,6 +40,8 @@ public class LogicNGVersionTest {
         assertThat(LogicNGVersion.patch("2.1.0")).isEqualTo(0);
         assertThat(LogicNGVersion.patch("42.7.19")).isEqualTo(19);
         assertThat(LogicNGVersion.patch("0.123.22")).isEqualTo(22);
+
+        assertThat(LogicNGVersion.patch("2.2.A")).isEqualTo(-1);
     }
 
     @Test
