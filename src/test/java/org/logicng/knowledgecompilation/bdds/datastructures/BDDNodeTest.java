@@ -95,6 +95,7 @@ public class BDDNodeTest {
         assertThat(verumNode).isEqualTo(verumNode);
         assertThat(falsumNode).isEqualTo(falsumNode);
         assertThat(innerNode1).isEqualTo(innerNode1);
+        assertThat(innerNode1.equals(innerNode1)).isTrue();
         assertThat(innerNode1).isEqualTo(innerNode1a);
         assertThat(innerNode1).isNotEqualTo(innerNode2);
         assertThat(innerNode1).isNotEqualTo(innerNode3);

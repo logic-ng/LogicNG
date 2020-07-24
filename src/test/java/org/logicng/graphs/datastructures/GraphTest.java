@@ -129,4 +129,20 @@ public class GraphTest {
         assertThat(a.neighbours().isEmpty()).isTrue();
         assertThatThrownBy(() -> g1.connect(a, b)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    public void testNodes() {
+        final Graph<String> g1 = new Graph<>("G1");
+        final Node<String> node01 = new Node<>("nA", g1);
+        final Node<String> node02 = new Node<>("nA", g1);
+        final Node<String> node03 = new Node<>("nB", g1);
+
+        assertThat(node01).isEqualTo(node01);
+        assertThat(node01.equals(node01)).isTrue();
+        assertThat(node01).isEqualTo(node02);
+        assertThat(node02).isEqualTo(node01);
+        assertThat(node01.equals(2)).isFalse();
+        assertThat(node02).isNotEqualTo(node03);
+        assertThat(node03).isNotEqualTo(node02);
+    }
 }

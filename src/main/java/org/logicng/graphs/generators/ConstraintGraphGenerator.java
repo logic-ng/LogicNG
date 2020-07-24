@@ -15,6 +15,13 @@ import java.util.Collection;
 public final class ConstraintGraphGenerator {
 
     /**
+     * Private constructor.
+     */
+    private ConstraintGraphGenerator() {
+        // Intentionally left empty.
+    }
+
+    /**
      * Constructs the constraint graph.
      * @param formula the formula in extended CNF
      * @return the constraint graph for the given formula
