@@ -1602,7 +1602,8 @@ public class FormulaFactory {
                 return false;
             }
             final FormulaFactoryStatistics that = (FormulaFactoryStatistics) o;
-            return this.positiveLiterals == that.positiveLiterals &&
+            return Objects.equals(this.name, that.name) &&
+                    this.positiveLiterals == that.positiveLiterals &&
                     this.negativeLiterals == that.negativeLiterals &&
                     this.negations == that.negations &&
                     this.implications == that.implications &&
@@ -1619,8 +1620,7 @@ public class FormulaFactory {
                     this.ccs == that.ccs &&
                     this.ccCounter == that.ccCounter &&
                     this.pbCounter == that.pbCounter &&
-                    this.cnfCounter == that.cnfCounter &&
-                    Objects.equals(this.name, that.name);
+                    this.cnfCounter == that.cnfCounter;
         }
 
         @Override

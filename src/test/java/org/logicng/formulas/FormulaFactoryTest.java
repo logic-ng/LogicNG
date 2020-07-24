@@ -41,6 +41,7 @@ import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -165,6 +166,7 @@ public class FormulaFactoryTest {
         final Formula nCnf = f.cnf(nClauses);
         assertThat(cnf.cnf()).isEqualTo(cnf);
         assertThat(nCnf.cnf()).isNotEqualTo(nCnf);
+        assertThat(f.cnf(Collections.emptyList())).isEqualTo(f.verum());
     }
 
     @Test
@@ -187,5 +189,136 @@ public class FormulaFactoryTest {
         for (final Literal litG : fg.literals()) {
             assertThat(litG.factory()).isSameAs(g);
         }
+    }
+
+    @Test
+    public void testStatistics() throws ParserException {
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory F").build());
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory F").build());
+        final FormulaFactory.FormulaFactoryStatistics statisticsF1 = f.statistics();
+        final FormulaFactory.FormulaFactoryStatistics statisticsG = g.statistics();
+
+        assertThat(statisticsF1.name()).isEqualTo("Factory F");
+        assertThat(statisticsF1.positiveLiterals()).isEqualTo(0);
+        assertThat(statisticsF1.negativeLiterals()).isEqualTo(0);
+        assertThat(statisticsF1.negations()).isEqualTo(0);
+        assertThat(statisticsF1.implications()).isEqualTo(0);
+        assertThat(statisticsF1.equivalences()).isEqualTo(0);
+        assertThat(statisticsF1.conjunctions2()).isEqualTo(0);
+        assertThat(statisticsF1.conjunctions3()).isEqualTo(0);
+        assertThat(statisticsF1.conjunctions4()).isEqualTo(0);
+        assertThat(statisticsF1.conjunctionsN()).isEqualTo(0);
+        assertThat(statisticsF1.disjunctions2()).isEqualTo(0);
+        assertThat(statisticsF1.disjunctions3()).isEqualTo(0);
+        assertThat(statisticsF1.disjunctions4()).isEqualTo(0);
+        assertThat(statisticsF1.disjunctionsN()).isEqualTo(0);
+        assertThat(statisticsF1.pbcs()).isEqualTo(0);
+        assertThat(statisticsF1.ccs()).isEqualTo(0);
+        assertThat(statisticsF1.ccCounter()).isEqualTo(0);
+        assertThat(statisticsF1.pbCounter()).isEqualTo(0);
+        assertThat(statisticsF1.cnfCounter()).isEqualTo(0);
+        assertThat(statisticsF1.formulas()).isEqualTo(0);
+
+        assertThat(statisticsF1.equals(statisticsF1)).isTrue();
+        assertThat(statisticsF1).isEqualTo(statisticsF1);
+        assertThat(statisticsF1.equals(42)).isFalse();
+        assertThat(statisticsF1).isEqualTo(statisticsG);
+        assertThat(statisticsG).isEqualTo(statisticsF1);
+        assertThat(statisticsF1.hashCode()).isEqualTo(statisticsG.hashCode());
+
+        assertThat(statisticsF1.toString()).isEqualTo(
+                "FormulaFactoryStatistics{"
+                        + "name='Factory F'"
+                        + ", positiveLiterals=0"
+                        + ", negativeLiterals=0"
+                        + ", negations=0"
+                        + ", implications=0"
+                        + ", equivalences=0"
+                        + ", conjunctions2=0"
+                        + ", conjunctions3=0"
+                        + ", conjunctions4=0"
+                        + ", conjunctionsN=0"
+                        + ", disjunctions2=0"
+                        + ", disjunctions3=0"
+                        + ", disjunctions4=0"
+                        + ", disjunctionsN=0"
+                        + ", pbcs=0"
+                        + ", ccs=0"
+                        + ", ccCounter=0"
+                        + ", pbCounter=0"
+                        + ", cnfCounter=0"
+                        + '}');
+
+        final Variable a = f.variable("A");
+        final Variable b = f.variable("B");
+        final Variable c = f.variable("C");
+        final Variable d = f.variable("D");
+        final Variable e = f.variable("E");
+        final And and = (And) f.and(a, b);
+        final And and3 = (And) f.and(a, b, c);
+        final And and4 = (And) f.and(a, b, c, d);
+        final And and5 = (And) f.and(a, b, c, d, e);
+        final Or or2 = (Or) f.or(a, b);
+        final Or or3 = (Or) f.or(a, b, c);
+        final Or or4 = (Or) f.or(a, b, c, d);
+        final Or or5 = (Or) f.or(a, b, c, d, e);
+        assertThat(f.posLiterals).containsValue(b);
+        assertThat(f.ands2).containsValue(and);
+        assertThat(f.ands3).containsValue(and3);
+        assertThat(f.ands4).containsValue(and4);
+        assertThat(f.andsN).containsValue(and5);
+        assertThat(f.ors2).containsValue(or2);
+        assertThat(f.ors3).containsValue(or3);
+        assertThat(f.ors4).containsValue(or4);
+        assertThat(f.orsN).containsValue(or5);
+
+        final FormulaFactory.FormulaFactoryStatistics statisticsF2 = f.statistics();
+
+        assertThat(statisticsF2.name()).isEqualTo("Factory F");
+        assertThat(statisticsF2.positiveLiterals()).isEqualTo(5);
+        assertThat(statisticsF2.negativeLiterals()).isEqualTo(5);
+        assertThat(statisticsF2.negations()).isEqualTo(0);
+        assertThat(statisticsF2.implications()).isEqualTo(0);
+        assertThat(statisticsF2.equivalences()).isEqualTo(0);
+        assertThat(statisticsF2.conjunctions2()).isEqualTo(1);
+        assertThat(statisticsF2.conjunctions3()).isEqualTo(1);
+        assertThat(statisticsF2.conjunctions4()).isEqualTo(1);
+        assertThat(statisticsF2.conjunctionsN()).isEqualTo(1);
+        assertThat(statisticsF2.disjunctions2()).isEqualTo(1);
+        assertThat(statisticsF2.disjunctions3()).isEqualTo(1);
+        assertThat(statisticsF2.disjunctions4()).isEqualTo(1);
+        assertThat(statisticsF2.disjunctionsN()).isEqualTo(1);
+        assertThat(statisticsF2.pbcs()).isEqualTo(0);
+        assertThat(statisticsF2.ccs()).isEqualTo(0);
+        assertThat(statisticsF2.ccCounter()).isEqualTo(0);
+        assertThat(statisticsF2.pbCounter()).isEqualTo(0);
+        assertThat(statisticsF2.cnfCounter()).isEqualTo(0);
+        assertThat(statisticsF2.formulas()).isEqualTo(18);
+
+        assertThat(statisticsF2).isNotEqualTo(statisticsF1);
+        assertThat(statisticsF1).isNotEqualTo(statisticsF2);
+
+        assertThat(statisticsF2.toString()).isEqualTo(
+                "FormulaFactoryStatistics{"
+                        + "name='Factory F'"
+                        + ", positiveLiterals=5"
+                        + ", negativeLiterals=5"
+                        + ", negations=0"
+                        + ", implications=0"
+                        + ", equivalences=0"
+                        + ", conjunctions2=1"
+                        + ", conjunctions3=1"
+                        + ", conjunctions4=1"
+                        + ", conjunctionsN=1"
+                        + ", disjunctions2=1"
+                        + ", disjunctions3=1"
+                        + ", disjunctions4=1"
+                        + ", disjunctionsN=1"
+                        + ", pbcs=0"
+                        + ", ccs=0"
+                        + ", ccCounter=0"
+                        + ", pbCounter=0"
+                        + ", cnfCounter=0"
+                        + '}');
     }
 }
