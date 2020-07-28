@@ -106,6 +106,7 @@ public class AIGTest extends TestWithExampleFormulas {
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.aigTrans).holds(this.aigPred)).isTrue();
         assertThat(p.parse("a | b | (~x & ~y)").transform(this.aigTrans).holds(this.aigPred)).isTrue();
         assertThat(this.AND1.holds(this.aigPred)).isTrue();
+        assertThat(this.f.and(this.AND1, this.PBC1).holds(this.aigPred)).isFalse();
         assertThat(this.OR1.holds(this.aigPred)).isFalse();
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").holds(this.aigPred)).isFalse();
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").holds(this.aigPred)).isFalse();

@@ -29,6 +29,7 @@
 package org.logicng.graphs.algorithms;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.cardinalityconstraints.CCConfig;
@@ -46,6 +47,7 @@ import org.logicng.transformations.cnf.CNFFactorization;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -148,5 +150,14 @@ public class ConnectedComponentsComputerTest {
         assertThat(split.get(1)).hasSize(3);
         assertThat(split.get(2)).hasSize(3);
         assertThat(split.get(3)).hasSize(3);
+    }
+
+    @Test
+    public void testFormulaSplitIllegal() {
+        final FormulaFactory f = new FormulaFactory();
+        final Graph<Variable> graph = ConstraintGraphGenerator.generateFromCnf(f.variable("B"));
+        final Set<Set<Node<Variable>>> ccs = Collections.singleton(Collections.singleton(graph.node(f.variable("B"))));
+        assertThatThrownBy(() -> ConnectedComponentsComputation.splitFormulasByComponent(Collections.singletonList(f.variable("A")), ccs))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

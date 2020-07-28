@@ -40,6 +40,7 @@ import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.MaxSATSolver;
@@ -283,12 +284,11 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         assertThat(solver.solve()).isEqualTo(OPTIMUM);
         assertThat(solver.result()).isEqualTo(3);
         final Assignment model = solver.model();
-        System.out.println("model = " + model);
         assertThat(model.size()).isEqualTo(8);
         assertThat(model.positiveVariables()).hasSize(1);
-        assertThat(model.positiveVariables()).extracting("name").containsExactlyInAnyOrder("y");
+        assertThat(model.positiveVariables()).extracting(Variable::name).containsExactlyInAnyOrder("y");
         assertThat(model.negativeLiterals()).hasSize(7);
-        assertThat(model.negativeVariables()).extracting("name").containsExactlyInAnyOrder("a", "b", "c", "d", "e", "x", "z");
+        assertThat(model.negativeVariables()).extracting(Variable::name).containsExactlyInAnyOrder("a", "b", "c", "d", "e", "x", "z");
     }
 
     @Test

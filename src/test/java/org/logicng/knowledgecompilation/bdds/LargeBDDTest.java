@@ -35,6 +35,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.NumberOfNodesBDDHandler;
 import org.logicng.handlers.TimeoutBDDHandler;
+import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.testutils.NQueensGenerator;
@@ -137,6 +138,17 @@ public class LargeBDDTest {
         final BDDKernel kernel = new BDDKernel(f, queens.variables().size(), 10000, 10000);
         final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(5);
         final BDD bdd = BDDFactory.build(queens, kernel, handler);
+        assertThat(handler.aborted()).isTrue();
+        assertThat(bdd.index()).isEqualTo(BDDKernel.BDD_ABORT);
+    }
+
+    @Test
+    public void testNumberOfNodesHandler() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula formula = f.parse("A <=> ~(B => C & F & G & ~H | A & D & ~E)");
+        final BDDKernel kernel = new BDDKernel(f, formula.variables().size(), 10000, 10000);
+        final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(5);
+        final BDD bdd = BDDFactory.build(formula, kernel, handler);
         assertThat(handler.aborted()).isTrue();
         assertThat(bdd.index()).isEqualTo(BDDKernel.BDD_ABORT);
     }

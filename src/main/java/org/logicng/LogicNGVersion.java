@@ -32,7 +32,7 @@ public final class LogicNGVersion {
         return major(version());
     }
 
-    static int major(final String version) {
+    private static int major(final String version) {
         try {
             return Integer.parseInt(version.split("\\.")[0]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -48,7 +48,7 @@ public final class LogicNGVersion {
         return minor(version());
     }
 
-    static int minor(final String version) {
+    private static int minor(final String version) {
         try {
             return Integer.parseInt(version.split("\\.")[1]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -64,7 +64,7 @@ public final class LogicNGVersion {
         return patch(version());
     }
 
-    static int patch(final String version) {
+    private static int patch(final String version) {
         try {
             return Integer.parseInt(version.split("\\.")[2].split("-")[0]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -80,7 +80,7 @@ public final class LogicNGVersion {
         return snapshot(version());
     }
 
-    static boolean snapshot(final String version) {
+    private static boolean snapshot(final String version) {
         return version.contains("-SNAPSHOT");
     }
 }

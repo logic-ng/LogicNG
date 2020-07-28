@@ -83,7 +83,7 @@ public class DnnfCompilerTest {
     @Test
     public void testDnnfProperties() throws ParserException {
         final DNNF dnnf = new DNNFFactory().compile(this.parser.parse("a | ((b & ~c) | (c & (~d | ~a & b)) & e)"));
-        assertThat(dnnf.getOriginalVariables()).extracting("name").containsExactlyInAnyOrder("a", "b", "c", "d", "e");
+        assertThat(dnnf.getOriginalVariables()).extracting(Variable::name).containsExactlyInAnyOrder("a", "b", "c", "d", "e");
     }
 
     @Test
