@@ -2,7 +2,7 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2020-07-xx
+## [2.0.0] - 2020-07-30
 ### Added
 - DNNF data structure and compilation
 - DNNF-based model counting
