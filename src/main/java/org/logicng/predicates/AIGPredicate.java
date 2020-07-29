@@ -28,12 +28,12 @@
 
 package org.logicng.predicates;
 
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
 import org.logicng.formulas.Not;
-
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_AIG;
 
 /**
  * And-inverter-graph (AIG) predicate.  Returns {@code true} if the given formula is an AIG, {@code false} otherwise.

@@ -25,6 +25,7 @@
 //  permissions and limitations under the License.                       //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
+
 package org.logicng.transformations.qmc;
 
 import org.logicng.cardinalityconstraints.CCIncrementalData;

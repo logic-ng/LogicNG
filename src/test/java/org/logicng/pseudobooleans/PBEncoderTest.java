@@ -27,6 +27,8 @@
 ///////////////////////////////////////////////////////////////////////////
 package org.logicng.pseudobooleans;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
 import org.logicng.cardinalityconstraints.CCConfig;
@@ -44,8 +46,6 @@ import org.logicng.solvers.SATSolver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for {@link PBEncoder}.

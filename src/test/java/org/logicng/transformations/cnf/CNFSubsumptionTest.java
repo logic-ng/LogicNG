@@ -28,6 +28,9 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LongRunningTag;
 import org.logicng.formulas.Formula;
@@ -38,9 +41,6 @@ import org.logicng.io.readers.FormulaReader;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 
 import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for {@link CNFSubsumption}.

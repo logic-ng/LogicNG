@@ -752,7 +752,7 @@ public class BDDKernel {
         this.quantvarset = new int[this.varnum];
         this.quantvarsetID = 0;
     }
-    
+
     /**
      * Returns the statistics for this BDD Kernel.
      * @return the statistics

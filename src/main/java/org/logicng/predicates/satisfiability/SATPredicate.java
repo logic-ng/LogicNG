@@ -28,6 +28,8 @@
 
 package org.logicng.predicates.satisfiability;
 
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -35,8 +37,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_SAT;
 
 /**
  * A SAT solver based SAT predicate.  Indicates whether a formula is satisfiable or not.

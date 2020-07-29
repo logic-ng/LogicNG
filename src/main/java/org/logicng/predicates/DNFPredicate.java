@@ -28,12 +28,12 @@
 
 package org.logicng.predicates;
 
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
-
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
 
 /**
  * DNF predicate.  Indicates whether a formula is in DNF or not.

@@ -28,6 +28,8 @@
 
 package org.logicng.transformations;
 
+import static org.logicng.util.FormulaHelper.literalsAsVariables;
+
 import org.logicng.cardinalityconstraints.CCAMOPure;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.BinaryOperator;
@@ -41,8 +43,6 @@ import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.logicng.util.FormulaHelper.literalsAsVariables;
 
 /**
  * Transformation of a formula to a formula with expanded at-most-one and exactly-one cardinality constraints.

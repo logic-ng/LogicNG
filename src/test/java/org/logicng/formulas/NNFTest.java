@@ -25,6 +25,7 @@
 //  permissions and limitations under the License.                       //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
+
 package org.logicng.formulas;
 
 import static org.assertj.core.api.Assertions.assertThat;

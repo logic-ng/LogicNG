@@ -28,6 +28,10 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.logicng.formulas.FType.AND;
+import static org.logicng.formulas.FType.LITERAL;
+import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
+
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
@@ -35,10 +39,6 @@ import org.logicng.handlers.FactorizationHandler;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-
-import static org.logicng.formulas.FType.AND;
-import static org.logicng.formulas.FType.LITERAL;
-import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
 /**
  * Transformation of a formula in CNF by factorization.
@@ -75,7 +75,7 @@ public final class CNFFactorization implements FormulaTransformation {
         this.proceed = true;
         return applyRec(formula, cache);
     }
-    
+
     private Formula applyRec(final Formula formula, final boolean cache) {
         if (!this.proceed) {
             return null;

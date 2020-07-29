@@ -28,6 +28,8 @@
 
 package org.logicng.formulas;
 
+import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
+
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
@@ -47,8 +49,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Stream;
-
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
 
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of

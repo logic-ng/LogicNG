@@ -28,6 +28,13 @@
 
 package org.logicng.transformations.qmc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.chooseSatBased;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.combineInTermClasses;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.computePrimeImplicants;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.convertToTerm;
+import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.generateInitialTermClasses;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
@@ -52,13 +59,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.SortedMap;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.chooseSatBased;
-import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.combineInTermClasses;
-import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.computePrimeImplicants;
-import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.convertToTerm;
-import static org.logicng.transformations.qmc.QuineMcCluskeyAlgorithm.generateInitialTermClasses;
 
 /**
  * Unit tests for {@link QuineMcCluskeyAlgorithm}.

@@ -28,6 +28,8 @@
 
 package org.logicng.formulas;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.cache.FunctionCacheEntry;
 import org.logicng.formulas.cache.PredicateCacheEntry;
@@ -35,8 +37,6 @@ import org.logicng.formulas.cache.TransformationCacheEntry;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for the package formulas.cache.

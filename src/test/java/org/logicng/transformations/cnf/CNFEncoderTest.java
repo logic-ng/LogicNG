@@ -28,6 +28,9 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
@@ -41,9 +44,6 @@ import org.logicng.solvers.SATSolver;
 
 import java.util.List;
 import java.util.SortedSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for the class {@link CNFEncoder}.

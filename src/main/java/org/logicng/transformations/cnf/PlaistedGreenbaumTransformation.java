@@ -28,6 +28,9 @@
 
 package org.logicng.transformations.cnf;
 
+import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_POS;
+import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
+
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -38,9 +41,6 @@ import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_POS;
-import static org.logicng.formulas.cache.TransformationCacheEntry.PLAISTED_GREENBAUM_VARIABLE;
 
 /**
  * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum.  Results in this implementation will always be

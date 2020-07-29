@@ -28,6 +28,9 @@
 
 package org.logicng.cardinalityconstraints;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
 import org.logicng.formulas.CType;
@@ -40,9 +43,6 @@ import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.ModelEnumerationFunction;
 
 import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for the at-least-k configs.

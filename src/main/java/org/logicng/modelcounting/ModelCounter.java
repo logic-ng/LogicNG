@@ -1,3 +1,31 @@
+///////////////////////////////////////////////////////////////////////////
+//                   __                _      _   ________               //
+//                  / /   ____  ____ _(_)____/ | / / ____/               //
+//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
+//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
+//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
+//                           /____/                                      //
+//                                                                       //
+//               The Next Generation Logic Library                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//  Copyright 2015-20xx Christoph Zengler                                //
+//                                                                       //
+//  Licensed under the Apache License, Version 2.0 (the "License");      //
+//  you may not use this file except in compliance with the License.     //
+//  You may obtain a copy of the License at                              //
+//                                                                       //
+//  http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                       //
+//  Unless required by applicable law or agreed to in writing, software  //
+//  distributed under the License is distributed on an "AS IS" BASIS,    //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
+//  implied.  See the License for the specific language governing        //
+//  permissions and limitations under the License.                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
 package org.logicng.modelcounting;
 
 import org.logicng.datastructures.Assignment;
@@ -10,9 +38,9 @@ import org.logicng.graphs.algorithms.ConnectedComponentsComputation;
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
-import org.logicng.knowledgecompilation.dnnf.DNNFFactory;
-import org.logicng.knowledgecompilation.dnnf.datastructures.DNNF;
-import org.logicng.knowledgecompilation.dnnf.functions.DNNFModelCountFunction;
+import org.logicng.knowledgecompilation.dnnf.DnnfFactory;
+import org.logicng.knowledgecompilation.dnnf.datastructures.Dnnf;
+import org.logicng.knowledgecompilation.dnnf.functions.DnnfModelCountFunction;
 import org.logicng.transformations.PureExpansionTransformation;
 import org.logicng.transformations.cnf.CNFConfig;
 import org.logicng.transformations.cnf.CNFEncoder;
@@ -98,11 +126,11 @@ public final class ModelCounter {
         final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulas);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
         final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulas, ccs);
-        final DNNFFactory factory = new DNNFFactory();
+        final DnnfFactory factory = new DnnfFactory();
         BigInteger count = BigInteger.ONE;
         for (final List<Formula> component : components) {
-            final DNNF dnnf = factory.compile(f.and(component));
-            count = count.multiply(dnnf.execute(DNNFModelCountFunction.get()));
+            final Dnnf dnnf = factory.compile(f.and(component));
+            count = count.multiply(dnnf.execute(DnnfModelCountFunction.get()));
         }
         return count;
     }

@@ -1,9 +1,37 @@
+///////////////////////////////////////////////////////////////////////////
+//                   __                _      _   ________               //
+//                  / /   ____  ____ _(_)____/ | / / ____/               //
+//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
+//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
+//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
+//                           /____/                                      //
+//                                                                       //
+//               The Next Generation Logic Library                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//  Copyright 2015-20xx Christoph Zengler                                //
+//                                                                       //
+//  Licensed under the Apache License, Version 2.0 (the "License");      //
+//  you may not use this file except in compliance with the License.     //
+//  You may obtain a copy of the License at                              //
+//                                                                       //
+//  http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                       //
+//  Unless required by applicable law or agreed to in writing, software  //
+//  distributed under the License is distributed on an "AS IS" BASIS,    //
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
+//  implied.  See the License for the specific language governing        //
+//  permissions and limitations under the License.                       //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
 package org.logicng.knowledgecompilation.dnnf.datastructures.dtree;
 
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Variable;
-import org.logicng.knowledgecompilation.dnnf.DNNFSATSolver;
+import org.logicng.knowledgecompilation.dnnf.DnnfSatSolver;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 import java.util.BitSet;
@@ -22,7 +50,7 @@ public class DTreeNode extends DTree {
     protected final DTree right;
     protected final int size;
 
-    protected DNNFSATSolver solver;
+    protected DnnfSatSolver solver;
 
     protected final SortedSet<Variable> staticVariableSet;
     protected final BitSet staticSeparatorBitSet;
@@ -89,7 +117,7 @@ public class DTreeNode extends DTree {
     }
 
     @Override
-    public void initialize(final DNNFSATSolver solver) {
+    public void initialize(final DnnfSatSolver solver) {
         this.solver = solver;
         this.left.initialize(solver);
         this.right.initialize(solver);

@@ -28,6 +28,10 @@
 
 package org.logicng.formulas;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.data.MapEntry.entry;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.logicng.LongRunningTag;
@@ -39,7 +43,6 @@ import org.logicng.testutils.PigeonHoleGenerator;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.transformations.cnf.PlaistedGreenbaumTransformation;
 import org.logicng.transformations.dnf.DNFFactorization;
-import sun.awt.image.ImageWatched;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,10 +50,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TreeMap;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.data.MapEntry.entry;
 
 /**
  * Unit tests for the class {@link ExtendedFormulaFactory}.
@@ -63,7 +62,7 @@ public class ExtendedFormulaFactoryTest {
     public void testShrinkMapWithWrongArguments() {
         assertThatThrownBy(() -> ExtendedFormulaFactory.shrinkMap(new TreeMap<>(), 4))
                 .isInstanceOf(IllegalStateException.class)
-        .hasMessage("Cannot shrink a map which is not of type LinkedHashMap");
+                .hasMessage("Cannot shrink a map which is not of type LinkedHashMap");
         assertThatThrownBy(() -> ExtendedFormulaFactory.shrinkMap(new LinkedHashMap<>(), 4))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot shrink a map of size 0 to new size 4");

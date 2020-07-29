@@ -28,6 +28,8 @@
 
 package org.logicng.cardinalityconstraints;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
 import org.logicng.LongRunningTag;
@@ -38,8 +40,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Performance tests for cardinality constraints.

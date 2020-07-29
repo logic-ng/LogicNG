@@ -26,18 +26,26 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.knowledgecompilation.bdds.jbuddy;
+package org.logicng.knowledgecompilation.dnnf.functions;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.Variable;
 
-import org.junit.jupiter.api.Test;
+import java.util.SortedSet;
 
-public class BDDPrimeTest {
+/**
+ * A function which can be applied on a DNNF.
+ * @param <RESULT> the result type of the function
+ * @version 2.0.0
+ * @since 2.0.0
+ */
+public interface DnnfFunction<RESULT> {
 
-    @Test
-    public void testNumberOfBits() {
-        assertThat(BDDPrime.numberOfBits(0)).isEqualTo(0);
-        assertThat(BDDPrime.numberOfBits(1)).isEqualTo(1);
-    }
-
+    /**
+     * Applies this function to a given DNNF
+     * @param originalVariables the original variables of the DNNF
+     * @param formula           the formula of the DNNF
+     * @return the result of the function application
+     */
+    RESULT apply(final SortedSet<Variable> originalVariables, final Formula formula);
 }

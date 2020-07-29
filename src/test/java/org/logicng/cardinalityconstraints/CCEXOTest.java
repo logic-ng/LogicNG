@@ -28,18 +28,6 @@
 
 package org.logicng.cardinalityconstraints;
 
-import org.junit.jupiter.api.Test;
-import org.logicng.LogicNGTest;
-import org.logicng.formulas.CardinalityConstraint;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Variable;
-import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.SATSolver;
-
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BEST;
 import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.BIMANDER;
@@ -52,6 +40,18 @@ import static org.logicng.cardinalityconstraints.CCConfig.AMO_ENCODER.PURE;
 import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.FIXED;
 import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.HALF;
 import static org.logicng.cardinalityconstraints.CCConfig.BIMANDER_GROUP_SIZE.SQRT;
+
+import org.junit.jupiter.api.Test;
+import org.logicng.LogicNGTest;
+import org.logicng.formulas.CardinalityConstraint;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
+
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Unit tests for the exactly-one encoders.

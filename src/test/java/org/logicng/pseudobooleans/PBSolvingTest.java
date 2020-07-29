@@ -28,6 +28,8 @@
 
 package org.logicng.pseudobooleans;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
 import org.logicng.datastructures.Assignment;
@@ -40,8 +42,6 @@ import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.sat.MiniSatConfig;
 
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test the solving (via encoding) of pseudo-Boolean constraints.

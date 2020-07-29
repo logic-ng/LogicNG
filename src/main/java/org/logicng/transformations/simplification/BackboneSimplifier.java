@@ -25,6 +25,7 @@
 //  permissions and limitations under the License.                       //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
+
 package org.logicng.transformations.simplification;
 
 import org.logicng.backbones.Backbone;
