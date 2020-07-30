@@ -1,6 +1,0 @@
-box: maven:3.5.2-jdk-8
-build:
-  steps:
-    - xenoterracide/maven:
-        goals: clean test jacoco:report coveralls:report -DrepoToken=$COVERALLS_TOKEN
-
