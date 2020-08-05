@@ -3,8 +3,11 @@ name: build
 on: [push, pull_request]
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -13,25 +16,10 @@ jobs:
           java-version: 1.8
       - name: Build with Maven
         run: mvn -B package
-
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+      - name: Upload coverage to codecov.io
+        uses: codecov/codecov-action@v1
         with:
-          java-version: 1.8
-      - name: Build with Maven
-        run: mvn -B package
-
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Build with Maven
-        run: mvn -B package
+          name: LogicNG
+          file: ./target/site/jacoco/jacoco.xml
+          flags: unittests
+          env_vars: OS
