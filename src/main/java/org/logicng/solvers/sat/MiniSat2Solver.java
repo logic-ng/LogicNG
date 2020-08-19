@@ -159,7 +159,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
             }
             this.pgProof.push(vec);
 
-            vec = new LNGIntVector(oc.size());
+            vec = new LNGIntVector(oc.size() + 1);
             vec.push(-1);
             for (i = 0; i < oc.size(); i++) {
                 vec.push((var(oc.get(i)) + 1) * (-2 * (sign(oc.get(i)) ? 1 : 0) + 1));

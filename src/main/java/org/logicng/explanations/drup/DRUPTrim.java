@@ -362,7 +362,7 @@ public final class DRUPTrim {
                     clauseNr = 0;
                     currentFile = this.proof;
                 }
-                if (clauseNr >= currentFile.size() && fileSwitchFlag && !currentFile.empty()) {
+                if (clauseNr > currentFile.size() && fileSwitchFlag && !currentFile.empty()) {
                     break;
                 }
                 if (Math.abs(lit) > this.nVars) {

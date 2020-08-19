@@ -833,7 +833,7 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
                 }
 
                 if (this.config.proofGeneration) {
-                    final LNGIntVector vec = new LNGIntVector(learntClause.size());
+                    final LNGIntVector vec = new LNGIntVector(learntClause.size() + 1);
                     vec.push(1);
                     for (int i = 0; i < learntClause.size(); i++) {
                         vec.push((var(learntClause.get(i)) + 1) * (-2 * (sign(learntClause.get(i)) ? 1 : 0) + 1));
