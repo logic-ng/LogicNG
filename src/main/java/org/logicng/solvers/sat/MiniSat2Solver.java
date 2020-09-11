@@ -117,7 +117,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         int p;
         int i;
         int j;
-        if (this.config.proofGeneration && this.assumptions.empty()) {
+        if (this.config.proofGeneration) {
             final LNGIntVector vec = new LNGIntVector(ps.size());
             for (i = 0; i < ps.size(); i++) {
                 vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
@@ -131,7 +131,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
 
         boolean flag = false;
         LNGIntVector oc = null;
-        if (this.config.proofGeneration && this.assumptions.empty()) {
+        if (this.config.proofGeneration) {
             oc = new LNGIntVector();
             for (i = 0, p = LIT_UNDEF; i < ps.size(); i++) {
                 oc.push(ps.get(i));
@@ -207,7 +207,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
             currRestarts++;
         }
 
-        if (this.config.proofGeneration && this.assumptions.empty()) {
+        if (this.config.proofGeneration) {
             if (status == Tristate.FALSE) {
                 this.pgProof.push(new LNGIntVector(1, 0));
             }
@@ -255,7 +255,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         state[2] = this.clauses.size();
         state[3] = this.learnts.size();
         state[4] = this.unitClauses.size();
-        if (this.config.proofGeneration && this.assumptions.empty()) {
+        if (this.config.proofGeneration) {
             state[5] = this.pgOriginalClauses.size();
             state[6] = this.pgProof.size();
         }
@@ -291,7 +291,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
             uncheckedEnqueue(this.unitClauses.get(i), null);
             this.ok = propagate() == null;
         }
-        if (this.config.proofGeneration && this.assumptions.empty()) {
+        if (this.config.proofGeneration) {
             final int newPgOriginalSize = Math.min(state[5], this.pgOriginalClauses.size());
             this.pgOriginalClauses.shrinkTo(newPgOriginalSize);
             final int newPgProofSize = Math.min(state[6], this.pgProof.size());
@@ -335,7 +335,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
 
     @Override
     protected void removeClause(final MSClause c) {
-        if (this.config.proofGeneration && this.assumptions.empty()) {
+        if (this.config.proofGeneration) {
             final LNGIntVector vec = new LNGIntVector(c.size());
             vec.push(-1);
             for (int i = 0; i < c.size(); i++) {
@@ -497,7 +497,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
                 removeClause(cs.get(i));
             } else {
                 assert value(c.get(0)) == Tristate.UNDEF && value(c.get(1)) == Tristate.UNDEF;
-                if (!this.config.proofGeneration && this.assumptions.empty()) {
+                if (!this.config.proofGeneration) {
                     // This simplification does not work with proof generation
                     for (int k = 2; k < c.size(); k++) {
                         if (value(c.get(k)) == Tristate.FALSE) {
@@ -572,7 +572,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
                     this.selectionOrderIdx = this.analyzeBtLevel;
                 }
 
-                if (this.config.proofGeneration && this.assumptions.empty()) {
+                if (this.config.proofGeneration) {
                     final LNGIntVector vec = new LNGIntVector(learntClause.size());
                     vec.push(1);
                     for (int i = 0; i < learntClause.size(); i++) {

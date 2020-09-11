@@ -265,6 +265,23 @@ public class DRUPTest implements LogicNGTest {
     }
 
     @Test
+    public void testCoreAndAssumptions2() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final MiniSat solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+
+        solver.add(f.parse("~C => D"));
+        solver.add(f.parse("C => D"));
+        solver.add(f.parse("D => B | A"));
+        solver.add(f.parse("B => X"));
+        solver.add(f.parse("B => ~X"));
+        solver.sat(f.literal("A", false));
+
+        solver.add(f.parse("~A"));
+        solver.sat();
+        assertThat(solver.unsatCore()).isNotNull();
+    }
+
+    @Test
     public void testWithCcPropositions() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
