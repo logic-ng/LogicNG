@@ -282,6 +282,32 @@ public class DRUPTest implements LogicNGTest {
     }
 
     @Test
+    public void testCoreAndAssumptions3() throws ParserException {
+        // Unit test for DRUP issue which led to java.lang.ArrayIndexOutOfBoundsException: -1
+        final FormulaFactory f = new FormulaFactory();
+        final MiniSat solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+
+        solver.add(f.parse("X => Y"));
+        solver.add(f.parse("X => Z"));
+        solver.add(f.parse("C => E"));
+        solver.add(f.parse("D => ~F"));
+        solver.add(f.parse("B => M"));
+        solver.add(f.parse("D => N"));
+        solver.add(f.parse("G => O"));
+        solver.add(f.parse("A => B"));
+        solver.add(f.parse("T1 <=> A & K & ~B & ~C"));
+        solver.add(f.parse("T2 <=> A & B & C & K"));
+        solver.add(f.parse("T1 + T2 = 1"));
+        solver.sat(); // required for DRUP issue
+
+        solver.add(f.parse("Y => ~X & D"));
+        solver.add(f.parse("X"));
+
+        solver.sat();
+        assertThat(solver.unsatCore()).isNotNull();
+    }
+
+    @Test
     public void testWithCcPropositions() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
