@@ -71,8 +71,8 @@ public class FormulaBDDTest {
         assertThat(bddNoOrder.nodeCount()).isEqualTo(13);
         assertThat(bddBfs.nodeCount()).isEqualTo(14);
         assertThat(bddDfs.nodeCount()).isEqualTo(13);
-        assertThat(bddMin2Max.nodeCount()).isEqualTo(17);
-        assertThat(bddMax2Min.nodeCount()).isEqualTo(24);
+        assertThat(bddMin2Max.nodeCount()).isEqualTo(14);
+        assertThat(bddMax2Min.nodeCount()).isEqualTo(22);
 
         final TautologyPredicate tautology = new TautologyPredicate(f);
         assertThat(f.equivalence(bddNoOrder.cnf(), formula).holds(tautology)).isTrue();
