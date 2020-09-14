@@ -245,15 +245,16 @@ public abstract class Formula implements Iterable<Formula> {
      * @return the BDD for this formula with the given ordering
      */
     public BDD bdd(final VariableOrdering variableOrdering) {
-        final int varNum = this.variables().size();
+        final Formula formula = this.nnf();
+        final int varNum = formula.variables().size();
         final BDDKernel kernel;
         if (variableOrdering == null) {
-            kernel = new BDDKernel(this.factory(), varNum, varNum * 30, varNum * 20);
+            kernel = new BDDKernel(this.f, varNum, varNum * 30, varNum * 20);
         } else {
             final VariableOrderingProvider provider = variableOrdering.provider();
-            kernel = new BDDKernel(this.f, provider.getOrder(this), varNum * 30, varNum * 20);
+            kernel = new BDDKernel(this.f, provider.getOrder(formula), varNum * 30, varNum * 20);
         }
-        return BDDFactory.build(this, kernel, null);
+        return BDDFactory.build(formula, kernel, null);
     }
 
     /**

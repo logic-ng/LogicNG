@@ -81,4 +81,11 @@ public class FormulaBDDTest {
         assertThat(f.equivalence(bddMin2Max.cnf(), formula).holds(tautology)).isTrue();
         assertThat(f.equivalence(bddMax2Min.cnf(), formula).holds(tautology)).isTrue();
     }
+
+    @Test
+    public void testNonNnfs() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        assertThat(f.parse("A + 2*B - C = 1").bdd()).isNotNull();
+        assertThat(f.parse("(A & B & C | D & E & F) & (A - 2*B -D <= 0) | (C + 3*D - F > 0)").bdd()).isNotNull();
+    }
 }
