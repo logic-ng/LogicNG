@@ -169,12 +169,18 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
 
         if (ps.empty()) {
             this.ok = false;
+            if (this.config.proofGeneration) {
+                this.pgProof.push(new LNGIntVector(1, 0));
+            }
             return false;
         } else if (ps.size() == 1) {
             uncheckedEnqueue(ps.get(0), null);
             this.ok = propagate() == null;
             if (this.incremental) {
                 this.unitClauses.push(ps.get(0));
+            }
+            if (!this.ok && this.config.proofGeneration) {
+                this.pgProof.push(new LNGIntVector(1, 0));
             }
             return this.ok;
         } else {

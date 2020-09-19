@@ -30,6 +30,7 @@ package org.logicng.explanations.drup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.datastructures.Tristate.FALSE;
+import static org.logicng.datastructures.Tristate.TRUE;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
@@ -321,6 +322,50 @@ public class DRUPTest implements LogicNGTest {
         solver.add(p4);
         assertThat(solver.sat()).isEqualTo(FALSE);
         assertThat(solver.unsatCore().propositions()).containsExactlyInAnyOrder(p1, p2, p3);
+    }
+
+    @Test
+    public void testWithSpecialUnitCaseMiniSat() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).build());
+        final StandardProposition p1 = new StandardProposition(f.parse("a => b"));
+        final StandardProposition p2 = new StandardProposition(f.parse("a => c | d"));
+        final StandardProposition p3 = new StandardProposition(f.parse("b => c | d"));
+        final StandardProposition p4 = new StandardProposition(f.parse("e | f | g | h => i"));
+        final StandardProposition p5 = new StandardProposition(f.parse("~j => k | j"));
+        final StandardProposition p6 = new StandardProposition(f.parse("b => ~(e | f)"));
+        final StandardProposition p7 = new StandardProposition(f.parse("c => ~j"));
+        final StandardProposition p8 = new StandardProposition(f.parse("l | m => ~i"));
+        final StandardProposition p9 = new StandardProposition(f.parse("j => (f + g + h = 1)"));
+        final StandardProposition p10 = new StandardProposition(f.parse("d => (l + m + e + f = 1)"));
+        final StandardProposition p11 = new StandardProposition(f.parse("~k"));
+        solver.addPropositions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+        assertThat(solver.sat()).isEqualTo(TRUE);
+        solver.add(f.variable("a"));
+        assertThat(solver.sat()).isEqualTo(FALSE);
+        assertThat(solver.unsatCore().propositions()).contains(p1, p2, p4, p5, p6, p7, p8, p9, p10, p11);
+    }
+
+    @Test
+    public void testWithSpecialUnitCaseGlucose() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final SATSolver solver = MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build(), GlucoseConfig.builder().build());
+        final StandardProposition p1 = new StandardProposition(f.parse("a => b"));
+        final StandardProposition p2 = new StandardProposition(f.parse("a => c | d"));
+        final StandardProposition p3 = new StandardProposition(f.parse("b => c | d"));
+        final StandardProposition p4 = new StandardProposition(f.parse("e | f | g | h => i"));
+        final StandardProposition p5 = new StandardProposition(f.parse("~j => k | j"));
+        final StandardProposition p6 = new StandardProposition(f.parse("b => ~(e | f)"));
+        final StandardProposition p7 = new StandardProposition(f.parse("c => ~j"));
+        final StandardProposition p8 = new StandardProposition(f.parse("l | m => ~i"));
+        final StandardProposition p9 = new StandardProposition(f.parse("j => (f + g + h = 1)"));
+        final StandardProposition p10 = new StandardProposition(f.parse("d => (l + m + e + f = 1)"));
+        final StandardProposition p11 = new StandardProposition(f.parse("~k"));
+        solver.addPropositions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+        assertThat(solver.sat()).isEqualTo(TRUE);
+        solver.add(f.variable("a"));
+        assertThat(solver.sat()).isEqualTo(FALSE);
+        assertThat(solver.unsatCore().propositions()).contains(p1, p2, p4, p5, p6, p7, p8, p9, p10, p11);
     }
 
     /**
