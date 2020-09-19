@@ -2,9 +2,15 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2020-09-19
+### Fixed
+- Fixed another bug for a special case in the DRUP proof generation
+
+
 ## [2.0.1] - 2020-09-18
 ### Fixed
 - Fixed a bug for a special case in the DRUP proof generation
+
 
 ## [2.0.0] - 2020-07-30
 ### Added

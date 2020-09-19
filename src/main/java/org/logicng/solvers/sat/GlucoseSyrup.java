@@ -277,10 +277,16 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
 
         if (ps.size() == 0) {
             this.ok = false;
+            if (this.config.proofGeneration) {
+                this.pgProof.push(new LNGIntVector(1, 0));
+            }
             return false;
         } else if (ps.size() == 1) {
             uncheckedEnqueue(ps.get(0), null);
             this.ok = propagate() == null;
+            if (!this.ok && this.config.proofGeneration) {
+                this.pgProof.push(new LNGIntVector(1, 0));
+            }
             return this.ok;
         } else {
             final MSClause c = new MSClause(ps, false);
