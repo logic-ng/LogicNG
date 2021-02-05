@@ -115,7 +115,7 @@ public final class FormulaHelper {
      * @param <C>               the type parameters of the collection
      * @return the negated literals
      */
-    public static <C extends Collection<Literal>> C negateLiterals(final Collection<Literal> literals, final Supplier<C> collectionFactory) {
+    public static <C extends Collection<Literal>> C negateLiterals(final Collection<? extends Literal> literals, final Supplier<C> collectionFactory) {
         final C result = collectionFactory.get();
         for (final Literal lit : literals) {
             result.add(lit.negate());
@@ -130,7 +130,7 @@ public final class FormulaHelper {
      * @param <C>               the type parameters of the collection
      * @return the negated literals
      */
-    public static <C extends Collection<Formula>> C negate(final Collection<Formula> formulas, final Supplier<C> collectionFactory) {
+    public static <C extends Collection<Formula>> C negate(final Collection<? extends Formula> formulas, final Supplier<C> collectionFactory) {
         final C result = collectionFactory.get();
         for (final Formula formula : formulas) {
             result.add(formula.negate());

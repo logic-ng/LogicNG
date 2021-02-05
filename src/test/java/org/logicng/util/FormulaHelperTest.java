@@ -34,11 +34,13 @@ import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -72,7 +74,8 @@ public class FormulaHelperTest extends TestWithExampleFormulas {
         assertThat(FormulaHelper.literals(this.IMP1, this.NY)).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.NY)));
 
         assertThat(FormulaHelper.literals(Arrays.asList(this.TRUE, this.FALSE))).isEqualTo(new TreeSet<>());
-        assertThat(FormulaHelper.literals(Arrays.asList(this.IMP1, this.IMP2, this.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y, this.NA, this.NB)));
+        assertThat(FormulaHelper.literals(Arrays.asList(this.IMP1, this.IMP2, this.IMP3))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.X, this.Y, this.NA,
+                this.NB)));
         assertThat(FormulaHelper.literals(Arrays.asList(this.IMP1, this.NY))).isEqualTo(new TreeSet<>(Arrays.asList(this.A, this.B, this.NY)));
     }
 
@@ -84,6 +87,9 @@ public class FormulaHelperTest extends TestWithExampleFormulas {
                 .isEqualTo(Arrays.asList(this.NA, this.B));
         assertThat((HashSet<Literal>) FormulaHelper.negateLiterals(Arrays.asList(this.A, this.NB), HashSet::new))
                 .isEqualTo(new HashSet<>(Arrays.asList(this.NA, this.B)));
+        final List<Variable> variables = Arrays.asList(this.A, this.B);
+        assertThat((HashSet<Literal>) FormulaHelper.negateLiterals(variables, HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(this.NA, this.NB)));
     }
 
     @Test
@@ -94,6 +100,12 @@ public class FormulaHelperTest extends TestWithExampleFormulas {
                 .isEqualTo(Arrays.asList(this.NA, this.FALSE, this.B, this.f.not(this.AND1)));
         assertThat((HashSet<Formula>) FormulaHelper.negate(Arrays.asList(this.A, this.TRUE, this.NB, this.AND1), HashSet::new))
                 .isEqualTo(new HashSet<>(Arrays.asList(this.NA, this.FALSE, this.B, this.f.not(this.AND1))));
+        final List<Variable> variables = Arrays.asList(this.A, this.B);
+        assertThat((HashSet<Formula>) FormulaHelper.negate(variables, HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(this.NA, this.NB)));
+        final List<Literal> literals = Arrays.asList(this.NA, this.B);
+        assertThat((HashSet<Formula>) FormulaHelper.negate(literals, HashSet::new))
+                .isEqualTo(new HashSet<>(Arrays.asList(this.A, this.NB)));
     }
 
     @Test
