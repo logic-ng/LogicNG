@@ -80,7 +80,7 @@ public final class FormulaDimacsFileWriter {
             throw new IllegalArgumentException("Cannot write a non-CNF formula to dimacs.  Convert to CNF first.");
         }
         final List<Formula> parts = new ArrayList<>();
-        if (formula.type().equals(FType.LITERAL)) {
+        if (formula.type().equals(FType.LITERAL) || formula.type().equals(FType.OR)) {
             parts.add(formula);
         } else {
             for (final Formula part : formula) {
