@@ -66,7 +66,7 @@ public class SimplifierTest extends TestWithExampleFormulas {
     public void testRandomized() {
         for (int i = 0; i < 100; i++) {
             final FormulaFactory f = new FormulaFactory();
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(8).weightPbc(2).seed(42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(8).weightPbc(2).seed(i * 42).build());
             final Formula formula = randomizer.formula(5);
             computeAndVerify(formula);
         }

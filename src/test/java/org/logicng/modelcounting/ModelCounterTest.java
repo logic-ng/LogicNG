@@ -174,7 +174,7 @@ public class ModelCounterTest extends TestWithExampleFormulas {
                     .numVars(5)
                     .weightAmo(5)
                     .weightExo(5)
-                    .seed(42).build();
+                    .seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
 
             final Formula formula = randomizer.formula(4);
@@ -194,7 +194,26 @@ public class ModelCounterTest extends TestWithExampleFormulas {
                     .numVars(5)
                     .weightAmo(5)
                     .weightExo(5)
-                    .seed(42).build();
+                    .seed(i * 42).build();
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
+
+            final List<Formula> formulas = IntStream.range(1, 5).mapToObj(j -> randomizer.formula(4)).collect(Collectors.toList());
+            final BigInteger expCount = enumerationBasedModelCount(formulas, f);
+            final BigInteger count = ModelCounter.count(formulas, FormulaHelper.variables(formulas));
+            assertThat(count).isEqualTo(expCount);
+        }
+    }
+
+    @Test
+    @RandomTag
+    public void testRandomWithFormulaListWithoutPBC() {
+        for (int i = 0; i < 500; i++) {
+            final FormulaFactory f = new FormulaFactory();
+            f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
+            final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
+                    .numVars(5)
+                    .weightPbc(0)
+                    .seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
 
             final List<Formula> formulas = IntStream.range(1, 5).mapToObj(j -> randomizer.formula(4)).collect(Collectors.toList());
@@ -203,6 +222,7 @@ public class ModelCounterTest extends TestWithExampleFormulas {
             assertThat(count).isEqualTo(expCount);
             final Formula formula = f.and(formulas);
             if (!formula.variables().isEmpty()) {
+                // Without PB constraints we can use the BDD model count as reference
                 assertThat(count).isEqualTo(formula.bdd(VariableOrdering.FORCE).modelCount());
             }
         }

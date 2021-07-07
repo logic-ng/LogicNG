@@ -656,7 +656,7 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
                     assignment.literals().stream().collect(Collectors.toMap(Literal::variable, Literal::phase)));
             final EvaluatesToConstantPredicate trueEvaluation = new EvaluatesToConstantPredicate(true,
                     assignment.literals().stream().collect(Collectors.toMap(Literal::variable, Literal::phase)));
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(i * 42).build());
             final Formula formula = randomizer.formula(6);
             final Formula restricted = formula.restrict(assignment);
             assertThat(restricted.type() == FType.FALSE).isEqualTo(formula.holds(falseEvaluation));

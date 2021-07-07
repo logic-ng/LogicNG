@@ -159,7 +159,7 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
         for (int i = 0; i < 200; i++) {
             final FormulaFactory f = new FormulaFactory();
             final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
-                    .numVars(12).weightAmo(5).weightExo(5).seed(42).build();
+                    .numVars(12).weightAmo(5).weightExo(5).seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
             final Formula formula = randomizer.formula(5);
             computeAndVerify(formula, transformation);

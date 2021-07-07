@@ -78,7 +78,7 @@ public class PlaistedGreenbaumTransformationSolverTest extends TestWithExampleFo
         for (int i = 0; i < 1000; i++) {
             final FormulaFactory f = new FormulaFactory();
             final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(i * 42).build());
 
             final Formula randomFormula01 = randomSATFormula(randomizer, 4, f);
             final Formula randomFormula02 = randomSATFormula(randomizer, 4, f);
