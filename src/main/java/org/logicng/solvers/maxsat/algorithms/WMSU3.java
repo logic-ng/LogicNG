@@ -50,7 +50,7 @@
 package org.logicng.solvers.maxsat.algorithms;
 
 import static org.logicng.datastructures.Tristate.TRUE;
-import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.IncrementalStrategy;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity;
@@ -60,6 +60,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
+import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.maxsat.encodings.Encoder;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 
@@ -179,9 +180,9 @@ public class WMSU3 extends MaxSAT {
         final LNGIntVector fullObjFunction = new LNGIntVector();
         final LNGIntVector fullCoeffsFunction = new LNGIntVector();
         while (true) {
-            res = searchSATSolver(this.solver, satHandler(), this.assumptions);
-            satSolverFinished();
-            if (res == UNDEF) {
+            final SATHandler satHandler = satHandler();
+            res = searchSATSolver(this.solver, satHandler, this.assumptions);
+            if (aborted(satHandler)) {
                 return MaxSATResult.UNDEF;
             } else if (res == TRUE) {
                 this.nbSatisfiable++;
@@ -274,9 +275,9 @@ public class WMSU3 extends MaxSAT {
         }
         this.assumptions.clear();
         while (true) {
-            res = searchSATSolver(this.solver, satHandler(), this.assumptions);
-            satSolverFinished();
-            if (res == UNDEF) {
+            final SATHandler satHandler = satHandler();
+            res = searchSATSolver(this.solver, satHandler, this.assumptions);
+            if (aborted(satHandler)) {
                 return MaxSATResult.UNDEF;
             } else if (res == TRUE) {
                 this.nbSatisfiable++;
@@ -374,9 +375,9 @@ public class WMSU3 extends MaxSAT {
         bmoEncodings.push(e);
         firstEncoding.push(true);
         while (true) {
-            res = searchSATSolver(this.solver, satHandler(), this.assumptions);
-            satSolverFinished();
-            if (res == UNDEF) {
+            final SATHandler satHandler = satHandler();
+            res = searchSATSolver(this.solver, satHandler, this.assumptions);
+            if (aborted(satHandler)) {
                 return MaxSATResult.UNDEF;
             } else if (res == TRUE) {
                 this.nbSatisfiable++;

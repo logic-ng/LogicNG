@@ -28,6 +28,8 @@
 
 package org.logicng.knowledgecompilation.dnnf;
 
+import static org.logicng.handlers.Handler.start;
+
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
@@ -173,9 +175,7 @@ public class DnnfCompiler {
         }
         initializeCaches(dTree);
         this.handler = handler;
-        if (handler != null) {
-            handler.started();
-        }
+        start(handler);
 
         Formula result;
         try {

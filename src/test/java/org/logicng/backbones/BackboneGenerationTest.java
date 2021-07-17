@@ -37,13 +37,17 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.BoundedSatHandler;
+import org.logicng.handlers.SATHandler;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.io.readers.DimacsReader;
 import org.logicng.io.readers.FormulaReader;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
 import org.logicng.solvers.functions.BackboneFunction;
 import org.logicng.solvers.sat.MiniSatConfig;
+import org.logicng.util.FormulaHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +60,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for {@link BackboneGeneration}.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.5.0
  */
 public class BackboneGenerationTest {
@@ -309,6 +313,20 @@ public class BackboneGenerationTest {
             solver = MiniSat.miniSat(f, config);
             solver.add(formula);
             assertThat(solver.execute(BackboneFunction.builder().variables(formula.variables()).build())).isEqualTo(backbone);
+        }
+    }
+
+    @Test
+    public void testCancellationPoints() throws IOException {
+        final FormulaFactory f = new FormulaFactory();
+        final List<Formula> formulas = DimacsReader.readCNF("src/test/resources/sat/term1_gr_rcs_w4.shuffled.cnf", f);
+        for (int numStarts = 0; numStarts < 10; numStarts++) {
+            final SATHandler handler = new BoundedSatHandler(numStarts);
+
+            final Backbone result = BackboneGeneration.compute(formulas, FormulaHelper.variables(formulas), BackboneType.POSITIVE_AND_NEGATIVE, handler);
+
+            assertThat(handler.aborted()).isTrue();
+            assertThat(result).isNull();
         }
     }
 }

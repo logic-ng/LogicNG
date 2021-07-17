@@ -274,7 +274,7 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     public void testTimeoutHandlerUB() throws IOException {
         final MaxSATSolver solver = MaxSATSolver.linearSU(MaxSATConfig.builder().verbosity(SOME).output(this.logStream).build());
         readCNF(solver, "src/test/resources/partialmaxsat/c1355_F1229gat@1.wcnf");
-        final TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(5000);
+        final TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(5000L);
         final MaxSAT.MaxSATResult result = solver.solve(handler);
         assertThat(handler.aborted()).isFalse();
         assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);

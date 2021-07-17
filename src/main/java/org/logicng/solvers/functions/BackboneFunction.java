@@ -28,10 +28,13 @@
 
 package org.logicng.solvers.functions;
 
+import static org.logicng.handlers.Handler.start;
+
 import org.logicng.backbones.Backbone;
 import org.logicng.backbones.BackboneType;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 
@@ -43,15 +46,17 @@ import java.util.function.Consumer;
  * A solver function which computes a backbone for the formula on the solver.
  * <p>
  * Backbone functions are instantiated via their builder {@link #builder()}.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public final class BackboneFunction implements SolverFunction<Backbone> {
 
+    private final SATHandler handler;
     private final Collection<Variable> variables;
     private final BackboneType type;
 
-    private BackboneFunction(final Collection<Variable> variables, final BackboneType type) {
+    private BackboneFunction(final SATHandler handler, final Collection<Variable> variables, final BackboneType type) {
+        this.handler = handler;
         this.variables = variables;
         this.type = type;
     }
@@ -66,11 +71,12 @@ public final class BackboneFunction implements SolverFunction<Backbone> {
 
     @Override
     public Backbone apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
+        start(handler);
         SolverState stateBeforeBackbone = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
             stateBeforeBackbone = solver.saveState();
         }
-        final Backbone backbone = solver.underlyingSolver().computeBackbone(this.variables, this.type);
+        final Backbone backbone = solver.underlyingSolver().computeBackbone(this.variables, this.type, handler);
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
             solver.loadState(stateBeforeBackbone);
         }
@@ -82,11 +88,22 @@ public final class BackboneFunction implements SolverFunction<Backbone> {
      */
     public static class Builder {
 
+        private SATHandler handler;
         private Collection<Variable> variables;
         private BackboneType type = BackboneType.POSITIVE_AND_NEGATIVE;
 
         private Builder() {
             // Initialize only via factory
+        }
+
+        /**
+         * Sets the SAT handler for this function.
+         * @param handler the handler
+         * @return the current builder
+         */
+        public Builder handler(final SATHandler handler) {
+            this.handler = handler;
+            return this;
         }
 
         /**
@@ -124,7 +141,7 @@ public final class BackboneFunction implements SolverFunction<Backbone> {
          * @return the backbone function
          */
         public BackboneFunction build() {
-            return new BackboneFunction(this.variables, this.type);
+            return new BackboneFunction(this.handler, this.variables, this.type);
         }
     }
 }

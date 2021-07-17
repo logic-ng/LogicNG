@@ -37,6 +37,9 @@ import org.logicng.explanations.UNSATCore;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.handlers.BoundedSatHandler;
+import org.logicng.handlers.SATHandler;
+import org.logicng.io.readers.DimacsReader;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
 import org.logicng.testutils.PigeonHoleGenerator;
@@ -45,12 +48,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Unit tests for the class {@link MUSGeneration}.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.1
  */
 public class MUSGenerationTest {
@@ -139,6 +144,43 @@ public class MUSGenerationTest {
         testMUS(this.pg5, mus3);
         testMUS(this.file1, mus6);
         testMUS(this.file2, mus7);
+    }
+
+    @Test
+    public void testDeletionBasedCancellationPoints() throws IOException {
+        final MUSGeneration mus = new MUSGeneration();
+        final List<StandardProposition> propositions = DimacsReader.readCNF("src/test/resources/sat/too_large_gr_rcs_w5.shuffled.cnf", f).stream()
+                .map(StandardProposition::new)
+                .collect(Collectors.toList());
+        for (int numStarts = 0; numStarts < 20; numStarts++) {
+            final SATHandler handler = new BoundedSatHandler(numStarts);
+            final MUSConfig config = MUSConfig.builder().handler(handler).algorithm(MUSConfig.Algorithm.PLAIN_INSERTION).build();
+
+            final UNSATCore<StandardProposition> result = mus.computeMUS(propositions, f, config);
+
+            assertThat(handler.aborted()).isTrue();
+            assertThat(result).isNull();
+        }
+    }
+
+    @Test
+    public void testCancellationPoints() throws IOException {
+        final MUSGeneration mus = new MUSGeneration();
+        final List<StandardProposition> propositions = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", f).stream()
+                .map(StandardProposition::new)
+                .collect(Collectors.toList());
+        final List<MUSConfig.Algorithm> algorithms = Arrays.asList(MUSConfig.Algorithm.DELETION, MUSConfig.Algorithm.PLAIN_INSERTION);
+        for (final MUSConfig.Algorithm algorithm : algorithms) {
+            for (int numStarts = 0; numStarts < 10; numStarts++) {
+                final SATHandler handler = new BoundedSatHandler(numStarts);
+                final MUSConfig config = MUSConfig.builder().handler(handler).algorithm(algorithm).build();
+
+                final UNSATCore<StandardProposition> result = mus.computeMUS(propositions, f, config);
+
+                assertThat(handler.aborted()).isTrue();
+                assertThat(result).isNull();
+            }
+        }
     }
 
     @Test

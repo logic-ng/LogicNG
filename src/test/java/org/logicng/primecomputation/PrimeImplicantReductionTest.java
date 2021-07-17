@@ -37,6 +37,8 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.handlers.BoundedSatHandler;
+import org.logicng.handlers.SATHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.FormulaReader;
 import org.logicng.solvers.MiniSat;
@@ -54,7 +56,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link NaivePrimeReduction}.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
@@ -81,33 +83,6 @@ public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
                 .containsExactlyInAnyOrder(this.B);
         assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B.negate(), this.C))))
                 .containsExactlyInAnyOrder(this.C);
-    }
-
-    private void testFormula(final Formula formula) {
-        final FormulaFactory f = formula.factory();
-        final MiniSat solver = MiniSat.miniSat(f);
-        solver.add(formula);
-        final boolean isSAT = solver.sat() == Tristate.TRUE;
-        if (!isSAT) {
-            return;
-        }
-        final SortedSet<Literal> model = solver.model().literals();
-        final NaivePrimeReduction naive = new NaivePrimeReduction(formula);
-        final SortedSet<Literal> primeImplicant = naive.reduceImplicant(model);
-        assertThat(model).containsAll(primeImplicant);
-        testPrimeImplicantProperty(formula, primeImplicant);
-    }
-
-    public static void testPrimeImplicantProperty(final Formula formula, final SortedSet<Literal> primeImplicant) {
-        final FormulaFactory f = formula.factory();
-        final MiniSat solver = MiniSat.miniSat(f);
-        solver.add(formula.negate());
-        assertThat(solver.sat(primeImplicant)).isEqualTo(Tristate.FALSE);
-        for (final Literal lit : primeImplicant) {
-            final SortedSet<Literal> reducedPrimeImplicant = new TreeSet<>(primeImplicant);
-            reducedPrimeImplicant.remove(lit);
-            assertThat(solver.sat(reducedPrimeImplicant)).isEqualTo(Tristate.TRUE);
-        }
     }
 
     @Test
@@ -151,6 +126,51 @@ public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(20).weightPbc(2).seed(i * 42).build());
             final Formula formula = randomizer.formula(4);
             testFormula(formula);
+        }
+    }
+
+    @Test
+    public void testCancellationPoints() throws ParserException, IOException {
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+        for (int numStarts = 0; numStarts < 20; numStarts++) {
+            final SATHandler handler = new BoundedSatHandler(numStarts);
+            testFormula(formula, handler, true);
+        }
+    }
+
+    private void testFormula(final Formula formula) {
+        testFormula(formula, null, false);
+    }
+
+    private void testFormula(final Formula formula, final SATHandler handler, final boolean expAborted) {
+        final FormulaFactory f = formula.factory();
+        final MiniSat solver = MiniSat.miniSat(f);
+        solver.add(formula);
+        final boolean isSAT = solver.sat() == Tristate.TRUE;
+        if (!isSAT) {
+            return;
+        }
+        final SortedSet<Literal> model = solver.model().literals();
+        final NaivePrimeReduction naive = new NaivePrimeReduction(formula);
+        final SortedSet<Literal> primeImplicant = naive.reduceImplicant(model, handler);
+        if (expAborted) {
+            assertThat(handler.aborted()).isTrue();
+            assertThat(primeImplicant).isNull();
+        } else {
+            assertThat(model).containsAll(primeImplicant);
+            testPrimeImplicantProperty(formula, primeImplicant);
+        }
+    }
+
+    public static void testPrimeImplicantProperty(final Formula formula, final SortedSet<Literal> primeImplicant) {
+        final FormulaFactory f = formula.factory();
+        final MiniSat solver = MiniSat.miniSat(f);
+        solver.add(formula.negate());
+        assertThat(solver.sat(primeImplicant)).isEqualTo(Tristate.FALSE);
+        for (final Literal lit : primeImplicant) {
+            final SortedSet<Literal> reducedPrimeImplicant = new TreeSet<>(primeImplicant);
+            reducedPrimeImplicant.remove(lit);
+            assertThat(solver.sat(reducedPrimeImplicant)).isEqualTo(Tristate.TRUE);
         }
     }
 }

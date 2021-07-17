@@ -57,6 +57,8 @@ MODIFICATIONS.
 
 package org.logicng.knowledgecompilation.bdds;
 
+import static org.logicng.handlers.Handler.start;
+
 import org.logicng.formulas.And;
 import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.Formula;
@@ -123,9 +125,7 @@ public final class BDDFactory {
      * @return the top node of the BDD or {@link BDDKernel#BDD_ABORT} if the computation was aborted
      */
     public static BDD build(final Formula formula, final BDDKernel kernel, final BDDHandler handler) {
-        if (handler != null) {
-            handler.started();
-        }
+        start(handler);
         final int varNum = formula.variables().size();
         final BDDKernel bddKernel = kernel == null
                 ? new BDDKernel(formula.factory(), varNum, varNum * 30, varNum * 20)

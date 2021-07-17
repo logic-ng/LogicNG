@@ -32,7 +32,7 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * Interface for a handler for the enumeration of models.
- * @version 1.6.2
+ * @version 2.1.0
  * @since 1.0
  */
 public interface ModelEnumerationHandler extends Handler {
@@ -43,16 +43,15 @@ public interface ModelEnumerationHandler extends Handler {
      */
     SATHandler satHandler();
 
+    @Override
+    default boolean aborted() {
+        return satHandler() != null && satHandler().aborted();
+    }
+
     /**
      * This method is called every time a model is found.
      * @param assignment the respective model
-     * @return whether more models should be searched or not
+     * @return {@code true} if more models should be searched, otherwise {@code false}
      */
     boolean foundModel(Assignment assignment);
-
-    /**
-     * This method is called every time the SAT solver finished.
-     * @return whether more models should be searched or not
-     */
-    boolean satSolverFinished();
 }

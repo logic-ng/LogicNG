@@ -28,24 +28,30 @@
 
 package org.logicng.explanations.mus;
 
+import static org.logicng.handlers.Handler.aborted;
+import static org.logicng.handlers.Handler.start;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.explanations.UNSATCore;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.handlers.SATHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A naive plain insertion-based MUS algorithm.
- * @version 1.3
+ * @version 2.1.0
  * @since 1.1
  */
 public class PlainInsertionBasedMUS extends MUSAlgorithm {
 
     @Override
     public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+        start(config.handler);
         final List<T> currentFormula = new ArrayList<>(propositions.size());
         currentFormula.addAll(propositions);
         final List<T> mus = new ArrayList<>(propositions.size());
@@ -58,7 +64,7 @@ public class PlainInsertionBasedMUS extends MUSAlgorithm {
                 solver.add(p);
             }
             int count = currentFormula.size();
-            while (solver.sat() == Tristate.TRUE) {
+            while (shouldProceed(solver, config.handler)) {
                 if (count == 0) {
                     throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
                 }
@@ -66,6 +72,9 @@ public class PlainInsertionBasedMUS extends MUSAlgorithm {
                 currentSubset.add(removeProposition);
                 transitionProposition = removeProposition;
                 solver.add(removeProposition);
+            }
+            if (aborted(config.handler)) {
+                return null;
             }
             currentFormula.clear();
             currentFormula.addAll(currentSubset);
@@ -75,5 +84,10 @@ public class PlainInsertionBasedMUS extends MUSAlgorithm {
             }
         }
         return new UNSATCore<>(mus, true);
+    }
+
+    private static boolean shouldProceed(final SATSolver solver, final SATHandler handler) {
+        final boolean sat = solver.sat(handler) == Tristate.TRUE;
+        return sat && !aborted(handler);
     }
 }

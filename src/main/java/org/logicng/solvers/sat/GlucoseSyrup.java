@@ -77,6 +77,9 @@
 
 package org.logicng.solvers.sat;
 
+import static org.logicng.handlers.Handler.start;
+import static org.logicng.handlers.SATHandler.finishSolving;
+
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
@@ -302,9 +305,7 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
             throw new IllegalStateException("Cannot use incremental and proof generation at the same time");
         }
         this.handler = handler;
-        if (this.handler != null) {
-            this.handler.started();
-        }
+        start(handler);
         this.model.clear();
         this.conflict.clear();
         if (!this.ok) {
@@ -333,9 +334,7 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
         } else if (status == Tristate.FALSE && this.conflict.size() == 0) {
             this.ok = false;
         }
-        if (this.handler != null) {
-            this.handler.finishedSolving();
-        }
+        finishSolving(handler);
         cancelUntil(0);
         this.handler = null;
         this.canceledByHandler = false;

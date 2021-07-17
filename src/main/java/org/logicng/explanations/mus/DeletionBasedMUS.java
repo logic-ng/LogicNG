@@ -28,6 +28,9 @@
 
 package org.logicng.explanations.mus;
 
+import static org.logicng.handlers.Handler.aborted;
+import static org.logicng.handlers.Handler.start;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.explanations.UNSATCore;
 import org.logicng.formulas.FormulaFactory;
@@ -40,13 +43,14 @@ import java.util.List;
 
 /**
  * A naive deletion-based MUS algorithm.
- * @version 1.3
+ * @version 2.1.0
  * @since 1.1
  */
 public final class DeletionBasedMUS extends MUSAlgorithm {
 
     @Override
     public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+        start(config.handler);
         final List<T> mus = new ArrayList<>(propositions.size());
         final List<SolverState> solverStates = new ArrayList<>(propositions.size());
         final MiniSat solver = MiniSat.miniSat(f);
@@ -54,7 +58,11 @@ public final class DeletionBasedMUS extends MUSAlgorithm {
             solverStates.add(solver.saveState());
             solver.add(proposition);
         }
-        if (solver.sat() != Tristate.FALSE) {
+        boolean sat = solver.sat() == Tristate.TRUE;
+        if (aborted(config.handler)) {
+            return null;
+        }
+        if (sat) {
             throw new IllegalArgumentException("Cannot compute a MUS for a satisfiable formula set.");
         }
         for (int i = solverStates.size() - 1; i >= 0; i--) {
@@ -62,7 +70,11 @@ public final class DeletionBasedMUS extends MUSAlgorithm {
             for (final Proposition prop : mus) {
                 solver.add(prop);
             }
-            if (solver.sat() == Tristate.TRUE) {
+            sat = solver.sat(config.handler) == Tristate.TRUE;
+            if (aborted(config.handler)) {
+                return null;
+            }
+            if (sat) {
                 mus.add(propositions.get(i));
             }
         }

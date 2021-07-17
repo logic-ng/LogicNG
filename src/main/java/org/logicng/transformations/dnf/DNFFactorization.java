@@ -30,6 +30,7 @@ package org.logicng.transformations.dnf;
 
 import static org.logicng.formulas.FType.LITERAL;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_DNF;
+import static org.logicng.handlers.Handler.start;
 
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -68,15 +69,13 @@ public final class DNFFactorization implements FormulaTransformation {
     }
 
     @Override
-    public Formula apply(Formula formula, boolean cache) {
-        if (this.handler != null) {
-            this.handler.started();
-        }
+    public Formula apply(final Formula formula, final boolean cache) {
+        start(this.handler);
         this.proceed = true;
         return applyRec(formula, cache);
     }
 
-    private Formula applyRec(final Formula formula, boolean cache) {
+    private Formula applyRec(final Formula formula, final boolean cache) {
         if (!this.proceed) {
             return null;
         }
@@ -159,7 +158,7 @@ public final class DNFFactorization implements FormulaTransformation {
             }
             final Formula clause = f.and(f1, f2);
             if (this.handler != null) {
-                proceed = this.handler.createdClause(clause);
+                this.proceed = this.handler.createdClause(clause);
             }
             return clause;
         }

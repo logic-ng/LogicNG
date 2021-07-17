@@ -44,6 +44,9 @@
 
 package org.logicng.solvers.sat;
 
+import static org.logicng.handlers.Handler.start;
+import static org.logicng.handlers.SATHandler.finishSolving;
+
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
@@ -194,9 +197,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
     @Override
     public Tristate solve(final SATHandler handler) {
         this.handler = handler;
-        if (this.handler != null) {
-            this.handler.started();
-        }
+        start(handler);
         this.model.clear();
         this.conflict.clear();
         if (!this.ok) {
@@ -227,9 +228,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         } else if (status == Tristate.FALSE && this.conflict.empty()) {
             this.ok = false;
         }
-        if (this.handler != null) {
-            this.handler.finishedSolving();
-        }
+        finishSolving(handler);
         cancelUntil(0);
         this.handler = null;
         this.canceledByHandler = false;

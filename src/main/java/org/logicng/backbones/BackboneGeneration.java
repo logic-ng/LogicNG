@@ -31,6 +31,7 @@ package org.logicng.backbones;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.functions.BackboneFunction;
 import org.logicng.solvers.sat.MiniSatConfig;
@@ -43,7 +44,7 @@ import java.util.Collections;
  * Main entry point for backbone computations.
  * <p>
  * This class provides convenient methods for backbone computation for many use cases.
- * @version 1.6.0
+ * @version 2.1.0
  * @since 1.5.0
  */
 public final class BackboneGeneration {
@@ -60,16 +61,28 @@ public final class BackboneGeneration {
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
      * @param type      the type of backbone variables that should be computed
+     * @param handler   the handler
      * @return the backbone or {@code null} if the formula is UNSAT
      */
-    public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
+    public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type, final SATHandler handler) {
         if (formulas == null || formulas.isEmpty()) {
             throw new IllegalArgumentException("Provide at least one formula for backbone computation");
         }
         final FormulaFactory f = formulas.iterator().next().factory();
         final MiniSat miniSat = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         miniSat.add(formulas);
-        return miniSat.execute(BackboneFunction.builder().variables(variables).type(type).build());
+        return miniSat.execute(BackboneFunction.builder().handler(handler).variables(variables).type(type).build());
+    }
+
+    /**
+     * Computes the backbone for a given collection of formulas w.r.t. a collection of variables and a backbone type.
+     * @param formulas  the given collection of formulas
+     * @param variables the given collection of relevant variables for the backbone computation
+     * @param type      the type of backbone variables that should be computed
+     * @return the backbone or {@code null} if the formula is UNSAT
+     */
+    public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
+        return compute(formulas, variables, type, null);
     }
 
     /**

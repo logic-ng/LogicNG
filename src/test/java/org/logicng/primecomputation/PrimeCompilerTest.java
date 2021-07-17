@@ -37,22 +37,28 @@ import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.handlers.BoundedOptimizationHandler;
+import org.logicng.handlers.OptimizationHandler;
+import org.logicng.handlers.TimeoutHandler;
+import org.logicng.handlers.TimeoutOptimizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
+import org.logicng.util.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 
 /**
  * Unit Tests for the class {@link PrimeCompiler}.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public class PrimeCompilerTest extends TestWithExampleFormulas {
@@ -121,6 +127,65 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                 });
     }
 
+    @Test
+    public void testTimeoutHandlerSmall() throws ParserException {
+        final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
+                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE));
+        for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
+            final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
+                    new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
+                    new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
+                    new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
+            );
+            final Formula formula = f.parse("a & b | ~c & a");
+            for (final TimeoutOptimizationHandler handler : handlers) {
+                testHandler(handler, formula, compiler.first(), compiler.second(), false);
+            }
+        }
+    }
+
+    @Test
+    public void testTimeoutHandlerLarge() {
+        final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
+                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE));
+        for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
+            final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
+                    new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
+                    new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
+                    new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
+            );
+            final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().numVars(15).seed(42).build());
+            final Formula formula = random.formula(5);
+            for (final TimeoutOptimizationHandler handler : handlers) {
+                testHandler(handler, formula, compiler.first(), compiler.second(), true);
+            }
+        }
+    }
+
+    @Test
+    public void testCancellationPoints() throws IOException, ParserException {
+        final Formula formula = f.parse(Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
+        final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
+                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE));
+        for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
+            for (int numOptimizationStarts = 1; numOptimizationStarts < 5; numOptimizationStarts++) {
+                for (int numSatHandlerStarts = 1; numSatHandlerStarts < 10; numSatHandlerStarts++) {
+                    final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
+                    testHandler(handler, formula, compiler.first(), compiler.second(), true);
+                }
+            }
+        }
+    }
+
     private void computeAndVerify(final Formula formula) {
         final PrimeResult resultImplicantsMax = PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
         verify(resultImplicantsMax, formula);
@@ -166,5 +231,16 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
         assertThat(f.equivalence(f.and(implicates), formula).holds(new TautologyPredicate(f)))
                 .as("Conjunction of implicates should be equivalent to the original formula.")
                 .isTrue();
+    }
+
+    private void testHandler(final OptimizationHandler handler, final Formula formula, final PrimeCompiler compiler, final PrimeResult.CoverageType coverageType,
+                             final boolean expAborted) {
+        final PrimeResult result = compiler.compute(formula, coverageType, handler);
+        assertThat(handler.aborted()).isEqualTo(expAborted);
+        if (expAborted) {
+            assertThat(result).isNull();
+        } else {
+            assertThat(result).isNotNull();
+        }
     }
 }

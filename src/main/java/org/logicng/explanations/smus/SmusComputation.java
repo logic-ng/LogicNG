@@ -28,11 +28,16 @@
 
 package org.logicng.explanations.smus;
 
+import static org.logicng.handlers.Handler.aborted;
+import static org.logicng.handlers.Handler.start;
+import static org.logicng.handlers.OptimizationHandler.satHandler;
+
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.OptimizationHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
@@ -55,7 +60,7 @@ import java.util.stream.Collectors;
  * Implementation is based on &quot;Smallest MUS extraction with minimal
  * hitting set dualization&quot; (Ignatiev, Previti, Liffiton, &amp;
  * Marques-Silva, 2015).
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public final class SmusComputation {
@@ -71,13 +76,31 @@ public final class SmusComputation {
 
     /**
      * Computes the SMUS for the given list of propositions modulo some additional constraint.
+     * @param <P>                   the subtype of the propositions
      * @param propositions          the propositions
      * @param additionalConstraints the additional constraints
      * @param f                     the formula factory
-     * @param <P>                   the subtype of the propositions
      * @return the SMUS or {@code null} if the given propositions are satisfiable
      */
     public static <P extends Proposition> List<P> computeSmus(final List<P> propositions, final List<Formula> additionalConstraints, final FormulaFactory f) {
+        return computeSmus(propositions, additionalConstraints, f, null);
+    }
+
+    /**
+     * Computes the SMUS for the given list of propositions modulo some additional constraint.
+     * <p>
+     * The SMUS computation can be called with an {@link OptimizationHandler}. The given handler instance will be used for every subsequent
+     * * {@link org.logicng.solvers.functions.OptimizationFunction} call and the handler's SAT handler is used for every subsequent SAT call.
+     * @param <P>                   the subtype of the propositions
+     * @param propositions          the propositions
+     * @param additionalConstraints the additional constraints
+     * @param f                     the formula factory
+     * @param handler               the handler, can be {@code null}
+     * @return the SMUS or {@code null} if the given propositions are satisfiable
+     */
+    public static <P extends Proposition> List<P> computeSmus(final List<P> propositions, final List<Formula> additionalConstraints, final FormulaFactory f,
+                                                              final OptimizationHandler handler) {
+        start(handler);
         final SATSolver growSolver = MiniSat.miniSat(f);
         growSolver.add(additionalConstraints == null ? Collections.singletonList(f.verum()) : additionalConstraints);
         final Map<Variable, P> propositionMapping = new TreeMap<>();
@@ -86,13 +109,23 @@ public final class SmusComputation {
             propositionMapping.put(selector, proposition);
             growSolver.add(f.equivalence(selector, proposition.formula()));
         }
-        if (growSolver.sat(propositionMapping.keySet()) == Tristate.TRUE) {
-            return null; // no MUS, since propositions are SAT
+        final boolean sat = growSolver.sat(satHandler(handler), propositionMapping.keySet()) == Tristate.TRUE;
+        if (aborted(handler)) {
+            return null;
+        }
+        if (sat) {
+            throw new IllegalArgumentException("Cannot compute a smallest MUS for a satisfiable formula set.");
         }
         final SATSolver hSolver = MiniSat.miniSat(f);
         while (true) {
-            final SortedSet<Variable> h = minimumHs(hSolver, propositionMapping.keySet());
-            final SortedSet<Variable> c = grow(growSolver, h, propositionMapping.keySet());
+            final SortedSet<Variable> h = minimumHs(hSolver, propositionMapping.keySet(), handler);
+            if (aborted(handler)) {
+                return null;
+            }
+            final SortedSet<Variable> c = grow(growSolver, h, propositionMapping.keySet(), handler);
+            if (aborted(handler)) {
+                return null;
+            }
             if (c == null) {
                 return h.stream().map(propositionMapping::get).collect(Collectors.toList());
             }
@@ -108,26 +141,47 @@ public final class SmusComputation {
      * @return the SMUS or {@code null} if the given formulas are satisfiable
      */
     public static List<Formula> computeSmusForFormulas(final List<Formula> formulas, final List<Formula> additionalConstraints, final FormulaFactory f) {
+        return computeSmusForFormulas(formulas, additionalConstraints, f, null);
+    }
+
+    /**
+     * Computes the SMUS for the given list of formulas and some additional constraints.
+     * @param formulas              the formulas
+     * @param additionalConstraints the additional constraints
+     * @param f                     the formula factory
+     * @param handler               the SMUS handler, can be {@code null}
+     * @return the SMUS or {@code null} if the given formulas are satisfiable
+     */
+    public static List<Formula> computeSmusForFormulas(final List<Formula> formulas, final List<Formula> additionalConstraints, final FormulaFactory f,
+                                                       final OptimizationHandler handler) {
         final List<Proposition> props = formulas.stream().map(StandardProposition::new).collect(Collectors.toList());
-        final List<Proposition> smus = computeSmus(props, additionalConstraints, f);
+        final List<Proposition> smus = computeSmus(props, additionalConstraints, f, handler);
         return smus == null ? null : smus.stream().map(Proposition::formula).collect(Collectors.toList());
     }
 
-    private static SortedSet<Variable> minimumHs(final SATSolver hSolver, final Set<Variable> variables) {
-        return new TreeSet<>(hSolver.execute(OptimizationFunction.minimize(variables)).positiveVariables());
+    private static SortedSet<Variable> minimumHs(final SATSolver hSolver, final Set<Variable> variables, final OptimizationHandler handler) {
+        final Assignment minimumHsModel = hSolver.execute(OptimizationFunction.builder()
+                .handler(handler)
+                .literals(variables)
+                .minimize().build());
+        return aborted(handler) ? null : new TreeSet<>(minimumHsModel.positiveVariables());
     }
 
-    private static SortedSet<Variable> grow(final SATSolver growSolver, final SortedSet<Variable> h, final Set<Variable> variables) {
+    private static SortedSet<Variable> grow(final SATSolver growSolver, final SortedSet<Variable> h, final Set<Variable> variables, final OptimizationHandler handler) {
         final SolverState solverState = growSolver.saveState();
         growSolver.add(h);
-        final Assignment maxModel = growSolver.execute(OptimizationFunction.maximize(variables));
-        if (maxModel == null) {
+        final Assignment maxModel = growSolver.execute(OptimizationFunction.builder()
+                .handler(handler)
+                .literals(variables)
+                .maximize().build());
+        if (maxModel == null || aborted(handler)) {
             return null;
+        } else {
+            final List<Variable> maximumSatisfiableSet = maxModel.positiveVariables();
+            growSolver.loadState(solverState);
+            final SortedSet<Variable> minimumCorrectionSet = new TreeSet<>(variables);
+            minimumCorrectionSet.removeAll(maximumSatisfiableSet);
+            return minimumCorrectionSet;
         }
-        final List<Variable> maximumSatisfiableSet = maxModel.positiveVariables();
-        growSolver.loadState(solverState);
-        final SortedSet<Variable> minimumCorrectionSet = new TreeSet<>(variables);
-        minimumCorrectionSet.removeAll(maximumSatisfiableSet);
-        return minimumCorrectionSet;
     }
 }

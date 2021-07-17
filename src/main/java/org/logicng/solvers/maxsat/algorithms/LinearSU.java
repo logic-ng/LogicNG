@@ -49,6 +49,7 @@
 
 package org.logicng.solvers.maxsat.algorithms;
 
+import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity;
 
@@ -56,6 +57,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Tristate;
+import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.datastructures.MSSoftClause;
 import org.logicng.solvers.maxsat.encodings.Encoder;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
@@ -133,9 +135,9 @@ public class LinearSU extends MaxSAT {
         int localCost = 0;
         this.ubCost = 0;
         while (true) {
-            res = searchSATSolver(this.solver, satHandler());
-            satSolverFinished();
-            if (res == Tristate.UNDEF) {
+            final SATHandler satHandler = satHandler();
+            res = searchSATSolver(this.solver, satHandler);
+            if (aborted(satHandler)) {
                 return MaxSATResult.UNDEF;
             }
             if (res == Tristate.TRUE) {
@@ -209,9 +211,9 @@ public class LinearSU extends MaxSAT {
         this.initRelaxation();
         this.solver = this.rebuildSolver(1);
         while (true) {
-            res = searchSATSolver(this.solver, satHandler());
-            satSolverFinished();
-            if (res == Tristate.UNDEF) {
+            final SATHandler satHandler = satHandler();
+            res = searchSATSolver(this.solver, satHandler);
+            if (aborted(satHandler)) {
                 return MaxSATResult.UNDEF;
             } else if (res == Tristate.TRUE) {
                 this.nbSatisfiable++;

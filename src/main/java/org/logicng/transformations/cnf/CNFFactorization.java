@@ -31,6 +31,7 @@ package org.logicng.transformations.cnf;
 import static org.logicng.formulas.FType.AND;
 import static org.logicng.formulas.FType.LITERAL;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
+import static org.logicng.handlers.Handler.start;
 
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -69,9 +70,7 @@ public final class CNFFactorization implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        if (this.handler != null) {
-            this.handler.started();
-        }
+        start(this.handler);
         this.proceed = true;
         return applyRec(formula, cache);
     }

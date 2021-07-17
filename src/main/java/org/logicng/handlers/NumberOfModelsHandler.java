@@ -32,7 +32,7 @@ import org.logicng.datastructures.Assignment;
 
 /**
  * A model enumeration handler that terminates the solving process after a given number of models.
- * @version 1.6.2
+ * @version 2.1.0
  * @since 1.0
  */
 public final class NumberOfModelsHandler extends ComputationHandler implements ModelEnumerationHandler {
@@ -66,11 +66,6 @@ public final class NumberOfModelsHandler extends ComputationHandler implements M
     @Override
     public boolean foundModel(final Assignment assignment) {
         this.aborted = ++this.count >= this.bound;
-        return !aborted;
-    }
-
-    @Override
-    public boolean satSolverFinished() {
-        return true;
+        return !this.aborted;
     }
 }

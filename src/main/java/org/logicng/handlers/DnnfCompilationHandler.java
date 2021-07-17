@@ -30,19 +30,16 @@ package org.logicng.handlers;
 
 /**
  * Interface for a handler for DNNF compilations.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public interface DnnfCompilationHandler extends Handler {
 
     /**
      * This method is called when an shannon expansion was performed.
-     * @return true when the computation should be continued, false if it should be aborted with a {@link java.util.concurrent.TimeoutException}
+     * @return {@code true} when the computation should be continued, {@code false} if it should be aborted with a {@link java.util.concurrent.TimeoutException}
      */
-    boolean shannonExpansion();
-
-    /**
-     * This method is called when the computation ends.
-     */
-    void end();
+    default boolean shannonExpansion() {
+        return true;
+    }
 }

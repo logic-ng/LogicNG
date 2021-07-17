@@ -28,10 +28,14 @@
 
 package org.logicng.primecomputation;
 
+import static org.logicng.handlers.Handler.aborted;
+import static org.logicng.handlers.Handler.start;
+
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.sat.MiniSatConfig;
@@ -47,7 +51,7 @@ import java.util.TreeSet;
  * <p>
  * The computation is initialized with the formula for which
  * the prime implicants/implicates should be computed.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public final class NaivePrimeReduction {
@@ -74,10 +78,26 @@ public final class NaivePrimeReduction {
      * @return a prime implicant
      */
     public SortedSet<Literal> reduceImplicant(final SortedSet<Literal> implicant) {
+        return reduceImplicant(implicant, null);
+    }
+
+    /**
+     * Computes a prime implicant from the given implicant for the given formula.
+     * Assumption: Given implicant is a satisfying assignment for the formula
+     * @param implicant the implicant
+     * @param handler   the SAT handler
+     * @return a prime implicant
+     */
+    public SortedSet<Literal> reduceImplicant(final SortedSet<Literal> implicant, final SATHandler handler) {
+        start(handler);
         final SortedSet<Literal> primeImplicant = new TreeSet<>(implicant);
         for (final Literal lit : implicant) {
             primeImplicant.remove(lit);
-            if (this.implicantSolver.sat(primeImplicant) == Tristate.TRUE) {
+            final boolean sat = this.implicantSolver.sat(handler, primeImplicant) == Tristate.TRUE;
+            if (aborted(handler)) {
+                return null;
+            }
+            if (sat) {
                 primeImplicant.add(lit);
             }
         }
@@ -92,11 +112,28 @@ public final class NaivePrimeReduction {
      * @return a prime implicate
      */
     public SortedSet<Literal> reduceImplicate(final SortedSet<Literal> implicate) {
+        return reduceImplicate(implicate, null);
+    }
+
+    /**
+     * Computes a prime implicate from the given implicate for the given formula.
+     * Assumption: Given implicate is a falsifying assignment for the formula, i.e. a satisfying assignment for the
+     * negated formula
+     * @param implicate the implicate
+     * @param handler   the SAT handler
+     * @return a prime implicate
+     */
+    public SortedSet<Literal> reduceImplicate(final SortedSet<Literal> implicate, final SATHandler handler) {
+        start(handler);
         final SortedSet<Literal> primeImplicate = new TreeSet<>(implicate);
         for (final Literal lit : implicate) {
             primeImplicate.remove(lit);
             final List<Literal> assumptions = FormulaHelper.negateLiterals(primeImplicate, ArrayList::new);
-            if (this.implicateSolver.sat(assumptions) == Tristate.TRUE) {
+            final boolean sat = this.implicateSolver.sat(handler, assumptions) == Tristate.TRUE;
+            if (aborted(handler)) {
+                return null;
+            }
+            if (sat) {
                 primeImplicate.add(lit);
             }
         }

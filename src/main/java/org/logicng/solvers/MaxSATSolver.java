@@ -182,6 +182,14 @@ public class MaxSATSolver {
     }
 
     /**
+     * Returns whether this solver can handle weighted instances or not.
+     * @return whether this solver can handle weighted instances or not
+     */
+    public boolean isWeighted() {
+        return this.algorithm == Algorithm.INC_WBO || this.algorithm == Algorithm.WMSU3 || this.algorithm == Algorithm.WBO;
+    }
+
+    /**
      * Resets the solver.
      * @throws IllegalArgumentException if the algorithm was unknown
      */

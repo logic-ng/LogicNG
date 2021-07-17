@@ -30,10 +30,11 @@ package org.logicng.explanations.mus;
 
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
+import org.logicng.handlers.SATHandler;
 
 /**
  * The configuration object for the MUS generation.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.1
  */
 public final class MUSConfig extends Configuration {
@@ -46,6 +47,7 @@ public final class MUSConfig extends Configuration {
     }
 
     final Algorithm algorithm;
+    final SATHandler handler;
 
     /**
      * Constructs a new configuration with a given type.
@@ -54,6 +56,7 @@ public final class MUSConfig extends Configuration {
     private MUSConfig(final Builder builder) {
         super(ConfigurationType.MUS);
         this.algorithm = builder.algorithm;
+        this.handler = builder.handler;
     }
 
     /**
@@ -78,6 +81,7 @@ public final class MUSConfig extends Configuration {
     public static class Builder {
 
         private Algorithm algorithm = Algorithm.DELETION;
+        private SATHandler handler = null;
 
         private Builder() {
             // Initialize only via factory
@@ -90,6 +94,16 @@ public final class MUSConfig extends Configuration {
          */
         public Builder algorithm(final Algorithm algorithm) {
             this.algorithm = algorithm;
+            return this;
+        }
+
+        /**
+         * Sets the SAT handler for the MUS generation.
+         * @param handler the SAT handler
+         * @return the current builder
+         */
+        public Builder handler(final SATHandler handler) {
+            this.handler = handler;
             return this;
         }
 

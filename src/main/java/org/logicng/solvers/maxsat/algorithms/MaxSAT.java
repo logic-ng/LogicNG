@@ -49,6 +49,7 @@
 
 package org.logicng.solvers.maxsat.algorithms;
 
+import static org.logicng.handlers.Handler.start;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.SolverType;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity;
 import static org.logicng.solvers.sat.MiniSatStyleSolver.LIT_UNDEF;
@@ -183,9 +184,7 @@ public abstract class MaxSAT {
      */
     public final MaxSATResult search(final MaxSATHandler handler) {
         this.handler = handler;
-        if (handler != null) {
-            handler.started();
-        }
+        start(handler);
         final MaxSATResult result = search();
         if (handler != null) {
             handler.finishedSolving();
@@ -445,10 +444,6 @@ public abstract class MaxSAT {
 
     boolean foundUpperBound(final int upperBound, final Assignment model) {
         return this.handler == null || this.handler.foundUpperBound(upperBound, model);
-    }
-
-    boolean satSolverFinished() {
-        return this.handler == null || this.handler.satSolverFinished();
     }
 
     /**
