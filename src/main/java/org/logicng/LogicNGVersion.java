@@ -31,7 +31,7 @@ package org.logicng;
 /**
  * A class which exposes the LogicNG library version as specified in the POM.
  * This works only if the compiled library as jar is included in your project.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2.0.0
  */
 public final class LogicNGVersion {
@@ -60,7 +60,7 @@ public final class LogicNGVersion {
         return major(version());
     }
 
-    private static int major(final String version) {
+    static int major(final String version) {
         try {
             return Integer.parseInt(version.split("\\.")[0]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -76,7 +76,7 @@ public final class LogicNGVersion {
         return minor(version());
     }
 
-    private static int minor(final String version) {
+    static int minor(final String version) {
         try {
             return Integer.parseInt(version.split("\\.")[1]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -92,7 +92,7 @@ public final class LogicNGVersion {
         return patch(version());
     }
 
-    private static int patch(final String version) {
+    static int patch(final String version) {
         try {
             return Integer.parseInt(version.split("\\.")[2].split("-")[0]);
         } catch (final ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -108,7 +108,7 @@ public final class LogicNGVersion {
         return snapshot(version());
     }
 
-    private static boolean snapshot(final String version) {
+    static boolean snapshot(final String version) {
         return version.contains("-SNAPSHOT");
     }
 }
