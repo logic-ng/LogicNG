@@ -28,6 +28,9 @@
 
 package org.logicng;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 /**
  * A class which exposes the LogicNG library version as specified in the POM.
  * This works only if the compiled library as jar is included in your project.
@@ -48,8 +51,11 @@ public final class LogicNGVersion {
      * @return the version string from the POM
      */
     public static String version() {
-        final Package mainPackage = LogicNGVersion.class.getPackage();
-        return mainPackage.getImplementationVersion();
+        try {
+            return new BufferedReader(new InputStreamReader(LogicNGVersion.class.getResourceAsStream("version.txt"))).readLine();
+        } catch (final Exception e) {
+            return "unknown";
+        }
     }
 
     /**
