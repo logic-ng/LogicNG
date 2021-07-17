@@ -33,7 +33,7 @@ package org.logicng.handlers;
  * @version 1.6.2
  * @since 1.6.2
  */
-public final class NumberOfNodesBDDHandler extends ComputationHandler implements BDDHandler {
+public class NumberOfNodesBDDHandler extends ComputationHandler implements BDDHandler {
 
     private final int bound;
     private int count;

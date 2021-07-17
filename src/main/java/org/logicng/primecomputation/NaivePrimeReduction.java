@@ -85,8 +85,8 @@ public final class NaivePrimeReduction {
      * Computes a prime implicant from the given implicant for the given formula.
      * Assumption: Given implicant is a satisfying assignment for the formula
      * @param implicant the implicant
-     * @param handler   the SAT handler
-     * @return a prime implicant
+     * @param handler   a SAT handler for the underlying SAT Solver
+     * @return a prime implicant or null if the computation was aborted by the handler
      */
     public SortedSet<Literal> reduceImplicant(final SortedSet<Literal> implicant, final SATHandler handler) {
         start(handler);
@@ -120,8 +120,8 @@ public final class NaivePrimeReduction {
      * Assumption: Given implicate is a falsifying assignment for the formula, i.e. a satisfying assignment for the
      * negated formula
      * @param implicate the implicate
-     * @param handler   the SAT handler
-     * @return a prime implicate
+     * @param handler   a SAT handler for the underlying SAT Solver
+     * @return a prime implicate of null if the computation was aborted by the handler
      */
     public SortedSet<Literal> reduceImplicate(final SortedSet<Literal> implicate, final SATHandler handler) {
         start(handler);

@@ -53,7 +53,7 @@ import java.util.TreeMap;
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.0
  */
 public class MaxSATSolver {

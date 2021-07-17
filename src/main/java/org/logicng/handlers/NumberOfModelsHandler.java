@@ -35,7 +35,7 @@ import org.logicng.datastructures.Assignment;
  * @version 2.1.0
  * @since 1.0
  */
-public final class NumberOfModelsHandler extends ComputationHandler implements ModelEnumerationHandler {
+public class NumberOfModelsHandler extends ComputationHandler implements ModelEnumerationHandler {
 
     private final int bound;
     private int count;

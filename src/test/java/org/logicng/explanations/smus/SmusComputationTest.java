@@ -29,7 +29,6 @@
 package org.logicng.explanations.smus;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
@@ -95,9 +94,8 @@ public class SmusComputationTest extends TestWithExampleFormulas {
                 this.f.parse("~n"),
                 this.f.parse("~m|l")
         );
-        assertThatThrownBy(() -> SmusComputation.computeSmusForFormulas(input, Collections.singletonList(this.f.parse("n|l")), this.f))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Cannot compute a smallest MUS for a satisfiable formula set.");
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(this.f.parse("n|l")), this.f);
+        assertThat(result).isNull();
     }
 
     @Test
@@ -275,7 +273,7 @@ public class SmusComputationTest extends TestWithExampleFormulas {
 
     @Test
     public void testCancellationPoints() throws IOException {
-        final List<Formula> formulas = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", f);
+        final List<Formula> formulas = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", this.f);
         for (int numOptimizationStarts = 1; numOptimizationStarts < 5; numOptimizationStarts++) {
             for (int numSatHandlerStarts = 1; numSatHandlerStarts < 10; numSatHandlerStarts++) {
                 final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
@@ -306,7 +304,7 @@ public class SmusComputationTest extends TestWithExampleFormulas {
     }
 
     private void testHandler(final OptimizationHandler handler, final List<Formula> formulas, final boolean expAborted) {
-        final List<Formula> result = SmusComputation.computeSmusForFormulas(formulas, Collections.emptyList(), f, handler);
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(formulas, Collections.emptyList(), this.f, handler);
         assertThat(handler.aborted()).isEqualTo(expAborted);
         if (expAborted) {
             assertThat(result).isNull();

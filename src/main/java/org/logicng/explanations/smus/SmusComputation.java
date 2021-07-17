@@ -80,7 +80,7 @@ public final class SmusComputation {
      * @param propositions          the propositions
      * @param additionalConstraints the additional constraints
      * @param f                     the formula factory
-     * @return the SMUS or {@code null} if the given propositions are satisfiable
+     * @return the SMUS or {@code null} if the given propositions are satisfiable or the handler aborted the computation
      */
     public static <P extends Proposition> List<P> computeSmus(final List<P> propositions, final List<Formula> additionalConstraints, final FormulaFactory f) {
         return computeSmus(propositions, additionalConstraints, f, null);
@@ -96,7 +96,7 @@ public final class SmusComputation {
      * @param additionalConstraints the additional constraints
      * @param f                     the formula factory
      * @param handler               the handler, can be {@code null}
-     * @return the SMUS or {@code null} if the given propositions are satisfiable
+     * @return the SMUS or {@code null} if the given propositions are satisfiable or the handler aborted the computation
      */
     public static <P extends Proposition> List<P> computeSmus(final List<P> propositions, final List<Formula> additionalConstraints, final FormulaFactory f,
                                                               final OptimizationHandler handler) {
@@ -110,16 +110,13 @@ public final class SmusComputation {
             growSolver.add(f.equivalence(selector, proposition.formula()));
         }
         final boolean sat = growSolver.sat(satHandler(handler), propositionMapping.keySet()) == Tristate.TRUE;
-        if (aborted(handler)) {
+        if (sat || aborted(handler)) {
             return null;
-        }
-        if (sat) {
-            throw new IllegalArgumentException("Cannot compute a smallest MUS for a satisfiable formula set.");
         }
         final SATSolver hSolver = MiniSat.miniSat(f);
         while (true) {
             final SortedSet<Variable> h = minimumHs(hSolver, propositionMapping.keySet(), handler);
-            if (aborted(handler)) {
+            if (h == null || aborted(handler)) {
                 return null;
             }
             final SortedSet<Variable> c = grow(growSolver, h, propositionMapping.keySet(), handler);
@@ -138,7 +135,7 @@ public final class SmusComputation {
      * @param formulas              the formulas
      * @param additionalConstraints the additional constraints
      * @param f                     the formula factory
-     * @return the SMUS or {@code null} if the given formulas are satisfiable
+     * @return the SMUS or {@code null} if the given propositions are satisfiable or the handler aborted the computation
      */
     public static List<Formula> computeSmusForFormulas(final List<Formula> formulas, final List<Formula> additionalConstraints, final FormulaFactory f) {
         return computeSmusForFormulas(formulas, additionalConstraints, f, null);
@@ -150,7 +147,7 @@ public final class SmusComputation {
      * @param additionalConstraints the additional constraints
      * @param f                     the formula factory
      * @param handler               the SMUS handler, can be {@code null}
-     * @return the SMUS or {@code null} if the given formulas are satisfiable
+     * @return the SMUS or {@code null} if the given propositions are satisfiable or the handler aborted the computation
      */
     public static List<Formula> computeSmusForFormulas(final List<Formula> formulas, final List<Formula> additionalConstraints, final FormulaFactory f,
                                                        final OptimizationHandler handler) {
@@ -180,7 +177,7 @@ public final class SmusComputation {
             final List<Variable> maximumSatisfiableSet = maxModel.positiveVariables();
             growSolver.loadState(solverState);
             final SortedSet<Variable> minimumCorrectionSet = new TreeSet<>(variables);
-            minimumCorrectionSet.removeAll(maximumSatisfiableSet);
+            maximumSatisfiableSet.forEach(minimumCorrectionSet::remove);
             return minimumCorrectionSet;
         }
     }

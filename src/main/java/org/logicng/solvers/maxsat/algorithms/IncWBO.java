@@ -72,7 +72,7 @@ import java.util.TreeMap;
 
 /**
  * Incremental WBO solver.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.0
  */
 public class IncWBO extends WBO {

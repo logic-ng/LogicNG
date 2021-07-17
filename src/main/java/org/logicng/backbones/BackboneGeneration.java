@@ -61,8 +61,8 @@ public final class BackboneGeneration {
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
      * @param type      the type of backbone variables that should be computed
-     * @param handler   the handler
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @param handler   an optional handler for the backbone computation's SAT solver
+     * @return the backbone or {@code null} if the formula is UNSAT or the computation was aborted by the handler
      */
     public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type, final SATHandler handler) {
         if (formulas == null || formulas.isEmpty()) {

@@ -65,7 +65,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
  * Therefore clause deletion and simplifications are deactivated in this mode.  This mode is most efficient on small
  * to mid-size industrial formulas (up to 50,000 variables, 100,000 clauses).  Whenever you have lots of small formulas
  * to solve or need the ability to add and delete formulas from the solver, we recommend to consider this mode.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.0
  */
 public class MiniSat2Solver extends MiniSatStyleSolver {

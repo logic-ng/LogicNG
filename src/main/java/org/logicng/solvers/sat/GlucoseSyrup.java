@@ -94,7 +94,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
 
 /**
  * Glucose 4.0 solver.
- * @version 2.0.0
+ * @version 2.1.0
  * @since 1.0
  */
 public class GlucoseSyrup extends MiniSatStyleSolver {

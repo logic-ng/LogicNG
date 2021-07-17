@@ -100,8 +100,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
     public Formula apply(final Formula formula, final boolean cache) {
         start(this.handler);
         final FormulaFactory f = formula.factory();
-        final Backbone backbone = BackboneGeneration.compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(handler));
-        if (aborted(handler)) {
+        final Backbone backbone = BackboneGeneration.compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(this.handler));
+        if (backbone == null || aborted(this.handler)) {
             return null;
         }
         if (!backbone.isSat()) {
@@ -109,17 +109,16 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         }
         final SortedSet<Literal> backboneLiterals = backbone.getCompleteBackbone();
         final Formula restrictedFormula = formula.restrict(new Assignment(backboneLiterals));
-        final PrimeResult primeResult = PrimeCompiler.getWithMinimization().compute(restrictedFormula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, handler);
-        if (aborted(this.handler)) {
+        final PrimeResult primeResult = PrimeCompiler.getWithMinimization().compute(restrictedFormula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, this.handler);
+        if (primeResult == null || aborted(this.handler)) {
             return null;
         }
         final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
         final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
                 Collections.singletonList(restrictedFormula), f, this.handler);
-        if (aborted(this.handler)) {
+        if (minimizedPIs == null || aborted(this.handler)) {
             return null;
         }
-        assert minimizedPIs != null : "The conjunction of a satisfiable formula and its negated prime implications is always a contradiction";
         final Formula minDnf = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
         final Formula fullFactor = minDnf.transform(new FactorOutSimplifier(this.ratingFunction));
         return f.and(f.and(backboneLiterals), fullFactor).transform(new NegationSimplifier());

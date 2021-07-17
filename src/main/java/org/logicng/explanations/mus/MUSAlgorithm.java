@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * Abstract super class for MUS computation algorithms.
- * @version 1.3
+ * @version 2.1.0
  * @since 1.1
  */
 abstract class MUSAlgorithm {
@@ -47,8 +47,7 @@ abstract class MUSAlgorithm {
      * @param f            the formula factory
      * @param config       the MUS configuration
      * @param <T>          the type of the MUSes propositions
-     * @return the MUS
+     * @return the MUS or null if the MUS computation was configured with a handler and this handler aborted the computation
      */
-    public abstract <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f,
-                                                                    final MUSConfig config);
+    public abstract <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config);
 }

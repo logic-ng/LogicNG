@@ -30,7 +30,7 @@ package org.logicng.handlers;
 
 /**
  * A computation handler.
- * @version 2.1.0
+ * @version 1.6.2
  * @since 1.6.2
  */
 public abstract class ComputationHandler implements Handler {

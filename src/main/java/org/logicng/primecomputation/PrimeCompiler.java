@@ -118,19 +118,21 @@ public final class PrimeCompiler {
      * The coverage type specifies if the implicants or the implicates will
      * be complete, the other one will still be a cover of the given formula.
      * <p>
-     * The prime compiler can be called with an {@link OptimizationHandler}. The given handler instance will be used for every subsequent
-     * {@link org.logicng.solvers.functions.OptimizationFunction} call and the handler's SAT handler is used for every subsequent SAT call.
+     * The prime compiler can be called with an {@link OptimizationHandler}.
+     * The given handler instance will be used for every subsequent
+     * {@link org.logicng.solvers.functions.OptimizationFunction} call and
+     * the handler's SAT handler is used for every subsequent SAT call.
      * @param formula the formula
      * @param type    the coverage type
-     * @param handler the handler, can be {@code null}
-     * @return the prime result
+     * @param handler an optimization handler, can be {@code null}
+     * @return the prime result or null if the computation was aborted by the handler
      */
     public PrimeResult compute(final Formula formula, final PrimeResult.CoverageType type, final OptimizationHandler handler) {
         start(handler);
         final boolean completeImplicants = type == PrimeResult.CoverageType.IMPLICANTS_COMPLETE;
         final Formula formulaForComputation = completeImplicants ? formula : formula.negate();
         final Pair<List<SortedSet<Literal>>, List<SortedSet<Literal>>> result = computeGeneric(formulaForComputation, handler);
-        if (aborted(handler)) {
+        if (result == null || aborted(handler)) {
             return null;
         }
         return new PrimeResult(
@@ -166,7 +168,7 @@ public final class PrimeCompiler {
             }
             if (fSat == Tristate.FALSE) {
                 final SortedSet<Literal> primeImplicant = this.computeWithMaximization ? primeReduction.reduceImplicant(fModel.literals(), satHandler(handler)) : fModel.literals();
-                if (aborted(handler)) {
+                if (primeImplicant == null || aborted(handler)) {
                     return null;
                 }
                 primeImplicants.add(primeImplicant);
@@ -181,7 +183,7 @@ public final class PrimeCompiler {
                     implicate.add(lit.negate());
                 }
                 final SortedSet<Literal> primeImplicate = primeReduction.reduceImplicate(implicate, satHandler(handler));
-                if (aborted(handler)) {
+                if (primeImplicate == null || aborted(handler)) {
                     return null;
                 }
                 primeImplicates.add(primeImplicate);
