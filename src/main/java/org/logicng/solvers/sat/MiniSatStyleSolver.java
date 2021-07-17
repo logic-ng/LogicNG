@@ -819,7 +819,7 @@ public abstract class MiniSatStyleSolver {
      * Computes the backbone of the given variables with respect to the formulas added to the solver.
      * @param variables variables to test
      * @param type      backbone type
-     * @return the backbone projected to the relevant variables or {@code null} if the formula on the solver with the restrictions are not satisfiable
+     * @return the backbone projected to the relevant variables
      */
     public Backbone computeBackbone(final Collection<Variable> variables, final BackboneType type) {
         return computeBackbone(variables, type, null);
@@ -830,7 +830,7 @@ public abstract class MiniSatStyleSolver {
      * @param variables variables to test
      * @param type      backbone type
      * @param handler   the handler
-     * @return the backbone projected to the relevant variables or {@code null} if the formula on the solver with the restrictions are not satisfiable
+     * @return the backbone projected to the relevant variables or {@code null} if the computation was aborted by the handler
      */
     public Backbone computeBackbone(final Collection<Variable> variables, final BackboneType type, final SATHandler handler) {
         final boolean sat = solve(handler) == Tristate.TRUE;

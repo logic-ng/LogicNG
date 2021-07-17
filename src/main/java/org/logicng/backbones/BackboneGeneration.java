@@ -62,7 +62,7 @@ public final class BackboneGeneration {
      * @param variables the given collection of relevant variables for the backbone computation
      * @param type      the type of backbone variables that should be computed
      * @param handler   an optional handler for the backbone computation's SAT solver
-     * @return the backbone or {@code null} if the formula is UNSAT or the computation was aborted by the handler
+     * @return the backbone or {@code null} if the computation was aborted by the handler
      */
     public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type, final SATHandler handler) {
         if (formulas == null || formulas.isEmpty()) {
@@ -79,7 +79,7 @@ public final class BackboneGeneration {
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
      * @param type      the type of backbone variables that should be computed
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables, final BackboneType type) {
         return compute(formulas, variables, type, null);
@@ -89,7 +89,7 @@ public final class BackboneGeneration {
      * Computes the complete backbone for a given collection of formulas w.r.t. a collection of variables and a backbone type.
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas, final Collection<Variable> variables) {
         return compute(formulas, variables, BackboneType.POSITIVE_AND_NEGATIVE);
@@ -99,7 +99,7 @@ public final class BackboneGeneration {
      * Computes the backbone for a given collection of formulas w.r.t. a given backbone type.
      * @param formulas the given collection of formulas
      * @param type     the type of backbone variables that should be computed
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas, final BackboneType type) {
         return compute(formulas, FormulaHelper.variables(formulas), type);
@@ -108,7 +108,7 @@ public final class BackboneGeneration {
     /**
      * Computes the complete backbone for a given collection of formulas.
      * @param formulas the given collection of formulas
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Collection<Formula> formulas) {
         return compute(formulas, FormulaHelper.variables(formulas), BackboneType.POSITIVE_AND_NEGATIVE);
@@ -119,7 +119,7 @@ public final class BackboneGeneration {
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
      * @param type      the type of backbone variables that should be computed
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Formula formula, final Collection<Variable> variables, final BackboneType type) {
         return compute(Collections.singletonList(formula), variables, type);
@@ -129,7 +129,7 @@ public final class BackboneGeneration {
      * Computes the complete backbone for a given formula w.r.t. a collection of variables and a backbone type.
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Formula formula, final Collection<Variable> variables) {
         return compute(formula, variables, BackboneType.POSITIVE_AND_NEGATIVE);
@@ -139,7 +139,7 @@ public final class BackboneGeneration {
      * Computes the backbone for a given formula w.r.t. a given backbone type.
      * @param formula the given formula
      * @param type    the type of backbone variables that should be computed
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Formula formula, final BackboneType type) {
         return compute(formula, formula.variables(), type);
@@ -148,7 +148,7 @@ public final class BackboneGeneration {
     /**
      * Computes the complete backbone for a given formula.
      * @param formula the given formula
-     * @return the backbone or {@code null} if the formula is UNSAT
+     * @return the backbone
      */
     public static Backbone compute(final Formula formula) {
         return compute(formula, formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE);
@@ -158,7 +158,7 @@ public final class BackboneGeneration {
      * Computes the positive backbone variables for a given collection of formulas w.r.t. a collection of variables.
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
-     * @return the positive backbone or {@code null} if the formula is UNSAT
+     * @return the positive backbone
      */
     public static Backbone computePositive(final Collection<Formula> formulas, final Collection<Variable> variables) {
         return compute(formulas, variables, BackboneType.ONLY_POSITIVE);
@@ -167,7 +167,7 @@ public final class BackboneGeneration {
     /**
      * Computes the positive backbone variables for a given collection of formulas.
      * @param formulas the given collection of formulas
-     * @return the positive backbone or {@code null} if the formula is UNSAT
+     * @return the positive backbone
      */
     public static Backbone computePositive(final Collection<Formula> formulas) {
         return compute(formulas, FormulaHelper.variables(formulas), BackboneType.ONLY_POSITIVE);
@@ -177,7 +177,7 @@ public final class BackboneGeneration {
      * Computes the positive backbone allVariablesInFormulas for a given formula w.r.t. a collection of variables.
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
-     * @return the positive backbone or {@code null} if the formula is UNSAT
+     * @return the positive backbone
      */
     public static Backbone computePositive(final Formula formula, final Collection<Variable> variables) {
         return compute(formula, variables, BackboneType.ONLY_POSITIVE);
@@ -186,7 +186,7 @@ public final class BackboneGeneration {
     /**
      * Computes the positive backbone variables for a given formula.
      * @param formula the given formula
-     * @return the positive backbone or {@code null} if the formula is UNSAT
+     * @return the positive backbone
      */
     public static Backbone computePositive(final Formula formula) {
         return compute(formula, formula.variables(), BackboneType.ONLY_POSITIVE);
@@ -196,7 +196,7 @@ public final class BackboneGeneration {
      * Computes the negative backbone variables for a given collection of formulas w.r.t. a collection of variables.
      * @param formulas  the given collection of formulas
      * @param variables the given collection of relevant variables for the backbone computation
-     * @return the negative backbone or {@code null} if the formula is UNSAT
+     * @return the negative backbone
      */
     public static Backbone computeNegative(final Collection<Formula> formulas, final Collection<Variable> variables) {
         return compute(formulas, variables, BackboneType.ONLY_NEGATIVE);
@@ -205,7 +205,7 @@ public final class BackboneGeneration {
     /**
      * Computes the negative backbone variables for a given collection of formulas.
      * @param formulas the given collection of formulas
-     * @return the negative backbone or {@code null} if the formula is UNSAT
+     * @return the negative backbone
      */
     public static Backbone computeNegative(final Collection<Formula> formulas) {
         return compute(formulas, FormulaHelper.variables(formulas), BackboneType.ONLY_NEGATIVE);
@@ -215,7 +215,7 @@ public final class BackboneGeneration {
      * Computes the negative backbone variables for a given formula w.r.t. a collection of variables.
      * @param formula   the given formula
      * @param variables the given collection of relevant variables for the backbone computation
-     * @return the negative backbone or {@code null} if the formula is UNSAT
+     * @return the negative backbone
      */
     public static Backbone computeNegative(final Formula formula, final Collection<Variable> variables) {
         return compute(formula, variables, BackboneType.ONLY_NEGATIVE);
@@ -224,7 +224,7 @@ public final class BackboneGeneration {
     /**
      * Computes the negative backbone variables for a given formula.
      * @param formula the given formula
-     * @return the negative backbone or {@code null} if the formula is UNSAT
+     * @return the negative backbone
      */
     public static Backbone computeNegative(final Formula formula) {
         return compute(formula, formula.variables(), BackboneType.ONLY_NEGATIVE);
