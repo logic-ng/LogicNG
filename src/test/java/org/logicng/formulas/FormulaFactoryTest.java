@@ -192,7 +192,7 @@ public class FormulaFactoryTest {
     }
 
     @Test
-    public void testStatistics() throws ParserException {
+    public void testStatistics() {
         final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory F").build());
         final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory F").build());
         final FormulaFactory.FormulaFactoryStatistics statisticsF1 = f.statistics();

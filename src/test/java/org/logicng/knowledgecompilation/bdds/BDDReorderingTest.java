@@ -77,7 +77,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                     BDDReorderingMethod.BDD_REORDER_SIFTITE, BDDReorderingMethod.BDD_REORDER_RANDOM);
 
     @Test
-    public void testExceptionalBehavior() throws ParserException {
+    public void testExceptionalBehavior() {
         assertThatThrownBy(() -> {
             final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B), 100, 100);
             final BDDReordering reordering = new BDDReordering(kernel);
