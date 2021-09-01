@@ -46,7 +46,7 @@ import java.util.List;
 
 /**
  * Test some basic formula factory functionality.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public class FormulaFactoryTest {
@@ -76,8 +76,8 @@ public class FormulaFactoryTest {
         f.or(f.variable("a"), f.literal("b", false), f.variable("x"), f.implication(f.variable("a"), f.variable("x")));
         final String expected = String.format("Name:              MyFormulaFactory%n" +
                 "Positive Literals: 3%n" +
-                "Negative Literals: 3%n" +
-                "Negations:         1%n" +
+                "Negative Literals: 1%n" +
+                "Negations:         0%n" +
                 "Implications:      1%n" +
                 "Equivalences:      0%n" +
                 "Conjunctions (2):  1%n" +
@@ -276,7 +276,7 @@ public class FormulaFactoryTest {
 
         assertThat(statisticsF2.name()).isEqualTo("Factory F");
         assertThat(statisticsF2.positiveLiterals()).isEqualTo(5);
-        assertThat(statisticsF2.negativeLiterals()).isEqualTo(5);
+        assertThat(statisticsF2.negativeLiterals()).isEqualTo(0);
         assertThat(statisticsF2.negations()).isEqualTo(0);
         assertThat(statisticsF2.implications()).isEqualTo(0);
         assertThat(statisticsF2.equivalences()).isEqualTo(0);
@@ -293,7 +293,7 @@ public class FormulaFactoryTest {
         assertThat(statisticsF2.ccCounter()).isEqualTo(0);
         assertThat(statisticsF2.pbCounter()).isEqualTo(0);
         assertThat(statisticsF2.cnfCounter()).isEqualTo(0);
-        assertThat(statisticsF2.formulas()).isEqualTo(18);
+        assertThat(statisticsF2.formulas()).isEqualTo(13);
 
         assertThat(statisticsF2).isNotEqualTo(statisticsF1);
         assertThat(statisticsF1).isNotEqualTo(statisticsF2);
@@ -302,7 +302,7 @@ public class FormulaFactoryTest {
                 "FormulaFactoryStatistics{"
                         + "name='Factory F'"
                         + ", positiveLiterals=5"
-                        + ", negativeLiterals=5"
+                        + ", negativeLiterals=0"
                         + ", negations=0"
                         + ", implications=0"
                         + ", equivalences=0"

@@ -100,7 +100,7 @@ public class FormulaFactoryImporterTest extends TestWithExampleFormulas {
         assertThat(imp(this.NOT1)).isEqualTo(this.NOT1);
         assertThat(imp(this.NOT2)).isEqualTo(this.NOT2);
         assertThat(this.myG.statistics().positiveLiterals()).isEqualTo(4);
-        assertThat(this.myG.statistics().negativeLiterals()).isEqualTo(4);
+        assertThat(this.myG.statistics().negativeLiterals()).isEqualTo(0);
         assertThat(this.myG.statistics().conjunctions2()).isEqualTo(1);
         assertThat(this.myG.statistics().disjunctions2()).isEqualTo(1);
         assertThat(this.myG.statistics().negations()).isEqualTo(2);
@@ -144,10 +144,10 @@ public class FormulaFactoryImporterTest extends TestWithExampleFormulas {
         assertThat(imp(this.EQ3)).isEqualTo(this.EQ3);
         assertThat(imp(this.EQ4)).isEqualTo(this.EQ4);
         assertThat(this.myG.statistics().positiveLiterals()).isEqualTo(4);
-        assertThat(this.myG.statistics().negativeLiterals()).isEqualTo(4);
+        assertThat(this.myG.statistics().negativeLiterals()).isEqualTo(2);
         assertThat(this.myG.statistics().conjunctions2()).isEqualTo(1);
         assertThat(this.myG.statistics().disjunctions2()).isEqualTo(1);
-        assertThat(this.myG.statistics().negations()).isEqualTo(2);
+        assertThat(this.myG.statistics().negations()).isEqualTo(0);
         assertThat(this.myG.statistics().implications()).isEqualTo(2);
         assertThat(this.myG.statistics().equivalences()).isEqualTo(4);
     }
@@ -167,7 +167,7 @@ public class FormulaFactoryImporterTest extends TestWithExampleFormulas {
         assertThat(this.myG.statistics().negativeLiterals()).isEqualTo(4);
         assertThat(this.myG.statistics().conjunctions2()).isEqualTo(2);
         assertThat(this.myG.statistics().disjunctions2()).isEqualTo(3);
-        assertThat(this.myG.statistics().negations()).isEqualTo(2);
+        assertThat(this.myG.statistics().negations()).isEqualTo(0);
         assertThat(this.myG.statistics().implications()).isEqualTo(0);
         assertThat(this.myG.statistics().equivalences()).isEqualTo(0);
     }
@@ -187,7 +187,7 @@ public class FormulaFactoryImporterTest extends TestWithExampleFormulas {
         assertThat(this.myG.statistics().negativeLiterals()).isEqualTo(4);
         assertThat(this.myG.statistics().conjunctions2()).isEqualTo(3);
         assertThat(this.myG.statistics().disjunctions2()).isEqualTo(2);
-        assertThat(this.myG.statistics().negations()).isEqualTo(2);
+        assertThat(this.myG.statistics().negations()).isEqualTo(0);
         assertThat(this.myG.statistics().implications()).isEqualTo(0);
         assertThat(this.myG.statistics().equivalences()).isEqualTo(0);
     }

@@ -66,7 +66,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public class FormulaFactory {
@@ -148,15 +148,36 @@ public class FormulaFactory {
     }
 
     /**
-     * Returns {@code true} if a given list of formulas contains the negation of a  given formula,
+     * Returns {@code true} if a given list of formulas contains the negation of a given formula,
      * {@code false} otherwise.  Always returns {@code false} if the formula factory is configured
      * to allow contradictions and tautologies.
      * @param formulas the list of formulas
-     * @param f        the formula
+     * @param formula  the formula
      * @return {@code true} if a given list of formulas contains a given formula, {@code false} otherwise
      */
-    private boolean containsComplement(final LinkedHashSet<Formula> formulas, final Formula f) {
-        return this.simplifyComplementaryOperands && formulas.contains(f.negate());
+    private boolean containsComplement(final LinkedHashSet<Formula> formulas, final Formula formula) {
+        if (!this.simplifyComplementaryOperands) {
+            return false;
+        }
+        final Formula negatedFormula = negateOrNull(formula);
+        return negatedFormula != null && formulas.contains(negatedFormula);
+    }
+
+    /**
+     * Returns the negated formula if the negation exists in the cache, otherwise {@code null} is returned.
+     * @param formula the formula
+     * @return the negated formula if the negation exists in the cache, otherwise {@code null}
+     */
+    private Formula negateOrNull(final Formula formula) {
+        if (formula.type() == FALSE || formula.type() == TRUE || formula.type == NOT) {
+            return formula.negate();
+        } else if (formula.type() == LITERAL) {
+            final Literal lit = (Literal) formula;
+            final String name = lit.name();
+            return lit.phase() ? this.negLiterals.get(name) : this.posLiterals.get(name);
+        } else {
+            return this.nots.get(formula);
+        }
     }
 
     /**
@@ -314,7 +335,7 @@ public class FormulaFactory {
         if (left.equals(right)) {
             return this.verum();
         }
-        if (left.equals(right.negate())) {
+        if (left.equals(negateOrNull(right))) {
             return this.falsum();
         }
         final LinkedHashSet<Formula> key = new LinkedHashSet<>(Arrays.asList(left, right));
@@ -339,11 +360,11 @@ public class FormulaFactory {
      * <p>
      * Constants, literals and negations are negated directly and returned.
      * For all other formulas a new {@code Not} object is returned.
-     * @param operandIn the given formula
+     * @param formula the given formula
      * @return the negated formula
      */
-    public Formula not(final Formula operandIn) {
-        final Formula operand = importOrPanic(operandIn);
+    public Formula not(final Formula formula) {
+        final Formula operand = importOrPanic(formula);
         if (operand.type() == LITERAL || operand.type() == FALSE || operand.type() == TRUE || operand.type() == NOT) {
             return operand.negate();
         }
@@ -1087,8 +1108,8 @@ public class FormulaFactory {
         this.cnfCheck = true;
         for (final Formula form : operands) {
             if (form.type() == OR) {
-                for (final Formula f : ((NAryOperator) form).operands) {
-                    final byte ret = this.addFormulaOr(ops, f);
+                for (final Formula op : ((NAryOperator) form).operands) {
+                    final byte ret = this.addFormulaOr(ops, op);
                     if (ret == 0x00) {
                         return null;
                     }
@@ -1119,8 +1140,8 @@ public class FormulaFactory {
         this.cnfCheck = true;
         for (final Formula form : operands) {
             if (form.type() == AND) {
-                for (final Formula f : ((NAryOperator) form).operands) {
-                    final byte ret = this.addFormulaAnd(ops, f);
+                for (final Formula op : ((NAryOperator) form).operands) {
+                    final byte ret = this.addFormulaAnd(ops, op);
                     if (ret == 0x00) {
                         return null;
                     }
@@ -1174,17 +1195,17 @@ public class FormulaFactory {
      * operation it will be skipped.  If a complementary formula is already present in the list of operands or the
      * formula is the dual element, 0x00 is returned.  If the added formula was a literal 0x01 is returned,
      * otherwise 0x02 is returned.
-     * @param ops the list of operands
-     * @param f   the formula
+     * @param ops     the list of operands
+     * @param formula the formula
      */
-    private byte addFormulaOr(final LinkedHashSet<Formula> ops, final Formula f) {
-        if (f.type == FALSE) {
+    private byte addFormulaOr(final LinkedHashSet<Formula> ops, final Formula formula) {
+        if (formula.type == FALSE) {
             return 0x01;
-        } else if (f.type == TRUE || containsComplement(ops, f)) {
+        } else if (formula.type == TRUE || containsComplement(ops, formula)) {
             return 0x00;
         } else {
-            ops.add(f);
-            return (byte) (f.type == LITERAL ? 0x01 : 0x02);
+            ops.add(formula);
+            return (byte) (formula.type == LITERAL ? 0x01 : 0x02);
         }
     }
 
@@ -1193,17 +1214,17 @@ public class FormulaFactory {
      * operation it will be skipped.  If a complementary formula is already present in the list of operands or the
      * formula is the dual element, 0x00 is returned.  If the added formula was a clause, 0x01 is returned,
      * otherwise 0x02 is returned.
-     * @param ops the list of operands
-     * @param f   the formula
+     * @param ops     the list of operands
+     * @param formula the formula
      */
-    private byte addFormulaAnd(final LinkedHashSet<Formula> ops, final Formula f) {
-        if (f.type() == TRUE) {
+    private byte addFormulaAnd(final LinkedHashSet<Formula> ops, final Formula formula) {
+        if (formula.type() == TRUE) {
             return 0x01;
-        } else if (f.type == FALSE || containsComplement(ops, f)) {
+        } else if (formula.type == FALSE || containsComplement(ops, formula)) {
             return 0x00;
         } else {
-            ops.add(f);
-            return (byte) (f.type == LITERAL || f.type == OR && ((Or) f).isCNFClause() ? 0x01 : 0x02);
+            ops.add(formula);
+            return (byte) (formula.type == LITERAL || formula.type == OR && ((Or) formula).isCNFClause() ? 0x01 : 0x02);
         }
     }
 

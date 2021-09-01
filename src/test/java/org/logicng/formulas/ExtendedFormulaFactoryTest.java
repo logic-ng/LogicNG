@@ -53,7 +53,7 @@ import java.util.TreeMap;
 
 /**
  * Unit tests for the class {@link ExtendedFormulaFactory}.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.2
  */
 public class ExtendedFormulaFactoryTest {
@@ -70,7 +70,7 @@ public class ExtendedFormulaFactoryTest {
 
     @Test
     public void testShrinkMap() {
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        final LinkedHashMap<String, String> map = new LinkedHashMap<>();
         map.put("a", "A");
         map.put("b", "B");
         map.put("c", "C");
@@ -96,7 +96,7 @@ public class ExtendedFormulaFactoryTest {
 
     @Test
     public void testShrinkSet() {
-        LinkedHashSet<String> set = new LinkedHashSet<>();
+        final LinkedHashSet<String> set = new LinkedHashSet<>();
         set.add("a");
         set.add("b");
         set.add("c");
@@ -240,12 +240,13 @@ public class ExtendedFormulaFactoryTest {
         testCacheClearance(new DNFFactorization(), PredicateCacheEntry.IS_DNF, TransformationCacheEntry.FACTORIZED_DNF);
     }
 
-    private void testCacheClearance(final FormulaTransformation transformation, final PredicateCacheEntry predicateCacheEntry, final TransformationCacheEntry transformationCacheEntry) {
+    private void testCacheClearance(final FormulaTransformation transformation, final PredicateCacheEntry predicateCacheEntry,
+                                    final TransformationCacheEntry transformationCacheEntry) {
         final SoftAssertions softly = new SoftAssertions();
         final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
         final List<Formula> formulas = initializeFormulaFactoryWithFormulas(eff);
         final FormulaFactoryState state = eff.save();
-        assertThat(state.toString()).isEqualTo("FormulaFactoryState{id=0, state=[4, 4, 0, 5, 4, 5, 3, 0, 0, 0, 3, 0, 0, 0, 5, 2, 0, 0, 0]}");
+        assertThat(state.toString()).isEqualTo("FormulaFactoryState{id=0, state=[4, 4, 0, 2, 4, 5, 3, 0, 0, 0, 3, 0, 0, 0, 5, 2, 0, 0, 0]}");
         for (final Formula formula : formulas) {
             transformation.apply(formula, true);
             softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula.transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();
