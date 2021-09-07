@@ -30,7 +30,7 @@ package org.logicng.formulas.cache;
 
 /**
  * The pre-defined function cache entries.
- * @version 2.0
+ * @version 2.2.0
  * @since 1.0
  */
 public enum FunctionCacheEntry implements CacheEntry {
@@ -38,7 +38,11 @@ public enum FunctionCacheEntry implements CacheEntry {
     VARPROFILE("variable profile"),
     LITPROFILE("literal profile"),
     DNNF_MODELCOUNT("DNNF model count"),
-    DEPTH("Formula depth");
+    DEPTH("Formula depth"),
+    NUMBER_OF_ATOMS("number of atoms"),
+    NUMBER_OF_NODES("number of nodes"),
+    VARIABLES("variables"),
+    LITERALS("literals");
 
     private final String description;
 

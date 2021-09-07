@@ -31,11 +31,8 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
 /**
@@ -44,9 +41,6 @@ import java.util.stream.Stream;
  * @since 1.0
  */
 public abstract class Constant extends Formula {
-
-    private static final SortedSet<Variable> EMPTY_VARIABLE_SET = Collections.unmodifiableSortedSet(new TreeSet<>());
-    private static final SortedSet<Literal> EMPTY_LITERAL_SET = Collections.unmodifiableSortedSet(new TreeSet<>());
 
     private static final Iterator<Formula> ITERATOR = new Iterator<Formula>() {
         @Override
@@ -75,16 +69,6 @@ public abstract class Constant extends Formula {
     }
 
     @Override
-    public long numberOfAtoms() {
-        return 1L;
-    }
-
-    @Override
-    public long numberOfNodes() {
-        return 1L;
-    }
-
-    @Override
     public int numberOfOperands() {
         return 0;
     }
@@ -97,16 +81,6 @@ public abstract class Constant extends Formula {
     @Override
     public boolean isAtomicFormula() {
         return true;
-    }
-
-    @Override
-    public SortedSet<Variable> variables() {
-        return EMPTY_VARIABLE_SET;
-    }
-
-    @Override
-    public SortedSet<Literal> literals() {
-        return EMPTY_LITERAL_SET;
     }
 
     @Override

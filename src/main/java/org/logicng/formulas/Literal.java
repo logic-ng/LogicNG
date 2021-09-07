@@ -31,11 +31,8 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
 /**
@@ -74,7 +71,6 @@ public class Literal extends Formula implements Comparable<Literal> {
 
     private final String name;
     private final boolean phase;
-    private final SortedSet<Literal> literals;
     private final Variable var;
     private volatile Literal negated;
     private volatile int hashCode;
@@ -91,23 +87,11 @@ public class Literal extends Formula implements Comparable<Literal> {
         this.name = name;
         this.phase = phase;
         this.var = phase ? (Variable) this : (Variable) this.negate();
-        this.variables = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(this.var)));
-        this.literals = Collections.unmodifiableSortedSet(new TreeSet<>(Collections.singletonList(this)));
     }
 
     @Override
     public FormulaFactory factory() {
         return this.f;
-    }
-
-    @Override
-    public long numberOfAtoms() {
-        return 1L;
-    }
-
-    @Override
-    public long numberOfNodes() {
-        return 1L;
     }
 
     @Override
@@ -123,16 +107,6 @@ public class Literal extends Formula implements Comparable<Literal> {
     @Override
     public boolean isAtomicFormula() {
         return true;
-    }
-
-    @Override
-    public SortedSet<Variable> variables() {
-        return this.variables;
-    }
-
-    @Override
-    public SortedSet<Literal> literals() {
-        return this.literals;
     }
 
     @Override

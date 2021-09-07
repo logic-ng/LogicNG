@@ -28,9 +28,6 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
-import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
-
 import org.logicng.datastructures.Assignment;
 
 import java.util.LinkedHashSet;
@@ -43,7 +40,7 @@ import java.util.LinkedHashSet;
  * - does not contain duplicates
  * - does not contain complementary literals
  * - does not contain constants
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public final class And extends NAryOperator {
@@ -52,16 +49,9 @@ public final class And extends NAryOperator {
      * Constructor.
      * @param operands the stream of operands
      * @param f        the factory which created this instance
-     * @param isCNF    is {@code true} if the formula is in CNF, {@code false} otherwise
      */
-    And(final LinkedHashSet<? extends Formula> operands, final FormulaFactory f, final boolean isCNF) {
+    And(final LinkedHashSet<? extends Formula> operands, final FormulaFactory f) {
         super(FType.AND, operands, f);
-        if (isCNF) {
-            this.setPredicateCacheEntry(IS_CNF, true);
-            this.setTransformationCacheEntry(FACTORIZED_CNF, this);
-        } else {
-            this.setPredicateCacheEntry(IS_CNF, false);
-        }
     }
 
     @Override

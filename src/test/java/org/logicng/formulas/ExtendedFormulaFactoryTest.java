@@ -249,12 +249,13 @@ public class ExtendedFormulaFactoryTest {
         assertThat(state.toString()).isEqualTo("FormulaFactoryState{id=0, state=[4, 4, 0, 2, 4, 5, 3, 0, 0, 0, 3, 0, 0, 0, 5, 2, 0, 0, 0]}");
         for (final Formula formula : formulas) {
             transformation.apply(formula, true);
-            softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula.transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();
+            softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula
+                    .transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();
         }
         eff.load(state);
         for (final Formula formula : formulas) {
             softly.assertThat(formula.transformationCacheEntry(transformationCacheEntry)).isNull();
-            softly.assertThat(formula.transformationCache).isEmpty();
+            softly.assertThat(eff.transformationCache.get(formula)).isNullOrEmpty();
         }
         softly.assertAll();
     }

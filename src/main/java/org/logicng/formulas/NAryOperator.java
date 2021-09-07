@@ -30,16 +30,13 @@ package org.logicng.formulas;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
-import org.logicng.util.FormulaHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /**
@@ -65,30 +62,6 @@ public abstract class NAryOperator extends Formula {
     }
 
     @Override
-    public long numberOfAtoms() {
-        if (this.numberOfAtoms != -1) {
-            return this.numberOfAtoms;
-        }
-        this.numberOfAtoms = 0;
-        for (final Formula f : this.operands) {
-            this.numberOfAtoms += f.numberOfAtoms();
-        }
-        return this.numberOfAtoms;
-    }
-
-    @Override
-    public long numberOfNodes() {
-        if (this.numberOfNodes != -1) {
-            return this.numberOfNodes;
-        }
-        this.numberOfNodes = 1;
-        for (final Formula f : this.operands) {
-            this.numberOfNodes += f.numberOfNodes();
-        }
-        return this.numberOfNodes;
-    }
-
-    @Override
     public int numberOfOperands() {
         return this.operands.length;
     }
@@ -101,19 +74,6 @@ public abstract class NAryOperator extends Formula {
     @Override
     public boolean isAtomicFormula() {
         return false;
-    }
-
-    @Override
-    public SortedSet<Variable> variables() {
-        if (this.variables == null) {
-            this.variables = Collections.unmodifiableSortedSet(FormulaHelper.variables(this.operands));
-        }
-        return this.variables;
-    }
-
-    @Override
-    public SortedSet<Literal> literals() {
-        return Collections.unmodifiableSortedSet(FormulaHelper.literals(this.operands));
     }
 
     @Override

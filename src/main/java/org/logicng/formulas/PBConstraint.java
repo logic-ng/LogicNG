@@ -33,7 +33,6 @@ import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
-import org.logicng.util.FormulaHelper;
 import org.logicng.util.Pair;
 
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
@@ -364,20 +362,6 @@ public class PBConstraint extends Formula {
     }
 
     @Override
-    public long numberOfAtoms() {
-        return 1L;
-    }
-
-    @Override
-    public long numberOfNodes() {
-        if (this.numberOfNodes != -1) {
-            return this.numberOfNodes;
-        }
-        this.numberOfNodes = 1L + this.literals.length;
-        return this.numberOfNodes;
-    }
-
-    @Override
     public int numberOfOperands() {
         return 0;
     }
@@ -390,19 +374,6 @@ public class PBConstraint extends Formula {
     @Override
     public boolean isAtomicFormula() {
         return true;
-    }
-
-    @Override
-    public SortedSet<Variable> variables() {
-        if (this.variables == null) {
-            this.variables = Collections.unmodifiableSortedSet(FormulaHelper.variables(this.literals));
-        }
-        return this.variables;
-    }
-
-    @Override
-    public SortedSet<Literal> literals() {
-        return Collections.unmodifiableSortedSet(FormulaHelper.literals(this.literals));
     }
 
     @Override

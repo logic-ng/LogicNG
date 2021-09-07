@@ -28,10 +28,9 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
-import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
-
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.cache.PredicateCacheEntry;
 
 import java.util.LinkedHashSet;
 
@@ -43,29 +42,18 @@ import java.util.LinkedHashSet;
  * - does not contain duplicates
  * - does not contain complementary literals
  * - does not contain constants
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public final class Or extends NAryOperator {
-
-    private final boolean isCNFClause;
 
     /**
      * Constructor.
      * @param operands the list of operands
      * @param f        the factory which created this instance
-     * @param isClause is {@code true} if the formula is a clause, {@code false} otherwise
      */
-    Or(final LinkedHashSet<? extends Formula> operands, final FormulaFactory f, final boolean isClause) {
+    Or(final LinkedHashSet<? extends Formula> operands, final FormulaFactory f) {
         super(FType.OR, operands, f);
-        if (isClause) {
-            this.setPredicateCacheEntry(IS_CNF, true);
-            this.setTransformationCacheEntry(FACTORIZED_CNF, this);
-            this.isCNFClause = true;
-        } else {
-            this.setPredicateCacheEntry(IS_CNF, false);
-            this.isCNFClause = false;
-        }
     }
 
     @Override
@@ -83,7 +71,7 @@ public final class Or extends NAryOperator {
      * @return {@code true} if this formula is a CNF clause
      */
     public boolean isCNFClause() {
-        return this.isCNFClause;
+        return this.f.predicateCacheEntry(this, PredicateCacheEntry.IS_CNF) == Tristate.TRUE;
     }
 
     @Override

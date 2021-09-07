@@ -32,6 +32,10 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.CacheEntry;
+import org.logicng.functions.LiteralsFunction;
+import org.logicng.functions.NumberOfAtomsFunction;
+import org.logicng.functions.NumberOfNodesFunction;
+import org.logicng.functions.VariablesFunction;
 import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
@@ -39,8 +43,6 @@ import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
 import org.logicng.transformations.NNFTransformation;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.stream.Stream;
 
@@ -53,12 +55,6 @@ public abstract class Formula implements Iterable<Formula> {
 
     protected final FType type;
     protected final FormulaFactory f;
-    protected final Map<CacheEntry, Formula> transformationCache;
-    protected final Map<CacheEntry, Tristate> predicateCache;
-    protected final Map<CacheEntry, Object> functionCache;
-    protected SortedSet<Variable> variables;
-    protected long numberOfAtoms;
-    protected long numberOfNodes;
 
     /**
      * Constructs a new formula.
@@ -68,12 +64,6 @@ public abstract class Formula implements Iterable<Formula> {
     protected Formula(final FType type, final FormulaFactory f) {
         this.type = type;
         this.f = f;
-        this.transformationCache = new HashMap<>();
-        this.predicateCache = new HashMap<>();
-        this.functionCache = new HashMap<>();
-        this.variables = null;
-        this.numberOfAtoms = -1;
-        this.numberOfNodes = -1;
     }
 
     /**
@@ -97,13 +87,17 @@ public abstract class Formula implements Iterable<Formula> {
      * or a pseudo-Boolean constraint.
      * @return the number of atomic formulas of this formula.
      */
-    public abstract long numberOfAtoms();
+    public long numberOfAtoms() {
+        return NumberOfAtomsFunction.get().apply(this, true);
+    }
 
     /**
      * Returns the number of nodes of this formula.
      * @return the number of nodes of this formula.
      */
-    public abstract long numberOfNodes();
+    public long numberOfNodes() {
+        return NumberOfNodesFunction.get().apply(this, true);
+    }
 
     /**
      * Returns the number of operands of this formula.
@@ -136,14 +130,18 @@ public abstract class Formula implements Iterable<Formula> {
      * set manually.
      * @return all variables occurring in this formula
      */
-    public abstract SortedSet<Variable> variables();
+    public SortedSet<Variable> variables() {
+        return VariablesFunction.get().apply(this, true);
+    }
 
     /**
      * Returns all literals occurring in this formula.  Returns an unmodifiable set, so do not try to change the literal
      * set manually.
      * @return all literals occurring in this formula
      */
-    public abstract SortedSet<Literal> literals();
+    public SortedSet<Literal> literals() {
+        return LiteralsFunction.get().apply(this, true);
+    }
 
     /**
      * Returns {@code true} if a given variable name is found in this formula, {@code false} otherwise.
@@ -336,7 +334,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @return the cache value or {@code null} if the key is not found
      */
     public Formula transformationCacheEntry(final CacheEntry key) {
-        return this.transformationCache.get(key);
+        return this.f.transformationCacheEntry(this, key);
     }
 
     /**
@@ -345,7 +343,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @param value the cache value
      */
     public void setTransformationCacheEntry(final CacheEntry key, final Formula value) {
-        this.transformationCache.put(key, value);
+        this.f.setTransformationCacheEntry(this, key, value);
     }
 
     /**
@@ -354,11 +352,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @return the cache value (which is {@code UNDEF} if nothing is present)
      */
     public Tristate predicateCacheEntry(final CacheEntry key) {
-        final Tristate tristate = this.predicateCache.get(key);
-        if (tristate == null) {
-            return Tristate.UNDEF;
-        }
-        return tristate;
+        return this.f.predicateCacheEntry(this, key);
     }
 
     /**
@@ -367,7 +361,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @param value the cache value
      */
     public void setPredicateCacheEntry(final CacheEntry key, final boolean value) {
-        this.predicateCache.put(key, Tristate.fromBool(value));
+        this.f.setPredicateCacheEntry(this, key, value);
     }
 
     /**
@@ -376,7 +370,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @param value the cache value
      */
     public void setPredicateCacheEntry(final CacheEntry key, final Tristate value) {
-        this.predicateCache.put(key, value);
+        this.f.setPredicateCacheEntry(this, key, value);
     }
 
     /**
@@ -385,7 +379,7 @@ public abstract class Formula implements Iterable<Formula> {
      * @return the cache value or {@code null} if the key is not found
      */
     public Object functionCacheEntry(final CacheEntry key) {
-        return this.functionCache.get(key);
+        return this.f.functionCacheEntry(this, key);
     }
 
     /**
@@ -394,15 +388,14 @@ public abstract class Formula implements Iterable<Formula> {
      * @param value the cache value
      */
     public void setFunctionCacheEntry(final CacheEntry key, final Object value) {
-        this.functionCache.put(key, value);
+        this.f.setFunctionCacheEntry(this, key, value);
     }
 
     /**
      * Clears the transformation and function cache of the formula.
      */
     public void clearCaches() {
-        this.transformationCache.clear();
-        this.functionCache.clear();
+        this.f.clearCaches(this);
     }
 
     /**

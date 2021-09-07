@@ -30,6 +30,7 @@ package org.logicng.formulas;
 
 import org.logicng.collections.LNGIntVector;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -44,7 +45,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to
  * synchronize the formula factory yourself or you use a formula factory for each single thread.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.2
  */
 public class ExtendedFormulaFactory extends FormulaFactory {
@@ -121,6 +122,9 @@ public class ExtendedFormulaFactory extends FormulaFactory {
         this.ccCounter = 0;
         this.pbCounter = 0;
         this.cnfCounter = 0;
+        this.transformationCache = new HashMap<>();
+        this.predicateCache = new HashMap<>();
+        this.functionCache = new HashMap<>();
     }
 
     /**
@@ -194,56 +198,10 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     }
 
     /**
-     * Clears the caches of every cached Formula.
+     * Clears the transformation and function caches.
      */
-    private void clearCaches() {
-        for (final Formula formula : this.posLiterals.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.negLiterals.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.generatedVariables) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.nots.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.implications.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.equivalences.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.ands2.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.ands3.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.ands4.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.andsN.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.ors2.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.ors3.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.ors4.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.orsN.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.pbConstraints.values()) {
-            formula.clearCaches();
-        }
-        for (final Formula formula : this.cardinalityConstraints.values()) {
-            formula.clearCaches();
-        }
+    public void clearCaches() {
+        this.transformationCache.clear();
+        this.functionCache.clear();
     }
 }

@@ -69,10 +69,10 @@ public class LiteralTest extends TestWithExampleFormulas {
 
     @Test
     public void testVariables() {
-        assertThat(this.A.variables)
+        assertThat(this.A.variables())
                 .hasSize(1)
                 .containsExactly(this.A);
-        assertThat(this.NA.variables)
+        assertThat(this.NA.variables())
                 .hasSize(1)
                 .containsExactly(this.A);
     }

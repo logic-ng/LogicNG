@@ -29,17 +29,14 @@
 package org.logicng.formulas;
 
 import org.logicng.datastructures.Substitution;
-import org.logicng.util.FormulaHelper;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /**
  * Super class for Boolean binary operators.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public abstract class BinaryOperator extends Formula {
@@ -79,24 +76,6 @@ public abstract class BinaryOperator extends Formula {
     }
 
     @Override
-    public long numberOfAtoms() {
-        if (this.numberOfAtoms != -1) {
-            return this.numberOfAtoms;
-        }
-        this.numberOfAtoms = this.left.numberOfAtoms() + this.right.numberOfAtoms();
-        return this.numberOfAtoms;
-    }
-
-    @Override
-    public long numberOfNodes() {
-        if (this.numberOfNodes != -1) {
-            return this.numberOfNodes;
-        }
-        this.numberOfNodes = this.left.numberOfNodes() + this.right.numberOfNodes() + 1;
-        return this.numberOfNodes;
-    }
-
-    @Override
     public int numberOfOperands() {
         return 2;
     }
@@ -109,19 +88,6 @@ public abstract class BinaryOperator extends Formula {
     @Override
     public boolean isAtomicFormula() {
         return false;
-    }
-
-    @Override
-    public SortedSet<Variable> variables() {
-        if (this.variables == null) {
-            this.variables = Collections.unmodifiableSortedSet(FormulaHelper.variables(this.left, this.right));
-        }
-        return this.variables;
-    }
-
-    @Override
-    public SortedSet<Literal> literals() {
-        return Collections.unmodifiableSortedSet(FormulaHelper.literals(this.left, this.right));
     }
 
     @Override

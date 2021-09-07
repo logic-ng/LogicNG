@@ -34,9 +34,13 @@ import static org.logicng.formulas.FType.LITERAL;
 import static org.logicng.formulas.FType.NOT;
 import static org.logicng.formulas.FType.OR;
 import static org.logicng.formulas.FType.TRUE;
+import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
+import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.cache.CacheEntry;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
@@ -109,6 +113,9 @@ public class FormulaFactory {
     int ccCounter;
     int pbCounter;
     int cnfCounter;
+    Map<Formula, Map<CacheEntry, Formula>> transformationCache;
+    Map<Formula, Map<CacheEntry, Tristate>> predicateCache;
+    Map<Formula, Map<CacheEntry, Object>> functionCache;
     private boolean cnfCheck;
     private FormulaFactoryImporter importer;
 
@@ -203,6 +210,9 @@ public class FormulaFactory {
         this.ccCounter = 0;
         this.pbCounter = 0;
         this.cnfCounter = 0;
+        this.transformationCache = new HashMap<>();
+        this.predicateCache = new HashMap<>();
+        this.functionCache = new HashMap<>();
     }
 
     /**
@@ -597,7 +607,8 @@ public class FormulaFactory {
         }
         and = condAndMap.get(condensedOperands);
         if (and == null) {
-            tempAnd = new And(condensedOperands, this, this.cnfCheck);
+            tempAnd = new And(condensedOperands, this);
+            setCnfCaches(tempAnd, this.cnfCheck);
             opAndMap.put(operands, tempAnd);
             condAndMap.put(condensedOperands, tempAnd);
             return tempAnd;
@@ -666,7 +677,8 @@ public class FormulaFactory {
         if (tempAnd != null) {
             return tempAnd;
         }
-        tempAnd = new And(clauses, this, true);
+        tempAnd = new And(clauses, this);
+        setCnfCaches(tempAnd, true);
         opAndMap.put(clauses, tempAnd);
         return tempAnd;
     }
@@ -751,7 +763,8 @@ public class FormulaFactory {
         }
         or = condOrMap.get(condensedOperands);
         if (or == null) {
-            tempOr = new Or(condensedOperands, this, this.cnfCheck);
+            tempOr = new Or(condensedOperands, this);
+            setCnfCaches(tempOr, this.cnfCheck);
             opOrMap.put(operands, tempOr);
             condOrMap.put(condensedOperands, tempOr);
             return tempOr;
@@ -818,9 +831,19 @@ public class FormulaFactory {
         if (tempOr != null) {
             return tempOr;
         }
-        tempOr = new Or(literals, this, true);
+        tempOr = new Or(literals, this);
+        setCnfCaches(tempOr, true);
         opOrMap.put(literals, tempOr);
         return tempOr;
+    }
+
+    private void setCnfCaches(final Formula formula, final boolean isCNF) {
+        if (isCNF) {
+            setPredicateCacheEntry(formula, IS_CNF, true);
+            setTransformationCacheEntry(formula, FACTORIZED_CNF, formula);
+        } else {
+            setPredicateCacheEntry(formula, IS_CNF, false);
+        }
     }
 
     /**
@@ -1267,6 +1290,93 @@ public class FormulaFactory {
                 }
             }
         }
+    }
+
+    /**
+     * Returns an entry of the transformation cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @return the cache value or {@code null} if the key is not found
+     */
+    protected Formula transformationCacheEntry(final Formula formula, final CacheEntry key) {
+        final Map<CacheEntry, Formula> cache = this.transformationCache.get(formula);
+        return cache == null ? null : cache.get(key);
+    }
+
+    /**
+     * Sets an entry in the transformation cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @param value   the cache value
+     */
+    protected void setTransformationCacheEntry(final Formula formula, final CacheEntry key, final Formula value) {
+        this.transformationCache.computeIfAbsent(formula, k -> new HashMap<>()).put(key, value);
+    }
+
+    /**
+     * Returns an entry of the predicate cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @return the cache value (which is {@code UNDEF} if nothing is present)
+     */
+    protected Tristate predicateCacheEntry(final Formula formula, final CacheEntry key) {
+        final Map<CacheEntry, Tristate> cache = this.predicateCache.get(formula);
+        if (cache == null) {
+            return Tristate.UNDEF;
+        } else {
+            final Tristate tristate = cache.get(key);
+            return tristate == null ? Tristate.UNDEF : tristate;
+        }
+    }
+
+    /**
+     * Sets an entry in the predicate cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @param value   the cache value
+     */
+    protected void setPredicateCacheEntry(final Formula formula, final CacheEntry key, final boolean value) {
+        this.setPredicateCacheEntry(formula, key, Tristate.fromBool(value));
+    }
+
+    /**
+     * Sets an entry in the predicate cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @param value   the cache value
+     */
+    protected void setPredicateCacheEntry(final Formula formula, final CacheEntry key, final Tristate value) {
+        this.predicateCache.computeIfAbsent(formula, k -> new HashMap<>()).put(key, value);
+    }
+
+    /**
+     * Returns an entry of the function cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @return the cache value or {@code null} if the key is not found
+     */
+    protected Object functionCacheEntry(final Formula formula, final CacheEntry key) {
+        final Map<CacheEntry, Object> cache = this.functionCache.get(formula);
+        return cache == null ? null : cache.get(key);
+    }
+
+    /**
+     * Sets an entry in the function cache for the given formula.
+     * @param formula the formula
+     * @param key     the cache key
+     * @param value   the cache value
+     */
+    protected void setFunctionCacheEntry(final Formula formula, final CacheEntry key, final Object value) {
+        this.functionCache.computeIfAbsent(formula, k -> new HashMap<>()).put(key, value);
+    }
+
+    /**
+     * Clears the transformation and function cache for the given formula.
+     * @param formula the formula
+     */
+    protected void clearCaches(final Formula formula) {
+        this.transformationCache.remove(formula);
+        this.functionCache.remove(formula);
     }
 
     /**

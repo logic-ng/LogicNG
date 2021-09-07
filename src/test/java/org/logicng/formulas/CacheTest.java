@@ -49,7 +49,8 @@ public class CacheTest {
     public void testDescription() {
         assertThat(TransformationCacheEntry.AIG.description()).isEqualTo("TransformationCacheEntry{description=and-inverter graph}");
         assertThat(TransformationCacheEntry.NNF.description()).isEqualTo("TransformationCacheEntry{description=negation normal form}");
-        assertThat(TransformationCacheEntry.PLAISTED_GREENBAUM_POS.description()).isEqualTo("TransformationCacheEntry{description=Plaisted & Greenbaum conjunctive normal form (positive polarity)}");
+        assertThat(TransformationCacheEntry.PLAISTED_GREENBAUM_POS.description()).isEqualTo("TransformationCacheEntry{description=Plaisted & Greenbaum conjunctive normal form " +
+                "(positive polarity)}");
         assertThat(TransformationCacheEntry.TSEITIN.description()).isEqualTo("TransformationCacheEntry{description=Tseitin conjunctive normal form}");
         assertThat(TransformationCacheEntry.FACTORIZED_CNF.description()).isEqualTo("TransformationCacheEntry{description=factorized conjunctive normal form}");
 
@@ -77,7 +78,7 @@ public class CacheTest {
         assertThat(valuesPred.contains(PredicateCacheEntry.valueOf("IS_SAT"))).isTrue();
 
         final List<FunctionCacheEntry> valuesFunc = Arrays.asList(FunctionCacheEntry.values());
-        assertThat(valuesFunc.size()).isEqualTo(5);
+        assertThat(valuesFunc.size()).isEqualTo(9);
         assertThat(valuesFunc.contains(FunctionCacheEntry.valueOf("LITPROFILE"))).isTrue();
         assertThat(valuesFunc.contains(FunctionCacheEntry.valueOf("SUBFORMULAS"))).isTrue();
     }

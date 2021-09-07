@@ -31,10 +31,8 @@ package org.logicng.formulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /**
@@ -67,24 +65,6 @@ public final class Not extends Formula {
     }
 
     @Override
-    public long numberOfAtoms() {
-        if (this.numberOfAtoms != -1) {
-            return this.numberOfAtoms;
-        }
-        this.numberOfAtoms = this.operand.numberOfAtoms();
-        return this.numberOfAtoms;
-    }
-
-    @Override
-    public long numberOfNodes() {
-        if (this.numberOfNodes != -1) {
-            return this.numberOfNodes;
-        }
-        this.numberOfNodes = this.operand.numberOfNodes() + 1;
-        return this.numberOfNodes;
-    }
-
-    @Override
     public int numberOfOperands() {
         return 1;
     }
@@ -97,19 +77,6 @@ public final class Not extends Formula {
     @Override
     public boolean isAtomicFormula() {
         return false;
-    }
-
-    @Override
-    public SortedSet<Variable> variables() {
-        if (this.variables == null) {
-            this.variables = Collections.unmodifiableSortedSet(this.operand.variables());
-        }
-        return this.variables;
-    }
-
-    @Override
-    public SortedSet<Literal> literals() {
-        return this.operand.literals();
     }
 
     @Override
