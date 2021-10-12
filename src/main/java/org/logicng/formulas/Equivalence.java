@@ -28,13 +28,11 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
-
 import org.logicng.datastructures.Assignment;
 
 /**
  * Boolean equivalence.
- * @version 1.0
+ * @version 2.2.0
  * @since 1.0
  */
 public final class Equivalence extends BinaryOperator {
@@ -57,16 +55,6 @@ public final class Equivalence extends BinaryOperator {
     @Override
     public Formula restrict(final Assignment assignment) {
         return this.f.equivalence(this.left.restrict(assignment), this.right.restrict(assignment));
-    }
-
-    @Override
-    public Formula nnf() {
-        Formula nnf = this.transformationCache.get(NNF);
-        if (nnf == null) {
-            nnf = this.f.and(this.f.or(this.f.not(this.left).nnf(), this.right.nnf()), this.f.or(this.f.not(this.right).nnf(), this.left.nnf()));
-            this.transformationCache.put(NNF, nnf);
-        }
-        return nnf;
     }
 
     @Override

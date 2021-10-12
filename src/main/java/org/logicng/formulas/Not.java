@@ -28,22 +28,18 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.FType.dual;
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
-
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /**
  * Boolean negation.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public final class Not extends Formula {
@@ -144,38 +140,6 @@ public final class Not extends Formula {
     @Override
     public Formula negate() {
         return this.operand;
-    }
-
-    @Override
-    public Formula nnf() {
-        Formula nnf = this.transformationCache.get(NNF);
-        if (nnf == null) {
-            switch (this.operand.type) {
-                case AND:
-                case OR:
-                    final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-                    for (final Formula op : this.operand) {
-                        nops.add(op.negate().nnf());
-                    }
-                    nnf = this.f.naryOperator(dual(this.operand.type), nops);
-                    break;
-                case IMPL:
-                    final BinaryOperator impl = (BinaryOperator) this.operand;
-                    nnf = this.f.and(impl.left.nnf(), impl.right.negate().nnf());
-                    break;
-                case EQUIV:
-                    final BinaryOperator equiv = (BinaryOperator) this.operand;
-                    nnf = this.f.and(this.f.or(equiv.left.negate().nnf(), equiv.right.negate().nnf()), this.f.or(equiv.left.nnf(), equiv.right.nnf()));
-                    break;
-                case PBC:
-                    nnf = this.operand.negate().nnf();
-                    break;
-                default:
-                    throw new IllegalStateException("Did not expect formula of type: " + this.operand.type());
-            }
-            this.transformationCache.put(NNF, nnf);
-        }
-        return nnf;
     }
 
     @Override

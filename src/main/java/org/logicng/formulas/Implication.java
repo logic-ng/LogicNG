@@ -28,13 +28,11 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
-
 import org.logicng.datastructures.Assignment;
 
 /**
  * Boolean implication.
- * @version 1.0
+ * @version 2.2.0
  * @since 1.0
  */
 public final class Implication extends BinaryOperator {
@@ -51,7 +49,7 @@ public final class Implication extends BinaryOperator {
 
     @Override
     public boolean evaluate(final Assignment assignment) {
-        return !left.evaluate(assignment) || right.evaluate(assignment);
+        return !this.left.evaluate(assignment) || this.right.evaluate(assignment);
     }
 
     @Override
@@ -60,19 +58,9 @@ public final class Implication extends BinaryOperator {
     }
 
     @Override
-    public Formula nnf() {
-        Formula nnf = this.transformationCache.get(NNF);
-        if (nnf == null) {
-            nnf = f.or(f.not(left).nnf(), right.nnf());
-            this.transformationCache.put(NNF, nnf);
-        }
-        return nnf;
-    }
-
-    @Override
     public int hashCode() {
         if (this.hashCode == 0) {
-            this.hashCode = 37 * left.hashCode() + 39 * right.hashCode();
+            this.hashCode = 37 * this.left.hashCode() + 39 * this.right.hashCode();
         }
         return this.hashCode;
     }
@@ -86,7 +74,7 @@ public final class Implication extends BinaryOperator {
             return false; // the same formula factory would have produced a == object
         }
         if (other instanceof Implication) {
-            Implication otherImp = (Implication) other;
+            final Implication otherImp = (Implication) other;
             return this.left.equals(otherImp.left) && this.right.equals(otherImp.right);
         }
         return false;

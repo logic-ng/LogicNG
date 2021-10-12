@@ -28,8 +28,6 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
-
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
 import org.logicng.datastructures.Assignment;
@@ -53,7 +51,7 @@ import java.util.stream.Stream;
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public class PBConstraint extends Formula {
@@ -532,19 +530,6 @@ public class PBConstraint extends Formula {
         }
     }
 
-    @Override
-    public Formula nnf() {
-        Formula nnf = this.transformationCache.get(NNF);
-        if (nnf == null) {
-            if (this.encoding == null) {
-                this.encode();
-            }
-            nnf = this.f.and(this.encoding);
-            this.setTransformationCacheEntry(NNF, nnf);
-        }
-        return nnf;
-    }
-
     /**
      * Returns the evaluation of the left-hand side of this constraint.
      * @param assignment the assignment
@@ -583,10 +568,14 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Encodes this constraint as CNF and stores the result.
+     * Encodes this constraint as CNF and stores the result, if the encoding does not already exist.
+     * @return the encoding
      */
-    private void encode() {
-        this.encoding = this.f.pbEncoder().encode(this);
+    public List<Formula> getEncoding() {
+        if (this.encoding == null) {
+            this.encoding = this.f.pbEncoder().encode(this);
+        }
+        return Collections.unmodifiableList(this.encoding);
     }
 
     @Override

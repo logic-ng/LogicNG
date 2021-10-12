@@ -37,7 +37,7 @@ import org.logicng.io.parsers.PropositionalParser;
 
 /**
  * Unit Tests for NNF conversion.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public class NNFTest extends TestWithExampleFormulas {
@@ -82,6 +82,7 @@ public class NNFTest extends TestWithExampleFormulas {
         assertThat(p.parse("~~a").nnf()).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(a => b)").nnf()).isEqualTo(p.parse("a & ~b"));
         assertThat(p.parse("~(~(a | b) => ~(x | y))").nnf()).isEqualTo(p.parse("~a & ~b & (x | y)"));
+        assertThat(p.parse("a <=> b").nnf()).isEqualTo(p.parse("(~a | b) & (~b | a)"));
         assertThat(p.parse("~(a <=> b)").nnf()).isEqualTo(p.parse("(~a | ~b) & (a | b)"));
         assertThat(p.parse("~(~(a | b) <=> ~(x | y))").nnf()).isEqualTo(p.parse("((a | b) | (x | y)) & ((~a & ~b) | (~x & ~y))"));
         assertThat(p.parse("~(a & b & ~x & ~y)").nnf()).isEqualTo(p.parse("~a | ~b | x | y"));

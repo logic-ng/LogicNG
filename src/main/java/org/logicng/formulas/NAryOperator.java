@@ -28,8 +28,6 @@
 
 package org.logicng.formulas;
 
-import static org.logicng.formulas.cache.TransformationCacheEntry.NNF;
-
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Substitution;
 import org.logicng.util.FormulaHelper;
@@ -46,7 +44,7 @@ import java.util.stream.Stream;
 
 /**
  * Super class for Boolean n-ary operators.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public abstract class NAryOperator extends Formula {
@@ -175,20 +173,6 @@ public abstract class NAryOperator extends Formula {
     @Override
     public Formula negate() {
         return this.f.not(this);
-    }
-
-    @Override
-    public Formula nnf() {
-        Formula nnf = this.transformationCache.get(NNF);
-        if (nnf == null) {
-            final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
-            for (final Formula op : this.operands) {
-                nops.add(op.nnf());
-            }
-            nnf = this.f.naryOperator(this.type, nops);
-            this.transformationCache.put(NNF, nnf);
-        }
-        return nnf;
     }
 
     /**

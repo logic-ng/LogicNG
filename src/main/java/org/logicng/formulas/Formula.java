@@ -37,6 +37,7 @@ import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
+import org.logicng.transformations.NNFTransformation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
 
 /**
  * Super class for formulas.
- * @version 1.2
+ * @version 2.2.0
  * @since 1.0
  */
 public abstract class Formula implements Iterable<Formula> {
@@ -213,7 +214,9 @@ public abstract class Formula implements Iterable<Formula> {
      * Returns a copy of this formula which is in NNF.
      * @return a copy of this formula which is in NNF
      */
-    public abstract Formula nnf();
+    public Formula nnf() {
+        return transform(NNFTransformation.get(), true);
+    }
 
     /**
      * Returns a copy of this formula which is in CNF.  The algorithm which is used for the default CNF transformation

@@ -50,7 +50,7 @@ import java.util.stream.Stream;
  * with {@code f.literal("a", false)} or if preferred with {@code f.not(f.variable("a"))}
  * or {@code f.variable("a").negate()}.
  * <p>
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public class Literal extends Formula implements Comparable<Literal> {
@@ -168,11 +168,6 @@ public class Literal extends Formula implements Comparable<Literal> {
         }
         this.negated = this.f.literal(this.name, !this.phase);
         return this.negated;
-    }
-
-    @Override
-    public Formula nnf() {
-        return this;
     }
 
     /**

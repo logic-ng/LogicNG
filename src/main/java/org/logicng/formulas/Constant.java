@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 
 /**
  * Super class for Boolean constants.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public abstract class Constant extends Formula {
@@ -126,11 +126,6 @@ public abstract class Constant extends Formula {
 
     @Override
     public Formula substitute(final Substitution substitution) {
-        return this;
-    }
-
-    @Override
-    public Formula nnf() {
         return this;
     }
 
