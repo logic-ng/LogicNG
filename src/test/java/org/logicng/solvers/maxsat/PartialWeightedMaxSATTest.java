@@ -39,6 +39,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.handlers.TimeoutMaxSATHandler;
+import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
@@ -265,6 +266,62 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             final MaxSATSolver solver = MaxSATSolver.wbo(config);
             testTimeoutHandler(solver);
+        }
+    }
+
+    @Test
+    public void testWeightedNonClauselSoftConstraints() throws ParserException {
+        final MaxSATSolver[] solvers = new MaxSATSolver[4];
+        solvers[0] = MaxSATSolver.incWBO();
+        solvers[1] = MaxSATSolver.linearSU();
+        solvers[2] = MaxSATSolver.wbo();
+        solvers[3] = MaxSATSolver.wmsu3();
+        for (final MaxSATSolver solver : solvers) {
+            solver.addHardFormula(this.f.parse("a & b & c"));
+            solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 2);
+            assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+            assertThat(solver.model().literals()).containsExactlyInAnyOrder(
+                    this.f.variable("a"), this.f.variable("b"), this.f.variable("c")
+            );
+            assertThat(solver.result()).isEqualTo(2);
+        }
+    }
+
+    @Test
+    public void testWeightedSoftConstraintsCornerCaseVerum() throws ParserException {
+        final MaxSATSolver[] solvers = new MaxSATSolver[4];
+        solvers[0] = MaxSATSolver.incWBO();
+        solvers[1] = MaxSATSolver.linearSU();
+        solvers[2] = MaxSATSolver.wbo();
+        solvers[3] = MaxSATSolver.wmsu3();
+        for (final MaxSATSolver solver : solvers) {
+            solver.addHardFormula(this.f.parse("a & b & c"));
+            solver.addSoftFormula(this.f.parse("$true"), 2);
+            solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 3);
+            assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+            assertThat(solver.model().literals()).containsExactlyInAnyOrder(
+                    this.f.variable("a"), this.f.variable("b"), this.f.variable("c")
+            );
+            assertThat(solver.result()).isEqualTo(3);
+        }
+    }
+
+    @Test
+    public void testWeightedSoftConstraintsCornerCaseFalsum() throws ParserException {
+        final MaxSATSolver[] solvers = new MaxSATSolver[4];
+        solvers[0] = MaxSATSolver.incWBO();
+        solvers[1] = MaxSATSolver.linearSU();
+        solvers[2] = MaxSATSolver.wbo();
+        solvers[3] = MaxSATSolver.wmsu3();
+        for (final MaxSATSolver solver : solvers) {
+            solver.addHardFormula(this.f.parse("a & b & c"));
+            solver.addSoftFormula(this.f.parse("$false"), 2);
+            solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 3);
+            assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+            assertThat(solver.model().literals()).containsExactlyInAnyOrder(
+                    this.f.variable("a"), this.f.variable("b"), this.f.variable("c")
+            );
+            assertThat(solver.result()).isEqualTo(5);
         }
     }
 

@@ -211,9 +211,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testLinearUS() throws IOException {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
-        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[0] =
+                MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[1] =
+                MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[2] =
+                MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.linearUS(config);
@@ -231,9 +234,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testMSU3() throws IOException {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
-        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[0] =
+                MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[1] =
+                MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[2] =
+                MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.msu3(config);
@@ -259,9 +265,9 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         assertThat(stats.bestSolution()).isEqualTo(26);
         assertThat(stats.unsatCalls()).isEqualTo(26);
         assertThat(stats.satCalls()).isEqualTo(2);
-        assertThat(stats.averageCoreSize()).isEqualTo(29.46, Offset.offset(0.01));
-        assertThat(stats.symmetryClauses()).isEqualTo(24449);
-        assertThat(stats.toString()).isEqualTo("MaxSAT.Stats{best solution=26, #sat calls=2, #unsat calls=26, average core size=29.46, #symmetry clauses=24449}");
+        assertThat(stats.averageCoreSize()).isEqualTo(31.88, Offset.offset(0.01));
+        assertThat(stats.symmetryClauses()).isEqualTo(31150);
+        assertThat(stats.toString()).isEqualTo("MaxSAT.Stats{best solution=26, #sat calls=2, #unsat calls=26, average core size=31.88, #symmetry clauses=31150}");
     }
 
     @Test
@@ -316,19 +322,19 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         solvers[4] = MaxSATSolver.wbo();
         solvers[5] = MaxSATSolver.wmsu3();
 
-        final String expected = "MaxSATSolver{result=OPTIMUM, var2index={a=0, b=1}}";
+        final String expected = "MaxSATSolver{result=OPTIMUM, var2index={@SEL_SOFT_0=2, @SEL_SOFT_1=3, a=0, b=1}}";
 
-        for (int i = 0; i < 6; i++) {
-            final MaxSATSolver s = solvers[i];
-            s.addHardFormula(this.OR3);
-            s.addSoftFormula(this.A, 1);
+        for (int i = 0; i < solvers.length; i++) {
+            final MaxSATSolver solver = solvers[i];
+            solver.addHardFormula(this.OR3);
+            solver.addSoftFormula(this.A, 1);
             if (i == 2 || i == 3) {
-                s.addSoftFormula(this.NA, 1);
+                solver.addSoftFormula(this.NA, 1);
             } else {
-                s.addSoftFormula(this.NA, 2);
+                solver.addSoftFormula(this.NA, 2);
             }
-            s.solve();
-            assertThat(s.toString()).isEqualTo(expected);
+            solver.solve();
+            assertThat(solver.toString()).isEqualTo(expected);
         }
     }
 

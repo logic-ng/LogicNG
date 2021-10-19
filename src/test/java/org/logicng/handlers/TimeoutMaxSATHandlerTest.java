@@ -94,7 +94,7 @@ class TimeoutMaxSATHandlerTest {
             lenient().when(handler.foundUpperBound(anyInt(), any())).thenReturn(true);
             final AtomicInteger count = new AtomicInteger(0);
             when(satHandler.detectedConflict()).thenReturn(true);
-            when(satHandler.aborted()).then(invocationOnMock -> count.addAndGet(1) > 2);
+            when(satHandler.aborted()).then(invocationOnMock -> count.addAndGet(1) > 1);
 
             final MaxSAT.MaxSATResult solve = solver.solve(handler);
 
@@ -103,7 +103,7 @@ class TimeoutMaxSATHandlerTest {
             verify(handler, times(1)).started();
             verify(handler, atLeast(1)).satHandler();
             verify(handler, times(1)).finishedSolving();
-            verify(satHandler, times(3)).aborted();
+            verify(satHandler, times(2)).aborted();
         }
     }
 

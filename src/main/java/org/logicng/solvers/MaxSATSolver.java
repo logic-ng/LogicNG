@@ -36,6 +36,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.MaxSATHandler;
@@ -49,14 +50,18 @@ import org.logicng.solvers.maxsat.algorithms.WBO;
 import org.logicng.solvers.maxsat.algorithms.WMSU3;
 
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 2.1.0
+ * @version 2.2.0
  * @since 1.0
  */
 public class MaxSATSolver {
+
+    private static final String SEL_PREFIX = "@SEL_SOFT_";
 
     protected enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
 
@@ -66,6 +71,7 @@ public class MaxSATSolver {
     protected MaxSAT solver;
     protected SortedMap<Variable, Integer> var2index;
     protected SortedMap<Integer, Variable> index2var;
+    protected SortedSet<Variable> selectorVariables;
 
     /**
      * Constructs a new MaxSAT solver with a given configuration.
@@ -197,6 +203,7 @@ public class MaxSATSolver {
         this.result = UNDEF;
         this.var2index = new TreeMap<>();
         this.index2var = new TreeMap<>();
+        this.selectorVariables = new TreeSet<>();
         switch (this.algorithm) {
             case WBO:
                 this.solver = new WBO(this.configuration);
@@ -230,7 +237,7 @@ public class MaxSATSolver {
         if (this.result != UNDEF) {
             throw new IllegalStateException("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         }
-        this.addCNF(formula.cnf(), -1);
+        addCNF(formula.cnf(), -1);
     }
 
     /**
@@ -247,7 +254,12 @@ public class MaxSATSolver {
         if (weight < 1) {
             throw new IllegalArgumentException("The weight of a formula must be > 0");
         }
-        this.addCNF(formula.cnf(), weight);
+        final FormulaFactory f = formula.factory();
+        final Variable selVar = f.variable(SEL_PREFIX + this.selectorVariables.size());
+        this.selectorVariables.add(selVar);
+        addHardFormula(f.or(selVar.negate(), formula));
+        addHardFormula(f.or(formula.negate(), selVar));
+        addClause(selVar, weight);
     }
 
     /**
@@ -361,7 +373,7 @@ public class MaxSATSolver {
         final Assignment model = new Assignment();
         for (int i = 0; i < vec.size(); i++) {
             final Literal lit = this.index2var.get(i);
-            if (lit != null) {
+            if (lit != null && !this.selectorVariables.contains(lit.variable())) {
                 if (vec.get(i)) {
                     model.addLiteral(lit);
                 } else {
