@@ -43,7 +43,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for {@link CollectionHelper}
- * @version 2.0.0
+ * @version 2.2.0
  * @since 2.0.0
  */
 public class CollectionHelperTest {
@@ -71,12 +71,21 @@ public class CollectionHelperTest {
     @Test
     public void testIntersection() {
         final List<String> strings1 = Arrays.asList("a", "b", "c", "a");
-        List<String> strings2 = Arrays.asList("c", "d", "e");
+        final List<String> strings2 = Arrays.asList("c", "d", "e");
         assertThat(CollectionHelper.<String, TreeSet<String>>intersection(strings1, null, TreeSet::new)).isEmpty();
         assertThat(CollectionHelper.<String, TreeSet<String>>intersection(null, strings2, TreeSet::new)).isEmpty();
         assertThat(CollectionHelper.<String, TreeSet<String>>intersection(strings1, strings2, TreeSet::new)).containsExactly("c");
-        strings2 = Arrays.asList("c", "d", "e", "a", "a", "a");
-        assertThat(CollectionHelper.<String, List<String>>intersection(strings1, strings2, ArrayList::new)).containsExactly("a", "c", "a");
+        final List<String> strings3 = Arrays.asList("c", "d", "e", "a", "a", "a");
+        assertThat(CollectionHelper.<String, List<String>>intersection(strings1, strings3, ArrayList::new)).containsExactly("a", "c", "a");
+
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(null, strings1, null, strings2, strings1), TreeSet::new)).isEmpty();
+        assertThat(CollectionHelper.<String, ArrayList<String>>intersection(Arrays.asList(strings1, null, strings3, strings1), ArrayList::new)).isEmpty();
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(strings3, strings2, strings3), TreeSet::new))
+                .containsExactly("c", "d", "e");
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(strings1, strings2, strings3), TreeSet::new))
+                .containsExactly("c");
+        assertThat(CollectionHelper.<String, ArrayList<String>>intersection(Arrays.asList(strings1, strings3), ArrayList::new))
+                .containsExactly("a", "c", "a");
     }
 
     @Test
@@ -86,6 +95,24 @@ public class CollectionHelperTest {
         assertThat(CollectionHelper.<String, ArrayList<String>>union(strings1, null, ArrayList::new)).containsExactly("a", "b", "c", "a");
         assertThat(CollectionHelper.<String, ArrayList<String>>union(null, strings2, ArrayList::new)).containsExactly("c", "d", "e");
         assertThat(CollectionHelper.<String, ArrayList<String>>union(strings1, strings2, ArrayList::new)).containsExactly("a", "b", "c", "a", "c", "d", "e");
+
+        final List<String> strings3 = Arrays.asList("c", "d", "e", "a", "a", "a", "f");
+        assertThat(CollectionHelper.<String, TreeSet<String>>union(Arrays.asList(null, strings1, null), TreeSet::new))
+                .containsExactly("a", "b", "c");
+        assertThat(CollectionHelper.<String, TreeSet<String>>union(Arrays.asList(null, strings1, strings2, null, strings3, strings3), TreeSet::new))
+                .containsExactly("a", "b", "c", "d", "e", "f");
+        assertThat(CollectionHelper.<String, ArrayList<String>>union(Arrays.asList(null, strings3, strings2, null, strings1), ArrayList::new))
+                .containsExactly("c", "d", "e", "a", "a", "a", "f", "c", "d", "e", "a", "b", "c", "a");
+    }
+
+    @Test
+    public void testDifference() {
+        final List<String> strings1 = Arrays.asList("a", "b", "c", "a");
+        final List<String> strings2 = Arrays.asList("c", "d", "e");
+        assertThat(CollectionHelper.<String, TreeSet<String>>difference(strings1, null, TreeSet::new)).containsExactly("a", "b", "c");
+        assertThat(CollectionHelper.<String, TreeSet<String>>difference(null, strings1, TreeSet::new)).isEmpty();
+        assertThat(CollectionHelper.<String, TreeSet<String>>difference(strings1, strings2, TreeSet::new)).containsExactly("a", "b");
+        assertThat(CollectionHelper.<String, ArrayList<String>>difference(strings1, strings2, ArrayList::new)).containsExactly("a", "b", "a");
     }
 
     @Test

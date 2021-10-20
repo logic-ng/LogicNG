@@ -173,7 +173,8 @@ public final class FormulaHelper {
 
     /**
      * Returns a sorted variable set from a given collection of strings which will be used as variable names
-     * and a formula factory.
+     * and a formula factory. The given collection is treated in a null-safe manner,
+     * i.e. if the collection is {@code null} the collection is considered to be an empty collection.
      * @param strings the collection of strings (can be empty or {@code null}
      * @param f       the formula factory which is used to generate the variables
      * @return the sorted set of variables from the collection of variable names
@@ -192,7 +193,8 @@ public final class FormulaHelper {
     /**
      * Returns a sorted literal set from a given collection of strings and a formula factory.
      * If a string begins with the given {@code negationPrefix} a literal with a negative phase is created,
-     * otherwise a literal with a positive phase is created.
+     * otherwise a literal with a positive phase is created. The given collection is treated in a null-safe manner,
+     * i.e. if the collection is {@code null} the collection is considered to be an empty collection.
      * @param strings        the collection of strings (can be empty or {@code null}
      * @param negationPrefix the negation prefix
      * @param f              the formula factory which is used to generate the variables
@@ -212,6 +214,8 @@ public final class FormulaHelper {
 
     /**
      * Returns a list of strings from a given collection of variables. The strings contain the variable names.
+     * The given collection is treated in a null-safe manner, i.e. if the collection is {@code null}
+     * the collection is considered to be an empty collection.
      * @param variables the collection of variables (can be empty or {@code null}
      * @return the list of variable names
      */
@@ -229,6 +233,8 @@ public final class FormulaHelper {
     /**
      * Returns a list of strings from a given collection of literals. The strings contain the variable names
      * with a leading {@code negationPrefix} if the literal has a negative phase.
+     * The given collection is treated in a null-safe manner, i.e. if the collection is {@code null}
+     * the collection is considered to be an empty collection.
      * @param literals       the collection of variables (can be empty or {@code null}
      * @param negationPrefix the negation prefix
      * @return the list of literal names with a leading {@code negationPrefix} if the phase is negative

@@ -51,6 +51,7 @@ public final class TermPredicate implements FormulaPredicate {
             case EQUIV:
             case PBC:
             case NOT:
+                return false;
             case OR:
                 if (!this.mintermPredicate) {
                     return false;

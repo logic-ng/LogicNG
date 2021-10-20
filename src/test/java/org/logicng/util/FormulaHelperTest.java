@@ -118,4 +118,48 @@ public class FormulaHelperTest extends TestWithExampleFormulas {
         assertThat(FormulaHelper.splitTopLevelAnd(this.AND1)).isEqualTo(Arrays.asList(this.A, this.B));
         assertThat(FormulaHelper.splitTopLevelAnd(this.AND3)).isEqualTo(Arrays.asList(this.OR1, this.OR2));
     }
+
+    @Test
+    public void testStrings2Vars() {
+        assertThat(FormulaHelper.strings2vars(null, this.f)).isEmpty();
+        assertThat(FormulaHelper.strings2vars(new TreeSet<>(), this.f)).isEmpty();
+        assertThat(FormulaHelper.strings2vars(Arrays.asList("a", "b", "c"), this.f))
+                .containsExactly(this.A, this.B, this.C);
+        assertThat(FormulaHelper.strings2vars(Arrays.asList("a", "b", "c", "a", "a"), this.f))
+                .containsExactly(this.A, this.B, this.C);
+    }
+
+    @Test
+    public void testStrings2Literals() {
+        assertThat(FormulaHelper.strings2literals(null, "~", this.f)).isEmpty();
+        assertThat(FormulaHelper.strings2literals(new TreeSet<>(), "~", this.f)).isEmpty();
+        assertThat(FormulaHelper.strings2literals(Arrays.asList("a", "~b", "c"), "~", this.f))
+                .containsExactly(this.A, this.NB, this.C);
+        assertThat(FormulaHelper.strings2literals(Arrays.asList("~a", "b", "c", "a", "a"), "~", this.f))
+                .containsExactly(this.A, this.NA, this.B, this.C);
+        assertThat(FormulaHelper.strings2literals(Arrays.asList("-a", "b", "c", "a", "a"), "-", this.f))
+                .containsExactly(this.A, this.NA, this.B, this.C);
+    }
+
+    @Test
+    public void testVars2Strings() {
+        assertThat(FormulaHelper.vars2strings(null)).isEmpty();
+        assertThat(FormulaHelper.vars2strings(new TreeSet<>())).isEmpty();
+        assertThat(FormulaHelper.vars2strings(Arrays.asList(this.A, this.B, this.C)))
+                .containsExactly("a", "b", "c");
+        assertThat(FormulaHelper.vars2strings(Arrays.asList(this.A, this.B, this.C, this.A, this.A)))
+                .containsExactly("a", "b", "c");
+    }
+
+    @Test
+    public void testVars2Literals() {
+        assertThat(FormulaHelper.literals2strings(null, "~")).isEmpty();
+        assertThat(FormulaHelper.literals2strings(new TreeSet<>(), "~")).isEmpty();
+        assertThat(FormulaHelper.literals2strings(Arrays.asList(this.A, this.NB, this.C), "~"))
+                .containsExactly("a", "c", "~b");
+        assertThat(FormulaHelper.literals2strings(Arrays.asList(this.NA, this.B, this.C, this.A, this.A), "~"))
+                .containsExactly("a", "b", "c", "~a");
+        assertThat(FormulaHelper.literals2strings(Arrays.asList(this.NA, this.B, this.C, this.A, this.A), "-"))
+                .containsExactly("-a", "a", "b", "c");
+    }
 }
