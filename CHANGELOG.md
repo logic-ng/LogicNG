@@ -2,6 +2,21 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2021-10-xx
+
+### Added
+
+- Improved `FormulaFactory` by avoiding creating unnecessary negations (cache pollution) during the check for complementary operands.
+- Improved the NNF computation by avoiding creating unnecessary negations (cache pollution) during the recursive calls.
+- Extracted the NNF computation in its own transformation class `NNFTransformation`.
+- Moved all formula caches from the `Formula` class to the `FormulaFactory` to save memory by avoiding creating empty cache maps.
+- New `TermPredicate` class to check whether a formula is a minterm (clause) or maxterm (DNF term).
+- Extended helper classes `CollectionHelper` and `FormulaHelper` by additional convenient methods.
+
+### Fixed
+
+- Fixed a bug in the `addSoftFormula` method of the `MaxSATSolver` class. A soft formula is now weighted properly if the soft formula is not a clause.
+
 ## [2.1.0] - 2021-07-18
 
 ### Added
