@@ -45,7 +45,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for {@link FormulaHelper}.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.5.1
  */
 public class FormulaHelperTest extends TestWithExampleFormulas {

@@ -336,7 +336,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     public void testTimeoutOptimizationHandler(final SATSolver solver) throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
-        final TimeoutOptimizationHandler handlerMax = new TimeoutOptimizationHandler(1000L);
+        final TimeoutOptimizationHandler handlerMax = new TimeoutOptimizationHandler(2000L);
         final Assignment maximumModel = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), true, solver, handlerMax);
         assertThat(maximumModel).isNull();
         assertThat(handlerMax.aborted()).isTrue();

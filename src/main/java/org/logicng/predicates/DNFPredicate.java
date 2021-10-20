@@ -29,15 +29,15 @@
 package org.logicng.predicates;
 
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
+import static org.logicng.predicates.TermPredicate.getMaxtermPredicate;
 
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
  * DNF predicate.  Indicates whether a formula is in DNF or not.
- * @version 1.0
+ * @version 2.2.0
  * @since 1.0
  */
 public final class DNFPredicate implements FormulaPredicate {
@@ -79,13 +79,13 @@ public final class DNFPredicate implements FormulaPredicate {
             case OR:
                 result = true;
                 for (final Formula op : formula) {
-                    if (!this.isDNFClause(op)) {
+                    if (!getMaxtermPredicate().test(op, false)) {
                         result = false;
                     }
                 }
                 break;
             case AND:
-                result = this.isDNFClause(formula);
+                result = getMaxtermPredicate().test(formula, false);
                 break;
             default:
                 throw new IllegalArgumentException("Cannot compute DNF predicate on " + formula.type());
@@ -94,35 +94,6 @@ public final class DNFPredicate implements FormulaPredicate {
             formula.setPredicateCacheEntry(IS_DNF, result);
         }
         return result;
-    }
-
-    /**
-     * Returns {@code true} if the given formula is a DNF minterm, {@code false} otherwise.
-     * @param formula the formula
-     * @return {@code true} if the given formula is a DNF minterm
-     */
-    private boolean isDNFClause(final Formula formula) {
-        switch (formula.type()) {
-            case TRUE:
-            case FALSE:
-            case LITERAL:
-                return true;
-            case IMPL:
-            case EQUIV:
-            case PBC:
-            case NOT:
-            case OR:
-                return false;
-            case AND:
-                for (final Formula op : formula) {
-                    if (op.type() != FType.LITERAL) {
-                        return false;
-                    }
-                }
-                return true;
-            default:
-                throw new IllegalArgumentException("Cannot compute DNF clause predicate on " + formula.type());
-        }
     }
 
     @Override

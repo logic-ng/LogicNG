@@ -28,9 +28,12 @@
 
 package org.logicng.util;
 
+import static org.logicng.util.CollectionHelper.nullOrEmpty;
+
 import org.logicng.formulas.And;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
@@ -44,7 +47,7 @@ import java.util.function.Supplier;
 
 /**
  * A class which contains utility methods for {@link Formula} objects.
- * @version 1.5.1
+ * @version 2.2.0
  * @since 1.5.1
  */
 public final class FormulaHelper {
@@ -166,5 +169,78 @@ public final class FormulaHelper {
         } else {
             return Collections.singletonList(formula);
         }
+    }
+
+    /**
+     * Returns a sorted variable set from a given collection of strings which will be used as variable names
+     * and a formula factory.
+     * @param strings the collection of strings (can be empty or {@code null}
+     * @param f       the formula factory which is used to generate the variables
+     * @return the sorted set of variables from the collection of variable names
+     */
+    public static SortedSet<Variable> strings2vars(final Collection<String> strings, final FormulaFactory f) {
+        if (nullOrEmpty(strings)) {
+            return Collections.emptySortedSet();
+        }
+        final SortedSet<Variable> vars = new TreeSet<>();
+        for (final String string : strings) {
+            vars.add(f.variable(string));
+        }
+        return vars;
+    }
+
+    /**
+     * Returns a sorted literal set from a given collection of strings and a formula factory.
+     * If a string begins with the given {@code negationPrefix} a literal with a negative phase is created,
+     * otherwise a literal with a positive phase is created.
+     * @param strings        the collection of strings (can be empty or {@code null}
+     * @param negationPrefix the negation prefix
+     * @param f              the formula factory which is used to generate the variables
+     * @return the sorted set of literals
+     */
+    public static SortedSet<Literal> strings2literals(final Collection<String> strings, final String negationPrefix, final FormulaFactory f) {
+        if (nullOrEmpty(strings)) {
+            return Collections.emptySortedSet();
+        }
+        final SortedSet<Literal> literals = new TreeSet<>();
+        for (final String string : strings) {
+            final boolean isPositive = !string.startsWith(negationPrefix);
+            literals.add(f.literal(isPositive ? string : string.substring(negationPrefix.length()), isPositive));
+        }
+        return literals;
+    }
+
+    /**
+     * Returns a list of strings from a given collection of variables. The strings contain the variable names.
+     * @param variables the collection of variables (can be empty or {@code null}
+     * @return the list of variable names
+     */
+    public static SortedSet<String> vars2strings(final Collection<Variable> variables) {
+        if (nullOrEmpty(variables)) {
+            return Collections.emptySortedSet();
+        }
+        final SortedSet<String> strings = new TreeSet<>();
+        for (final Variable variable : variables) {
+            strings.add(variable.name());
+        }
+        return strings;
+    }
+
+    /**
+     * Returns a list of strings from a given collection of literals. The strings contain the variable names
+     * with a leading {@code negationPrefix} if the literal has a negative phase.
+     * @param literals       the collection of variables (can be empty or {@code null}
+     * @param negationPrefix the negation prefix
+     * @return the list of literal names with a leading {@code negationPrefix} if the phase is negative
+     */
+    public static SortedSet<String> literals2strings(final Collection<Literal> literals, final String negationPrefix) {
+        if (nullOrEmpty(literals)) {
+            return Collections.emptySortedSet();
+        }
+        final SortedSet<String> strings = new TreeSet<>();
+        for (final Literal lit : literals) {
+            strings.add(lit.phase() ? lit.name() : negationPrefix + lit.name());
+        }
+        return strings;
     }
 }

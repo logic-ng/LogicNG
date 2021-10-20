@@ -61,6 +61,11 @@ public class CollectionHelperTest {
         assertThat(nullSafe(null)).isEmpty();
         final List<String> strings = Arrays.asList("a", "b", "c");
         assertThat(nullSafe(strings)).isEqualTo(strings);
+
+        assertThat(nullSafe(() -> Arrays.asList("a", "b"), ArrayList::new)).isEqualTo(new ArrayList<>(Arrays.asList("a", "b")));
+        assertThat(nullSafe(() -> new TreeSet<>(Arrays.asList("a", "b")), TreeSet::new)).isEqualTo(new TreeSet<>(Arrays.asList("a", "b")));
+        assertThat(nullSafe(() -> (ArrayList<Integer>) null, ArrayList::new)).isEqualTo(new ArrayList<Integer>());
+        assertThat(nullSafe(() -> (TreeSet<String>) null, TreeSet::new)).isEqualTo(new TreeSet<String>());
     }
 
     @Test
