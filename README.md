@@ -25,11 +25,10 @@ Compared to other implementation of logic libraries on the JVM this is a huge me
 LogicNG is released in the Maven Central Repository. To include it just add
 
 ```xml
-
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>2.1.0</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -75,7 +74,7 @@ Once you created the formula you can for example convert it to NNF or CNF or sol
 final Formula nnf=formula.nnf();
 final Formula cnf=formula.cnf();
 final SATSolver miniSat=MiniSat.miniSat(f);
-        miniSat.add(formula);
+miniSat.add(formula);
 final Tristate result=miniSat.sat();
 ```
 
