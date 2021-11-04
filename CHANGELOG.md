@@ -16,6 +16,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fixed a bug in the `addSoftFormula` method of the `MaxSATSolver` class. A soft formula is now weighted properly if the soft formula is not a clause.
+- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the solver.
 
 ### Deprecated
 

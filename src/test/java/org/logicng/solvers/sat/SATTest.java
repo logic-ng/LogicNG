@@ -390,7 +390,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
-    public void testRelexationFormulas() throws ParserException {
+    public void testRelaxationFormulas() throws ParserException {
         for (final SATSolver s : this.solvers) {
             s.add(this.f.parse("a & (b | c)"));
             assertSolverSat(s);

@@ -249,14 +249,6 @@ public class MiniSat extends SATSolver {
     }
 
     @Override
-    protected void addClauseWithRelaxation(final Variable relaxationVar, final Formula formula) {
-        this.result = UNDEF;
-        final SortedSet<Literal> literals = new TreeSet<>(formula.literals());
-        literals.add(relaxationVar);
-        this.solver.addClause(generateClauseVector(literals), null);
-    }
-
-    @Override
     public Tristate sat(final SATHandler handler) {
         if (lastResultIsUsable()) {
             return this.result;
