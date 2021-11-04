@@ -53,7 +53,7 @@ import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
 public abstract class SATSolver {
