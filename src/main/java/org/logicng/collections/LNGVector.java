@@ -146,7 +146,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @return the element at the position
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public final T get(int position) {
+    public T get(int position) {
         return this.elements[position];
     }
 

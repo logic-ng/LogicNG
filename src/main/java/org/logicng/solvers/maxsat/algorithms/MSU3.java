@@ -189,7 +189,7 @@ public class MSU3 extends MaxSAT {
                     }
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c Relaxed soft clauses %d / %d", currentObjFunction.size(), this.objFunction.size()));
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", currentObjFunction.size(), this.objFunction.size());
                 }
                 this.solver = this.rebuildSolver();
                 this.encoder.encodeCardinality(this.solver, currentObjFunction, this.lbCost);
@@ -279,7 +279,7 @@ public class MSU3 extends MaxSAT {
                     }
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c Relaxed soft clauses %d / %d", currentObjFunction.size(), this.objFunction.size()));
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", currentObjFunction.size(), this.objFunction.size());
                 }
                 if (!this.encoder.hasCardEncoding()) {
                     if (this.lbCost != currentObjFunction.size()) {

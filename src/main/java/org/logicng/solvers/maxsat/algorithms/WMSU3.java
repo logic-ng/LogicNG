@@ -244,7 +244,7 @@ public class WMSU3 extends MaxSAT {
                     fullObjFunction.push(this.objFunction.get(i));
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c Relaxed soft clauses %d / %d", fullCoeffsFunction.size(), nSoft()));
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", fullCoeffsFunction.size(), nSoft());
                 }
                 this.lbCost++;
                 while (!subsetSum(fullCoeffsFunction, this.lbCost)) {
@@ -331,7 +331,7 @@ public class WMSU3 extends MaxSAT {
                     }
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c Relaxed soft clauses %d / %d", this.objFunction.size(), nSoft()));
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", this.objFunction.size(), nSoft());
                 }
                 this.solver = this.rebuildSolver();
                 this.lbCost++;
@@ -489,7 +489,7 @@ public class WMSU3 extends MaxSAT {
                     }
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c Relaxed soft clauses %d / %d", this.objFunction.size(), nSoft()));
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", this.objFunction.size(), nSoft());
                 }
                 assert posWeight < functions.size();
                 functions.set(posWeight, new LNGIntVector(this.objFunction));

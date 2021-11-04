@@ -153,7 +153,7 @@ public class LinearSU extends MaxSAT {
                         return MaxSATResult.UNDEF;
                     }
                 } else if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c BMO-UB : %d (Function %d/%d)", newCost, posWeight + 1, this.orderWeights.size()));
+                    this.output.printf("c BMO-UB : %d (Function %d/%d)%n", newCost, posWeight + 1, this.orderWeights.size());
                 }
                 if (newCost == 0 && currentWeight == minWeight) {
                     return MaxSATResult.OPTIMUM;

@@ -119,7 +119,7 @@ public final class FormulaDotFileWriter {
             case PBC:
                 final int id = ids.size();
                 ids.put(formula, id);
-                sb.append("  id").append(id).append(" [label=\"").append(formula.toString()).append(String.format("\"];%n"));
+                sb.append("  id").append(id).append(" [label=\"").append(formula).append(String.format("\"];%n"));
                 for (final Formula operand : ((PBConstraint) formula).operands()) {
                     sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
                 }

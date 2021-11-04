@@ -141,7 +141,7 @@ public final class BDDFactory {
      * interruption.
      * @param formula      the formula
      * @param kernel       the BDD kernel
-     * @param construction
+     * @param construction the BDD construction instance
      * @param handler      the BDD handler
      * @return the BDD index or {@link BDDKernel#BDD_ABORT} if the computation was aborted
      */

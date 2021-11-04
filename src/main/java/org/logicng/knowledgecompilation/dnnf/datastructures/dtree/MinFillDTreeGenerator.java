@@ -76,6 +76,10 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
          */
         protected final List<LNGIntVector> edgeList;
 
+        /**
+         * Computes the DTree from the given CNF.
+         * @param cnf the CNF
+         */
         public Graph(final Formula cnf) {
             /* build vertices */
             this.numberOfVertices = cnf.variables().size();

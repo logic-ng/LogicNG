@@ -534,10 +534,7 @@ public final class DRUPTrim {
                         this.removeWatch(clausePtr, 1);
                     }
 
-                    boolean gotoNextLemma = false;
-                    if (ad == 0) {
-                        gotoNextLemma = true;
-                    }
+                    boolean gotoNextLemma = ad == 0;
 
                     if (!gotoNextLemma) {
                         while (this.DB.get(clausePtr) != 0) {

@@ -57,10 +57,10 @@ import java.util.TreeSet;
 
 /**
  * The internal representation of a BDD.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.4.0
  */
-public final class BDD {
+public class BDD {
 
     private final int index;
     protected final BDDKernel kernel;

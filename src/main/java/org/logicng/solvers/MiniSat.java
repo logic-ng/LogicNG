@@ -66,10 +66,10 @@ import java.util.TreeSet;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 2.0.0
+ * @version 2.2.0
  * @since 1.0
  */
-public final class MiniSat extends SATSolver {
+public class MiniSat extends SATSolver {
 
     public enum SolverStyle {MINISAT, GLUCOSE, MINICARD}
 

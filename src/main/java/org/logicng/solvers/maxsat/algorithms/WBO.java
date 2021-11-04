@@ -487,7 +487,7 @@ public class WBO extends MaxSAT {
                 final int coreCost = this.computeCostCore(this.solver.conflict());
                 this.lbCost += coreCost;
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c LB : %d CS : %d W : %d", this.lbCost, this.solver.conflict().size(), coreCost));
+                    this.output.printf("c LB : %d CS : %d W : %d%n", this.lbCost, this.solver.conflict().size(), coreCost);
                 }
                 if (!foundLowerBound(this.lbCost, null)) {
                     return MaxSATResult.UNDEF;
@@ -553,7 +553,7 @@ public class WBO extends MaxSAT {
                 final int coreCost = this.computeCostCore(this.solver.conflict());
                 this.lbCost += coreCost;
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.println(String.format("c LB : %d CS : %d W : %d", this.lbCost, this.solver.conflict().size(), coreCost));
+                    this.output.printf("c LB : %d CS : %d W : %d%n", this.lbCost, this.solver.conflict().size(), coreCost);
                 }
                 if (this.lbCost == this.ubCost) {
                     if (this.verbosity != Verbosity.NONE) {
