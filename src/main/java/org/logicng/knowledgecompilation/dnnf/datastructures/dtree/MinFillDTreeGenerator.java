@@ -59,7 +59,6 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
      */
     public static class Graph {
         protected final int numberOfVertices;
-        protected final int numberOfEdges;
 
         /**
          * The adjacency matrix (which is symmetric since the graph is undirected)
@@ -98,7 +97,6 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
                 this.edgeList.add(new LNGIntVector());
             }
 
-            int numberOfEdges = 0;
             for (final Formula clause : cnf) {
                 final SortedSet<Variable> variables = clause.variables();
                 final int[] varNums = new int[variables.size()];
@@ -112,11 +110,9 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
                         this.edgeList.get(varNums[j]).push(varNums[i]);
                         this.adjMatrix[varNums[i]][varNums[j]] = true;
                         this.adjMatrix[varNums[j]][varNums[i]] = true;
-                        numberOfEdges++;
                     }
                 }
             }
-            this.numberOfEdges = numberOfEdges;
         }
 
         protected List<LNGIntVector> getCopyOfEdgeList() {

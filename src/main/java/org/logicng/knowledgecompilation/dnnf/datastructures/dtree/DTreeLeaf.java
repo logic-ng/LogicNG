@@ -52,7 +52,6 @@ public class DTreeLeaf extends DTree {
     protected final int clauseSize;
 
     protected int[] literals;
-    protected int[] dynamicVarSetHelper;
 
     protected final BitSet separatorBitSet = new BitSet();
 
@@ -89,7 +88,6 @@ public class DTreeLeaf extends DTree {
             this.literals[i] = MiniSatStyleSolver.mkLit(var, !literal.phase());
             i++;
         }
-        this.dynamicVarSetHelper = new int[size];
     }
 
     @Override
