@@ -42,6 +42,7 @@ import org.logicng.handlers.OptimizationHandler;
 import org.logicng.handlers.TimeoutHandler;
 import org.logicng.handlers.TimeoutOptimizationHandler;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.io.readers.FormulaReader;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
@@ -140,7 +141,7 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                     new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                     new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
             );
-            final Formula formula = f.parse("a & b | ~c & a");
+            final Formula formula = this.f.parse("a & b | ~c & a");
             for (final TimeoutOptimizationHandler handler : handlers) {
                 testHandler(handler, formula, compiler.first(), compiler.second(), false);
             }
@@ -148,7 +149,7 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testTimeoutHandlerLarge() {
+    public void testTimeoutHandlerLarge() throws ParserException, IOException {
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
@@ -160,8 +161,7 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                     new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                     new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
             );
-            final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().numVars(15).seed(42).build());
-            final Formula formula = random.formula(5);
+            final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
             for (final TimeoutOptimizationHandler handler : handlers) {
                 testHandler(handler, formula, compiler.first(), compiler.second(), true);
             }
@@ -170,7 +170,7 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
 
     @Test
     public void testCancellationPoints() throws IOException, ParserException {
-        final Formula formula = f.parse(Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
+        final Formula formula = this.f.parse(Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),

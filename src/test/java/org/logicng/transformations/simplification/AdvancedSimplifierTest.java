@@ -41,11 +41,13 @@ import org.logicng.handlers.OptimizationHandler;
 import org.logicng.handlers.TimeoutHandler;
 import org.logicng.handlers.TimeoutOptimizationHandler;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.io.readers.FormulaReader;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -88,21 +90,20 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
                 new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                 new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
         );
-        final Formula formula = f.parse("a & b | ~c & a");
+        final Formula formula = this.f.parse("a & b | ~c & a");
         for (final TimeoutOptimizationHandler handler : handlers) {
             testHandler(handler, formula, false);
         }
     }
 
     @Test
-    public void testTimeoutHandlerLarge() {
+    public void testTimeoutHandlerLarge() throws ParserException, IOException {
         final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                 new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
         );
-        final FormulaRandomizer random = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().numVars(15).seed(42).build());
-        final Formula formula = random.formula(5);
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         for (final TimeoutOptimizationHandler handler : handlers) {
             testHandler(handler, formula, true);
         }
@@ -111,14 +112,14 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
     @Test
     public void testPrimeCompilerIsCancelled() throws ParserException {
         final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 0);
-        final Formula formula = f.parse("a&(b|c)");
+        final Formula formula = this.f.parse("a&(b|c)");
         testHandler(handler, formula, true);
     }
 
     @Test
     public void testSmusComputationIsCancelled() throws ParserException {
         final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 5);
-        final Formula formula = f.parse("a&(b|c)");
+        final Formula formula = this.f.parse("a&(b|c)");
         testHandler(handler, formula, true);
     }
 

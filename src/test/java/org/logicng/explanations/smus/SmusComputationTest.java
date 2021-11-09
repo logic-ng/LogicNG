@@ -39,11 +39,13 @@ import org.logicng.handlers.TimeoutHandler;
 import org.logicng.handlers.TimeoutOptimizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.DimacsReader;
+import org.logicng.io.readers.FormulaReader;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Unit Tests for the class {@link SmusComputation}.
@@ -239,33 +241,14 @@ public class SmusComputationTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testTimeoutHandlerLarge() throws ParserException {
+    public void testTimeoutHandlerLarge() throws ParserException, IOException {
         final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                 new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
         );
-        final List<Formula> formulas = Arrays.asList(
-                this.f.parse("a"),
-                this.f.parse("~a|b"),
-                this.f.parse("~b|c"),
-                this.f.parse("~c|~a"),
-                this.f.parse("a1"),
-                this.f.parse("~a1|b1"),
-                this.f.parse("~b1|c1"),
-                this.f.parse("~c1|~a1"),
-                this.f.parse("a2"),
-                this.f.parse("~a2|b2"),
-                this.f.parse("~b2|c2"),
-                this.f.parse("~c2|~a2"),
-                this.f.parse("a3"),
-                this.f.parse("~a3|b3"),
-                this.f.parse("~b3|c3"),
-                this.f.parse("~c3|~a3"),
-                this.f.parse("a1|a2|a3|a4|b1|x|y"),
-                this.f.parse("x&~y"),
-                this.f.parse("x=>y")
-        );
+        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+        final List<Formula> formulas = formula.stream().collect(Collectors.toList());
         for (final TimeoutOptimizationHandler handler : handlers) {
             testHandler(handler, formulas, true);
         }
