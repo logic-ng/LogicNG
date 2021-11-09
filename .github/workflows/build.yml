@@ -16,7 +16,7 @@ jobs:
           java-version: 1.8
       - name: Build with Maven
         run: |
-          export MAVEN_OPTS="-Xmx4g"
+          export MAVEN_OPTS="-Xmx2g"
           mvn -B package
       - name: Upload coverage to codecov.io
         uses: codecov/codecov-action@v1
@@ -36,7 +36,7 @@ jobs:
           java-version: 1.8
       - name: Build with Maven
         run: |
-          set MAVEN_OPTS="-Xmx4g"
+          set MAVEN_OPTS="-Xmx2g"
           mvn -B package
       - name: Upload coverage to codecov.io
         uses: codecov/codecov-action@v1
