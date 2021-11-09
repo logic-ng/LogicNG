@@ -233,6 +233,7 @@
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
           <trimStackTrace>false</trimStackTrace>
+          <argLine>-Xmx2g</argLine>
         </configuration>
       </plugin>
     </plugins>
