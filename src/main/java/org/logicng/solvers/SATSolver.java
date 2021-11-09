@@ -139,15 +139,19 @@ public abstract class SATSolver {
      * @param formula       the formula
      */
     public void addWithRelaxation(final Variable relaxationVar, final Formula formula) {
-        this.add(f.or(relaxationVar, formula));
+        this.add(this.f.or(relaxationVar, formula));
     }
 
     /**
      * Adds a proposition to the solver by using the given relaxation variable,
      * i.e. by adding the disjunction of the relaxation variable and the formula of the proposition.
+     * Only the formula is added to the solver, the proposition is thrown away.
      * @param relaxationVar the relaxation variable
      * @param proposition   the proposition
+     * @deprecated since this method only adds the formula of the proposition but not the proposition
+     * itself, this method has a confusing behaviour and will be removed in upcoming releases.
      */
+    @Deprecated
     public void addWithRelaxation(final Variable relaxationVar, final Proposition proposition) {
         this.addWithRelaxation(relaxationVar, proposition.formula());
     }
