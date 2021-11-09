@@ -2,7 +2,7 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 2021-10-xx
+## [2.2.0] - 2021-11-09
 
 ### Added
 
@@ -21,6 +21,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Deprecated
 
 - Deprecation of method `addWithoutUnknown` in class `SATSolver` - this method will be removed in future versions.
+- Deprecation of method `addWithRelaxation` for propositions in class `SATSolver` - this method will be removed in future versions. 
 
 ## [2.1.0] - 2021-07-18
 
