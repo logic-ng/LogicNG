@@ -37,6 +37,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -58,6 +59,25 @@ import java.util.TreeMap;
  * @since 1.4.0
  */
 public class QuineMcCluskeyAlgorithm {
+
+    private static final QuineMcCluskeyAlgorithm INSTANCE = new QuineMcCluskeyAlgorithm();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public QuineMcCluskeyAlgorithm() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static QuineMcCluskeyAlgorithm get() {
+        return INSTANCE;
+    }
 
     /**
      * Computes a minimized DNF for a given formula projected to a given set of variables.  First a projected canonical

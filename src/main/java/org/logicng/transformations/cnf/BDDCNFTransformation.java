@@ -34,6 +34,7 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_CNF;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.predicates.CNFPredicate;
@@ -48,6 +49,26 @@ public final class BDDCNFTransformation implements FormulaTransformation {
 
     private final UnitPropagation up = new UnitPropagation();
     private final BDDKernel kernel;
+    private static final BDDCNFTransformation INSTANCE = new BDDCNFTransformation();
+
+    /**
+     * Constructs a new BDD-based CNF transformation and constructs a new BDD kernel
+     * for every formula application.
+     * @deprecated In the next version, the public constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public BDDCNFTransformation() {
+        this(null);
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static BDDCNFTransformation get() {
+        return INSTANCE;
+    }
 
     /**
      * Constructs a new BDD-based CNF transformation with an optional BDD kernel.
@@ -77,13 +98,7 @@ public final class BDDCNFTransformation implements FormulaTransformation {
         this.kernel = new BDDKernel(f, numVars, Math.max(numVars * 30, 20_000), Math.max(numVars * 20, 20_000));
     }
 
-    /**
-     * Constructs a new BDD-based CNF transformation and constructs a new BDD kernel
-     * for every formula application.
-     */
-    public BDDCNFTransformation() {
-        this(null);
-    }
+
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

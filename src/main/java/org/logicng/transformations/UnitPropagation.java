@@ -34,6 +34,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.cache.TransformationCacheEntry;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatConfig;
@@ -47,6 +48,25 @@ import java.util.List;
  * @since 1.2
  */
 public final class UnitPropagation implements FormulaTransformation {
+
+    private static final UnitPropagation INSTANCE = new UnitPropagation();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public UnitPropagation() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static UnitPropagation get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

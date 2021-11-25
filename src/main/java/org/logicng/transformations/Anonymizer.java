@@ -34,6 +34,7 @@ import org.logicng.datastructures.Substitution;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Variable;
+import org.logicng.functions.SubNodeFunction;
 
 /**
  * An anonymizer replaces all variables in a formula with new variables generated from a given prefix and a counter.
@@ -45,6 +46,25 @@ public final class Anonymizer implements FormulaTransformation {
     private final Substitution substitution;
     private final String prefix;
     private int counter;
+    private static final Anonymizer INSTANCE = new Anonymizer();
+
+    /**
+     * Constructs a new anonymizer with the standard variable prefix 'v'.
+     * @deprecated In the next version, the public constructor will be replaced by a private one.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public Anonymizer() {
+        this("v");
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static Anonymizer get() {
+        return INSTANCE;
+    }
 
     /**
      * Constructs a new anonymizer with a given prefix for the newly introduced variables.
@@ -63,13 +83,6 @@ public final class Anonymizer implements FormulaTransformation {
      */
     public Anonymizer(final String prefix) {
         this(prefix, 0);
-    }
-
-    /**
-     * Constructs a new anonymizer with the standard variable prefix 'v'.
-     */
-    public Anonymizer() {
-        this("v");
     }
 
     @Override

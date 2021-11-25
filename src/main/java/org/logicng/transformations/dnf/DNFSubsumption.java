@@ -33,6 +33,7 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.transformations.Subsumption;
 
@@ -49,6 +50,24 @@ import java.util.SortedSet;
  * @since 1.5.0
  */
 public final class DNFSubsumption extends Subsumption implements FormulaTransformation {
+    private static final DNFSubsumption INSTANCE = new DNFSubsumption();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public DNFSubsumption() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static DNFSubsumption get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

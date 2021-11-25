@@ -51,6 +51,24 @@ import java.util.TreeMap;
  * @since 1.0
  */
 public final class LiteralProfileFunction implements FormulaFunction<Map<Literal, Integer>> {
+    private static final LiteralProfileFunction INSTANCE = new LiteralProfileFunction();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public LiteralProfileFunction() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static LiteralProfileFunction get() {
+        return INSTANCE;
+    }
 
     /**
      * The non-caching implementation of the literal profile computation.  In this case the result map is only

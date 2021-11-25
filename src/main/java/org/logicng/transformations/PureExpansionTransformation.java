@@ -40,6 +40,7 @@ import org.logicng.formulas.NAryOperator;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
+import org.logicng.functions.SubNodeFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +55,24 @@ import java.util.List;
 public final class PureExpansionTransformation implements FormulaTransformation {
 
     private final CCAMOPure amoEncoder = new CCAMOPure();
+    private static final PureExpansionTransformation INSTANCE = new PureExpansionTransformation();
 
     /**
      * Constructs a new transformation instance.
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
      */
+    @Deprecated
     public PureExpansionTransformation() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static PureExpansionTransformation get() {
+        return INSTANCE;
     }
 
     @Override

@@ -33,6 +33,7 @@ import org.logicng.backbones.BackboneType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.BackboneFunction;
@@ -46,6 +47,25 @@ import org.logicng.solvers.functions.BackboneFunction;
  * @since 1.5.0
  */
 public final class BackboneSimplifier implements FormulaTransformation {
+
+    private static final BackboneSimplifier INSTANCE = new BackboneSimplifier();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public BackboneSimplifier() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static BackboneSimplifier get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

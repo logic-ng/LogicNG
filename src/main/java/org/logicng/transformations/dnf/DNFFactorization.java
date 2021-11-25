@@ -36,6 +36,7 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.handlers.FactorizationHandler;
 
 import java.util.Iterator;
@@ -50,13 +51,25 @@ public final class DNFFactorization implements FormulaTransformation {
 
     private final FactorizationHandler handler;
     private boolean proceed;
+    private static final DNFFactorization INSTANCE = new DNFFactorization();
 
     /**
      * Constructor for a DNF Factorization without a factorization handler.
+     * @deprecated In the next version, the public constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
      */
+    @Deprecated
     public DNFFactorization() {
         this.proceed = true;
         this.handler = null;
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static DNFFactorization get() {
+        return INSTANCE;
     }
 
     /**

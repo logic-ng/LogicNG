@@ -35,6 +35,7 @@ import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.functions.SubNodeFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +55,25 @@ import java.util.Map;
 public final class LiteralSubstitution implements FormulaTransformation {
 
     private final Map<Literal, Literal> substitution;
+    private static final LiteralSubstitution INSTANCE = new LiteralSubstitution();
+
+    /**
+     * Generates a new formula substitution with an empty literal mapping.
+     * @deprecated In the next version, the public constructor will be made private.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public LiteralSubstitution() {
+        this.substitution = new HashMap<>();
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static LiteralSubstitution get() {
+        return INSTANCE;
+    }
 
     /**
      * Generate a new formula substitution with a given literal-to-literal
@@ -62,13 +82,6 @@ public final class LiteralSubstitution implements FormulaTransformation {
      */
     public LiteralSubstitution(final Map<Literal, Literal> substitution) {
         this.substitution = substitution;
-    }
-
-    /**
-     * Generates a new formula substitution with an empty literal mapping.
-     */
-    public LiteralSubstitution() {
-        this.substitution = new HashMap<>();
     }
 
     /**

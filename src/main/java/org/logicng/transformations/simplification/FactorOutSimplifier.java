@@ -36,6 +36,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.NAryOperator;
 import org.logicng.formulas.Not;
+import org.logicng.functions.SubNodeFunction;
 import org.logicng.util.Pair;
 
 import java.util.ArrayList;
@@ -53,6 +54,26 @@ import java.util.Map;
  */
 public final class FactorOutSimplifier implements FormulaTransformation {
 
+    private static final FactorOutSimplifier INSTANCE = new FactorOutSimplifier();
+
+    /**
+     * Constructs a new factor out simplification with the default rating function {@link DefaultRatingFunction}.
+     * @deprecated In the next version, the public constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public FactorOutSimplifier() {
+        this(new DefaultRatingFunction());
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static FactorOutSimplifier get() {
+        return INSTANCE;
+    }
+
     private final RatingFunction<? extends Number> ratingFunction;
 
     /**
@@ -61,13 +82,6 @@ public final class FactorOutSimplifier implements FormulaTransformation {
      */
     public FactorOutSimplifier(final RatingFunction<? extends Number> ratingFunction) {
         this.ratingFunction = ratingFunction;
-    }
-
-    /**
-     * Constructs a new factor out simplification with the default rating function {@link DefaultRatingFunction}.
-     */
-    public FactorOutSimplifier() {
-        this(new DefaultRatingFunction());
     }
 
     @Override

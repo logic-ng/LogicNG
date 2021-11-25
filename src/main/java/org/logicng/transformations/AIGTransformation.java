@@ -39,6 +39,7 @@ import org.logicng.formulas.Implication;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.Or;
 import org.logicng.formulas.cache.PredicateCacheEntry;
+import org.logicng.functions.SubNodeFunction;
 
 import java.util.LinkedHashSet;
 
@@ -51,6 +52,24 @@ public final class AIGTransformation implements FormulaTransformation {
 
     private FormulaFactory f;
     private boolean cache;
+    private static final AIGTransformation INSTANCE = new AIGTransformation();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public AIGTransformation() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static AIGTransformation get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, boolean cache) {

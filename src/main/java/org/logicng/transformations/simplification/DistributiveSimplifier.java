@@ -38,6 +38,7 @@ import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Implication;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.cache.TransformationCacheEntry;
+import org.logicng.functions.SubNodeFunction;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,6 +51,25 @@ import java.util.Set;
  * @since 1.3
  */
 public final class DistributiveSimplifier implements FormulaTransformation {
+
+    private static final DistributiveSimplifier INSTANCE = new DistributiveSimplifier();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public DistributiveSimplifier() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static DistributiveSimplifier get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

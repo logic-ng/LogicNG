@@ -53,6 +53,25 @@ import java.util.TreeMap;
  */
 public final class VariableProfileFunction implements FormulaFunction<Map<Variable, Integer>> {
 
+    private static final VariableProfileFunction INSTANCE = new VariableProfileFunction();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public VariableProfileFunction() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static VariableProfileFunction get() {
+        return INSTANCE;
+    }
+
     /**
      * The non-caching implementation of the variable profile computation.  In this case the result map is only
      * constructed once and results are just added to it.
