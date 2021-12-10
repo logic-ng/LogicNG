@@ -79,9 +79,9 @@ public final class MinimumPrimeImplicantFunction implements FormulaFunction<Sort
             newVar2oldLit.put(newVar, literal);
             substitution.addSubstitution(literal, newVar);
         }
-        final Formula substitued = nnf.transform(substitution);
+        final Formula substituted = nnf.transform(substitution);
         final SATSolver solver = MiniSat.miniSat(formula.factory(), MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        solver.add(substitued);
+        solver.add(substituted);
         for (final Literal literal : newVar2oldLit.values()) {
             if (literal.phase() && newVar2oldLit.containsValue(literal.negate())) {
                 solver.add(formula.factory().amo(formula.factory().variable(literal.name() + POS), formula.factory().variable(literal.name() + NEG)));
