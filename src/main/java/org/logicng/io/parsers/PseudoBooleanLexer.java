@@ -36,7 +36,7 @@ import org.antlr.v4.runtime.LexerNoViableAltException;
  * @version 1.0
  * @since 1.0
  */
-public final class PseudoBooleanLexer extends LogicNGPseudoBooleanLexer {
+public final class PseudoBooleanLexer extends org.logicng.io.parsers.LogicNGPseudoBooleanLexer {
 
     /**
      * Constructs a new pseudo boolean lexer.
