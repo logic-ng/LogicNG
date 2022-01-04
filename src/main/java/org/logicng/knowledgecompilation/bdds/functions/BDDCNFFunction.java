@@ -43,6 +43,25 @@ import java.util.List;
  */
 public final class BDDCNFFunction implements BDDFunction<Formula> {
 
+    private static final BDDCNFFunction INSTANCE = new BDDCNFFunction();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the get()-method.
+     */
+    @Deprecated
+    public BDDCNFFunction() {
+        // intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static BDDCNFFunction get() {
+        return INSTANCE;
+    }
+
     @Override
     public Formula apply(final BDD bdd) {
         final BDDKernel kernel = bdd.underlyingKernel();
