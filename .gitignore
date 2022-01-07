@@ -20,3 +20,8 @@ src/test/resources/partialweightedmaxsat/log.txt
 
 # test temporary files
 src/test/resources/writers/temp/*.dot
+
+# LSP
+.settings
+.classpath
+.project
