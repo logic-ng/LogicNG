@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 
 /**
  * A class which contains utility methods for {@link Collection} objects.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class CollectionHelper {
@@ -92,7 +92,7 @@ public final class CollectionHelper {
      * @param <C>               the type parameters of the collection
      * @return the intersection of the collections
      */
-    public static <T, C extends Collection<T>> C intersection(final Collection<Collection<T>> collections, final Supplier<C> collectionFactory) {
+    public static <T, C extends Collection<T>> C intersection(final Collection<? extends Collection<T>> collections, final Supplier<C> collectionFactory) {
         final C result = collectionFactory.get();
         boolean first = true;
         for (final Collection<T> collection : collections) {
@@ -129,7 +129,7 @@ public final class CollectionHelper {
      * @param <C>               the type parameters of the collection
      * @return the union of the collections
      */
-    public static <T, C extends Collection<T>> C union(final Collection<Collection<T>> collections, final Supplier<C> collectionFactory) {
+    public static <T, C extends Collection<T>> C union(final Collection<? extends Collection<T>> collections, final Supplier<C> collectionFactory) {
         final C result = collectionFactory.get();
         for (final Collection<T> collection : collections) {
             result.addAll(nullSafe(collection));

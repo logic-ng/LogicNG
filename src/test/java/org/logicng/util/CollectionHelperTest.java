@@ -86,6 +86,9 @@ public class CollectionHelperTest {
                 .containsExactly("c");
         assertThat(CollectionHelper.<String, ArrayList<String>>intersection(Arrays.asList(strings1, strings3), ArrayList::new))
                 .containsExactly("a", "c", "a");
+
+        final List<List<String>> lists = Arrays.asList(strings1, strings2);
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(lists, TreeSet::new)).containsExactly("c");
     }
 
     @Test
@@ -103,6 +106,9 @@ public class CollectionHelperTest {
                 .containsExactly("a", "b", "c", "d", "e", "f");
         assertThat(CollectionHelper.<String, ArrayList<String>>union(Arrays.asList(null, strings3, strings2, null, strings1), ArrayList::new))
                 .containsExactly("c", "d", "e", "a", "a", "a", "f", "c", "d", "e", "a", "b", "c", "a");
+
+        final List<List<String>> lists = Arrays.asList(strings1, strings2);
+        assertThat(CollectionHelper.<String, TreeSet<String>>union(lists, TreeSet::new)).containsExactly("a", "b", "c", "d", "e");
     }
 
     @Test

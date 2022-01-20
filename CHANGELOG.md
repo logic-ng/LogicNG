@@ -2,6 +2,12 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2022-mm-dd
+
+### Changed
+- Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
+
+
 ## [2.2.0] - 2021-11-09
 
 ### Added
