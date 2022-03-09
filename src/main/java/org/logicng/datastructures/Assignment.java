@@ -48,7 +48,7 @@ import java.util.TreeSet;
  * Note: the internal data structure is a plain list - no checking of the model is performed e.g. if
  * contradictory literals are added. Since assignments are used e.g. in the model enumeration of the SAT solvers these
  * checks would be too costly.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public final class Assignment {
@@ -289,7 +289,7 @@ public final class Assignment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(new HashSet<>(this.pos), new HashSet<>(this.neg));
+        return Objects.hash(toHashSet(this.pos), toHashSet(this.neg));
     }
 
     @Override
@@ -302,10 +302,20 @@ public final class Assignment {
         }
         if (this.getClass() == other.getClass()) {
             final Assignment o = (Assignment) other;
-            return Objects.equals(new HashSet<>(this.pos), new HashSet<>(o.pos))
-                    && Objects.equals(new HashSet<>(this.neg), new HashSet<>(o.neg));
+            return Objects.equals(toHashSet(this.pos), o.toHashSet(o.pos))
+                    && Objects.equals(toHashSet(this.neg), o.toHashSet(o.neg));
         }
         return false;
+    }
+
+    /**
+     * Returns a hash set containing the given literals. The given literals must be {@link this#pos} or {@link this#neg}.
+     * @param literals the literal collection, either {@link this#pos} or {@link this#neg}
+     * @return a hash set with the elements of the given literals
+     */
+    private Collection<? extends Literal> toHashSet(final Collection<? extends Literal> literals) {
+        // invariant: if fastEvaluable is active, the pos and neg collections are already hash sets
+        return this.fastEvaluable ? literals : new HashSet<>(literals);
     }
 
     @Override

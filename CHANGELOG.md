@@ -5,8 +5,9 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [2.3.0] - 2022-mm-dd
 
 ### Changed
-- Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
 
+- Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
+- Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
 
 ## [2.2.0] - 2021-11-09
 
@@ -22,12 +23,13 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fixed a bug in the `addSoftFormula` method of the `MaxSATSolver` class. A soft formula is now weighted properly if the soft formula is not a clause.
-- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the solver.
+- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the
+  solver.
 
 ### Deprecated
 
 - Deprecation of method `addWithoutUnknown` in class `SATSolver` - this method will be removed in future versions.
-- Deprecation of method `addWithRelaxation` for propositions in class `SATSolver` - this method will be removed in future versions. 
+- Deprecation of method `addWithRelaxation` for propositions in class `SATSolver` - this method will be removed in future versions.
 
 ## [2.1.0] - 2021-07-18
 

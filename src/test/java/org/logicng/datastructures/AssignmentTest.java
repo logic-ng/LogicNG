@@ -170,7 +170,11 @@ public class AssignmentTest extends TestWithExampleFormulas {
         ass.addLiteral(this.B);
         ass.addLiteral(this.NX);
         ass.addLiteral(this.NY);
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode()).isEqualTo(ass.hashCode());
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(ass.hashCode());
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(ass.hashCode());
     }
@@ -182,6 +186,11 @@ public class AssignmentTest extends TestWithExampleFormulas {
         ass.addLiteral(this.B);
         ass.addLiteral(this.NX);
         ass.addLiteral(this.NY);
+        final Assignment fastAss = new Assignment(true);
+        fastAss.addLiteral(this.A);
+        fastAss.addLiteral(this.B);
+        fastAss.addLiteral(this.NX);
+        fastAss.addLiteral(this.NY);
         assertThat(ass).isNotEqualTo(null);
         assertThat(ass.equals(null)).isFalse();
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
