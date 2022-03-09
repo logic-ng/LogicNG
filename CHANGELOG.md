@@ -4,6 +4,11 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.3.0] - 2022-mm-dd
 
+### Added
+
+- Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
+- Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
+
 ### Changed
 
 - Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.

@@ -66,7 +66,7 @@ import java.util.TreeSet;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class MiniSat extends SATSolver {
@@ -367,14 +367,27 @@ public class MiniSat extends SATSolver {
     }
 
     /**
-     * Creates an assignment from a Boolean vector of the solver.
+     * Creates an assignment from a Boolean vector of the solver. The created assignment is not fast evaluable.
      * @param vec             the vector of the solver
      * @param relevantIndices the solver's indices of the relevant variables for the model.  If {@code null}, all
      *                        variables are relevant.
      * @return the assignment
      */
     public Assignment createAssignment(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
-        final Assignment model = new Assignment();
+        return createAssignment(vec, relevantIndices, false);
+    }
+
+    /**
+     * Creates an assignment from a Boolean vector of the solver. The flag {@code fastEvaluable} determines if the created
+     * assignment is {@link Assignment#fastEvaluable() fast evaluable} assignment.
+     * @param vec             the vector of the solver
+     * @param relevantIndices the solver's indices of the relevant variables for the model.  If {@code null}, all
+     *                        variables are relevant.
+     * @param fastEvaluable   {@code true} if the created assignment should be fast evaluable, otherwise {@code false}
+     * @return the assignment
+     */
+    public Assignment createAssignment(final LNGBooleanVector vec, final LNGIntVector relevantIndices, final boolean fastEvaluable) {
+        final Assignment model = new Assignment(fastEvaluable);
         if (relevantIndices == null) {
             for (int i = 0; i < vec.size(); i++) {
                 final String name = this.solver.nameForIdx(i);
