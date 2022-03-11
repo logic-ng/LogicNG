@@ -8,6 +8,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
 - Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
+- A canonical DNF enumeration `CanonicalDNFEnumeration`, a subclass of the newly added class `CanonicalEnuemration`.
 
 ### Changed
 

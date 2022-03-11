@@ -26,25 +26,25 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.transformations.dnf;
+package org.logicng.transformations.cnf;
 
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.transformations.CanonicalEnumeration;
 
 /**
- * Canonical DNF generation via enumeration of models by a SAT solver.
+ * Canonical CNF generation via enumeration of falsifying assignments by a SAT solver.
  * @version 2.3.0
- * @since 1.0
+ * @since 2.3.0
  */
-public final class CanonicalDNFEnumeration extends CanonicalEnumeration implements FormulaTransformation {
+public final class CanonicalCNFEnumeration extends CanonicalEnumeration implements FormulaTransformation {
 
-    private final static CanonicalDNFEnumeration INSTANCE = new CanonicalDNFEnumeration();
+    private final static CanonicalCNFEnumeration INSTANCE = new CanonicalCNFEnumeration();
 
     /**
      * Private empty constructor.  Singleton class.
      */
-    private CanonicalDNFEnumeration() {
+    private CanonicalCNFEnumeration() {
         // Intentionally left empty
     }
 
@@ -52,13 +52,13 @@ public final class CanonicalDNFEnumeration extends CanonicalEnumeration implemen
      * Returns the singleton of the transformation.
      * @return the transformation instance
      */
-    public static CanonicalDNFEnumeration get() {
+    public static CanonicalCNFEnumeration get() {
         return INSTANCE;
     }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        return compute(formula, false);
+        return compute(formula, true);
     }
 
     @Override
