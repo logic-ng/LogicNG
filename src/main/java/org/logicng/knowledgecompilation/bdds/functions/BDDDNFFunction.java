@@ -32,18 +32,18 @@ import org.logicng.formulas.Formula;
 import org.logicng.knowledgecompilation.bdds.BDD;
 
 /**
- * Creates a CNF from a BDD.
+ * Creates a DNF from a BDD.
  * @version 2.3.0
  * @since 2.0.0
  */
-public final class BDDCNFFunction extends BDDNormalFormFunction implements BDDFunction<Formula> {
+public final class BDDDNFFunction extends BDDNormalFormFunction implements BDDFunction<Formula> {
 
-    private final static BDDCNFFunction INSTANCE = new BDDCNFFunction();
+    private final static BDDDNFFunction INSTANCE = new BDDDNFFunction();
 
     /**
      * Private empty constructor.  Singleton class.
      */
-    private BDDCNFFunction() {
+    private BDDDNFFunction() {
         // Intentionally left empty
     }
 
@@ -51,12 +51,12 @@ public final class BDDCNFFunction extends BDDNormalFormFunction implements BDDFu
      * Returns the singleton of the transformation.
      * @return the transformation instance
      */
-    public static BDDCNFFunction get() {
+    public static BDDDNFFunction get() {
         return INSTANCE;
     }
 
     @Override
     public Formula apply(final BDD bdd) {
-        return compute(bdd, true);
+        return compute(bdd, false);
     }
 }

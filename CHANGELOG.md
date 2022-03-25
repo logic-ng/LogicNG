@@ -8,11 +8,14 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
 - Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
+- A DNF from BDD function `BDDDNFFunction`, a subclass of the newly added class `BDDNormalFormFunction`
 
 ### Changed
 
 - Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
 - Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
+- Method `BDD#dnf()` uses the newly introduced `BDDDNFFunction` to obtain a smaller DNF instead of a canonical DNF
+- Class `BDDCNFFunction` uses the singleton pattern
 
 ## [2.2.0] - 2021-11-09
 
@@ -28,8 +31,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fixed a bug in the `addSoftFormula` method of the `MaxSATSolver` class. A soft formula is now weighted properly if the soft formula is not a clause.
-- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the
-  solver.
+- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the solver.
 
 ### Deprecated
 
@@ -89,8 +91,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     - Expansion of pseudo-Boolean constraints
 - New solver function for optimizing the current formula on the solver (wrt. the number of positive/negative literals)
 - New formula randomizer and corner case generator, especially useful for testing
-- Configuration object for formula factory which can be used to allow trivial contradictions and tautologies in formulas and to specify a default merge strategy
-  for formulas from different factories
+- Configuration object for formula factory which can be used to allow trivial contradictions and tautologies in formulas and to specify a default merge strategy for formulas from
+  different factories
 - New helper classes for collections
 - Stream operators on formulas
 
@@ -142,8 +144,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- A new method for generating CNFs directly on the solver instead of using the formula factory. This often leads to a faster generation and reduced Heap
-  consumption but with the loss of caching
+- A new method for generating CNFs directly on the solver instead of using the formula factory. This often leads to a faster generation and reduced Heap consumption but with the
+  loss of caching
 - The current formula on a MiniSat-based solver can be extracted
 
 ### Changed
@@ -239,8 +241,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- MiniSat and Glucose have a new option for proof tracing. A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable
-  formulas after solving them. The new method can be found in the SAT solver class: `unsatCore()`
+- MiniSat and Glucose have a new option for proof tracing. A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable formulas after
+  solving them. The new method can be found in the SAT solver class: `unsatCore()`
 - A new simplifier which applies the distributive law was added: `DistributiveSimplifier`
 
 ### Changed

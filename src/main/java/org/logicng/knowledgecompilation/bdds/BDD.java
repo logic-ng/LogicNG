@@ -30,11 +30,11 @@ package org.logicng.knowledgecompilation.bdds;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;
 import org.logicng.knowledgecompilation.bdds.functions.BDDCNFFunction;
+import org.logicng.knowledgecompilation.bdds.functions.BDDDNFFunction;
 import org.logicng.knowledgecompilation.bdds.functions.BDDFunction;
 import org.logicng.knowledgecompilation.bdds.functions.BDDModelEnumerationFunction;
 import org.logicng.knowledgecompilation.bdds.functions.LngBDDFunction;
@@ -57,7 +57,7 @@ import java.util.TreeSet;
 
 /**
  * The internal representation of a BDD.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.4.0
  */
 public class BDD {
@@ -162,7 +162,7 @@ public class BDD {
      * @return the CNF for the formula represented by this BDD
      */
     public Formula cnf() {
-        return this.apply(new BDDCNFFunction());
+        return this.apply(BDDCNFFunction.get());
     }
 
     /**
@@ -174,16 +174,11 @@ public class BDD {
     }
 
     /**
-     * Returns a DNF formula for a this BDD.
+     * Returns a DNF formula for this BDD.
      * @return the DNF for the formula represented by this BDD
      */
     public Formula dnf() {
-        final List<Formula> ops = new ArrayList<>();
-        final FormulaFactory f = this.kernel.factory();
-        for (final Assignment ass : this.enumerateAllModels()) {
-            ops.add(ass.formula(f));
-        }
-        return ops.isEmpty() ? f.falsum() : f.or(ops);
+        return this.apply(BDDDNFFunction.get());
     }
 
     /**
