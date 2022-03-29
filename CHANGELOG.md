@@ -9,6 +9,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
 - Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
 - A DNF from BDD function `BDDDNFFunction`, a subclass of the newly added class `BDDNormalFormFunction`
+- A DNF from BDD formula transformation `BDDDNFTransformation`, a subclass of the newly added class `BDDNormalFormTransforamtion`
 
 ### Changed
 

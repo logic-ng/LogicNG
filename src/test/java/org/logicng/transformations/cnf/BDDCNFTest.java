@@ -29,27 +29,21 @@
 package org.logicng.transformations.cnf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.testutils.TestUtil.equivalentModels;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
-import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.predicates.CNFPredicate;
-import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.SATSolver;
-
-import java.util.List;
-import java.util.SortedSet;
 
 /**
  * Unit Tests for {@link BDDCNFTransformation}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.4.0
  */
 public class BDDCNFTest extends TestWithExampleFormulas {
@@ -180,23 +174,5 @@ public class BDDCNFTest extends TestWithExampleFormulas {
         assertThat(equivalentModels(f3, f3.transform(this.bddcnf), f3.variables())).isTrue();
         assertThat(f4.transform(this.bddcnf).holds(this.cnfPredicate)).isTrue();
         assertThat(equivalentModels(f4, f4.transform(this.bddcnf), f4.variables())).isTrue();
-    }
-
-    private boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {
-        final SATSolver s = MiniSat.miniSat(f1.factory());
-        s.add(f1);
-        final List<Assignment> models1 = s.enumerateAllModels(vars);
-        s.reset();
-        s.add(f2);
-        final List<Assignment> models2 = s.enumerateAllModels(vars);
-        if (models1.size() != models2.size()) {
-            return false;
-        }
-        for (final Assignment model : models1) {
-            if (!models2.contains(model)) {
-                return false;
-            }
-        }
-        return true;
     }
 }

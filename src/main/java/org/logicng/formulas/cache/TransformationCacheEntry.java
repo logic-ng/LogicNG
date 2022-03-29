@@ -30,7 +30,7 @@ package org.logicng.formulas.cache;
 
 /**
  * The pre-defined transformation cache entries.
- * @version 1.3
+ * @version 2.3.0
  * @since 1.0
  */
 public enum TransformationCacheEntry implements CacheEntry {
@@ -43,6 +43,7 @@ public enum TransformationCacheEntry implements CacheEntry {
     FACTORIZED_CNF("factorized conjunctive normal form"),
     BDD_CNF("conjunctive normal form via BDD"),
     FACTORIZED_DNF("factorized disjunctive normal form"),
+    BDD_DNF("disjunctive normal form via BDD"),
     AIG("and-inverter graph"),
     UNIT_PROPAGATION("unit propagation"),
     DISTRIBUTIVE_SIMPLIFICATION("distributive simplification"),
