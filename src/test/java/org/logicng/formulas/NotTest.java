@@ -41,7 +41,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Not}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class NotTest extends TestWithExampleFormulas {
@@ -166,5 +166,23 @@ public class NotTest extends TestWithExampleFormulas {
     public void testContains() {
         assertThat(this.NOT1.containsVariable(this.f.variable("a"))).isTrue();
         assertThat(this.NOT1.containsVariable(this.f.variable("x"))).isFalse();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.NOT1.isNNF()).isFalse();
+        assertThat(this.NOT2.isNNF()).isFalse();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.NOT1.isDNF()).isFalse();
+        assertThat(this.NOT2.isDNF()).isFalse();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.NOT1.isCNF()).isFalse();
+        assertThat(this.NOT2.isCNF()).isFalse();
     }
 }

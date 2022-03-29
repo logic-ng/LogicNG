@@ -35,7 +35,7 @@ import org.logicng.TestWithExampleFormulas;
 
 /**
  * Unit Tests for the class {@link CFalse}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class CFalseTest extends TestWithExampleFormulas {
@@ -115,5 +115,20 @@ public class CFalseTest extends TestWithExampleFormulas {
     @Test
     public void testContains() {
         assertThat(this.FALSE.containsVariable(this.f.variable("a"))).isFalse();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.FALSE.isNNF()).isTrue();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.FALSE.isDNF()).isTrue();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.FALSE.isCNF()).isTrue();
     }
 }

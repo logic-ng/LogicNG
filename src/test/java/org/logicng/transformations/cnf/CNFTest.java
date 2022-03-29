@@ -38,20 +38,16 @@ import org.logicng.handlers.FactorizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
-import org.logicng.predicates.CNFPredicate;
-import org.logicng.predicates.DNFPredicate;
 
 /**
  * Unit Tests for CNF conversion.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class CNFTest extends TestWithExampleFormulas {
 
     private final FactorizationHandler handler = new TestFactorizationHandler();
     private final CNFFactorization cnf = new CNFFactorization(this.handler);
-    private final CNFPredicate cnfPredicate = CNFPredicate.get();
-    private final DNFPredicate dnfPredicate = DNFPredicate.get();
 
     @Test
     public void testConstants() {
@@ -73,13 +69,13 @@ public class CNFTest extends TestWithExampleFormulas {
         assertThat(this.IMP3.transform(this.cnf)).isEqualTo(p.parse("~a | ~b | x | y"));
         assertThat(this.EQ1.transform(this.cnf)).isEqualTo(p.parse("(a | ~b) & (~a | b)"));
         assertThat(this.EQ2.transform(this.cnf)).isEqualTo(p.parse("(~a | b) & (a | ~b)"));
-        assertThat(this.IMP1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(this.IMP2.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(this.IMP3.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(this.EQ1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(this.EQ1.transform(this.cnf).holds(this.dnfPredicate)).isFalse();
-        assertThat(this.EQ2.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(this.EQ2.transform(this.cnf).holds(this.dnfPredicate)).isFalse();
+        assertThat(this.IMP1.transform(this.cnf).isCNF()).isTrue();
+        assertThat(this.IMP2.transform(this.cnf).isCNF()).isTrue();
+        assertThat(this.IMP3.transform(this.cnf).isCNF()).isTrue();
+        assertThat(this.EQ1.transform(this.cnf).isCNF()).isTrue();
+        assertThat(this.EQ1.transform(this.cnf).isDNF()).isFalse();
+        assertThat(this.EQ2.transform(this.cnf).isCNF()).isTrue();
+        assertThat(this.EQ2.transform(this.cnf).isDNF()).isFalse();
     }
 
     @Test
@@ -90,14 +86,14 @@ public class CNFTest extends TestWithExampleFormulas {
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf)).isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf)).isEqualTo(p.parse("(~a | ~b | c | ~x) & (~a  | ~b | c | y)"));
         assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf)).isEqualTo(p.parse("(a | b | ~x) & (a | b | ~y)"));
-        assertThat(this.AND1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(this.OR1.transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf).holds(this.dnfPredicate)).isFalse();
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf).holds(this.dnfPredicate)).isFalse();
-        assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf).holds(this.cnfPredicate)).isTrue();
-        assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf).holds(this.dnfPredicate)).isFalse();
+        assertThat(this.AND1.transform(this.cnf).isCNF()).isTrue();
+        assertThat(this.OR1.transform(this.cnf).isCNF()).isTrue();
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf).isCNF()).isTrue();
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf).isDNF()).isFalse();
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf).isCNF()).isTrue();
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf).isDNF()).isFalse();
+        assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf).isCNF()).isTrue();
+        assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf).isDNF()).isFalse();
     }
 
     @Test

@@ -46,7 +46,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link PBConstraint}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class PBConstraintTest extends TestWithExampleFormulas {
@@ -372,6 +372,27 @@ public class PBConstraintTest extends TestWithExampleFormulas {
         assertThat(this.pb2.containsVariable(f.variable("c"))).isTrue();
         assertThat(this.pb2.containsVariable(f.variable("d"))).isFalse();
         assertThat(this.pb2.containsVariable(f.variable("x"))).isFalse();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.pb1.isNNF()).isFalse();
+        assertThat(this.pb2.isNNF()).isFalse();
+        assertThat(this.pb22.isNNF()).isFalse();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.pb1.isDNF()).isFalse();
+        assertThat(this.pb2.isDNF()).isFalse();
+        assertThat(this.pb22.isDNF()).isFalse();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.pb1.isCNF()).isFalse();
+        assertThat(this.pb2.isCNF()).isFalse();
+        assertThat(this.pb22.isCNF()).isFalse();
     }
 
     @Test

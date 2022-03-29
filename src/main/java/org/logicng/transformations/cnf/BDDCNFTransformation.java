@@ -36,7 +36,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.predicates.CNFPredicate;
 import org.logicng.transformations.UnitPropagation;
 
 /**
@@ -90,7 +89,7 @@ public final class BDDCNFTransformation implements FormulaTransformation {
         if (formula.type().precedence() >= LITERAL.precedence()) {
             return formula;
         }
-        if (formula.holds(CNFPredicate.get())) {
+        if (formula.isCNF()) {
             return formula;
         }
         final Formula cached = formula.transformationCacheEntry(BDD_CNF);

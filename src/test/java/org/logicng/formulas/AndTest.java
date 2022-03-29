@@ -44,7 +44,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link And}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class AndTest extends TestWithExampleFormulas {
@@ -209,5 +209,26 @@ public class AndTest extends TestWithExampleFormulas {
         final PropositionalParser parser = new PropositionalParser(this.f);
         final Formula contAnd = parser.parse("a & b & (c | (d & e))");
         assertThat(contAnd.containsNode(parser.parse("d & e"))).isTrue();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.AND1.isNNF()).isTrue();
+        assertThat(this.AND2.isNNF()).isTrue();
+        assertThat(this.AND3.isNNF()).isTrue();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.AND1.isDNF()).isTrue();
+        assertThat(this.AND2.isDNF()).isTrue();
+        assertThat(this.AND3.isDNF()).isFalse();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.AND1.isCNF()).isTrue();
+        assertThat(this.AND2.isCNF()).isTrue();
+        assertThat(this.AND3.isCNF()).isTrue();
     }
 }

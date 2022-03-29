@@ -42,7 +42,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Implication}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class ImplicationTest extends TestWithExampleFormulas {
@@ -191,5 +191,29 @@ public class ImplicationTest extends TestWithExampleFormulas {
     public void testContains() {
         assertThat(this.IMP4.containsVariable(this.f.variable("a"))).isTrue();
         assertThat(this.IMP4.containsVariable(this.f.variable("c"))).isFalse();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.IMP1.isNNF()).isFalse();
+        assertThat(this.IMP2.isNNF()).isFalse();
+        assertThat(this.IMP3.isNNF()).isFalse();
+        assertThat(this.IMP4.isNNF()).isFalse();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.IMP1.isDNF()).isFalse();
+        assertThat(this.IMP2.isDNF()).isFalse();
+        assertThat(this.IMP3.isDNF()).isFalse();
+        assertThat(this.IMP4.isDNF()).isFalse();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.IMP1.isCNF()).isFalse();
+        assertThat(this.IMP2.isCNF()).isFalse();
+        assertThat(this.IMP3.isCNF()).isFalse();
+        assertThat(this.IMP4.isCNF()).isFalse();
     }
 }
