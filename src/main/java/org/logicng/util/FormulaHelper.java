@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 
 /**
  * A class which contains utility methods for {@link Formula} objects.
- * @version 2.3.0
+ * @version 2.2.0
  * @since 1.5.1
  */
 public final class FormulaHelper {
@@ -248,56 +248,5 @@ public final class FormulaHelper {
             strings.add(lit.phase() ? lit.name() : negationPrefix + lit.name());
         }
         return strings;
-    }
-
-    /**
-     * Returns a collection of max-terms (or min-terms) for a given CNF (or DNF).
-     * <p>
-     * The method does *NOT* verify whether the given formula is actually a correct CNF or DNF. However, if the formula given is
-     * not a CNF or DNF the method may still return a result, but the result might be of no use.
-     * @param normalForm the normal form (CNF or DNF)
-     * @param cnf        {@code true} if the given normal form is a CNF, {@code false} if the given normal form is a DNF
-     * @param setFactory the supplier for the term set
-     * @param <SET>      the type parameter of the term set
-     * @return the collection of max-terms for a CNF or the set of min-terms for a DNF
-     */
-    public static <SET extends Collection<SortedSet<Literal>>> SET normalFormAsTermSet(
-            final Formula normalForm, final boolean cnf, final Supplier<SET> setFactory) {
-        final SET terms = setFactory.get();
-        switch (normalForm.type()) {
-            case TRUE:
-                if (!cnf) {
-                    terms.add(new TreeSet<>());
-                }
-                break;
-            case FALSE:
-                if (cnf) {
-                    terms.add(new TreeSet<>());
-                }
-                break;
-            case LITERAL:
-                terms.add(normalForm.literals());
-                break;
-            case AND:
-            case OR:
-                final boolean isMaxTermSet = cnf && normalForm.type() == FType.AND;
-                final boolean isMinTermSet = !cnf && normalForm.type() == FType.OR;
-                if (isMaxTermSet || isMinTermSet) {
-                    for (final Formula op : normalForm) {
-                        terms.add(op.literals());
-                    }
-                } else {
-                    terms.add(normalForm.literals());
-                }
-                break;
-            case PBC:
-            case EQUIV:
-            case IMPL:
-            case NOT:
-                throw new IllegalArgumentException("Unexpected formula type: " + normalForm.type());
-            default:
-                throw new IllegalArgumentException("Unknown formula type: " + normalForm.type());
-        }
-        return terms;
     }
 }
