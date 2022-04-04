@@ -173,7 +173,7 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
 
     private static void verify(final Formula formula, final Formula expandedFormula) {
         final FormulaFactory f = formula.factory();
-        assertThat(f.equivalence(formula, expandedFormula).holds(new TautologyPredicate(f)));
+        assertThat(f.equivalence(formula, expandedFormula).holds(new TautologyPredicate(f))).isTrue();
         assertThat(isFreeOfPBCs(expandedFormula)).isTrue();
     }
 

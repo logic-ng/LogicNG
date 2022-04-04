@@ -421,7 +421,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
         final FormulaFactory f = formula.factory();
         final SATPredicate satPredicate = new SATPredicate(f);
         if (formula.holds(satPredicate)) {
-            assertThat(f.and(formula, f.and(optimumModel.literals())).holds(satPredicate));
+            assertThat(f.and(formula, f.and(optimumModel.literals())).holds(satPredicate)).isTrue();
             final int numSatisfiedLiterals = satisfiedLiterals(optimumModel, literals).size();
             final SortedSet<Variable> selVars = new TreeSet<>();
             final SATSolver solver = MiniSat.miniSat(formula.factory());

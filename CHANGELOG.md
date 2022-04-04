@@ -15,6 +15,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
 - Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
 
+### Fixed
+
+- Minor edge case issue in `NegationSimplifier` which yielded a larger result formula than input formula.
+
 ## [2.2.0] - 2021-11-09
 
 ### Added
