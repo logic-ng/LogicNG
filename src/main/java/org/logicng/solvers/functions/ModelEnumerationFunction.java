@@ -108,7 +108,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
             }
         }
         LNGIntVector relevantAllIndices = null;
-        final SortedSet<Variable> uniqueAdditionalVariables = new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
+        final SortedSet<Variable> uniqueAdditionalVariables =
+                new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
         if (this.variables != null) {
             uniqueAdditionalVariables.removeAll(this.variables);
         }
@@ -232,7 +233,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model.
+         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
          * @param variables the additional variables for each model
          * @return the current builder
          */

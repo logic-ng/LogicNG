@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
+// TODO check builder methods additional variables.
 public class ModelCounterFunction implements SolverFunction<BigInteger> {
     private final ModelEnumerationHandler handler;
     private final Collection<Variable> variables;
@@ -46,7 +47,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
     }
 
     @Override
-    public BigInteger apply(final MiniSat solver, final Consumer resultSetter) {
+    public BigInteger apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
         final List<Assignment> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
@@ -107,6 +108,9 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
             solver.loadState(stateBeforeEnumeration);
         }
+        for (final Assignment model : models) {
+            System.out.println(model);
+        }
         return new BigInteger(String.valueOf(models.size()));
     }
 
@@ -151,6 +155,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
      */
     public static class Builder {
         private ModelEnumerationHandler handler;
+        private Collection<Variable> relevantVariables;
         private Collection<Variable> variables;
         private Collection<Variable> additionalVariables;
 
@@ -165,6 +170,26 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          */
         public ModelCounterFunction.Builder handler(final ModelEnumerationHandler handler) {
             this.handler = handler;
+            return this;
+        }
+
+        /**
+         * Sets the set of variables over which the model enumeration should iterate.
+         * @param variables the set of variables
+         * @return the current builder
+         */
+        public ModelCounterFunction.Builder relevantVariables(final Collection<Variable> variables) {
+            this.relevantVariables = variables;
+            return this;
+        }
+
+        /**
+         * Sets the set of variables over which the model enumeration should iterate.
+         * @param variables the set of variables
+         * @return the current builder
+         */
+        public ModelCounterFunction.Builder relevantVariables(final Variable... variables) {
+            this.relevantVariables = Arrays.asList(variables);
             return this;
         }
 
