@@ -67,18 +67,20 @@ import java.util.stream.Collectors;
  *     <li>Factoring out: Applying the Distributive Law heuristically for a smaller formula</li>
  *     <li>Minimizing negations: Applying De Morgan's Law heuristically for a smaller formula</li>
  * </ul>
+ * The last two steps and whether the backbone shall be computed can be configured using the {@link AdvancedSimplifierConfig}. Also the handler and the rating
+ * function can be configured. The default rating function is the {@link DefaultRatingFunction}.
  * @version 2.1.0
  * @since 2.0.0
  */
 public final class AdvancedSimplifier implements FormulaTransformation {
 
-    private final RatingFunction<?> ratingFunction;
-    private final OptimizationHandler handler;
+    AdvancedSimplifierConfig config;
 
     /**
      * Constructs a new simplifier with the given rating functions.
      * @param ratingFunction the rating function
      */
+    @Deprecated
     public AdvancedSimplifier(final RatingFunction<?> ratingFunction) {
         this(ratingFunction, null);
     }
@@ -91,37 +93,64 @@ public final class AdvancedSimplifier implements FormulaTransformation {
      * @param ratingFunction the rating function
      * @param handler        the handler, can be {@code null}
      */
+    @Deprecated
     public AdvancedSimplifier(final RatingFunction<?> ratingFunction, final OptimizationHandler handler) {
-        this.handler = handler;
-        this.ratingFunction = ratingFunction;
+        this.config = AdvancedSimplifierConfig.builder().ratingFunction(ratingFunction).handler(handler).build();
+    }
+
+    /**
+     * Constructs a new simplifier with the default configuration.
+     */
+    public AdvancedSimplifier() {
+        this.config = AdvancedSimplifierConfig.builder().build();
+    }
+
+    /**
+     * Constructs a new simplifier with the given configuration.
+     */
+    public AdvancedSimplifier(final AdvancedSimplifierConfig config) {
+        this.config = config;
     }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        start(this.handler);
+        start(this.config.handler);
         final FormulaFactory f = formula.factory();
-        final Backbone backbone = BackboneGeneration.compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(this.handler));
-        if (backbone == null || aborted(this.handler)) {
-            return null;
+
+        final Formula restrictedByBackbone;
+        final SortedSet<Literal> backboneLiterals;
+        if (this.config.restrictBackbone) {
+            final Backbone backbone = BackboneGeneration
+                    .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(this.config.handler));
+            if (backbone == null || aborted(this.config.handler)) {
+                return null;
+            }
+            if (!backbone.isSat()) {
+                return f.falsum();
+            }
+            backboneLiterals = backbone.getCompleteBackbone();
+            restrictedByBackbone = formula.restrict(new Assignment(backboneLiterals));
+        } else {
+            restrictedByBackbone = formula;
+            backboneLiterals = formula.literals();
         }
-        if (!backbone.isSat()) {
-            return f.falsum();
-        }
-        final SortedSet<Literal> backboneLiterals = backbone.getCompleteBackbone();
-        final Formula restrictedFormula = formula.restrict(new Assignment(backboneLiterals));
-        final PrimeResult primeResult = PrimeCompiler.getWithMinimization().compute(restrictedFormula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, this.handler);
-        if (primeResult == null || aborted(this.handler)) {
+
+        final PrimeResult primeResult =
+                PrimeCompiler.getWithMinimization().compute(restrictedByBackbone, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, this.config.handler);
+        if (primeResult == null || aborted(this.config.handler)) {
             return null;
         }
         final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
         final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
-                Collections.singletonList(restrictedFormula), f, this.handler);
-        if (minimizedPIs == null || aborted(this.handler)) {
+                Collections.singletonList(restrictedByBackbone), f, this.config.handler);
+        if (minimizedPIs == null || aborted(this.config.handler)) {
             return null;
         }
         final Formula minDnf = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
-        final Formula fullFactor = minDnf.transform(new FactorOutSimplifier(this.ratingFunction));
-        return f.and(f.and(backboneLiterals), fullFactor).transform(new NegationSimplifier());
+        final Formula simplifiedByFactoringOut = this.config.factorOut ? minDnf.transform(new FactorOutSimplifier(this.config.ratingFunction)) : minDnf;
+        final Formula simplifiedByRestrictToBackbone =
+                this.config.restrictBackbone ? f.and(f.and(backboneLiterals), simplifiedByFactoringOut) : simplifiedByFactoringOut;
+        return this.config.simplifyNegations ? simplifiedByRestrictToBackbone.transform(new NegationSimplifier()) : simplifiedByRestrictToBackbone;
     }
 
     private List<Formula> negateAllLiterals(final Collection<SortedSet<Literal>> literalSets, final FormulaFactory f) {
