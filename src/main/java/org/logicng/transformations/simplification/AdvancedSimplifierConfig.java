@@ -6,8 +6,8 @@ import org.logicng.handlers.OptimizationHandler;
 
 /**
  * The configuration object for the {@link AdvancedSimplifier}.
- * @version 3.0.0
- * @since 3.0
+ * @version 2.3.0
+ * @since 2.3.0
  */
 
 public class AdvancedSimplifierConfig extends Configuration {
@@ -76,7 +76,7 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the flag for whether the formula should be factorised. The default is 'true'.
+         * Sets the flag for whether the formula should be factorized. The default is 'true'.
          * @param factorOut flag for the factorisation
          * @return the current builder
          */
@@ -107,7 +107,7 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the handler to control the computation. The default is "no handler".
+         * Sets the handler to control the computation. The default is 'no handler'.
          * @param handler the optimization handler
          * @return the current builder
          */
