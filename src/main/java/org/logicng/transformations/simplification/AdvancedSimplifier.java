@@ -124,8 +124,7 @@ public final class AdvancedSimplifier implements FormulaTransformation {
     public Formula apply(final Formula formula, final boolean cache) {
         start(this.config.handler);
         final FormulaFactory f = formula.factory();
-
-        Formula simplified;
+        Formula simplified = formula;
         final SortedSet<Literal> backboneLiterals = new TreeSet<>();
         if (this.config.restrictBackbone) {
             final Backbone backbone = BackboneGeneration
@@ -138,10 +137,24 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             }
             backboneLiterals.addAll(backbone.getCompleteBackbone());
             simplified = formula.restrict(new Assignment(backboneLiterals));
-        } else {
-            simplified = formula;
         }
+        simplified = computeMinDnf(f, simplified);
+        if (simplified == null) {
+            return null;
+        }
+        if (this.config.factorOut) {
+            simplified = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
+        }
+        if (this.config.restrictBackbone) {
+            simplified = f.and(f.and(backboneLiterals), simplified);
+        }
+        if (this.config.simplifyNegations) {
+            simplified = simplified.transform(new NegationSimplifier());
+        }
+        return simplified;
+    }
 
+    private Formula computeMinDnf(final FormulaFactory f, Formula simplified) {
         final PrimeResult primeResult =
                 PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, this.config.handler);
         if (primeResult == null || aborted(this.config.handler)) {
@@ -153,10 +166,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         if (minimizedPIs == null || aborted(this.config.handler)) {
             return null;
         }
-        final Formula minDnf = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
-        simplified = this.config.factorOut ? minDnf.transform(new FactorOutSimplifier(this.config.ratingFunction)) : minDnf;
-        simplified = this.config.restrictBackbone ? f.and(f.and(backboneLiterals), simplified) : simplified;
-        return this.config.simplifyNegations ? simplified.transform(new NegationSimplifier()) : simplified;
+        simplified = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
+        return simplified;
     }
 
     private List<Formula> negateAllLiterals(final Collection<SortedSet<Literal>> literalSets, final FormulaFactory f) {
