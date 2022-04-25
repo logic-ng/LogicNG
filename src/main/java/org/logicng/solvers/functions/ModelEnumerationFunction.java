@@ -30,6 +30,9 @@ package org.logicng.solvers.functions;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
+import static org.logicng.formulas.FormulaFactory.CC_PREFIX;
+import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
+import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 import static org.logicng.handlers.Handler.start;
 
 import org.logicng.collections.LNGBooleanVector;
@@ -39,12 +42,14 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
+import org.logicng.functions.VariableProfileFunction;
 import org.logicng.graphs.algorithms.ConnectedComponentsComputation;
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.predicates.satisfiability.ContingencyPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 
@@ -56,8 +61,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -72,18 +79,29 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
     private final Collection<Variable> variables;
     private final Collection<Variable> additionalVariables;
     private final boolean fastEvaluable;
-    private final boolean computeWithSplit;
+    private final boolean enumerateWithSplit;
+    private final boolean computeWithComponents;
     private final int minNumberOfVarsForSplit;
+    private final SPLIT_CRITERION splitCriterion;
+    private final int lowerBoundSplit;
+    private final int upperBoundSplit;
+    private static final double HUNDRED = 100;
+
 
     private ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables,
-                                     final Collection<Variable> additionalVariables, final boolean fastEvaluable, final boolean computeWithSplit,
-                                     final int minNumberOfVarsForSplit) {
+                                     final Collection<Variable> additionalVariables, final boolean fastEvaluable, final boolean computeWithComponents,
+                                     final boolean enumerateWithSplit, final int minNumberOfVarsForSplit, final SPLIT_CRITERION splitCriterion,
+                                     final int lowerBoundSplit, final int upperBoundSplit) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
-        this.computeWithSplit = computeWithSplit;
+        this.computeWithComponents = computeWithComponents;
+        this.enumerateWithSplit = enumerateWithSplit;
         this.minNumberOfVarsForSplit = minNumberOfVarsForSplit;
+        this.splitCriterion = splitCriterion;
+        this.lowerBoundSplit = lowerBoundSplit;
+        this.upperBoundSplit = upperBoundSplit;
     }
 
     /**
@@ -98,61 +116,138 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
-        if (!this.computeWithSplit) {
-            return enumerate(solver, resultSetter, this.variables);
+        if (!this.computeWithComponents) {
+            return this.enumerateWithSplit ? enumerateWithSplit(solver, resultSetter, formulasOnSolver, solver.knownVariables()) :
+                    enumerate(solver, resultSetter, this.variables);
         } else {
             final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulasOnSolver);
             final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
             final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulasOnSolver, ccs);
-            final List<List<Assignment>> allModels = new ArrayList<>();
+            final List<List<Assignment>> modelsForAllComponents = new ArrayList<>();
+            final SortedSet<Variable> leftOverVars = solver.knownVariables();
+            leftOverVars.removeIf(x -> !isNotHelpVar(x));
+            if (components.size() == 1 && components.get(0).size() == 1 && !components.get(0).get(0).holds(new ContingencyPredicate(solver.factory()))) {
+                return Collections.emptyList();
+            }
             for (final List<Formula> component : components) {
-                final SolverState initialState = solver.saveState();
-                for (final Formula formula : formulasOnSolver) {
-                    if (!component.contains(formula)) {
-                        solver.add(solver.factory().or(formula, formula.negate()));
-                    }
-                }
-                final SortedSet<Variable> varsInThisComponent = new TreeSet<>();
-                component.forEach(formula -> varsInThisComponent.addAll(formula.variables()));
-                if (this.variables != null) {
-                    varsInThisComponent.removeIf(x -> !this.variables.contains(x));
-                }
-                if (varsInThisComponent.size() < this.minNumberOfVarsForSplit) {
-                    final List<Assignment> modelsForThisComponent = enumerate(solver, resultSetter, varsInThisComponent);
-                    allModels.add(modelsForThisComponent);
-                    solver.loadState(initialState);
-                } else {
-                    final SortedSet<Variable> splitVars = computeSplitVars(varsInThisComponent);
-                    final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars);
-                    final List<Assignment> modelsForThisComponent = new ArrayList<>();
-                    for (final Assignment splitAssignment : splitAssignments) {
-                        solver.add(splitAssignment.formula(solver.factory()));
-                        modelsForThisComponent.addAll(enumerate(solver, resultSetter, varsInThisComponent));
-                        solver.loadState(initialState);
-                    }
-                    allModels.add(modelsForThisComponent);
+                final SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
+                leftOverVars.removeAll(varsInThisComponent);
+                final List<Assignment> models = this.enumerateWithSplit ?
+                        enumerateWithSplit(solver, resultSetter, component, varsInThisComponent) :
+                        enumerate(solver, resultSetter, varsInThisComponent);
+                if (!models.isEmpty()) {
+                    modelsForAllComponents.add(models);
                 }
             }
-            return multiplyAssignments(allModels);
+            if (!leftOverVars.isEmpty()) {
+                modelsForAllComponents.add(enumerate(solver, resultSetter, leftOverVars));
+            }
+            return modelsForAllComponents.isEmpty() ? Collections.emptyList() : getCartesianProduct(modelsForAllComponents);
         }
     }
 
-    /**
-     * Very naive approach: Every second variable is split variable.
-     */
-    private SortedSet<Variable> computeSplitVars(final SortedSet<Variable> varsInThisComponent) {
+    private List<Assignment> enumerateWithSplit(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulas,
+                                                final Collection<Variable> varsInThisComponent) {
+        if (varsInThisComponent.size() < this.minNumberOfVarsForSplit) {
+            return enumerate(solver, resultSetter, varsInThisComponent);
+        } else {
+            final SolverState initialState = solver.saveState();
+            final SortedSet<Variable> splitVars = computeSplitVars(varsInThisComponent, formulas);
+            final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars);
+            final List<Assignment> modelsForThisComponent = new ArrayList<>();
+            for (final Assignment splitAssignment : splitAssignments) {
+                solver.add(splitAssignment.formula(solver.factory()));
+                modelsForThisComponent.addAll(enumerate(solver, resultSetter, varsInThisComponent));
+                solver.loadState(initialState);
+            }
+            return modelsForThisComponent;
+        }
+    }
+
+    private SortedSet<Variable> computeSplitVars(final Collection<Variable> varsInThisComponent, final Collection<Formula> component) {
         final SortedSet<Variable> splitVars = new TreeSet<>();
+        final Map<Integer, SortedSet<Variable>> occurrence2Vars = getOccurrence2Vars(component);
+        final int minNumberOfSplitVars = (int) Math.ceil(this.lowerBoundSplit * varsInThisComponent.size() / HUNDRED);
+        final int maxNumberOfSplitVars = (int) Math.floor(this.upperBoundSplit * varsInThisComponent.size() / HUNDRED);
         final List<Variable> vars = new ArrayList<>(varsInThisComponent);
-        for (int i = 0; i < vars.size(); i += 2) {
-            splitVars.add(vars.get(i));
+        switch (this.splitCriterion) {
+            case RANDOM:
+                int counterR = 0;
+                while (splitVars.size() < minNumberOfSplitVars) {
+                    splitVars.add(vars.get(counterR));
+                    counterR++;
+                }
+                return splitVars;
+            case LEAST_COMMON_VARS:
+                int counterL = occurrence2Vars.entrySet().stream().findFirst().get().getKey();
+                while (splitVars.size() < minNumberOfSplitVars) {
+                    if (occurrence2Vars.containsKey(counterL)) {
+                        splitVars.addAll(occurrence2Vars.get(counterL));
+                    }
+                    counterL++;
+                }
+                return splitVars.size() <= maxNumberOfSplitVars ? splitVars : removeVarsFromSplitVars(splitVars, maxNumberOfSplitVars);
+            case MOST_COMMON_VARS:
+                int counterM = occurrence2Vars.keySet().stream().mapToInt(i -> i).max().getAsInt();
+                while (splitVars.size() < minNumberOfSplitVars) {
+                    if (occurrence2Vars.containsKey(counterM)) {
+                        splitVars.addAll(occurrence2Vars.get(counterM));
+                    }
+                    counterM--;
+                }
+                return splitVars.size() <= maxNumberOfSplitVars ? splitVars : removeVarsFromSplitVars(splitVars, maxNumberOfSplitVars);
+            default:
+                throw new IllegalArgumentException("Unknown split criterion");
         }
-        return splitVars;
     }
 
-    private List<Assignment> multiplyAssignments(final List<List<Assignment>> allModelsList) {
+    private Map<Integer, SortedSet<Variable>> getOccurrence2Vars(final Collection<Formula> component) {
+        final Formula componentFormulas = component.stream().findAny().get().factory().and(component);
+        final Map<Integer, SortedSet<Variable>> occurrence2Vars = new TreeMap<>();
+        final Map<Variable, Integer> variableIntegerMap = componentFormulas.apply(new VariableProfileFunction()).entrySet().stream()
+                .filter(x -> isNotHelpVar(x.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        for (final Map.Entry<Variable, Integer> entry : variableIntegerMap.entrySet()) {
+            occurrence2Vars.computeIfAbsent(entry.getValue(), x -> new TreeSet<>()).add(entry.getKey());
+        }
+        return occurrence2Vars;
+    }
+
+    private boolean isNotHelpVar(final Variable var) {
+        return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
+    }
+
+    private SortedSet<Variable> removeVarsFromSplitVars(final SortedSet<Variable> splitVars, final int maxNumerOfSplitVars) {
+        final SortedSet<Variable> updatedSplitVars = new TreeSet<>(splitVars);
+        for (final Variable splitVar : splitVars) {
+            updatedSplitVars.remove(splitVar);
+            if (updatedSplitVars.size() <= maxNumerOfSplitVars) {
+                break;
+            }
+        }
+        return updatedSplitVars;
+    }
+
+    private SortedSet<Variable> getVarsInThisComponent(final Collection<Variable> variables, final Collection<Formula> component) {
+        final SortedSet<Variable> varsInThisComponent = new TreeSet<>();
+        final SortedSet<Variable> varsCom = new TreeSet<>();
+        for (final Formula formula : component) {
+            varsCom.addAll(formula.variables());
+        }
+        for (final Variable var : variables) {
+            if (isNotHelpVar(var) && varsCom.contains(var)) {
+                varsInThisComponent.add(var);
+            }
+        }
+        return varsInThisComponent;
+    }
+
+    private List<Assignment> getCartesianProduct(final List<List<Assignment>> allModelsList) {
+        if (allModelsList.size() == 1) {
+            return allModelsList.get(0);
+        }
         final List<Assignment> allJoinedAssignments = new ArrayList<>();
-        final CartesianProduct cartesianProduct = new CartesianProduct();
-        final List<List<Assignment>> product = cartesianProduct.product(allModelsList);
+        final List<List<Assignment>> product = CartesianProduct.product(allModelsList);
         for (final List<Assignment> assignmentList : product) {
             final Assignment assignment = new Assignment();
             for (final Assignment assignment1 : assignmentList) {
@@ -166,8 +261,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
     }
 
     private List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables) {
-        SolverState stateBeforeEnumeration = null;
         final List<Assignment> models = new ArrayList<>();
+        SolverState stateBeforeEnumeration = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
             stateBeforeEnumeration = solver.saveState();
         }
@@ -271,8 +366,12 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         private Collection<Variable> variables;
         private Collection<Variable> additionalVariables;
         private boolean fastEvaluable = false;
-        private boolean computeWithSplit = false;
+        private boolean enumerateWithSplit = false;
+        private boolean computeWithComponents = false;
         private int minNumberOfVarsForSplit = 10;
+        private SPLIT_CRITERION splitCriterion = SPLIT_CRITERION.RANDOM;
+        private int lowerBoundSplit = 50;
+        private int upperBoundSplit = 65;
 
         private Builder() {
             // Initialize only via factory
@@ -339,12 +438,22 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets the flag whether the computation should be performed with splits.
-         * @param computeWithSplit {@code true} if the computation should be performed with split, otherwise {@code false}
+         * Indicates whether the computation should be performed by splitting into components.
+         * @param computeWithComponents the flag for whether the computation should be performed with components.
          * @return the builder
          */
-        public Builder computeWithSplit(final boolean computeWithSplit) {
-            this.computeWithSplit = computeWithSplit;
+        public Builder computeWithComponents(final boolean computeWithComponents) {
+            this.computeWithComponents = computeWithComponents;
+            return this;
+        }
+
+        /**
+         * Sets the flag whether the model enumeration should be performed with splits.
+         * @param enumerateWithSplit {@code true} if the model enumeration should be performed with split, otherwise {@code false}
+         * @return the builder
+         */
+        public Builder enumerateWithSplit(final boolean enumerateWithSplit) {
+            this.enumerateWithSplit = enumerateWithSplit;
             return this;
         }
 
@@ -359,12 +468,72 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
+         * Sets the split criterium for the split.
+         * @param splitCriterion the split criterium
+         * @return the builder
+         */
+        public Builder splitCriterion(final SPLIT_CRITERION splitCriterion) {
+            this.splitCriterion = splitCriterion;
+            return this;
+        }
+
+        /**
+         * Sets the lower bound for the number of variables after which should be split.
+         * @param lowerBoundSplit the lower bound for the split
+         * @return the builder
+         */
+        public Builder lowerBoundSplit(final int lowerBoundSplit) {
+            this.lowerBoundSplit = lowerBoundSplit;
+            return this;
+        }
+
+        /**
+         * Sets the upper bound for the number of variables after which should be split.
+         * @param upperBoundSplit the upper bound for the split
+         * @return the builder
+         */
+        public Builder upperBoundSplit(final int upperBoundSplit) {
+            this.upperBoundSplit = upperBoundSplit;
+            return this;
+        }
+
+        /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunction build() {
-            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.computeWithSplit,
-                    this.minNumberOfVarsForSplit);
+            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.computeWithComponents,
+                    this.enumerateWithSplit, this.minNumberOfVarsForSplit, splitCriterion, lowerBoundSplit, upperBoundSplit);
+        }
+    }
+
+    enum SPLIT_CRITERION {
+        MOST_COMMON_VARS,
+        LEAST_COMMON_VARS,
+        RANDOM
+    }
+
+    private static class CartesianProduct {
+        public static <T> List<List<T>> product(final List<List<T>> lists) {
+            final List<List<T>> product = new ArrayList<>();
+            product(product, new ArrayList<>(), lists);
+            return product;
+        }
+
+        private static <T> void product(final List<List<T>> result, final List<T> existingTupleToComplete, final List<List<T>> valuesToUse) {
+            for (final T value : valuesToUse.get(0)) {
+                final List<T> newExisting = new ArrayList<>(existingTupleToComplete);
+                newExisting.add(value);
+                if (valuesToUse.size() == 1) {
+                    result.add(newExisting);
+                } else {
+                    final List<List<T>> newValues = new ArrayList<>();
+                    for (int i = 1; i < valuesToUse.size(); i++) {
+                        newValues.add(valuesToUse.get(i));
+                    }
+                    product(result, newExisting, newValues);
+                }
+            }
         }
     }
 }
