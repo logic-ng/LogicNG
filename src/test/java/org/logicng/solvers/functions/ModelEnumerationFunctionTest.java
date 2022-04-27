@@ -6,19 +6,28 @@ import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
 import org.logicng.functions.FormulaDepthFunction;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.functions.splitVariables.FixedVariables;
+import org.logicng.solvers.functions.splitVariables.LeastCommonVariables;
+import org.logicng.solvers.functions.splitVariables.MostCommonVariables;
+import org.logicng.solvers.functions.splitVariables.RandomSplitVariables;
+import org.logicng.solvers.functions.splitVariables.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Units tests for {@link ModelEnumerationFunction}.
@@ -58,181 +67,51 @@ public class ModelEnumerationFunctionTest {
     }
 
     @Test
-    public void testModelEnumerationWithVariables() {
-        final SATSolver solver = MiniSat.miniSat(this.f);
-        final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(10).build());
-        final Formula formula = randomizer.formula(5);
-        solver.add(formula);
-        final long t1 = System.currentTimeMillis();
-        final List<Assignment> modelsWithSplit = solver.execute(
-                ModelEnumerationFunction.builder().variables(f.variable("v01"), f.variable("v02"), f.variable("v03")).enumerateWithSplit(true).build());
-        System.out.println(modelsWithSplit);
-
-        final long t2 = System.currentTimeMillis();
-        final List<Assignment> modelsWithoutSplit = solver.execute(
-                ModelEnumerationFunction.builder().variables(f.variable("v01"), f.variable("v02"), f.variable("v03")).enumerateWithSplit(false).build());
-        final long t3 = System.currentTimeMillis();
-
-        System.out.println(modelsWithoutSplit);
-
-        System.out.println("time with split: " + (t2 - t1));
-        System.out.println("time without split: " + (t3 - t2));
-        assertThat(modelsWithSplit).containsAll(modelsWithoutSplit);
-        assertThat(modelsWithoutSplit).containsAll(modelsWithSplit);
-    }
-
-
-    @Test
-    public void testNewImplementation() {
-        for (int i = 1; i <= 1000; i++) {
+    public void testSplitProvider() throws IOException {
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("performanceSplitv2.csv"));
+        fw.write(
+                "seed;depth;#vars;#combinations;time no split (ms);aborted?;time split (ms);aborted?;formula");
+        fw.newLine();
+        for (int i = 1; i <= 100; i++) {
             // given
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(2);
-            final SATSolver solver = MiniSat.miniSat(this.f);
-            solver.add(formula);
-            System.out.println("\nSeed: " + i + ", formula: " + formula);
 
-            // when
-            final long t1 = System.currentTimeMillis();
-            final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().build());
-
-            final long t2 = System.currentTimeMillis();
-            final List<Assignment> models2 = solver.execute(ModelEnumerationFunction.builder().enumerateWithSplit(true).build());
-
-            final long t3 = System.currentTimeMillis();
-            final List<Assignment> models3 = solver.execute(ModelEnumerationFunction.builder().computeWithComponents(true).build());
-
-            final long t4 = System.currentTimeMillis();
-            final List<Assignment> models4 = solver.execute(ModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true).build());
-
-            final long t5 = System.currentTimeMillis();
-
-            System.out.println("Time no split, no components: " + (t2 - t1));
-            System.out.println("Time split, no components: " + (t3 - t2));
-            System.out.println("Time no split, components: " + (t4 - t3));
-            System.out.println("Time split, component: " + (t5 - t4));
-            // System.out.println("Models 1: " + models1);
-            // System.out.println("Models 2: " + models2);
-            // System.out.println("Models 3: " + models3);
-            // System.out.println("Models 4: " + models4);
-
-
-            // then
-            assertThat(models1.containsAll(models2)).isTrue();
-            assertThat(models1.containsAll(models3)).isTrue();
-            assertThat(models1.containsAll(models4)).isTrue();
-
-            assertThat(models2.containsAll(models1)).isTrue();
-            assertThat(models2.containsAll(models3)).isTrue();
-            assertThat(models2.containsAll(models4)).isTrue();
-
-            assertThat(models3.containsAll(models1)).isTrue();
-            assertThat(models3.containsAll(models2)).isTrue();
-            assertThat(models3.containsAll(models4)).isTrue();
-
-            assertThat(models4.containsAll(models1)).isTrue();
-            assertThat(models4.containsAll(models2)).isTrue();
-            assertThat(models4.containsAll(models3)).isTrue();
-        }
-    }
-
-
-    @Test
-    public void compareSplitCriteria() {
-        for (int i = 1; i <= 30; i++) {
-
-            // given
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
-            final SATSolver solver = MiniSat.miniSat(this.f);
-            solver.add(formula);
-            System.out.println("\nSeed: " + i + ", formula: " + formula);
-
-            // when
-            final long t1 = System.currentTimeMillis();
-            final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.RANDOM).build());
-
-            final long t2 = System.currentTimeMillis();
-            System.out.println("Time random split: " + (t2 - t1));
-
-            final List<Assignment> models2 = solver.execute(ModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.LEAST_COMMON_VARS).build());
-
-            final long t3 = System.currentTimeMillis();
-            System.out.println("Time prefer least common vars: " + (t3 - t2));
-
-            final List<Assignment> models3 = solver.execute(ModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.MOST_COMMON_VARS).build());
-
-            final long t4 = System.currentTimeMillis();
-            System.out.println("Time prefer most common vars: " + (t4 - t3));
-
-            // then
-            assertThat(models1.containsAll(models2)).isTrue();
-            assertThat(models1.containsAll(models3)).isTrue();
-
-            assertThat(models2.containsAll(models1)).isTrue();
-            assertThat(models2.containsAll(models3)).isTrue();
-
-            assertThat(models3.containsAll(models1)).isTrue();
-            assertThat(models3.containsAll(models2)).isTrue();
-        }
-    }
-
-    @Test
-    public void getBestSplitAlgorithm() throws IOException {
-        final BufferedWriter fw = new BufferedWriter(new FileWriter("performanceSplitCriteria_maxDepth4.csv"));
-        fw.write("seed;depth;#vars;#combinations;time random;random aborted;time least common vars;lc aborted;time most common vars;mc aborted;formula");
-        fw.newLine();
-        for (int i = 1; i <= 50; i++) {
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(4);
             final int numberOfVars = formula.variables().size();
             if (numberOfVars < 10) {
                 continue;
             }
             final SATSolver solver = MiniSat.miniSat(this.f);
             solver.add(formula);
-            System.out.println("\nSeed: " + i + ", formula: " + formula);
+            System.out.println("\nSeed: " + i);
 
             final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
             final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler3 = new NumberOfModelsHandler(2500000);
-
+            // when
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> models = solver.execute(ModelEnumerationFunction.builder()
-                    .handler(handler1)
-                    .computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.RANDOM).build());
-
-            final long t2 = System.currentTimeMillis();
-            final long timeRandom = t2 - t1;
-            System.out.println("Number of combis: " + models.size());
-
-            if (models.size() < 1000) {
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().handler(handler1).splitVariableProvider(new LeastCommonVariables()).build());
+            if (models1.size() > 500000) {
                 continue;
             }
 
-            System.out.println("Time random split: " + timeRandom);
-
-            solver.execute(ModelEnumerationFunction.builder().handler(handler2)
-                    .computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.LEAST_COMMON_VARS).build());
+            final long t2 = System.currentTimeMillis();
+            final long timeSplit = t2 - t1;
+            System.out.println(models1.size());
+            System.out.println("Time with split: " + timeSplit);
+            final List<Assignment> models2 = solver.execute(ModelEnumerationFunction.builder().handler(handler2).build());
             final long t3 = System.currentTimeMillis();
-            final long timeLeastCommon = t3 - t2;
-            System.out.println("Time prefer least common vars: " + timeLeastCommon);
 
-            solver.execute(ModelEnumerationFunction.builder().handler(handler3).computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.MOST_COMMON_VARS).build());
+            final long timeNoSplit = t3 - t2;
 
-            final long t4 = System.currentTimeMillis();
-            final long timeMostCommon = t4 - t3;
-            System.out.println("Time prefer most common vars: " + timeMostCommon);
+            System.out.println("Time without split: " + timeNoSplit);
+
+            assertThat(models1.size()).isEqualTo(models2.size());
 
             final int depth = formula.apply(new FormulaDepthFunction());
-            final String resultString = String.format("%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%s", i, depth, numberOfVars, models.size(), timeRandom, handler1.aborted(),
-                    timeLeastCommon, handler2.aborted(), timeMostCommon, handler3.aborted(), formula);
+            final String resultString =
+                    String.format("%d;%d;%d;%d;%d;%b;%d;%b;%s", i, depth, numberOfVars, models1.size(), timeNoSplit, handler1.aborted(), timeSplit,
+                            handler2.aborted(), formula);
             fw.write(resultString);
             fw.newLine();
             fw.flush();
@@ -240,84 +119,75 @@ public class ModelEnumerationFunctionTest {
     }
 
     @Test
-    public void testLeastCommonSplitAlgorithm() {
-        for (int i = 1; i <= 1; i++) {
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(4);
-            final int numberOfVars = formula.variables().size();
-            if (numberOfVars < 10) {
-                continue;
-            }
-            final SATSolver solver = MiniSat.miniSat(this.f);
-            solver.add(formula);
-            System.out.println("\nSeed: " + i + ", formula: " + formula);
-
-            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
-            final long t1 = System.currentTimeMillis();
-
-            solver.execute(ModelEnumerationFunction.builder().handler(handler1)
-                    .computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(ModelEnumerationFunction.SPLIT_CRITERION.LEAST_COMMON_VARS).build());
-            final long t2 = System.currentTimeMillis();
-            final long timeLeastCommon = t2 - t1;
-            System.out.println("Time prefer least common vars: " + timeLeastCommon);
-        }
-
-    }
-
-    @Test
-    public void compareComputationsWithSplitAndComponents() throws IOException {
-        final BufferedWriter fw = new BufferedWriter(new FileWriter("performanceSplitAndComponentsPart2.csv"));
+    public void compareSplitProvider() throws IOException {
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("compareSplitProvider.csv"));
         fw.write(
-                "seed;depth;#vars;time no split, no components;aborted?;time split, no components;aborted?;time no split, components;aborted?;time split, " +
-                        "components;aborted?;formula");
+                "seed;depth;#vars;#combinations;time split lc (ms);time split mc (ms);time split random (ms);time split fixed (ms);formula");
         fw.newLine();
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 100; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
-            if (numberOfVars < 10) {
+            if (numberOfVars < 12) {
                 continue;
             }
-
             final SATSolver solver = MiniSat.miniSat(this.f);
             solver.add(formula);
-            System.out.println("\nSeed: " + i + ", formula: " + formula);
 
-            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler3 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler4 = new NumberOfModelsHandler(2500000);
-
+            // least common vars
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> models = solver.execute(ModelEnumerationFunction.builder().handler(handler1).build());
-            if (models.size() < 1000) {
+            final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables()).build());
+            final long t1a = System.currentTimeMillis();
+            if (models1.size() > 500000 || models1.size() < 10000) {
                 continue;
             }
-
             final long t2 = System.currentTimeMillis();
-            final long timeNoSplitNoComponents = t2 - t1;
-            System.out.println("Time no split, no components: " + timeNoSplitNoComponents);
 
-            solver.execute(ModelEnumerationFunction.builder().handler(handler2).enumerateWithSplit(true).build());
+            // most common vars
+            final List<Assignment> models2 = solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariables()).build());
             final long t3 = System.currentTimeMillis();
-            final long timeSplitNoComponents = t3 - t2;
-            System.out.println("Time split, no components: " + timeSplitNoComponents);
 
-            solver.execute(ModelEnumerationFunction.builder().handler(handler3).computeWithComponents(true).build());
+            // random vars
+            final List<Assignment> models3 = solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new RandomSplitVariables()).build());
             final long t4 = System.currentTimeMillis();
-            final long timeNoSplitComponents = t4 - t3;
-            System.out.println("Time no split, components: " + timeNoSplitComponents);
 
-            solver.execute(ModelEnumerationFunction.builder().handler(handler4).computeWithComponents(true).enumerateWithSplit(true).build());
+            // fixed number of vars
+            final List<Variable> varsFormula = new ArrayList<>(formula.variables());
+            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 2);
+            final SortedSet<Variable> splitVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
+            final SplitVariableProvider splitVariableProvider = new FixedVariables(minNumberOfVars, splitVars);
             final long t5 = System.currentTimeMillis();
-            final long timeSplitComponents = t5 - t4;
-            System.out.println("Time split, component: " + timeSplitComponents);
+            final List<Assignment> models4 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(splitVariableProvider).build());
+            final long t6 = System.currentTimeMillis();
+
+            // no split
+            // final List<Assignment> models5 = solver.execute(ModelEnumerationFunction.builder().build());
+            // final long t7 = System.currentTimeMillis();
+
+            final long timeLc = t1a - t1;
+            final long timeMc = t3 - t2;
+            final long timeRandom = t4 - t3;
+            final long timeFixed = t6 - t5;
+            // final long timeNoSplit = t7 - t6;
+
+            System.out.println("\nSeed: " + i);
+            System.out.println("Number of combinations: " + models1.size());
+            System.out.println("Time least common vars: " + timeLc);
+            System.out.println("Time most common vars: " + timeMc);
+            System.out.println("Time random vars: " + timeRandom);
+            System.out.println("Time fixed number of vars: " + timeFixed);
+            // System.out.println("Time no split: " + timeNoSplit);
+            //
+            // assertThat(models1.size()).isEqualTo(models5.size());
+            // assertThat(models2.size()).isEqualTo(models5.size());
+            // assertThat(models3.size()).isEqualTo(models5.size());
+            // assertThat(models4.size()).isEqualTo(models5.size());
 
             final int depth = formula.apply(new FormulaDepthFunction());
             final String resultString =
-                    String.format("%d;%d;%d;%d;%b;%d;%b;%d;%b;%d;%b;%s", i, depth, numberOfVars, timeNoSplitNoComponents, handler1.aborted(),
-                            timeSplitNoComponents, handler2.aborted(), timeNoSplitComponents, handler3.aborted(), timeSplitComponents, handler4.aborted(),
+                    String.format("%d;%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, models1.size(), timeLc, timeMc, timeRandom,
+                            timeFixed,
                             formula);
             fw.write(resultString);
             fw.newLine();
@@ -325,5 +195,57 @@ public class ModelEnumerationFunctionTest {
         }
     }
 
+    @Test
+    public void leastCommonSplitVarProvider() throws IOException {
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("compareLeastCommonProvider.csv"));
+        fw.write("seed;depth;#vars;#combinations;time 40;time 30;time 50;formula");
+        fw.newLine();
+        for (int i = 1; i <= 100; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+            final Formula formula = randomizer.formula(3);
+            final int numberOfVars = formula.variables().size();
+            if (numberOfVars < 12) {
+                continue;
+            }
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(formula);
 
+            // most common vars
+            final long t1 = System.currentTimeMillis();
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(12, 50, 65)).build());
+            final long t1a = System.currentTimeMillis();
+            if (models1.size() > 100000 || models1.size() < 10000) {
+                continue;
+            }
+            final long t2 = System.currentTimeMillis();
+
+            // most common vars
+            final List<Assignment> models2 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(12, 50, 70)).build());
+            final long t3 = System.currentTimeMillis();
+
+            // random vars
+            final List<Assignment> models3 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(12, 50, 75)).build());
+            final long t4 = System.currentTimeMillis();
+
+            final long timeMc10 = t1a - t1;
+            final long timeMc30 = t3 - t2;
+            final long timeMc50 = t4 - t3;
+
+            System.out.println("\nSeed: " + i);
+            System.out.println("Number combinations: " + models1.size());
+            System.out.println("Time timeMc40: " + timeMc10);
+            System.out.println("Time timeMc30: " + timeMc30);
+            System.out.println("Time timeMc50: " + timeMc50);
+
+            final int depth = formula.apply(new FormulaDepthFunction());
+            final String resultString =
+                    String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, models1.size(), timeMc10, timeMc30, timeMc50, formula);
+            fw.write(resultString);
+            fw.newLine();
+            fw.flush();
+        }
+    }
 }
