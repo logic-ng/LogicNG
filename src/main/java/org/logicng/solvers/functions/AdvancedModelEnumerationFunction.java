@@ -44,11 +44,11 @@ import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.SolverState;
 import org.logicng.solvers.functions.splitVariables.LeastCommonVariables;
 import org.logicng.solvers.functions.splitVariables.SplitVariableProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -66,15 +67,22 @@ import java.util.function.Consumer;
  */
 public final class AdvancedModelEnumerationFunction implements SolverFunction<List<Assignment>> {
 
-    private final ModelEnumerationHandler handler;
     private final boolean computeWithComponents;
     private final SplitVariableProvider splitVariableProvider;
+    private final ModelEnumerationHandler handler;
+    private final Collection<Variable> variables;
+    private final Collection<Variable> additionalVariables;
+    private final boolean fastEvaluable;
 
-    public AdvancedModelEnumerationFunction(final ModelEnumerationHandler handler, final boolean computeWithComponents,
-                                            final SplitVariableProvider splitVariableProvider) {
-        this.handler = handler;
+    public AdvancedModelEnumerationFunction(final boolean computeWithComponents, final SplitVariableProvider splitVariableProvider,
+                                            final ModelEnumerationHandler handler, final Collection<Variable> variables,
+                                            final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
         this.computeWithComponents = computeWithComponents;
         this.splitVariableProvider = splitVariableProvider;
+        this.handler = handler;
+        this.variables = variables;
+        this.additionalVariables = additionalVariables;
+        this.fastEvaluable = fastEvaluable;
     }
 
     /**
@@ -88,39 +96,42 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
     @Override
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
+        final ModelEnumerationFunction modelEnumerationFunction = ModelEnumerationFunction.builder().handler(this.handler)
+                .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables)
+                .fastEvaluable(this.fastEvaluable).build();
+        if (!this.computeWithComponents || solver.knownVariables().size() < 15) {
+            return modelEnumerationFunction.apply(solver, resultSetter);
+        }
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
         if (formulasOnSolver.isEmpty()) {
             return Collections.emptyList();
         }
-
-        final ModelEnumerationFunction modelEnumerationFunction = ModelEnumerationFunction.builder().splitVariableProvider(this.splitVariableProvider)
-                .build();
-        if (!this.computeWithComponents || solver.knownVariables().size() < 15) {
-            return modelEnumerationFunction.apply(solver, resultSetter);
-        } else {
-            final SolverState initialState = solver.saveState();
-            final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulasOnSolver);
-            final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
-            final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulasOnSolver, ccs);
-            final List<List<Assignment>> modelsForAllComponents = new ArrayList<>();
-            final SortedSet<Variable> leftOverVars = solver.knownVariables();
-            leftOverVars.removeIf(x -> !isNotHelpVar(x));
-            // if (components.size() == 1 && components.get(0).size() == 1 && !components.get(0).get(0).holds(new ContingencyPredicate(solver.factory()))) {
-            //     return Collections.emptyList();
-            // }
-            for (final List<Formula> component : components) {
-                final SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
-                leftOverVars.removeAll(varsInThisComponent);
-                final List<Assignment> models = modelEnumerationFunction.enumerate(solver, resultSetter, varsInThisComponent);
-                if (!models.isEmpty()) {
-                    modelsForAllComponents.add(models);
-                }
+        final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulasOnSolver);
+        final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
+        final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulasOnSolver, ccs);
+        final SortedSet<Variable> leftOverVars = this.variables == null ? solver.knownVariables() : filterVarsForPme(solver.knownVariables());
+        leftOverVars.removeIf(x -> !isNotHelpVar(x));
+        final List<List<Assignment>> modelsForAllComponents = new ArrayList<>();
+        for (final List<Formula> component : components) {
+            SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
+            if (this.variables != null) {
+                varsInThisComponent = filterVarsForPme(varsInThisComponent);
             }
-            if (!leftOverVars.isEmpty()) {
-                modelsForAllComponents.add(modelEnumerationFunction.enumerate(solver, resultSetter, leftOverVars));
+            leftOverVars.removeAll(varsInThisComponent);
+            final List<Assignment> models =
+                    modelEnumerationFunction.splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
+            if (!models.isEmpty()) {
+                modelsForAllComponents.add(models);
             }
-            return modelsForAllComponents.isEmpty() ? Collections.emptyList() : getCartesianProduct(modelsForAllComponents);
         }
+        if (!leftOverVars.isEmpty()) {
+            modelsForAllComponents.add(modelEnumerationFunction.enumerate(solver, resultSetter, leftOverVars, Collections.emptyList()));
+        }
+        return modelsForAllComponents.isEmpty() ? Collections.emptyList() : getCartesianProduct(modelsForAllComponents);
+    }
+
+    private TreeSet<Variable> filterVarsForPme(final SortedSet<Variable> variables) {
+        return variables.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private boolean isNotHelpVar(final Variable var) {
@@ -128,17 +139,9 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
     }
 
     private SortedSet<Variable> getVarsInThisComponent(final Collection<Variable> variables, final Collection<Formula> component) {
-        final SortedSet<Variable> varsInThisComponent = new TreeSet<>();
         final SortedSet<Variable> varsCom = new TreeSet<>();
-        for (final Formula formula : component) {
-            varsCom.addAll(formula.variables());
-        }
-        for (final Variable var : variables) {
-            if (isNotHelpVar(var) && varsCom.contains(var)) {
-                varsInThisComponent.add(var);
-            }
-        }
-        return varsInThisComponent;
+        component.forEach(x -> varsCom.addAll(x.variables()));
+        return variables.stream().filter(x -> isNotHelpVar(x) && varsCom.contains(x)).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private List<Assignment> getCartesianProduct(final List<List<Assignment>> allModelsList) {
@@ -160,25 +163,18 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
     }
 
     /**
-     * The builder for a model enumeration function.
+     * The builder for an advanced model enumeration function.
      */
     public static class Builder {
-        private ModelEnumerationHandler handler;
         private boolean computeWithComponents = false;
         private SplitVariableProvider splitVariableProvider = new LeastCommonVariables();
+        private ModelEnumerationHandler handler;
+        private Collection<Variable> variables;
+        private Collection<Variable> additionalVariables;
+        private boolean fastEvaluable;
 
         private Builder() {
             // Initialize only via factory
-        }
-
-        /**
-         * Sets the model enumeration handler for this function
-         * @param handler the handler
-         * @return the current builder
-         */
-        public Builder handler(final ModelEnumerationHandler handler) {
-            this.handler = handler;
-            return this;
         }
 
         /**
@@ -196,17 +192,79 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param splitVariableProvider the split variable provider
          * @return the builder
          */
-        public Builder SplitVariableProvider(final SplitVariableProvider splitVariableProvider) {
+        public Builder splitVariableProvider(final SplitVariableProvider splitVariableProvider) {
             this.splitVariableProvider = splitVariableProvider;
             return this;
         }
 
         /**
-         * Builds the model enumeration function with the current builder's configuration.
-         * @return the model enumeration function
+         * Sets the model enumeration handler for this function
+         * @param handler the handler
+         * @return the current builder
+         */
+        public Builder handler(final ModelEnumerationHandler handler) {
+            this.handler = handler;
+            return this;
+        }
+
+        /**
+         * Sets the set of variables over which the model enumeration should iterate.
+         * @param variables the set of variables
+         * @return the current builder
+         */
+        public Builder variables(final Collection<Variable> variables) {
+            this.variables = variables;
+            return this;
+        }
+
+        /**
+         * Sets the set of variables over which the model enumeration should iterate.
+         * @param variables the set of variables
+         * @return the current builder
+         */
+        public Builder variables(final Variable... variables) {
+            this.variables = Arrays.asList(variables);
+            return this;
+        }
+
+        /**
+         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
+         * @param variables the additional variables for each model
+         * @return the current builder
+         */
+        public Builder additionalVariables(final Collection<Variable> variables) {
+            this.additionalVariables = variables;
+            return this;
+        }
+
+        /**
+         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
+         * @param variables the additional variables for each model
+         * @return the current builder
+         */
+        public Builder additionalVariables(final Variable... variables) {
+            this.additionalVariables = Arrays.asList(variables);
+            return this;
+        }
+
+        /**
+         * Sets the flag whether the created assignment should be {@link Assignment#fastEvaluable() fast evaluable} assignments.
+         * @param fastEvaluable {@code true} if the created assignment should be fast evaluable, otherwise {@code false}
+         * @return the builder
+         */
+        public Builder fastEvaluable(final boolean fastEvaluable) {
+            this.fastEvaluable = fastEvaluable;
+            return this;
+        }
+
+
+        /**
+         * Builds the advanced model enumeration function with the current builder's configuration.
+         * @return the advanced model enumeration function
          */
         public AdvancedModelEnumerationFunction build() {
-            return new AdvancedModelEnumerationFunction(this.handler, this.computeWithComponents, this.splitVariableProvider);
+            return new AdvancedModelEnumerationFunction(this.computeWithComponents, this.splitVariableProvider, handler, variables, additionalVariables,
+                    fastEvaluable);
         }
     }
 

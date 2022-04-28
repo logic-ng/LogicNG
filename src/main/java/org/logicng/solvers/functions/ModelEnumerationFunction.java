@@ -107,21 +107,26 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         if (this.splitVariableProvider == null) {
             return enumerate(solver, resultSetter, this.variables, this.additionalVariables);
         }
-        final SolverState initialState = solver.saveState();
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
         if (formulasOnSolver.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.singletonList(new Assignment());
         }
         SortedSet<Variable> relevantVars = solver.knownVariables().stream().filter(this::isNotHelpVar).collect(Collectors.toCollection(TreeSet::new));
         if (this.variables != null) {
             relevantVars = relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
         }
+        return splitModelEnumeration(solver, resultSetter, formulasOnSolver, relevantVars, this.additionalVariables);
+    }
+
+    List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
+                                           final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
+        final SolverState initialState = solver.saveState();
         final SortedSet<Variable> splitVars = this.splitVariableProvider.getOrder(formulasOnSolver, relevantVars);
         final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
         final List<Assignment> models = new ArrayList<>();
         for (final Assignment splitAssignment : splitAssignments) {
             solver.add(splitAssignment.formula(solver.factory()));
-            models.addAll(enumerate(solver, resultSetter, relevantVars, this.additionalVariables));
+            models.addAll(enumerate(solver, resultSetter, relevantVars, additionalVariables));
             solver.loadState(initialState);
         }
         return models;
@@ -240,7 +245,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         private boolean fastEvaluable = false;
         private SplitVariableProvider splitVariableProvider = null;
 
-        private Builder() {
+        Builder() {
             // Initialize only via factory
         }
 

@@ -131,7 +131,7 @@ public class ModelEnumerationFunctionTest {
         for (int i = 1; i <= 100; i++) {
             solver.loadState(initialState);
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(10);
+            final Formula formula = randomizer.formula(6);
             solver.add(formula);
 
             final List<Variable> varsFormula = new ArrayList<>(formula.variables());
