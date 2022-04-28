@@ -112,7 +112,10 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         if (formulasOnSolver.isEmpty()) {
             return Collections.emptyList();
         }
-        final SortedSet<Variable> relevantVars = solver.knownVariables().stream().filter(this::isNotHelpVar).collect(Collectors.toCollection(TreeSet::new));
+        SortedSet<Variable> relevantVars = solver.knownVariables().stream().filter(this::isNotHelpVar).collect(Collectors.toCollection(TreeSet::new));
+        if (this.variables != null) {
+            relevantVars = relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
+        }
         final SortedSet<Variable> splitVars = this.splitVariableProvider.getOrder(formulasOnSolver, relevantVars);
         final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars);
         final List<Assignment> models = new ArrayList<>();
@@ -128,7 +131,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
     }
 
-    private List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables) {
+    List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables) {
         final List<Assignment> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {

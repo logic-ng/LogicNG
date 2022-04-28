@@ -34,7 +34,7 @@ public interface SplitVariableProvider {
      */
     SortedSet<Variable> getOrder(final Collection<Formula> formulas, final Collection<Variable> variables);
 
-    default Map<Integer, SortedSet<Variable>> getOccurrence2Vars(final Collection<Formula> formulas) {
+    default Map<Integer, SortedSet<Variable>> getOccurrence2Vars(final Collection<Formula> formulas, final Collection<Variable> relevantVars) {
         final Formula formula = formulas.stream().findAny().get().factory().and(formulas);
         if (formula.isConstantFormula()) {
             return null;
@@ -42,6 +42,7 @@ public interface SplitVariableProvider {
         final Map<Integer, SortedSet<Variable>> occurrence2Vars = new TreeMap<>();
         final Map<Variable, Integer> variableIntegerMap = formula.apply(new VariableProfileFunction()).entrySet().stream()
                 .filter(x -> isNotHelpVar(x.getKey()))
+                .filter(x -> relevantVars.contains(x.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         for (final Map.Entry<Variable, Integer> entry : variableIntegerMap.entrySet()) {
             occurrence2Vars.computeIfAbsent(entry.getValue(), x -> new TreeSet<>()).add(entry.getKey());

@@ -32,30 +32,31 @@ public class AdvancedModelEnumerationFunctionTest {
         this.f = new FormulaFactory();
     }
 
-    @Test
-    public void testModelEnumerationWithVariables() {
-        final SATSolver solver = MiniSat.miniSat(this.f);
-        final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(10).build());
-        final Formula formula = randomizer.formula(5);
-        solver.add(formula);
-        final long t1 = System.currentTimeMillis();
-        final List<Assignment> modelsWithSplit = solver.execute(
-                AdvancedModelEnumerationFunction.builder().variables(f.variable("v01"), f.variable("v02"), f.variable("v03")).enumerateWithSplit(true).build());
-        System.out.println(modelsWithSplit);
-
-        final long t2 = System.currentTimeMillis();
-        final List<Assignment> modelsWithoutSplit = solver.execute(
-                AdvancedModelEnumerationFunction.builder().variables(f.variable("v01"), f.variable("v02"), f.variable("v03")).enumerateWithSplit(false)
-                        .build());
-        final long t3 = System.currentTimeMillis();
-
-        System.out.println(modelsWithoutSplit);
-
-        System.out.println("time with split: " + (t2 - t1));
-        System.out.println("time without split: " + (t3 - t2));
-        assertThat(modelsWithSplit).containsAll(modelsWithoutSplit);
-        assertThat(modelsWithoutSplit).containsAll(modelsWithSplit);
-    }
+    // @Test
+    // public void testModelEnumerationWithVariables() {
+    //     final SATSolver solver = MiniSat.miniSat(this.f);
+    //     final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(10).build());
+    //     final Formula formula = randomizer.formula(5);
+    //     solver.add(formula);
+    //     final long t1 = System.currentTimeMillis();
+    //     final List<Assignment> modelsWithSplit = solver.execute(
+    //             AdvancedModelEnumerationFunction.builder().variables(f.variable("v01"), f.variable("v02"), f.variable("v03")).
+    //             .build());
+    //     System.out.println(modelsWithSplit);
+    //
+    //     final long t2 = System.currentTimeMillis();
+    //     final List<Assignment> modelsWithoutSplit = solver.execute(
+    //             AdvancedModelEnumerationFunction.builder().variables(f.variable("v01"), f.variable("v02"), f.variable("v03")).enumerateWithSplit(false)
+    //                     .build());
+    //     final long t3 = System.currentTimeMillis();
+    //
+    //     System.out.println(modelsWithoutSplit);
+    //
+    //     System.out.println("time with split: " + (t2 - t1));
+    //     System.out.println("time without split: " + (t3 - t2));
+    //     assertThat(modelsWithSplit).containsAll(modelsWithoutSplit);
+    //     assertThat(modelsWithoutSplit).containsAll(modelsWithSplit);
+    // }
 
 
     @Test
@@ -73,14 +74,14 @@ public class AdvancedModelEnumerationFunctionTest {
             final List<Assignment> models1 = solver.execute(AdvancedModelEnumerationFunction.builder().build());
 
             final long t2 = System.currentTimeMillis();
-            final List<Assignment> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().enumerateWithSplit(true).build());
+            final List<Assignment> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().build());
 
             final long t3 = System.currentTimeMillis();
             final List<Assignment> models3 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
 
             final long t4 = System.currentTimeMillis();
             final List<Assignment> models4 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
 
             final long t5 = System.currentTimeMillis();
 
@@ -127,20 +128,17 @@ public class AdvancedModelEnumerationFunctionTest {
 
             // when
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> models1 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.RANDOM).build());
+            final List<Assignment> models1 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
 
             final long t2 = System.currentTimeMillis();
             System.out.println("Time random split: " + (t2 - t1));
 
-            final List<Assignment> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.LEAST_COMMON_VARS).build());
+            final List<Assignment> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
 
             final long t3 = System.currentTimeMillis();
             System.out.println("Time prefer least common vars: " + (t3 - t2));
 
-            final List<Assignment> models3 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.MOST_COMMON_VARS).build());
+            final List<Assignment> models3 = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
 
             final long t4 = System.currentTimeMillis();
             System.out.println("Time prefer most common vars: " + (t4 - t3));
@@ -180,8 +178,7 @@ public class AdvancedModelEnumerationFunctionTest {
             final long t1 = System.currentTimeMillis();
             final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                     .handler(handler1)
-                    .computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.RANDOM).build());
+                    .computeWithComponents(true).build());
 
             final long t2 = System.currentTimeMillis();
             final long timeRandom = t2 - t1;
@@ -194,21 +191,20 @@ public class AdvancedModelEnumerationFunctionTest {
             System.out.println("Time random split: " + timeRandom);
 
             solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler2)
-                    .computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.LEAST_COMMON_VARS).build());
+                    .computeWithComponents(true).build());
             final long t3 = System.currentTimeMillis();
             final long timeLeastCommon = t3 - t2;
             System.out.println("Time prefer least common vars: " + timeLeastCommon);
 
-            solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler3).computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.MOST_COMMON_VARS).build());
+            solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler3).computeWithComponents(true).build());
 
             final long t4 = System.currentTimeMillis();
             final long timeMostCommon = t4 - t3;
             System.out.println("Time prefer most common vars: " + timeMostCommon);
 
             final int depth = formula.apply(new FormulaDepthFunction());
-            final String resultString = String.format("%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%s", i, depth, numberOfVars, models.size(), timeRandom, handler1.aborted(),
+            final String resultString = String.format("%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%s", i, depth, numberOfVars, models.size(), timeRandom, handler1
+                            .aborted(),
                     timeLeastCommon, handler2.aborted(), timeMostCommon, handler3.aborted(), formula);
             fw.write(resultString);
             fw.newLine();
@@ -233,23 +229,19 @@ public class AdvancedModelEnumerationFunctionTest {
             final long t1 = System.currentTimeMillis();
 
             solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler1)
-                    .computeWithComponents(true).enumerateWithSplit(true)
-                    .splitCriterion(AdvancedModelEnumerationFunction.SPLIT_CRITERION.LEAST_COMMON_VARS).build());
+                    .computeWithComponents(true).build());
             final long t2 = System.currentTimeMillis();
             final long timeLeastCommon = t2 - t1;
             System.out.println("Time prefer least common vars: " + timeLeastCommon);
         }
-
     }
 
     @Test
     public void compareComputationsWithSplitAndComponents() throws IOException {
-        final BufferedWriter fw = new BufferedWriter(new FileWriter("performanceSplitAndComponentsPart2.csv"));
-        fw.write(
-                "seed;depth;#vars;time no split, no components;aborted?;time split, no components;aborted?;time no split, components;aborted?;time split, " +
-                        "components;aborted?;formula");
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("advancedME.csv"));
+        fw.write("seed;depth;#vars;#combinations;time classic;time advanced no components;time advanced with components;formula");
         fw.newLine();
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 1000; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
@@ -261,41 +253,36 @@ public class AdvancedModelEnumerationFunctionTest {
             solver.add(formula);
             System.out.println("\nSeed: " + i + ", formula: " + formula);
 
-            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler3 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler4 = new NumberOfModelsHandler(2500000);
-
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler1).build());
-            if (models.size() < 1000) {
+            final List<Assignment> modelsAdvNoComp = solver.execute(AdvancedModelEnumerationFunction.builder().build());
+            if (modelsAdvNoComp.size() < 1000 || modelsAdvNoComp.size() > 100000) {
                 continue;
             }
 
             final long t2 = System.currentTimeMillis();
-            final long timeNoSplitNoComponents = t2 - t1;
-            System.out.println("Time no split, no components: " + timeNoSplitNoComponents);
+            final long timeAdvancedNoComponents = t2 - t1;
+            System.out.println("Time advanced enumeration no components: " + timeAdvancedNoComponents);
 
-            solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler2).enumerateWithSplit(true).build());
+            final List<Assignment> modelsClassic = solver.execute(ModelEnumerationFunction.builder().build());
+
             final long t3 = System.currentTimeMillis();
-            final long timeSplitNoComponents = t3 - t2;
-            System.out.println("Time split, no components: " + timeSplitNoComponents);
+            final long timeClassic = t3 - t2;
+            System.out.println("Time classic enumeration: " + timeClassic);
 
-            solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler3).computeWithComponents(true).build());
+            final List<Assignment> modelsAdvWithComp = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
             final long t4 = System.currentTimeMillis();
-            final long timeNoSplitComponents = t4 - t3;
-            System.out.println("Time no split, components: " + timeNoSplitComponents);
+            final long timeAdvancedWithComponents = t4 - t3;
+            System.out.println("Time advanced enumeration with components: " + timeAdvancedWithComponents);
 
-            solver.execute(AdvancedModelEnumerationFunction.builder().handler(handler4).computeWithComponents(true).enumerateWithSplit(true).build());
-            final long t5 = System.currentTimeMillis();
-            final long timeSplitComponents = t5 - t4;
-            System.out.println("Time split, component: " + timeSplitComponents);
+            assertThat(modelsClassic.size()).isEqualTo(modelsAdvNoComp.size());
+            assertThat(modelsClassic.size()).isEqualTo(modelsAdvWithComp.size());
+            assertThat(modelsClassic).containsExactlyInAnyOrderElementsOf(modelsAdvNoComp);
+            assertThat(modelsClassic).containsExactlyInAnyOrderElementsOf(modelsAdvWithComp);
 
             final int depth = formula.apply(new FormulaDepthFunction());
             final String resultString =
-                    String.format("%d;%d;%d;%d;%b;%d;%b;%d;%b;%d;%b;%s", i, depth, numberOfVars, timeNoSplitNoComponents, handler1.aborted(),
-                            timeSplitNoComponents, handler2.aborted(), timeNoSplitComponents, handler3.aborted(), timeSplitComponents, handler4.aborted(),
-                            formula);
+                    String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, modelsClassic.size(), timeClassic, timeAdvancedNoComponents,
+                            timeAdvancedWithComponents, formula);
             fw.write(resultString);
             fw.newLine();
             fw.flush();

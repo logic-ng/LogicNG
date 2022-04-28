@@ -31,7 +31,7 @@ public class LeastCommonVariables implements SplitVariableProvider {
         if (variables.size() < this.minNumberOfVars) {
             return Collections.emptySortedSet();
         }
-        final Map<Integer, SortedSet<Variable>> occurrence2Vars = getOccurrence2Vars(formulas);
+        final Map<Integer, SortedSet<Variable>> occurrence2Vars = getOccurrence2Vars(formulas, variables);
         if (occurrence2Vars == null || occurrence2Vars.isEmpty()) {
             return Collections.emptySortedSet();
         }
