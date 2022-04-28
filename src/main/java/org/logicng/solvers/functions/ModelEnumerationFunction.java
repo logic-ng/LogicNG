@@ -105,7 +105,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
         if (this.splitVariableProvider == null) {
-            return enumerate(solver, resultSetter, this.variables);
+            return enumerate(solver, resultSetter, this.variables, this.additionalVariables);
         }
         final SolverState initialState = solver.saveState();
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
@@ -117,11 +117,11 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
             relevantVars = relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
         }
         final SortedSet<Variable> splitVars = this.splitVariableProvider.getOrder(formulasOnSolver, relevantVars);
-        final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars);
+        final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
         final List<Assignment> models = new ArrayList<>();
         for (final Assignment splitAssignment : splitAssignments) {
             solver.add(splitAssignment.formula(solver.factory()));
-            models.addAll(enumerate(solver, resultSetter, relevantVars));
+            models.addAll(enumerate(solver, resultSetter, relevantVars, this.additionalVariables));
             solver.loadState(initialState);
         }
         return models;
@@ -131,7 +131,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
     }
 
-    List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables) {
+    List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
+                               final Collection<Variable> additionalVariables) {
         final List<Assignment> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
@@ -158,7 +159,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
         LNGIntVector relevantAllIndices = null;
         final SortedSet<Variable> uniqueAdditionalVariables =
-                new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
+                new TreeSet<>(additionalVariables == null ? Collections.emptyList() : additionalVariables);
         if (variables != null) {
             uniqueAdditionalVariables.removeAll(variables);
         }

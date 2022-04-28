@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.functions.FormulaDepthFunction;
 import org.logicng.handlers.ModelEnumerationHandler;
@@ -170,29 +171,29 @@ public class ModelEnumerationFunctionTest {
         }
     }
 
+
     @Test
     public void testAdditionalVariables() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("additionalVars.csv"));
         fw.write("seed;depth;#vars formula;# vars pme;#combinations;time no split (ms);time split (ms);formula");
         fw.newLine();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        final SolverState initialState = solver.saveState();
-        for (int i = 10; i <= 10; i++) {
-            solver.loadState(initialState);
+
+        for (int i = 1; i <= 1000; i++) {
             // given
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(8);
+            final Formula formula = randomizer.formula(10);
             solver.add(formula);
 
             final List<Variable> varsFormula = new ArrayList<>(formula.variables());
             final int numberOfVars = formula.variables().size();
-            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 10);
+            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 3) + 2;
             final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
 
-            System.out.println("Min number of vars: " + minNumberOfVars);
-            final int additionalVarsStart = 7 * minNumberOfVars;
-            System.out.println("additional vars start: " + additionalVarsStart);
-            System.out.println("size: " + varsFormula.size());
+            // System.out.println("Min number of vars: " + minNumberOfVars);
+            final int additionalVarsStart = 2 * minNumberOfVars;
+            // System.out.println("additional vars start: " + additionalVarsStart);
+            // System.out.println("size: " + varsFormula.size());
             final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
 
             System.out.println(varsFormula);
@@ -201,34 +202,35 @@ public class ModelEnumerationFunctionTest {
 
             // when
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
+            final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars)
+                    .build());
             final long t1a = System.currentTimeMillis();
 
             final long timeNoSplit = t1a - t1;
             System.out.println("\nSeed: " + i);
-            System.out.println("Number of combinations no split: " + models1.size());
-            for (final Assignment assignment : models1) {
-                System.out.println(assignment);
+            if (models1.size() < 10) {
+                continue;
             }
+
+            System.out.println("Number of combinations: " + models1.size());
+
             System.out.println("Time no split: " + timeNoSplit);
 
             final long t2 = System.currentTimeMillis();
             final List<Assignment> models2 =
-                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables()).variables(pmeVars)
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(3, 50, 70)).variables(pmeVars)
                             .additionalVariables(additionalVars).build());
 
             final long t3 = System.currentTimeMillis();
-            System.out.println("Number of combinations with split: " + models2.size());
-            for (final Assignment assignment : models2) {
-                System.out.println(assignment);
-            }
-
             final long timeSplit = t3 - t2;
 
             System.out.println("Time split: " + timeSplit);
 
+            final List<Assignment> updatedModels1 = restrictAssignmentsToPmeVars(pmeVars, models1);
+            final List<Assignment> updatedModels2 = restrictAssignmentsToPmeVars(pmeVars, models2);
+
             assertThat(models1.size()).isEqualTo(models2.size());
-            assertThat(models1).containsExactlyInAnyOrderElementsOf(models2);
+            assertThat(updatedModels1).containsExactlyInAnyOrderElementsOf(updatedModels2);
 
             final int depth = formula.apply(new FormulaDepthFunction());
             final String resultString =
@@ -237,6 +239,48 @@ public class ModelEnumerationFunctionTest {
             fw.newLine();
             fw.flush();
         }
+    }
+
+    @Test
+    public void test() {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(1).build());
+        final Formula formula = randomizer.formula(5);
+        solver.add(formula);
+        final List<Variable> varsFormula = new ArrayList<>(formula.variables());
+        final int numberOfVars = formula.variables().size();
+        final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 10);
+        final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
+        final int additionalVarsStart = 7 * minNumberOfVars;
+        final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
+
+        final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
+
+        final List<Assignment> models2 = solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
+
+        final List<Assignment> updatedModels1 = restrictAssignmentsToPmeVars(pmeVars, models1);
+        final List<Assignment> updatedModels2 = restrictAssignmentsToPmeVars(pmeVars, models2);
+
+        updatedModels1.forEach(System.out::println);
+        System.out.println("\n");
+        updatedModels2.forEach(System.out::println);
+
+        assertThat(models1.size()).isEqualTo(models2.size());
+        assertThat(updatedModels1).containsExactlyInAnyOrderElementsOf(updatedModels2);
+    }
+
+    private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
+        final List<Assignment> updatedModels = new ArrayList<>();
+        for (final Assignment assignment : models) {
+            final Assignment updatedAssignment = new Assignment();
+            for (final Literal literal : assignment.literals()) {
+                if (pmeVars.contains(literal.variable())) {
+                    updatedAssignment.addLiteral(literal);
+                }
+            }
+            updatedModels.add(updatedAssignment);
+        }
+        return updatedModels;
     }
 
     public static void main(final String[] args) throws ParserException {
