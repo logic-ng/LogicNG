@@ -130,12 +130,12 @@ public class ModelEnumerationFunctionTest {
         for (int i = 1; i <= 100; i++) {
             solver.loadState(initialState);
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(11);
+            final Formula formula = randomizer.formula(10);
             solver.add(formula);
 
             final List<Variable> varsFormula = new ArrayList<>(formula.variables());
             final int numberOfVars = formula.variables().size();
-            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 2);
+            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 2) + 2;
             final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
 
             // when
@@ -155,14 +155,12 @@ public class ModelEnumerationFunctionTest {
             final List<Assignment> models2 =
                     solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables()).variables(pmeVars).build());
             final long t3 = System.currentTimeMillis();
-            System.out.println("\nNumber of combinations with split: " + models2.size());
-
             final long timeSplit = t3 - t2;
 
             System.out.println("Time split: " + timeSplit);
             assertThat(models1.size()).isEqualTo(models2.size());
             assertThat(models1).containsExactlyInAnyOrderElementsOf(models2);
-            
+
             final int depth = formula.apply(new FormulaDepthFunction());
             final String resultString =
                     String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, pmeVars.size(), models2.size(), timeNoSplit, timeSplit, formula);
