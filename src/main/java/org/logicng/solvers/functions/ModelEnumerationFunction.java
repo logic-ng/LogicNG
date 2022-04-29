@@ -45,7 +45,7 @@ import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
-import org.logicng.solvers.functions.splitVariables.SplitVariableProvider;
+import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,17 +101,14 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         if (formulasOnSolver.isEmpty()) {
             return Collections.singletonList(new Assignment());
         }
-        SortedSet<Variable> relevantVars = solver.knownVariables().stream().filter(this::isNotHelpVar).collect(Collectors.toCollection(TreeSet::new));
-        if (this.variables != null) {
-            relevantVars = relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
-        }
+        final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
         return splitModelEnumeration(solver, resultSetter, formulasOnSolver, relevantVars, this.additionalVariables);
     }
 
     List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
                                            final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
         final SolverState initialState = solver.saveState();
-        final SortedSet<Variable> splitVars = this.splitVariableProvider.getOrder(formulasOnSolver, relevantVars);
+        final SortedSet<Variable> splitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
         final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
         final List<Assignment> models = new ArrayList<>();
         for (final Assignment splitAssignment : splitAssignments) {
@@ -120,10 +117,6 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
             solver.loadState(initialState);
         }
         return models;
-    }
-
-    private boolean isNotHelpVar(final Variable var) {
-        return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
     }
 
     List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
@@ -188,6 +181,19 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
             solver.loadState(stateBeforeEnumeration);
         }
         return models;
+    }
+
+    SortedSet<Variable> getVarsForEnumeration(final Collection<Variable> knownVariables) {
+        final SortedSet<Variable> relevantVars = knownVariables.stream().filter(this::isNotHelpVar).collect(Collectors.toCollection(TreeSet::new));
+        return this.variables == null ? relevantVars : filterVarsForPme(relevantVars);
+    }
+
+    private SortedSet<Variable> filterVarsForPme(final SortedSet<Variable> variables) {
+        return variables.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    private boolean isNotHelpVar(final Variable var) {
+        return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
     }
 
     private boolean modelEnumerationSATCall(final MiniSat solver, final ModelEnumerationHandler handler) {

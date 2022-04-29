@@ -28,9 +28,6 @@
 
 package org.logicng.solvers.functions;
 
-import static org.logicng.formulas.FormulaFactory.CC_PREFIX;
-import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
-import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 import static org.logicng.handlers.Handler.start;
 
 import org.logicng.datastructures.Assignment;
@@ -44,8 +41,8 @@ import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.functions.splitVariables.LeastCommonVariables;
-import org.logicng.solvers.functions.splitVariables.SplitVariableProvider;
+import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariables;
+import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,9 +58,9 @@ import java.util.stream.Collectors;
 /**
  * A solver function for enumerating models on the solver.
  * <p>
- * Model enumeration functions are instantiated via their builder {@link #builder()}.
+ * Model enumeration functions are instantiated via their builder {@link Builder()}.
  * @version 2.3.0
- * @since 2.0.0
+ * @since 2.3.0
  */
 public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunction {
 
@@ -72,18 +69,17 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
     private final ModelEnumerationHandler handler;
     private final Collection<Variable> variables;
     private final Collection<Variable> additionalVariables;
-    private final boolean fastEvaluable;
+    private static final int minNumberOfVars = 15;
 
     public AdvancedModelEnumerationFunction(final boolean computeWithComponents, final SplitVariableProvider splitVariableProvider,
                                             final ModelEnumerationHandler handler, final Collection<Variable> variables,
                                             final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
         super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider);
         this.computeWithComponents = computeWithComponents;
-        this.splitVariableProvider = splitVariableProvider;
         this.handler = handler;
-        this.variables = variables;
         this.additionalVariables = additionalVariables;
-        this.fastEvaluable = fastEvaluable;
+        this.splitVariableProvider = splitVariableProvider;
+        this.variables = variables;
     }
 
     /**
@@ -97,8 +93,10 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
     @Override
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
-        if (!this.computeWithComponents || solver.knownVariables().size() < 15) {
-            return ((ModelEnumerationFunction) this).apply(solver, resultSetter);
+        if (!this.computeWithComponents || solver.knownVariables().size() < minNumberOfVars) {
+            return ModelEnumerationFunction.builder().handler(this.handler)
+                    .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables).build()
+                    .apply(solver, resultSetter);
         }
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
         if (formulasOnSolver.isEmpty()) {
@@ -107,14 +105,10 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulasOnSolver);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
         final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulasOnSolver, ccs);
-        final SortedSet<Variable> leftOverVars = this.variables == null ? solver.knownVariables() : filterVarsForPme(solver.knownVariables());
-        leftOverVars.removeIf(x -> !isNotHelpVar(x));
         final List<List<Assignment>> modelsForAllComponents = new ArrayList<>();
+        final SortedSet<Variable> leftOverVars = getVarsForEnumeration(solver.knownVariables());
         for (final List<Formula> component : components) {
-            SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
-            if (this.variables != null) {
-                varsInThisComponent = filterVarsForPme(varsInThisComponent);
-            }
+            final SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
             leftOverVars.removeAll(varsInThisComponent);
             final List<Assignment> models = this.splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
             if (!models.isEmpty()) {
@@ -122,23 +116,15 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
             }
         }
         if (!leftOverVars.isEmpty()) {
-            modelsForAllComponents.add(this.enumerate(solver, resultSetter, leftOverVars, Collections.emptyList()));
+            modelsForAllComponents.add(this.enumerate(solver, resultSetter, leftOverVars, this.additionalVariables));
         }
         return modelsForAllComponents.isEmpty() ? Collections.emptyList() : getCartesianProduct(modelsForAllComponents);
     }
 
-    private TreeSet<Variable> filterVarsForPme(final SortedSet<Variable> variables) {
-        return variables.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    private boolean isNotHelpVar(final Variable var) {
-        return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
-    }
-
-    private SortedSet<Variable> getVarsInThisComponent(final Collection<Variable> variables, final Collection<Formula> component) {
-        final SortedSet<Variable> varsCom = new TreeSet<>();
-        component.forEach(x -> varsCom.addAll(x.variables()));
-        return variables.stream().filter(x -> isNotHelpVar(x) && varsCom.contains(x)).collect(Collectors.toCollection(TreeSet::new));
+    private SortedSet<Variable> getVarsInThisComponent(final Collection<Variable> knownVariables, final Collection<Formula> component) {
+        final SortedSet<Variable> varsComponent = new TreeSet<>();
+        component.forEach(x -> varsComponent.addAll(x.variables()));
+        return getVarsForEnumeration(knownVariables).stream().filter(varsComponent::contains).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private List<Assignment> getCartesianProduct(final List<List<Assignment>> allModelsList) {
