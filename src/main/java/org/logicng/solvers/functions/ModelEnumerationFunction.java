@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * @version 2.3.0
  * @since 2.0.0
  */
-public final class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
+public class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
 
     private final ModelEnumerationHandler handler;
     private final Collection<Variable> variables;
@@ -74,18 +74,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
     private final boolean fastEvaluable;
     private final SplitVariableProvider splitVariableProvider;
 
-    private ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables,
-                                     final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
-        this.handler = handler;
-        this.variables = variables;
-        this.additionalVariables = additionalVariables;
-        this.fastEvaluable = fastEvaluable;
-        this.splitVariableProvider = null;
-    }
-
-    private ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables,
-                                     final Collection<Variable> additionalVariables, final boolean fastEvaluable,
-                                     final SplitVariableProvider splitVariableProvider) {
+    ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
+                             final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;

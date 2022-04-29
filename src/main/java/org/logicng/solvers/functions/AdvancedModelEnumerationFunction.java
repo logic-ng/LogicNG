@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  * @version 2.3.0
  * @since 2.0.0
  */
-public final class AdvancedModelEnumerationFunction implements SolverFunction<List<Assignment>> {
+public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunction {
 
     private final boolean computeWithComponents;
     private final SplitVariableProvider splitVariableProvider;
@@ -77,6 +77,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
     public AdvancedModelEnumerationFunction(final boolean computeWithComponents, final SplitVariableProvider splitVariableProvider,
                                             final ModelEnumerationHandler handler, final Collection<Variable> variables,
                                             final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
+        super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider);
         this.computeWithComponents = computeWithComponents;
         this.splitVariableProvider = splitVariableProvider;
         this.handler = handler;
@@ -96,11 +97,8 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
     @Override
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
-        final ModelEnumerationFunction modelEnumerationFunction = ModelEnumerationFunction.builder().handler(this.handler)
-                .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables)
-                .fastEvaluable(this.fastEvaluable).build();
         if (!this.computeWithComponents || solver.knownVariables().size() < 15) {
-            return modelEnumerationFunction.apply(solver, resultSetter);
+            return ((ModelEnumerationFunction) this).apply(solver, resultSetter);
         }
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
         if (formulasOnSolver.isEmpty()) {
@@ -118,14 +116,13 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
                 varsInThisComponent = filterVarsForPme(varsInThisComponent);
             }
             leftOverVars.removeAll(varsInThisComponent);
-            final List<Assignment> models =
-                    modelEnumerationFunction.splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
+            final List<Assignment> models = this.splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
             if (!models.isEmpty()) {
                 modelsForAllComponents.add(models);
             }
         }
         if (!leftOverVars.isEmpty()) {
-            modelsForAllComponents.add(modelEnumerationFunction.enumerate(solver, resultSetter, leftOverVars, Collections.emptyList()));
+            modelsForAllComponents.add(this.enumerate(solver, resultSetter, leftOverVars, Collections.emptyList()));
         }
         return modelsForAllComponents.isEmpty() ? Collections.emptyList() : getCartesianProduct(modelsForAllComponents);
     }
@@ -165,7 +162,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
     /**
      * The builder for an advanced model enumeration function.
      */
-    public static class Builder {
+    public static class Builder extends ModelEnumerationFunction.Builder {
         private boolean computeWithComponents = false;
         private SplitVariableProvider splitVariableProvider = new LeastCommonVariables();
         private ModelEnumerationHandler handler;
@@ -192,6 +189,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param splitVariableProvider the split variable provider
          * @return the builder
          */
+        @Override
         public Builder splitVariableProvider(final SplitVariableProvider splitVariableProvider) {
             this.splitVariableProvider = splitVariableProvider;
             return this;
@@ -202,6 +200,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param handler the handler
          * @return the current builder
          */
+        @Override
         public Builder handler(final ModelEnumerationHandler handler) {
             this.handler = handler;
             return this;
@@ -212,6 +211,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param variables the set of variables
          * @return the current builder
          */
+        @Override
         public Builder variables(final Collection<Variable> variables) {
             this.variables = variables;
             return this;
@@ -222,6 +222,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param variables the set of variables
          * @return the current builder
          */
+        @Override
         public Builder variables(final Variable... variables) {
             this.variables = Arrays.asList(variables);
             return this;
@@ -232,6 +233,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param variables the additional variables for each model
          * @return the current builder
          */
+        @Override
         public Builder additionalVariables(final Collection<Variable> variables) {
             this.additionalVariables = variables;
             return this;
@@ -242,6 +244,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param variables the additional variables for each model
          * @return the current builder
          */
+        @Override
         public Builder additionalVariables(final Variable... variables) {
             this.additionalVariables = Arrays.asList(variables);
             return this;
@@ -252,6 +255,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * @param fastEvaluable {@code true} if the created assignment should be fast evaluable, otherwise {@code false}
          * @return the builder
          */
+        @Override
         public Builder fastEvaluable(final boolean fastEvaluable) {
             this.fastEvaluable = fastEvaluable;
             return this;
@@ -262,6 +266,7 @@ public final class AdvancedModelEnumerationFunction implements SolverFunction<Li
          * Builds the advanced model enumeration function with the current builder's configuration.
          * @return the advanced model enumeration function
          */
+        @Override
         public AdvancedModelEnumerationFunction build() {
             return new AdvancedModelEnumerationFunction(this.computeWithComponents, this.splitVariableProvider, handler, variables, additionalVariables,
                     fastEvaluable);
