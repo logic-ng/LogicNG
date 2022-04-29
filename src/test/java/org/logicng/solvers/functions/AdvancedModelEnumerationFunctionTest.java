@@ -33,6 +33,7 @@ import java.util.TreeSet;
  * @version 2.3.0
  * @since 2.3.0
  */
+@Ignore
 public class AdvancedModelEnumerationFunctionTest {
 
     private final FormulaFactory f;
