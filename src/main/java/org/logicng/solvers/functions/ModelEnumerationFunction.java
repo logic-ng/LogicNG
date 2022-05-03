@@ -68,11 +68,11 @@ import java.util.stream.Collectors;
  */
 public class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
 
-    private final ModelEnumerationHandler handler;
-    private final Collection<Variable> variables;
-    private final Collection<Variable> additionalVariables;
-    private final boolean fastEvaluable;
-    private final SplitVariableProvider splitVariableProvider;
+    protected final ModelEnumerationHandler handler;
+    protected final Collection<Variable> variables;
+    protected final Collection<Variable> additionalVariables;
+    protected final boolean fastEvaluable;
+    protected final SplitVariableProvider splitVariableProvider;
 
     ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
                              final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider) {
@@ -105,8 +105,8 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         return splitModelEnumeration(solver, resultSetter, formulasOnSolver, relevantVars, this.additionalVariables);
     }
 
-    List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
-                                           final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
+    protected List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
+                                                     final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
         final SolverState initialState = solver.saveState();
         final SortedSet<Variable> splitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
         final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
@@ -119,8 +119,8 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         return models;
     }
 
-    List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
-                               final Collection<Variable> additionalVariables) {
+    protected List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
+                                         final Collection<Variable> additionalVariables) {
         final List<Assignment> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
@@ -183,16 +183,12 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         return models;
     }
 
-    SortedSet<Variable> getVarsForEnumeration(final Collection<Variable> knownVariables) {
-        final SortedSet<Variable> relevantVars = knownVariables.stream().filter(this::isNotHelpVar).collect(Collectors.toCollection(TreeSet::new));
-        return this.variables == null ? relevantVars : filterVarsForPme(relevantVars);
+    protected SortedSet<Variable> getVarsForEnumeration(final Collection<Variable> knownVariables) {
+        final SortedSet<Variable> relevantVars = knownVariables.stream().filter(this::isNotAuxiliaryVariable).collect(Collectors.toCollection(TreeSet::new));
+        return this.variables == null ? relevantVars : relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private SortedSet<Variable> filterVarsForPme(final SortedSet<Variable> variables) {
-        return variables.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    private boolean isNotHelpVar(final Variable var) {
+    private boolean isNotAuxiliaryVariable(final Variable var) {
         return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
     }
 
@@ -235,11 +231,11 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
      * The builder for a model enumeration function.
      */
     public static class Builder {
-        private ModelEnumerationHandler handler;
-        private Collection<Variable> variables;
-        private Collection<Variable> additionalVariables;
-        private boolean fastEvaluable = false;
-        private SplitVariableProvider splitVariableProvider = null;
+        protected ModelEnumerationHandler handler;
+        protected Collection<Variable> variables;
+        protected Collection<Variable> additionalVariables;
+        protected boolean fastEvaluable = false;
+        protected SplitVariableProvider splitVariableProvider = null;
 
         Builder() {
             // Initialize only via factory

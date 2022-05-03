@@ -15,9 +15,9 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
-import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariables;
-import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariables;
-import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariables;
+import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
+import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariableProvider;
 import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
@@ -85,7 +85,8 @@ public class ModelEnumerationFunctionTest {
 
             // least common vars
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> models1 = solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables()).build());
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
             final long t1a = System.currentTimeMillis();
             if (models1.size() > 500000 || models1.size() < 10000) {
                 continue;
@@ -93,18 +94,20 @@ public class ModelEnumerationFunctionTest {
             final long t2 = System.currentTimeMillis();
 
             // most common vars
-            final List<Assignment> models2 = solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariables()).build());
+            final List<Assignment> models2 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariableProvider(this.f)).build());
             final long t3 = System.currentTimeMillis();
 
             // random vars
-            final List<Assignment> models3 = solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new RandomSplitVariables()).build());
+            final List<Assignment> models3 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new RandomSplitVariableProvider(this.f)).build());
             final long t4 = System.currentTimeMillis();
 
             // fixed number of vars. Here replaced by random split vars.
             // final List<Variable> varsFormula = new ArrayList<>(formula.variables());
             // final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 2);
             // final SortedSet<Variable> splitVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
-            final SplitVariableProvider splitVariableProvider = new RandomSplitVariables();
+            final SplitVariableProvider splitVariableProvider = new RandomSplitVariableProvider(this.f);
             final long t5 = System.currentTimeMillis();
             final List<Assignment> models4 =
                     solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(splitVariableProvider).build());
@@ -181,7 +184,8 @@ public class ModelEnumerationFunctionTest {
 
             final long t2 = System.currentTimeMillis();
             final List<Assignment> models2 =
-                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables()).variables(pmeVars).build());
+                    solver.execute(
+                            ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).variables(pmeVars).build());
             final long t3 = System.currentTimeMillis();
             final long timeSplit = t3 - t2;
 
@@ -236,8 +240,9 @@ public class ModelEnumerationFunctionTest {
 
             final long t2 = System.currentTimeMillis();
             final List<Assignment> models2 =
-                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(3, 50, 70)).variables(pmeVars)
-                            .additionalVariables(additionalVars).build());
+                    solver.execute(
+                            ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70)).variables(pmeVars)
+                                    .additionalVariables(additionalVars).build());
 
             final long t3 = System.currentTimeMillis();
             final long timeSplit = t3 - t2;
@@ -296,7 +301,7 @@ public class ModelEnumerationFunctionTest {
 
             final long t1 = System.currentTimeMillis();
             final List<Assignment> models1 =
-                    solver.execute(ModelEnumerationFunction.builder().handler(handler1).splitVariableProvider(new LeastCommonVariables()).build());
+                    solver.execute(ModelEnumerationFunction.builder().handler(handler1).splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
             if (models1.size() > 500000) {
                 continue;
             }
@@ -342,7 +347,7 @@ public class ModelEnumerationFunctionTest {
             // parameter 1
             final long t1 = System.currentTimeMillis();
             final List<Assignment> models1 =
-                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(12, 50, 65)).build());
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f, 12, 50, 65)).build());
             final long t1a = System.currentTimeMillis();
             if (models1.size() > 100000 || models1.size() < 10000) {
                 continue;
@@ -350,11 +355,11 @@ public class ModelEnumerationFunctionTest {
             final long t2 = System.currentTimeMillis();
 
             // parameter 2
-            solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(12, 50, 70)).build());
+            solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f, 12, 50, 70)).build());
             final long t3 = System.currentTimeMillis();
 
             // parameter 3
-            solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariables(12, 50, 75)).build());
+            solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f, 12, 50, 75)).build());
             final long t4 = System.currentTimeMillis();
 
             final long timeMc10 = t1a - t1;

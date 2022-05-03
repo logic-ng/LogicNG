@@ -14,9 +14,9 @@ import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
-import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariables;
-import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariables;
-import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariables;
+import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
+import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
@@ -158,7 +158,7 @@ public class AdvancedModelEnumerationFunctionTest {
             // when
             final long t1 = System.currentTimeMillis();
             final List<Assignment> models1 = solver.execute(AdvancedModelEnumerationFunction.builder()
-                    .splitVariableProvider(new LeastCommonVariables(3, 50, 70))
+                    .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
                     .variables(pmeVars)
                     .additionalVariables(additionalVars).build());
             final long t1a = System.currentTimeMillis();
@@ -174,7 +174,7 @@ public class AdvancedModelEnumerationFunctionTest {
             final long t2 = System.currentTimeMillis();
             final List<Assignment> models2 = solver.execute(AdvancedModelEnumerationFunction.builder()
                     .computeWithComponents(true)
-                    .splitVariableProvider(new LeastCommonVariables(3, 50, 70))
+                    .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
                     .variables(pmeVars)
                     .additionalVariables(additionalVars).build());
 
@@ -238,7 +238,7 @@ public class AdvancedModelEnumerationFunctionTest {
 
             // random split provider
             final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                    .splitVariableProvider(new RandomSplitVariables())
+                    .splitVariableProvider(new RandomSplitVariableProvider(this.f))
                     .handler(handler1)
                     .computeWithComponents(true).build());
             final long t2 = System.currentTimeMillis();
@@ -251,7 +251,7 @@ public class AdvancedModelEnumerationFunctionTest {
 
             // least common split provider
             solver.execute(AdvancedModelEnumerationFunction.builder()
-                    .splitVariableProvider(new LeastCommonVariables())
+                    .splitVariableProvider(new LeastCommonVariableProvider(this.f))
                     .handler(handler2)
                     .computeWithComponents(true).build());
             final long t3 = System.currentTimeMillis();
@@ -260,7 +260,7 @@ public class AdvancedModelEnumerationFunctionTest {
 
             // most common split provider
             solver.execute(AdvancedModelEnumerationFunction.builder()
-                    .splitVariableProvider(new MostCommonVariables())
+                    .splitVariableProvider(new MostCommonVariableProvider(this.f))
                     .handler(handler3)
                     .computeWithComponents(true).build());
             final long t4 = System.currentTimeMillis();

@@ -5,6 +5,7 @@ import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
 import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.functions.VariableProfileFunction;
 import org.logicng.solvers.functions.ModelEnumerationFunction;
@@ -24,10 +25,23 @@ import java.util.stream.Collectors;
  * @since 2.3.0
  */
 public abstract class SplitVariableProvider {
+    final FormulaFactory f;
     int minNumberOfVars = 12;
     int lowerBound = 50;
-    int upperBound = 65;
-    final static double HUNDRED = 100;
+    protected int upperBound = 65;
+    private final static double HUNDRED = 100;
+
+    public SplitVariableProvider(final FormulaFactory f) {
+        this.f = f;
+    }
+
+    public SplitVariableProvider(final FormulaFactory f, final int minNumberOfVars, final int lowerBound, final int upperBound) {
+        this.f = f;
+        this.minNumberOfVars = minNumberOfVars;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
+
 
     /**
      * Generates a set of split variables for a given formula. Such a set of split variables can then be used for the
@@ -37,11 +51,11 @@ public abstract class SplitVariableProvider {
      */
     public abstract SortedSet<Variable> getSplitVars(final Collection<Formula> formulas, final Collection<Variable> variables);
 
-    boolean notWorthSplitting(final Collection<Variable> variables) {
+    protected boolean notWorthSplitting(final Collection<Variable> variables) {
         return variables.size() < this.minNumberOfVars;
     }
 
-    Map<Integer, SortedSet<Variable>> getOccurrence2Vars(final Collection<Formula> formulas, final Collection<Variable> relevantVars) {
+    protected Map<Integer, SortedSet<Variable>> getOccurrence2Vars(final Collection<Formula> formulas, final Collection<Variable> relevantVars) {
         final Formula formula;
         if (formulas.stream().findAny().isPresent()) {
             formula = formulas.stream().findAny().get().factory().and(formulas);
@@ -62,12 +76,12 @@ public abstract class SplitVariableProvider {
         return occurrence2Vars;
     }
 
-    boolean isHelpVar(final Variable var) {
+    private boolean isHelpVar(final Variable var) {
         return var.name().startsWith(CC_PREFIX) || var.name().startsWith(PB_PREFIX) || var.name().startsWith(CNF_PREFIX);
     }
 
-    void fillSplitVars(final Map<Integer, SortedSet<Variable>> occurrence2Vars, final int counter, final int minNumberOfSplitVars,
-                       final int maxNumberOfSplitVars, final SortedSet<Variable> splitVars) {
+    protected void fillSplitVars(final Map<Integer, SortedSet<Variable>> occurrence2Vars, final int counter, final int minNumberOfSplitVars,
+                                 final int maxNumberOfSplitVars, final SortedSet<Variable> splitVars) {
         if (occurrence2Vars.containsKey(counter)) {
             final List<Variable> vars = new ArrayList<>(occurrence2Vars.get(counter));
             if (vars.size() + splitVars.size() <= maxNumberOfSplitVars) {
@@ -81,11 +95,11 @@ public abstract class SplitVariableProvider {
         }
     }
 
-    int getMinNumberOfSplitVars(final Collection<Variable> variables) {
+    protected int getMinNumberOfSplitVars(final Collection<Variable> variables) {
         return (int) Math.ceil(this.lowerBound * variables.size() / HUNDRED);
     }
 
-    int getMaxNumberOfSplitVars(final Collection<Variable> variables) {
+    protected int getMaxNumberOfSplitVars(final Collection<Variable> variables) {
         return (int) Math.floor(this.upperBound * variables.size() / HUNDRED);
     }
 }

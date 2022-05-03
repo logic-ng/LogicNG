@@ -33,6 +33,7 @@ import static org.logicng.handlers.Handler.start;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.graphs.algorithms.ConnectedComponentsComputation;
@@ -41,7 +42,7 @@ import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariables;
+import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
 import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 
 import java.util.ArrayList;
@@ -65,10 +66,6 @@ import java.util.stream.Collectors;
 public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunction {
 
     private final boolean computeWithComponents;
-    private final SplitVariableProvider splitVariableProvider;
-    private final ModelEnumerationHandler handler;
-    private final Collection<Variable> variables;
-    private final Collection<Variable> additionalVariables;
     private static final int minNumberOfVars = 15;
 
     public AdvancedModelEnumerationFunction(final boolean computeWithComponents, final SplitVariableProvider splitVariableProvider,
@@ -76,10 +73,6 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
                                             final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
         super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider);
         this.computeWithComponents = computeWithComponents;
-        this.handler = handler;
-        this.additionalVariables = additionalVariables;
-        this.splitVariableProvider = splitVariableProvider;
-        this.variables = variables;
     }
 
     /**
@@ -95,7 +88,8 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         start(this.handler);
         if (!this.computeWithComponents || solver.knownVariables().size() < minNumberOfVars) {
             return ModelEnumerationFunction.builder().handler(this.handler)
-                    .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables).build()
+                    .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables)
+                    .fastEvaluable(this.fastEvaluable).build()
                     .apply(solver, resultSetter);
         }
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
@@ -110,13 +104,13 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         for (final List<Formula> component : components) {
             final SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
             leftOverVars.removeAll(varsInThisComponent);
-            final List<Assignment> models = this.splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
+            final List<Assignment> models = splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
             if (!models.isEmpty()) {
                 modelsForAllComponents.add(models);
             }
         }
         if (!leftOverVars.isEmpty()) {
-            modelsForAllComponents.add(this.enumerate(solver, resultSetter, leftOverVars, this.additionalVariables));
+            modelsForAllComponents.add(enumerate(solver, resultSetter, leftOverVars, this.additionalVariables));
         }
         return modelsForAllComponents.isEmpty() ? Collections.emptyList() : getCartesianProduct(modelsForAllComponents);
     }
@@ -132,7 +126,7 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
             return allModelsList.get(0);
         }
         final List<Assignment> allJoinedAssignments = new ArrayList<>();
-        final List<List<Assignment>> product = CartesianProduct.product(allModelsList);
+        final List<List<Assignment>> product = product(allModelsList);
         for (final List<Assignment> assignmentList : product) {
             final Assignment assignment = new Assignment();
             for (final Assignment assignment1 : assignmentList) {
@@ -145,16 +139,34 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         return allJoinedAssignments;
     }
 
+    private static <T> List<List<T>> product(final List<List<T>> lists) {
+        final List<List<T>> product = new ArrayList<>();
+        product(product, new ArrayList<>(), lists);
+        return product;
+    }
+
+    private static <T> void product(final List<List<T>> result, final List<T> existingTupleToComplete, final List<List<T>> valuesToUse) {
+        for (final T value : valuesToUse.get(0)) {
+            final List<T> newExisting = new ArrayList<>(existingTupleToComplete);
+            newExisting.add(value);
+            if (valuesToUse.size() == 1) {
+                result.add(newExisting);
+            } else {
+                final List<List<T>> newValues = new ArrayList<>();
+                for (int i = 1; i < valuesToUse.size(); i++) {
+                    newValues.add(valuesToUse.get(i));
+                }
+                product(result, newExisting, newValues);
+            }
+        }
+    }
+
     /**
      * The builder for an advanced model enumeration function.
      */
     public static class Builder extends ModelEnumerationFunction.Builder {
         private boolean computeWithComponents = false;
-        private SplitVariableProvider splitVariableProvider = new LeastCommonVariables();
-        private ModelEnumerationHandler handler;
-        private Collection<Variable> variables;
-        private Collection<Variable> additionalVariables;
-        private boolean fastEvaluable;
+        private SplitVariableProvider splitVariableProvider = new LeastCommonVariableProvider(new FormulaFactory());
 
         private Builder() {
             // Initialize only via factory
@@ -254,32 +266,8 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
          */
         @Override
         public AdvancedModelEnumerationFunction build() {
-            return new AdvancedModelEnumerationFunction(this.computeWithComponents, this.splitVariableProvider, handler, variables, additionalVariables,
-                    fastEvaluable);
-        }
-    }
-
-    private static class CartesianProduct {
-        public static <T> List<List<T>> product(final List<List<T>> lists) {
-            final List<List<T>> product = new ArrayList<>();
-            product(product, new ArrayList<>(), lists);
-            return product;
-        }
-
-        private static <T> void product(final List<List<T>> result, final List<T> existingTupleToComplete, final List<List<T>> valuesToUse) {
-            for (final T value : valuesToUse.get(0)) {
-                final List<T> newExisting = new ArrayList<>(existingTupleToComplete);
-                newExisting.add(value);
-                if (valuesToUse.size() == 1) {
-                    result.add(newExisting);
-                } else {
-                    final List<List<T>> newValues = new ArrayList<>();
-                    for (int i = 1; i < valuesToUse.size(); i++) {
-                        newValues.add(valuesToUse.get(i));
-                    }
-                    product(result, newExisting, newValues);
-                }
-            }
+            return new AdvancedModelEnumerationFunction(this.computeWithComponents, this.splitVariableProvider, this.handler, this.variables,
+                    this.additionalVariables, this.fastEvaluable);
         }
     }
 }
