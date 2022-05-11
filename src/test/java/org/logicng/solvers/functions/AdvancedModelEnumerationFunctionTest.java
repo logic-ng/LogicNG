@@ -42,6 +42,24 @@ public class AdvancedModelEnumerationFunctionTest {
     }
 
     @Test
+    public void computeWithComponentsWithSplit() {
+        for (int i = 1; i <= 100; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+            final Formula formula = randomizer.formula(3);
+            final int numberOfVars = formula.variables().size();
+            if (numberOfVars < 20) {
+                continue;
+            }
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(formula);
+
+            final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
+            System.out.println("\nSeed: " + i + ", models: " + models.size());
+
+        }
+    }
+
+    @Test
     public void testNewImplementation() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("advancedME.csv"));
         fw.write("seed;depth;#vars;#combinations;time classic;time advanced no components;time advanced with components;formula");

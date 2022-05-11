@@ -122,6 +122,9 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
     }
 
     private List<Assignment> getCartesianProduct(final List<List<Assignment>> allModelsList) {
+        if (allModelsList.size() == 1) {
+            return allModelsList.get(0);
+        }
         List<List<Literal>> currentResult = Collections.singletonList(Collections.emptyList());
         for (final List<Assignment> newAssignments : allModelsList) {
             final List<List<Literal>> newResult = new ArrayList<>();
@@ -136,22 +139,6 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
             currentResult = newResult;
         }
         return currentResult.stream().map(Assignment::new).collect(Collectors.toList());
-    }
-
-    private static <T> void product(final List<List<T>> result, final List<T> existingTupleToComplete, final List<List<T>> valuesToUse) {
-        for (final T value : valuesToUse.get(0)) {
-            final List<T> newExisting = new ArrayList<>(existingTupleToComplete);
-            newExisting.add(value);
-            if (valuesToUse.size() == 1) {
-                result.add(newExisting);
-            } else {
-                final List<List<T>> newValues = new ArrayList<>();
-                for (int i = 1; i < valuesToUse.size(); i++) {
-                    newValues.add(valuesToUse.get(i));
-                }
-                product(result, newExisting, newValues);
-            }
-        }
     }
 
     /**
