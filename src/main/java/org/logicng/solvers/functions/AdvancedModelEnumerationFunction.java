@@ -122,27 +122,20 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
     }
 
     private List<Assignment> getCartesianProduct(final List<List<Assignment>> allModelsList) {
-        if (allModelsList.size() == 1) {
-            return allModelsList.get(0);
-        }
-        final List<Assignment> allJoinedAssignments = new ArrayList<>();
-        final List<List<Assignment>> product = product(allModelsList);
-        for (final List<Assignment> assignmentList : product) {
-            final Assignment assignment = new Assignment();
-            for (final Assignment assignment1 : assignmentList) {
-                for (final Literal literal : assignment1.literals()) {
-                    assignment.addLiteral(literal);
+        List<List<Literal>> currentResult = Collections.singletonList(Collections.emptyList());
+        for (final List<Assignment> newAssignments : allModelsList) {
+            final List<List<Literal>> newResult = new ArrayList<>();
+            for (final Assignment newAssignment : newAssignments) {
+                final SortedSet<Literal> newLiterals = newAssignment.literals();
+                for (final List<Literal> existingAssignment : currentResult) {
+                    final List<Literal> extendedAssignment = new ArrayList<>(existingAssignment);
+                    extendedAssignment.addAll(newLiterals);
+                    newResult.add(extendedAssignment);
                 }
             }
-            allJoinedAssignments.add(assignment);
+            currentResult = newResult;
         }
-        return allJoinedAssignments;
-    }
-
-    private static <T> List<List<T>> product(final List<List<T>> lists) {
-        final List<List<T>> product = new ArrayList<>();
-        product(product, new ArrayList<>(), lists);
-        return product;
+        return currentResult.stream().map(Assignment::new).collect(Collectors.toList());
     }
 
     private static <T> void product(final List<List<T>> result, final List<T> existingTupleToComplete, final List<List<T>> valuesToUse) {
