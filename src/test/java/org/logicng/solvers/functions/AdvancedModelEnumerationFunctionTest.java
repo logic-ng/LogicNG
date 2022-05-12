@@ -43,9 +43,9 @@ public class AdvancedModelEnumerationFunctionTest {
 
     @Test
     public void computeWithComponentsWithSplit() {
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 13; i <= 13; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(3);
+            final Formula formula = randomizer.formula(5);
             final int numberOfVars = formula.variables().size();
             if (numberOfVars < 20) {
                 continue;
@@ -54,7 +54,7 @@ public class AdvancedModelEnumerationFunctionTest {
             solver.add(formula);
 
             final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
-            System.out.println("\nSeed: " + i + ", models: " + models.size());
+            System.out.println("Seed: " + i + ", models: " + models.size() + "\n");
 
         }
     }

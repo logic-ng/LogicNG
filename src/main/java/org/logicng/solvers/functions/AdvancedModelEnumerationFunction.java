@@ -86,11 +86,11 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
     @Override
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
+        final ModelEnumerationFunction standardModelEnumeration = ModelEnumerationFunction.builder().handler(this.handler)
+                .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables)
+                .fastEvaluable(this.fastEvaluable).build();
         if (!this.computeWithComponents || solver.knownVariables().size() < minNumberOfVars) {
-            return ModelEnumerationFunction.builder().handler(this.handler)
-                    .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables)
-                    .fastEvaluable(this.fastEvaluable).build()
-                    .apply(solver, resultSetter);
+            return standardModelEnumeration.apply(solver, resultSetter);
         }
         final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
         if (formulasOnSolver.isEmpty()) {
@@ -99,6 +99,10 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulasOnSolver);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
         final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulasOnSolver, ccs);
+        if (components.size() == 1) {
+            System.out.println("Only one component");
+            return standardModelEnumeration.apply(solver, resultSetter);
+        }
         final List<List<Assignment>> modelsForAllComponents = new ArrayList<>();
         final SortedSet<Variable> leftOverVars = getVarsForEnumeration(solver.knownVariables());
         for (final List<Formula> component : components) {
