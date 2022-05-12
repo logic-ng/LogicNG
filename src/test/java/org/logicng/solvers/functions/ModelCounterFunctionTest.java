@@ -2,7 +2,6 @@ package org.logicng.solvers.functions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -50,98 +49,117 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         return Arrays.stream(vars).map(this.f::variable).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    @Test
-    public void testWrongArgument() {
-        final MiniSat miniSat = MiniSat.miniSat(f);
-        final BigInteger modelcount = miniSat.execute(ModelCounterFunction.builder().build());
-
-        assertThrows(IllegalArgumentException.class, () ->
-                ModelCounter.count(Collections.singletonList(this.f.parse("a & b")), new TreeSet<>(Collections.singletonList(this.A))));
-    }
 
     @Test
     public void testConstants() {
-        assertThat(ModelCounter.count(Collections.singleton(this.f.falsum()), Collections.emptySortedSet()))
-                .isEqualTo(BigInteger.valueOf(0));
-        assertThat(ModelCounter.count(Collections.singleton(this.f.falsum()), vars("a", "b")))
-                .isEqualTo(BigInteger.valueOf(0));
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState state = solver.saveState();
 
-        assertThat(ModelCounter.count(Collections.singleton(this.f.verum()), Collections.emptySortedSet()))
-                .isEqualTo(BigInteger.valueOf(1));
-        assertThat(ModelCounter.count(Collections.singleton(this.f.verum()), vars("a", "b")))
-                .isEqualTo(BigInteger.valueOf(4));
+        solver.add(this.f.falsum());
+        assertThat(solver.execute(ModelCounterFunction.builder().variables(Collections.emptySortedSet()).build())).isEqualTo(BigInteger.ZERO);
+        solver.loadState(state);
+
+        solver.add(this.f.falsum());
+        assertThat(solver.execute(ModelCounterFunction.builder().variables(vars("a", "b")).build())).isEqualTo(BigInteger.ZERO);
+        solver.loadState(state);
+
+        solver.add(this.f.verum());
+        assertThat(solver.execute(ModelCounterFunction.builder().variables(Collections.emptySortedSet()).build())).isEqualTo(BigInteger.ONE);
+        solver.loadState(state);
+
+
+        //TODO check
+        solver.add(this.f.falsum());
+        assertThat(solver.execute(ModelCounterFunction.builder().variables(vars("a", "b")).build())).isEqualTo(BigInteger.valueOf(0));
+        solver.loadState(state);
     }
 
     @Test
     public void testSimple() throws ParserException {
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
+
         final Formula formula01 = this.f.parse("(~v1 => ~v0) | ~v1 | v0");
-        assertThat(ModelCounter.count(Collections.singletonList(formula01), formula01.variables())).isEqualTo(BigInteger.valueOf(4));
+        solver.add(formula01);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(4));
+        solver.loadState(initialState);
 
         final List<Formula> formulas02 = Arrays.asList(this.f.parse("(a & b) | ~b"), this.f.parse("a"));
-        assertThat(ModelCounter.count(formulas02, FormulaHelper.variables(formulas02))).isEqualTo(BigInteger.valueOf(2));
+        solver.add(formulas02);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(2));
+        solver.loadState(initialState);
 
         final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & b & c"), this.f.parse("c & d"));
-        assertThat(ModelCounter.count(formulas03, FormulaHelper.variables(formulas03))).isEqualTo(BigInteger.valueOf(1));
+        solver.add(formulas03);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(1));
+        solver.loadState(initialState);
     }
 
     @Test
     public void testAmoAndExo() throws ParserException {
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
+
         final List<Formula> formulas01 = Arrays.asList(this.f.parse("a & b"), this.f.parse("a + b + c + d <= 1"));
-        assertThat(ModelCounter.count(formulas01, FormulaHelper.variables(formulas01))).isEqualTo(BigInteger.valueOf(0));
+        formulas01.forEach(solver::add);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(0));
+        solver.loadState(initialState);
 
         final List<Formula> formulas02 = Arrays.asList(this.f.parse("a & b & (a + b + c + d <= 1)"), this.f.parse("a | b"));
-        assertThat(ModelCounter.count(formulas02, FormulaHelper.variables(formulas02))).isEqualTo(BigInteger.valueOf(0));
+        formulas02.forEach(solver::add);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(0));
+        solver.loadState(initialState);
 
         final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & (a + b + c + d <= 1)"), this.f.parse("a | b"));
-        assertThat(ModelCounter.count(formulas03, FormulaHelper.variables(formulas03))).isEqualTo(BigInteger.valueOf(1));
+        formulas03.forEach(solver::add);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(1));
+        solver.loadState(initialState);
 
         final List<Formula> formulas04 = Arrays.asList(this.f.parse("a & (a + b + c + d = 1)"), this.f.parse("a | b"));
-        assertThat(ModelCounter.count(formulas04, FormulaHelper.variables(formulas04))).isEqualTo(BigInteger.valueOf(1));
-    }
-
-    @Test
-    public void testNonAmoAndExo() throws ParserException {
-        final List<Formula> formulas01 = Arrays.asList(this.f.parse("a & b"), this.f.parse("a + b + c + d = 2"));
-        assertThatThrownBy(() -> ModelCounter.count(formulas01, FormulaHelper.variables(formulas01)))
-                .isInstanceOf(UnsupportedOperationException.class)
-                .hasMessage("Pure encoding for a PBC of type other than AMO or EXO is currently not supported.");
-
-        final List<Formula> formulas02 = Arrays.asList(this.f.parse("a & b"), this.f.parse("c | a & (b + c + d <= 4)"));
-        assertThatThrownBy(() -> ModelCounter.count(formulas02, FormulaHelper.variables(formulas02)))
-                .isInstanceOf(UnsupportedOperationException.class)
-                .hasMessage("Pure encoding for a PBC of type other than AMO or EXO is currently not supported.");
+        formulas04.forEach(solver::add);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(1));
+        solver.loadState(initialState);
     }
 
     @Test
     public void testQueens() {
+        final MiniSat solver = MiniSat.miniSat(f);
         final NQueensGenerator generator = new NQueensGenerator(this.f);
-        testQueens(generator, 4, 2);
-        testQueens(generator, 5, 10);
-        testQueens(generator, 6, 4);
-        testQueens(generator, 7, 40);
-        testQueens(generator, 8, 92);
+        testQueens(solver, generator, 4, 2);
+        testQueens(solver, generator, 5, 10);
+        testQueens(solver, generator, 6, 4);
+        testQueens(solver, generator, 7, 40);
+        testQueens(solver, generator, 8, 92);
     }
 
-    private void testQueens(final NQueensGenerator generator, final int size, final int models) {
+    private void testQueens(final MiniSat solver, final NQueensGenerator generator, final int size, final int models) {
+        final SolverState initialState = solver.saveState();
         final Formula queens = generator.generate(size);
-        assertThat(ModelCounter.count(Collections.singletonList(queens), queens.variables())).isEqualTo(BigInteger.valueOf(models));
+        solver.add(queens);
+        assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(models));
+        solver.loadState(initialState);
     }
 
     @Test
     public void testCornerCases() {
+        // TODO adapt
         final FormulaFactory f = new FormulaFactory();
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
         final FormulaCornerCases cornerCases = new FormulaCornerCases(f);
         for (final Formula formula : cornerCases.cornerCases()) {
+            solver.add(formula);
             if (formula.type() == FType.PBC) {
                 final PBConstraint pbc = (PBConstraint) formula;
                 if (!pbc.isAmo() && !pbc.isExo()) {
-                    assertThatThrownBy(() -> ModelCounter.count(Collections.singletonList(formula), formula.variables()))
+                    assertThatThrownBy(() -> solver.execute(ModelCounterFunction.builder().build()))
                             .isInstanceOf(UnsupportedOperationException.class);
                     continue;
                 }
             }
             final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
-            final BigInteger count = ModelCounter.count(Collections.singleton(formula), formula.variables());
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
+            solver.loadState(initialState);
             assertThat(count).isEqualTo(expCount);
         }
     }
@@ -149,6 +167,8 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     @Test
     @RandomTag
     public void testRandom() {
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
         for (int i = 0; i < 500; i++) {
             final FormulaFactory f = new FormulaFactory();
             f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
@@ -158,10 +178,11 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
                     .weightExo(5)
                     .seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
-
             final Formula formula = randomizer.formula(4);
+            solver.add(formula);
             final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
-            final BigInteger count = ModelCounter.count(Collections.singleton(formula), formula.variables());
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
+            solver.loadState(initialState);
             assertThat(count).isEqualTo(expCount);
         }
     }
@@ -169,6 +190,8 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     @Test
     @RandomTag
     public void testRandomWithFormulaList() {
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
         for (int i = 0; i < 500; i++) {
             final FormulaFactory f = new FormulaFactory();
             f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
@@ -178,10 +201,11 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
                     .weightExo(5)
                     .seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
-
             final List<Formula> formulas = IntStream.range(1, 5).mapToObj(j -> randomizer.formula(4)).collect(Collectors.toList());
+            formulas.forEach(solver::add);
             final BigInteger expCount = enumerationBasedModelCount(formulas, f);
-            final BigInteger count = ModelCounter.count(formulas, FormulaHelper.variables(formulas));
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
+            solver.loadState(initialState);
             assertThat(count).isEqualTo(expCount);
         }
     }
@@ -189,6 +213,8 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     @Test
     @RandomTag
     public void testRandomWithFormulaListWithoutPBC() {
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
         for (int i = 0; i < 500; i++) {
             final FormulaFactory f = new FormulaFactory();
             f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
@@ -197,10 +223,11 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
                     .weightPbc(0)
                     .seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
-
             final List<Formula> formulas = IntStream.range(1, 5).mapToObj(j -> randomizer.formula(4)).collect(Collectors.toList());
+            formulas.forEach(solver::add);
             final BigInteger expCount = enumerationBasedModelCount(formulas, f);
-            final BigInteger count = ModelCounter.count(formulas, FormulaHelper.variables(formulas));
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
+            solver.loadState(initialState);
             assertThat(count).isEqualTo(expCount);
             final Formula formula = f.and(formulas);
             if (!formula.variables().isEmpty()) {
