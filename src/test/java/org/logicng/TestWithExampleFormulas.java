@@ -32,12 +32,16 @@ import org.logicng.formulas.CType;
 import org.logicng.formulas.Constant;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaFactoryConfig;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 public abstract class TestWithExampleFormulas {
-    protected final FormulaFactory f = new FormulaFactory();
-    protected final FormulaFactory g = new FormulaFactory();
+    final FormulaFactoryConfig config = FormulaFactoryConfig.builder().simplifyComplementaryOperands(false).build();
+
+    // this is changed for the new model counter function. Possibly doesn't always work.
+    protected final FormulaFactory f = new FormulaFactory(config);
+    protected final FormulaFactory g = new FormulaFactory(config);
 
     // Constants
     protected final Constant TRUE = this.f.verum();

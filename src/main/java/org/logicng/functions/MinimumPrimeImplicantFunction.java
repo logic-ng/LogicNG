@@ -87,7 +87,6 @@ public final class MinimumPrimeImplicantFunction implements FormulaFunction<Sort
                 solver.add(formula.factory().amo(formula.factory().variable(literal.name() + POS), formula.factory().variable(literal.name() + NEG)));
             }
         }
-
         if (solver.sat() != Tristate.TRUE) {
             return null;
         }

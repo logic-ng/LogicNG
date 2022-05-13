@@ -12,6 +12,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.functions.MinimumPrimeImplicantFunction;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
+import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 
@@ -49,7 +50,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
     @Override
     public BigInteger apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
-        BigInteger modelCount = BigInteger.ONE;
+        BigInteger modelCount = BigInteger.ZERO;
         SolverState stateBeforeEnumeration = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
             stateBeforeEnumeration = solver.saveState();
@@ -92,30 +93,38 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
                 }
             }
         }
-
+        final Map<String, Integer> name2idx = solver.underlyingSolver().getName2idx();
         final boolean continueLoop = modelEnumerationSATCall(solver, this.handler);
         if (!continueLoop) {
-            return BigInteger.ZERO;
+            return modelCount;
         }
-        while (proceed) {
+        while (true) {
             final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
-            final Formula and = solver.factory().and(formulasOnSolver);
-            final SortedSet<Literal> minimumPrimeImplicant = MinimumPrimeImplicantFunction.get().apply(and, true);
-
+            if (formulasOnSolver.isEmpty()) {
+                System.out.println("Somethings wrong");
+            }
+            System.out.println("formulas on solver: " + formulasOnSolver);
+            final Formula formulaOnSolver = solver.factory().and(formulasOnSolver);
+            if (formulaOnSolver.holds(new TautologyPredicate(solver.factory()))) {
+                final int numberOfVars = solver.underlyingSolver().getName2idx().size();
+                modelCount = modelCount.add(BigInteger.valueOf(2).pow(numberOfVars));
+                return modelCount;
+            }
+            final SortedSet<Literal> minimumPrimeImplicant = MinimumPrimeImplicantFunction.get().apply(formulaOnSolver, true);
             System.out.println("minimumPrimeImplicant = " + minimumPrimeImplicant);
 
             if (minimumPrimeImplicant != null) {
-                final LNGIntVector minimumPrimeImplicantIndices = new LNGIntVector(minimumPrimeImplicant.size());
-                for (final Literal var : minimumPrimeImplicant) {
-                    minimumPrimeImplicantIndices.push(solver.underlyingSolver().idxForName(var.name()));
+                final LNGIntVector blockingClause = new LNGIntVector(minimumPrimeImplicant.size());
+                for (final Literal lit : minimumPrimeImplicant) {
+                    final int idx = solver.underlyingSolver().idxForName(lit.name());
+                    blockingClause.push(lit.phase() ? idx * 2 ^ 1 : idx * 2);
                 }
-                final int dontCareSize = and.variables().size() - minimumPrimeImplicant.size();
-                modelCount = modelCount.multiply(BigInteger.valueOf(2).pow(dontCareSize));
+                final long numberOfVarsWithoutAuxiliary = name2idx.keySet().stream().filter(x -> !x.startsWith("@")).count();
 
-                final LNGIntVector blockingClause = generateBlockingClause(minimumPrimeImplicantIndices, relevantIndices);
+                final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary - minimumPrimeImplicant.size());
+                modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
                 solver.underlyingSolver().addClause(blockingClause, null);
                 resultSetter.accept(UNDEF);
-                // proceed = this.handler == null || handler.foundModel();
             } else {
                 break;
             }
@@ -133,32 +142,6 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
         final Tristate tristate = solver.sat(handler.satHandler());
         return !handler.aborted() && tristate == TRUE;
     }
-
-    /**
-     * Generates a blocking clause from a given model and a set of relevant variables.
-     * @param minimumPrimeImplicantIndices the current model for which the blocking clause should be generated
-     * @param relevantVars                 the indices of the relevant variables.  If {@code null} all variables are relevant.
-     * @return the blocking clause for the given model and relevant variables
-     */
-    private LNGIntVector generateBlockingClause(final LNGIntVector minimumPrimeImplicantIndices, final LNGIntVector relevantVars) {
-        final LNGIntVector blockingClause;
-        if (relevantVars != null) {
-            blockingClause = new LNGIntVector(relevantVars.size());
-            for (int i = 0; i < relevantVars.size(); i++) {
-                final int varIndex = relevantVars.get(i);
-                if (varIndex != -1) {
-                    blockingClause.push(minimumPrimeImplicantIndices.get(i) ^ 1);
-                }
-            }
-        } else {
-            blockingClause = new LNGIntVector(minimumPrimeImplicantIndices.size());
-            for (int i = 0; i < minimumPrimeImplicantIndices.size(); i++) {
-                blockingClause.push(minimumPrimeImplicantIndices.get(i) ^ 1);
-            }
-        }
-        return blockingClause;
-    }
-
 
     /**
      * The builder for a model counting function.
