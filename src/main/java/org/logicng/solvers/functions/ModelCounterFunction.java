@@ -6,13 +6,9 @@ import static org.logicng.handlers.Handler.start;
 
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.Formula;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-import org.logicng.functions.MinimumPrimeImplicantFunction;
-import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
-import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 
@@ -21,18 +17,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
-// TODO check builder methods additional variables.
 public class ModelCounterFunction implements SolverFunction<BigInteger> {
-    private final ModelEnumerationHandler handler;
+    private final SATHandler handler;
     private final Collection<Variable> variables;
     private final Collection<Variable> additionalVariables;
 
-    private ModelCounterFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables,
+    private ModelCounterFunction(final SATHandler handler, final Collection<Variable> variables,
                                  final Collection<Variable> additionalVariables) {
         this.handler = handler;
         this.variables = variables;
@@ -55,7 +49,6 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
             stateBeforeEnumeration = solver.saveState();
         }
-        final boolean proceed = true;
         final LNGIntVector relevantIndices;
         if (this.variables == null) {
             if (!solver.getConfig().isAuxiliaryVariablesInModels()) {
@@ -99,29 +92,14 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
             return modelCount;
         }
         while (true) {
-            final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
-            if (formulasOnSolver.isEmpty()) {
-                System.out.println("Somethings wrong");
-            }
-            System.out.println("formulas on solver: " + formulasOnSolver);
-            final Formula formulaOnSolver = solver.factory().and(formulasOnSolver);
-            if (formulaOnSolver.holds(new TautologyPredicate(solver.factory()))) {
-                final int numberOfVars = solver.underlyingSolver().getName2idx().size();
-                modelCount = modelCount.add(BigInteger.valueOf(2).pow(numberOfVars));
-                return modelCount;
-            }
-            final SortedSet<Literal> minimumPrimeImplicant = MinimumPrimeImplicantFunction.get().apply(formulaOnSolver, true);
-            System.out.println("minimumPrimeImplicant = " + minimumPrimeImplicant);
-
-            if (minimumPrimeImplicant != null) {
-                final LNGIntVector blockingClause = new LNGIntVector(minimumPrimeImplicant.size());
-                for (final Literal lit : minimumPrimeImplicant) {
-                    final int idx = solver.underlyingSolver().idxForName(lit.name());
-                    blockingClause.push(lit.phase() ? idx * 2 ^ 1 : idx * 2);
+            final LNGIntVector primeImplicant = solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).build());
+            if (primeImplicant != null) {
+                final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
+                for (int i = 0; i < primeImplicant.size(); i++) {
+                    blockingClause.push(primeImplicant.get(i) ^ 1);
                 }
-                final long numberOfVarsWithoutAuxiliary = name2idx.keySet().stream().filter(x -> !x.startsWith("@")).count();
-
-                final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary - minimumPrimeImplicant.size());
+                final long numberOfVarsWithoutAuxiliary = name2idx.keySet().stream().filter(this::isRelevantVariable).count();
+                final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary) - blockingClause.size();
                 modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
                 solver.underlyingSolver().addClause(blockingClause, null);
                 resultSetter.accept(UNDEF);
@@ -135,11 +113,15 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
         return modelCount;
     }
 
-    private boolean modelEnumerationSATCall(final MiniSat solver, final ModelEnumerationHandler handler) {
+    final boolean isRelevantVariable(final String name) {
+        return !name.startsWith(FormulaFactory.CNF_PREFIX) && !name.startsWith(FormulaFactory.CC_PREFIX) && !name.startsWith(FormulaFactory.PB_PREFIX);
+    }
+
+    private boolean modelEnumerationSATCall(final MiniSat solver, final SATHandler handler) {
         if (handler == null) {
             return solver.sat((SATHandler) null) == TRUE;
         }
-        final Tristate tristate = solver.sat(handler.satHandler());
+        final Tristate tristate = solver.sat(handler);
         return !handler.aborted() && tristate == TRUE;
     }
 
@@ -147,8 +129,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
      * The builder for a model counting function.
      */
     public static class Builder {
-        private ModelEnumerationHandler handler;
-        private Collection<Variable> relevantVariables;
+        private SATHandler handler;
         private Collection<Variable> variables;
         private Collection<Variable> additionalVariables;
 
@@ -161,28 +142,8 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          * @param handler the handler
          * @return the current builder
          */
-        public ModelCounterFunction.Builder handler(final ModelEnumerationHandler handler) {
+        public ModelCounterFunction.Builder handler(final SATHandler handler) {
             this.handler = handler;
-            return this;
-        }
-
-        /**
-         * Sets the set of variables over which the model enumeration should iterate.
-         * @param variables the set of variables
-         * @return the current builder
-         */
-        public ModelCounterFunction.Builder relevantVariables(final Collection<Variable> variables) {
-            this.relevantVariables = variables;
-            return this;
-        }
-
-        /**
-         * Sets the set of variables over which the model enumeration should iterate.
-         * @param variables the set of variables
-         * @return the current builder
-         */
-        public ModelCounterFunction.Builder relevantVariables(final Variable... variables) {
-            this.relevantVariables = Arrays.asList(variables);
             return this;
         }
 

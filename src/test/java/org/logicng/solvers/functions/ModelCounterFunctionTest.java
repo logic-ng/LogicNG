@@ -1,7 +1,9 @@
 package org.logicng.solvers.functions;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.util.FormulaHelper.variables;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
@@ -21,11 +23,14 @@ import org.logicng.testutils.NQueensGenerator;
 import org.logicng.transformations.cnf.CNFConfig;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.util.FormulaCornerCases;
-import org.logicng.util.FormulaHelper;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,16 +45,42 @@ import java.util.stream.IntStream;
  * @since 2.0.0
  */
 public class ModelCounterFunctionTest extends TestWithExampleFormulas {
-    private void init() {
-        final CNFConfig configCnf = CNFConfig.builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build();
-        g.putConfiguration(configCnf);
-        f.putConfiguration(configCnf);
-    }
-
     private SortedSet<Variable> vars(final String... vars) {
         return Arrays.stream(vars).map(this.f::variable).collect(Collectors.toCollection(TreeSet::new));
     }
 
+    @Disabled
+    @Test
+    public void testBmwPdf() throws IOException, ParserException {
+        final List<String> strings = Files.readAllLines(Paths.get("/Users/ena/Development/LogicNG/src/test/java/org/logicng/solvers/functions/pdf.txt"));
+        final List<Formula> formulas = new ArrayList<>();
+        for (final String string : strings) {
+            formulas.add(f.parse(string));
+        }
+
+        for (final Formula formula : formulas) {
+            System.out.println(formula);
+        }
+
+        final long start = System.currentTimeMillis();
+
+        final SATSolver solver = MiniSat.miniSat(f);
+        solver.add(formulas);
+        final BigInteger modelCountNew = solver.execute(ModelCounterFunction.builder().build());
+
+        final long mid = System.currentTimeMillis();
+        final BigInteger countOld = ModelCounter.count(formulas, variables(formulas));
+
+        final long end = System.currentTimeMillis();
+
+        System.out.println(countOld);
+
+        System.out.println("Time old: " + (end - mid));
+        System.out.println("Time new: " + (mid - start));
+        // assertThat(modelCountNew).isEqualTo(countOld);
+
+
+    }
 
     @Test
     public void testConstants() {
@@ -75,7 +106,6 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
 
     @Test
     public void testSimple() throws ParserException {
-        init();
         final MiniSat solver = MiniSat.miniSat(f);
         final SolverState initialState = solver.saveState();
 
@@ -179,33 +209,30 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         }
     }
 
-    // @Test
-    // @RandomTag
-    // public void testRandom() {
-    //     final MiniSat solver = MiniSat.miniSat(f);
-    //     final SolverState initialState = solver.saveState();
-    //     for (int i = 0; i < 200; i++) {
-    //         System.out.println("int: " + i);
-    //         final FormulaFactory f = new FormulaFactory();
-    //         f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
-    //         final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
-    //                 .numVars(5)
-    //                 .weightAmo(5)
-    //                 .weightExo(5)
-    //                 .seed(i * 42).build();
-    //         final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
-    //         final Formula formula = randomizer.formula(3);
-    //         System.out.println("\nformula = " + formula);
-    //         final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
-    //         System.out.println("expCount = " + expCount);
-    //         solver.add(formula);
-    //         // something strange happens: Check it
-    //         final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
-    //         System.out.println("count = " + count);
-    //         solver.loadState(initialState);
-    //         assertThat(count).isEqualTo(expCount);
-    //     }
-    // }
+    @Test
+    @RandomTag
+    public void testRandom() {
+        final MiniSat solver = MiniSat.miniSat(f);
+        for (int i = 0; i < 500; i++) {
+            System.out.println("int: " + i);
+            f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
+            final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
+                    .numVars(5)
+                    .weightAmo(5)
+                    .weightExo(5)
+                    .seed(i * 42).build();
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
+            final Formula formula = randomizer.formula(4);
+            System.out.println("\nformula = " + formula);
+            final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
+            System.out.println("expCount = " + expCount);
+            solver.add(formula);
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
+            System.out.println("count = " + count);
+            solver.reset();
+            assertThat(count).isEqualTo(expCount);
+        }
+    }
 
     @Test
     public void compareWithModelEnumeration() throws ParserException {
@@ -225,9 +252,11 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
         System.out.println(formula);
-
-        final List<Assignment> assignments = solver.enumerateAllModels();
-        System.out.println("assignments: " + assignments.size());
+        final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
+        System.out.println("expCount = " + expCount);
+        //
+        // final List<Assignment> assignments = solver.enumerateAllModels();
+        // System.out.println("assignments: " + assignments.size());
 
         final SolverState initialState = solver.saveState();
         final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
@@ -238,28 +267,28 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     }
 
     // Sieht gut aus, habe irgendwann abgebrochen.
-    // @Test
-    // @RandomTag
-    // public void testRandomWithFormulaList() {
-    //     final MiniSat solver = MiniSat.miniSat(f);
-    //     final SolverState initialState = solver.saveState();
-    //     for (int i = 0; i < 500; i++) {
-    //         final FormulaFactory f = new FormulaFactory();
-    //         f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
-    //         final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
-    //                 .numVars(5)
-    //                 .weightAmo(5)
-    //                 .weightExo(5)
-    //                 .seed(i * 42).build();
-    //         final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
-    //         final List<Formula> formulas = IntStream.range(1, 5).mapToObj(j -> randomizer.formula(4)).collect(Collectors.toList());
-    //         formulas.forEach(solver::add);
-    //         final BigInteger expCount = enumerationBasedModelCount(formulas, f);
-    //         final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
-    //         solver.loadState(initialState);
-    //         assertThat(count).isEqualTo(expCount);
-    //     }
-    // }
+    @Test
+    @RandomTag
+    public void testRandomWithFormulaList() {
+        final MiniSat solver = MiniSat.miniSat(f);
+        final SolverState initialState = solver.saveState();
+        for (int i = 0; i < 500; i++) {
+            final FormulaFactory f = new FormulaFactory();
+            f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
+            final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
+                    .numVars(5)
+                    .weightAmo(5)
+                    .weightExo(5)
+                    .seed(i * 42).build();
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
+            final List<Formula> formulas = IntStream.range(1, 5).mapToObj(j -> randomizer.formula(4)).collect(Collectors.toList());
+            formulas.forEach(solver::add);
+            final BigInteger expCount = enumerationBasedModelCount(formulas, f);
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
+            solver.loadState(initialState);
+            assertThat(count).isEqualTo(expCount);
+        }
+    }
 
     @Test
     @RandomTag
@@ -291,7 +320,7 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     private static BigInteger enumerationBasedModelCount(final List<Formula> formulas, final FormulaFactory f) {
         final MiniSat solver = MiniSat.miniSat(f);
         solver.add(formulas);
-        final SortedSet<Variable> variables = FormulaHelper.variables(formulas);
+        final SortedSet<Variable> variables = variables(formulas);
         final List<Assignment> models = solver.enumerateAllModels(variables);
         return modelCount(models, variables);
     }
@@ -320,13 +349,8 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         final Formula f1 = f.and(f.or(a, b), f.or(c, d));
         miniSat.add(f1);
         final BigInteger modelcount = miniSat.execute(ModelCounterFunction.builder().build());
-        System.out.println(modelcount);
-        System.out.println("**");
         final List<Assignment> assignments = miniSat.execute(ModelEnumerationFunction.builder().build());
-        for (final Assignment assignment : assignments) {
-            System.out.println(assignment);
-        }
-        System.out.println(assignments.size());
+        assertThat(modelcount).isEqualTo(assignments.size());
     }
 
     @Test
@@ -356,16 +380,13 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         final BigInteger modelcount = miniSat.execute(ModelCounterFunction.builder().build());
         System.out.println("new implementation: " + modelcount);
 
-        final BigInteger modelcountOriginal = ModelCounter.count(Collections.singletonList(f1), new TreeSet<>(Collections.singletonList(a)));
-        System.out.println("count original: " + modelcountOriginal);
         System.out.println("**");
         final List<Assignment> assignments = miniSat.execute(ModelEnumerationFunction.builder().build());
         for (final Assignment assignment : assignments) {
             System.out.println(assignment);
         }
-
+        assertThat(modelcount).isEqualTo(assignments.size());
     }
-
 
     // @ParameterizedTest
     // @MethodSource("solvers")
