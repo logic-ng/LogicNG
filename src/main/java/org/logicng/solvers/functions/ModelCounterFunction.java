@@ -94,21 +94,21 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
         if (!continueLoop) {
             return modelCount;
         }
-        while (true) {
-            final long allVarsSize = this.variables == null ? name2idx.keySet().stream().filter(this::isRelevantVariable).count() : relevantAllIndices.size();
-            if (this.variables != null) {
-                final Set<String> irrelevantVars = name2idx.keySet();
-                this.variables.stream().map(Literal::name).collect(Collectors.toList()).forEach(irrelevantVars::remove);
-                for (final String var : irrelevantVars) {
-                    final Variable variable = solver.factory().variable(var);
-                    final Tristate sat = solver.sat(variable);
-                    if (sat == Tristate.TRUE) {
-                        solver.add(variable);
-                    } else {
-                        solver.add(variable.negate());
-                    }
+
+        if (this.variables != null) {
+            final Set<String> irrelevantVars = name2idx.keySet().stream().filter(this::isRelevantVariable).collect(Collectors.toSet());
+            this.variables.stream().map(Literal::name).collect(Collectors.toList()).forEach(irrelevantVars::remove);
+            for (final String var : irrelevantVars) {
+                final Variable variable = solver.factory().variable(var);
+                final Tristate sat = solver.sat(variable);
+                if (sat == Tristate.TRUE) {
+                    solver.add(variable);
+                } else {
+                    solver.add(variable.negate());
                 }
             }
+        }
+        while (true) {
             final LNGIntVector primeImplicant =
                     solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).variables(this.variables).build());
             if (primeImplicant != null) {
@@ -116,7 +116,15 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
                 for (int i = 0; i < primeImplicant.size(); i++) {
                     blockingClause.push(primeImplicant.get(i) ^ 1);
                 }
-                final int dontCareSize = (int) (allVarsSize) - blockingClause.size();
+                final Set<String> allVariables = name2idx.keySet().stream().filter(this::isRelevantVariable).collect(Collectors.toSet());
+                final int allVarsSize;
+                if (this.variables != null) {
+                    // TODO WIP
+                    allVarsSize = relevantAllIndices.size();
+                } else {
+                    allVarsSize = allVariables.size();
+                }
+                final int dontCareSize = allVarsSize - blockingClause.size();
                 modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
                 solver.underlyingSolver().addClause(blockingClause, null);
                 resultSetter.accept(UNDEF);

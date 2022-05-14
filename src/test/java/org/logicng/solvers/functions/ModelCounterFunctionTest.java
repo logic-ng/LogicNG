@@ -50,7 +50,6 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         return Arrays.stream(vars).map(this.f::variable).collect(Collectors.toCollection(TreeSet::new));
     }
 
-
     @Test
     public void testPmcSimple() throws ParserException {
         final MiniSat solver = MiniSat.miniSat(f);
@@ -94,6 +93,40 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         final List<Assignment> modelsMe3 = solver.execute(ModelEnumerationFunction.builder().variables(variablesOverWhichToCount3).build());
         assertThat(countMc3).isEqualTo(modelsMe3.size());
         solver.reset();
+    }
+
+    // TODO
+    @Disabled
+    @Test
+    @RandomTag
+    public void testRandomPmc() {
+        final MiniSat solver = MiniSat.miniSat(f);
+        for (int i = 1; i < 500; i++) {
+            f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
+            final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
+                    .numVars(5)
+                    .weightAmo(5)
+                    .weightExo(5)
+                    .seed(i * 42).build();
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
+            final Formula formula = randomizer.formula(4);
+            System.out.println("formula = " + formula);
+            final SortedSet<Variable> variables = formula.variables();
+            final List<Variable> variableList = new ArrayList<>(variables);
+            final List<Variable> variables1 = variableList.subList(0, variables.size() / 2);
+            System.out.println("pj variables = " + variables1);
+
+            solver.add(formula);
+            final List<Assignment> assignments = solver.execute(ModelEnumerationFunction.builder().variables(variables1).build());
+            solver.reset();
+
+            System.out.println("assignments = " + assignments);
+
+            solver.add(formula);
+            final BigInteger count = solver.execute(ModelCounterFunction.builder().variables(variables1).build());
+            solver.reset();
+            assertThat(count).isEqualTo(assignments.size());
+        }
     }
 
     @Test
