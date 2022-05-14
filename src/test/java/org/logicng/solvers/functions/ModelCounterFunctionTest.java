@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.CType;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -48,6 +49,72 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     private SortedSet<Variable> vars(final String... vars) {
         return Arrays.stream(vars).map(this.f::variable).collect(Collectors.toCollection(TreeSet::new));
     }
+
+
+    @Test
+    public void testPmcSimple() throws ParserException {
+        final MiniSat solver = MiniSat.miniSat(f);
+
+        final Formula formula0 = g.parse("(A | B) & ~C & D");
+        final SortedSet<Variable> variablesOverWhichToCount0 = new TreeSet<>(Arrays.asList(f.variable("A"), f.variable("B")));
+        solver.add(formula0);
+        final BigInteger countMc0 = solver.execute(ModelCounterFunction.builder().variables(variablesOverWhichToCount0).build());
+        solver.reset();
+        solver.add(formula0);
+        final List<Assignment> modelsMe0 = solver.execute(ModelEnumerationFunction.builder().variables(variablesOverWhichToCount0).build());
+        assertThat(countMc0).isEqualTo(modelsMe0.size());
+        solver.reset();
+
+        final Formula formula01 = g.parse("(~v1 => ~v0) | ~v1 | v0");
+        solver.add(formula01);
+        final SortedSet<Variable> variablesOverWhichToCount1 = new TreeSet<>(Arrays.asList(f.variable("v0")));
+        final BigInteger countMc = solver.execute(ModelCounterFunction.builder().variables(variablesOverWhichToCount1).build());
+        solver.reset();
+        solver.add(formula01);
+        final List<Assignment> modelsMe = solver.execute(ModelEnumerationFunction.builder().variables(variablesOverWhichToCount1).build());
+        assertThat(countMc).isEqualTo(modelsMe.size());
+        solver.reset();
+
+        final List<Formula> formulas02 = Arrays.asList(this.f.parse("(a & b) | ~b"), this.f.parse("a"));
+        solver.add(f.and(formulas02));
+        final SortedSet<Variable> variablesOverWhichToCount2 = new TreeSet<>(Arrays.asList(f.variable("a")));
+        final BigInteger countMc2 = solver.execute(ModelCounterFunction.builder().variables(variablesOverWhichToCount2).build());
+        solver.reset();
+        solver.add(formula01);
+        final List<Assignment> modelsMe2 = solver.execute(ModelEnumerationFunction.builder().variables(variablesOverWhichToCount2).build());
+        assertThat(countMc2).isEqualTo(modelsMe2.size());
+        solver.reset();
+
+        final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & b & c"), this.f.parse("c & d"));
+        solver.add(formulas03);
+        final SortedSet<Variable> variablesOverWhichToCount3 = new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("c")));
+        final BigInteger countMc3 = solver.execute(ModelCounterFunction.builder().variables(variablesOverWhichToCount3).build());
+        solver.reset();
+        solver.add(formula01);
+        final List<Assignment> modelsMe3 = solver.execute(ModelEnumerationFunction.builder().variables(variablesOverWhichToCount3).build());
+        assertThat(countMc3).isEqualTo(modelsMe3.size());
+        solver.reset();
+    }
+
+    @Test
+    public void testPmc() {
+        final SATSolver s = MiniSat.miniSat(f);
+        final SortedSet<Variable> lits = new TreeSet<>();
+        final SortedSet<Variable> firstFive = new TreeSet<>();
+        for (int j = 0; j < 20; j++) {
+            final Variable lit = this.f.variable("x" + j);
+            lits.add(lit);
+            if (j < 5) {
+                firstFive.add(lit);
+            }
+        }
+        final Formula formula = this.f.cc(CType.GE, 1, lits);
+        System.out.println(formula);
+        s.add(formula);
+        final BigInteger count = s.execute(ModelCounterFunction.builder().variables(firstFive).build());
+        assertThat(count).isEqualTo(32);
+    }
+
 
     @Disabled
     @Test
@@ -115,8 +182,7 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         solver.loadState(initialState);
 
         final List<Formula> formulas02 = Arrays.asList(this.f.parse("(a & b) | ~b"), this.f.parse("a"));
-        final Formula fAnd = f.and(formulas02);
-        solver.add(fAnd);
+        solver.add(f.and(formulas02));
         assertThat(solver.execute(ModelCounterFunction.builder().build())).isEqualTo(BigInteger.valueOf(2));
         solver.loadState(initialState);
 
@@ -223,12 +289,9 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
                     .seed(i * 42).build();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, config);
             final Formula formula = randomizer.formula(4);
-            System.out.println("\nformula = " + formula);
             final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
-            System.out.println("expCount = " + expCount);
             solver.add(formula);
             final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
-            System.out.println("count = " + count);
             solver.reset();
             assertThat(count).isEqualTo(expCount);
         }

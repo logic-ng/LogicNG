@@ -7,6 +7,7 @@ import static org.logicng.handlers.Handler.start;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
@@ -17,9 +18,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ModelCounterFunction implements SolverFunction<BigInteger> {
     private final SATHandler handler;
@@ -92,19 +95,48 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
             return modelCount;
         }
         while (true) {
-            final LNGIntVector primeImplicant = solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).build());
-            if (primeImplicant != null) {
-                final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
-                for (int i = 0; i < primeImplicant.size(); i++) {
-                    blockingClause.push(primeImplicant.get(i) ^ 1);
+            if (this.variables == null) {
+                final LNGIntVector primeImplicant = solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).build());
+                if (primeImplicant != null) {
+                    final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
+                    for (int i = 0; i < primeImplicant.size(); i++) {
+                        blockingClause.push(primeImplicant.get(i) ^ 1);
+                    }
+                    final long numberOfVarsWithoutAuxiliary = name2idx.keySet().stream().filter(this::isRelevantVariable).count();
+                    final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary) - blockingClause.size();
+                    modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
+                    solver.underlyingSolver().addClause(blockingClause, null);
+                    resultSetter.accept(UNDEF);
+                } else {
+                    break;
                 }
-                final long numberOfVarsWithoutAuxiliary = name2idx.keySet().stream().filter(this::isRelevantVariable).count();
-                final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary) - blockingClause.size();
-                modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
-                solver.underlyingSolver().addClause(blockingClause, null);
-                resultSetter.accept(UNDEF);
             } else {
-                break;
+                final Set<String> irrelevantVars = name2idx.keySet();
+                this.variables.stream().map(Literal::name).collect(Collectors.toList()).forEach(irrelevantVars::remove);
+                for (final String var : irrelevantVars) {
+                    final Variable variable = solver.factory().variable(var);
+                    final Tristate sat = solver.sat(variable);
+                    if (sat == Tristate.TRUE) {
+                        solver.add(variable);
+                    } else {
+                        solver.add(variable.negate());
+                    }
+                }
+                final LNGIntVector primeImplicant =
+                        solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).variables(this.variables).build());
+                if (primeImplicant != null) {
+                    final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
+                    for (int i = 0; i < primeImplicant.size(); i++) {
+                        blockingClause.push(primeImplicant.get(i) ^ 1);
+                    }
+                    final long numberOfVarsWithoutAuxiliary = relevantAllIndices.size();
+                    final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary) - blockingClause.size();
+                    modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
+                    solver.underlyingSolver().addClause(blockingClause, null);
+                    resultSetter.accept(UNDEF);
+                } else {
+                    break;
+                }
             }
         }
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {

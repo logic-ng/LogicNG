@@ -6,10 +6,13 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
@@ -17,10 +20,12 @@ import java.util.function.Consumer;
 public class PrimeImplicantFunction implements SolverFunction<LNGIntVector> {
     final SATHandler handler;
     final boolean isMinimal;
+    final Collection<Variable> variables;
 
-    private PrimeImplicantFunction(final SATHandler handler, final boolean isMinimal) {
+    private PrimeImplicantFunction(final SATHandler handler, final boolean isMinimal, final Collection<Variable> variables) {
         this.handler = handler;
         this.isMinimal = isMinimal;
+        this.variables = variables;
     }
 
     /**
@@ -42,7 +47,8 @@ public class PrimeImplicantFunction implements SolverFunction<LNGIntVector> {
         final SortedSet<Integer> primeImplicant = new TreeSet<>();
         for (int i = 0; i < model.size(); i++) {
             final String name = solver.underlyingSolver().nameForIdx(i);
-            if (isRelevantVariable(name)) {
+            final boolean variablesContainName = this.variables == null || this.variables.stream().anyMatch(x -> x.name().equals(name));
+            if (isRelevantVariable(name) && variablesContainName) {
                 primeImplicant.add(MiniSatStyleSolver.mkLit(i, !model.get(i)));
             }
         }
@@ -66,7 +72,6 @@ public class PrimeImplicantFunction implements SolverFunction<LNGIntVector> {
             // TODO gebe minimales Modell aus
             // final Assignment minimumModel = solver.execute(OptimizationFunction.minimize(primeImplicant));
         }
-
         return getLngIntVector(primeImplicant);
     }
 
@@ -88,6 +93,7 @@ public class PrimeImplicantFunction implements SolverFunction<LNGIntVector> {
     public static class Builder {
         private SATHandler handler;
         private boolean isMinimal;
+        private Collection<Variable> variables;
 
         private Builder() {
             // Initialize only via factory
@@ -114,11 +120,31 @@ public class PrimeImplicantFunction implements SolverFunction<LNGIntVector> {
         }
 
         /**
+         * Sets the set of variables over which the prime implicants should iterate.
+         * @param variables the set of variables
+         * @return the current builder
+         */
+        public Builder variables(final Collection<Variable> variables) {
+            this.variables = variables;
+            return this;
+        }
+
+        /**
+         * Sets the set of variables over which the prime implicants should iterate.
+         * @param variables the set of variables
+         * @return the current builder
+         */
+        public Builder variables(final Variable... variables) {
+            this.variables = Arrays.asList(variables);
+            return this;
+        }
+
+        /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public PrimeImplicantFunction build() {
-            return new PrimeImplicantFunction(this.handler, this.isMinimal);
+            return new PrimeImplicantFunction(this.handler, this.isMinimal, variables);
         }
     }
 
