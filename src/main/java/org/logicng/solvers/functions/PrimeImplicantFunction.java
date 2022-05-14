@@ -144,7 +144,7 @@ public class PrimeImplicantFunction implements SolverFunction<LNGIntVector> {
          * @return the model enumeration function
          */
         public PrimeImplicantFunction build() {
-            return new PrimeImplicantFunction(this.handler, this.isMinimal, variables);
+            return new PrimeImplicantFunction(this.handler, this.isMinimal, this.variables);
         }
     }
 

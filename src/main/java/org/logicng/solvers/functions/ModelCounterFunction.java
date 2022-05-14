@@ -95,22 +95,8 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
             return modelCount;
         }
         while (true) {
-            if (this.variables == null) {
-                final LNGIntVector primeImplicant = solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).build());
-                if (primeImplicant != null) {
-                    final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
-                    for (int i = 0; i < primeImplicant.size(); i++) {
-                        blockingClause.push(primeImplicant.get(i) ^ 1);
-                    }
-                    final long numberOfVarsWithoutAuxiliary = name2idx.keySet().stream().filter(this::isRelevantVariable).count();
-                    final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary) - blockingClause.size();
-                    modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
-                    solver.underlyingSolver().addClause(blockingClause, null);
-                    resultSetter.accept(UNDEF);
-                } else {
-                    break;
-                }
-            } else {
+            final long allVarsSize = this.variables == null ? name2idx.keySet().stream().filter(this::isRelevantVariable).count() : relevantAllIndices.size();
+            if (this.variables != null) {
                 final Set<String> irrelevantVars = name2idx.keySet();
                 this.variables.stream().map(Literal::name).collect(Collectors.toList()).forEach(irrelevantVars::remove);
                 for (final String var : irrelevantVars) {
@@ -122,21 +108,20 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
                         solver.add(variable.negate());
                     }
                 }
-                final LNGIntVector primeImplicant =
-                        solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).variables(this.variables).build());
-                if (primeImplicant != null) {
-                    final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
-                    for (int i = 0; i < primeImplicant.size(); i++) {
-                        blockingClause.push(primeImplicant.get(i) ^ 1);
-                    }
-                    final long numberOfVarsWithoutAuxiliary = relevantAllIndices.size();
-                    final int dontCareSize = (int) (numberOfVarsWithoutAuxiliary) - blockingClause.size();
-                    modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
-                    solver.underlyingSolver().addClause(blockingClause, null);
-                    resultSetter.accept(UNDEF);
-                } else {
-                    break;
+            }
+            final LNGIntVector primeImplicant =
+                    solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).variables(this.variables).build());
+            if (primeImplicant != null) {
+                final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
+                for (int i = 0; i < primeImplicant.size(); i++) {
+                    blockingClause.push(primeImplicant.get(i) ^ 1);
                 }
+                final int dontCareSize = (int) (allVarsSize) - blockingClause.size();
+                modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
+                solver.underlyingSolver().addClause(blockingClause, null);
+                resultSetter.accept(UNDEF);
+            } else {
+                break;
             }
         }
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
@@ -174,7 +159,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          * @param handler the handler
          * @return the current builder
          */
-        public ModelCounterFunction.Builder handler(final SATHandler handler) {
+        public Builder handler(final SATHandler handler) {
             this.handler = handler;
             return this;
         }
@@ -184,7 +169,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          * @param variables the set of variables
          * @return the current builder
          */
-        public ModelCounterFunction.Builder variables(final Collection<Variable> variables) {
+        public Builder variables(final Collection<Variable> variables) {
             this.variables = variables;
             return this;
         }
@@ -194,7 +179,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          * @param variables the set of variables
          * @return the current builder
          */
-        public ModelCounterFunction.Builder variables(final Variable... variables) {
+        public Builder variables(final Variable... variables) {
             this.variables = Arrays.asList(variables);
             return this;
         }
@@ -204,7 +189,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          * @param variables the additional variables for each model
          * @return the current builder
          */
-        public ModelCounterFunction.Builder additionalVariables(final Collection<Variable> variables) {
+        public Builder additionalVariables(final Collection<Variable> variables) {
             this.additionalVariables = variables;
             return this;
         }
@@ -214,7 +199,7 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
          * @param variables the additional variables for each model
          * @return the current builder
          */
-        public ModelCounterFunction.Builder additionalVariables(final Variable... variables) {
+        public Builder additionalVariables(final Variable... variables) {
             this.additionalVariables = Arrays.asList(variables);
             return this;
         }

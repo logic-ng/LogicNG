@@ -109,7 +109,6 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
             }
         }
         final Formula formula = this.f.cc(CType.GE, 1, lits);
-        System.out.println(formula);
         s.add(formula);
         final BigInteger count = s.execute(ModelCounterFunction.builder().variables(firstFive).build());
         assertThat(count).isEqualTo(32);
@@ -280,7 +279,6 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
     public void testRandom() {
         final MiniSat solver = MiniSat.miniSat(f);
         for (int i = 0; i < 500; i++) {
-            System.out.println("int: " + i);
             f.putConfiguration(CNFConfig.builder().algorithm(CNFConfig.Algorithm.PLAISTED_GREENBAUM).build());
             final FormulaRandomizerConfig config = FormulaRandomizerConfig.builder()
                     .numVars(5)
@@ -314,19 +312,11 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
                 "(v0 + v1 = 1))");
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
-        System.out.println(formula);
         final BigInteger expCount = enumerationBasedModelCount(Collections.singletonList(formula), f);
-        System.out.println("expCount = " + expCount);
-        //
-        // final List<Assignment> assignments = solver.enumerateAllModels();
-        // System.out.println("assignments: " + assignments.size());
-
         final SolverState initialState = solver.saveState();
         final BigInteger count = solver.execute(ModelCounterFunction.builder().build());
-        System.out.println("count: " + count);
         solver.loadState(initialState);
-
-
+        assertThat(expCount).isEqualTo(count);
     }
 
     // Sieht gut aus, habe irgendwann abgebrochen.
@@ -427,27 +417,16 @@ public class ModelCounterFunctionTest extends TestWithExampleFormulas {
         final Formula noAuxiliaryVars = f1.transform(new CNFFactorization());
         miniSat.add(noAuxiliaryVars);
         final List<Assignment> assignments = miniSat.execute(ModelEnumerationFunction.builder().build());
-        for (final Assignment assignment : assignments) {
-            System.out.println(assignment);
-        }
-        System.out.println(assignments.size());
     }
 
     @Test
     public void simpleTestTautology() {
         final Variable a = f.variable("A");
         final Formula f1 = f.or(a, a.negate());
-        System.out.println(f1);
         final MiniSat miniSat = MiniSat.miniSat(f);
         miniSat.add(f1);
         final BigInteger modelcount = miniSat.execute(ModelCounterFunction.builder().build());
-        System.out.println("new implementation: " + modelcount);
-
-        System.out.println("**");
         final List<Assignment> assignments = miniSat.execute(ModelEnumerationFunction.builder().build());
-        for (final Assignment assignment : assignments) {
-            System.out.println(assignment);
-        }
         assertThat(modelcount).isEqualTo(assignments.size());
     }
 
