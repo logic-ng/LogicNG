@@ -7,7 +7,6 @@ import static org.logicng.handlers.Handler.start;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
@@ -95,35 +94,33 @@ public class ModelCounterFunction implements SolverFunction<BigInteger> {
             return modelCount;
         }
 
-        if (this.variables != null) {
-            final Set<String> irrelevantVars = name2idx.keySet().stream().filter(this::isRelevantVariable).collect(Collectors.toSet());
-            this.variables.stream().map(Literal::name).collect(Collectors.toList()).forEach(irrelevantVars::remove);
-            for (final String var : irrelevantVars) {
-                final Variable variable = solver.factory().variable(var);
-                final Tristate sat = solver.sat(variable);
-                if (sat == Tristate.TRUE) {
-                    solver.add(variable);
-                } else {
-                    solver.add(variable.negate());
-                }
-            }
-        }
+        // if (this.variables != null) {
+        //     final Set<String> irrelevantVars = name2idx.keySet().stream().filter(this::isRelevantVariable).collect(Collectors.toSet());
+        //     this.variables.stream().map(Literal::name).collect(Collectors.toList()).forEach(irrelevantVars::remove);
+        //     for (final String var : irrelevantVars) {
+        //         final Variable variable = solver.factory().variable(var);
+        //         final Tristate sat = solver.sat(variable);
+        //         if (sat == Tristate.TRUE) {
+        //             solver.add(variable);
+        //         } else {
+        //             solver.add(variable.negate());
+        //         }
+        //     }
+        // }
         while (true) {
-            final LNGIntVector primeImplicant =
-                    solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).variables(this.variables).build());
+            final LNGIntVector primeImplicant = solver.execute(PrimeImplicantFunction.builder().handler(handler).isMinimal(true).build());
             if (primeImplicant != null) {
                 final LNGIntVector blockingClause = new LNGIntVector(primeImplicant.size());
                 for (int i = 0; i < primeImplicant.size(); i++) {
                     blockingClause.push(primeImplicant.get(i) ^ 1);
                 }
                 final Set<String> allVariables = name2idx.keySet().stream().filter(this::isRelevantVariable).collect(Collectors.toSet());
-                final int allVarsSize;
-                if (this.variables != null) {
-                    // TODO WIP
-                    allVarsSize = relevantAllIndices.size();
-                } else {
-                    allVarsSize = allVariables.size();
-                }
+                final int allVarsSize = allVariables.size();
+                // if (this.variables != null) {
+                //     allVarsSize = relevantAllIndices.size();
+                // } else {
+                //     allVarsSize = allVariables.size();
+                // }
                 final int dontCareSize = allVarsSize - blockingClause.size();
                 modelCount = modelCount.add(BigInteger.valueOf(2).pow(dontCareSize));
                 solver.underlyingSolver().addClause(blockingClause, null);
