@@ -278,9 +278,80 @@ public class ModelEnumerationFunctionTest {
         return updatedModels;
     }
 
+    @Test
+    public void testOneSplitProvider() {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        for (int i = 1; i <= 40; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+            final Formula formula = randomizer.formula(3);
+            final int numberOfVars = formula.variables().size();
+            if (numberOfVars < 10) {
+                continue;
+            }
+            solver.add(formula);
+            System.out.println("\nSeed: " + i);
+
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+            System.out.println("Models: " + models1.size());
+            solver.reset();
+        }
+    }
 
     @Test
-    public void testOneSplitProvider() throws IOException {
+    public void performanceTestMultipleSplits() throws IOException {
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("PerformanceDoubleSplit.csv"));
+        fw.write("seed;depth;#vars;#combinations;time no double split (ms);aborted?;time double split (ms);aborted?;formula");
+        fw.newLine();
+        for (int i = 1; i <= 100; i++) {
+
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+            final Formula formula = randomizer.formula(3);
+            final int numberOfVars = formula.variables().size();
+            if (numberOfVars < 10) {
+                continue;
+            }
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(formula);
+            System.out.println("\nSeed: " + i);
+
+            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
+            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
+
+            final long t1 = System.currentTimeMillis();
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().handler(handler1).splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+            if (models1.size() > 500000) {
+                continue;
+            }
+
+            final long t2 = System.currentTimeMillis();
+            final long timeSplit = t2 - t1;
+            System.out.println(models1.size());
+            System.out.println("Time normal split: " + timeSplit);
+            final List<Assignment> models2 = solver.execute(
+                    ModelEnumerationFunction.builder().handler(handler2).splitVariableProvider(new LeastCommonVariableProvider(this.f)).multipleSplits(true)
+                            .build());
+            final long t3 = System.currentTimeMillis();
+            final long timeNoSplit = t3 - t2;
+
+            System.out.println("Time multiple splits: " + timeNoSplit);
+            assertThat(models1.size()).isEqualTo(models2.size());
+            assertThat(models1).containsExactlyInAnyOrderElementsOf(models2);
+
+            final int depth = formula.apply(new FormulaDepthFunction());
+            final String resultString =
+                    String.format("%d;%d;%d;%d;%d;%b;%d;%b;%s", i, depth, numberOfVars, models1.size(), timeNoSplit, handler1.aborted(), timeSplit,
+                            handler2.aborted(), formula);
+            fw.write(resultString);
+            fw.newLine();
+            fw.flush();
+        }
+    }
+
+
+    @Test
+    public void performanceTestOneSplitProvider() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("MePerformance.csv"));
         fw.write("seed;depth;#vars;#combinations;time no split (ms);aborted?;time split (ms);aborted?;formula");
         fw.newLine();

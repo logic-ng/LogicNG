@@ -45,6 +45,7 @@ import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
+import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariableProvider;
 import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 
 import java.util.ArrayList;
@@ -73,14 +74,16 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
     protected final Collection<Variable> additionalVariables;
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
+    protected final boolean doubleSplit;
 
     ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
-                             final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider) {
+                             final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final boolean doubleSplit) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
         this.splitVariableProvider = splitVariableProvider;
+        this.doubleSplit = doubleSplit;
     }
 
     /**
@@ -112,8 +115,29 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
         final List<Assignment> models = new ArrayList<>();
         for (final Assignment splitAssignment : splitAssignments) {
-            solver.add(splitAssignment.formula(solver.factory()));
-            models.addAll(enumerate(solver, resultSetter, relevantVars, additionalVariables));
+            final Formula splitAssignmentFormula = splitAssignment.formula(solver.factory());
+            solver.add(splitAssignmentFormula);
+            final SolverState thisInitialState = solver.saveState();
+            if (splitAssignment.size() >= 10) {
+                // split again
+                final SortedSet<Variable> leftOverRelevant = new TreeSet<>(relevantVars);
+                leftOverRelevant.removeAll(splitVars);
+                final SortedSet<Variable> thisSplitVars = new RandomSplitVariableProvider(solver.factory(), 5, 50, 1).getSplitVars(null, leftOverRelevant);
+                final List<Assignment> thisSplitAssignments = enumerate(solver, resultSetter, thisSplitVars, Collections.emptyList());
+                final List<Assignment> thisModels = new ArrayList<>();
+                for (final Assignment splitAssignment1 : thisSplitAssignments) {
+                    final Formula thisFormula = splitAssignment1.formula(solver.factory());
+                    solver.add(thisFormula);
+                    final List<Assignment> thisAssignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
+                    thisModels.addAll(thisAssignments);
+                    solver.loadState(thisInitialState);
+                }
+                models.addAll(thisModels);
+            } else {
+                final List<Assignment> assignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
+                models.addAll(assignments);
+                solver.loadState(initialState);
+            }
             solver.loadState(initialState);
         }
         return models;
@@ -236,6 +260,7 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         protected Collection<Variable> additionalVariables;
         protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
+        protected boolean multipleSplits = false;
 
         Builder() {
             // Initialize only via factory
@@ -312,12 +337,18 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
             return this;
         }
 
+        public Builder multipleSplits(final boolean multipleSplits) {
+            this.multipleSplits = multipleSplits;
+            return this;
+        }
+
         /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunction build() {
-            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.splitVariableProvider);
+            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.splitVariableProvider,
+                    multipleSplits);
         }
     }
 }

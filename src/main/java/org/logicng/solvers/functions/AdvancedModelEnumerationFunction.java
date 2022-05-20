@@ -70,8 +70,8 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
 
     public AdvancedModelEnumerationFunction(final boolean computeWithComponents, final SplitVariableProvider splitVariableProvider,
                                             final ModelEnumerationHandler handler, final Collection<Variable> variables,
-                                            final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
-        super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider);
+                                            final Collection<Variable> additionalVariables, final boolean fastEvaluable, final boolean doubleSplit) {
+        super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider, doubleSplit);
         this.computeWithComponents = computeWithComponents;
     }
 
@@ -243,6 +243,12 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
             return this;
         }
 
+        @Override
+        public Builder multipleSplits(final boolean multipleSplits) {
+            this.multipleSplits = multipleSplits;
+            return this;
+        }
+
 
         /**
          * Builds the advanced model enumeration function with the current builder's configuration.
@@ -251,7 +257,7 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         @Override
         public AdvancedModelEnumerationFunction build() {
             return new AdvancedModelEnumerationFunction(this.computeWithComponents, this.splitVariableProvider, this.handler, this.variables,
-                    this.additionalVariables, this.fastEvaluable);
+                    this.additionalVariables, this.fastEvaluable, this.multipleSplits);
         }
     }
 }
