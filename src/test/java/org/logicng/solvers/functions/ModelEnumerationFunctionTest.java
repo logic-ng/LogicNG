@@ -281,7 +281,7 @@ public class ModelEnumerationFunctionTest {
     @Test
     public void testOneSplitProvider() {
         final SATSolver solver = MiniSat.miniSat(this.f);
-        for (int i = 1; i <= 40; i++) {
+        for (int i = 58; i <= 58; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();

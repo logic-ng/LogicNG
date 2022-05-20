@@ -115,31 +115,46 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
         final List<Assignment> models = new ArrayList<>();
         for (final Assignment splitAssignment : splitAssignments) {
-            final Formula splitAssignmentFormula = splitAssignment.formula(solver.factory());
-            solver.add(splitAssignmentFormula);
-            final SolverState thisInitialState = solver.saveState();
             if (splitAssignment.size() >= 10) {
                 // split again
                 final SortedSet<Variable> leftOverRelevant = new TreeSet<>(relevantVars);
                 leftOverRelevant.removeAll(splitVars);
-                final SortedSet<Variable> thisSplitVars = new RandomSplitVariableProvider(solver.factory(), 5, 50, 1).getSplitVars(null, leftOverRelevant);
-                final List<Assignment> thisSplitAssignments = enumerate(solver, resultSetter, thisSplitVars, Collections.emptyList());
-                final List<Assignment> thisModels = new ArrayList<>();
-                for (final Assignment splitAssignment1 : thisSplitAssignments) {
-                    final Formula thisFormula = splitAssignment1.formula(solver.factory());
-                    solver.add(thisFormula);
-                    final List<Assignment> thisAssignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
-                    thisModels.addAll(thisAssignments);
-                    solver.loadState(thisInitialState);
-                }
-                models.addAll(thisModels);
+                models.addAll(splitAgain(solver, resultSetter, relevantVars, additionalVariables, leftOverRelevant, splitAssignment, 0));
             } else {
+                solver.add(splitAssignment.formula(solver.factory()));
                 final List<Assignment> assignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
                 models.addAll(assignments);
                 solver.loadState(initialState);
             }
             solver.loadState(initialState);
         }
+        return models;
+    }
+
+    private List<Assignment> splitAgain(final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> relevantVars,
+                                        final Collection<Variable> additionalVariables, final SortedSet<Variable> leftOverRelevant,
+                                        final Assignment splitAssignment, final int depth) {
+        final List<Assignment> models = new ArrayList<>();
+        solver.add(splitAssignment.formula(solver.factory()));
+        final SolverState initialState = solver.saveState();
+        final SortedSet<Variable> thisSplitVars = new RandomSplitVariableProvider(solver.factory(), 5, 50, 1).getSplitVars(null, leftOverRelevant);
+        final List<Assignment> thisSplitAssignments = enumerate(solver, resultSetter, thisSplitVars, Collections.emptyList());
+        final List<Assignment> thisModels = new ArrayList<>();
+        for (final Assignment splitAssignment1 : thisSplitAssignments) {
+            if (splitAssignment1.size() > 4) {
+                System.out.println("big " + splitAssignment1.size());
+                final SortedSet<Variable> newLeftOverRelevant = new TreeSet<>(leftOverRelevant);
+                newLeftOverRelevant.removeAll(thisSplitVars);
+                models.addAll(splitAgain(solver, resultSetter, relevantVars, additionalVariables, newLeftOverRelevant, splitAssignment1, depth + 1));
+            } else {
+                final Formula thisFormula = splitAssignment1.formula(solver.factory());
+                solver.add(thisFormula);
+                final List<Assignment> thisAssignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
+                thisModels.addAll(thisAssignments);
+                solver.loadState(initialState);
+            }
+        }
+        models.addAll(thisModels);
         return models;
     }
 
