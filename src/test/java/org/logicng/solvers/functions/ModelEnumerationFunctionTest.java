@@ -302,6 +302,7 @@ public class ModelEnumerationFunctionTest {
 
             System.out.println("Time standard: " + (time1 - time0));
             System.out.println("Time recursive: " + (time2 - time1));
+            System.out.println("models: " + models2.size());
             assertThat(models1.size()).isEqualTo(models2.size());
             // assertThat(models1).containsExactlyInAnyOrderElementsOf(models2);
             solver.reset();
