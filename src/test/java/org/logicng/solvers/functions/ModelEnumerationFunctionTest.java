@@ -281,7 +281,7 @@ public class ModelEnumerationFunctionTest {
     @Test
     public void testOneSplitProvider() {
         final SATSolver solver = MiniSat.miniSat(this.f);
-        for (int i = 1; i <= 40; i++) {
+        for (int i = 58; i <= 58; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
@@ -291,9 +291,13 @@ public class ModelEnumerationFunctionTest {
             solver.add(formula);
             System.out.println("\nSeed: " + i);
 
-            final List<Assignment> models1 =
-                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
-            System.out.println("Models: " + models1.size());
+            // final List<Assignment> models1 =
+            //         solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+
+            final List<Assignment> models2 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+            // System.out.println("Models: " + models1.size());
+            System.out.println("Models new algorithm: " + models2.size());
             solver.reset();
         }
     }

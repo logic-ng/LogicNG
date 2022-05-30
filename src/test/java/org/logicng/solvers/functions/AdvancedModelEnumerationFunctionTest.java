@@ -43,11 +43,11 @@ public class AdvancedModelEnumerationFunctionTest {
 
     @Test
     public void computeWithComponentsWithSplit() {
-        for (int i = 13; i <= 13; i++) {
+        for (int i = 18; i <= 18; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(5);
+            final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
-            if (numberOfVars < 20) {
+            if (numberOfVars < 10) {
                 continue;
             }
             final SATSolver solver = MiniSat.miniSat(this.f);
@@ -55,7 +55,6 @@ public class AdvancedModelEnumerationFunctionTest {
 
             final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
             System.out.println("Seed: " + i + ", models: " + models.size() + "\n");
-
         }
     }
 
