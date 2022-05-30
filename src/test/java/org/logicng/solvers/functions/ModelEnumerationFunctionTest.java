@@ -291,13 +291,19 @@ public class ModelEnumerationFunctionTest {
             solver.add(formula);
             System.out.println("\nSeed: " + i);
 
-            // final List<Assignment> models1 =
-            //         solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+            final long time0 = System.currentTimeMillis();
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+            final long time1 = System.currentTimeMillis();
 
             final List<Assignment> models2 =
                     solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
-            // System.out.println("Models: " + models1.size());
-            System.out.println("Models new algorithm: " + models2.size());
+            final long time2 = System.currentTimeMillis();
+
+            System.out.println("Time standard: " + (time1 - time0));
+            System.out.println("Time recursive: " + (time2 - time1));
+            assertThat(models1.size()).isEqualTo(models2.size());
+            // assertThat(models1).containsExactlyInAnyOrderElementsOf(models2);
             solver.reset();
         }
     }
