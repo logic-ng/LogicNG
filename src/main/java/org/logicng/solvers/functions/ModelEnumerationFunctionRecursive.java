@@ -75,17 +75,20 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
     protected final int maxNumberOfVarsForSplit;
+    protected boolean isRecursive;
     private static final int TWO = 2;
 
     ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables,
                                       final Collection<Variable> additionalVariables,
-                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfVarsForSplit) {
+                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfVarsForSplit,
+                                      final boolean isRecursive) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
         this.splitVariableProvider = splitVariableProvider;
         this.maxNumberOfVarsForSplit = maxNumberOfVarsForSplit;
+        this.isRecursive = isRecursive;
     }
 
     /**
@@ -171,7 +174,8 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
 
             final SolverState state1 = solver.saveState();
             for (final Assignment assignment : splitAssignments) {
-                System.out.println("Recursive");
+                this.isRecursive = true;
+                System.out.println("recursive");
                 final List<Assignment> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, state1);
                 models.addAll(assignmentsNew);
             }
@@ -318,6 +322,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
         protected int maxNumberOfVarsForSplit = 1000;
+        protected boolean isRecursive = false;
 
         Builder() {
             // Initialize only via factory
@@ -399,13 +404,18 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
             return this;
         }
 
+        public Builder isRecursive(final boolean isRecursive) {
+            this.isRecursive = isRecursive;
+            return this;
+        }
+
         /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunctionRecursive build() {
             return new ModelEnumerationFunctionRecursive(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
-                    this.splitVariableProvider, this.maxNumberOfVarsForSplit);
+                    this.splitVariableProvider, this.maxNumberOfVarsForSplit, this.isRecursive);
         }
     }
 }

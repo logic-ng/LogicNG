@@ -338,11 +338,11 @@ public class ModelEnumerationFunctionTest {
     public void testRecursives() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("Recursives.csv"));
         fw.write(
-                "seed;depth;#vars;#combinations;time original (ms);aborted?;time recursive 500 (ms);aborted?;time recursive 1000 (ms);aborted?;time recursive" +
-                        " 1500 (ms);aborted?");
+                "seed;depth;#vars;#combinations;time original (ms);aborted?;time recursive 500 (ms);aborted?;recursive?;time recursive 1000 (ms);aborted?;" +
+                        "recursive?;time recursive 1500 (ms);aborted?;recursive?");
         fw.newLine();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        for (int i = 1; i <= 10000; i++) {
+        for (int i = 1; i <= 100; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
@@ -369,32 +369,36 @@ public class ModelEnumerationFunctionTest {
             System.out.println("\nSeed: " + i);
 
             // recursive 500
+            final ModelEnumerationFunctionRecursive recursive500 =
+                    ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
+                            .maxNumberOfVarsForSplit(500).build();
             final long time20 = System.currentTimeMillis();
-            final List<Assignment> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
-                            .maxNumberOfVarsForSplit(500).build());
+            final List<Assignment> models2 = solver.execute(recursive500);
             final long time2 = System.currentTimeMillis();
 
             // recursive 1000
-            final List<Assignment> models3 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
-                            .maxNumberOfVarsForSplit(1000).build());
+            final ModelEnumerationFunctionRecursive recursive1000 =
+                    ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler3)
+                            .maxNumberOfVarsForSplit(1000).build();
+            final long time30 = System.currentTimeMillis();
+            final List<Assignment> models3 = solver.execute(recursive1000);
             final long time3 = System.currentTimeMillis();
 
             // recursive 1500
-            final List<Assignment> models4 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
-                            .maxNumberOfVarsForSplit(1500).build());
+            final ModelEnumerationFunctionRecursive recursive1500 =
+                    ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler4)
+                            .maxNumberOfVarsForSplit(1500).build();
+            final long time40 = System.currentTimeMillis();
+            final List<Assignment> models4 = solver.execute(recursive1500);
             final long time4 = System.currentTimeMillis();
-
 
             if (!handler1.aborted() && !handler2.aborted()) {
                 assertThat(models1.size()).isEqualTo(models2.size());
             }
             final long timeStandard = time1 - time0;
             final long timeRecursive500 = time2 - time20;
-            final long timeRecursive1000 = time3 - time2;
-            final long timeRecursive1500 = time4 - time3;
+            final long timeRecursive1000 = time3 - time30;
+            final long timeRecursive1500 = time4 - time40;
 
             System.out.println("Time standard: " + timeStandard);
             System.out.println("Time recursive 500: " + timeRecursive500);
@@ -405,9 +409,11 @@ public class ModelEnumerationFunctionTest {
 
             final int depth = formula.apply(new FormulaDepthFunction());
             final String resultString =
-                    String.format("%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%d;%b", i, depth, numberOfVars, models1.size(), timeStandard, handler1.aborted(),
-                            timeRecursive500,
-                            handler2.aborted(), timeRecursive1000, handler3.aborted(), timeRecursive1500, handler4.aborted());
+                    String.format("%d;%d;%d;%d;%d;%b;%d;%b;%b;%d;%b;%b;%d;%b;%b", i, depth, numberOfVars, models1.size(),
+                            timeStandard, handler1.aborted(),
+                            timeRecursive500, handler2.aborted(), recursive500.isRecursive,
+                            timeRecursive1000, handler3.aborted(), recursive1000.isRecursive,
+                            timeRecursive1500, handler4.aborted(), recursive1500.isRecursive);
             fw.write(resultString);
             fw.newLine();
             fw.flush();
