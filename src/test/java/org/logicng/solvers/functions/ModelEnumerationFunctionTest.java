@@ -280,11 +280,11 @@ public class ModelEnumerationFunctionTest {
 
     @Test
     public void testOneSplitProvider() throws IOException {
-        final BufferedWriter fw = new BufferedWriter(new FileWriter("Recursive2.csv"));
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("Recursive.csv"));
         fw.write("seed;depth;#vars;#combinations;time original (ms);aborted?; time recursive (ms);aborted?;formula");
         fw.newLine();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        for (int i = 576; i <= 10000; i++) {
+        for (int i = 1; i <= 10000; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
@@ -292,10 +292,9 @@ public class ModelEnumerationFunctionTest {
                 continue;
             }
             solver.add(formula);
-            System.out.println("\nSeed: " + i);
 
-            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2000000);
-            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2000000);
+            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
+            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
 
             final long time0 = System.currentTimeMillis();
             final List<Assignment> models1 =
@@ -306,6 +305,7 @@ public class ModelEnumerationFunctionTest {
                 solver.reset();
                 continue;
             }
+            System.out.println("\nSeed: " + i);
 
             final long time20 = System.currentTimeMillis();
             final List<Assignment> models2 =
@@ -333,6 +333,88 @@ public class ModelEnumerationFunctionTest {
             solver.reset();
         }
     }
+
+    @Test
+    public void testRecursives() throws IOException {
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("Recursives.csv"));
+        fw.write(
+                "seed;depth;#vars;#combinations;time original (ms);aborted?;time recursive 500 (ms);aborted?;time recursive 1000 (ms);aborted?;time recursive" +
+                        " 1500 (ms);aborted?");
+        fw.newLine();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        for (int i = 1; i <= 10000; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+            final Formula formula = randomizer.formula(3);
+            final int numberOfVars = formula.variables().size();
+            if (numberOfVars < 10) {
+                continue;
+            }
+            solver.add(formula);
+
+            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
+            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
+            final ModelEnumerationHandler handler3 = new NumberOfModelsHandler(2500000);
+            final ModelEnumerationHandler handler4 = new NumberOfModelsHandler(2500000);
+
+            // original
+            final long time0 = System.currentTimeMillis();
+            final List<Assignment> models1 =
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler1).build());
+            final long time1 = System.currentTimeMillis();
+
+            if (models1.size() < 10000) {
+                solver.reset();
+                continue;
+            }
+            System.out.println("\nSeed: " + i);
+
+            // recursive 500
+            final long time20 = System.currentTimeMillis();
+            final List<Assignment> models2 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
+                            .maxNumberOfVarsForSplit(500).build());
+            final long time2 = System.currentTimeMillis();
+
+            // recursive 1000
+            final List<Assignment> models3 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
+                            .maxNumberOfVarsForSplit(1000).build());
+            final long time3 = System.currentTimeMillis();
+
+            // recursive 1500
+            final List<Assignment> models4 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
+                            .maxNumberOfVarsForSplit(1500).build());
+            final long time4 = System.currentTimeMillis();
+
+
+            if (!handler1.aborted() && !handler2.aborted()) {
+                assertThat(models1.size()).isEqualTo(models2.size());
+            }
+            final long timeStandard = time1 - time0;
+            final long timeRecursive500 = time2 - time20;
+            final long timeRecursive1000 = time3 - time2;
+            final long timeRecursive1500 = time4 - time3;
+
+            System.out.println("Time standard: " + timeStandard);
+            System.out.println("Time recursive 500: " + timeRecursive500);
+            System.out.println("Time recursive 1000: " + timeRecursive1000);
+            System.out.println("Time recursive 1500: " + timeRecursive1500);
+
+            System.out.println("models: " + models1.size());
+
+            final int depth = formula.apply(new FormulaDepthFunction());
+            final String resultString =
+                    String.format("%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%d;%b", i, depth, numberOfVars, models1.size(), timeStandard, handler1.aborted(),
+                            timeRecursive500,
+                            handler2.aborted(), timeRecursive1000, handler3.aborted(), timeRecursive1500, handler4.aborted());
+            fw.write(resultString);
+            fw.newLine();
+            fw.flush();
+            solver.reset();
+        }
+    }
+
 
     @Test
     public void performanceTestMultipleSplits() throws IOException {

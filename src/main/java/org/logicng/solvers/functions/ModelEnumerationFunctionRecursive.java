@@ -74,17 +74,18 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
     protected final Collection<Variable> additionalVariables;
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
-    private static final int MAX_NUMBER_OF_VARS_FOR_SPLIT = 1000;
+    protected final int maxNumberOfVarsForSplit;
     private static final int TWO = 2;
 
     ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables,
                                       final Collection<Variable> additionalVariables,
-                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider) {
+                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfVarsForSplit) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
         this.splitVariableProvider = splitVariableProvider;
+        this.maxNumberOfVarsForSplit = maxNumberOfVarsForSplit;
     }
 
     /**
@@ -112,7 +113,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
     protected List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
                                                      final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
-        final ModelEnumerationHandler handler = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
+        final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
         final List<Assignment> assignments = enumerate(solver, resultSetter, initialSplitVars, Collections.emptyList(), handler);
 
         // get split assignments
@@ -121,7 +122,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         if (handler.aborted()) {
             boolean continueL = true;
             while (continueL) {
-                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
+                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
                 final TreeSet<Variable> updatedSplitVars = updateSplitVars(splitVars);
                 splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, additionalVariables, handler1);
                 continueL = handler1.aborted();
@@ -152,7 +153,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         solver.add(splitAssignment.formula(solver.factory()));
         final SortedSet<Variable> leftOverVars = new TreeSet<>(relevantVars);
         leftOverVars.removeAll(varsInInitialSplitAssignment);
-        final ModelEnumerationHandler handler = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
+        final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
         final List<Assignment> modelsFound = enumerate(solver, resultSetter, leftOverVars, relevantVars, handler);
         if (handler.aborted()) {
 
@@ -161,7 +162,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
             SortedSet<Variable> splitVars = leftOverVars;
             boolean continueL = true;
             while (continueL) {
-                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
+                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
                 final TreeSet<Variable> updatedSplitVars = updateSplitVars(splitVars);
                 splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, Collections.emptyList(), handler1);
                 continueL = handler1.aborted();
@@ -170,6 +171,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
 
             final SolverState state1 = solver.saveState();
             for (final Assignment assignment : splitAssignments) {
+                System.out.println("Recursive");
                 final List<Assignment> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, state1);
                 models.addAll(assignmentsNew);
             }
@@ -315,6 +317,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         protected Collection<Variable> additionalVariables;
         protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
+        protected int maxNumberOfVarsForSplit = 1000;
 
         Builder() {
             // Initialize only via factory
@@ -391,13 +394,18 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
             return this;
         }
 
+        public Builder maxNumberOfVarsForSplit(final int maxNumberOfVarsForSplit) {
+            this.maxNumberOfVarsForSplit = maxNumberOfVarsForSplit;
+            return this;
+        }
+
         /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunctionRecursive build() {
             return new ModelEnumerationFunctionRecursive(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
-                    this.splitVariableProvider);
+                    this.splitVariableProvider, this.maxNumberOfVarsForSplit);
         }
     }
 }
