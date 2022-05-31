@@ -29,6 +29,7 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
 
 /**
  * A model enumeration handler which cancels the computation process after a given timeout.
@@ -93,6 +94,11 @@ public class TimeoutModelEnumerationHandler extends TimeoutHandler implements Mo
 
     @Override
     public boolean foundModel(final Assignment assignment) {
+        return !timeLimitExceeded();
+    }
+
+    @Override
+    public boolean foundModel(final Model model) {
         return !timeLimitExceeded();
     }
 }

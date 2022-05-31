@@ -29,6 +29,7 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
 
 /**
  * Interface for a handler for the enumeration of models.
@@ -54,4 +55,11 @@ public interface ModelEnumerationHandler extends Handler {
      * @return {@code true} if more models should be searched, otherwise {@code false}
      */
     boolean foundModel(Assignment assignment);
+
+    /**
+     * This method is called every time a model is found.
+     * @param model the respective model
+     * @return {@code true} if more models should be searched, otherwise {@code false}
+     */
+    boolean foundModel(Model model);
 }

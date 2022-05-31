@@ -39,6 +39,7 @@ import org.logicng.LogicNGTest;
 import org.logicng.LongRunningTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
@@ -104,8 +105,10 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
         this.solvers[3] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(true).build());
         this.solvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(false).build());
         this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
-        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[6] =
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[7] =
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
 
         this.testStrings = new String[8];
         this.testStrings[0] = "MiniSat2Solver{result=UNDEF, incremental=true}";
@@ -174,7 +177,8 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     @Test
     public void testAnd2() {
         for (final SATSolver s : this.solvers) {
-            final StandardProposition prop = new StandardProposition(this.f.and(this.f.literal("a", true), this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", false)));
+            final StandardProposition prop = new StandardProposition(
+                    this.f.and(this.f.literal("a", true), this.f.literal("b", false), this.f.literal("c", true), this.f.literal("d", false)));
             s.add(prop);
             assertSolverSat(s);
             assertThat(s.model().size()).isEqualTo(4);
@@ -323,6 +327,11 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                     public boolean foundModel(final Assignment assignment) {
                         this.aborted = assignment.negativeLiterals().isEmpty();
                         return !this.aborted;
+                    }
+
+                    @Override
+                    public boolean foundModel(final Model model) {
+                        return false;
                     }
                 };
                 final List<Assignment> models = s.execute(ModelEnumerationFunction.builder().handler(handler).build());
@@ -662,7 +671,8 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
             s.add(this.f.cc(CType.GE, 1, lits));
 
             final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
-            final List<Assignment> modelsWithHandler = s.execute(ModelEnumerationFunction.builder().variables(firstFive).additionalVariables(lits).handler(handler).build());
+            final List<Assignment> modelsWithHandler =
+                    s.execute(ModelEnumerationFunction.builder().variables(firstFive).additionalVariables(lits).handler(handler).build());
             assertThat(handler.aborted()).isTrue();
             assertThat(modelsWithHandler.size()).isEqualTo(29);
             for (final Assignment model : modelsWithHandler) {
@@ -690,7 +700,8 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
             s.add(this.f.cc(CType.GE, 1, lits));
 
             final NumberOfModelsHandler handler = new NumberOfModelsHandler(29);
-            final List<Assignment> modelsWithHandler = s.execute(ModelEnumerationFunction.builder().additionalVariables(Collections.singletonList(firstFive.first())).handler(handler).build());
+            final List<Assignment> modelsWithHandler =
+                    s.execute(ModelEnumerationFunction.builder().additionalVariables(Collections.singletonList(firstFive.first())).handler(handler).build());
             assertThat(handler.aborted()).isTrue();
             assertThat(modelsWithHandler.size()).isEqualTo(29);
             for (final Assignment model : modelsWithHandler) {

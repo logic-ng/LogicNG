@@ -45,8 +45,10 @@ class TimeoutModelEnumerationHandlerTest {
         this.solvers[3] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(true).build());
         this.solvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(false).build());
         this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
-        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[6] =
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[7] =
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
     }
 
     @Test
@@ -85,7 +87,7 @@ class TimeoutModelEnumerationHandlerTest {
                 count.addAndGet(1);
                 return satHandler;
             });
-            when(handler.foundModel(any())).thenReturn(true);
+            when(handler.foundModel((Assignment) any())).thenReturn(true);
             when(handler.aborted()).then(invocationOnMock -> count.get() > 5);
             lenient().when(satHandler.detectedConflict()).thenReturn(true);
             final ModelEnumerationFunction me = ModelEnumerationFunction.builder().handler(handler).variables(formula.variables()).build();
@@ -117,7 +119,8 @@ class TimeoutModelEnumerationHandlerTest {
         final Formula formula = pg.generate(10).negate();
         for (final SATSolver solver : this.solvers) {
             solver.add(formula);
-            final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);
+            final TimeoutModelEnumerationHandler handler =
+                    new TimeoutModelEnumerationHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);
             final ModelEnumerationFunction me = ModelEnumerationFunction.builder().handler(handler).variables(formula.variables()).build();
 
             final List<Assignment> result = solver.execute(me);

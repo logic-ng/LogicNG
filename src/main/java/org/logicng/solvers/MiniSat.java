@@ -37,6 +37,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.EncodingResult;
+import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.CardinalityConstraint;
@@ -57,6 +58,7 @@ import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 import org.logicng.transformations.cnf.PlaistedGreenbaumTransformationSolver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -376,6 +378,10 @@ public class MiniSat extends SATSolver {
     public Assignment createAssignment(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
         return createAssignment(vec, relevantIndices, false);
     }
+    
+    public Model createModel(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
+        return createModel(vec, relevantIndices, false);
+    }
 
     /**
      * Creates an assignment from a Boolean vector of the solver. The flag {@code fastEvaluable} determines if the created
@@ -407,6 +413,29 @@ public class MiniSat extends SATSolver {
             }
         }
         return model;
+    }
+
+    public Model createModel(final LNGBooleanVector vec, final LNGIntVector relevantIndices, final boolean fastEvaluable) {
+        final List<Literal> model = new ArrayList<>(vec.size());
+        if (relevantIndices == null) {
+            for (int i = 0; i < vec.size(); i++) {
+                final String name = this.solver.nameForIdx(i);
+                if (isRelevantVariable(name)) {
+                    model.add(this.f.literal(name, vec.get(i)));
+                }
+            }
+        } else {
+            for (int i = 0; i < relevantIndices.size(); i++) {
+                final int index = relevantIndices.get(i);
+                if (index != -1) {
+                    final String name = this.solver.nameForIdx(index);
+                    if (isRelevantVariable(name)) {
+                        model.add(this.f.literal(name, vec.get(index)));
+                    }
+                }
+            }
+        }
+        return new Model(model);
     }
 
     /**

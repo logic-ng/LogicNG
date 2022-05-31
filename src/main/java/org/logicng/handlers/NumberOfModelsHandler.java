@@ -29,6 +29,7 @@
 package org.logicng.handlers;
 
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
 
 /**
  * A model enumeration handler that terminates the solving process after a given number of models.
@@ -65,6 +66,12 @@ public class NumberOfModelsHandler extends ComputationHandler implements ModelEn
 
     @Override
     public boolean foundModel(final Assignment assignment) {
+        this.aborted = ++this.count >= this.bound;
+        return !this.aborted;
+    }
+
+    @Override
+    public boolean foundModel(final Model model) {
         this.aborted = ++this.count >= this.bound;
         return !this.aborted;
     }

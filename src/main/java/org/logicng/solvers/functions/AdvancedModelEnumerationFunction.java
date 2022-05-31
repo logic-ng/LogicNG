@@ -31,6 +31,7 @@ package org.logicng.solvers.functions;
 import static org.logicng.handlers.Handler.start;
 
 import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -63,7 +64,7 @@ import java.util.stream.Collectors;
  * @version 2.3.0
  * @since 2.3.0
  */
-public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunction {
+public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunctionModel {
 
     private final boolean computeWithComponents;
     private static final int minNumberOfVars = 15;
@@ -84,9 +85,9 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
     }
 
     @Override
-    public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
+    public List<Model> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
-        final ModelEnumerationFunction standardModelEnumeration = ModelEnumerationFunction.builder().handler(this.handler)
+        final ModelEnumerationFunctionModel standardModelEnumeration = ModelEnumerationFunctionModel.builder().handler(this.handler)
                 .splitVariableProvider(this.splitVariableProvider).variables(this.variables).additionalVariables(this.additionalVariables)
                 .fastEvaluable(this.fastEvaluable).build();
         if (!this.computeWithComponents || solver.knownVariables().size() < minNumberOfVars) {
@@ -103,12 +104,12 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
             System.out.println("Only one component");
             return standardModelEnumeration.apply(solver, resultSetter);
         }
-        final List<List<Assignment>> modelsForAllComponents = new ArrayList<>();
+        final List<List<Model>> modelsForAllComponents = new ArrayList<>();
         final SortedSet<Variable> leftOverVars = getVarsForEnumeration(solver.knownVariables());
         for (final List<Formula> component : components) {
             final SortedSet<Variable> varsInThisComponent = getVarsInThisComponent(solver.knownVariables(), component);
             leftOverVars.removeAll(varsInThisComponent);
-            final List<Assignment> models = splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
+            final List<Model> models = splitModelEnumeration(solver, resultSetter, component, varsInThisComponent, this.additionalVariables);
             if (!models.isEmpty()) {
                 modelsForAllComponents.add(models);
             }
@@ -125,15 +126,15 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
         return getVarsForEnumeration(knownVariables).stream().filter(varsComponent::contains).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private List<Assignment> getCartesianProduct(final List<List<Assignment>> allModelsList) {
+    private List<Model> getCartesianProduct(final List<List<Model>> allModelsList) {
         if (allModelsList.size() == 1) {
             return allModelsList.get(0);
         }
         List<List<Literal>> currentResult = Collections.singletonList(Collections.emptyList());
-        for (final List<Assignment> newAssignments : allModelsList) {
+        for (final List<Model> newAssignments : allModelsList) {
             final List<List<Literal>> newResult = new ArrayList<>();
-            for (final Assignment newAssignment : newAssignments) {
-                final SortedSet<Literal> newLiterals = newAssignment.literals();
+            for (final Model newAssignment : newAssignments) {
+                final List<Literal> newLiterals = newAssignment.getLiterals();
                 for (final List<Literal> existingAssignment : currentResult) {
                     final List<Literal> extendedAssignment = new ArrayList<>(existingAssignment);
                     extendedAssignment.addAll(newLiterals);
@@ -142,13 +143,13 @@ public final class AdvancedModelEnumerationFunction extends ModelEnumerationFunc
             }
             currentResult = newResult;
         }
-        return currentResult.stream().map(Assignment::new).collect(Collectors.toList());
+        return currentResult.stream().map(Model::new).collect(Collectors.toList());
     }
 
     /**
      * The builder for an advanced model enumeration function.
      */
-    public static class Builder extends ModelEnumerationFunction.Builder {
+    public static class Builder extends ModelEnumerationFunctionModel.Builder {
         private boolean computeWithComponents = false;
         private SplitVariableProvider splitVariableProvider = new LeastCommonVariableProvider(new FormulaFactory());
 

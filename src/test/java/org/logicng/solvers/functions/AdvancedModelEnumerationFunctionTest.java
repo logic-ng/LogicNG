@@ -3,11 +3,9 @@ package org.logicng.solvers.functions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
-import org.logicng.formulas.Variable;
 import org.logicng.functions.FormulaDepthFunction;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
@@ -23,10 +21,7 @@ import org.logicng.util.FormulaRandomizerConfig;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Units tests for {@link AdvancedModelEnumerationFunction}.
@@ -53,7 +48,7 @@ public class AdvancedModelEnumerationFunctionTest {
             final SATSolver solver = MiniSat.miniSat(this.f);
             solver.add(formula);
 
-            final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
+            final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
             System.out.println("Seed: " + i + ", models: " + models.size() + "\n");
         }
     }
@@ -77,7 +72,7 @@ public class AdvancedModelEnumerationFunctionTest {
             final long t1 = System.currentTimeMillis();
 
             // advanced enumeration, no components
-            final List<Assignment> modelsAdvNoComp = solver.execute(AdvancedModelEnumerationFunction.builder().build());
+            final List<Model> modelsAdvNoComp = solver.execute(AdvancedModelEnumerationFunction.builder().build());
             if (modelsAdvNoComp.size() < 100 || modelsAdvNoComp.size() > 100000) {
                 continue;
             }
@@ -87,14 +82,14 @@ public class AdvancedModelEnumerationFunctionTest {
             System.out.println("Time advanced enumeration no components: " + timeAdvancedNoComponents);
 
             // classic enumeration
-            final List<Assignment> modelsClassic = solver.execute(ModelEnumerationFunction.builder().build());
+            final List<Model> modelsClassic = solver.execute(ModelEnumerationFunctionModel.builder().build());
 
             final long t3 = System.currentTimeMillis();
             final long timeClassic = t3 - t2;
             System.out.println("Time classic enumeration: " + timeClassic);
 
             // advanced enumeration, with components
-            final List<Assignment> modelsAdvWithComp = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
+            final List<Model> modelsAdvWithComp = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
             final long t4 = System.currentTimeMillis();
             final long timeAdvancedWithComponents = t4 - t3;
             System.out.println("Time advanced enumeration with components: " + timeAdvancedWithComponents);
@@ -125,7 +120,7 @@ public class AdvancedModelEnumerationFunctionTest {
             final Formula formula = randomizer.formula(5);
             solver.add(formula);
             final long t1 = System.currentTimeMillis();
-            final List<Assignment> modelsWithComponents = solver.execute(
+            final List<Model> modelsWithComponents = solver.execute(
                     AdvancedModelEnumerationFunction.builder().computeWithComponents(true)
                             .variables(f.variable("v01"), f.variable("v02"), f.variable("v03"), f.variable("v04"), f.variable("v05"), f.variable("v06"),
                                     f.variable("v07"), f.variable("v08"), f.variable("v09"),
@@ -135,7 +130,7 @@ public class AdvancedModelEnumerationFunctionTest {
             }
             System.out.println("\nSeed: " + i + ", number of models: " + modelsWithComponents.size());
             final long t2 = System.currentTimeMillis();
-            final List<Assignment> classicModels = solver.execute(
+            final List<Model> classicModels = solver.execute(
                     AdvancedModelEnumerationFunction.builder()
                             .variables(f.variable("v01"), f.variable("v02"), f.variable("v03"), f.variable("v04"), f.variable("v05"), f.variable("v06"),
                                     f.variable("v07"), f.variable("v08"), f.variable("v09"),
@@ -149,86 +144,86 @@ public class AdvancedModelEnumerationFunctionTest {
         }
     }
 
-
-    @Test
-    public void testAdditionalVariables() throws IOException {
-        final BufferedWriter fw = new BufferedWriter(new FileWriter("AmeAdditionalVars.csv"));
-        fw.write("seed;depth;#vars formula;# vars pme;#combinations;time no components (ms);time with components (ms);formula");
-        fw.newLine();
-        final SATSolver solver = MiniSat.miniSat(this.f);
-        final SolverState initialState = solver.saveState();
-        for (int i = 1; i <= 1000; i++) {
-            solver.loadState(initialState);
-            // given
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-            final Formula formula = randomizer.formula(8);
-            solver.add(formula);
-
-            final List<Variable> varsFormula = new ArrayList<>(formula.variables());
-            final int numberOfVars = formula.variables().size();
-            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 3) + 2;
-            final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
-
-            final int additionalVarsStart = 2 * minNumberOfVars;
-            final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
-
-            // when
-            final long t1 = System.currentTimeMillis();
-            final List<Assignment> models1 = solver.execute(AdvancedModelEnumerationFunction.builder()
-                    .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
-                    .variables(pmeVars)
-                    .additionalVariables(additionalVars).build());
-            final long t1a = System.currentTimeMillis();
-
-            final long timeNoComponents = t1a - t1;
-            if (models1.size() < 10) {
-                continue;
-            }
-            System.out.println("\nSeed: " + i);
-            System.out.println("Number of combinations: " + models1.size());
-            System.out.println("Time no components: " + timeNoComponents);
-
-            final long t2 = System.currentTimeMillis();
-            final List<Assignment> models2 = solver.execute(AdvancedModelEnumerationFunction.builder()
-                    .computeWithComponents(true)
-                    .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
-                    .variables(pmeVars)
-                    .additionalVariables(additionalVars).build());
-
-            final long t3 = System.currentTimeMillis();
-            final long timeWithComponents = t3 - t2;
-
-            System.out.println("Time with components: " + timeWithComponents);
-
-            final List<Assignment> updatedModels1 = restrictAssignmentsToPmeVars(pmeVars, models1);
-            final List<Assignment> updatedModels2 = restrictAssignmentsToPmeVars(pmeVars, models2);
-
-            // then
-            assertThat(models1.size()).isEqualTo(models2.size());
-            assertThat(updatedModels1).containsExactlyInAnyOrderElementsOf(updatedModels2);
-
-            final int depth = formula.apply(new FormulaDepthFunction());
-            final String resultString = String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, pmeVars.size(), models2.size(), timeNoComponents,
-                    timeWithComponents, formula);
-            fw.write(resultString);
-            fw.newLine();
-            fw.flush();
-        }
-    }
-
-    private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
-        final List<Assignment> updatedModels = new ArrayList<>();
-        for (final Assignment assignment : models) {
-            final Assignment updatedAssignment = new Assignment();
-            for (final Literal literal : assignment.literals()) {
-                if (pmeVars.contains(literal.variable())) {
-                    updatedAssignment.addLiteral(literal);
-                }
-            }
-            updatedModels.add(updatedAssignment);
-        }
-        return updatedModels;
-    }
+    //
+    // @Test
+    // public void testAdditionalVariables() throws IOException {
+    //     final BufferedWriter fw = new BufferedWriter(new FileWriter("AmeAdditionalVars.csv"));
+    //     fw.write("seed;depth;#vars formula;# vars pme;#combinations;time no components (ms);time with components (ms);formula");
+    //     fw.newLine();
+    //     final SATSolver solver = MiniSat.miniSat(this.f);
+    //     final SolverState initialState = solver.saveState();
+    //     for (int i = 1; i <= 1000; i++) {
+    //         solver.loadState(initialState);
+    //         // given
+    //         final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+    //         final Formula formula = randomizer.formula(8);
+    //         solver.add(formula);
+    //
+    //         final List<Variable> varsFormula = new ArrayList<>(formula.variables());
+    //         final int numberOfVars = formula.variables().size();
+    //         final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 3) + 2;
+    //         final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
+    //
+    //         final int additionalVarsStart = 2 * minNumberOfVars;
+    //         final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
+    //
+    //         // when
+    //         final long t1 = System.currentTimeMillis();
+    //         final List<Model> models1 = solver.execute(AdvancedModelEnumerationFunction.builder()
+    //                 .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
+    //                 .variables(pmeVars)
+    //                 .additionalVariables(additionalVars).build());
+    //         final long t1a = System.currentTimeMillis();
+    //
+    //         final long timeNoComponents = t1a - t1;
+    //         if (models1.size() < 10) {
+    //             continue;
+    //         }
+    //         System.out.println("\nSeed: " + i);
+    //         System.out.println("Number of combinations: " + models1.size());
+    //         System.out.println("Time no components: " + timeNoComponents);
+    //
+    //         final long t2 = System.currentTimeMillis();
+    //         final List<Model> models2 = solver.execute(AdvancedModelEnumerationFunction.builder()
+    //                 .computeWithComponents(true)
+    //                 .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
+    //                 .variables(pmeVars)
+    //                 .additionalVariables(additionalVars).build());
+    //
+    //         final long t3 = System.currentTimeMillis();
+    //         final long timeWithComponents = t3 - t2;
+    //
+    //         System.out.println("Time with components: " + timeWithComponents);
+    //
+    //         final List<Model> updatedModels1 = restrictAssignmentsToPmeVars(pmeVars, models1);
+    //         final List<Model> updatedModels2 = restrictAssignmentsToPmeVars(pmeVars, models2);
+    //
+    //         // then
+    //         assertThat(models1.size()).isEqualTo(models2.size());
+    //         assertThat(updatedModels1).containsExactlyInAnyOrderElementsOf(updatedModels2);
+    //
+    //         final int depth = formula.apply(new FormulaDepthFunction());
+    //         final String resultString = String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, pmeVars.size(), models2.size(), timeNoComponents,
+    //                 timeWithComponents, formula);
+    //         fw.write(resultString);
+    //         fw.newLine();
+    //         fw.flush();
+    //     }
+    // }
+    //
+    // private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
+    //     final List<Assignment> updatedModels = new ArrayList<>();
+    //     for (final Assignment assignment : models) {
+    //         final Assignment updatedAssignment = new Assignment();
+    //         for (final Literal literal : assignment.literals()) {
+    //             if (pmeVars.contains(literal.variable())) {
+    //                 updatedAssignment.addLiteral(literal);
+    //             }
+    //         }
+    //         updatedModels.add(updatedAssignment);
+    //     }
+    //     return updatedModels;
+    // }
 
 
     @Test
@@ -254,7 +249,7 @@ public class AdvancedModelEnumerationFunctionTest {
             final long t1 = System.currentTimeMillis();
 
             // random split provider
-            final List<Assignment> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+            final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                     .splitVariableProvider(new RandomSplitVariableProvider(this.f))
                     .handler(handler1)
                     .computeWithComponents(true).build());

@@ -73,16 +73,14 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
     protected final Collection<Variable> additionalVariables;
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
-    protected final boolean doubleSplit;
 
     ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
-                             final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final boolean doubleSplit) {
+                             final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
         this.splitVariableProvider = splitVariableProvider;
-        this.doubleSplit = doubleSplit;
     }
 
     /**
@@ -120,56 +118,6 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         }
         return models;
     }
-    
-    // protected List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
-    //                                                  final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
-    //     final SolverState initialState = solver.saveState();
-    //     final SortedSet<Variable> splitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
-    //     final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
-    //     final List<Assignment> models = new ArrayList<>();
-    //     for (final Assignment splitAssignment : splitAssignments) {
-    //         if (splitAssignment.size() >= 10) {
-    //             // split again
-    //             final SortedSet<Variable> leftOverRelevant = new TreeSet<>(relevantVars);
-    //             leftOverRelevant.removeAll(splitVars);
-    //             models.addAll(splitAgain(solver, resultSetter, relevantVars, additionalVariables, leftOverRelevant, splitAssignment, 0));
-    //         } else {
-    //             solver.add(splitAssignment.formula(solver.factory()));
-    //             final List<Assignment> assignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
-    //             models.addAll(assignments);
-    //             solver.loadState(initialState);
-    //         }
-    //         solver.loadState(initialState);
-    //     }
-    //     return models;
-    // }
-    //
-    // private List<Assignment> splitAgain(final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> relevantVars,
-    //                                     final Collection<Variable> additionalVariables, final SortedSet<Variable> leftOverRelevant,
-    //                                     final Assignment splitAssignment, final int depth) {
-    //     final List<Assignment> models = new ArrayList<>();
-    //     solver.add(splitAssignment.formula(solver.factory()));
-    //     final SolverState initialState = solver.saveState();
-    //     final SortedSet<Variable> thisSplitVars = new RandomSplitVariableProvider(solver.factory(), 5, 50, 1).getSplitVars(null, leftOverRelevant);
-    //     final List<Assignment> thisSplitAssignments = enumerate(solver, resultSetter, thisSplitVars, Collections.emptyList());
-    //     final List<Assignment> thisModels = new ArrayList<>();
-    //     for (final Assignment splitAssignment1 : thisSplitAssignments) {
-    //         if (splitAssignment1.size() > 4) {
-    //             System.out.println("big " + splitAssignment1.size());
-    //             final SortedSet<Variable> newLeftOverRelevant = new TreeSet<>(leftOverRelevant);
-    //             newLeftOverRelevant.removeAll(thisSplitVars);
-    //             models.addAll(splitAgain(solver, resultSetter, relevantVars, additionalVariables, newLeftOverRelevant, splitAssignment1, depth + 1));
-    //         } else {
-    //             final Formula thisFormula = splitAssignment1.formula(solver.factory());
-    //             solver.add(thisFormula);
-    //             final List<Assignment> thisAssignments = enumerate(solver, resultSetter, relevantVars, additionalVariables);
-    //             thisModels.addAll(thisAssignments);
-    //             solver.loadState(initialState);
-    //         }
-    //     }
-    //     models.addAll(thisModels);
-    //     return models;
-    // }
 
     protected List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
                                          final Collection<Variable> additionalVariables) {
@@ -288,7 +236,6 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         protected Collection<Variable> additionalVariables;
         protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
-        protected boolean multipleSplits = false;
 
         Builder() {
             // Initialize only via factory
@@ -365,18 +312,12 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
             return this;
         }
 
-        public Builder multipleSplits(final boolean multipleSplits) {
-            this.multipleSplits = multipleSplits;
-            return this;
-        }
-
         /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunction build() {
-            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.splitVariableProvider,
-                    multipleSplits);
+            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.splitVariableProvider);
         }
     }
 }
