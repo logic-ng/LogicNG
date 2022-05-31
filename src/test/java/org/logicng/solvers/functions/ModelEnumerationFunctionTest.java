@@ -279,9 +279,12 @@ public class ModelEnumerationFunctionTest {
     }
 
     @Test
-    public void testOneSplitProvider() {
+    public void testOneSplitProvider() throws IOException {
+        final BufferedWriter fw = new BufferedWriter(new FileWriter("Recursive2.csv"));
+        fw.write("seed;depth;#vars;#combinations;time original (ms);aborted?; time recursive (ms);aborted?;formula");
+        fw.newLine();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        for (int i = 58; i <= 58; i++) {
+        for (int i = 576; i <= 10000; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
@@ -291,20 +294,42 @@ public class ModelEnumerationFunctionTest {
             solver.add(formula);
             System.out.println("\nSeed: " + i);
 
+            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2000000);
+            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2000000);
+
             final long time0 = System.currentTimeMillis();
             final List<Assignment> models1 =
-                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+                    solver.execute(ModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler1).build());
             final long time1 = System.currentTimeMillis();
 
+            if (models1.size() < 10000) {
+                solver.reset();
+                continue;
+            }
+
+            final long time20 = System.currentTimeMillis();
             final List<Assignment> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
+                            .build());
             final long time2 = System.currentTimeMillis();
+
+            if (!handler1.aborted() && !handler2.aborted()) {
+                assertThat(models1.size()).isEqualTo(models2.size());
+            }
+            final long timeStandard = time1 - time0;
+            final long timeRecursive = time2 - time20;
 
             System.out.println("Time standard: " + (time1 - time0));
             System.out.println("Time recursive: " + (time2 - time1));
-            System.out.println("models: " + models2.size());
-            assertThat(models1.size()).isEqualTo(models2.size());
-            // assertThat(models1).containsExactlyInAnyOrderElementsOf(models2);
+            System.out.println("models: " + models1.size());
+
+            final int depth = formula.apply(new FormulaDepthFunction());
+            final String resultString =
+                    String.format("%d;%d;%d;%d;%d;%b;%d;%b;%s", i, depth, numberOfVars, models1.size(), timeStandard, handler1.aborted(), timeRecursive,
+                            handler2.aborted(), formula);
+            fw.write(resultString);
+            fw.newLine();
+            fw.flush();
             solver.reset();
         }
     }

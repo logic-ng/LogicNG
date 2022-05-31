@@ -114,17 +114,23 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
         final ModelEnumerationHandler handler = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
         final List<Assignment> assignments = enumerate(solver, resultSetter, initialSplitVars, Collections.emptyList(), handler);
-        List<Assignment> splitAssignments1 = null;
+
+        // get split assignments
+        List<Assignment> splitAssignments = null;
         SortedSet<Variable> splitVars = initialSplitVars;
-        boolean continueL = true;
-        while (continueL) {
-            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
-            final TreeSet<Variable> updatedSplitVars = splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
-            splitAssignments1 = enumerate(solver, resultSetter, updatedSplitVars, additionalVariables, handler1);
-            continueL = handler1.aborted();
-            splitVars = updatedSplitVars;
+        if (handler.aborted()) {
+            boolean continueL = true;
+            while (continueL) {
+                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
+                final TreeSet<Variable> updatedSplitVars = updateSplitVars(splitVars);
+                splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, additionalVariables, handler1);
+                continueL = handler1.aborted();
+                splitVars = updatedSplitVars;
+            }
+        } else {
+            splitAssignments = assignments;
         }
-        final List<Assignment> splitAssignments = handler.aborted() ? splitAssignments1 : assignments;
+
         if (splitAssignments.isEmpty()) {
             return Collections.emptyList();
         }
@@ -149,16 +155,19 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         final ModelEnumerationHandler handler = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
         final List<Assignment> modelsFound = enumerate(solver, resultSetter, leftOverVars, relevantVars, handler);
         if (handler.aborted()) {
+
+            // get split assignments
             List<Assignment> splitAssignments = null;
             SortedSet<Variable> splitVars = leftOverVars;
             boolean continueL = true;
             while (continueL) {
                 final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(MAX_NUMBER_OF_VARS_FOR_SPLIT);
-                final TreeSet<Variable> updatedSplitVars = splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
+                final TreeSet<Variable> updatedSplitVars = updateSplitVars(splitVars);
                 splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, Collections.emptyList(), handler1);
                 continueL = handler1.aborted();
                 splitVars = updatedSplitVars;
             }
+
             final SolverState state1 = solver.saveState();
             for (final Assignment assignment : splitAssignments) {
                 final List<Assignment> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, state1);
@@ -169,7 +178,11 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<As
         }
         return models;
     }
-    
+
+    private TreeSet<Variable> updateSplitVars(final SortedSet<Variable> splitVars) {
+        return splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
+    }
+
     // private List<Assignment> getSplitAssignments(final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> initialSplitVars,
     //                                              final Collection<Variable> additionalVariables) {
     //     List<Assignment> splitAssignments = null;
