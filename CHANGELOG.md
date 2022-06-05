@@ -9,6 +9,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
 - Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
 - Convenience methods `isNNF()`, `isDNF()` and `isCNF()` in class `Formula`
+- Two new constructors for `Substitution`s and a new method `getMapping()` to get the internal mapping
+- Method `getSubstitution` on `Anonymizer` to get the mapping from original variable to anonymized one
 
 ### Changed
 
