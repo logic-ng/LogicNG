@@ -2,6 +2,12 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2022-06-09
+
+### Added
+
+- Basic support for OSGi via `maven-bundle-plugin`
+
 ## [2.2.0] - 2021-11-09
 
 ### Added
