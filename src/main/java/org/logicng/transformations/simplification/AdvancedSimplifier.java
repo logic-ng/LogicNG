@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -61,24 +62,29 @@ import java.util.stream.Collectors;
  * <p>
  * The simplification performs the following steps:
  * <ul>
+ *     <li>Restricting the formula to its backbone</li>
  *     <li>Computation of all prime implicants</li>
  *     <li>Finding a minimal coverage (by finding a smallest MUS)</li>
  *     <li>Building a DNF from the minimal prime implicant coverage</li>
  *     <li>Factoring out: Applying the Distributive Law heuristically for a smaller formula</li>
  *     <li>Minimizing negations: Applying De Morgan's Law heuristically for a smaller formula</li>
  * </ul>
- * @version 2.1.0
+ * The first and the last two steps can be configured using the {@link AdvancedSimplifierConfig}. Also the handler and the rating
+ * function can be configured. If no rating function is specified, the {@link DefaultRatingFunction} is chosen.
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class AdvancedSimplifier implements FormulaTransformation {
 
-    private final RatingFunction<?> ratingFunction;
-    private final OptimizationHandler handler;
+    private final AdvancedSimplifierConfig config;
 
     /**
      * Constructs a new simplifier with the given rating functions.
      * @param ratingFunction the rating function
+     * @deprecated this constructor is no longer acceptable, use the constructor with an {@link AdvancedSimplifierConfig} or with no parameters (for the
+     * default advanced simplifier configuration) instead.
      */
+    @Deprecated
     public AdvancedSimplifier(final RatingFunction<?> ratingFunction) {
         this(ratingFunction, null);
     }
@@ -90,38 +96,78 @@ public final class AdvancedSimplifier implements FormulaTransformation {
      * {@link org.logicng.solvers.functions.OptimizationFunction} call and the handler's SAT handler is used for every subsequent SAT call.
      * @param ratingFunction the rating function
      * @param handler        the handler, can be {@code null}
+     * @deprecated this constructor is no longer acceptable, use the constructor with an {@link AdvancedSimplifierConfig} or with no parameters (for the
+     * default advanced simplifier configuration) instead.
      */
+    @Deprecated
     public AdvancedSimplifier(final RatingFunction<?> ratingFunction, final OptimizationHandler handler) {
-        this.handler = handler;
-        this.ratingFunction = ratingFunction;
+        this.config = AdvancedSimplifierConfig.builder().ratingFunction(ratingFunction).handler(handler).build();
+    }
+
+    /**
+     * Constructs a new simplifier with the default configuration.
+     */
+    public AdvancedSimplifier() {
+        this.config = AdvancedSimplifierConfig.builder().build();
+    }
+
+    /**
+     * Constructs a new simplifier with the given configuration.
+     * @param config The configuration for the advanced simplifier, including a handler, a rating function and flags for which steps should pe performed
+     *               during the computation.
+     */
+    public AdvancedSimplifier(final AdvancedSimplifierConfig config) {
+        this.config = config;
     }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        start(this.handler);
+        start(this.config.handler);
         final FormulaFactory f = formula.factory();
-        final Backbone backbone = BackboneGeneration.compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(this.handler));
-        if (backbone == null || aborted(this.handler)) {
+        Formula simplified = formula;
+        final SortedSet<Literal> backboneLiterals = new TreeSet<>();
+        if (this.config.restrictBackbone) {
+            final Backbone backbone = BackboneGeneration
+                    .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(this.config.handler));
+            if (backbone == null || aborted(this.config.handler)) {
+                return null;
+            }
+            if (!backbone.isSat()) {
+                return f.falsum();
+            }
+            backboneLiterals.addAll(backbone.getCompleteBackbone());
+            simplified = formula.restrict(new Assignment(backboneLiterals));
+        }
+        final Formula simplifyMinDnf = computeMinDnf(f, simplified);
+        if (simplifyMinDnf == null) {
             return null;
         }
-        if (!backbone.isSat()) {
-            return f.falsum();
+        simplified = simplifyWithRating(simplified, simplifyMinDnf);
+        if (this.config.factorOut) {
+            final Formula factoredOut = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
+            simplified = simplifyWithRating(simplified, factoredOut);
         }
-        final SortedSet<Literal> backboneLiterals = backbone.getCompleteBackbone();
-        final Formula restrictedFormula = formula.restrict(new Assignment(backboneLiterals));
-        final PrimeResult primeResult = PrimeCompiler.getWithMinimization().compute(restrictedFormula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, this.handler);
-        if (primeResult == null || aborted(this.handler)) {
+        if (this.config.simplifyNegations) {
+            final Formula negationSimplified = simplified.transform(new NegationSimplifier());
+            simplified = simplifyWithRating(simplified, negationSimplified);
+        }
+        return f.and(f.and(backboneLiterals), simplified);
+    }
+
+    private Formula computeMinDnf(final FormulaFactory f, Formula simplified) {
+        final PrimeResult primeResult =
+                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, this.config.handler);
+        if (primeResult == null || aborted(this.config.handler)) {
             return null;
         }
         final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
         final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
-                Collections.singletonList(restrictedFormula), f, this.handler);
-        if (minimizedPIs == null || aborted(this.handler)) {
+                Collections.singletonList(simplified), f, this.config.handler);
+        if (minimizedPIs == null || aborted(this.config.handler)) {
             return null;
         }
-        final Formula minDnf = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
-        final Formula fullFactor = minDnf.transform(new FactorOutSimplifier(this.ratingFunction));
-        return f.and(f.and(backboneLiterals), fullFactor).transform(NegationSimplifier.get());
+        simplified = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
+        return simplified;
     }
 
     private List<Formula> negateAllLiterals(final Collection<SortedSet<Literal>> literalSets, final FormulaFactory f) {
@@ -138,5 +184,11 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             result.add(f.and(FormulaHelper.negateLiterals(formula.literals(), ArrayList::new)));
         }
         return result;
+    }
+
+    private Formula simplifyWithRating(final Formula formula, final Formula simplifiedOneStep) {
+        final Number ratingSimplified = this.config.ratingFunction.apply(simplifiedOneStep, true);
+        final Number ratingFormula = this.config.ratingFunction.apply(formula, true);
+        return ratingSimplified.intValue() < ratingFormula.intValue() ? simplifiedOneStep : formula;
     }
 }
