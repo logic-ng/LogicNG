@@ -33,7 +33,6 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.predicates.CNFPredicate;
 import org.logicng.transformations.Subsumption;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public final class CNFSubsumption extends Subsumption implements FormulaTransfor
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        if (!formula.holds(CNFPredicate.get())) {
+        if (!formula.isCNF()) {
             throw new IllegalArgumentException("CNF subsumption can only be applied to formulas in CNF");
         }
         if (formula.type().precedence() >= FType.LITERAL.precedence() || formula.type() == FType.OR) {

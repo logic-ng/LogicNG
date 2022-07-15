@@ -126,6 +126,6 @@ public class CCALKTest implements LogicNGTest {
         assertThat(new CCALKModularTotalizer(f).toString()).isEqualTo("CCALKModularTotalizer");
         assertThat(new CCALKCardinalityNetwork().toString()).isEqualTo("CCALKCardinalityNetwork");
 
-        assertThat(Arrays.asList(CCConfig.ALK_ENCODER.values()).contains(CCConfig.ALK_ENCODER.valueOf("MODULAR_TOTALIZER")));
+        assertThat(Arrays.asList(CCConfig.ALK_ENCODER.values())).contains(CCConfig.ALK_ENCODER.valueOf("MODULAR_TOTALIZER"));
     }
 }

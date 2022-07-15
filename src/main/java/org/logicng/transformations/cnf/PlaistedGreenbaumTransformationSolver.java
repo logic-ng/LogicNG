@@ -36,7 +36,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Implication;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
-import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.ContainsPBCPredicate;
 import org.logicng.propositions.Proposition;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
@@ -80,7 +79,7 @@ public final class PlaistedGreenbaumTransformationSolver {
     public void addCNFtoSolver(final Formula formula, final Proposition proposition) {
         final Formula workingFormula = this.performNNF ? formula.nnf() : formula;
         final Formula withoutPBCs = !this.performNNF && workingFormula.holds(ContainsPBCPredicate.get()) ? workingFormula.nnf() : workingFormula;
-        if (withoutPBCs.holds(CNFPredicate.get())) {
+        if (withoutPBCs.isCNF()) {
             addCNF(withoutPBCs, proposition);
         } else {
             final LNGIntVector topLevelVars = computeTransformation(withoutPBCs, true, proposition, true);

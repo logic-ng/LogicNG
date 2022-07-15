@@ -31,6 +31,7 @@ package org.logicng.datastructures;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,22 @@ public final class Substitution {
      */
     public Substitution() {
         this.subst = new HashMap<>();
+    }
+
+    /**
+     * Constructs a new substitution by copying the given one.
+     * @param other the substitution to copy
+     */
+    public Substitution(final Substitution other) {
+        this.subst = new HashMap<>(other.subst);
+    }
+
+    /**
+     * Constructs a new substitution and initializes it with the given mapping.
+     * @param mapping the initial mapping
+     */
+    public Substitution(final Map<Variable, Formula> mapping) {
+        this.subst = new HashMap<>(mapping);
     }
 
     /**
@@ -72,10 +89,18 @@ public final class Substitution {
     /**
      * Returns a formula for a given variable.  If there is no mapping for this variable, {@code null} is returned.
      * @param variable the variable
-     * @return an formula of {@code null}
+     * @return a formula or {@code null}
      */
     public Formula getSubstitution(final Variable variable) {
         return this.subst.get(variable);
+    }
+
+    /**
+     * Returns an unmodifiable reference to the internal mapping of variables to formulas.
+     * @return the internal mapping of variables to formulas
+     */
+    public Map<Variable, Formula> getMapping() {
+        return Collections.unmodifiableMap(this.subst);
     }
 
     @Override

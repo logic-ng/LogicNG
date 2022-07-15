@@ -42,7 +42,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Or}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class OrTest extends TestWithExampleFormulas {
@@ -196,5 +196,26 @@ public class OrTest extends TestWithExampleFormulas {
         final PropositionalParser parser = new PropositionalParser(this.f);
         final Formula contAnd = parser.parse("a | b | (c & (d | e))");
         assertThat(contAnd.containsNode(parser.parse("d | e"))).isTrue();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.OR1.isNNF()).isTrue();
+        assertThat(this.OR2.isNNF()).isTrue();
+        assertThat(this.OR3.isNNF()).isTrue();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.OR1.isDNF()).isTrue();
+        assertThat(this.OR2.isDNF()).isTrue();
+        assertThat(this.OR3.isDNF()).isTrue();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.OR1.isCNF()).isTrue();
+        assertThat(this.OR2.isCNF()).isTrue();
+        assertThat(this.OR3.isCNF()).isFalse();
     }
 }

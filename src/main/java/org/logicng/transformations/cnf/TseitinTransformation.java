@@ -38,7 +38,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +73,7 @@ public final class TseitinTransformation implements FormulaTransformation {
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
         final Formula f = formula.nnf();
-        if (f.holds(CNFPredicate.get())) {
+        if (f.isCNF()) {
             return f;
         }
         Formula tseitin = f.transformationCacheEntry(TSEITIN);

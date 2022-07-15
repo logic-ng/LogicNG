@@ -33,7 +33,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.graphs.datastructures.Hypergraph;
 import org.logicng.graphs.datastructures.HypergraphNode;
-import org.logicng.predicates.CNFPredicate;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,7 +92,7 @@ public final class HypergraphGenerator {
      * @return the hypergraph for the CNF formula
      */
     public static Hypergraph<Variable> fromCNF(final Formula cnf) {
-        if (!cnf.holds(CNFPredicate.get())) {
+        if (!cnf.isCNF()) {
             throw new IllegalArgumentException("Cannot generate a hypergraph from a non-cnf formula");
         }
         final Hypergraph<Variable> hypergraph = new Hypergraph<>();

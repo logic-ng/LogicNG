@@ -36,19 +36,15 @@ import org.logicng.formulas.Formula;
 import org.logicng.handlers.FactorizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.logicng.predicates.CNFPredicate;
-import org.logicng.predicates.DNFPredicate;
 
 /**
  * Unit Tests for DNF conversion.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class DNFFactorizationTest extends TestWithExampleFormulas {
 
     private final DNFFactorization dnfFactorization = new DNFFactorization();
-    private final DNFPredicate dnfPredicate = DNFPredicate.get();
-    private final CNFPredicate cnfPredicate = CNFPredicate.get();
 
     @Test
     public void testConstants() {
@@ -70,13 +66,13 @@ public class DNFFactorizationTest extends TestWithExampleFormulas {
         assertThat(this.IMP3.transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | x | y"));
         assertThat(this.EQ1.transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
         assertThat(this.EQ2.transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b) | (~a & ~b)"));
-        assertThat(this.IMP1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(this.IMP2.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(this.IMP3.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(this.EQ1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(this.EQ1.transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
-        assertThat(this.EQ2.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(this.EQ2.transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
+        assertThat(this.IMP1.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(this.IMP2.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(this.IMP3.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(this.EQ1.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(this.EQ1.transform(this.dnfFactorization).isCNF()).isFalse();
+        assertThat(this.EQ2.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(this.EQ2.transform(this.dnfFactorization).isCNF()).isFalse();
     }
 
     @Test
@@ -87,14 +83,14 @@ public class DNFFactorizationTest extends TestWithExampleFormulas {
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | c | (~x & y)"));
         assertThat(p.parse("~(a | b) & c & ~(x & ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("(~a & ~b & c & ~x) | (~a & ~b & c & y)"));
         assertThat(p.parse("a & b & (~x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b & ~x) | (a & b & ~y)"));
-        assertThat(this.AND1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(this.OR1.transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
-        assertThat(p.parse("a | b | (~x & ~y)").transform(this.dnfFactorization).holds(this.dnfPredicate)).isTrue();
-        assertThat(p.parse("a | b | (~x & ~y)").transform(this.dnfFactorization).holds(this.cnfPredicate)).isFalse();
+        assertThat(this.AND1.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(this.OR1.transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).isCNF()).isFalse();
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization).isCNF()).isFalse();
+        assertThat(p.parse("a | b | (~x & ~y)").transform(this.dnfFactorization).isDNF()).isTrue();
+        assertThat(p.parse("a | b | (~x & ~y)").transform(this.dnfFactorization).isCNF()).isFalse();
     }
 
     @Test

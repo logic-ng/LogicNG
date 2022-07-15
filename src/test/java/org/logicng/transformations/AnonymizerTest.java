@@ -31,9 +31,14 @@ package org.logicng.transformations;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.datastructures.Substitution;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
+
+import java.util.HashMap;
 
 /**
  * Unit tests for {@link Anonymizer}.
@@ -101,5 +106,24 @@ public class AnonymizerTest {
         assertThat(p.parse("A <=> ~B").transform(anonymizer, false)).isEqualTo(p.parse("var10 <=> ~var11"));
         assertThat(p.parse("A | B | ~D | C").transform(anonymizer, false)).isEqualTo(p.parse("var10 | var11 | ~var13 | var12"));
         assertThat(p.parse("A & B & C & ~D").transform(anonymizer, false)).isEqualTo(p.parse("var10 & var11 & var12 & ~var13"));
+    }
+
+    @Test
+    public void testGetSubstitution() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final PseudoBooleanParser p = new PseudoBooleanParser(f);
+        final Anonymizer anonymizer = new Anonymizer("v", 0);
+        assertThat(anonymizer.getSubstitution()).isEqualTo(new Substitution());
+        assertThat(p.parse("A & B & C & ~D").transform(anonymizer, false)).isEqualTo(p.parse("v0 & v1 & v2 & ~v3"));
+        final HashMap<Variable, Formula> mapping = new HashMap<>();
+        mapping.put(f.variable("A"), f.variable("v0"));
+        mapping.put(f.variable("B"), f.variable("v1"));
+        mapping.put(f.variable("C"), f.variable("v2"));
+        mapping.put(f.variable("D"), f.variable("v3"));
+        assertThat(anonymizer.getSubstitution()).isEqualTo(new Substitution(mapping));
+        assertThat(p.parse("E & A & C & ~F").transform(anonymizer, false)).isEqualTo(p.parse("v4 & v0 & v2 & ~v5"));
+        mapping.put(f.variable("E"), f.variable("v4"));
+        mapping.put(f.variable("F"), f.variable("v5"));
+        assertThat(anonymizer.getSubstitution()).isEqualTo(new Substitution(mapping));
     }
 }

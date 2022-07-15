@@ -8,6 +8,9 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
 - Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
+- Convenience methods `isNNF()`, `isDNF()` and `isCNF()` in class `Formula`
+- Two new constructors for `Substitution`s and a new method `getMapping()` to get the internal mapping
+- Method `getSubstitution` on `Anonymizer` to get the mapping from original variable to anonymized one
 - A DNF from BDD function `BDDDNFFunction`, a subclass of the newly added class `BDDNormalFormFunction`
 - A DNF from BDD formula transformation `BDDDNFTransformation`, a subclass of the newly added class `BDDNormalFormTransforamtion`
 
@@ -17,6 +20,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
 - Method `BDD#dnf()` uses the newly introduced `BDDDNFFunction` to obtain a smaller DNF instead of a canonical DNF
 - Class `BDDCNFFunction` uses the singleton pattern
+
+### Fixed
+
+- Minor edge case issue in `NegationSimplifier` which yielded a larger result formula than input formula.
 
 ## [2.2.0] - 2021-11-09
 

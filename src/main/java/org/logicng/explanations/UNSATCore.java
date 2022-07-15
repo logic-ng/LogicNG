@@ -47,7 +47,7 @@ public final class UNSATCore<T extends Proposition> {
     /**
      * Constructs a new unsatisfiable core.
      * @param propositions the propositions of the core
-     * @param isMUS        {@code true} if it is a MUS, {@code false} otherwise
+     * @param isMUS        {@code true} if it is a MUS and {@code false} if it is unknown whether it is a MUS.
      */
     public UNSATCore(final List<T> propositions, final boolean isMUS) {
         this.propositions = propositions;
@@ -63,8 +63,9 @@ public final class UNSATCore<T extends Proposition> {
     }
 
     /**
-     * Returns {@code true} if this core is a MUS, {@code false} otherwise.
-     * @return {@code true} if this core is a MUS, {@code false} otherwise
+     * Returns {@code true} if this core is a MUS and {@code false} if it is unknown whether it is a MUS.
+     * Note, if set to {@code false} this core might be a MUS but it is not yet verified.
+     * @return {@code true} if this core is a MUS and {@code false} if it is unknown whether it is a MUS.
      */
     public boolean isMUS() {
         return this.isMUS;

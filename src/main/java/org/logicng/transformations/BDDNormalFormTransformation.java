@@ -38,8 +38,6 @@ import org.logicng.formulas.FormulaTransformation;
 import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.predicates.CNFPredicate;
-import org.logicng.predicates.DNFPredicate;
 
 /**
  * Transformation of a formula in a normal form (DNF or CNF) by converting it to a BDD.
@@ -113,6 +111,6 @@ public abstract class BDDNormalFormTransformation implements FormulaTransformati
     }
 
     private boolean hasNormalForm(final Formula formula, final boolean cnf) {
-        return cnf ? formula.holds(CNFPredicate.get()) : formula.holds(DNFPredicate.get());
+        return cnf ? formula.isCNF() : formula.isDNF();
     }
 }

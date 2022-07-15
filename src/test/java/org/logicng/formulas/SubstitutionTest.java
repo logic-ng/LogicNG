@@ -37,6 +37,9 @@ import org.logicng.datastructures.Substitution;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
+import java.util.Collections;
+import java.util.HashMap;
+
 /**
  * Unit tests for the class {@link Substitution}.
  * @version 2.0.0
@@ -56,6 +59,38 @@ public class SubstitutionTest extends TestWithExampleFormulas {
     @Test
     public void testConstructor() {
         assertThat(new Substitution()).isNotNull();
+    }
+
+    @Test
+    public void testCopyConstructor() {
+        final Substitution original = new Substitution();
+        original.addMapping(this.A, this.NA);
+        original.addMapping(this.B, this.NB);
+        final Substitution copy = new Substitution(original);
+        copy.addMapping(this.X, this.NX);
+        original.addMapping(this.Y, this.NY);
+        assertThat(original.size()).isEqualTo(3);
+        assertThat(copy.size()).isEqualTo(3);
+        assertThat(copy.getSubstitution(this.A)).isEqualTo(this.NA);
+        assertThat(copy.getSubstitution(this.B)).isEqualTo(this.NB);
+        assertThat(original.getSubstitution(this.X)).isNull();
+        assertThat(copy.getSubstitution(this.X)).isEqualTo(this.NX);
+        assertThat(original.getSubstitution(this.Y)).isEqualTo(this.NY);
+        assertThat(copy.getSubstitution(this.Y)).isNull();
+    }
+
+    @Test
+    public void testConstructionWithMapping() {
+        final HashMap<Variable, Formula> mapping = new HashMap<>();
+        mapping.put(this.X, this.OR1);
+        mapping.put(this.Y, this.AND1);
+        final Substitution substitution = new Substitution(mapping);
+        assertThat(substitution.getSubstitution(this.X)).isEqualTo(this.OR1);
+        assertThat(substitution.getSubstitution(this.Y)).isEqualTo(this.AND1);
+        assertThat(substitution.getSubstitution(this.A)).isNull();
+        substitution.addMapping(this.A, this.NA);
+        assertThat(substitution.getSubstitution(this.A)).isEqualTo(this.NA);
+        assertThat(new Substitution(Collections.emptyMap()).size()).isEqualTo(0);
     }
 
     @Test
@@ -79,6 +114,20 @@ public class SubstitutionTest extends TestWithExampleFormulas {
         assertThat(subst.getSubstitution(this.X)).isNull();
         subst.addMapping(this.B, this.AND1);
         assertThat(subst.getSubstitution(this.B)).isEqualTo(this.AND1);
+    }
+
+    @Test
+    public void testGetMapping() {
+        final Substitution subst = new Substitution();
+        assertThat(subst.getMapping()).isEqualTo(Collections.emptyMap());
+        subst.addMapping(this.A, this.NA);
+        subst.addMapping(this.B, this.OR1);
+        subst.addMapping(this.C, this.AND1);
+        final HashMap<Variable, Formula> expected = new HashMap<>();
+        expected.put(this.A, this.NA);
+        expected.put(this.B, this.OR1);
+        expected.put(this.C, this.AND1);
+        assertThat(subst.getMapping()).isEqualTo(expected);
     }
 
     @Test
@@ -173,6 +222,7 @@ public class SubstitutionTest extends TestWithExampleFormulas {
         subst.addMapping(this.A, this.NA);
         assertThat(subst.toString()).isEqualTo("Substitution{a=~a}");
         subst.addMapping(this.B, this.OR1);
+        assertThat(subst.toString()).isEqualTo("Substitution{a=~a, b=x | y}");
     }
 
 }

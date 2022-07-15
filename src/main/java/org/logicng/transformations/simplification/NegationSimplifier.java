@@ -39,7 +39,6 @@ import org.logicng.formulas.NAryOperator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -47,7 +46,7 @@ import java.util.List;
  * Negation simplifier.
  * <p>
  * Reduces the number of negations for a formula in a greedy manner.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class NegationSimplifier implements FormulaTransformation {
@@ -56,10 +55,10 @@ public final class NegationSimplifier implements FormulaTransformation {
     public Formula apply(final Formula formula, final boolean cache) {
         final Formula nnf = formula.nnf();
         if (nnf.isAtomicFormula()) {
-            return nnf;
+            return getSmallestFormula(true, formula, nnf);
         }
         final MinimizationResult result = minimize(nnf, true);
-        return getSmallestFormula(Arrays.asList(formula, nnf, result.positiveResult), true);
+        return getSmallestFormula(true, formula, nnf, result.positiveResult);
     }
 
     private MinimizationResult minimize(final Formula formula, final boolean topLevel) {
@@ -112,18 +111,18 @@ public final class NegationSimplifier implements FormulaTransformation {
         }
         final Formula partialNegative = f.naryOperator(type, f.naryOperator(type, smallerPositiveOps),
                 f.not(f.naryOperator(dual(type), smallerNegativeOps)));
-        return getSmallestFormula(Arrays.asList(allPositive, partialNegative), topLevel);
+        return getSmallestFormula(topLevel, allPositive, partialNegative);
     }
 
     private Formula findSmallestNegative(final FType type, final List<Formula> negativeOpResults, final Formula smallestPositive, final boolean topLevel, final FormulaFactory f) {
         final Formula negation = f.not(smallestPositive);
         final Formula flipped = f.naryOperator(dual(type), negativeOpResults);
-        return getSmallestFormula(Arrays.asList(negation, flipped), topLevel);
+        return getSmallestFormula(topLevel, negation, flipped);
     }
 
-    private Formula getSmallestFormula(final Collection<Formula> formulas, final boolean topLevel) {
-        assert !formulas.isEmpty();
-        return formulas.stream().min(Comparator.comparingInt(formula -> formattedLength(formula, topLevel))).get();
+    private Formula getSmallestFormula(final boolean topLevel, final Formula... formulas) {
+        assert formulas.length != 0;
+        return Arrays.stream(formulas).min(Comparator.comparingInt(formula -> formattedLength(formula, topLevel))).get();
     }
 
     private int formattedLength(final Formula formula, final boolean topLevel) {

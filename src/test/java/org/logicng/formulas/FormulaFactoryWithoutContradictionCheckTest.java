@@ -34,8 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.io.parsers.ParserException;
-import org.logicng.predicates.CNFPredicate;
-import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.NNFPredicate;
 import org.logicng.predicates.satisfiability.ContingencyPredicate;
 import org.logicng.predicates.satisfiability.ContradictionPredicate;
@@ -144,12 +142,12 @@ public class FormulaFactoryWithoutContradictionCheckTest {
 
     @Test
     public void testPredicates() {
-        assertThat(this.tautology.holds(CNFPredicate.get())).isTrue();
-        assertThat(this.contradiction.holds(CNFPredicate.get())).isTrue();
+        assertThat(this.tautology.isCNF()).isTrue();
+        assertThat(this.contradiction.isCNF()).isTrue();
         assertThat(this.tautology.holds(NNFPredicate.get())).isTrue();
         assertThat(this.contradiction.holds(NNFPredicate.get())).isTrue();
-        assertThat(this.tautology.holds(DNFPredicate.get())).isTrue();
-        assertThat(this.contradiction.holds(DNFPredicate.get())).isTrue();
+        assertThat(this.tautology.isDNF()).isTrue();
+        assertThat(this.contradiction.isDNF()).isTrue();
         assertThat(this.tautology.holds(new SATPredicate(this.f))).isTrue();
         assertThat(this.contradiction.holds(new SATPredicate(this.f))).isFalse();
         assertThat(this.tautology.holds(new TautologyPredicate(this.f))).isTrue();

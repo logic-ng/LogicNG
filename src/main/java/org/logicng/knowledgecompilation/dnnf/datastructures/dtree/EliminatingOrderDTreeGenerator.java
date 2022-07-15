@@ -31,7 +31,6 @@ package org.logicng.knowledgecompilation.dnnf.datastructures.dtree;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
-import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,7 +53,7 @@ public abstract class EliminatingOrderDTreeGenerator implements DTreeGenerator {
     public final DTree generateWithEliminatingOrder(final Formula cnf, final List<Variable> ordering) {
         assert cnf.variables().size() == ordering.size();
 
-        if (!cnf.holds(CNFPredicate.get()) || cnf.isAtomicFormula()) {
+        if (!cnf.isCNF() || cnf.isAtomicFormula()) {
             throw new IllegalArgumentException("Cannot generate DTree from a non-cnf formula or atomic formula");
         } else if (cnf.type() != FType.AND) {
             return new DTreeLeaf(0, cnf);

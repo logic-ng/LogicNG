@@ -39,7 +39,6 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
-import org.logicng.predicates.CNFPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -48,13 +47,12 @@ import java.util.SortedSet;
 
 /**
  * Unit Tests for {@link TseitinTransformation}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class TseitinTest extends TestWithExampleFormulas {
 
     private final TseitinTransformation ts = new TseitinTransformation(0);
-    private final CNFPredicate cnfPredicate = CNFPredicate.get();
 
     @Test
     public void testConstants() {
@@ -70,19 +68,19 @@ public class TseitinTest extends TestWithExampleFormulas {
 
     @Test
     public void testBinaryOperators() {
-        assertThat(this.IMP1.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.IMP1.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.IMP1, this.IMP1.transform(this.ts), this.IMP1.variables())).isTrue();
-        assertThat(this.IMP2.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.IMP2.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.IMP2, this.IMP2.transform(this.ts), this.IMP2.variables())).isTrue();
-        assertThat(this.IMP3.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.IMP3.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.IMP3, this.IMP3.transform(this.ts), this.IMP3.variables())).isTrue();
-        assertThat(this.EQ1.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ1.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.EQ1, this.EQ1.transform(this.ts), this.EQ1.variables())).isTrue();
-        assertThat(this.EQ2.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ2.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.EQ2, this.EQ2.transform(this.ts), this.EQ2.variables())).isTrue();
-        assertThat(this.EQ3.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ3.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.EQ3, this.EQ3.transform(this.ts), this.EQ3.variables())).isTrue();
-        assertThat(this.EQ4.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(this.EQ4.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(this.EQ4, this.EQ4.transform(this.ts), this.EQ4.variables())).isTrue();
     }
 
@@ -94,11 +92,11 @@ public class TseitinTest extends TestWithExampleFormulas {
         final Formula f1 = p.parse("~(a | b) & c & ~(x & ~y) & (w => z)");
         final Formula f2 = p.parse("~(a & b) | c | ~(x | ~y)");
         final Formula f3 = p.parse("a | b | (~x & ~y)");
-        assertThat(f1.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f1.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f1, f1.transform(this.ts), f1.variables())).isTrue();
-        assertThat(f2.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f2.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f2, f2.transform(this.ts), f2.variables())).isTrue();
-        assertThat(f3.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f3.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f3, f3.transform(this.ts), f3.variables())).isTrue();
     }
 
@@ -113,17 +111,17 @@ public class TseitinTest extends TestWithExampleFormulas {
         final Formula f3 = p.parse("~(~(a | b) <=> ~(x | y))");
         final Formula f4 = p.parse("~(a & b & ~x & ~y)");
         final Formula f5 = p.parse("~(a | b | ~x | ~y)");
-        assertThat(f1.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f1.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f1, f1.transform(this.ts), f1.variables())).isTrue();
-        assertThat(f2.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f2.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f2, f2.transform(this.ts), f2.variables())).isTrue();
-        assertThat(f3.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f3.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f3, f3.transform(this.ts), f3.variables())).isTrue();
-        assertThat(f4.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f4.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f4, f4.transform(this.ts), f4.variables())).isTrue();
-        assertThat(f5.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f5.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f5, f5.transform(this.ts), f5.variables())).isTrue();
-        assertThat(f5.transform(this.ts).holds(this.cnfPredicate)).isTrue();
+        assertThat(f5.transform(this.ts).isCNF()).isTrue();
         assertThat(equivalentModels(f5, f5.transform(this.ts), f5.variables())).isTrue();
     }
 
@@ -135,13 +133,13 @@ public class TseitinTest extends TestWithExampleFormulas {
         final Formula f2 = p.parse("~x & ~y");
         final Formula f3 = p.parse("d & ((a | b) => c)");
         final Formula f4 = p.parse("d & ((a | b) => c) | ~x & ~y");
-        assertThat(f1.transform(pgf).holds(this.cnfPredicate)).isTrue();
+        assertThat(f1.transform(pgf).isCNF()).isTrue();
         assertThat(f1.transform(pgf).variables().size()).isEqualTo(f1.variables().size());
-        assertThat(f2.transform(pgf).holds(this.cnfPredicate)).isTrue();
+        assertThat(f2.transform(pgf).isCNF()).isTrue();
         assertThat(f2.transform(pgf).variables().size()).isEqualTo(f2.variables().size());
-        assertThat(f3.transform(pgf).holds(this.cnfPredicate)).isTrue();
+        assertThat(f3.transform(pgf).isCNF()).isTrue();
         assertThat(f3.transform(pgf).variables().size()).isEqualTo(f3.variables().size());
-        assertThat(f4.transform(pgf).holds(this.cnfPredicate)).isTrue();
+        assertThat(f4.transform(pgf).isCNF()).isTrue();
         assertThat(f4.transform(pgf).variables().size()).isEqualTo(f4.variables().size());
     }
 

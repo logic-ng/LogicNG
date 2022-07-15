@@ -37,7 +37,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +92,7 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
         final Formula nnf = formula.nnf();
-        if (nnf.holds(CNFPredicate.get())) {
+        if (nnf.isCNF()) {
             return nnf;
         }
         Formula pg;
