@@ -67,7 +67,7 @@ public final class FactorOutSimplifier implements FormulaTransformation {
      * Constructs a new factor out simplification with the default rating function {@link DefaultRatingFunction}.
      */
     public FactorOutSimplifier() {
-        this(new DefaultRatingFunction());
+        this(DefaultRatingFunction.get());
     }
 
     @Override

@@ -46,7 +46,7 @@ import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
  */
 public abstract class BDDNormalFormTransformation implements FormulaTransformation {
 
-    private final UnitPropagation up = new UnitPropagation();
+    private final UnitPropagation up = UnitPropagation.get();
     private final BDDKernel kernel;
 
     /**

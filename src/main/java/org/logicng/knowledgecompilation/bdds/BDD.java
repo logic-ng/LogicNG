@@ -370,7 +370,7 @@ public class BDD {
      * @return the BDD as LogicNG data structure
      */
     public BDDNode toLngBdd() {
-        return this.apply(new LngBDDFunction());
+        return this.apply(LngBDDFunction.get());
     }
 
     /**

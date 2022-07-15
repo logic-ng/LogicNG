@@ -58,7 +58,7 @@ import java.util.List;
  */
 public class AdvancedSimplifierTest extends TestWithExampleFormulas {
 
-    private final AdvancedSimplifier simplifier = new AdvancedSimplifier(new DefaultRatingFunction());
+    private final AdvancedSimplifier simplifier = new AdvancedSimplifier(DefaultRatingFunction.get());
 
     @Test
     public void testConstants() {
@@ -145,7 +145,7 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
     }
 
     private void testHandler(final OptimizationHandler handler, final Formula formula, final boolean expAborted) {
-        final AdvancedSimplifier simplifierWithHandler = new AdvancedSimplifier(new DefaultRatingFunction(), handler);
+        final AdvancedSimplifier simplifierWithHandler = new AdvancedSimplifier(DefaultRatingFunction.get(), handler);
         final Formula simplified = formula.transform(simplifierWithHandler);
         assertThat(handler.aborted()).isEqualTo(expAborted);
         if (expAborted) {

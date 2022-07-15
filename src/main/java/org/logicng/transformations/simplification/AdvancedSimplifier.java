@@ -121,7 +121,7 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         }
         final Formula minDnf = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
         final Formula fullFactor = minDnf.transform(new FactorOutSimplifier(this.ratingFunction));
-        return f.and(f.and(backboneLiterals), fullFactor).transform(new NegationSimplifier());
+        return f.and(f.and(backboneLiterals), fullFactor).transform(NegationSimplifier.get());
     }
 
     private List<Formula> negateAllLiterals(final Collection<SortedSet<Literal>> literalSets, final FormulaFactory f) {

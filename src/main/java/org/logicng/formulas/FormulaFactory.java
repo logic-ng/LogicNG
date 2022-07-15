@@ -133,7 +133,7 @@ public class FormulaFactory {
         this.clear();
         this.configurations = new EnumMap<>(ConfigurationType.class);
         this.cnfEncoder = new CNFEncoder(this);
-        this.subformulaFunction = new SubNodeFunction();
+        this.subformulaFunction = SubNodeFunction.get();
         if (!this.name.isEmpty()) {
             this.ccPrefix = CC_PREFIX + this.name + "_";
             this.pbPrefix = PB_PREFIX + this.name + "_";

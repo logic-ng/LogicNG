@@ -94,7 +94,7 @@ public final class ModelCounter {
     }
 
     private static List<Formula> encodeAsCnf(final Collection<Formula> formulas, final FormulaFactory f) {
-        final PureExpansionTransformation expander = new PureExpansionTransformation();
+        final PureExpansionTransformation expander = PureExpansionTransformation.get();
         final List<Formula> expandedFormulas = formulas.stream().map(formula -> formula.transform(expander)).collect(Collectors.toList());
         final CNFEncoder cnfEncoder = new CNFEncoder(f, CNFConfig.builder()
                 .algorithm(CNFConfig.Algorithm.ADVANCED)

@@ -50,7 +50,7 @@ public class DNFSubsumptionTest {
 
     private final FormulaFactory f = new FormulaFactory();
     private final PropositionalParser p = new PropositionalParser(this.f);
-    private final DNFSubsumption s = new DNFSubsumption();
+    private final DNFSubsumption s = DNFSubsumption.get();
 
     @Test
     public void testNotInDNF() {
@@ -92,7 +92,7 @@ public class DNFSubsumptionTest {
                 break;
             }
             final Formula dnf = op.transform(new DNFFactorization());
-            final Formula subsumed = dnf.transform(new DNFSubsumption());
+            final Formula subsumed = dnf.transform(DNFSubsumption.get());
             assertThat(f.equivalence(dnf, subsumed).holds(new TautologyPredicate(f))).isTrue();
             assertThat(dnf.numberOfOperands() > subsumed.numberOfOperands()).isTrue();
             count--;

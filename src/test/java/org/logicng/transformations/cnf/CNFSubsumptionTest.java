@@ -51,7 +51,7 @@ public class CNFSubsumptionTest {
 
     private final FormulaFactory f = new FormulaFactory();
     private final PropositionalParser p = new PropositionalParser(this.f);
-    private final CNFSubsumption s = new CNFSubsumption();
+    private final CNFSubsumption s = CNFSubsumption.get();
 
     @Test
     public void testNotInCNF() {
@@ -89,7 +89,7 @@ public class CNFSubsumptionTest {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final Formula cnf = formula.transform(new CNFFactorization());
-        final Formula subsumed = cnf.transform(new CNFSubsumption());
+        final Formula subsumed = cnf.transform(CNFSubsumption.get());
         assertThat(f.equivalence(cnf, subsumed).holds(new TautologyPredicate(f))).isTrue();
         assertThat(cnf.numberOfOperands() > subsumed.numberOfOperands()).isTrue();
     }

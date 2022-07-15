@@ -43,7 +43,7 @@ import org.logicng.io.parsers.PropositionalParser;
  */
 public class DistributiveSimplifierTest extends TestWithExampleFormulas {
 
-    private final DistributiveSimplifier distributiveSimplifier = new DistributiveSimplifier();
+    private final DistributiveSimplifier distributiveSimplifier = DistributiveSimplifier.get();
 
     @Test
     public void testConstants() {

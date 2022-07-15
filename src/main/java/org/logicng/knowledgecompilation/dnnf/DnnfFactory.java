@@ -52,8 +52,8 @@ public class DnnfFactory {
      * Constructs a new DNNF factory instance.
      */
     public DnnfFactory() {
-        this.backboneSimplifier = new BackboneSimplifier();
-        this.subsumption = new CNFSubsumption();
+        this.backboneSimplifier = BackboneSimplifier.get();
+        this.subsumption = CNFSubsumption.get();
     }
 
     /**

@@ -48,7 +48,7 @@ import org.logicng.util.FormulaRandomizerConfig;
  */
 public class NegationMinimizerTest extends TestWithExampleFormulas {
 
-    private final NegationSimplifier minimizer = new NegationSimplifier();
+    private final NegationSimplifier minimizer = NegationSimplifier.get();
 
     @Test
     public void testSimple() throws ParserException {
@@ -109,7 +109,7 @@ public class NegationMinimizerTest extends TestWithExampleFormulas {
 
     private static void computeAndVerify(final Formula formula) {
         final FormulaFactory f = formula.factory();
-        final Formula simplified = formula.transform(new NegationSimplifier());
+        final Formula simplified = formula.transform(NegationSimplifier.get());
         assertThat(f.equivalence(formula, simplified).holds(new TautologyPredicate(f))).isTrue();
         assertThat(simplified.toString().length()).isLessThanOrEqualTo(formula.toString().length());
     }

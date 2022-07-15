@@ -57,7 +57,7 @@ public class LiteralProfileTest {
     private final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
     private final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
 
-    private final LiteralProfileFunction litProfile = new LiteralProfileFunction();
+    private final LiteralProfileFunction litProfile = LiteralProfileFunction.get();
 
     private final Formula pb1;
     private final Formula pb2;
