@@ -214,7 +214,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
             currRestarts++;
         }
 
-        if (this.config.proofGeneration) {
+        if (this.config.proofGeneration && this.assumptions.empty()) {
             if (status == Tristate.FALSE) {
                 this.pgProof.push(new LNGIntVector(1, 0));
             }
