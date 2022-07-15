@@ -41,6 +41,9 @@ import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
+import org.logicng.predicates.CNFPredicate;
+import org.logicng.predicates.DNFPredicate;
+import org.logicng.predicates.NNFPredicate;
 import org.logicng.transformations.NNFTransformation;
 
 import java.util.SortedSet;
@@ -48,7 +51,7 @@ import java.util.stream.Stream;
 
 /**
  * Super class for formulas.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public abstract class Formula implements Iterable<Formula> {
@@ -182,6 +185,33 @@ public abstract class Formula implements Iterable<Formula> {
      * @return {@code true} if this formula contains a given node
      */
     public abstract boolean containsNode(final Formula formula);
+
+    /**
+     * Returns {@code true} if this formula is in NNF, otherwise {@code false}
+     * @return {@code true} if this formula is in NNF, otherwise {@code false}
+     * @see NNFPredicate the NNF predicate
+     */
+    public boolean isNNF() {
+        return this.holds(NNFPredicate.get());
+    }
+
+    /**
+     * Returns {@code true} if this formula is in DNF, otherwise {@code false}
+     * @return {@code true} if this formula is in DNF, otherwise {@code false}
+     * @see DNFPredicate the DNF predicate
+     */
+    public boolean isDNF() {
+        return this.holds(DNFPredicate.get());
+    }
+
+    /**
+     * Returns {@code true} if this formula is in CNF, otherwise {@code false}
+     * @return {@code true} if this formula is in CNF, otherwise {@code false}
+     * @see CNFPredicate the CNF predicate
+     */
+    public boolean isCNF() {
+        return this.holds(CNFPredicate.get());
+    }
 
     /**
      * Performs a simultaneous substitution on this formula given a single mapping from variable to formula.

@@ -37,7 +37,6 @@ import org.logicng.handlers.NumberOfNodesBDDHandler;
 import org.logicng.handlers.TimeoutBDDHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.predicates.CNFPredicate;
 import org.logicng.testutils.NQueensGenerator;
 import org.logicng.testutils.PigeonHoleGenerator;
 
@@ -87,7 +86,7 @@ public class LargeBDDTest {
         final BDDKernel kernel = new BDDKernel(f, queens.variables().size(), 10000, 10000);
         final BDD bdd = BDDFactory.build(queens, kernel);
         final Formula cnf = bdd.cnf();
-        assertThat(cnf.holds(CNFPredicate.get())).isTrue();
+        assertThat(cnf.isCNF()).isTrue();
         final BDD cnfBDD = BDDFactory.build(cnf, kernel);
         assertThat(cnfBDD).isEqualTo(bdd);
         assertThat(bdd.support()).isEqualTo(queens.variables());

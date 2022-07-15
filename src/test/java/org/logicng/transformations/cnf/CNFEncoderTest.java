@@ -38,7 +38,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.logicng.predicates.CNFPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -47,12 +46,10 @@ import java.util.SortedSet;
 
 /**
  * Unit tests for the class {@link CNFEncoder}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.1
  */
 public class CNFEncoderTest {
-
-    private static final CNFPredicate cnfPredicate = CNFPredicate.get();
 
     private static final String p1 = "(x1 | x2) & x3 & x4 & ((x1 & x5 & ~(x6 | x7) | x8) | x9)";
     private static final String p2 = "(y1 | y2) & y3 & y4 & ((y1 & y5 & ~(y6 | y7) | y8) | y9)";
@@ -160,13 +157,13 @@ public class CNFEncoderTest {
         final Formula phi3 = p.parse(p3);
         final CNFEncoder encoder = new CNFEncoder(f, CNFConfig.builder().algorithm(CNFConfig.Algorithm.BDD).build());
         final Formula phi1CNF = encoder.encode(phi1);
-        assertThat(phi1CNF.holds(cnfPredicate)).isTrue();
+        assertThat(phi1CNF.isCNF()).isTrue();
         assertThat(equivalentModels(phi1, phi1CNF, phi1.variables())).isTrue();
         final Formula phi2CNF = encoder.encode(phi2);
-        assertThat(phi2CNF.holds(cnfPredicate)).isTrue();
+        assertThat(phi2CNF.isCNF()).isTrue();
         assertThat(equivalentModels(phi2, phi2CNF, phi2.variables())).isTrue();
         final Formula phi3CNF = encoder.encode(phi3);
-        assertThat(phi3CNF.holds(cnfPredicate)).isTrue();
+        assertThat(phi3CNF.isCNF()).isTrue();
         assertThat(equivalentModels(phi3, phi3CNF, phi3.variables())).isTrue();
     }
 

@@ -170,7 +170,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                 final FormulaFactory f = new FormulaFactory();
                 final Formula formula = randomFormula(vars, depth, f);
                 if (verbose) {
-                    System.out.println(String.format("vars = %2d, depth = %2d, nodes = %5d", vars, depth, formula.numberOfNodes()));
+                    System.out.printf("vars = %2d, depth = %2d, nodes = %5d%n", vars, depth, formula.numberOfNodes());
                 }
                 for (final BDDReorderingMethod method : REORDER_METHODS) {
                     performReorder(f, formula, method, true, verbose);

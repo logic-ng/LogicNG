@@ -111,6 +111,6 @@ public class NegationMinimizerTest extends TestWithExampleFormulas {
         final FormulaFactory f = formula.factory();
         final Formula simplified = formula.transform(new NegationSimplifier());
         assertThat(f.equivalence(formula, simplified).holds(new TautologyPredicate(f))).isTrue();
-        assertThat(simplified.toString().length() <= formula.toString().length());
+        assertThat(simplified.toString().length()).isLessThanOrEqualTo(formula.toString().length());
     }
 }

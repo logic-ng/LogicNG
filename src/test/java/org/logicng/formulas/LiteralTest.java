@@ -36,7 +36,7 @@ import org.logicng.datastructures.Substitution;
 
 /**
  * Unit Tests for the class {@link Literal}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class LiteralTest extends TestWithExampleFormulas {
@@ -181,6 +181,24 @@ public class LiteralTest extends TestWithExampleFormulas {
         assertThat(this.A.containsVariable(this.f.variable("a"))).isTrue();
         assertThat(this.NA.containsVariable(this.f.variable("b"))).isFalse();
         assertThat(this.NA.containsVariable(this.f.variable("a"))).isTrue();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.A.isNNF()).isTrue();
+        assertThat(this.NA.isNNF()).isTrue();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.A.isDNF()).isTrue();
+        assertThat(this.NA.isDNF()).isTrue();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.A.isCNF()).isTrue();
+        assertThat(this.NA.isCNF()).isTrue();
     }
 
     @Test

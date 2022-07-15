@@ -32,7 +32,6 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-import org.logicng.predicates.CNFPredicate;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -76,7 +75,7 @@ public final class FormulaDimacsFileWriter {
         for (final Variable var : new TreeSet<>(formula.variables())) {
             var2id.put(var, i++);
         }
-        if (!formula.holds(CNFPredicate.get())) {
+        if (!formula.isCNF()) {
             throw new IllegalArgumentException("Cannot write a non-CNF formula to dimacs.  Convert to CNF first.");
         }
         final List<Formula> parts = new ArrayList<>();

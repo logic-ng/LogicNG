@@ -45,7 +45,6 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.readers.FormulaReader;
-import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
@@ -62,7 +61,7 @@ import java.util.SortedMap;
 
 /**
  * Unit tests for {@link QuineMcCluskeyAlgorithm}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.4.0
  */
 public class QuineMcCluskeyTest {
@@ -73,7 +72,7 @@ public class QuineMcCluskeyTest {
         final PropositionalParser p = new PropositionalParser(f);
         final Formula formula = p.parse("(~a & ~b & ~c) | (~a & ~b & c) | (~a & b & ~c) | (a & ~b & c) | (a & b & ~c) | (a & b & c)");
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
-        assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+        assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
     }
 
@@ -83,7 +82,7 @@ public class QuineMcCluskeyTest {
         final PropositionalParser p = new PropositionalParser(f);
         final Formula formula = p.parse("(~a & ~b & ~c) | (~a & b & ~c) | (a & ~b & c) | (a & b & c)");
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
-        assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+        assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
     }
 
@@ -98,7 +97,7 @@ public class QuineMcCluskeyTest {
         final PropositionalParser p = new PropositionalParser(f);
         final Formula formula = p.parse("~5 & ~4 & 3 & 2 & 1 | ~3 & ~7 & ~2 & 1 | ~6 & 1 & ~3 & 2 | ~9 & 6 & 8 & ~1 | 3 & 4 & 2 & 1 | ~2 & 7 & 1 | ~10 & ~8 & ~1");
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
-        assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+        assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
         assertThat(formula.variables()).containsAll(dnf.variables());
     }
@@ -109,7 +108,7 @@ public class QuineMcCluskeyTest {
         final PropositionalParser p = new PropositionalParser(f);
         final Formula formula = p.parse("A => B & ~((D | E | I | J) & ~K) & L");
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
-        assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+        assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
     }
 
@@ -136,7 +135,7 @@ public class QuineMcCluskeyTest {
         }
         final Formula canonicalDNF = f.or(operands);
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(models, f);
-        assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+        assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(canonicalDNF, dnf).holds(new TautologyPredicate(f))).isTrue();
     }
 
@@ -167,7 +166,7 @@ public class QuineMcCluskeyTest {
         }
         final Formula canonicalDNF = f.or(operands);
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(models, f);
-        assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+        assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(canonicalDNF, dnf).holds(new TautologyPredicate(f))).isTrue();
     }
 
@@ -372,7 +371,7 @@ public class QuineMcCluskeyTest {
             final Formula canonicalDNF = f.or(operands);
 
             final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula, projectedVars);
-            assertThat(dnf.holds(DNFPredicate.get())).isTrue();
+            assertThat(dnf.isDNF()).isTrue();
             assertThat(f.equivalence(canonicalDNF, dnf).holds(new TautologyPredicate(f))).isTrue();
         }
     }

@@ -41,7 +41,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Equivalence}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class EquivalenceTest extends TestWithExampleFormulas {
@@ -192,5 +192,29 @@ public class EquivalenceTest extends TestWithExampleFormulas {
         assertThat(this.EQ4.containsVariable(this.f.variable("x"))).isFalse();
         assertThat(this.EQ4.containsNode(this.IMP1)).isTrue();
         assertThat(this.EQ4.containsNode(this.IMP4)).isFalse();
+    }
+
+    @Test
+    public void testIsNNF() {
+        assertThat(this.EQ1.isNNF()).isFalse();
+        assertThat(this.EQ2.isNNF()).isFalse();
+        assertThat(this.EQ3.isNNF()).isFalse();
+        assertThat(this.EQ4.isNNF()).isFalse();
+    }
+
+    @Test
+    public void testIsDNF() {
+        assertThat(this.EQ1.isDNF()).isFalse();
+        assertThat(this.EQ2.isDNF()).isFalse();
+        assertThat(this.EQ3.isDNF()).isFalse();
+        assertThat(this.EQ4.isDNF()).isFalse();
+    }
+
+    @Test
+    public void testIsCNF() {
+        assertThat(this.EQ1.isCNF()).isFalse();
+        assertThat(this.EQ2.isCNF()).isFalse();
+        assertThat(this.EQ3.isCNF()).isFalse();
+        assertThat(this.EQ4.isCNF()).isFalse();
     }
 }
