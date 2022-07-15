@@ -1,4 +1,4 @@
-![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.2.0-ff69b4.svg)
+![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.3.0-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -25,10 +25,11 @@ Compared to other implementation of logic libraries on the JVM this is a huge me
 LogicNG is released in the Maven Central Repository. To include it just add
 
 ```xml
+
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>2.2.0</version>
+  <version>2.3.0</version>
 </dependency>
 ```
 
@@ -74,13 +75,13 @@ Once you created the formula you can for example convert it to NNF or CNF or sol
 final Formula nnf=formula.nnf();
 final Formula cnf=formula.cnf();
 final SATSolver miniSat=MiniSat.miniSat(f);
-miniSat.add(formula);
+        miniSat.add(formula);
 final Tristate result=miniSat.sat();
 ```
 
-### Frequently Asked Questions
+### Documentation
 
-We recently started a Wiki section for a [FAQ](https://github.com/logic-ng/LogicNG/wiki/FAQ).
+For an extensive documentation see the [wiki](https://github.com/logic-ng/LogicNG/wiki).
 
 ## License & Commercial Support
 
