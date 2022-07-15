@@ -30,7 +30,6 @@ package org.logicng.cardinalityconstraints;
 
 import static org.logicng.util.FormulaHelper.literalsAsVariables;
 
-import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.CardinalityConstraint;
@@ -54,14 +53,13 @@ import java.util.List;
  * has no associated cardinality constraint encoder configuration.  If you change the configuration in the factory,
  * all encoders constructed for this factory will be affected.</li>
  * </ol>
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.1
  */
 public class CCEncoder {
 
     protected final FormulaFactory f;
     protected final CCConfig config;
-    protected final CCConfig defaultConfig;
 
     protected CCAMOPure amoPure;
     protected CCAMOLadder amoLadder;
@@ -90,7 +88,6 @@ public class CCEncoder {
     public CCEncoder(final FormulaFactory f, final CCConfig config) {
         this.f = f;
         this.config = config;
-        this.defaultConfig = CCConfig.builder().build();
     }
 
     /**
@@ -163,16 +160,11 @@ public class CCEncoder {
 
     /**
      * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise the current configuration of the formula factory is used or - if not
-     * present - the default configuration.
+     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
      * @return the current configuration of
      */
     public CCConfig config() {
-        if (this.config != null) {
-            return this.config;
-        }
-        final Configuration ccConfig = this.f.configurationFor(ConfigurationType.CC_ENCODER);
-        return ccConfig != null ? (CCConfig) ccConfig : this.defaultConfig;
+        return this.config != null ? this.config : (CCConfig) this.f.configurationFor(ConfigurationType.CC_ENCODER);
     }
 
     /**

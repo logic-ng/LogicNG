@@ -28,7 +28,6 @@
 
 package org.logicng.transformations.cnf;
 
-import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -41,14 +40,13 @@ import java.util.List;
 
 /**
  * An encoder for conjunctive normal form (CNF).
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.1
  */
 public class CNFEncoder {
 
     protected final FormulaFactory f;
     protected final CNFConfig config;
-    protected final CNFConfig defaultConfig;
 
     protected CNFFactorization factorization;
     protected CNFFactorization advancedFactorization;
@@ -66,7 +64,6 @@ public class CNFEncoder {
     public CNFEncoder(final FormulaFactory f, final CNFConfig config) {
         this.f = f;
         this.config = config;
-        this.defaultConfig = CNFConfig.builder().build();
     }
 
     /**
@@ -162,16 +159,11 @@ public class CNFEncoder {
 
     /**
      * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise the current configuration of the formula factory is used or - if not
-     * present - the default configuration.
+     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
      * @return the current configuration of
      */
     public CNFConfig config() {
-        if (this.config != null) {
-            return this.config;
-        }
-        final Configuration cnfConfig = this.f.configurationFor(ConfigurationType.CNF);
-        return cnfConfig != null ? (CNFConfig) cnfConfig : this.defaultConfig;
+        return this.config != null ? this.config : (CNFConfig) this.f.configurationFor(ConfigurationType.CNF);
     }
 
     @Override

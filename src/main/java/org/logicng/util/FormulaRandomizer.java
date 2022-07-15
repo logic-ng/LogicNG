@@ -28,6 +28,7 @@
 
 package org.logicng.util;
 
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Constant;
 import org.logicng.formulas.FType;
@@ -46,7 +47,7 @@ import java.util.stream.Stream;
  * <p>
  * The formula types included in the generated formulas can be configured
  * with a {@link FormulaRandomizerConfig}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class FormulaRandomizer {
@@ -62,19 +63,27 @@ public final class FormulaRandomizer {
     private final double coefficientNegativeProbability;
 
     /**
+     * Generates a new formula randomizer. With the given formula factory and the randomizer configuration from the formula factory.
+     * @param f the formula factory
+     */
+    public FormulaRandomizer(final FormulaFactory f) {
+        this(f, null);
+    }
+
+    /**
      * Generates a new formula randomizer. With the given formula factory and configuration.
      * @param f      the formula factory
      * @param config the formula randomizer configuration
      */
     public FormulaRandomizer(final FormulaFactory f, final FormulaRandomizerConfig config) {
         this.f = f;
-        this.config = config;
-        this.random = config.seed != 0 ? new Random(config.seed) : new Random();
-        this.variables = generateVars(f, config);
-        this.formulaTypeProbabilities = new FormulaTypeProbabilities(config);
-        this.cTypeProbabilities = new CTypeProbabilities(config);
-        this.phaseProbability = generatePhaseProbability(config);
-        this.coefficientNegativeProbability = config.weightPbcCoeffNegative / (config.weightPbcCoeffPositive + config.weightPbcCoeffNegative);
+        this.config = config != null ? config : (FormulaRandomizerConfig) f.configurationFor(ConfigurationType.FORMULA_RANDOMIZER);
+        this.random = this.config.seed != 0 ? new Random(this.config.seed) : new Random();
+        this.variables = generateVars(f, this.config);
+        this.formulaTypeProbabilities = new FormulaTypeProbabilities(this.config);
+        this.cTypeProbabilities = new CTypeProbabilities(this.config);
+        this.phaseProbability = generatePhaseProbability(this.config);
+        this.coefficientNegativeProbability = this.config.weightPbcCoeffNegative / (this.config.weightPbcCoeffPositive + this.config.weightPbcCoeffNegative);
     }
 
     /**

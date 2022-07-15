@@ -23,6 +23,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Class `BDDCNFFunction` uses the singleton pattern
 - All functions/transformations/predicates with only a default constructor introduce a static `get()` method with the singleton pattern. The public
   constructors are now deprecated and will be removed with LogicNG 3.0
+- Always use the default configuration of algorithms from the formula factory and do not construct them in the respective classes separately.
 
 ### Fixed
 

@@ -32,7 +32,6 @@ import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.cardinalityconstraints.CCEncoder;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.collections.LNGVector;
-import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.formulas.CardinalityConstraint;
 import org.logicng.formulas.Formula;
@@ -46,14 +45,13 @@ import java.util.List;
 
 /**
  * An encoder for pseudo-Boolean constraints.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class PBEncoder {
 
     protected final FormulaFactory f;
     protected final PBConfig config;
-    protected final PBConfig defaultConfig;
     protected final CCEncoder ccEncoder;
 
     protected PBSWC swc;
@@ -67,7 +65,6 @@ public class PBEncoder {
      */
     public PBEncoder(final FormulaFactory f, final PBConfig pbConfig, final CCConfig ccConfig) {
         this.f = f;
-        this.defaultConfig = PBConfig.builder().build();
         this.config = pbConfig;
         this.ccEncoder = new CCEncoder(f, ccConfig);
     }
@@ -79,7 +76,6 @@ public class PBEncoder {
      */
     public PBEncoder(final FormulaFactory f, final PBConfig pbConfig) {
         this.f = f;
-        this.defaultConfig = PBConfig.builder().build();
         this.config = pbConfig;
         this.ccEncoder = new CCEncoder(f);
     }
@@ -90,7 +86,6 @@ public class PBEncoder {
      */
     public PBEncoder(final FormulaFactory f) {
         this.f = f;
-        this.defaultConfig = PBConfig.builder().build();
         this.config = null;
         this.ccEncoder = new CCEncoder(f);
     }
@@ -137,25 +132,20 @@ public class PBEncoder {
 
     /**
      * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise the current configuration of the formula factory is used or - if not
-     * present - the default configuration.
+     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
      * @return the current configuration of
      */
     public PBConfig config() {
-        if (this.config != null) {
-            return this.config;
-        }
-        final Configuration pbConfig = this.f.configurationFor(ConfigurationType.PB_ENCODER);
-        return pbConfig != null ? (PBConfig) pbConfig : this.defaultConfig;
+        return this.config != null ? this.config : (PBConfig) this.f.configurationFor(ConfigurationType.PB_ENCODER);
     }
 
     /**
      * Builds a pseudo Boolean constraint of the form {@code c_1 * lit_1 + c_2 * lit_2 + ... + c_n * lit_n >= k}.
      * @param lits   the literals {@code lit_1 ... lit_n}
      * @param coeffs the coefficients {@code c_1 ... c_n}
-     * @param rhs    the right hand side {@code k} of the constraint
+     * @param rhs    the right-hand side {@code k} of the constraint
      * @return the CNF encoding of the pseudo Boolean constraint
-     * @throws IllegalArgumentException if the right hand side of the cardinality constraint is negative or
+     * @throws IllegalArgumentException if the right-hand side of the cardinality constraint is negative or
      *                                  larger than the number of literals
      */
     protected List<Formula> encode(final Literal[] lits, final int[] coeffs, final int rhs) {

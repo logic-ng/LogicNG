@@ -28,6 +28,7 @@
 
 package org.logicng.explanations.mus;
 
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.explanations.UNSATCore;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.propositions.Proposition;
@@ -53,14 +54,14 @@ public final class MUSGeneration {
     }
 
     /**
-     * Computes a MUS for the given propositions with the default algorithm and the default configuration.
+     * Computes a MUS for the given propositions with the default algorithm and the MUS configuration from the formula factory.
      * @param propositions the propositions
      * @param f            the formula factory
      * @param <T>          the type of the MUSes propositions
      * @return the MUS
      */
     public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f) {
-        return this.computeMUS(propositions, f, MUSConfig.builder().build());
+        return this.computeMUS(propositions, f, (MUSConfig) f.configurationFor(ConfigurationType.MUS));
     }
 
     /**

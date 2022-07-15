@@ -85,7 +85,7 @@ public final class SetCover {
                 elementOccurrences.computeIfAbsent(element, i -> new LinkedHashSet<>()).add(setVar);
             }
         }
-        final MaxSATSolver solver = MaxSATSolver.msu3();
+        final MaxSATSolver solver = MaxSATSolver.msu3(f);
         for (final Set<Variable> occurrences : elementOccurrences.values()) {
             solver.addHardFormula(f.or(occurrences));
         }

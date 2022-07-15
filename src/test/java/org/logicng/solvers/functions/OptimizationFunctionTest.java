@@ -321,11 +321,11 @@ public class OptimizationFunctionTest implements LogicNGTest {
             variables.addAll(parsed.variables());
         }
         final int expected = 25;
-        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.incWBO())).isEqualTo(expected);
-        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.linearSU())).isEqualTo(expected);
-        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.linearUS())).isEqualTo(expected);
-        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.msu3())).isEqualTo(expected);
-        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.wbo())).isEqualTo(expected);
+        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.incWBO(f))).isEqualTo(expected);
+        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.linearSU(f))).isEqualTo(expected);
+        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.linearUS(f))).isEqualTo(expected);
+        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.msu3(f))).isEqualTo(expected);
+        assertThat(solveMaxSat(formulas, variables, MaxSATSolver.wbo(f))).isEqualTo(expected);
         assertThat(satisfiedLiterals(optimize(formulas, variables, Collections.emptyList(), false, MiniSat.miniSat(f), null), variables).size()).isEqualTo(expected);
         assertThat(satisfiedLiterals(optimize(formulas, variables, Collections.emptyList(), false, MiniSat.miniCard(f), null), variables).size()).isEqualTo(expected);
         assertThat(satisfiedLiterals(optimize(formulas, variables, Collections.emptyList(), false, MiniSat.glucose(f), null), variables).size()).isEqualTo(expected);

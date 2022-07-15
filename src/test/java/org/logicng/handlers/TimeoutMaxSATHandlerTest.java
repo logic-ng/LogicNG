@@ -38,12 +38,12 @@ class TimeoutMaxSATHandlerTest {
     public void init() {
         this.f = new FormulaFactory();
         this.solvers = Arrays.asList(
-                MaxSATSolver.incWBO(),
-                MaxSATSolver.wbo(),
-                MaxSATSolver.linearSU(),
-                MaxSATSolver.linearUS(),
-                MaxSATSolver.msu3(),
-                MaxSATSolver.wmsu3()
+                MaxSATSolver.incWBO(this.f),
+                MaxSATSolver.wbo(this.f),
+                MaxSATSolver.linearSU(this.f),
+                MaxSATSolver.linearUS(this.f),
+                MaxSATSolver.msu3(this.f),
+                MaxSATSolver.wmsu3(this.f)
         );
     }
 

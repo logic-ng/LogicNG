@@ -34,6 +34,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSAT.MaxSATResult.UNSATISF
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -56,7 +57,7 @@ import java.util.TreeSet;
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class MaxSATSolver {
@@ -88,9 +89,20 @@ public class MaxSATSolver {
     /**
      * Returns a new MaxSAT solver using incremental WBO as algorithm with the default configuration.
      * @return the MaxSAT solver
+     * @deprecated this factory without parameter will be removed in the future, use {@link #incWBO(FormulaFactory)} instead
      */
+    @Deprecated
     public static MaxSATSolver incWBO() {
         return new MaxSATSolver(MaxSATConfig.builder().build(), Algorithm.INC_WBO);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using incremental WBO as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver incWBO(final FormulaFactory f) {
+        return new MaxSATSolver((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), Algorithm.INC_WBO);
     }
 
     /**
@@ -105,9 +117,20 @@ public class MaxSATSolver {
     /**
      * Returns a new MaxSAT solver using LinearSU as algorithm with the default configuration.
      * @return the MaxSAT solver
+     * @deprecated this factory without parameter will be removed in the future, use {@link #linearSU(FormulaFactory)} instead
      */
     public static MaxSATSolver linearSU() {
         return new MaxSATSolver(MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).build(), Algorithm.LINEAR_SU);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using LinearSU as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver linearSU(final FormulaFactory f) {
+        final MaxSATConfig conf = new MaxSATConfig((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), MaxSATConfig.CardinalityEncoding.MTOTALIZER);
+        return new MaxSATSolver(conf, Algorithm.LINEAR_SU);
     }
 
     /**
@@ -122,9 +145,19 @@ public class MaxSATSolver {
     /**
      * Returns a new MaxSAT solver using LinearUS as algorithm with the default configuration.
      * @return the MaxSAT solver
+     * @deprecated this factory without parameter will be removed in the future, use {@link #linearUS(FormulaFactory)} instead
      */
     public static MaxSATSolver linearUS() {
         return new MaxSATSolver(MaxSATConfig.builder().build(), Algorithm.LINEAR_US);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using LinearUS as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver linearUS(final FormulaFactory f) {
+        return new MaxSATSolver((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), Algorithm.LINEAR_US);
     }
 
     /**
@@ -139,9 +172,19 @@ public class MaxSATSolver {
     /**
      * Returns a new MaxSAT solver using MSU3 as algorithm with the default configuration.
      * @return the MaxSAT solver
+     * @deprecated this factory without parameter will be removed in the future, use {@link #msu3(FormulaFactory)} instead
      */
     public static MaxSATSolver msu3() {
         return new MaxSATSolver(MaxSATConfig.builder().build(), Algorithm.MSU3);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using MSU3 as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver msu3(final FormulaFactory f) {
+        return new MaxSATSolver((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), Algorithm.MSU3);
     }
 
     /**
@@ -156,9 +199,19 @@ public class MaxSATSolver {
     /**
      * Returns a new MaxSAT solver using WBO as algorithm with the default configuration.
      * @return the MaxSAT solver
+     * @deprecated this factory without parameter will be removed in the future, use {@link #wbo(FormulaFactory)} instead
      */
     public static MaxSATSolver wbo() {
         return new MaxSATSolver(MaxSATConfig.builder().build(), Algorithm.WBO);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using WBO as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver wbo(final FormulaFactory f) {
+        return new MaxSATSolver((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), Algorithm.WBO);
     }
 
     /**
@@ -173,9 +226,20 @@ public class MaxSATSolver {
     /**
      * Returns a new MaxSAT solver using weighted MSU3 as algorithm with the default configuration.
      * @return the MaxSAT solver
+     * @deprecated this factory without parameter will be removed in the future, use {@link #wmsu3(FormulaFactory)} instead
      */
     public static MaxSATSolver wmsu3() {
         return new MaxSATSolver(MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).build(), Algorithm.WMSU3);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using weighted MSU3 as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver wmsu3(final FormulaFactory f) {
+        final MaxSATConfig conf = new MaxSATConfig((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), MaxSATConfig.IncrementalStrategy.ITERATIVE);
+        return new MaxSATSolver(conf, Algorithm.WMSU3);
     }
 
     /**

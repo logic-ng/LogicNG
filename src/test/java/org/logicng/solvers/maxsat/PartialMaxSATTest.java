@@ -82,7 +82,7 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testExceptionalBehaviorForMSU3() {
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.msu3();
+            final MaxSATSolver solver = MaxSATSolver.msu3(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 2);
             solver.solve();
@@ -285,8 +285,8 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testNonClauselSoftConstraints() throws ParserException {
         final MaxSATSolver[] solvers = new MaxSATSolver[2];
-        solvers[0] = MaxSATSolver.msu3();
-        solvers[1] = MaxSATSolver.linearUS();
+        solvers[0] = MaxSATSolver.msu3(this.f);
+        solvers[1] = MaxSATSolver.linearUS(this.f);
         for (final MaxSATSolver solver : solvers) {
             solver.addHardFormula(this.f.parse("a & b & c"));
             solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 1);
@@ -301,8 +301,8 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testSoftConstraintsCornerCaseVerum() throws ParserException {
         final MaxSATSolver[] solvers = new MaxSATSolver[2];
-        solvers[0] = MaxSATSolver.msu3();
-        solvers[1] = MaxSATSolver.linearUS();
+        solvers[0] = MaxSATSolver.msu3(this.f);
+        solvers[1] = MaxSATSolver.linearUS(this.f);
         for (final MaxSATSolver solver : solvers) {
             solver.addHardFormula(this.f.parse("a & b & c"));
             solver.addSoftFormula(this.f.parse("$true"), 1);
@@ -318,8 +318,8 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testSoftConstraintsCornerCaseFalsum() throws ParserException {
         final MaxSATSolver[] solvers = new MaxSATSolver[2];
-        solvers[0] = MaxSATSolver.msu3();
-        solvers[1] = MaxSATSolver.linearUS();
+        solvers[0] = MaxSATSolver.msu3(this.f);
+        solvers[1] = MaxSATSolver.linearUS(this.f);
         for (final MaxSATSolver solver : solvers) {
             solver.addHardFormula(this.f.parse("a & b & c"));
             solver.addSoftFormula(this.f.parse("$false"), 1);

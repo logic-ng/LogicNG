@@ -90,7 +90,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testExceptionalBehaviorForWMSU3() {
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.wmsu3();
+            final MaxSATSolver solver = MaxSATSolver.wmsu3(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
@@ -272,10 +272,10 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testWeightedNonClauselSoftConstraints() throws ParserException {
         final MaxSATSolver[] solvers = new MaxSATSolver[4];
-        solvers[0] = MaxSATSolver.incWBO();
-        solvers[1] = MaxSATSolver.linearSU();
-        solvers[2] = MaxSATSolver.wbo();
-        solvers[3] = MaxSATSolver.wmsu3();
+        solvers[0] = MaxSATSolver.incWBO(this.f);
+        solvers[1] = MaxSATSolver.linearSU(this.f);
+        solvers[2] = MaxSATSolver.wbo(this.f);
+        solvers[3] = MaxSATSolver.wmsu3(this.f);
         for (final MaxSATSolver solver : solvers) {
             solver.addHardFormula(this.f.parse("a & b & c"));
             solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 2);
@@ -290,10 +290,10 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testWeightedSoftConstraintsCornerCaseVerum() throws ParserException {
         final MaxSATSolver[] solvers = new MaxSATSolver[4];
-        solvers[0] = MaxSATSolver.incWBO();
-        solvers[1] = MaxSATSolver.linearSU();
-        solvers[2] = MaxSATSolver.wbo();
-        solvers[3] = MaxSATSolver.wmsu3();
+        solvers[0] = MaxSATSolver.incWBO(this.f);
+        solvers[1] = MaxSATSolver.linearSU(this.f);
+        solvers[2] = MaxSATSolver.wbo(this.f);
+        solvers[3] = MaxSATSolver.wmsu3(this.f);
         for (final MaxSATSolver solver : solvers) {
             solver.addHardFormula(this.f.parse("a & b & c"));
             solver.addSoftFormula(this.f.parse("$true"), 2);
@@ -309,10 +309,10 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testWeightedSoftConstraintsCornerCaseFalsum() throws ParserException {
         final MaxSATSolver[] solvers = new MaxSATSolver[4];
-        solvers[0] = MaxSATSolver.incWBO();
-        solvers[1] = MaxSATSolver.linearSU();
-        solvers[2] = MaxSATSolver.wbo();
-        solvers[3] = MaxSATSolver.wmsu3();
+        solvers[0] = MaxSATSolver.incWBO(this.f);
+        solvers[1] = MaxSATSolver.linearSU(this.f);
+        solvers[2] = MaxSATSolver.wbo(this.f);
+        solvers[3] = MaxSATSolver.wmsu3(this.f);
         for (final MaxSATSolver solver : solvers) {
             solver.addHardFormula(this.f.parse("a & b & c"));
             solver.addSoftFormula(this.f.parse("$false"), 2);

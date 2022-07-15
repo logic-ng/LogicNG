@@ -81,7 +81,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testExceptionalBehavior() {
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
@@ -89,7 +89,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
@@ -97,20 +97,20 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, -1);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The weight of a formula must be > 0");
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.result();
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get a result as long as the formula is not solved.  Call 'solver' first.");
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.incWBO();
+            final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.model();
@@ -121,7 +121,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testExceptionalBehaviorForLinearUS() {
         assertThatThrownBy(() -> {
-            final MaxSATSolver solver = MaxSATSolver.linearUS();
+            final MaxSATSolver solver = MaxSATSolver.linearUS(this.f);
             solver.addHardFormula(this.f.parse("a | b"));
             solver.addSoftFormula(this.A, 3);
             solver.solve();
@@ -141,7 +141,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
 
     @Test
     public void testCornerCase() throws ParserException {
-        final MaxSATSolver solver = MaxSATSolver.incWBO();
+        final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
         solver.addHardFormula(this.f.parse("a | b"));
         solver.addHardFormula(this.f.verum());
         solver.addSoftFormula(this.A, 1);
@@ -315,12 +315,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testToString() {
         final MaxSATSolver[] solvers = new MaxSATSolver[6];
-        solvers[0] = MaxSATSolver.incWBO();
-        solvers[1] = MaxSATSolver.linearSU();
-        solvers[2] = MaxSATSolver.linearUS();
-        solvers[3] = MaxSATSolver.msu3();
-        solvers[4] = MaxSATSolver.wbo();
-        solvers[5] = MaxSATSolver.wmsu3();
+        solvers[0] = MaxSATSolver.incWBO(this.f);
+        solvers[1] = MaxSATSolver.linearSU(this.f);
+        solvers[2] = MaxSATSolver.linearUS(this.f);
+        solvers[3] = MaxSATSolver.msu3(this.f);
+        solvers[4] = MaxSATSolver.wbo(this.f);
+        solvers[5] = MaxSATSolver.wmsu3(this.f);
 
         final String expected = "MaxSATSolver{result=OPTIMUM, var2index={@SEL_SOFT_0=2, @SEL_SOFT_1=3, a=0, b=1}}";
 

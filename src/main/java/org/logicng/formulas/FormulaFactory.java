@@ -37,17 +37,26 @@ import static org.logicng.formulas.FType.TRUE;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
+import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.mus.MUSConfig;
 import org.logicng.formulas.cache.CacheEntry;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
+import org.logicng.pseudobooleans.PBConfig;
 import org.logicng.pseudobooleans.PBEncoder;
+import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
+import org.logicng.solvers.sat.GlucoseConfig;
+import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.transformations.FormulaFactoryImporter;
+import org.logicng.transformations.cnf.CNFConfig;
 import org.logicng.transformations.cnf.CNFEncoder;
+import org.logicng.transformations.simplification.AdvancedSimplifierConfig;
+import org.logicng.util.FormulaRandomizerConfig;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -70,7 +79,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public class FormulaFactory {
@@ -128,10 +137,10 @@ public class FormulaFactory {
         this.stringRepresentation = config.stringRepresentation.get();
         this.formulaMergeStrategy = config.formulaMergeStrategy;
         this.simplifyComplementaryOperands = config.simplifyComplementaryOperands;
+        this.configurations = initDefaultConfigs();
         this.cFalse = new CFalse(this);
         this.cTrue = new CTrue(this);
         this.clear();
-        this.configurations = new EnumMap<>(ConfigurationType.class);
         this.cnfEncoder = new CNFEncoder(this);
         this.subformulaFunction = SubNodeFunction.get();
         if (!this.name.isEmpty()) {
@@ -152,6 +161,23 @@ public class FormulaFactory {
      */
     public FormulaFactory() {
         this(FormulaFactoryConfig.builder().build());
+    }
+
+    /**
+     * Init all configurations with the default configurations.
+     */
+    private static Map<ConfigurationType, Configuration> initDefaultConfigs() {
+        final Map<ConfigurationType, Configuration> configMap = new EnumMap<>(ConfigurationType.class);
+        configMap.put(ConfigurationType.CNF, CNFConfig.builder().build());
+        configMap.put(ConfigurationType.CC_ENCODER, CCConfig.builder().build());
+        configMap.put(ConfigurationType.PB_ENCODER, PBConfig.builder().build());
+        configMap.put(ConfigurationType.MINISAT, MiniSatConfig.builder().build());
+        configMap.put(ConfigurationType.GLUCOSE, GlucoseConfig.builder().build());
+        configMap.put(ConfigurationType.MAXSAT, MaxSATConfig.builder().build());
+        configMap.put(ConfigurationType.MUS, MUSConfig.builder().build());
+        configMap.put(ConfigurationType.ADVANCED_SIMPLIFIER, AdvancedSimplifierConfig.builder().build());
+        configMap.put(ConfigurationType.FORMULA_RANDOMIZER, FormulaRandomizerConfig.builder().build());
+        return configMap;
     }
 
     /**
