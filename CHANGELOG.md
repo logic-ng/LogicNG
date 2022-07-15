@@ -33,6 +33,12 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   logic.
 - Minor edge case issue in `MiniSat` when performing assumption solving with proof tracing
 
+## [2.2.1] - 2022-06-11
+
+### Added
+
+- Basic support for OSGi via `maven-bundle-plugin`
+
 ## [2.2.0] - 2021-11-09
 
 ### Added
