@@ -42,15 +42,17 @@ public final class CanonicalDNFEnumeration extends CanonicalEnumeration implemen
     private final static CanonicalDNFEnumeration INSTANCE = new CanonicalDNFEnumeration();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the {@link #get()} method.
      */
-    private CanonicalDNFEnumeration() {
+    @Deprecated
+    public CanonicalDNFEnumeration() {
         // Intentionally left empty
     }
 
     /**
-     * Returns the singleton of the transformation.
-     * @return the transformation instance
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
      */
     public static CanonicalDNFEnumeration get() {
         return INSTANCE;

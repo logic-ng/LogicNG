@@ -38,10 +38,29 @@ import java.util.LinkedHashSet;
 /**
  * A function that computes all sub-nodes of a given formula.  The order of the sub-nodes is bottom-up, i.e. a
  * sub-node only appears in the result when all of its sub-nodes are already listed.
- * @version 1.0
+ * @version 2.3.0
  * @since 1.0
  */
 public final class SubNodeFunction implements FormulaFunction<LinkedHashSet<Formula>> {
+
+    private static final SubNodeFunction INSTANCE = new SubNodeFunction();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the {@link #get()} method.
+     */
+    @Deprecated
+    public SubNodeFunction() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static SubNodeFunction get() {
+        return INSTANCE;
+    }
 
     @Override
     @SuppressWarnings("unchecked")

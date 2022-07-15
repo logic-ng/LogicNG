@@ -21,6 +21,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
 - Method `BDD#dnf()` uses the newly introduced `BDDDNFFunction` to obtain a smaller DNF instead of a canonical DNF
 - Class `BDDCNFFunction` uses the singleton pattern
+- All functions/transformations/predicates with only a default constructor introduce a static `get()` method with the singleton pattern. The public
+  constructors are now deprecated and will be removed with LogicNG 3.0
 
 ### Fixed
 

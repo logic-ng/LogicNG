@@ -41,15 +41,17 @@ public final class BDDCNFFunction extends BDDNormalFormFunction implements BDDFu
     private final static BDDCNFFunction INSTANCE = new BDDCNFFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the {@link #get()} method.
      */
-    private BDDCNFFunction() {
-        // Intentionally left empty
+    @Deprecated
+    public BDDCNFFunction() {
+        // intentionally left empty
     }
 
     /**
-     * Returns the singleton of the transformation.
-     * @return the transformation instance
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
      */
     public static BDDCNFFunction get() {
         return INSTANCE;

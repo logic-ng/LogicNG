@@ -360,7 +360,7 @@ public final class MiniSatConfig extends Configuration {
          * be included in methods like {@link SATSolver#model()} or {@link SATSolver#enumerateAllModels()}.  If
          * set to {@code true}, all variables will be included in these methods,  if set to {@code false}, variables
          * starting with "@RESERVED_CC_", "@RESERVED_PB_", and "@RESERVED_CNF_" will be excluded from the models.
-         * The default value is {@code true}.
+         * The default value is {@code false}.
          * @param auxiliaryVariablesInModels {@code true} if auxiliary variables should be included in the models,
          *                                   {@code false} otherwise
          * @return the builder

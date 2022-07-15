@@ -26,7 +26,7 @@ public class VariablesFunction implements FormulaFunction<SortedSet<Variable>> {
     private final static VariablesFunction INSTANCE = new VariablesFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private VariablesFunction() {
         // Intentionally left empty
