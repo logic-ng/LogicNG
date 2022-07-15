@@ -111,8 +111,8 @@ public class DNFFactorizationTest extends TestWithExampleFormulas {
         final PropositionalParser p = new PropositionalParser(this.f);
         final Formula formula = p.parse("x0 & x1 & x3 | ~x1 & ~x2 | x2 & ~x3");
         final Formula cdnf = p.parse("x0 & x1 & x2 & x3 | x0 & x1 & x2 & ~x3 | x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & x3 | x0 & x1 & ~x2 & x3 | ~x0 & x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & x3");
-        assertThat(formula.transform(new CanonicalDNFEnumeration())).isEqualTo(cdnf);
-        assertThat(this.f.and(this.A, this.NA).transform(new CanonicalDNFEnumeration())).isEqualTo(this.f.falsum());
+        assertThat(formula.transform(CanonicalDNFEnumeration.get())).isEqualTo(cdnf);
+        assertThat(this.f.and(this.A, this.NA).transform(CanonicalDNFEnumeration.get())).isEqualTo(this.f.falsum());
     }
 
     @Test
@@ -164,6 +164,6 @@ public class DNFFactorizationTest extends TestWithExampleFormulas {
     @Test
     public void testToString() {
         assertThat(this.dnfFactorization.toString()).isEqualTo("DNFFactorization");
-        assertThat(new CanonicalDNFEnumeration().toString()).isEqualTo("CanonicalDNFEnumeration");
+        assertThat(CanonicalDNFEnumeration.get().toString()).isEqualTo("CanonicalDNFEnumeration");
     }
 }

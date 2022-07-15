@@ -13,6 +13,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Method `getSubstitution` on `Anonymizer` to get the mapping from original variable to anonymized one
 - A DNF from BDD function `BDDDNFFunction`, a subclass of the newly added class `BDDNormalFormFunction`
 - A DNF from BDD formula transformation `BDDDNFTransformation`, a subclass of the newly added class `BDDNormalFormTransforamtion`
+- A canonical CNF enumeration `CanonicalCNFEnumeration`, a subclass of the newly added class `CanonicalEnumeration`.
 
 ### Changed
 
