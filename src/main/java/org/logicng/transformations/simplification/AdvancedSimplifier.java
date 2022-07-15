@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
  * </ul>
  * The first and the last two steps can be configured using the {@link AdvancedSimplifierConfig}. Also the handler and the rating
  * function can be configured. If no rating function is specified, the {@link DefaultRatingFunction} is chosen.
- * @version 2.1.0
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class AdvancedSimplifier implements FormulaTransformation {
@@ -138,22 +138,21 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             backboneLiterals.addAll(backbone.getCompleteBackbone());
             simplified = formula.restrict(new Assignment(backboneLiterals));
         }
-        final Formula formulaMinDnf = computeMinDnf(f, simplified);
-        if (formulaMinDnf == null) {
+        final Formula simplifyMinDnf = computeMinDnf(f, simplified);
+        if (simplifyMinDnf == null) {
             return null;
         }
-        simplified = simplifyWithRating(formula, formulaMinDnf);
+        simplified = simplifyWithRating(simplified, simplifyMinDnf);
         if (this.config.factorOut) {
             final Formula factoredOut = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
-            simplified = simplifyWithRating(formula, factoredOut);
+            simplified = simplifyWithRating(simplified, factoredOut);
         }
         if (this.config.restrictBackbone) {
-            final Formula restrictedBackbone = f.and(f.and(backboneLiterals), simplified);
-            simplified = simplifyWithRating(formula, restrictedBackbone);
+            simplified = f.and(f.and(backboneLiterals), simplified);
         }
         if (this.config.simplifyNegations) {
             final Formula negationSimplified = simplified.transform(new NegationSimplifier());
-            simplified = simplifyWithRating(formula, negationSimplified);
+            simplified = simplifyWithRating(simplified, negationSimplified);
         }
         return simplified;
     }

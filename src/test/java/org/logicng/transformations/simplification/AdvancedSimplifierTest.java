@@ -138,7 +138,7 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testAdvancedSimplifierConfig(){
+    public void testAdvancedSimplifierConfig() {
         final FormulaFactory f = new FormulaFactory();
         final List<AdvancedSimplifierConfig> configs = Arrays.asList(
                 AdvancedSimplifierConfig.builder().build(),
@@ -151,13 +151,15 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
                 AdvancedSimplifierConfig.builder().simplifyNegations(false).build());
 
         for (final AdvancedSimplifierConfig config : configs) {
-            AdvancedSimplifier advancedSimplifier = new AdvancedSimplifier(config);
-            for (int i = 0; i < 10; i++) {
-                FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-                Formula formula = randomizer.formula(3);
-                Formula simplified = formula.transform(advancedSimplifier);
-                assertThat(f.equivalence(formula, simplified).holds(new TautologyPredicate(f))).isTrue();
-                assertThat(formula.toString().length()).isGreaterThanOrEqualTo(simplified.toString().length());
+            final AdvancedSimplifier advancedSimplifier = new AdvancedSimplifier(config);
+            for (int i = 1; i < 10; i++) {
+                final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+                final Formula formula = randomizer.formula(3);
+                final Formula simplified = formula.transform(advancedSimplifier);
+                if (simplified != null) {
+                    assertThat(f.equivalence(formula, simplified).holds(new TautologyPredicate(f))).isTrue();
+                    assertThat(formula.toString().length()).isGreaterThanOrEqualTo(simplified.toString().length());
+                }
             }
         }
     }
