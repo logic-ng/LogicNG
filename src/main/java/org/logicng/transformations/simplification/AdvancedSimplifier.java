@@ -151,10 +151,7 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             final Formula negationSimplified = simplified.transform(new NegationSimplifier());
             simplified = simplifyWithRating(simplified, negationSimplified);
         }
-        if (this.config.restrictBackbone) {
-            simplified = f.and(f.and(backboneLiterals), simplified);
-        }
-        return simplified;
+        return this.config.restrictBackbone ? f.and(f.and(backboneLiterals), simplified) : simplified;
     }
 
     private Formula computeMinDnf(final FormulaFactory f, Formula simplified) {
