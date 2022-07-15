@@ -138,18 +138,22 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             backboneLiterals.addAll(backbone.getCompleteBackbone());
             simplified = formula.restrict(new Assignment(backboneLiterals));
         }
-        simplified = computeMinDnf(f, simplified);
-        if (simplified == null) {
+        Formula formulaMinDnf = computeMinDnf(f, simplified);
+        if (formulaMinDnf == null) {
             return null;
         }
+        simplified = simplifyWithRating(formula, formulaMinDnf);
         if (this.config.factorOut) {
-            simplified = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
+            Formula factoredOut = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
+            simplified = simplifyWithRating(formula, factoredOut);
         }
         if (this.config.restrictBackbone) {
-            simplified = f.and(f.and(backboneLiterals), simplified);
+            Formula restrictedBackbone = f.and(f.and(backboneLiterals), simplified);
+            simplified = simplifyWithRating(formula, restrictedBackbone);
         }
         if (this.config.simplifyNegations) {
-            simplified = simplified.transform(new NegationSimplifier());
+            Formula negationSimplified = simplified.transform(new NegationSimplifier());
+            simplified = simplifyWithRating(formula, negationSimplified);
         }
         return simplified;
     }
@@ -184,5 +188,11 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             result.add(f.and(FormulaHelper.negateLiterals(formula.literals(), ArrayList::new)));
         }
         return result;
+    }
+
+    private Formula simplifyWithRating(final Formula formula, final Formula simplifiedOneStep) {
+        Number ratingSimplified = this.config.ratingFunction.apply(simplifiedOneStep, true);
+        Number ratingFormula = this.config.ratingFunction.apply(formula, true);
+        return ratingSimplified.intValue() < ratingFormula.intValue() ? simplifiedOneStep : formula;
     }
 }

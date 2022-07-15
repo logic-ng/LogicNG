@@ -58,7 +58,7 @@ import java.util.List;
  */
 public class AdvancedSimplifierTest extends TestWithExampleFormulas {
 
-    private final AdvancedSimplifier simplifier = new AdvancedSimplifier(new DefaultRatingFunction());
+    private final AdvancedSimplifier simplifier = new AdvancedSimplifier();
 
     @Test
     public void testConstants() {
@@ -133,6 +133,31 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
             for (int numSatHandlerStarts = 1; numSatHandlerStarts < 500; numSatHandlerStarts++) {
                 final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
                 testHandler(handler, formula, true);
+            }
+        }
+    }
+
+    @Test
+    public void testAdvancedSimplifierConfig(){
+        final FormulaFactory f = new FormulaFactory();
+        final List<AdvancedSimplifierConfig> configs = Arrays.asList(
+                AdvancedSimplifierConfig.builder().build(),
+                AdvancedSimplifierConfig.builder().restrictBackbone(false).factorOut(false).simplifyNegations(false).build(),
+                AdvancedSimplifierConfig.builder().factorOut(false).simplifyNegations(false).build(),
+                AdvancedSimplifierConfig.builder().restrictBackbone(false).simplifyNegations(false).build(),
+                AdvancedSimplifierConfig.builder().restrictBackbone(false).factorOut(false).build(),
+                AdvancedSimplifierConfig.builder().restrictBackbone(false).build(),
+                AdvancedSimplifierConfig.builder().factorOut(false).build(),
+                AdvancedSimplifierConfig.builder().simplifyNegations(false).build());
+
+        for (final AdvancedSimplifierConfig config : configs) {
+            AdvancedSimplifier advancedSimplifier = new AdvancedSimplifier(config);
+            for (int i = 0; i < 10; i++) {
+                FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+                Formula formula = randomizer.formula(3);
+                Formula simplified = formula.transform(advancedSimplifier);
+                assertThat(f.equivalence(formula, simplified).holds(new TautologyPredicate(f))).isTrue();
+                assertThat(formula.toString().length()).isGreaterThanOrEqualTo(simplified.toString().length());
             }
         }
     }
