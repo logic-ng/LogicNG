@@ -35,7 +35,6 @@ import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
-import org.logicng.functions.SubNodeFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;

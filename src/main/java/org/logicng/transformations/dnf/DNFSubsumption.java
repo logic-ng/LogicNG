@@ -33,7 +33,6 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.transformations.Subsumption;
 

@@ -34,7 +34,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_CNF;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.predicates.CNFPredicate;
@@ -97,7 +96,6 @@ public final class BDDCNFTransformation implements FormulaTransformation {
     public BDDCNFTransformation(final FormulaFactory f, final int numVars) {
         this.kernel = new BDDKernel(f, numVars, Math.max(numVars * 30, 20_000), Math.max(numVars * 20, 20_000));
     }
-
 
 
     @Override

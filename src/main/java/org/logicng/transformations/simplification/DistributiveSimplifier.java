@@ -38,7 +38,6 @@ import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Implication;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.cache.TransformationCacheEntry;
-import org.logicng.functions.SubNodeFunction;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;

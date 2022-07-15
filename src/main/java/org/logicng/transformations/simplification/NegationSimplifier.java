@@ -36,7 +36,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.NAryOperator;
-import org.logicng.functions.SubNodeFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,7 +134,8 @@ public final class NegationSimplifier implements FormulaTransformation {
         return getSmallestFormula(Arrays.asList(allPositive, partialNegative), topLevel);
     }
 
-    private Formula findSmallestNegative(final FType type, final List<Formula> negativeOpResults, final Formula smallestPositive, final boolean topLevel, final FormulaFactory f) {
+    private Formula findSmallestNegative(final FType type, final List<Formula> negativeOpResults, final Formula smallestPositive, final boolean topLevel,
+                                         final FormulaFactory f) {
         final Formula negation = f.not(smallestPositive);
         final Formula flipped = f.naryOperator(dual(type), negativeOpResults);
         return getSmallestFormula(Arrays.asList(negation, flipped), topLevel);

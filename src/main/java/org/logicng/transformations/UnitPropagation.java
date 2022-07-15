@@ -34,7 +34,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.cache.TransformationCacheEntry;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.solvers.datastructures.MSClause;
 import org.logicng.solvers.sat.MiniSat2Solver;
 import org.logicng.solvers.sat.MiniSatConfig;

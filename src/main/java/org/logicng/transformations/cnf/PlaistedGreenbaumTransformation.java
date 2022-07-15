@@ -37,7 +37,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.predicates.CNFPredicate;
 
 import java.util.ArrayList;

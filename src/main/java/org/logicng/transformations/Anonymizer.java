@@ -34,7 +34,6 @@ import org.logicng.datastructures.Substitution;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Variable;
-import org.logicng.functions.SubNodeFunction;
 
 /**
  * An anonymizer replaces all variables in a formula with new variables generated from a given prefix and a counter.

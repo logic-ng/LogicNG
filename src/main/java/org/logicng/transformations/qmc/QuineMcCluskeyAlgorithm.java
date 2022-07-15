@@ -37,7 +37,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -91,7 +90,8 @@ public class QuineMcCluskeyAlgorithm {
         final FormulaFactory f = formula.factory();
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
-        final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
+        final List<Assignment> models =
+                relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
         return compute(models, f);
     }
 
@@ -279,7 +279,8 @@ public class QuineMcCluskeyAlgorithm {
      * @param formula2VarMapping a mapping form minterm to variable
      * @return the initialized SAT solver
      */
-    static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term, final LinkedHashMap<Formula, Variable> formula2VarMapping) {
+    static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term,
+                                      final LinkedHashMap<Formula, Variable> formula2VarMapping) {
         final LinkedHashMap<Variable, List<Variable>> minterm2Variants = new LinkedHashMap<>();
         int count = 0;
         String prefix = "@MINTERM_SEL_";

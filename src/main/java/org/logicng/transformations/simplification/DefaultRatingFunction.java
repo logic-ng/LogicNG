@@ -30,7 +30,6 @@ package org.logicng.transformations.simplification;
 
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.printer.DefaultStringRepresentation;
-import org.logicng.functions.SubNodeFunction;
 
 /**
  * A rating function which rates a formula with the length of its representation

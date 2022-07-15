@@ -36,7 +36,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.NAryOperator;
 import org.logicng.formulas.Not;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.util.Pair;
 
 import java.util.ArrayList;

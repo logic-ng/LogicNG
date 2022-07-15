@@ -36,7 +36,6 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
-import org.logicng.functions.SubNodeFunction;
 import org.logicng.handlers.FactorizationHandler;
 
 import java.util.Iterator;

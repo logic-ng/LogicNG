@@ -39,7 +39,6 @@ import org.logicng.formulas.Implication;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.Or;
 import org.logicng.formulas.cache.PredicateCacheEntry;
-import org.logicng.functions.SubNodeFunction;
 
 import java.util.LinkedHashSet;
 
@@ -72,7 +71,7 @@ public final class AIGTransformation implements FormulaTransformation {
     }
 
     @Override
-    public Formula apply(final Formula formula, boolean cache) {
+    public Formula apply(final Formula formula, final boolean cache) {
         this.f = formula.factory();
         this.cache = cache;
         switch (formula.type()) {

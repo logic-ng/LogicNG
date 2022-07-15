@@ -40,7 +40,6 @@ import org.logicng.formulas.NAryOperator;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
-import org.logicng.functions.SubNodeFunction;
 
 import java.util.ArrayList;
 import java.util.List;
