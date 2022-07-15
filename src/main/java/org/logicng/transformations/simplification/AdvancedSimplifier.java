@@ -138,21 +138,21 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             backboneLiterals.addAll(backbone.getCompleteBackbone());
             simplified = formula.restrict(new Assignment(backboneLiterals));
         }
-        Formula formulaMinDnf = computeMinDnf(f, simplified);
+        final Formula formulaMinDnf = computeMinDnf(f, simplified);
         if (formulaMinDnf == null) {
             return null;
         }
         simplified = simplifyWithRating(formula, formulaMinDnf);
         if (this.config.factorOut) {
-            Formula factoredOut = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
+            final Formula factoredOut = simplified.transform(new FactorOutSimplifier(this.config.ratingFunction));
             simplified = simplifyWithRating(formula, factoredOut);
         }
         if (this.config.restrictBackbone) {
-            Formula restrictedBackbone = f.and(f.and(backboneLiterals), simplified);
+            final Formula restrictedBackbone = f.and(f.and(backboneLiterals), simplified);
             simplified = simplifyWithRating(formula, restrictedBackbone);
         }
         if (this.config.simplifyNegations) {
-            Formula negationSimplified = simplified.transform(new NegationSimplifier());
+            final Formula negationSimplified = simplified.transform(new NegationSimplifier());
             simplified = simplifyWithRating(formula, negationSimplified);
         }
         return simplified;
@@ -191,8 +191,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
     }
 
     private Formula simplifyWithRating(final Formula formula, final Formula simplifiedOneStep) {
-        Number ratingSimplified = this.config.ratingFunction.apply(simplifiedOneStep, true);
-        Number ratingFormula = this.config.ratingFunction.apply(formula, true);
+        final Number ratingSimplified = this.config.ratingFunction.apply(simplifiedOneStep, true);
+        final Number ratingFormula = this.config.ratingFunction.apply(formula, true);
         return ratingSimplified.intValue() < ratingFormula.intValue() ? simplifiedOneStep : formula;
     }
 }
