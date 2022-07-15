@@ -24,6 +24,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `TermPredicate#getMaxtermPredicate()` tested for a minterm. To prevent silent errors for callers of these predicates, the factory method names were changed
   to `minterm()` and `maxterm()`, respectively. Thus, an intentional breaking change on compile time level has been introduced to force callers to adjust their
   logic.
+- Minor edge case issue in `MiniSat` when performing assumption solving with proof tracing
 
 ## [2.2.0] - 2021-11-09
 
