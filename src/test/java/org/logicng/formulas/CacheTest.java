@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * Unit tests for the package formulas.cache.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.1
  */
 public class CacheTest {
@@ -66,7 +66,7 @@ public class CacheTest {
     @Test
     public void testValues() {
         final List<TransformationCacheEntry> valuesTrans = Arrays.asList(TransformationCacheEntry.values());
-        assertThat(valuesTrans.size()).isEqualTo(13);
+        assertThat(valuesTrans.size()).isEqualTo(14);
         assertThat(valuesTrans.contains(TransformationCacheEntry.valueOf("FACTORIZED_DNF"))).isTrue();
         assertThat(valuesTrans.contains(TransformationCacheEntry.valueOf("PLAISTED_GREENBAUM_NEG"))).isTrue();
 

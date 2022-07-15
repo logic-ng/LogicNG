@@ -46,7 +46,7 @@ import java.util.List;
 
 /**
  * Unit tests for {@link BDDFactory}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.4.0
  */
 public class SimpleBDDTest {
@@ -121,7 +121,7 @@ public class SimpleBDDTest {
         assertThat(bdd.isTautology()).isFalse();
         assertThat(bdd.isContradiction()).isFalse();
         assertThat(bdd.cnf()).isEqualTo(parser.parse("~A | ~B"));
-        assertThat(bdd.dnf()).isEqualTo(parser.parse("~A & ~B | ~A & B | A & ~B"));
+        assertThat(bdd.dnf()).isEqualTo(parser.parse("~A | A & ~B"));
         assertThat(bdd.modelCount()).isEqualTo(BigInteger.valueOf(3));
         assertThat(bdd.underlyingKernel().factory()).isSameAs(f);
         assertThat(bdd.enumerateAllModels()).containsExactlyInAnyOrder(
@@ -160,7 +160,7 @@ public class SimpleBDDTest {
         assertThat(bdd.isTautology()).isFalse();
         assertThat(bdd.isContradiction()).isFalse();
         assertThat(bdd.cnf()).isEqualTo(parser.parse("A | B | ~C"));
-        assertThat(bdd.dnf()).isEqualTo(parser.parse("~A & ~B & ~C | ~A & B & ~C | ~A & B & C | A & ~B & ~C | A & ~B & C | A & B & ~C | A & B & C"));
+        assertThat(bdd.dnf()).isEqualTo(parser.parse("~A & ~B & ~C | ~A & B | A"));
         assertThat(bdd.modelCount()).isEqualTo(BigInteger.valueOf(7));
         assertThat(bdd.underlyingKernel().factory()).isSameAs(f);
         assertThat(bdd.enumerateAllModels()).containsExactlyInAnyOrder(

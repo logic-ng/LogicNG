@@ -26,58 +26,37 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.transformations.cnf;
+package org.logicng.knowledgecompilation.bdds.functions;
 
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
-import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.transformations.BDDNormalFormTransformation;
+import org.logicng.knowledgecompilation.bdds.BDD;
 
 /**
- * Transformation of a formula in CNF by converting it to a BDD.
+ * Creates a DNF from a BDD.
  * @version 2.3.0
- * @since 1.4.0
+ * @since 2.0.0
  */
-public final class BDDCNFTransformation extends BDDNormalFormTransformation {
+public final class BDDDNFFunction extends BDDNormalFormFunction implements BDDFunction<Formula> {
+
+    private final static BDDDNFFunction INSTANCE = new BDDDNFFunction();
 
     /**
-     * Constructs a new BDD-based CNF transformation with an optional BDD kernel.
-     * <p>
-     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
-     * the number of different variables in all applied formulas <b>must not exceed</b>
-     * the number of variables in the kernel.
-     * @param kernel the optional BDD kernel
+     * Private empty constructor.  Singleton class.
      */
-    public BDDCNFTransformation(final BDDKernel kernel) {
-        super(kernel);
+    private BDDDNFFunction() {
+        // Intentionally left empty
     }
 
     /**
-     * Constructs a new BDD-based CNF transformation for a given number of variables.
-     * <p>
-     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
-     * the number of different variables in all applied formulas <b>must not exceed</b>
-     * {@code numVars}.
-     * <p>
-     * To improve performance you might want to use {@link #BDDCNFTransformation(BDDKernel)},
-     * where you have full control over the node and cache size in the used BDD kernel.
-     * @param f       the formula factory to use
-     * @param numVars the number of variables
+     * Returns the singleton of the transformation.
+     * @return the transformation instance
      */
-    public BDDCNFTransformation(final FormulaFactory f, final int numVars) {
-        super(f, numVars);
-    }
-
-    /**
-     * Constructs a new BDD-based CNF transformation and constructs a new BDD kernel
-     * for every formula application.
-     */
-    public BDDCNFTransformation() {
-        this(null);
+    public static BDDDNFFunction get() {
+        return INSTANCE;
     }
 
     @Override
-    public Formula apply(final Formula formula, final boolean cache) {
-        return compute(formula, true, cache);
+    public Formula apply(final BDD bdd) {
+        return compute(bdd, false);
     }
 }

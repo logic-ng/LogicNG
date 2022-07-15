@@ -26,58 +26,91 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.transformations.cnf;
+package org.logicng.transformations;
+
+import static org.logicng.formulas.FType.LITERAL;
+import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_CNF;
+import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_DNF;
 
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.FormulaTransformation;
+import org.logicng.knowledgecompilation.bdds.BDD;
+import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.transformations.BDDNormalFormTransformation;
 
 /**
- * Transformation of a formula in CNF by converting it to a BDD.
+ * Transformation of a formula in a normal form (DNF or CNF) by converting it to a BDD.
  * @version 2.3.0
- * @since 1.4.0
+ * @since 2.3.0
  */
-public final class BDDCNFTransformation extends BDDNormalFormTransformation {
+public abstract class BDDNormalFormTransformation implements FormulaTransformation {
+
+    private final UnitPropagation up = new UnitPropagation();
+    private final BDDKernel kernel;
 
     /**
-     * Constructs a new BDD-based CNF transformation with an optional BDD kernel.
+     * Constructs a new BDD-based normal form transformation with an optional BDD kernel.
      * <p>
      * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
      * the number of different variables in all applied formulas <b>must not exceed</b>
      * the number of variables in the kernel.
      * @param kernel the optional BDD kernel
      */
-    public BDDCNFTransformation(final BDDKernel kernel) {
-        super(kernel);
+    public BDDNormalFormTransformation(final BDDKernel kernel) {
+        this.kernel = kernel;
     }
 
     /**
-     * Constructs a new BDD-based CNF transformation for a given number of variables.
+     * Constructs a new BDD-based normal form transformation for a given number of variables.
      * <p>
      * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
      * the number of different variables in all applied formulas <b>must not exceed</b>
      * {@code numVars}.
      * <p>
-     * To improve performance you might want to use {@link #BDDCNFTransformation(BDDKernel)},
+     * To improve performance you might want to use {@link #BDDNormalFormTransformation(BDDKernel)},
      * where you have full control over the node and cache size in the used BDD kernel.
      * @param f       the formula factory to use
      * @param numVars the number of variables
      */
-    public BDDCNFTransformation(final FormulaFactory f, final int numVars) {
-        super(f, numVars);
+    public BDDNormalFormTransformation(final FormulaFactory f, final int numVars) {
+        this.kernel = new BDDKernel(f, numVars, Math.max(numVars * 30, 20_000), Math.max(numVars * 20, 20_000));
     }
 
     /**
-     * Constructs a new BDD-based CNF transformation and constructs a new BDD kernel
-     * for every formula application.
+     * Computes the CNF or DNF from the given formula by using a BDD.
+     * @param formula the formula to transform
+     * @param cnf     {@code true} if a CNF should be computed, {@code false} if a canonical DNF should be computed
+     * @param cache   indicates whether the result should be cached in this formula's cache
+     * @return the normal form (CNF or DNF) of the formula
      */
-    public BDDCNFTransformation() {
-        this(null);
+    protected Formula compute(final Formula formula, final boolean cnf, final boolean cache) {
+        if (formula.type().precedence() >= LITERAL.precedence()) {
+            return formula;
+        }
+        if (hasNormalForm(formula, cnf)) {
+            return formula;
+        }
+        final Formula cached = formula.transformationCacheEntry(cnf ? BDD_CNF : BDD_DNF);
+        if (cache && cached != null) {
+            return cached;
+        }
+        final BDD bdd = BDDFactory.build(formula, this.kernel, null);
+        final Formula normalForm = cnf ? bdd.cnf() : bdd.dnf();
+        final Formula simplifiedNormalForm;
+        if (cnf) {
+            simplifiedNormalForm = normalForm.transform(this.up);
+        } else {
+            // unit propagation simplification creates a CNF, so we use the negated DNF to negate the result back to DNF again
+            simplifiedNormalForm = normalForm.negate().nnf().transform(this.up).negate().nnf();
+        }
+        if (cache) {
+            formula.setTransformationCacheEntry(BDD_CNF, simplifiedNormalForm);
+        }
+        return simplifiedNormalForm;
     }
 
-    @Override
-    public Formula apply(final Formula formula, final boolean cache) {
-        return compute(formula, true, cache);
+    private boolean hasNormalForm(final Formula formula, final boolean cnf) {
+        return cnf ? formula.isCNF() : formula.isDNF();
     }
 }

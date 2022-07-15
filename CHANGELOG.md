@@ -11,11 +11,15 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Convenience methods `isNNF()`, `isDNF()` and `isCNF()` in class `Formula`
 - Two new constructors for `Substitution`s and a new method `getMapping()` to get the internal mapping
 - Method `getSubstitution` on `Anonymizer` to get the mapping from original variable to anonymized one
+- A DNF from BDD function `BDDDNFFunction`, a subclass of the newly added class `BDDNormalFormFunction`
+- A DNF from BDD formula transformation `BDDDNFTransformation`, a subclass of the newly added class `BDDNormalFormTransforamtion`
 
 ### Changed
 
 - Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
 - Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
+- Method `BDD#dnf()` uses the newly introduced `BDDDNFFunction` to obtain a smaller DNF instead of a canonical DNF
+- Class `BDDCNFFunction` uses the singleton pattern
 
 ### Fixed
 
