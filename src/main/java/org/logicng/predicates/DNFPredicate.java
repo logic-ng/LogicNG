@@ -29,7 +29,7 @@
 package org.logicng.predicates;
 
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
-import static org.logicng.predicates.TermPredicate.getMaxtermPredicate;
+import static org.logicng.predicates.TermPredicate.minterm;
 
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
@@ -37,7 +37,7 @@ import org.logicng.formulas.FormulaPredicate;
 
 /**
  * DNF predicate.  Indicates whether a formula is in DNF or not.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public final class DNFPredicate implements FormulaPredicate {
@@ -79,13 +79,13 @@ public final class DNFPredicate implements FormulaPredicate {
             case OR:
                 result = true;
                 for (final Formula op : formula) {
-                    if (!getMaxtermPredicate().test(op, false)) {
+                    if (!minterm().test(op, false)) {
                         result = false;
                     }
                 }
                 break;
             case AND:
-                result = getMaxtermPredicate().test(formula, false);
+                result = minterm().test(formula, false);
                 break;
             default:
                 throw new IllegalArgumentException("Cannot compute DNF predicate on " + formula.type());
