@@ -88,10 +88,8 @@ public abstract class SATSolver {
      * Adds a formula to the solver, but sets all variables to false which are not known to the solver.
      * @param formula the formula
      * @deprecated Due to simplifications of formulas in LogicNG the solver might not know all original variables of the formulas added. If such a variable
-     * is contained in the
-     * given formula, this method sets the variable to false. For a caller this behavior is misleading and can yield to erroneous results. Instead of using
-     * this method, a caller
-     * should track the unknown/forbidden variables by itself and add each variable negated to the solver.
+     * is contained in the given formula, this method sets the variable to false. For a caller this behavior is misleading and can yield to erroneous results.
+     * Instead of using this method, a caller should track the unknown/forbidden variables by itself and add each variable negated to the solver.
      */
     @Deprecated
     public abstract void addWithoutUnknown(final Formula formula);
