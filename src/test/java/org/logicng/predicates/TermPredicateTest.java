@@ -35,13 +35,13 @@ import org.logicng.TestWithExampleFormulas;
 
 /**
  * Unit tests for the term predicate.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 2.2.0
  */
 public class TermPredicateTest extends TestWithExampleFormulas {
 
-    private final TermPredicate mintermPredicate = TermPredicate.getMintermPredicate();
-    private final TermPredicate maxtermPredicate = TermPredicate.getMaxtermPredicate();
+    private final TermPredicate mintermPredicate = TermPredicate.minterm();
+    private final TermPredicate maxtermPredicate = TermPredicate.maxterm();
 
     @Test
     public void testMintermPredicate() {
@@ -49,8 +49,8 @@ public class TermPredicateTest extends TestWithExampleFormulas {
         assertThat(this.f.falsum().holds(this.mintermPredicate)).isTrue();
         assertThat(this.A.holds(this.mintermPredicate)).isTrue();
         assertThat(this.NA.holds(this.mintermPredicate)).isTrue();
-        assertThat(this.AND1.holds(this.mintermPredicate)).isFalse();
-        assertThat(this.OR1.holds(this.mintermPredicate)).isTrue();
+        assertThat(this.AND1.holds(this.mintermPredicate)).isTrue();
+        assertThat(this.OR1.holds(this.mintermPredicate)).isFalse();
         assertThat(this.OR3.holds(this.mintermPredicate)).isFalse();
         assertThat(this.f.or(this.AND1, this.AND2, this.A, this.NY).holds(this.mintermPredicate)).isFalse();
         assertThat(this.PBC1.holds(this.mintermPredicate)).isFalse();
@@ -68,8 +68,8 @@ public class TermPredicateTest extends TestWithExampleFormulas {
         assertThat(this.f.falsum().holds(this.maxtermPredicate)).isTrue();
         assertThat(this.A.holds(this.maxtermPredicate)).isTrue();
         assertThat(this.NA.holds(this.maxtermPredicate)).isTrue();
-        assertThat(this.AND1.holds(this.maxtermPredicate)).isTrue();
-        assertThat(this.OR1.holds(this.maxtermPredicate)).isFalse();
+        assertThat(this.AND1.holds(this.maxtermPredicate)).isFalse();
+        assertThat(this.OR1.holds(this.maxtermPredicate)).isTrue();
         assertThat(this.OR3.holds(this.maxtermPredicate)).isFalse();
         assertThat(this.f.or(this.AND1, this.AND2, this.A, this.NY).holds(this.maxtermPredicate)).isFalse();
         assertThat(this.PBC1.holds(this.maxtermPredicate)).isFalse();
