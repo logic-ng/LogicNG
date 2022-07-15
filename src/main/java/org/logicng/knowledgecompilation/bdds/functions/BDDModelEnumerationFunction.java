@@ -50,30 +50,10 @@ import java.util.TreeSet;
  */
 public final class BDDModelEnumerationFunction implements BDDFunction<List<Assignment>> {
 
-    private static final BDDModelEnumerationFunction INSTANCE = new BDDModelEnumerationFunction();
-
-    /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
-     */
-    @Deprecated
-    public BDDModelEnumerationFunction() {
-        this.variables = get().variables;
-    }
-
-    /**
-     * Returns the singleton instance of this function.
-     * @return an instance of this function
-     */
-    public static BDDModelEnumerationFunction get() {
-        return INSTANCE;
-    }
-
     private final Collection<Variable> variables;
 
     /**
-     * Constructs a new model enumeration function. The models are projected to
-     * a given set of variables.
+     * Constructs a new model enumeration function. The models are projected to a given set of variables.
      * @param variables the variables to which models are projected
      */
     public BDDModelEnumerationFunction(final Collection<Variable> variables) {
