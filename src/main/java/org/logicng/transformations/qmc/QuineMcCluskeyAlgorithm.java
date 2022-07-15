@@ -59,25 +59,6 @@ import java.util.TreeMap;
  */
 public class QuineMcCluskeyAlgorithm {
 
-    private static final QuineMcCluskeyAlgorithm INSTANCE = new QuineMcCluskeyAlgorithm();
-
-    /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the get()-method.
-     */
-    @Deprecated
-    public QuineMcCluskeyAlgorithm() {
-        // Intentionally left empty
-    }
-
-    /**
-     * Returns the singleton instance of this function.
-     * @return an instance of this function
-     */
-    public static QuineMcCluskeyAlgorithm get() {
-        return INSTANCE;
-    }
-
     /**
      * Computes a minimized DNF for a given formula projected to a given set of variables.  First a projected canonical
      * DNF of the formula is computed for the given variables.  Then for this canonical DNF the Quine-McCluskey algorithm
@@ -90,8 +71,7 @@ public class QuineMcCluskeyAlgorithm {
         final FormulaFactory f = formula.factory();
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
-        final List<Assignment> models =
-                relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
+        final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
         return compute(models, f);
     }
 
@@ -279,8 +259,7 @@ public class QuineMcCluskeyAlgorithm {
      * @param formula2VarMapping a mapping form minterm to variable
      * @return the initialized SAT solver
      */
-    static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term,
-                                      final LinkedHashMap<Formula, Variable> formula2VarMapping) {
+    static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term, final LinkedHashMap<Formula, Variable> formula2VarMapping) {
         final LinkedHashMap<Variable, List<Variable>> minterm2Variants = new LinkedHashMap<>();
         int count = 0;
         String prefix = "@MINTERM_SEL_";

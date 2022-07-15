@@ -55,26 +55,6 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
 
     private final int boundaryForFactorization;
     private final CNFFactorization factorization = new CNFFactorization();
-    private static final PlaistedGreenbaumTransformation INSTANCE = new PlaistedGreenbaumTransformation();
-
-    /**
-     * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
-     * bound of 12.
-     * @deprecated In the next version, the public constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the get()-method.
-     */
-    @Deprecated
-    public PlaistedGreenbaumTransformation() {
-        this(12);
-    }
-
-    /**
-     * Returns the singleton instance of this function.
-     * @return an instance of this function
-     */
-    public static PlaistedGreenbaumTransformation get() {
-        return INSTANCE;
-    }
 
     /**
      * Constructor for a Plaisted &amp; Greenbaum transformation.
@@ -82,6 +62,14 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
      */
     public PlaistedGreenbaumTransformation(final int boundaryForFactorization) {
         this.boundaryForFactorization = boundaryForFactorization;
+    }
+
+    /**
+     * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
+     * bound of 12.
+     */
+    public PlaistedGreenbaumTransformation() {
+        this(12);
     }
 
     /**

@@ -55,24 +55,6 @@ public final class TseitinTransformation implements FormulaTransformation {
 
     private final int boundaryForFactorization;
     private final CNFFactorization factorization = new CNFFactorization();
-    private static final TseitinTransformation INSTANCE = new TseitinTransformation();
-
-    /**
-     * Constructor for a Tseitin transformation with a factorization bound of 12.
-     * @deprecated In the next version, the public constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the get()-method.
-     */
-    public TseitinTransformation() {
-        this.boundaryForFactorization = 12;
-    }
-
-    /**
-     * Returns the singleton instance of this function.
-     * @return an instance of this function
-     */
-    public static TseitinTransformation get() {
-        return INSTANCE;
-    }
 
     /**
      * Constructor for a Tseitin transformation.
@@ -80,6 +62,13 @@ public final class TseitinTransformation implements FormulaTransformation {
      */
     public TseitinTransformation(final int boundaryForFactorization) {
         this.boundaryForFactorization = boundaryForFactorization;
+    }
+
+    /**
+     * Constructor for a Tseitin transformation with a factorization bound of 12.
+     */
+    public TseitinTransformation() {
+        this.boundaryForFactorization = 12;
     }
 
     @Override
