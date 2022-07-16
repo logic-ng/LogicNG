@@ -1019,13 +1019,24 @@ public abstract class MiniSatStyleSolver {
      * @return {@code true} if the literal is unit, {@code false} otherwise
      */
     protected boolean isUnit(final int lit, final MSClause clause) {
-        for (int i = 0; i < clause.size(); ++i) {
-            final int clauseLit = clause.get(i);
-            if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
-                return false;
+        if (!clause.isAtMost()) {
+            for (int i = 0; i < clause.size(); ++i) {
+                final int clauseLit = clause.get(i);
+                if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
+                    return false;
+                }
             }
+            return true;
+        } else {
+            int countPos = 0;
+            for (int i = 0; i < clause.size(); ++i) {
+                final int clauseLit = clause.get(i);
+                if (var(lit) != var(clauseLit) && this.model.get(var(clauseLit))) {
+                    countPos++;
+                }
+            }
+            return countPos == clause.cardinality();
         }
-        return true;
     }
 
     /**

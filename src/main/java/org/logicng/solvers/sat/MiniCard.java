@@ -559,7 +559,7 @@ public class MiniCard extends MiniSatStyleSolver {
     /**
      * Adds an at-most k constraint.
      * @param ps  the literals of the constraint
-     * @param rhs the right hand side of the constraint
+     * @param rhs the right-hand side of the constraint
      * @return {@code true} if the constraint was added, {@code false} otherwise
      */
     public boolean addAtMost(final LNGIntVector ps, final int rhs) {
@@ -825,7 +825,6 @@ public class MiniCard extends MiniSatStyleSolver {
                     outLearnt.set(j++, outLearnt.get(i));
                 } else {
                     final MSClause c = v(outLearnt.get(i)).reason();
-                    assert !c.isAtMost();
                     for (int k = 1; k < c.size(); k++) {
                         if (!this.seen.get(var(c.get(k))) && v(c.get(k)).level() > 0) {
                             outLearnt.set(j++, outLearnt.get(i));
