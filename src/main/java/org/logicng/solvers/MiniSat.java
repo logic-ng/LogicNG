@@ -466,6 +466,16 @@ public class MiniSat extends SATSolver {
         this.solver.resetSelectionOrder();
     }
 
+    @Override
+    public boolean canSaveLoadState() {
+        return (this.style == SolverStyle.MINISAT || this.style == SolverStyle.MINICARD) && this.incremental;
+    }
+
+    @Override
+    public boolean canGenerateProof() {
+        return this.config.proofGeneration() && (this.style == SolverStyle.MINISAT || this.style == SolverStyle.GLUCOSE && !this.incremental);
+    }
+
     /**
      * Returns this solver's style.
      * @return this solver's style

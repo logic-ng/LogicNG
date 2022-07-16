@@ -187,7 +187,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
     @MethodSource("solvers")
     public void testIncrementalityMinimizeAndMaximize(final MiniSat solver) throws ParserException {
         final FormulaFactory f = solver.factory();
-        if (solver.getStyle() != MiniSat.SolverStyle.MINISAT || !solver.isIncremental()) {
+        if (!solver.canSaveLoadState()) {
             return;
         }
         solver.reset();

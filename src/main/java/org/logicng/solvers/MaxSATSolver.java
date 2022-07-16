@@ -77,6 +77,7 @@ public class MaxSATSolver {
 
     /**
      * Constructs a new MaxSAT solver with a given configuration.
+     * @param f             the formula factory
      * @param configuration the configuration
      * @param algorithm     the algorithm
      * @throws IllegalArgumentException if the algorithm was unknown

@@ -53,7 +53,7 @@ import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public abstract class SATSolver {
@@ -464,4 +464,16 @@ public abstract class SATSolver {
      * Resets the selection order on the solver.  The internal activity heuristics for the variable ordering will be used again.
      */
     protected abstract void resetSelectionOrder();
+
+    /**
+     * Returns whether this solver instance can save and load solver states.
+     * @return true when the solver can save and load states, false otherwise
+     */
+    public abstract boolean canSaveLoadState();
+
+    /**
+     * Returns whether this solver instance can generate proofs.
+     * @return true when the solver can generate proofs, false otherwise
+     */
+    public abstract boolean canGenerateProof();
 }

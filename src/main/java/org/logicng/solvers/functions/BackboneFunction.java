@@ -71,13 +71,13 @@ public final class BackboneFunction implements SolverFunction<Backbone> {
 
     @Override
     public Backbone apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
-        start(handler);
+        start(this.handler);
         SolverState stateBeforeBackbone = null;
-        if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
+        if (solver.canSaveLoadState()) {
             stateBeforeBackbone = solver.saveState();
         }
-        final Backbone backbone = solver.underlyingSolver().computeBackbone(this.variables, this.type, handler);
-        if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
+        final Backbone backbone = solver.underlyingSolver().computeBackbone(this.variables, this.type, this.handler);
+        if (solver.canSaveLoadState()) {
             solver.loadState(stateBeforeBackbone);
         }
         return backbone;

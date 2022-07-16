@@ -115,11 +115,11 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
     @Override
     public Assignment apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         SolverState initialState = null;
-        if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
+        if (solver.canSaveLoadState()) {
             initialState = solver.saveState();
         }
         final Assignment model = maximize(solver);
-        if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
+        if (solver.canSaveLoadState()) {
             solver.loadState(initialState);
         }
         return model;
@@ -142,8 +142,8 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
             selectorMap.forEach((selVar, lit) -> solver.add(f.or(selVar.negate(), lit.negate())));
             selectorMap.forEach((selVar, lit) -> solver.add(f.or(lit, selVar)));
         }
-        Tristate sat = solver.sat(satHandler(handler));
-        if (sat != Tristate.TRUE || aborted(handler)) {
+        Tristate sat = solver.sat(satHandler(this.handler));
+        if (sat != Tristate.TRUE || aborted(this.handler)) {
             return null;
         }
         internalModel = solver.underlyingSolver().model();
@@ -151,8 +151,8 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
         int currentBound = currentModel.positiveVariables().size();
         if (currentBound == 0) {
             solver.add(f.cc(CType.GE, 1, selectors));
-            sat = solver.sat(satHandler(handler));
-            if (aborted(handler)) {
+            sat = solver.sat(satHandler(this.handler));
+            if (aborted(this.handler)) {
                 return null;
             } else if (sat == Tristate.FALSE) {
                 return mkResultModel(solver, internalModel);
@@ -167,8 +167,8 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
         final Formula cc = f.cc(CType.GE, currentBound + 1, selectors);
         assert cc instanceof CardinalityConstraint;
         final CCIncrementalData incrementalData = solver.addIncrementalCC((CardinalityConstraint) cc);
-        sat = solver.sat(satHandler(handler));
-        if (aborted(handler)) {
+        sat = solver.sat(satHandler(this.handler));
+        if (aborted(this.handler)) {
             return null;
         }
         while (sat == Tristate.TRUE) {
@@ -183,8 +183,8 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
                 return mkResultModel(solver, internalModel);
             }
             incrementalData.newLowerBoundForSolver(currentBound + 1);
-            sat = solver.sat(satHandler(handler));
-            if (aborted(handler)) {
+            sat = solver.sat(satHandler(this.handler));
+            if (aborted(this.handler)) {
                 return null;
             }
         }
