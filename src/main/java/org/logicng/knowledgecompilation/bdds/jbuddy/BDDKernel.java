@@ -90,8 +90,8 @@ public class BDDKernel {
         EQUIV(6, new int[]{1, 0, 0, 1}),
         NOT(10, new int[]{1, 1, 0, 0});
 
-        protected final int v;
-        protected final int[] tt;
+        final int v;
+        private final int[] tt;
 
         Operand(final int value, final int[] truthTable) {
             this.v = value;

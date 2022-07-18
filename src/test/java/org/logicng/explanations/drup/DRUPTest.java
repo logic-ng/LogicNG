@@ -343,7 +343,6 @@ public class DRUPTest implements LogicNGTest {
         }
     }
 
-
     @Test
     public void testWithCcPropositions() throws ParserException {
         final FormulaFactory f = new FormulaFactory();

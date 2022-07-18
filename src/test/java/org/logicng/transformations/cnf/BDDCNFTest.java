@@ -39,7 +39,6 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.predicates.CNFPredicate;
 
 /**
  * Unit Tests for {@link BDDCNFTransformation}.

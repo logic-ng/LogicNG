@@ -33,10 +33,10 @@ import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 /**
  * A dot file writer for BDDs.  Writes the internal data structure of a BDD to a dot file.
@@ -86,7 +86,7 @@ public final class BDDDotFileWriter {
             sb.append(String.format("  %s%d -> %s [color = darkgreen];%n", NODE_PREFIX, internalNode[0], getNodeString(internalNode[3])));
         }
         sb.append("}").append(System.lineSeparator());
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

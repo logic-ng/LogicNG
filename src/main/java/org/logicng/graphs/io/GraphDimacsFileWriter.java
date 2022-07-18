@@ -34,10 +34,10 @@ import org.logicng.util.Pair;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -65,19 +65,19 @@ public final class GraphDimacsFileWriter {
      * @param <T>          the type of the graph content
      * @throws IOException if there was a problem writing the file
      */
-    public static <T> void write(final String fileName, Graph<T> g, boolean writeMapping) throws IOException {
-        File file = new File(fileName.endsWith(".col") ? fileName : fileName + ".col");
-        Map<Node<T>, Long> node2id = new LinkedHashMap<>();
+    public static <T> void write(final String fileName, final Graph<T> g, final boolean writeMapping) throws IOException {
+        final File file = new File(fileName.endsWith(".col") ? fileName : fileName + ".col");
+        final Map<Node<T>, Long> node2id = new LinkedHashMap<>();
         long i = 1;
-        for (Node<T> node : g.nodes()) {
+        for (final Node<T> node : g.nodes()) {
             node2id.put(node, i++);
         }
 
-        StringBuilder sb = new StringBuilder("p edge ");
-        Set<Pair<Node<T>, Node<T>>> edges = new LinkedHashSet<>();
-        Set<Node<T>> doneNodes = new LinkedHashSet<>();
-        for (Node<T> d : g.nodes()) {
-            for (Node<T> n : d.neighbours()) {
+        final StringBuilder sb = new StringBuilder("p edge ");
+        final Set<Pair<Node<T>, Node<T>>> edges = new LinkedHashSet<>();
+        final Set<Node<T>> doneNodes = new LinkedHashSet<>();
+        for (final Node<T> d : g.nodes()) {
+            for (final Node<T> n : d.neighbours()) {
                 if (!doneNodes.contains(n)) {
                     edges.add(new Pair<>(d, n));
                 }
@@ -86,26 +86,26 @@ public final class GraphDimacsFileWriter {
         }
         sb.append(node2id.size()).append(" ").append(edges.size()).append(System.lineSeparator());
 
-        for (Pair<Node<T>, Node<T>> edge : edges) {
+        for (final Pair<Node<T>, Node<T>> edge : edges) {
             sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second())).append(System.lineSeparator());
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }
         if (writeMapping) {
-            String mappingFileName = (fileName.endsWith(".col") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
+            final String mappingFileName = (fileName.endsWith(".col") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
             writeMapping(new File(mappingFileName), node2id);
         }
     }
 
-    private static <T> void writeMapping(File mappingFile, Map<Node<T>, Long> node2id) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Node<T>, Long> entry : node2id.entrySet()) {
+    private static <T> void writeMapping(final File mappingFile, final Map<Node<T>, Long> node2id) throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        for (final Map.Entry<Node<T>, Long> entry : node2id.entrySet()) {
             sb.append(entry.getKey().content()).append(";").append(entry.getValue()).append(System.lineSeparator());
         }
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(mappingFile.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

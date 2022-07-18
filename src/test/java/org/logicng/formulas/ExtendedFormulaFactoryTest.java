@@ -250,7 +250,7 @@ public class ExtendedFormulaFactoryTest {
         for (final Formula formula : formulas) {
             transformation.apply(formula, true);
             softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula
-                    .transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();
+                    .transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula + " type: " + transformationCacheEntry).isTrue();
         }
         eff.load(state);
         for (final Formula formula : formulas) {

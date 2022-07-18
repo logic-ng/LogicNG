@@ -125,7 +125,6 @@ public abstract class MaxSAT {
      * @param config the solver configuration
      */
     protected MaxSAT(final MaxSATConfig config) {
-        this.hardWeight = 0;
         this.hardClauses = new LNGVector<>();
         this.softClauses = new LNGVector<>();
         this.hardWeight = Integer.MAX_VALUE;

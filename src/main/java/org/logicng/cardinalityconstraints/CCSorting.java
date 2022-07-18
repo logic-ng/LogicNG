@@ -132,7 +132,6 @@ public final class CCSorting {
                 output.push(o1);
                 output.push(o2);
             } else {
-                assert m2 == 1;
                 this.comparator(input.get(0), input.get(1), o1, result, direction);
                 output.push(o1);
             }

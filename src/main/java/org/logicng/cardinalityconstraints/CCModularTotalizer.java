@@ -107,7 +107,7 @@ public final class CCModularTotalizer {
      * Builds an at-least-k constraint.
      * @param result the result of the encoding
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     void buildALK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final int newRHS = vars.length - rhs;
@@ -134,7 +134,6 @@ public final class CCModularTotalizer {
     private int initialize(final EncodingResult result, final int rhs, final int n) {
         result.reset();
         this.result = result;
-        this.cardinalityUpOutvars = new LNGVector<>();
         this.cardinalityLwOutvars = new LNGVector<>();
         final int mod = (int) Math.ceil(Math.sqrt(rhs + 1.0));
         this.cardinalityUpOutvars = new LNGVector<>(n / mod);

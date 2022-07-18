@@ -250,7 +250,7 @@ public class SequentialWeightCounter extends Encoding {
             final int wi = coeffs.get(i - 1);
             assert rhs >= wi;
             for (int j = 1; j <= rhs; j++) {
-                if (i >= 2 && i <= n && j <= rhs) {
+                if (i >= 2 && i <= n) {
                     addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), this.seqAuxiliaryInc.get(i).get(j));
                 }
                 if (i <= n && j <= wi) {

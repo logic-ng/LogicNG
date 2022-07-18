@@ -387,7 +387,7 @@ public class BDDReordering {
         BDDTree thisTree = t;
         BDDTree first = t;
         if (t == null) {
-            return t;
+            return null;
         }
         while (thisTree.getNext() != null) {
             final int best = reorderNodenum();
@@ -406,7 +406,7 @@ public class BDDReordering {
         BDDTree thisTree;
         BDDTree first = t;
         if (t == null) {
-            return t;
+            return null;
         }
         int lastsize;
 
@@ -436,7 +436,7 @@ public class BDDReordering {
         BDDTree first = t;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         while (thisTree.getNext() != null) {
@@ -454,7 +454,7 @@ public class BDDReordering {
         int lastsize;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         do {
@@ -484,7 +484,6 @@ public class BDDReordering {
                 blockdown(thisTree.getPrev());
                 next = thisTree.getNext();
             } else {
-                next = thisTree;
                 if (setfirst) {
                     first = thisTree.getPrev();
                 }
@@ -583,7 +582,7 @@ public class BDDReordering {
         int lastsize;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         do {
@@ -655,7 +654,7 @@ public class BDDReordering {
         int n;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         for (n = 0; n < num; n++) {
@@ -746,7 +745,7 @@ public class BDDReordering {
         int n, num = 0;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         for (thisTree = t; thisTree != null; thisTree = thisTree.getNext()) {
@@ -1215,25 +1214,6 @@ public class BDDReordering {
                 }
             }
         }
-    }
-
-    protected int[] scanset(final int r) {
-        if (r < 0 || (r) >= this.k.nodesize || r >= 2 && this.k.low(r) == -1) {
-            throw new IllegalArgumentException("Invalid BDD " + r + " as input");
-        }
-        if (r < 2) {
-            return new int[0];
-        }
-        int num = 0;
-        for (int n = r; n > 1; n = this.k.high(n)) {
-            num++;
-        }
-        final int[] varset = new int[num];
-        num = 0;
-        for (int n = r; n > 1; n = this.k.high(n)) {
-            varset[num++] = this.k.level2var[this.k.level(n)];
-        }
-        return varset;
     }
 
     protected int reorderGain() {
