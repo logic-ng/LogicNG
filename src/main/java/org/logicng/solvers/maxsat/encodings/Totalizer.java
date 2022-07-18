@@ -96,9 +96,9 @@ public class Totalizer extends Encoding {
     }
 
     /**
-     * Updates the right hand side.
+     * Updates the right-hand side.
      * @param s   the solver
-     * @param rhs the new right hand side
+     * @param rhs the new right-hand side
      */
     public void update(final MiniSatStyleSolver s, final int rhs) {
         final LNGIntVector assumptions = new LNGIntVector();
@@ -133,7 +133,7 @@ public class Totalizer extends Encoding {
      * Joins two constraints.  The given constraint is added to the current one.
      * @param s    the solver
      * @param lits the literals of the constraint
-     * @param rhs  the right hand side of the constraint
+     * @param rhs  the right-hand side of the constraint
      */
     void join(final MiniSatStyleSolver s, final LNGIntVector lits, final int rhs) {
         assert this.incrementalStrategy == MaxSATConfig.IncrementalStrategy.ITERATIVE;
@@ -159,9 +159,9 @@ public class Totalizer extends Encoding {
     }
 
     /**
-     * Updates the right hand side of a constraint.
+     * Updates the right-hand side of a constraint.
      * @param s           the solver
-     * @param rhs         the new right hand side
+     * @param rhs         the new right-hand side
      * @param assumptions the assumptions
      * @throws IllegalStateException if the incremental strategy is unknown
      */
@@ -189,7 +189,7 @@ public class Totalizer extends Encoding {
      * Builds the cardinality constraint.
      * @param s    the solver
      * @param lits the literals of the constraint
-     * @param rhs  the right hand side of the constraint
+     * @param rhs  the right-hand side of the constraint
      */
     public void build(final MiniSatStyleSolver s, final LNGIntVector lits, final int rhs) {
         this.cardinalityOutlits.clear();

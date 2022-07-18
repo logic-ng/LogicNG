@@ -84,7 +84,7 @@ public class PBConstraint extends Formula {
      * @param literals     the literals
      * @param coefficients the coefficients
      * @param comparator   the comparator
-     * @param rhs          the right hand side
+     * @param rhs          the right-hand side
      * @param f            the formula factory
      * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
      */

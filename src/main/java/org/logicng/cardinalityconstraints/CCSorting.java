@@ -96,7 +96,7 @@ public final class CCSorting {
 
     /**
      * Generates a sorter encoding for the given input.
-     * @param m         the the counter
+     * @param m         the counter
      * @param input     the input literals
      * @param result    the result of the encoding
      * @param output    the output literals

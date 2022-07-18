@@ -112,7 +112,7 @@ public class SequentialWeightCounter extends Encoding {
      * @param s      the solver
      * @param lits   the literals of the constraint
      * @param coeffs the coefficients of the constraints
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     public void encode(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs, final int rhs) {
         if (rhs == Integer.MAX_VALUE) {
@@ -180,7 +180,7 @@ public class SequentialWeightCounter extends Encoding {
      * @param s           the solver
      * @param lits        the literals of the constraint
      * @param coeffs      the coefficients of the constraint
-     * @param rhs         the right hand size of the constraint
+     * @param rhs         the right-hand size of the constraint
      * @param assumptions the current assumptions
      * @param size        the size
      */
@@ -277,7 +277,7 @@ public class SequentialWeightCounter extends Encoding {
      * Updates the 'rhs' of an already existent pseudo-Boolean encoding.  This method allows for all learned clauses
      * from previous iterations to be kept in the next iteration.
      * @param s   the solver
-     * @param rhs the new right hand side
+     * @param rhs the new right-hand side
      */
     public void update(final MiniSatStyleSolver s, final int rhs) {
         assert this.currentPbRhs != -1;
@@ -290,7 +290,7 @@ public class SequentialWeightCounter extends Encoding {
     /**
      * Incremental update of the SWC encoding.
      * @param s   the solver
-     * @param rhs the new right hand side
+     * @param rhs the new right-hand side
      */
     public void updateInc(final MiniSatStyleSolver s, final int rhs) {
         if (this.currentLitBlocking != LIT_UNDEF) {

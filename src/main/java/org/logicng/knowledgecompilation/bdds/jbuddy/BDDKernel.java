@@ -111,7 +111,7 @@ public class BDDKernel {
 
     protected BDDReordering reordering;
 
-    protected int[] nodes; // All of the bdd nodes
+    protected int[] nodes; // All the bdd nodes
     protected int[] vars; // Set of defined BDD variables
     protected final int minfreenodes; // Minimal % of nodes that has to be left after a garbage collection
     protected int gbcollectnum; // Number of garbage collections
@@ -291,9 +291,9 @@ public class BDDKernel {
     }
 
     /**
-     * Returns the the variable for the given index or {@code null} if no such index exists.
+     * Returns the variable for the given index or {@code null} if no such index exists.
      * @param idx the index
-     * @return the the variable for the given index
+     * @return the variable for the given index
      */
     public Variable getVariableForIndex(final int idx) {
         return this.idx2var.get(idx);
@@ -413,7 +413,7 @@ public class BDDKernel {
 
     /**
      * Adds a reference for a given node.  Reference counting is done on externally referenced nodes only and the count for
-     * a specific node {@code r} can and must be increased using this function to avoid loosing the node in the next
+     * a specific node {@code r} can and must be increased using this function to avoid losing the node in the next
      * garbage collection.  If a BDD handler is given, the handler's {@link BDDHandler#newRefAdded()} method is called.
      * If the generation gets aborted due to the handler, the method will return {@link BDDKernel#BDD_ABORT} as result. If
      * {@code null} is passed as handler, the generation will continue without interruption.

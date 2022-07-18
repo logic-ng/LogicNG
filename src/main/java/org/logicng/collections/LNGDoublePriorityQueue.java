@@ -222,7 +222,7 @@ public final class LNGDoublePriorityQueue {
     }
 
     /**
-     * Compares two elements by their priority and returns whether the first element's priority is less then the second
+     * Compares two elements by their priority and returns whether the first element's priority is less than the second
      * element's priority.
      * @param e1 the first element
      * @param e2 the second element

@@ -207,7 +207,7 @@ public final class FormulaRandomizerConfig extends Configuration {
         /**
          * Sets the seed of the randomizer (passed to the constructor of {@link java.util.Random}).
          * This provides the possibility to get deterministic random formulas. Just choose an arbitrary
-         * number and you get the same random formulas with every run.
+         * number, and you get the same random formulas with every run.
          * <p>
          * The default value is 0, meaning that the seed depends on the system time, so determinism
          * is lost.
@@ -390,8 +390,8 @@ public final class FormulaRandomizerConfig extends Configuration {
         }
 
         /**
-         * Sets the relative weight of a LT constraint ({@link org.logicng.formulas.CType#LT}.
-         * @param weightPbcTypeLt the relative weight of a LT constraint
+         * Sets the relative weight of an LT constraint ({@link org.logicng.formulas.CType#LT}.
+         * @param weightPbcTypeLt the relative weight of an LT constraint
          * @return the builder
          */
         public Builder weightPbcTypeLt(final double weightPbcTypeLt) {

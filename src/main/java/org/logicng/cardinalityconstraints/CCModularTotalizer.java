@@ -88,7 +88,7 @@ public final class CCModularTotalizer {
      * Builds an at-most-k constraint.
      * @param result the result of the encoding
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     void buildAMK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final int mod = this.initialize(result, rhs, vars.length);

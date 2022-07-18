@@ -48,7 +48,7 @@ public abstract class FormulaStringRepresentation {
      * Returns the string representation of the given formula.
      * <p>
      * In order to add a prefix/suffix or do one-time calculations on the formula it is recommended to overwrite this
-     * method in sub-classes.
+     * method in subclasses.
      * @param formula the formula
      * @return the string representation of the formula
      */

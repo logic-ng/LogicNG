@@ -161,7 +161,7 @@ public class Encoder {
      * Encodes a cardinality constraint in the given solver.
      * @param s    the solver
      * @param lits the literals for the constraint
-     * @param rhs  the right hand side of the constraint
+     * @param rhs  the right-hand side of the constraint
      * @throws IllegalStateException if the cardinality encoding is unknown
      */
     public void encodeCardinality(final MiniSatStyleSolver s, final LNGIntVector lits, final int rhs) {
@@ -183,7 +183,7 @@ public class Encoder {
     /**
      * Updates the cardinality constraint.
      * @param s   the solver
-     * @param rhs the new right hand side
+     * @param rhs the new right-hand side
      * @throws IllegalStateException if the cardinality encoding is unknown
      */
     public void updateCardinality(final MiniSatStyleSolver s, final int rhs) {
@@ -200,10 +200,10 @@ public class Encoder {
     }
 
     /**
-     * Manages the building of cardinality encodings.  Currently is only used for incremental solving.
+     * Manages the building of cardinality encodings.  Currently, is only used for incremental solving.
      * @param s    the solver
      * @param lits the literals for the constraint
-     * @param rhs  the right hand side of the constraint
+     * @param rhs  the right-hand side of the constraint
      * @throws IllegalStateException if the cardinality encoding does not support incrementality
      */
     public void buildCardinality(final MiniSatStyleSolver s, final LNGIntVector lits, final int rhs) {
@@ -222,7 +222,7 @@ public class Encoder {
      * @param s           the solver
      * @param join        the join literals
      * @param lits        the literals of the constraint
-     * @param rhs         the right hand side of the constraint
+     * @param rhs         the right-hand side of the constraint
      * @param assumptions the assumptions
      * @throws IllegalStateException if the cardinality encoding does not support incrementality
      */
@@ -247,7 +247,7 @@ public class Encoder {
      * @param s      the solver
      * @param lits   the literals of the constraint
      * @param coeffs the coefficients of the constraints
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      * @throws IllegalStateException if the pseudo-Boolean encoding is unknown
      */
     public void encodePB(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs, final int rhs) {
@@ -263,7 +263,7 @@ public class Encoder {
     /**
      * Updates a pseudo-Boolean encoding.
      * @param s   the solver
-     * @param rhs the new right hand side
+     * @param rhs the new right-hand side
      * @throws IllegalStateException if the pseudo-Boolean encoding is unknown
      */
     public void updatePB(final MiniSatStyleSolver s, final int rhs) {
@@ -281,7 +281,7 @@ public class Encoder {
      * @param s           the solver
      * @param lits        the literals of the constraint
      * @param coeffs      the coefficients of the constraint
-     * @param rhs         the right hand size of the constraint
+     * @param rhs         the right-hand size of the constraint
      * @param assumptions the current assumptions
      * @param size        the size
      * @throws IllegalStateException if the pseudo-Boolean encoding is unknown
@@ -303,7 +303,7 @@ public class Encoder {
      * @param s      the solver
      * @param lits   the literals of the constraint
      * @param coeffs the coefficients of the constraint
-     * @param rhs    the new right hand side of the constraint
+     * @param rhs    the new right-hand side of the constraint
      * @throws IllegalStateException if the pseudo-Boolean encoding is unknown
      */
     public void incUpdatePB(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs, final int rhs) {

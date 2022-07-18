@@ -65,7 +65,7 @@ import java.util.TreeSet;
  * prime implicates or a <b>cover</b> of prime implicants and <b>all</b> prime implicates.
  * This can be configured via the {@link org.logicng.primecomputation.PrimeResult.CoverageType}.
  * <p>
- * Furthermore the algorithm comes in two flavors: One which searches for maximum models
+ * Furthermore, the algorithm comes in two flavors: One which searches for maximum models
  * {@link #getWithMaximization()} and another which searches for minimum models
  * {@link #getWithMaximization()}. From experience, the one with minimum models usually
  * outperforms the one with maximum models.

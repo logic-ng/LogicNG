@@ -273,7 +273,7 @@ public class BDD {
 
     /**
      * Returns a full model of this BDD or {@code null} if there is none.
-     * @return an full model of this BDD
+     * @return a full model of this BDD
      */
     public Assignment fullModel() {
         return createAssignment(this.operations.fullSatOne(this.index));

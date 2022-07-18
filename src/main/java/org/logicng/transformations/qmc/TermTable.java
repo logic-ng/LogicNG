@@ -111,7 +111,7 @@ public class TermTable {
 
     /**
      * Performs elimination of columns by dominance.
-     * @return {@code true} if a elimination was performed, {@code false} otherwise
+     * @return {@code true} if an elimination was performed, {@code false} otherwise
      */
     protected boolean eliminateColumnDominance() {
         final SortedSet<Integer> toEliminate = new TreeSet<>();
@@ -133,7 +133,7 @@ public class TermTable {
 
     /**
      * Performs elimination of lines by dominance.
-     * @return {@code true} if a elimination was performed, {@code false} otherwise
+     * @return {@code true} if an elimination was performed, {@code false} otherwise
      */
     protected boolean eliminateLineDominance() {
         final SortedSet<Integer> toEliminate = new TreeSet<>();

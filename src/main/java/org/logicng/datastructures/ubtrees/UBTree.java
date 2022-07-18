@@ -89,7 +89,7 @@ public final class UBTree<T extends Comparable<T>> {
     /**
      * Returns all subsets of a given set in this UBTree.
      * @param set the set to search for
-     * @return all subsets of of the given set
+     * @return all subsets of the given set
      */
     public Set<SortedSet<T>> allSubsets(final SortedSet<T> set) {
         final Set<SortedSet<T>> subsets = new LinkedHashSet<>();

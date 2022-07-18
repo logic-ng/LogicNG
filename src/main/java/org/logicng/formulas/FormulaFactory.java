@@ -647,7 +647,7 @@ public class FormulaFactory {
      * Creates a new CNF from an array of clauses.
      * <p>
      * ATTENTION: it is assumed that the operands are really clauses - this is not checked for performance reasons.
-     * Also no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
+     * Also, no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
      * of redundant clauses.
      * @param clauses the array of clauses
      * @return a new CNF
@@ -662,7 +662,7 @@ public class FormulaFactory {
      * Creates a new CNF from a collection of clauses.
      * <p>
      * ATTENTION: it is assumed that the operands are really clauses - this is not checked for performance reasons.
-     * Also no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
+     * Also, no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
      * of redundant clauses.
      * @param clauses the collection of clauses
      * @return a new CNF

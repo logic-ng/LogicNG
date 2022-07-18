@@ -55,7 +55,7 @@ import java.util.function.Consumer;
  * Note that this formula is usually syntactically different to the
  * formulas which were actually added to the solver, since the formulas
  * are added as CNF and may be simplified or even removed depending on
- * the state of the solver. Furthermore the solver might add learnt
+ * the state of the solver. Furthermore, the solver might add learnt
  * clauses or propagate literals.
  * <p>
  * If the formula on the solver is known to be unsatisfiable, this

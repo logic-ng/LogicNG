@@ -139,7 +139,7 @@ public final class UnitPropagation implements FormulaTransformation {
         }
 
         /**
-         * Transforms an solver literal into the corresponding formula literal.
+         * Transforms a solver literal into the corresponding formula literal.
          * @param lit the solver literal
          * @param f   the formula factory
          * @return the formula literal

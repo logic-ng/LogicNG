@@ -60,7 +60,7 @@ import java.util.List;
 
 /**
  * Incremental data for an at-most-k cardinality constraint.  When an at-most-k cardinality constraint is constructed,
- * it is possible to save incremental data with it.  Then one can modify the constraint after it is was created by
+ * it is possible to save incremental data with it.  Then one can modify the constraint after it was created by
  * tightening the original bound.
  * @version 1.1
  * @since 1.1
@@ -156,7 +156,7 @@ public final class CCIncrementalData {
      * Tightens the upper bound of an at-most-k constraint and encodes it on the solver of the result.
      * <p>
      * Usage constraints:
-     * -New right hand side must be smaller than current right hand side.
+     * -New right-hand side must be smaller than current right-hand side.
      * -Cannot be used for at-least-k constraints.
      * @param rhs the new upperBound
      */
@@ -227,7 +227,7 @@ public final class CCIncrementalData {
      * Tightens the lower bound of an at-least-k constraint and encodes it on the solver of the result.
      * <p>
      * Usage constraints:
-     * -New right hand side must be greater than current right hand side.
+     * -New right-hand side must be greater than current right-hand side.
      * -Cannot be used for at-most-k constraints.
      * @param rhs the new upperBound
      */
@@ -286,8 +286,8 @@ public final class CCIncrementalData {
     }
 
     /**
-     * Returns the current right hand side of this CCIncrementalData.
-     * @return the current right hand side of this CCIncrementalData.
+     * Returns the current right-hand side of this CCIncrementalData.
+     * @return the current right-hand side of this CCIncrementalData.
      */
     public int currentRHS() {
         return this.currentRHS;

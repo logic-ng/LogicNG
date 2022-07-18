@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * A reader for DIMACS CNF files.
  * <p>
- * This reader reads all the clauses and variables - independent of the numbers given in the prefix. Also it assumes
+ * This reader reads all the clauses and variables - independent of the numbers given in the prefix. Also, it assumes
  * that every clause is in its own line and ends with '0'.  Comments are only allowed if the lines start with 'c'.  No
  * C style comments are supported (yes, we have actually seen these in DIMACS files).
  * @version 1.3

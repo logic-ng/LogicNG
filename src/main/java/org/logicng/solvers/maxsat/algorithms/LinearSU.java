@@ -286,7 +286,7 @@ public class LinearSU extends MaxSAT {
     /**
      * Rebuilds a SAT solver with the current MaxSAT formula
      * @param functions     the functions
-     * @param rhs           the right hand side
+     * @param rhs           the right-hand side
      * @param currentWeight the current weight
      * @return the rebuilt solver
      */

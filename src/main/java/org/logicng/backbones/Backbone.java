@@ -46,7 +46,7 @@ import java.util.TreeSet;
 
 /**
  * This class represents a backbone.  A backbone of a formula is a set of literals (positive and/or negative) which
- * are present in their respective polarity in every model of the given formula.  Therefore the literals must be set
+ * are present in their respective polarity in every model of the given formula.  Therefore, the literals must be set
  * accordingly in order for the formula to evaluate to true.
  * <p>
  * A backbone of a formula has up to three sets of variables

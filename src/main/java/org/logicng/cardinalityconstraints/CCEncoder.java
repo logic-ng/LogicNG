@@ -303,7 +303,7 @@ public class CCEncoder {
      * Encodes an at-most-k constraint.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     protected void amk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
@@ -350,7 +350,7 @@ public class CCEncoder {
      * Encodes an at-most-k constraint for incremental usage.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      * @return the incremental data
      */
     protected CCIncrementalData amkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
@@ -398,7 +398,7 @@ public class CCEncoder {
      * Encodes an at-lest-k constraint.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     protected void alk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
@@ -452,7 +452,7 @@ public class CCEncoder {
      * Encodes an at-lest-k constraint for incremental usage.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      * @return the incremental data
      */
     protected CCIncrementalData alkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
@@ -507,7 +507,7 @@ public class CCEncoder {
      * Encodes an exactly-k constraint.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     protected void exk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
@@ -573,7 +573,7 @@ public class CCEncoder {
 
     /**
      * Returns the best at-most-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently the modular totalizer is the best encoder for all sizes and therefore is always
+     * practical observations.  Currently, the modular totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
@@ -587,7 +587,7 @@ public class CCEncoder {
 
     /**
      * Returns the best at-least-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently the modular totalizer is the best encoder for all sizes and therefore is always
+     * practical observations.  Currently, the modular totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
@@ -601,7 +601,7 @@ public class CCEncoder {
 
     /**
      * Returns the best exactly-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently the totalizer is the best encoder for all sizes and therefore is always
+     * practical observations.  Currently, the totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder

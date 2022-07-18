@@ -57,7 +57,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param size the capacity of the vector.
      */
     @SuppressWarnings("unchecked")
-    public LNGVector(int size) {
+    public LNGVector(final int size) {
         this.elements = (T[]) new Object[size];
     }
 
@@ -67,7 +67,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param pad  the initial element
      */
     @SuppressWarnings("unchecked")
-    public LNGVector(int size, T pad) {
+    public LNGVector(final int size, final T pad) {
         this.elements = (T[]) new Object[size];
         Arrays.fill(this.elements, pad);
         this.size = size;
@@ -126,7 +126,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param element the element
      */
     public void push(final T element) {
-        int newSize = this.size + 1;
+        final int newSize = this.size + 1;
         this.ensure(newSize);
         this.elements[this.size++] = element;
     }
@@ -146,7 +146,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @return the element at the position
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public T get(int position) {
+    public T get(final int position) {
         return this.elements[position];
     }
 
@@ -156,7 +156,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param element  the element
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public void set(int position, final T element) {
+    public void set(final int position, final T element) {
         this.elements[position] = element;
     }
 
@@ -168,11 +168,11 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Shrinks the vector to a given size if the new size is less then the current size.  Otherwise the size remains
+     * Shrinks the vector to a given size if the new size is less than the current size.  Otherwise, the size remains
      * the same.
      * @param newSize the new size
      */
-    public void shrinkTo(int newSize) {
+    public void shrinkTo(final int newSize) {
         if (newSize < this.size) {
             for (int i = this.size; i > newSize; i--) {
                 this.elements[i - 1] = null;
@@ -186,7 +186,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param size the new size
      * @param pad  the value for new elements
      */
-    public void growTo(int size, final T pad) {
+    public void growTo(final int size, final T pad) {
         if (this.size >= size) {
             return;
         }
@@ -201,7 +201,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * Grows the vector to a new size and initializes the new elements with {@code null}.
      * @param size the new size
      */
-    public void growTo(int size) {
+    public void growTo(final int size) {
         if (this.size >= size) {
             return;
         }
@@ -214,7 +214,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param num the number of elements to remove.
      * @throws ArrayIndexOutOfBoundsException if the number of elements to remove is larger than the size of the vector
      */
-    public void removeElements(int num) {
+    public void removeElements(final int num) {
         int n = num;
         while (n-- > 0) {
             this.elements[--this.size] = null;
@@ -222,7 +222,7 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Removes the first occurrence of a given element from the vector (the element is compared by {@code equals}.
+     * Removes the first occurrence of a given element from the vector (the element is compared by {@code equals}).
      * @param element the element to remove
      * @return {@code true} if the element was removed, {@code false} if the element was not in the vector
      */
@@ -294,7 +294,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param end   the end index for sorting
      * @param lt    the comparator for elements of the array
      */
-    private void selectionSort(final T[] array, int start, int end, Comparator<T> lt) {
+    private void selectionSort(final T[] array, final int start, final int end, final Comparator<T> lt) {
         int i;
         int j;
         int bestI;
@@ -319,7 +319,7 @@ public final class LNGVector<T> implements Iterable<T> {
      * @param end   the end index for sorting
      * @param lt    the comparator for elements of the array
      */
-    private void sort(final T[] array, int start, int end, Comparator<T> lt) {
+    private void sort(final T[] array, final int start, final int end, final Comparator<T> lt) {
         if (start == end) {
             return;
         }

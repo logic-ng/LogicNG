@@ -70,7 +70,7 @@ import java.util.stream.Collectors;
  *     <li>Factoring out: Applying the Distributive Law heuristically for a smaller formula</li>
  *     <li>Minimizing negations: Applying De Morgan's Law heuristically for a smaller formula</li>
  * </ul>
- * The first and the last two steps can be configured using the {@link AdvancedSimplifierConfig}. Also the handler and the rating
+ * The first and the last two steps can be configured using the {@link AdvancedSimplifierConfig}. Also, the handler and the rating
  * function can be configured. If no rating function is specified, the {@link DefaultRatingFunction} is chosen.
  * @version 2.3.0
  * @since 2.0.0

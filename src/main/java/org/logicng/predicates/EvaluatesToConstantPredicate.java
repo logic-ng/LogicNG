@@ -57,7 +57,7 @@ import java.util.Map;
  *     <li>AND/OR has two operands with complementary negations</li>
  * </ul>
  * This evaluation differs from the standard formula evaluation {@link Formula#evaluate(Assignment)} in two ways. It
- * accepts partial assignments and it tries to avoid the generation of intermediate formula by the formula factory
+ * accepts partial assignments, and it tries to avoid the generation of intermediate formula by the formula factory
  * objects in order to speed up the performance.
  * <p>
  * Example 01: When evaluation to false the formula (a | b) &amp; (~a | c) with partial assignment

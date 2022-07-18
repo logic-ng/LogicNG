@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * A node in an hypergraph.
+ * A node in a hypergraph.
  * @param <T> the content type of the graph's nodes
  * @version 2.0.0
  * @since 1.4.0

@@ -33,7 +33,7 @@ import org.logicng.datastructures.Assignment;
 import java.util.function.Supplier;
 
 /**
- * A optimization handler which cancels the computation process after a given timeout.
+ * An optimization handler which cancels the computation process after a given timeout.
  * @version 2.1.0
  * @since 2.1.0
  */

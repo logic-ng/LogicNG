@@ -95,7 +95,7 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
     }
 
     /**
-     * Returns a optimization function which maximizes the given set of literals.
+     * Returns an optimization function which maximizes the given set of literals.
      * @param literals the literals to maximize
      * @return the solver function
      */
@@ -104,7 +104,7 @@ public final class OptimizationFunction implements SolverFunction<Assignment> {
     }
 
     /**
-     * Returns a optimization function which minimizes the given set of literals.
+     * Returns an optimization function which minimizes the given set of literals.
      * @param literals the literals to minimize
      * @return the solver function
      */

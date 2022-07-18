@@ -424,7 +424,7 @@ public class MiniSat extends SATSolver {
      * Returns the underlying core solver.
      * <p>
      * ATTENTION: by influencing the underlying solver directly, you can mess things up completely!  You should really
-     * know, what you are doing.
+     * know what you are doing.
      * @return the underlying core solver
      */
     public MiniSatStyleSolver underlyingSolver() {

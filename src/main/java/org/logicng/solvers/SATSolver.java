@@ -172,14 +172,14 @@ public abstract class SATSolver {
      * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
      * <p>
      * Usage constraints:
-     * - "&lt;": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
-     * - "&lt;=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
-     * - "&gt;": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side
+     * - "&lt;": Cannot be used with right-hand side 2, returns null for right-hand side 1, but constraint is added to solver.
+     * - "&lt;=": Cannot be used with right-hand side 1, returns null for right-hand side 0, but constraint is added to solver.
+     * - "&gt;": Returns null for right-hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right-hand side
      * &gt;= number of variables.
-     * - "&gt;=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side &gt;
+     * - "&gt;=": Returns null for right-hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right-hand side &gt;
      * number of variables.
      * @param cc the cardinality constraint
-     * @return the incremental data of this constraint, or null if the right hand side of cc is 1
+     * @return the incremental data of this constraint, or null if the right-hand side of cc is 1
      */
     public abstract CCIncrementalData addIncrementalCC(final CardinalityConstraint cc);
 
@@ -280,7 +280,7 @@ public abstract class SATSolver {
      * The given polarity in the selection order is used as assignment for the variable.
      * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
      * <p>
-     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Example: Order a, ~b, c. The solver picks variable `a`, if not assigned yet, and checks if setting `a` to true leads to a satisfying assignment.
      * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
      * @param selectionOrder the order of the literals for the selection order
      * @return the satisfiability of the formula in the solver
@@ -297,7 +297,7 @@ public abstract class SATSolver {
      * The given polarity in the selection order is used as assignment for the variable.
      * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
      * <p>
-     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Example: Order a, ~b, c. The solver picks variable `a`, if not assigned yet, and checks if setting `a` to true leads to a satisfying assignment.
      * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
      * @param selectionOrder the order of the literals for the selection order
      * @param handler        the SAT handler
@@ -409,7 +409,7 @@ public abstract class SATSolver {
 
     /**
      * Returns the set of variables currently known by the solver.
-     * NOTE: Due to the incremental/decremental interface of some of the solvers, this set is generated each time,
+     * NOTE: Due to the incremental/decremental interface of some solvers, this set is generated each time,
      * the method is called.  So if you can maintain a list of relevant/known variables in your own application,
      * this is recommended.
      * @return the set of variables currently known by the solver

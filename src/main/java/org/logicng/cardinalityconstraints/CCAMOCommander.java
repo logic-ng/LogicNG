@@ -125,7 +125,7 @@ public final class CCAMOCommander implements CCAtMostOne {
     }
 
     /**
-     * Internal non recursive encoding.
+     * Internal non-recursive encoding.
      * @param literals the current literals
      */
     private void encodeNonRecursive(final LNGVector<Literal> literals) {
