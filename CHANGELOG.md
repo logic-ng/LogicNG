@@ -2,7 +2,7 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.3.0] - 2022-mm-dd
+## [2.3.0] - 2022-07-18
 
 ### Added
 
@@ -32,7 +32,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `TermPredicate#getMaxtermPredicate()` tested for a minterm. To prevent silent errors for callers of these predicates, the factory method names were changed
   to `minterm()` and `maxterm()`, respectively. Thus, an intentional breaking change on compile time level has been introduced to force callers to adjust their
   logic.
-- Minor edge case issue in `MiniSat` when performing assumption solving with proof tracing
+- Minor edge case issue in `MiniSat` when performing assumption solving with proof tracing.
 - Fixed two bugs in the backbone computation on the MiniCard solver.
 
 ## [2.2.1] - 2022-06-11
