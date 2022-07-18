@@ -1029,13 +1029,16 @@ public abstract class MiniSatStyleSolver {
             return true;
         } else {
             int countPos = 0;
+            final int cardinality = clause.cardinality();
             for (int i = 0; i < clause.size(); ++i) {
-                final int clauseLit = clause.get(i);
-                if (var(lit) != var(clauseLit) && this.model.get(var(clauseLit))) {
-                    countPos++;
+                final int var = var(clause.get(i));
+                if (var(lit) != var && this.model.get(var)) {
+                    if (++countPos == cardinality) {
+                        return true;
+                    }
                 }
             }
-            return countPos == clause.cardinality();
+            return false;
         }
     }
 
