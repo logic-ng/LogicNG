@@ -269,7 +269,7 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns whether this formula implies the given other formula, i.e. `this => other` is a tautology.
+     * Returns whether this formula implies the given other formula, i.e. `this =&gt; other` is a tautology.
      * A new SAT solver is used to check this tautology.  If you want to have more influence on the solver
      * (e.g. which solver type or configuration) you must use the {@link TautologyPredicate} directly on the
      * implication.
@@ -281,7 +281,7 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns whether this formula is implied by the given other formula, i.e. `other => this` is a tautology.
+     * Returns whether this formula is implied by the given other formula, i.e. `other =&gt; this` is a tautology.
      * A new SAT solver is used to check this tautology.  If you want to have more influence on the solver
      * (e.g. which solver type or configuration) you must use the {@link TautologyPredicate} directly on the
      * implication.
@@ -293,7 +293,7 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns whether this formula is equivalent to the given other formula, i.e. `other <=> this` is a tautology.
+     * Returns whether this formula is equivalent to the given other formula, i.e. `other &lt;=&gt; this` is a tautology.
      * A new SAT solver is used to check this tautology.  If you want to have more influence on the solver
      * (e.g. which solver type or configuration) you must use the {@link TautologyPredicate} directly on the
      * equivalence.
