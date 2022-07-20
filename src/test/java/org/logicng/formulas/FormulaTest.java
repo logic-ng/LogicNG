@@ -36,6 +36,8 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
 import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.CacheEntry;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.transformations.cnf.BDDCNFTransformation;
 
 import java.util.Arrays;
 
@@ -114,5 +116,45 @@ public class FormulaTest {
         assertThat(CType.valueOf("LE")).isEqualTo(CType.LE);
         assertThat(Arrays.asList(CType.values()).contains(CType.valueOf("GT"))).isTrue();
         assertThat(CType.values().length).isEqualTo(5);
+    }
+
+    @Test
+    public void testImplies() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula f1 = f.parse("(a | b) & (c | ~d)");
+        final Formula f2 = f.parse("(a | b) & (c | ~d) & (e | ~f)");
+        final Formula f3 = f.parse("(a | b) & (c | d)");
+        assertThat(f1.implies(f2)).isFalse();
+        assertThat(f2.implies(f1)).isTrue();
+        assertThat(f1.implies(f3)).isFalse();
+        assertThat(f2.implies(f3)).isFalse();
+        assertThat(f2.implies(f2)).isTrue();
+    }
+
+    @Test
+    public void testIsImpliedBy() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula f1 = f.parse("(a | b) & (c | ~d)");
+        final Formula f2 = f.parse("(a | b) & (c | ~d) & (e | ~f)");
+        final Formula f3 = f.parse("(a | b) & (c | d)");
+        assertThat(f1.isImpliedBy(f2)).isTrue();
+        assertThat(f2.isImpliedBy(f1)).isFalse();
+        assertThat(f1.isImpliedBy(f3)).isFalse();
+        assertThat(f2.isImpliedBy(f3)).isFalse();
+        assertThat(f2.isImpliedBy(f2)).isTrue();
+    }
+
+    @Test
+    public void testIsEquivalentTo() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula f1 = f.parse("(a | b) & (c | ~d)");
+        final Formula f2 = f.parse("(a | b) & (c | ~d) & (e | ~f)");
+        final Formula f3 = f.parse("(a & c) | (a & ~d) | (b & c) | (b & ~d)");
+        assertThat(f1.isEquivalentTo(f2)).isFalse();
+        assertThat(f2.isEquivalentTo(f1)).isFalse();
+        assertThat(f1.isEquivalentTo(f3)).isTrue();
+        assertThat(f3.isEquivalentTo(f1)).isTrue();
+        assertThat(f2.isEquivalentTo(f3)).isFalse();
+        assertThat(f2.isEquivalentTo(f2.transform(new BDDCNFTransformation()))).isTrue();
     }
 }
