@@ -5,7 +5,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [2.4.0] - 2022-mm-dd
 
 ### Added
-- Convenience methods `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class.
+- Convenience methods `isSatisfiable`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class. 
 
 ## [2.3.0] - 2022-07-18
 

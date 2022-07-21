@@ -44,6 +44,7 @@ import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.NNFPredicate;
+import org.logicng.predicates.satisfiability.SATPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.transformations.NNFTransformation;
 
@@ -269,10 +270,21 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
+     * Returns whether this formula is satisfiable.
+     * A new SAT solver is used to check the satisfiability. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is satisfiable, {@code false} otherwise
+     */
+    public boolean isSatisfiable() {
+        return this.holds(new SATPredicate(this.f));
+    }
+
+    /**
      * Returns whether this formula implies the given other formula, i.e. `this =&gt; other` is a tautology.
-     * A new SAT solver is used to check this tautology.  If you want to have more influence on the solver
-     * (e.g. which solver type or configuration) you must use the {@link TautologyPredicate} directly on the
-     * implication.
+     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
      * @param other the formula which should be checked if it is implied by this formula
      * @return {@code true} when this formula implies the given other formula, {@code false} otherwise
      */
@@ -282,9 +294,9 @@ public abstract class Formula implements Iterable<Formula> {
 
     /**
      * Returns whether this formula is implied by the given other formula, i.e. `other =&gt; this` is a tautology.
-     * A new SAT solver is used to check this tautology.  If you want to have more influence on the solver
-     * (e.g. which solver type or configuration) you must use the {@link TautologyPredicate} directly on the
-     * implication.
+     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
      * @param other the formula which should be checked if it implies this formula
      * @return {@code true} when this formula is implied by the given other formula, {@code false} otherwise
      */
@@ -294,9 +306,9 @@ public abstract class Formula implements Iterable<Formula> {
 
     /**
      * Returns whether this formula is equivalent to the given other formula, i.e. `other &lt;=&gt; this` is a tautology.
-     * A new SAT solver is used to check this tautology.  If you want to have more influence on the solver
-     * (e.g. which solver type or configuration) you must use the {@link TautologyPredicate} directly on the
-     * equivalence.
+     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
      * @param other the formula which should be checked if it is equivalent with this formula
      * @return {@code true} when this formula is equivalent to the given other formula, {@code false} otherwise
      */

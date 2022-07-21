@@ -119,6 +119,17 @@ public class FormulaTest {
     }
 
     @Test
+    public void testIsSatisfiable() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula f1 = f.parse("(a | b) & (c | ~d)");
+        final Formula f2 = f.parse("~a & ~b & (a | b)");
+        assertThat(f.falsum().isSatisfiable()).isFalse();
+        assertThat(f.verum().isSatisfiable()).isTrue();
+        assertThat(f1.isSatisfiable()).isTrue();
+        assertThat(f2.isSatisfiable()).isFalse();
+    }
+
+    @Test
     public void testImplies() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula f1 = f.parse("(a | b) & (c | ~d)");
