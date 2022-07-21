@@ -90,8 +90,8 @@ public class MiniSat extends SATSolver {
      * Constructs a new SAT solver instance.
      * @param f             the formula factory
      * @param solverStyle   the solver style
-     * @param miniSatConfig the optional MiniSat configuration
-     * @param glucoseConfig the optional Glucose configuration
+     * @param miniSatConfig the MiniSat configuration, must not be {@code null}
+     * @param glucoseConfig the Glucose configuration, must not be {@code null} for solver type {@link SolverStyle#GLUCOSE}
      * @throws IllegalArgumentException if the solver style is unknown
      */
     protected MiniSat(final FormulaFactory f, final SolverStyle solverStyle, final MiniSatConfig miniSatConfig,
