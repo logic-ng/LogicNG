@@ -6,6 +6,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 - Convenience methods `isSatisfiable`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class. 
+- Two overloaded factory methods `mk` in `MiniSat` to construct a solver by formula factory, solver style and optional configuration. 
 
 ## [2.3.0] - 2022-07-18
 

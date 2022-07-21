@@ -67,7 +67,7 @@ import java.util.TreeSet;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 2.3.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class MiniSat extends SATSolver {
@@ -134,7 +134,7 @@ public class MiniSat extends SATSolver {
     /**
      * Returns a new MiniSat solver with a given configuration.
      * @param f      the formula factory
-     * @param config the configuration
+     * @param config the configuration, must not be {@code null}
      * @return the solver
      */
     public static MiniSat miniSat(final FormulaFactory f, final MiniSatConfig config) {
@@ -154,8 +154,8 @@ public class MiniSat extends SATSolver {
     /**
      * Returns a new Glucose solver with a given configuration.
      * @param f             the formula factory
-     * @param miniSatConfig the MiniSat configuration
-     * @param glucoseConfig the Glucose configuration
+     * @param miniSatConfig the MiniSat configuration, must not be {@code null}
+     * @param glucoseConfig the Glucose configuration, must not be {@code null}
      * @return the solver
      */
     public static MiniSat glucose(final FormulaFactory f, final MiniSatConfig miniSatConfig, final GlucoseConfig glucoseConfig) {
@@ -174,11 +174,44 @@ public class MiniSat extends SATSolver {
     /**
      * Returns a new MiniCard solver with a given configuration.
      * @param f      the formula factory
-     * @param config the configuration
+     * @param config the configuration, must not be {@code null}
      * @return the solver
      */
     public static MiniSat miniCard(final FormulaFactory f, final MiniSatConfig config) {
         return new MiniSat(f, SolverStyle.MINICARD, config, null);
+    }
+
+    /**
+     * Returns a new solver depending on the given solver style with the configuration from the formula factory.
+     * @param f     the formula factory
+     * @param style the solver style, must not be {@code null}
+     * @return the solver
+     */
+    public static MiniSat mk(final FormulaFactory f, final SolverStyle style) {
+        final MiniSatConfig miniSatConfig = (MiniSatConfig) f.configurationFor(ConfigurationType.MINISAT);
+        final GlucoseConfig glucoseConfig = style == SolverStyle.GLUCOSE ? (GlucoseConfig) f.configurationFor(ConfigurationType.GLUCOSE) : null;
+        return mk(f, style, miniSatConfig, glucoseConfig);
+    }
+
+    /**
+     * Returns a new solver depending on the given solver style with the given configuration.
+     * @param f             the formula factory
+     * @param solverStyle   the solver style, must not be {@code null}
+     * @param miniSatConfig the configuration, must not be {@code null}
+     * @param glucoseConfig the Glucose configuration, must not be {@code null} for solver type {@link SolverStyle#GLUCOSE}
+     * @return the solver
+     */
+    public static MiniSat mk(final FormulaFactory f, final SolverStyle solverStyle, final MiniSatConfig miniSatConfig, final GlucoseConfig glucoseConfig) {
+        switch (solverStyle) {
+            case MINISAT:
+                return miniSat(f, miniSatConfig);
+            case GLUCOSE:
+                return glucose(f, miniSatConfig, glucoseConfig);
+            case MINICARD:
+                return miniCard(f, miniSatConfig);
+            default:
+                throw new IllegalArgumentException("Unknown solver style: " + solverStyle);
+        }
     }
 
     @Override
