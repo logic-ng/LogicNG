@@ -2,6 +2,11 @@
 
 ## [2.3.1] - xxxx-xx-xx
 
+### Changed
+
+- Removed `negativeVariables` from the internal representation of `Assignment` it is now computed each time the method is called. This leeds to a minimal
+  performance disadvantage but to a proportional better memory footprint. The public API is not changed.
+
 ### Fixed
 
 - A small bug when comparing two backbones with the same set of negative/positive/optional variables but different satisfiability.

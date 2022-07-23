@@ -48,12 +48,11 @@ import java.util.TreeSet;
  * Note: the internal data structure is a plain list - no checking of the model is performed e.g. if
  * contradictory literals are added. Since assignments are used e.g. in the model enumeration of the SAT solvers these
  * checks would be too costly.
- * @version 2.3.0
+ * @version 2.3.1
  * @since 1.0
  */
 public final class Assignment {
 
-    private final List<Variable> negVars;
     private Collection<Variable> pos;
     private Collection<Literal> neg;
     private boolean fastEvaluable;
@@ -73,7 +72,6 @@ public final class Assignment {
      */
     public Assignment(final boolean fastEvaluable) {
         this.fastEvaluable = fastEvaluable;
-        this.negVars = new ArrayList<>();
         if (!fastEvaluable) {
             this.pos = new ArrayList<>();
             this.neg = new ArrayList<>();
@@ -184,7 +182,11 @@ public final class Assignment {
      * @return the negative literals of this assignment
      */
     public List<Variable> negativeVariables() {
-        return Collections.unmodifiableList(this.negVars);
+        final ArrayList<Variable> negatedVariables = new ArrayList<>();
+        for (final Literal lit : this.neg) {
+            negatedVariables.add(lit.variable());
+        }
+        return negatedVariables;
     }
 
     /**
@@ -207,7 +209,6 @@ public final class Assignment {
             this.pos.add(lit.variable());
         } else {
             this.neg.add(lit);
-            this.negVars.add(lit.variable());
         }
     }
 

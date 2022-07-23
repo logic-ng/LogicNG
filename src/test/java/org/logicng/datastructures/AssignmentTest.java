@@ -150,7 +150,7 @@ public class AssignmentTest extends TestWithExampleFormulas {
         ass.addLiteral(this.Y);
         assertThat(ass.positiveVariables()).containsExactly(this.A, this.Y);
         assertThat(ass.negativeLiterals()).containsExactly(this.NB, this.NX);
-        assertThat(ass.negativeVariables()).containsExactly(this.X, this.B);
+        assertThat(ass.negativeVariables()).containsExactlyInAnyOrder(this.X, this.B);
         assertThat(ass.evaluateLit(this.Y)).isTrue();
         assertThat(ass.evaluateLit(this.B)).isFalse();
         assertThat(ass.restrictLit(this.NB)).isEqualTo(this.TRUE);
