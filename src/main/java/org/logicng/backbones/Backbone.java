@@ -186,20 +186,21 @@ public final class Backbone {
             return false;
         }
         final Backbone backbone = (Backbone) other;
-        return Objects.equals(this.positiveBackbone, backbone.positiveBackbone) &&
+        return this.sat == backbone.sat && Objects.equals(this.positiveBackbone, backbone.positiveBackbone) &&
                 Objects.equals(this.negativeBackbone, backbone.negativeBackbone) &&
                 Objects.equals(this.optionalVariables, backbone.optionalVariables);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.positiveBackbone, this.negativeBackbone, this.optionalVariables);
+        return Objects.hash(this.sat, this.positiveBackbone, this.negativeBackbone, this.optionalVariables);
     }
 
     @Override
     public String toString() {
         return "Backbone{" +
-                "positiveBackbone=" + this.positiveBackbone +
+                "sat=" + this.sat +
+                ", positiveBackbone=" + this.positiveBackbone +
                 ", negativeBackbone=" + this.negativeBackbone +
                 ", optionalVariables=" + this.optionalVariables +
                 '}';
