@@ -6,6 +6,7 @@
 
 - Removed `negativeVariables` from the internal representation of `Assignment` it is now computed each time the method is called. This leeds to a minimal
   performance disadvantage but to a proportional better memory footprint. The public API is not changed.
+- Updated ANTLR to 4.9.3 (there were no relevant updates to the Java target, therefore no changes are expected for LogicNG)
 
 ### Fixed
 
