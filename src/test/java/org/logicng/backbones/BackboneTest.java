@@ -47,7 +47,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for {@link Backbone}.
- * @version 2.0.0
+ * @version 2.3.1
  * @since 1.5.0
  */
 public class BackboneTest {
