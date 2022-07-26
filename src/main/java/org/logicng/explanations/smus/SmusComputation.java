@@ -38,7 +38,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.OptimizationHandler;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MiniSat;
@@ -46,7 +45,6 @@ import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
 import org.logicng.solvers.functions.OptimizationFunction;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -141,12 +139,6 @@ public final class SmusComputation {
      */
     public static List<Formula> computeSmusForFormulas(final List<Formula> formulas, final List<Formula> additionalConstraints, final FormulaFactory f) {
         return computeSmusForFormulas(formulas, additionalConstraints, f, null);
-    }
-
-    public static void main(final String[] args) throws ParserException {
-        final FormulaFactory f = new FormulaFactory();
-        final List<Formula> mus = computeSmusForFormulas(Arrays.asList(f.parse("a")), Arrays.asList(f.parse("~a")), f);
-        System.out.println("mus = " + mus);
     }
 
     /**
