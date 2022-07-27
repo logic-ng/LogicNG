@@ -41,12 +41,13 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
  * Unit tests for {@link Backbone}.
- * @version 2.0.0
+ * @version 2.3.1
  * @since 1.5.0
  */
 public class BackboneTest {
@@ -139,7 +140,7 @@ public class BackboneTest {
     @Test
     public void testToString() {
         final Backbone backbone = Backbone.satBackbone(set(this.a1, this.a2, this.a3), set(this.b1, this.b2, this.b3), set(this.x1, this.x2, this.x3));
-        assertThat(backbone.toString()).isEqualTo("Backbone{positiveBackbone=[a1, a2, a3], negativeBackbone=[b1, b2, b3], optionalVariables=[x1, x2, x3]}");
+        assertThat(backbone.toString()).isEqualTo("Backbone{sat=true, positiveBackbone=[a1, a2, a3], negativeBackbone=[b1, b2, b3], optionalVariables=[x1, x2, x3]}");
     }
 
     @Test
@@ -148,6 +149,8 @@ public class BackboneTest {
         final Backbone backbone1b = Backbone.satBackbone(set(this.a1, this.a2, this.a3), null, null);
         final Backbone backbone3 = Backbone.satBackbone(set(this.a1, this.a2, this.a3), set(this.b1), null);
         final Backbone backbone5 = Backbone.satBackbone(null, set(this.b1, this.b2, this.b3), set(this.x1, this.x2, this.x3));
+        final Backbone satBB = Backbone.satBackbone(Collections.emptySortedSet(), Collections.emptySortedSet(), Collections.emptySortedSet());
+        final Backbone unsatBB = Backbone.unsatBackbone();
 
         assertThat(backbone1a.hashCode()).isEqualTo(backbone1b.hashCode());
         assertThat(backbone1a.equals(backbone1a)).isTrue();
@@ -156,7 +159,7 @@ public class BackboneTest {
         assertThat(backbone1a.equals(backbone5)).isFalse();
         assertThat(backbone1a.equals("String")).isFalse();
         assertThat(backbone1a.equals(null)).isFalse();
-
+        assertThat(satBB.equals(unsatBB)).isFalse();
     }
 
     private SortedSet<Variable> set(final Variable... variables) {

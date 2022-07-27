@@ -46,7 +46,7 @@ import java.util.Collection;
  *     <li>maximum numbers of operands for conjunctions, disjunctions, PBCs, and CCs</li>
  * </ul>
  * Note that the weights can only be applied for inner nodes of the generated formula,
- * since the 'leafs' of a formula in LogicNG are <b>always</b> literals or PBCs. So the weight of literals and PBCs
+ * since the 'leaves' of a formula in LogicNG are <b>always</b> literals or PBCs. So the weight of literals and PBCs
  * will effectively be higher and the weights of all other formula types (especially conjunctions and disjunctions)
  * will be lower. Similarly, the weight of constants will usually be lower, because they are always reduced in LogicNG
  * unless they are a single formula.
@@ -278,8 +278,8 @@ public final class FormulaRandomizerConfig extends Configuration {
         }
 
         /**
-         * Sets the relative weight of a disjuction.
-         * @param weightOr the relative weight of a disjuction
+         * Sets the relative weight of a disjunction.
+         * @param weightOr the relative weight of a disjunction
          * @return the builder
          */
         public Builder weightOr(final double weightOr) {
