@@ -33,22 +33,20 @@ options {
 }
 
 @parser::header {
-  package org.logicng.io.parsers;
+package org.logicng.io.parsers;
 
-  import java.util.LinkedHashSet;
-  import org.logicng.formulas.*;
+import java.util.LinkedHashSet;
+import org.logicng.formulas.*;
 }
 
 @parser::members {
-  public Formula getParsedFormula() {
-    return formula().f;
-  }
+public Formula getParsedFormula() {
+  return formula().f;
+}
 }
 
 @lexer::header {
-  package org.logicng.io.parsers;
-
-  import org.logicng.formulas.FormulaFactory;
+package org.logicng.io.parsers;
 }
 
 formula returns [Formula f]
