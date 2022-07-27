@@ -1,6 +1,8 @@
 # Changelog
 
-## [2.3.1] - xxxx-xx-xx
+LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.3.1] - 2022-07-27
 
 ### Changed
 
@@ -11,8 +13,6 @@
 ### Fixed
 
 - A small bug when comparing two backbones with the same set of negative/positive/optional variables but different satisfiability.
-
-LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.3.0] - 2022-07-18
 
