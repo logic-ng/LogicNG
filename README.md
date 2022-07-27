@@ -51,7 +51,7 @@ it in your local maven repository via `mvn install`.
 
 ### First Steps
 
-The following code creates the Boolean Formula *A and not (B or not C)* programatically:
+The following code creates the Boolean Formula *A and not (B or not C)* programmatically:
 
 ```java
 FormulaFactory f = new FormulaFactory();
