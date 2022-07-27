@@ -57,10 +57,13 @@ import java.util.TreeSet;
  * Therefore these variables can be assigned to true or false.
  * </ol>
  * All variable sets which were not computed are empty.
- * @version 2.0.0
+ * @version 2.3.1
  * @since 1.5.0
  */
 public final class Backbone {
+
+    private static final Backbone UNSAT_BACKBONE = new Backbone(false, null, null, null);
+
     private final boolean sat;
     private final SortedSet<Variable> positiveBackbone;
     private final SortedSet<Variable> negativeBackbone;
@@ -98,7 +101,7 @@ public final class Backbone {
      * @return the backbone
      */
     public static Backbone unsatBackbone() {
-        return new Backbone(false, null, null, null);
+        return UNSAT_BACKBONE;
     }
 
     /**

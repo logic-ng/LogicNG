@@ -44,7 +44,7 @@ import java.util.List;
 
 /**
  * Unit tests for the class {@link Assignment}.
- * @version 2.0.0
+ * @version 2.3.1
  * @since 1.0
  */
 public class AssignmentTest extends TestWithExampleFormulas {
