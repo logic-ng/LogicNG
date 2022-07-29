@@ -41,7 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * A dot file writer for a graph.  Writes the internal data structure of the formula to a dot file.
+ * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
  * @version 2.0.0
  * @since 1.2
  */
@@ -55,8 +55,8 @@ public final class GraphDotFileWriter {
     }
 
     /**
-     * Writes a given formula's internal data structure as a dimacs file.
-     * @param fileName the file name of the dimacs file to write
+     * Writes a given graph's internal data structure as a dot file.
+     * @param fileName the file name of the dot file to write
      * @param graph    the graph
      * @param <T>      the type of the graph content
      * @throws IOException if there was a problem writing the file
