@@ -9,6 +9,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Convenience methods `isSatisfiable`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class.
 - Two overloaded factory methods `mk` in `MiniSat` to construct a solver by formula factory, solver style and optional configuration.
 
+### Changed
+
+- Methods `generateFromCnf(Formula formula)` and `generateFromCnf(Collection<Formula> formulas)` in `ConstraintGraphGenerator` are now deprecated, since the constraint graph generation is not CNF specific. Both methods will be removed with LogicNG 3.0. Instead, use the general method `generateFromFormulas(Collection<Formula> formulas)`.
+
 ## [2.3.1] - 2022-07-27
 
 ### Changed
