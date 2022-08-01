@@ -1399,12 +1399,15 @@ public class FormulaFactory {
     }
 
     /**
-     * Clears the transformation and function cache for the given formula.
+     * Clears the transformation, function, and PB encoding cache for the given formula.
      * @param formula the formula
      */
     protected void clearCaches(final Formula formula) {
         this.transformationCache.remove(formula);
         this.functionCache.remove(formula);
+        if (formula instanceof PBConstraint) {
+            this.pbEncodingCache.remove(formula);
+        }
     }
 
     /**
