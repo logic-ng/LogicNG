@@ -235,6 +235,31 @@ public class ExtendedFormulaFactoryTest {
     }
 
     @Test
+    public void testCcEncondingClearance() {
+        final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
+        final Variable[] problemLits = new Variable[100];
+        for (int i = 0; i < 100; i++) {
+            problemLits[i] = eff.variable("v" + i);
+        }
+        final Formula amo1 = eff.amo(problemLits);
+
+        final FormulaFactoryState state = eff.save();
+
+        final Variable[] problemLits2 = new Variable[100];
+        for (int i = 0; i < 100; i++) {
+            problemLits2[i] = eff.variable("x" + i);
+        }
+        Formula amo2 = eff.amo(problemLits2);
+        amo2.nnf(); // first convert the new one
+        amo1.nnf(); // enforce the encoding
+
+        eff.load(state);
+        amo2 = null;
+        final Formula nnf = amo1.nnf();
+        assertThat(nnf.variables()).contains(eff.variable("@RESERVED_CC_1"));
+    }
+
+    @Test
     @LongRunningTag
     public void testDNFFactorization() {
         testCacheClearance(new DNFFactorization(), PredicateCacheEntry.IS_DNF, TransformationCacheEntry.FACTORIZED_DNF);
