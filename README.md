@@ -54,29 +54,29 @@ it in your local maven repository via `mvn install`.
 The following code creates the Boolean Formula *A and not (B or not C)* programmatically:
 
 ```java
-FormulaFactory f=new FormulaFactory();
-        Variable a=f.variable("A");
-        Variable b=f.variable("B");
-        Literal notC=f.literal("C",false);
-        Formula formula=f.and(a,f.not(f.or(b,notC)));
+FormulaFactory f = new FormulaFactory();
+Variable a = f.variable("A");
+Variable b = f.variable("B");
+Literal notC = f.literal("C", false);
+Formula formula = f.and(a, f.not(f.or(b, notC)));
 ```
 
 Alternatively you can just parse the formula from a string:
 
 ```java
-FormulaFactory f=new FormulaFactory();
-        PropositionalParser p=new PropositionalParser(f);
-        Formula formula=p.parse("A & ~(B | ~C)");
+FormulaFactory f = new FormulaFactory();
+PropositionalParser p = new PropositionalParser(f);
+Formula formula = p.parse("A & ~(B | ~C)");
 ```
 
 Once you created the formula you can for example convert it to NNF or CNF or solve it with an instance of MiniSAT:
 
 ```java
-Formula nnf=formula.nnf();
-        Formula cnf=formula.cnf();
-        SATSolver miniSat=MiniSat.miniSat(f);
-        miniSat.add(formula);
-        Tristate result=miniSat.sat();
+Formula nnf = formula.nnf();
+Formula cnf = formula.cnf();
+SATSolver miniSat = MiniSat.miniSat(f);
+miniSat.add(formula);
+Tristate result = miniSat.sat();
 ```
 
 There is a [Tutorial](https://github.com/logic-ng/LogicNG/wiki/Chapter-1%3A-Introduction-And-Problem-Modelling) for a a more in-depth introduction to LogicNG.
