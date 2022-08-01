@@ -235,7 +235,7 @@ public class ExtendedFormulaFactoryTest {
     }
 
     @Test
-    public void testCcEncondingClearance() {
+    public void testCcEncodingClearance() {
         final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
         final Variable[] problemLits = new Variable[100];
         for (int i = 0; i < 100; i++) {
