@@ -45,7 +45,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to
  * synchronize the formula factory yourself or you use a formula factory for each single thread.
- * @version 2.2.0
+ * @version 2.3.2
  * @since 1.2
  */
 public class ExtendedFormulaFactory extends FormulaFactory {
@@ -125,6 +125,7 @@ public class ExtendedFormulaFactory extends FormulaFactory {
         this.transformationCache = new HashMap<>();
         this.predicateCache = new HashMap<>();
         this.functionCache = new HashMap<>();
+        this.pbEncodingCache = new HashMap<>();
     }
 
     /**
@@ -198,10 +199,11 @@ public class ExtendedFormulaFactory extends FormulaFactory {
     }
 
     /**
-     * Clears the transformation and function caches.
+     * Clears the transformation, function, and PB encoding caches.
      */
     public void clearCaches() {
         this.transformationCache.clear();
         this.functionCache.clear();
+        this.pbEncodingCache.clear();
     }
 }

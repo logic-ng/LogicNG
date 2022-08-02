@@ -79,7 +79,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 2.3.0
+ * @version 2.3.2
  * @since 1.0
  */
 public class FormulaFactory {
@@ -125,6 +125,7 @@ public class FormulaFactory {
     Map<Formula, Map<CacheEntry, Formula>> transformationCache;
     Map<Formula, Map<CacheEntry, Tristate>> predicateCache;
     Map<Formula, Map<CacheEntry, Object>> functionCache;
+    Map<PBConstraint, List<Formula>> pbEncodingCache;
     private boolean cnfCheck;
     private FormulaFactoryImporter importer;
 
@@ -239,6 +240,7 @@ public class FormulaFactory {
         this.transformationCache = new HashMap<>();
         this.predicateCache = new HashMap<>();
         this.functionCache = new HashMap<>();
+        this.pbEncodingCache = new HashMap<>();
     }
 
     /**
@@ -1397,12 +1399,15 @@ public class FormulaFactory {
     }
 
     /**
-     * Clears the transformation and function cache for the given formula.
+     * Clears the transformation, function, and PB encoding cache for the given formula.
      * @param formula the formula
      */
     protected void clearCaches(final Formula formula) {
         this.transformationCache.remove(formula);
         this.functionCache.remove(formula);
+        if (formula instanceof PBConstraint) {
+            this.pbEncodingCache.remove(formula);
+        }
     }
 
     /**

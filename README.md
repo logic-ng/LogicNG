@@ -1,4 +1,4 @@
-![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.3.1-ff69b4.svg)
+![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.3.2-ff69b4.svg)
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
@@ -29,7 +29,7 @@ LogicNG is released in the Maven Central Repository. To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>2.3.1</version>
+  <version>2.3.2</version>
 </dependency>
 ```
 

@@ -13,6 +13,16 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Methods `generateFromCnf(Formula formula)` and `generateFromCnf(Collection<Formula> formulas)` in `ConstraintGraphGenerator` are now deprecated, since the constraint graph generation is not CNF specific. Both methods will be removed with LogicNG 3.0. Instead, use the general method `generateFromFormulas(Collection<Formula> formulas)`.
 
+## [2.3.2] - 2022-08-02
+
+### Changed
+
+- The cached PB and CC encodings are no longer held in the constraint itselt but analogously to the other caches in the formula factory.
+
+### Fixed
+
+- A small bug which could occur when using the extended formula factory in combination with cached CC and PB encodings.
+
 ## [2.3.1] - 2022-07-27
 
 ### Changed
