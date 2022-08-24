@@ -105,6 +105,7 @@ public class BDDKernel {
     public static final int CACHEID_PATHCOU_ZERO = 0x8;
     public static final int CACHEID_FORALL = 0x1;
 
+    protected final BDDPrime prime;
     protected final FormulaFactory f;
     protected final SortedMap<Variable, Integer> var2idx;
     protected final SortedMap<Integer, Variable> idx2var;
@@ -147,10 +148,11 @@ public class BDDKernel {
      */
     public BDDKernel(final FormulaFactory f, final int numVars, final int nodeSize, final int cacheSize) {
         this.f = f;
+        this.prime = new BDDPrime();
         this.var2idx = new TreeMap<>();
         this.idx2var = new TreeMap<>();
         this.reordering = new BDDReordering(this);
-        this.nodesize = BDDPrime.primeGTE(Math.max(nodeSize, 3));
+        this.nodesize = prime.primeGTE(Math.max(nodeSize, 3));
         this.nodes = new int[this.nodesize * 6];
         this.minfreenodes = 20;
         for (int n = 0; n < this.nodesize; n++) {
@@ -599,7 +601,7 @@ public class BDDKernel {
         if (this.nodesize > oldsize + this.maxnodeincrease) {
             this.nodesize = oldsize + this.maxnodeincrease;
         }
-        this.nodesize = BDDPrime.primeLTE(this.nodesize);
+        this.nodesize = prime.primeLTE(this.nodesize);
         final int[] newnodes = new int[this.nodesize * 6];
         System.arraycopy(this.nodes, 0, newnodes, 0, this.nodes.length);
         this.nodes = newnodes;
@@ -857,5 +859,9 @@ public class BDDKernel {
     @FunctionalInterface
     protected interface BddOperation {
         int perform() throws BddReorderRequest;
+    }
+
+    public BDDPrime getPrime() {
+        return prime;
     }
 }

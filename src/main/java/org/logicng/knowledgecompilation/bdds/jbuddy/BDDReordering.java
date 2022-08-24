@@ -1067,7 +1067,7 @@ public class BDDReordering {
             this.levels[n].start = n * this.levels[n].maxsize;
             this.levels[n].size = this.levels[n].maxsize;
             if (this.levels[n].size >= 4) {
-                this.levels[n].size = BDDPrime.primeLTE(this.levels[n].size);
+                this.levels[n].size = this.k.getPrime().primeLTE(this.levels[n].size);
             }
         }
     }

@@ -67,13 +67,13 @@ import java.util.Random;
 public final class BDDPrime {
 
     static final int CHECKTIMES = 20;
-    static final Random rng = new Random();
+    private final Random rng;
 
     /**
      * Private constructor.
      */
-    private BDDPrime() {
-        // Intentionally left empty.
+    public BDDPrime() {
+        rng = new Random();
     }
 
     /**
@@ -81,7 +81,7 @@ public final class BDDPrime {
      * @param num the number
      * @return the next prime greater than the given number
      */
-    public static int primeGTE(int num) {
+    public int primeGTE(int num) {
         if (isEven(num)) {
             ++num;
         }
@@ -96,7 +96,7 @@ public final class BDDPrime {
      * @param num the number
      * @return the next prime less than the given number
      */
-    public static int primeLTE(int num) {
+    public int primeLTE(int num) {
         if (isEven(num)) {
             --num;
         }
@@ -110,7 +110,7 @@ public final class BDDPrime {
         return (src & 0x1) == 0;
     }
 
-    static boolean isPrime(final int src) {
+    boolean isPrime(final int src) {
         return !hasEasyFactors(src) && isMillerRabinPrime(src);
     }
 
@@ -122,7 +122,7 @@ public final class BDDPrime {
                 || hasFactor(src, 13);
     }
 
-    static boolean isMillerRabinPrime(final int src) {
+    boolean isMillerRabinPrime(final int src) {
         for (int n = 0; n < CHECKTIMES; ++n) {
             final int witness = random(src - 1);
             if (isWitness(witness, src)) {
@@ -169,7 +169,7 @@ public final class BDDPrime {
         return (int) (((long) a * (long) b) % (long) c);
     }
 
-    static int random(final int i) {
+    int random(final int i) {
         return rng.nextInt(i) + 1;
     }
 
