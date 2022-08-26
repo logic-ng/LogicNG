@@ -15,6 +15,13 @@ import java.util.SortedSet;
 public class MostCommonVariableProvider extends SplitVariableProviderWithTakeRate {
 
     /**
+     * Creates a split variable provider returning the most common variables with a take rate of {@code 0.5}.
+     */
+    public MostCommonVariableProvider() {
+        super(0.5);
+    }
+
+    /**
      * Creates a split variable provider returning the most common variables.
      * <p>
      * The take rate specifies the number of variables which should be returned in {@link #getSplitVars}.
