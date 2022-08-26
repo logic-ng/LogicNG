@@ -123,24 +123,22 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
             solver.loadState(state);
             solver.add(splitAssignment.formula(solver.factory()));
         }
-        // TODO potentiell sein lassen
-        final SortedSet<Variable> leftOverVars = new TreeSet<>(relevantVars);
-        leftOverVars.removeAll(varsInInitialSplitAssignment);
         final ModelEnumerationHandler handler = new NumberOfModelsHandler(this.maxNumberOfModels);
-        final List<Model> modelsFound = enumerate(solver, resultSetter, leftOverVars, additionalVariables, handler);
+        final List<Model> modelsFound = enumerate(solver, resultSetter, relevantVars, additionalVariables, handler);
         if (splitAssignment == null || handler.aborted()) {
             List<Model> splitAssignments = null;
-            SortedSet<Variable> splitVars = leftOverVars;
+            SortedSet<Variable> newSplitVars = new TreeSet<>(relevantVars);
+            newSplitVars.removeAll(varsInInitialSplitAssignment);
             boolean continueL = true;
             while (continueL) {
-                splitVars = updateSplitVars(splitVars);
-                splitAssignments = enumerate(solver, resultSetter, splitVars, additionalVariables, handler);
+                newSplitVars = updateSplitVars(newSplitVars);
+                splitAssignments = enumerate(solver, resultSetter, newSplitVars, additionalVariables, handler);
                 continueL = handler.aborted();
             }
 
             final SolverState state1 = solver.saveState();
             for (final Model assignment : splitAssignments) {
-                final List<Model> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, additionalVariables, state1);
+                final List<Model> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, newSplitVars, additionalVariables, state1);
                 models.addAll(assignmentsNew);
             }
         } else {

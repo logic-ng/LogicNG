@@ -147,7 +147,7 @@ public class ModelEnumerationFunctionRecursiveTest {
 
         for (int i = 1; i <= 1000; i++) {
             // given
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).numVars(10).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(10).build());
             final Formula formula = randomizer.formula(4);
             solver.add(formula);
 
@@ -162,7 +162,7 @@ public class ModelEnumerationFunctionRecursiveTest {
             // when
             final List<Model> modelsRecursive =
                     solver.execute(ModelEnumerationFunctionRecursive.builder()
-                            .splitVariableProvider(new LeastCommonVariableProvider())
+                            .splitVariableProvider(new LeastCommonVariablesProvider())
                             .variables(pmeVars).additionalVariables(additionalVars).build());
 
             System.out.println("\nSeed: " + i);
