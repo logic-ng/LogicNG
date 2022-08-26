@@ -45,8 +45,8 @@ public class ModelEnumerationFunctionRecursiveTest {
     public static Collection<Object[]> splitProviders() {
         final List<Object[]> providers = new ArrayList<>();
         providers.add(new Object[]{null});
-        providers.add(new Object[]{new LeastCommonVariableProvider()});
-        providers.add(new Object[]{new MostCommonVariableProvider()});
+        providers.add(new Object[]{new LeastCommonVariablesProvider()});
+        providers.add(new Object[]{new MostCommonVariablesProvider()});
         return providers;
     }
 
