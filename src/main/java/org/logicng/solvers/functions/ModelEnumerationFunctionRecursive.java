@@ -47,7 +47,7 @@ import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
-import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,7 +131,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         //TODO potentiell sein lassen
         final SortedSet<Variable> leftOverVars = new TreeSet<>(relevantVars);
         leftOverVars.removeAll(varsInInitialSplitAssignment);
-        final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfModels);
+        final ModelEnumerationHandler handler = new NumberOfModelsHandler(this.maxNumberOfModels);
         final List<Model> modelsFound = enumerate(solver, resultSetter, leftOverVars, relevantVars, handler);
         if (splitAssignment == null || handler.aborted()) {
             List<Model> splitAssignments = null;

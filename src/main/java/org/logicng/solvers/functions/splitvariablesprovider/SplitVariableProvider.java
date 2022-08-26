@@ -1,4 +1,4 @@
-package org.logicng.solvers.functions.splitVariableProvider;
+package org.logicng.solvers.functions.splitvariablesprovider;
 
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.SATSolver;

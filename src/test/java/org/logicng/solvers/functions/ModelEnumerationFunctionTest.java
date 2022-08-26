@@ -16,8 +16,8 @@ import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
-import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 

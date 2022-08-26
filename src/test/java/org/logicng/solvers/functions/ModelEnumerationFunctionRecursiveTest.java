@@ -14,9 +14,9 @@ import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
-import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
-import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
@@ -92,7 +92,7 @@ public class ModelEnumerationFunctionRecursiveTest {
     @LongRunningTag
     public void testRecursives() {
         for (int i = 1; i <= 100; i++) {
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
             final Formula formula = randomizer.formula(3);
 
             final SATSolver solver = MiniSat.miniSat(this.f);
