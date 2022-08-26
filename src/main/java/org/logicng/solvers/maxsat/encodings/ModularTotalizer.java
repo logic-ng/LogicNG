@@ -106,7 +106,7 @@ public class ModularTotalizer extends Encoding {
      * Encodes a cardinality constraint.
      * @param s    the solver
      * @param lits the literals of the constraint
-     * @param rhs  the right hand side of the constraint
+     * @param rhs  the right-hand side of the constraint
      */
     public void encode(final MiniSatStyleSolver s, final LNGIntVector lits, final int rhs) {
         assert lits.size() > 0;
@@ -151,9 +151,9 @@ public class ModularTotalizer extends Encoding {
     }
 
     /**
-     * Updates the right hand side of the current constraint.
+     * Updates the right-hand side of the current constraint.
      * @param s   the solver
-     * @param rhs the new right hand side
+     * @param rhs the new right-hand side
      */
     public void update(final MiniSatStyleSolver s, final int rhs) {
         assert this.currentCardinalityRhs != -1;

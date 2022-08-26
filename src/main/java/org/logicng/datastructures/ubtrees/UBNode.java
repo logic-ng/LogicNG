@@ -64,7 +64,7 @@ public final class UBNode<T extends Comparable<T>> {
 
     /**
      * Returns the set of this node.  If this node is a terminal node, it holds a set
-     * of the UB Tree.  In this case this methods returns this set, otherwise it returns
+     * of the UB Tree.  In this case these methods returns this set, otherwise it returns
      * {@code null}.
      * @return the set of this node if it is a terminal node, {@code null} otherwise
      */

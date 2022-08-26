@@ -30,7 +30,6 @@ package org.logicng.cardinalityconstraints;
 
 import static org.logicng.util.FormulaHelper.literalsAsVariables;
 
-import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.CardinalityConstraint;
@@ -54,14 +53,13 @@ import java.util.List;
  * has no associated cardinality constraint encoder configuration.  If you change the configuration in the factory,
  * all encoders constructed for this factory will be affected.</li>
  * </ol>
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.1
  */
 public class CCEncoder {
 
     protected final FormulaFactory f;
     protected final CCConfig config;
-    protected final CCConfig defaultConfig;
 
     protected CCAMOPure amoPure;
     protected CCAMOLadder amoLadder;
@@ -90,7 +88,6 @@ public class CCEncoder {
     public CCEncoder(final FormulaFactory f, final CCConfig config) {
         this.f = f;
         this.config = config;
-        this.defaultConfig = CCConfig.builder().build();
     }
 
     /**
@@ -163,16 +160,11 @@ public class CCEncoder {
 
     /**
      * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise the current configuration of the formula factory is used or - if not
-     * present - the default configuration.
+     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
      * @return the current configuration of
      */
     public CCConfig config() {
-        if (this.config != null) {
-            return this.config;
-        }
-        final Configuration ccConfig = this.f.configurationFor(ConfigurationType.CC_ENCODER);
-        return ccConfig != null ? (CCConfig) ccConfig : this.defaultConfig;
+        return this.config != null ? this.config : (CCConfig) this.f.configurationFor(ConfigurationType.CC_ENCODER);
     }
 
     /**
@@ -311,7 +303,7 @@ public class CCEncoder {
      * Encodes an at-most-k constraint.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     protected void amk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
@@ -358,7 +350,7 @@ public class CCEncoder {
      * Encodes an at-most-k constraint for incremental usage.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      * @return the incremental data
      */
     protected CCIncrementalData amkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
@@ -406,7 +398,7 @@ public class CCEncoder {
      * Encodes an at-lest-k constraint.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     protected void alk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
@@ -460,7 +452,7 @@ public class CCEncoder {
      * Encodes an at-lest-k constraint for incremental usage.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      * @return the incremental data
      */
     protected CCIncrementalData alkIncremental(final EncodingResult result, final Variable[] vars, final int rhs) {
@@ -515,7 +507,7 @@ public class CCEncoder {
      * Encodes an exactly-k constraint.
      * @param result the result
      * @param vars   the variables of the constraint
-     * @param rhs    the right hand side of the constraint
+     * @param rhs    the right-hand side of the constraint
      */
     protected void exk(final EncodingResult result, final Variable[] vars, final int rhs) {
         if (rhs < 0) {
@@ -581,7 +573,7 @@ public class CCEncoder {
 
     /**
      * Returns the best at-most-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently the modular totalizer is the best encoder for all sizes and therefore is always
+     * practical observations.  Currently, the modular totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
@@ -595,7 +587,7 @@ public class CCEncoder {
 
     /**
      * Returns the best at-least-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently the modular totalizer is the best encoder for all sizes and therefore is always
+     * practical observations.  Currently, the modular totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
@@ -609,7 +601,7 @@ public class CCEncoder {
 
     /**
      * Returns the best exactly-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently the totalizer is the best encoder for all sizes and therefore is always
+     * practical observations.  Currently, the totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder

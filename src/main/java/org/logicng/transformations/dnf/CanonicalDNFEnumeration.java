@@ -28,38 +28,39 @@
 
 package org.logicng.transformations.dnf;
 
-import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
-import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.ModelEnumerationFunction;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.logicng.transformations.CanonicalEnumeration;
 
 /**
  * Canonical DNF generation via enumeration of models by a SAT solver.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.0
  */
-public final class CanonicalDNFEnumeration implements FormulaTransformation {
+public final class CanonicalDNFEnumeration extends CanonicalEnumeration implements FormulaTransformation {
+
+    private final static CanonicalDNFEnumeration INSTANCE = new CanonicalDNFEnumeration();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the {@link #get()} method.
+     */
+    @Deprecated
+    public CanonicalDNFEnumeration() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static CanonicalDNFEnumeration get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        final FormulaFactory f = formula.factory();
-        final SATSolver solver = MiniSat.miniSat(f);
-        solver.add(formula);
-        final List<Assignment> enumeration = solver.execute(ModelEnumerationFunction.builder().build());
-        if (enumeration.isEmpty()) {
-            return f.falsum();
-        }
-        final List<Formula> ops = new ArrayList<>();
-        for (final Assignment a : enumeration) {
-            ops.add(a.formula(f));
-        }
-        return f.or(ops);
+        return compute(formula, false);
     }
 
     @Override

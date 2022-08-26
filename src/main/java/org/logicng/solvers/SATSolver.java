@@ -53,7 +53,7 @@ import java.util.SortedSet;
 
 /**
  * A generic interface for LogicNG's SAT solvers.
- * @version 2.2.0
+ * @version 2.3.0
  * @since 1.0
  */
 public abstract class SATSolver {
@@ -87,9 +87,9 @@ public abstract class SATSolver {
     /**
      * Adds a formula to the solver, but sets all variables to false which are not known to the solver.
      * @param formula the formula
-     * @deprecated Due to simplifications of formulas in LogicNG the solver might not know all original variables of the formulas added. If such a variable is contained in the
-     * given formula, this method sets the variable to false. For a caller this behavior is misleading and can yield to erroneous results. Instead of using this method, a caller
-     * should track the unknown/forbidden variables by itself and add each variable negated to the solver.
+     * @deprecated Due to simplifications of formulas in LogicNG the solver might not know all original variables of the formulas added. If such a variable
+     * is contained in the given formula, this method sets the variable to false. For a caller this behavior is misleading and can yield to erroneous results.
+     * Instead of using this method, a caller should track the unknown/forbidden variables by itself and add each variable negated to the solver.
      */
     @Deprecated
     public abstract void addWithoutUnknown(final Formula formula);
@@ -172,12 +172,14 @@ public abstract class SATSolver {
      * Adds a cardinality constraint and returns its incremental data in order to refine the constraint on the solver.
      * <p>
      * Usage constraints:
-     * - "&lt;": Cannot be used with right hand side 2, returns null for right hand side 1, but constraint is added to solver.
-     * - "&lt;=": Cannot be used with right hand side 1, returns null for right hand side 0, but constraint is added to solver.
-     * - "&gt;": Returns null for right hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right hand side &gt;= number of variables.
-     * - "&gt;=": Returns null for right hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right hand side &gt; number of variables.
+     * - "&lt;": Cannot be used with right-hand side 2, returns null for right-hand side 1, but constraint is added to solver.
+     * - "&lt;=": Cannot be used with right-hand side 1, returns null for right-hand side 0, but constraint is added to solver.
+     * - "&gt;": Returns null for right-hand side 0 or number of variables -1, but constraint is added to solver. Adds false to solver for right-hand side
+     * &gt;= number of variables.
+     * - "&gt;=": Returns null for right-hand side 1 or number of variables, but constraint is added to solver. Adds false to solver for right-hand side &gt;
+     * number of variables.
      * @param cc the cardinality constraint
-     * @return the incremental data of this constraint, or null if the right hand side of cc is 1
+     * @return the incremental data of this constraint, or null if the right-hand side of cc is 1
      */
     public abstract CCIncrementalData addIncrementalCC(final CardinalityConstraint cc);
 
@@ -278,7 +280,7 @@ public abstract class SATSolver {
      * The given polarity in the selection order is used as assignment for the variable.
      * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
      * <p>
-     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Example: Order a, ~b, c. The solver picks variable `a`, if not assigned yet, and checks if setting `a` to true leads to a satisfying assignment.
      * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
      * @param selectionOrder the order of the literals for the selection order
      * @return the satisfiability of the formula in the solver
@@ -295,7 +297,7 @@ public abstract class SATSolver {
      * The given polarity in the selection order is used as assignment for the variable.
      * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
      * <p>
-     * Example: Order a, ~b, c. The solver picks variable a, if not assigned yet, and checks if setting a to true leads to a satisfying assignment.
+     * Example: Order a, ~b, c. The solver picks variable `a`, if not assigned yet, and checks if setting `a` to true leads to a satisfying assignment.
      * Next, the solver picks variable b and checks if setting b to false leads to a satisfying assignment.
      * @param selectionOrder the order of the literals for the selection order
      * @param handler        the SAT handler
@@ -407,7 +409,7 @@ public abstract class SATSolver {
 
     /**
      * Returns the set of variables currently known by the solver.
-     * NOTE: Due to the incremental/decremental interface of some of the solvers, this set is generated each time,
+     * NOTE: Due to the incremental/decremental interface of some solvers, this set is generated each time,
      * the method is called.  So if you can maintain a list of relevant/known variables in your own application,
      * this is recommended.
      * @return the set of variables currently known by the solver
@@ -415,8 +417,9 @@ public abstract class SATSolver {
     public abstract SortedSet<Variable> knownVariables();
 
     /**
-     * Returns an unsat core of the current problem.  Only works if the SAT solver is configured to record the information
+     * Returns an unsat core of the current problem. Only works if the SAT solver is configured to record the information
      * required to generate a proof trace and an unsat core.
+     * In particular, this method returns the unsat core only if the parameter "proofGeneration" in the MiniSatConfig is set to "true".
      * @return the unsat core
      */
     public UNSATCore<Proposition> unsatCore() {
@@ -461,4 +464,16 @@ public abstract class SATSolver {
      * Resets the selection order on the solver.  The internal activity heuristics for the variable ordering will be used again.
      */
     protected abstract void resetSelectionOrder();
+
+    /**
+     * Returns whether this solver instance can save and load solver states.
+     * @return true when the solver can save and load states, false otherwise
+     */
+    public abstract boolean canSaveLoadState();
+
+    /**
+     * Returns whether this solver instance can generate proofs.
+     * @return true when the solver can generate proofs, false otherwise
+     */
+    public abstract boolean canGenerateProof();
 }

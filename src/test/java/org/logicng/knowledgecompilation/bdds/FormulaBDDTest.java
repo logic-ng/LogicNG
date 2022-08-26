@@ -41,7 +41,7 @@ import org.logicng.predicates.satisfiability.TautologyPredicate;
 
 /**
  * Unit tests for the BDD generation in the {@link org.logicng.formulas.Formula} class.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.4.0
  */
 public class FormulaBDDTest {
@@ -80,6 +80,12 @@ public class FormulaBDDTest {
         assertThat(f.equivalence(bddDfs.cnf(), formula).holds(tautology)).isTrue();
         assertThat(f.equivalence(bddMin2Max.cnf(), formula).holds(tautology)).isTrue();
         assertThat(f.equivalence(bddMax2Min.cnf(), formula).holds(tautology)).isTrue();
+
+        assertThat(f.equivalence(bddNoOrder.dnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddBfs.dnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddDfs.dnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddMin2Max.dnf(), formula).holds(tautology)).isTrue();
+        assertThat(f.equivalence(bddMax2Min.dnf(), formula).holds(tautology)).isTrue();
     }
 
     @Test

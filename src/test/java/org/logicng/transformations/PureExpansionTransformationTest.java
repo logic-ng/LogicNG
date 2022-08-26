@@ -56,7 +56,7 @@ import java.util.Collections;
  */
 public class PureExpansionTransformationTest extends TestWithExampleFormulas {
 
-    private static final PureExpansionTransformation transformation = new PureExpansionTransformation();
+    private static final PureExpansionTransformation transformation = PureExpansionTransformation.get();
 
     @Test
     public void testConstants() {

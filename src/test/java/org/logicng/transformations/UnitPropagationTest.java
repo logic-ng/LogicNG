@@ -42,7 +42,7 @@ import org.logicng.io.parsers.PropositionalParser;
  */
 public class UnitPropagationTest extends TestWithExampleFormulas {
 
-    private final UnitPropagation unitPropagation = new UnitPropagation();
+    private final UnitPropagation unitPropagation = UnitPropagation.get();
 
     @Test
     public void testConstants() {

@@ -55,7 +55,7 @@ public final class LNGBooleanVector {
      * Creates a vector with a given capacity.
      * @param size the capacity of the vector.
      */
-    public LNGBooleanVector(int size) {
+    public LNGBooleanVector(final int size) {
         this.elements = new boolean[size];
     }
 
@@ -64,7 +64,7 @@ public final class LNGBooleanVector {
      * @param size the capacity of the vector
      * @param pad  the initial element
      */
-    public LNGBooleanVector(int size, boolean pad) {
+    public LNGBooleanVector(final int size, final boolean pad) {
         this.elements = new boolean[size];
         Arrays.fill(this.elements, pad);
         this.size = size;
@@ -117,7 +117,7 @@ public final class LNGBooleanVector {
      * @param element the element to push
      */
     public void push(final boolean element) {
-        int newSize = this.size + 1;
+        final int newSize = this.size + 1;
         this.ensure(newSize);
         this.elements[this.size++] = element;
     }
@@ -137,7 +137,7 @@ public final class LNGBooleanVector {
      * @return the element at the position
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public boolean get(int position) {
+    public boolean get(final int position) {
         return this.elements[position];
     }
 
@@ -147,7 +147,7 @@ public final class LNGBooleanVector {
      * @param element  the element
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public void set(int position, boolean element) {
+    public void set(final int position, final boolean element) {
         this.elements[position] = element;
     }
 
@@ -159,11 +159,11 @@ public final class LNGBooleanVector {
     }
 
     /**
-     * Shrinks the vector to a given size if the new size is less then the current size.  Otherwise the size remains
+     * Shrinks the vector to a given size if the new size is less than the current size.  Otherwise, the size remains
      * the same.
      * @param newSize the new size
      */
-    public void shrinkTo(int newSize) {
+    public void shrinkTo(final int newSize) {
         if (newSize < this.size) {
             this.size = newSize;
         }
@@ -174,7 +174,7 @@ public final class LNGBooleanVector {
      * @param size the new size
      * @param pad  the value for new elements
      */
-    public void growTo(int size, boolean pad) {
+    public void growTo(final int size, final boolean pad) {
         if (this.size >= size) {
             return;
         }
@@ -190,7 +190,7 @@ public final class LNGBooleanVector {
      * @param num the number of elements to remove.
      * @throws ArrayIndexOutOfBoundsException if the number of elements to remove is larger than the size of the vector
      */
-    public void removeElements(int num) {
+    public void removeElements(final int num) {
         int count = num;
         while (count-- > 0) {
             this.elements[--this.size] = false;
@@ -202,7 +202,7 @@ public final class LNGBooleanVector {
      */
     public void reverseInplace() {
         for (int i = 0; i < this.size / 2; i++) {
-            boolean temp = this.elements[i];
+            final boolean temp = this.elements[i];
             this.elements[i] = this.elements[this.size - i - 1];
             this.elements[this.size() - i - 1] = temp;
         }

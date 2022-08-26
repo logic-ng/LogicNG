@@ -48,7 +48,7 @@ import java.util.Map;
  */
 public final class MaxToMinOrdering implements VariableOrderingProvider {
 
-    private final VariableProfileFunction profileFunction = new VariableProfileFunction();
+    private final VariableProfileFunction profileFunction = VariableProfileFunction.get();
     private final DFSOrdering dfsOrdering = new DFSOrdering();
 
     @Override

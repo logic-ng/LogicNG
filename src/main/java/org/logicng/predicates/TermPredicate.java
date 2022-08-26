@@ -6,8 +6,8 @@ import org.logicng.formulas.FormulaPredicate;
 import org.logicng.formulas.NAryOperator;
 
 /**
- * Term predicate. Indicates whether a formula is a minterm or maxterm.
- * @version 2.2.0
+ * Term predicate. Indicates whether a formula is a minterm (conjunction of literals) or maxterm (disjunction of literals).
+ * @version 2.3.0
  * @since 2.2.0
  */
 public final class TermPredicate implements FormulaPredicate {
@@ -28,7 +28,7 @@ public final class TermPredicate implements FormulaPredicate {
      * Returns the singleton minterm predicate.
      * @return the minterm predicate instance
      */
-    public static TermPredicate getMintermPredicate() {
+    public static TermPredicate minterm() {
         return MINTERM_PREDICATE;
     }
 
@@ -36,7 +36,7 @@ public final class TermPredicate implements FormulaPredicate {
      * Returns the singleton maxterm predicate.
      * @return the maxterm predicate instance
      */
-    public static TermPredicate getMaxtermPredicate() {
+    public static TermPredicate maxterm() {
         return MAXTERM_PREDICATE;
     }
 
@@ -53,12 +53,12 @@ public final class TermPredicate implements FormulaPredicate {
             case NOT:
                 return false;
             case OR:
-                if (!this.mintermPredicate) {
+                if (this.mintermPredicate) {
                     return false;
                 }
                 return onlyLiteralOperands((NAryOperator) formula);
             case AND:
-                if (this.mintermPredicate) {
+                if (!this.mintermPredicate) {
                     return false;
                 }
                 return onlyLiteralOperands((NAryOperator) formula);

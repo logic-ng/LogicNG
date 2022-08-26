@@ -48,17 +48,30 @@ import java.util.List;
  * Transformation of a formula to a formula with expanded at-most-one and exactly-one cardinality constraints.
  * Each subformula of the formula that is a pseudo-Boolean constraint of type AMO or EXO gets replaced by a pure encoding such that
  * the resulting formula is equivalent and free of pseudo-Boolean constraints.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class PureExpansionTransformation implements FormulaTransformation {
 
     private final CCAMOPure amoEncoder = new CCAMOPure();
+    private static final PureExpansionTransformation INSTANCE = new PureExpansionTransformation();
 
     /**
      * Constructs a new transformation instance.
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the {@link #get()} method.
      */
+    @Deprecated
     public PureExpansionTransformation() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static PureExpansionTransformation get() {
+        return INSTANCE;
     }
 
     @Override

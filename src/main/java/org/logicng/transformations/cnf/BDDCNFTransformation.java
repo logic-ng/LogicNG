@@ -28,25 +28,17 @@
 
 package org.logicng.transformations.cnf;
 
-import static org.logicng.formulas.FType.LITERAL;
-import static org.logicng.formulas.cache.TransformationCacheEntry.BDD_CNF;
-
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.FormulaTransformation;
-import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
-import org.logicng.transformations.UnitPropagation;
+import org.logicng.transformations.BDDNormalFormTransformation;
 
 /**
  * Transformation of a formula in CNF by converting it to a BDD.
- * @version 1.4.0
+ * @version 2.3.0
  * @since 1.4.0
  */
-public final class BDDCNFTransformation implements FormulaTransformation {
-
-    private final UnitPropagation up = new UnitPropagation();
-    private final BDDKernel kernel;
+public final class BDDCNFTransformation extends BDDNormalFormTransformation {
 
     /**
      * Constructs a new BDD-based CNF transformation with an optional BDD kernel.
@@ -57,7 +49,7 @@ public final class BDDCNFTransformation implements FormulaTransformation {
      * @param kernel the optional BDD kernel
      */
     public BDDCNFTransformation(final BDDKernel kernel) {
-        this.kernel = kernel;
+        super(kernel);
     }
 
     /**
@@ -73,7 +65,7 @@ public final class BDDCNFTransformation implements FormulaTransformation {
      * @param numVars the number of variables
      */
     public BDDCNFTransformation(final FormulaFactory f, final int numVars) {
-        this.kernel = new BDDKernel(f, numVars, Math.max(numVars * 30, 20_000), Math.max(numVars * 20, 20_000));
+        super(f, numVars);
     }
 
     /**
@@ -86,20 +78,6 @@ public final class BDDCNFTransformation implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        if (formula.type().precedence() >= LITERAL.precedence()) {
-            return formula;
-        }
-        if (formula.isCNF()) {
-            return formula;
-        }
-        final Formula cached = formula.transformationCacheEntry(BDD_CNF);
-        if (cache && cached != null) {
-            return cached;
-        }
-        final Formula cnf = BDDFactory.build(formula, this.kernel, null).cnf().transform(this.up);
-        if (cache) {
-            formula.setTransformationCacheEntry(BDD_CNF, cnf);
-        }
-        return cnf;
+        return compute(formula, true, cache);
     }
 }

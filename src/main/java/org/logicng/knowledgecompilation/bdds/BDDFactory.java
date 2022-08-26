@@ -85,7 +85,7 @@ public final class BDDFactory {
     /**
      * Builds a BDD for a given formula.  BDDs support all Boolean formula types but not pseudo-Boolean constraints.
      * The reason is that before converting a formula to a BDD one must specify the number of variables.  In case of
-     * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore the caller first
+     * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore, the caller first
      * has to transform any pseudo-Boolean constraints in their respective CNF representation before converting them
      * to a BDD.
      * @param formula the formula
@@ -98,7 +98,7 @@ public final class BDDFactory {
     /**
      * Builds a BDD for a given formula.  BDDs support all Boolean formula types but not pseudo-Boolean constraints.
      * The reason is that before converting a formula to a BDD one must specify the number of variables.  In case of
-     * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore the caller first
+     * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore, the caller first
      * has to transform any pseudo-Boolean constraints in their respective CNF representation before converting them
      * to a BDD.
      * @param formula the formula
@@ -112,7 +112,7 @@ public final class BDDFactory {
     /**
      * Builds a BDD for a given formula.  BDDs support all Boolean formula types but not pseudo-Boolean constraints.
      * The reason is that before converting a formula to a BDD one must specify the number of variables.  In case of
-     * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore the caller first
+     * pseudo-Boolean constraints this number depends on the translation of the constraint.  Therefore, the caller first
      * has to transform any pseudo-Boolean constraints in their respective CNF representation before converting them
      * to a BDD.
      * <p>

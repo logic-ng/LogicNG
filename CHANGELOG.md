@@ -2,22 +2,77 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.3.0] - 2022-mm-dd
+## [2.4.0] - 2022-mm-dd
+
+### Added
+
+- Convenience methods `isSatisfiable`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class.
+- Two overloaded factory methods `mk` in `MiniSat` to construct a solver by formula factory, solver style and optional configuration.
+
+### Changed
+
+- Methods `generateFromCnf(Formula formula)` and `generateFromCnf(Collection<Formula> formulas)` in `ConstraintGraphGenerator` are now deprecated, since the constraint graph generation is not CNF specific. Both methods will be removed with LogicNG 3.0. Instead, use the general method `generateFromFormulas(Collection<Formula> formulas)`.
+
+## [2.3.2] - 2022-08-02
+
+### Changed
+
+- The cached PB and CC encodings are no longer held in the constraint itselt but analogously to the other caches in the formula factory.
+
+### Fixed
+
+- A small bug which could occur when using the extended formula factory in combination with cached CC and PB encodings.
+
+## [2.3.1] - 2022-07-27
+
+### Changed
+
+- Removed `negativeVariables` from the internal representation of `Assignment` it is now computed each time the method is called. This leeds to a minimal
+  performance disadvantage but to a proportional better memory footprint. The public API is not changed.
+- Updated ANTLR to 4.9.3 (there were no relevant updates to the Java target, therefore no changes are expected for LogicNG)
+
+### Fixed
+
+- A small bug when comparing two backbones with the same set of negative/positive/optional variables but different satisfiability.
+
+## [2.3.0] - 2022-07-18
 
 ### Added
 
 - Overloaded method `createAssignment` in `MiniSat` by flag whether the created assignment should be a fast evaluable assignment.
 - Extended `ModelEnumerationFunction.Builder` by flag `fastEvaulable` which indicates whether the created assignments should be a fast evaluable assignment.
 - Convenience methods `isNNF()`, `isDNF()` and `isCNF()` in class `Formula`
+- Two new constructors for `Substitution`s and a new method `getMapping()` to get the internal mapping
+- Method `getSubstitution` on `Anonymizer` to get the mapping from original variable to anonymized one
+- A DNF from BDD function `BDDDNFFunction`, a subclass of the newly added class `BDDNormalFormFunction`
+- A DNF from BDD formula transformation `BDDDNFTransformation`, a subclass of the newly added class `BDDNormalFormTransforamtion`
+- A canonical CNF enumeration `CanonicalCNFEnumeration`, a subclass of the newly added class `CanonicalEnumeration`.
 
 ### Changed
 
 - Improved methods `intersection` and `union` in `CollectionHelper` by using bounded wildcards.
 - Improved performance of `hashCode` and `equals` in `Assignment` by avoiding redundant hash set creation.
+- Method `BDD#dnf()` uses the newly introduced `BDDDNFFunction` to obtain a smaller DNF instead of a canonical DNF
+- Class `BDDCNFFunction` uses the singleton pattern
+- All functions/transformations/predicates with only a default constructor introduce a static `get()` method with the singleton pattern. The public
+  constructors are now deprecated and will be removed with LogicNG 3.0
+- Always use the default configuration of algorithms from the formula factory and do not construct them in the respective classes separately.
 
 ### Fixed
 
 - Minor edge case issue in `NegationSimplifier` which yielded a larger result formula than input formula.
+- The `TermPredicate` logic was inverted. In detail, the minterm predicate  `TermPredicate#getMintermPredicate()` tested for a maxterm and the
+  `TermPredicate#getMaxtermPredicate()` tested for a minterm. To prevent silent errors for callers of these predicates, the factory method names were changed
+  to `minterm()` and `maxterm()`, respectively. Thus, an intentional breaking change on compile time level has been introduced to force callers to adjust their
+  logic.
+- Minor edge case issue in `MiniSat` when performing assumption solving with proof tracing.
+- Fixed two bugs in the backbone computation on the MiniCard solver.
+
+## [2.2.1] - 2022-06-11
+
+### Added
+
+- Basic support for OSGi via `maven-bundle-plugin`
 
 ## [2.2.0] - 2021-11-09
 
@@ -33,7 +88,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fixed a bug in the `addSoftFormula` method of the `MaxSATSolver` class. A soft formula is now weighted properly if the soft formula is not a clause.
-- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the solver.
+- Fixed a bug in the `addWithRelaxation` method of the `SATSolver` class. The CNF of the formula is now computed properly regarding the configuration of the
+  solver.
 
 ### Deprecated
 
@@ -93,7 +149,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     - Expansion of pseudo-Boolean constraints
 - New solver function for optimizing the current formula on the solver (wrt. the number of positive/negative literals)
 - New formula randomizer and corner case generator, especially useful for testing
-- Configuration object for formula factory which can be used to allow trivial contradictions and tautologies in formulas and to specify a default merge strategy for formulas from
+- Configuration object for formula factory which can be used to allow trivial contradictions and tautologies in formulas and to specify a default merge strategy
+  for formulas from
   different factories
 - New helper classes for collections
 - Stream operators on formulas
@@ -146,7 +203,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- A new method for generating CNFs directly on the solver instead of using the formula factory. This often leads to a faster generation and reduced Heap consumption but with the
+- A new method for generating CNFs directly on the solver instead of using the formula factory. This often leads to a faster generation and reduced Heap
+  consumption but with the
   loss of caching
 - The current formula on a MiniSat-based solver can be extracted
 
@@ -243,7 +301,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- MiniSat and Glucose have a new option for proof tracing. A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable formulas after
+- MiniSat and Glucose have a new option for proof tracing. A DRUP implementation stores all the necessary information for generating a proof for unsatisfiable
+  formulas after
   solving them. The new method can be found in the SAT solver class: `unsatCore()`
 - A new simplifier which applies the distributive law was added: `DistributiveSimplifier`
 

@@ -191,14 +191,14 @@ public class SubformulaTest extends TestWithExampleFormulas {
         expected.add(p.parse("(~x | y) & (x | ~z)"));
         expected.add(p.parse("a => (~x | y) & (x | ~z)"));
         expected.add(p.parse("((a & ~b & c) | (d & (~e | c))) & (a => (~x | y) & (x | ~z))"));
-        assertThat(f1.apply(new SubNodeFunction())).isEqualTo(expected);
+        assertThat(f1.apply(SubNodeFunction.get())).isEqualTo(expected);
     }
 
     @Test
     public void testNotCache() throws ParserException {
         final PropositionalParser p = new PropositionalParser(this.f);
         final Formula f1 = p.parse("(d | (a & b)) & (c | (a & b)) | (a & b )");
-        f1.apply(new SubNodeFunction(), false);
+        f1.apply(SubNodeFunction.get(), false);
         assertThat(f1.functionCacheEntry(SUBFORMULAS)).isNull();
     }
 }

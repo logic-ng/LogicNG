@@ -59,7 +59,7 @@ public final class LNGHeap {
     private final LNGIntVector indices;
 
     /**
-     * Constructs a new heap for a given solver.  The solver is required to access it's activity information stored
+     * Constructs a new heap for a given solver.  The solver is required to access its activity information stored
      * for variables.  The initial size of the heap is 1000 elements.
      * @param solver the solver
      */

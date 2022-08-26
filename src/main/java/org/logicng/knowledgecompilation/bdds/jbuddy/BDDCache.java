@@ -63,6 +63,7 @@ package org.logicng.knowledgecompilation.bdds.jbuddy;
  * @since 1.4.0
  */
 public class BDDCache {
+    private final BDDPrime prime;
     protected BDDCacheEntry[] table;
 
     /**
@@ -70,6 +71,7 @@ public class BDDCache {
      * @param cs the cache size
      */
     protected BDDCache(final int cs) {
+        this.prime = new BDDPrime();
         resize(cs);
     }
 
@@ -78,7 +80,7 @@ public class BDDCache {
      * @param ns the new number of entries
      */
     protected void resize(final int ns) {
-        final int size = BDDPrime.primeGTE(ns);
+        final int size = prime.primeGTE(ns);
         this.table = new BDDCacheEntry[size];
         for (int n = 0; n < size; n++) {
             this.table[n] = new BDDCacheEntry();

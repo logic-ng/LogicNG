@@ -34,10 +34,10 @@ import org.logicng.formulas.printer.FormulaStringRepresentation;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 /**
  * A writer for formulas.
@@ -57,7 +57,7 @@ public final class FormulaWriter {
      * Writes a given formula to a file.
      * @param fileName          the file name of the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
      *                          written to different lines without a conjoining operator
      * @throws IOException if there was a problem writing the file
      */
@@ -69,7 +69,7 @@ public final class FormulaWriter {
      * Writes a given formula to a file with a given formula formatter.
      * @param fileName          the file name of the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
      *                          written to different lines without a conjoining operator
      * @param formatter         the formatter for the formula
      * @throws IOException if there was a problem writing the file
@@ -83,7 +83,7 @@ public final class FormulaWriter {
      * Writes a given formula to a file.
      * @param file              the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
      *                          written to different lines without a conjoining operator
      * @throws IOException if there was a problem writing the file
      */
@@ -95,7 +95,7 @@ public final class FormulaWriter {
      * Writes a given formula to a file  with a given formula formatter.
      * @param file              the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is an conjunction - the single operands should be
+     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
      *                          written to different lines without a conjoining operator
      * @param formatter         the formatter for the formula
      * @throws IOException if there was a problem writing the file
@@ -110,7 +110,7 @@ public final class FormulaWriter {
         } else {
             sb.append(formatter.toString(formula));
         }
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

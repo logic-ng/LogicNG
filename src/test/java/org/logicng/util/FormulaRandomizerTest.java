@@ -203,7 +203,7 @@ public class FormulaRandomizerTest {
             for (int i = 0; i < 10; i++) {
                 final Formula formula = random.and(depth);
                 assertThat(formula).isInstanceOf(And.class);
-                assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(depth);
+                assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(depth);
             }
         }
     }
@@ -218,7 +218,7 @@ public class FormulaRandomizerTest {
             for (int i = 0; i < 10; i++) {
                 final Formula formula = random.or(depth);
                 assertThat(formula).isInstanceOf(Or.class);
-                assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(depth);
+                assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(depth);
             }
         }
     }
@@ -234,7 +234,7 @@ public class FormulaRandomizerTest {
             for (int i = 0; i < 10; i++) {
                 final Formula formula = random.not(depth);
                 assertThat(formula).isInstanceOf(Not.class);
-                assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(depth);
+                assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(depth);
             }
         }
     }
@@ -249,7 +249,7 @@ public class FormulaRandomizerTest {
             for (int i = 0; i < 10; i++) {
                 final Formula formula = random.impl(depth);
                 assertThat(formula).isInstanceOf(Implication.class);
-                assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(depth);
+                assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(depth);
             }
         }
     }
@@ -264,7 +264,7 @@ public class FormulaRandomizerTest {
             for (int i = 0; i < 10; i++) {
                 final Formula formula = random.equiv(depth);
                 assertThat(formula).isInstanceOf(Equivalence.class);
-                assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(depth);
+                assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(depth);
             }
         }
     }
@@ -438,7 +438,7 @@ public class FormulaRandomizerTest {
         for (int i = 0; i < 10000; i++) {
             final Formula formula = random.formula(3);
             countOccurrences(formula, occurrences, 3);
-            assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(3);
+            assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(3);
         }
         final int totalOccurrences = occurrences.get("and") + occurrences.get("or") + occurrences.get("impl") + occurrences.get("equiv");
         // Considering constants does not make sense (they are always removed)
@@ -466,7 +466,7 @@ public class FormulaRandomizerTest {
         for (int i = 0; i < 10000; i++) {
             final Formula formula = random.formula(3);
             countOccurrences(formula, occurrences, 3);
-            assertThat(formula.apply(new FormulaDepthFunction())).isLessThanOrEqualTo(3);
+            assertThat(formula.apply(FormulaDepthFunction.get())).isLessThanOrEqualTo(3);
         }
         assertThat(occurrences.get("negLit")).isStrictlyBetween((int) (.8 * occurrences.get("posLit")), (int) (1.2 * occurrences.get("posLit")));
         assertThat(occurrences.get("pbc")).isStrictlyBetween((int) (.8 * occurrences.get("posLit")), (int) (1.2 * occurrences.get("posLit")));

@@ -37,17 +37,26 @@ import static org.logicng.formulas.FType.TRUE;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
 
+import org.logicng.cardinalityconstraints.CCConfig;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Tristate;
+import org.logicng.explanations.mus.MUSConfig;
 import org.logicng.formulas.cache.CacheEntry;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
+import org.logicng.pseudobooleans.PBConfig;
 import org.logicng.pseudobooleans.PBEncoder;
+import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
+import org.logicng.solvers.sat.GlucoseConfig;
+import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.transformations.FormulaFactoryImporter;
+import org.logicng.transformations.cnf.CNFConfig;
 import org.logicng.transformations.cnf.CNFEncoder;
+import org.logicng.transformations.simplification.AdvancedSimplifierConfig;
+import org.logicng.util.FormulaRandomizerConfig;
 import org.logicng.util.Pair;
 
 import java.util.Arrays;
@@ -70,7 +79,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 2.2.0
+ * @version 2.3.2
  * @since 1.0
  */
 public class FormulaFactory {
@@ -116,6 +125,7 @@ public class FormulaFactory {
     Map<Formula, Map<CacheEntry, Formula>> transformationCache;
     Map<Formula, Map<CacheEntry, Tristate>> predicateCache;
     Map<Formula, Map<CacheEntry, Object>> functionCache;
+    Map<PBConstraint, List<Formula>> pbEncodingCache;
     private boolean cnfCheck;
     private FormulaFactoryImporter importer;
 
@@ -128,12 +138,12 @@ public class FormulaFactory {
         this.stringRepresentation = config.stringRepresentation.get();
         this.formulaMergeStrategy = config.formulaMergeStrategy;
         this.simplifyComplementaryOperands = config.simplifyComplementaryOperands;
+        this.configurations = initDefaultConfigs();
         this.cFalse = new CFalse(this);
         this.cTrue = new CTrue(this);
         this.clear();
-        this.configurations = new EnumMap<>(ConfigurationType.class);
         this.cnfEncoder = new CNFEncoder(this);
-        this.subformulaFunction = new SubNodeFunction();
+        this.subformulaFunction = SubNodeFunction.get();
         if (!this.name.isEmpty()) {
             this.ccPrefix = CC_PREFIX + this.name + "_";
             this.pbPrefix = PB_PREFIX + this.name + "_";
@@ -152,6 +162,23 @@ public class FormulaFactory {
      */
     public FormulaFactory() {
         this(FormulaFactoryConfig.builder().build());
+    }
+
+    /**
+     * Init all configurations with the default configurations.
+     */
+    private static Map<ConfigurationType, Configuration> initDefaultConfigs() {
+        final Map<ConfigurationType, Configuration> configMap = new EnumMap<>(ConfigurationType.class);
+        configMap.put(ConfigurationType.CNF, CNFConfig.builder().build());
+        configMap.put(ConfigurationType.CC_ENCODER, CCConfig.builder().build());
+        configMap.put(ConfigurationType.PB_ENCODER, PBConfig.builder().build());
+        configMap.put(ConfigurationType.MINISAT, MiniSatConfig.builder().build());
+        configMap.put(ConfigurationType.GLUCOSE, GlucoseConfig.builder().build());
+        configMap.put(ConfigurationType.MAXSAT, MaxSATConfig.builder().build());
+        configMap.put(ConfigurationType.MUS, MUSConfig.builder().build());
+        configMap.put(ConfigurationType.ADVANCED_SIMPLIFIER, AdvancedSimplifierConfig.builder().build());
+        configMap.put(ConfigurationType.FORMULA_RANDOMIZER, FormulaRandomizerConfig.builder().build());
+        return configMap;
     }
 
     /**
@@ -213,6 +240,7 @@ public class FormulaFactory {
         this.transformationCache = new HashMap<>();
         this.predicateCache = new HashMap<>();
         this.functionCache = new HashMap<>();
+        this.pbEncodingCache = new HashMap<>();
     }
 
     /**
@@ -621,7 +649,7 @@ public class FormulaFactory {
      * Creates a new CNF from an array of clauses.
      * <p>
      * ATTENTION: it is assumed that the operands are really clauses - this is not checked for performance reasons.
-     * Also no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
+     * Also, no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
      * of redundant clauses.
      * @param clauses the array of clauses
      * @return a new CNF
@@ -636,7 +664,7 @@ public class FormulaFactory {
      * Creates a new CNF from a collection of clauses.
      * <p>
      * ATTENTION: it is assumed that the operands are really clauses - this is not checked for performance reasons.
-     * Also no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
+     * Also, no reduction of operands is performed - this method should only be used if you are sure that the CNF is free
      * of redundant clauses.
      * @param clauses the collection of clauses
      * @return a new CNF
@@ -1371,12 +1399,15 @@ public class FormulaFactory {
     }
 
     /**
-     * Clears the transformation and function cache for the given formula.
+     * Clears the transformation, function, and PB encoding cache for the given formula.
      * @param formula the formula
      */
     protected void clearCaches(final Formula formula) {
         this.transformationCache.remove(formula);
         this.functionCache.remove(formula);
+        if (formula instanceof PBConstraint) {
+            this.pbEncodingCache.remove(formula);
+        }
     }
 
     /**

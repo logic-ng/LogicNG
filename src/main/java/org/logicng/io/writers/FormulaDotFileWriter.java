@@ -37,10 +37,10 @@ import org.logicng.formulas.PBConstraint;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +65,7 @@ public final class FormulaDotFileWriter {
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
      * @throws IOException if there was a problem writing the file
      */
-    public static void write(final String fileName, final Formula formula, boolean alignLiterals) throws IOException {
+    public static void write(final String fileName, final Formula formula, final boolean alignLiterals) throws IOException {
         write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
     }
 
@@ -76,7 +76,7 @@ public final class FormulaDotFileWriter {
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
      * @throws IOException if there was a problem writing the file
      */
-    public static void write(final File file, final Formula formula, boolean alignLiterals) throws IOException {
+    public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
         final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
         final Map<Formula, Integer> ids = new HashMap<>();
         if (alignLiterals && !formula.literals().isEmpty()) {
@@ -94,7 +94,7 @@ public final class FormulaDotFileWriter {
         }
         generateDotString(formula, sb, ids);
         sb.append(String.format("}%n"));
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }
@@ -146,7 +146,7 @@ public final class FormulaDotFileWriter {
     }
 
     private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids) {
-        int id;
+        final int id;
         if (!ids.containsKey(not.operand())) {
             generateDotString(not.operand(), sb, ids);
         }
@@ -157,7 +157,7 @@ public final class FormulaDotFileWriter {
     }
 
     private static void generateBinaryDotString(final BinaryOperator formula, final StringBuilder sb,
-                                                final Map<Formula, Integer> ids, String op, boolean directions) {
+                                                final Map<Formula, Integer> ids, final String op, final boolean directions) {
         if (!ids.containsKey(formula.left())) {
             generateDotString(formula.left(), sb, ids);
         }

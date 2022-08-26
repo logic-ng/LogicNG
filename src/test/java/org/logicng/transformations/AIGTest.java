@@ -45,7 +45,7 @@ import org.logicng.predicates.AIGPredicate;
  */
 public class AIGTest extends TestWithExampleFormulas {
 
-    private final AIGTransformation aigTrans = new AIGTransformation();
+    private final AIGTransformation aigTrans = AIGTransformation.get();
     private final AIGPredicate aigPred = AIGPredicate.get();
 
     @Test

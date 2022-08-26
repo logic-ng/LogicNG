@@ -55,7 +55,7 @@ public final class LNGLongVector {
      * Creates a vector with a given capacity.
      * @param size the capacity of the vector.
      */
-    public LNGLongVector(int size) {
+    public LNGLongVector(final int size) {
         this.elements = new long[size];
     }
 
@@ -64,7 +64,7 @@ public final class LNGLongVector {
      * @param size the capacity of the vector
      * @param pad  the initial element
      */
-    public LNGLongVector(int size, long pad) {
+    public LNGLongVector(final int size, final long pad) {
         this.elements = new long[size];
         Arrays.fill(this.elements, pad);
         this.size = size;
@@ -116,8 +116,8 @@ public final class LNGLongVector {
      * Pushes an element at the end of the vector.
      * @param element the element to push
      */
-    public void push(long element) {
-        int newSize = this.size + 1;
+    public void push(final long element) {
+        final int newSize = this.size + 1;
         this.ensure(newSize);
         this.elements[this.size++] = element;
     }
@@ -137,7 +137,7 @@ public final class LNGLongVector {
      * @return the element at the position
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public long get(int position) {
+    public long get(final int position) {
         return this.elements[position];
     }
 
@@ -147,7 +147,7 @@ public final class LNGLongVector {
      * @param element  the element
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public void set(int position, long element) {
+    public void set(final int position, final long element) {
         this.elements[position] = element;
     }
 
@@ -159,11 +159,11 @@ public final class LNGLongVector {
     }
 
     /**
-     * Shrinks the vector to a given size if the new size is less then the current size.  Otherwise the size remains
+     * Shrinks the vector to a given size if the new size is less than the current size.  Otherwise, the size remains
      * the same.
      * @param newSize the new size
      */
-    public void shrinkTo(int newSize) {
+    public void shrinkTo(final int newSize) {
         if (newSize < this.size) {
             this.size = newSize;
         }
@@ -174,7 +174,7 @@ public final class LNGLongVector {
      * @param size the new size
      * @param pad  the value for new elements
      */
-    public void growTo(int size, long pad) {
+    public void growTo(final int size, final long pad) {
         if (this.size >= size) {
             return;
         }
@@ -190,7 +190,7 @@ public final class LNGLongVector {
      * @param num the number of elements to remove.
      * @throws ArrayIndexOutOfBoundsException if the number of elements to remove is larger than the size of the vector
      */
-    public void removeElements(int num) {
+    public void removeElements(final int num) {
         int count = num;
         while (count-- > 0) {
             this.elements[--this.size] = -1;
@@ -217,7 +217,7 @@ public final class LNGLongVector {
     public void sortReverse() {
         Arrays.sort(this.elements, 0, this.size);
         for (int i = 0; i < this.size / 2; i++) {
-            long temp = this.elements[i];
+            final long temp = this.elements[i];
             this.elements[i] = this.elements[this.size - i - 1];
             this.elements[this.size - i - 1] = temp;
         }

@@ -243,69 +243,104 @@ public class DRUPTest implements LogicNGTest {
     @Test
     public void testCoreAndAssumptions() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
-        final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        final StandardProposition p1 = new StandardProposition(f.parse("A => B"));
-        final StandardProposition p2 = new StandardProposition(f.parse("A & B => G"));
-        final StandardProposition p3 = new StandardProposition(f.or(f.literal("X", false), f.literal("A", true)));
-        final StandardProposition p4 = new StandardProposition(f.or(f.literal("X", false), f.literal("G", false)));
-        final StandardProposition p5 = new StandardProposition(f.literal("G", false));
-        final StandardProposition p6 = new StandardProposition(f.literal("A", true));
-        solver.add(p1);
-        solver.add(p2);
-        solver.add(p3);
-        solver.add(p4);
+        final SATSolver[] solvers = new SATSolver[]{
+                MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
+                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+        };
+        for (final SATSolver solver : solvers) {
+            final StandardProposition p1 = new StandardProposition(f.parse("A => B"));
+            final StandardProposition p2 = new StandardProposition(f.parse("A & B => G"));
+            final StandardProposition p3 = new StandardProposition(f.or(f.literal("X", false), f.literal("A", true)));
+            final StandardProposition p4 = new StandardProposition(f.or(f.literal("X", false), f.literal("G", false)));
+            final StandardProposition p5 = new StandardProposition(f.literal("G", false));
+            final StandardProposition p6 = new StandardProposition(f.literal("A", true));
+            solver.add(p1);
+            solver.add(p2);
+            solver.add(p3);
+            solver.add(p4);
 
-        // Assumption call
-        solver.sat(f.variable("X"));
+            // Assumption call
+            solver.sat(f.variable("X"));
 
-        solver.add(p5);
-        solver.add(p6);
-        solver.sat();
-        final UNSATCore<Proposition> unsatCore = solver.unsatCore();
-        assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1, p2, p5, p6);
+            solver.add(p5);
+            solver.add(p6);
+            solver.sat();
+            final UNSATCore<Proposition> unsatCore = solver.unsatCore();
+            assertThat(unsatCore.propositions()).containsExactlyInAnyOrder(p1, p2, p5, p6);
+        }
     }
 
     @Test
     public void testCoreAndAssumptions2() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
-        final MiniSat solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final SATSolver[] solvers = new SATSolver[]{
+                MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
+                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+        };
+        for (final SATSolver solver : solvers) {
+            solver.add(f.parse("~C => D"));
+            solver.add(f.parse("C => D"));
+            solver.add(f.parse("D => B | A"));
+            solver.add(f.parse("B => X"));
+            solver.add(f.parse("B => ~X"));
+            solver.sat(f.literal("A", false));
 
-        solver.add(f.parse("~C => D"));
-        solver.add(f.parse("C => D"));
-        solver.add(f.parse("D => B | A"));
-        solver.add(f.parse("B => X"));
-        solver.add(f.parse("B => ~X"));
-        solver.sat(f.literal("A", false));
-
-        solver.add(f.parse("~A"));
-        solver.sat();
-        assertThat(solver.unsatCore()).isNotNull();
+            solver.add(f.parse("~A"));
+            solver.sat();
+            assertThat(solver.unsatCore()).isNotNull();
+        }
     }
 
     @Test
     public void testCoreAndAssumptions3() throws ParserException {
         // Unit test for DRUP issue which led to java.lang.ArrayIndexOutOfBoundsException: -1
         final FormulaFactory f = new FormulaFactory();
-        final MiniSat solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final SATSolver[] solvers = new SATSolver[]{
+                MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
+                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+        };
+        for (final SATSolver solver : solvers) {
+            solver.add(f.parse("X => Y"));
+            solver.add(f.parse("X => Z"));
+            solver.add(f.parse("C => E"));
+            solver.add(f.parse("D => ~F"));
+            solver.add(f.parse("B => M"));
+            solver.add(f.parse("D => N"));
+            solver.add(f.parse("G => O"));
+            solver.add(f.parse("A => B"));
+            solver.add(f.parse("T1 <=> A & K & ~B & ~C"));
+            solver.add(f.parse("T2 <=> A & B & C & K"));
+            solver.add(f.parse("T1 + T2 = 1"));
+            solver.sat(); // required for DRUP issue
 
-        solver.add(f.parse("X => Y"));
-        solver.add(f.parse("X => Z"));
-        solver.add(f.parse("C => E"));
-        solver.add(f.parse("D => ~F"));
-        solver.add(f.parse("B => M"));
-        solver.add(f.parse("D => N"));
-        solver.add(f.parse("G => O"));
-        solver.add(f.parse("A => B"));
-        solver.add(f.parse("T1 <=> A & K & ~B & ~C"));
-        solver.add(f.parse("T2 <=> A & B & C & K"));
-        solver.add(f.parse("T1 + T2 = 1"));
-        solver.sat(); // required for DRUP issue
+            solver.add(f.parse("Y => ~X & D"));
+            solver.add(f.parse("X"));
 
-        solver.add(f.parse("Y => ~X & D"));
-        solver.add(f.parse("X"));
+            solver.sat();
+            assertThat(solver.unsatCore()).isNotNull();
+        }
+    }
 
-        solver.sat();
-        assertThat(solver.unsatCore()).isNotNull();
+    @Test
+    public void testCoreAndAssumptions4() throws ParserException {
+        final SATSolver[] solvers = new SATSolver[]{
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
+                MiniSat.glucose(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+        };
+        for (final SATSolver solver : solvers) {
+            solver.add(this.f.parse("~X1"));
+            solver.sat(this.f.variable("X1")); // caused the bug
+            solver.add(this.f.variable("A1"));
+            solver.add(this.f.parse("A1 => A2"));
+            solver.add(this.f.parse("R & A2 => A3"));
+            solver.add(this.f.parse("L & A2 => A3"));
+            solver.add(this.f.parse("R & A3 => A4"));
+            solver.add(this.f.parse("L & A3 => A4"));
+            solver.add(this.f.parse("~A4"));
+            solver.add(this.f.parse("L | R"));
+            solver.sat();
+            assertThat(solver.unsatCore()).isNotNull();
+        }
     }
 
     @Test

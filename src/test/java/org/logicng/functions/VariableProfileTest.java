@@ -55,7 +55,7 @@ public class VariableProfileTest {
     private final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
     private final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
 
-    private final VariableProfileFunction varProfile = new VariableProfileFunction();
+    private final VariableProfileFunction varProfile = VariableProfileFunction.get();
 
     private final Formula pb1;
     private final Formula pb2;

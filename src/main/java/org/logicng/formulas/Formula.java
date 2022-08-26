@@ -44,6 +44,8 @@ import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.NNFPredicate;
+import org.logicng.predicates.satisfiability.SATPredicate;
+import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.transformations.NNFTransformation;
 
 import java.util.SortedSet;
@@ -51,7 +53,7 @@ import java.util.stream.Stream;
 
 /**
  * Super class for formulas.
- * @version 2.3.0
+ * @version 2.4.0
  * @since 1.0
  */
 public abstract class Formula implements Iterable<Formula> {
@@ -265,6 +267,53 @@ public abstract class Formula implements Iterable<Formula> {
      */
     public Formula cnf() {
         return this.f.cnfEncoder().encode(this);
+    }
+
+    /**
+     * Returns whether this formula is satisfiable.
+     * A new SAT solver is used to check the satisfiability. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is satisfiable, {@code false} otherwise
+     */
+    public boolean isSatisfiable() {
+        return this.holds(new SATPredicate(this.f));
+    }
+
+    /**
+     * Returns whether this formula implies the given other formula, i.e. `this =&gt; other` is a tautology.
+     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @param other the formula which should be checked if it is implied by this formula
+     * @return {@code true} when this formula implies the given other formula, {@code false} otherwise
+     */
+    public boolean implies(final Formula other) {
+        return this.f.implication(this, other).holds(new TautologyPredicate(this.f));
+    }
+
+    /**
+     * Returns whether this formula is implied by the given other formula, i.e. `other =&gt; this` is a tautology.
+     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @param other the formula which should be checked if it implies this formula
+     * @return {@code true} when this formula is implied by the given other formula, {@code false} otherwise
+     */
+    public boolean isImpliedBy(final Formula other) {
+        return this.f.implication(other, this).holds(new TautologyPredicate(this.f));
+    }
+
+    /**
+     * Returns whether this formula is equivalent to the given other formula, i.e. `other &lt;=&gt; this` is a tautology.
+     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @param other the formula which should be checked if it is equivalent with this formula
+     * @return {@code true} when this formula is equivalent to the given other formula, {@code false} otherwise
+     */
+    public boolean isEquivalentTo(final Formula other) {
+        return this.f.equivalence(this, other).holds(new TautologyPredicate(this.f));
     }
 
     /**

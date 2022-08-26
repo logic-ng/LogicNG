@@ -45,7 +45,7 @@ import java.util.TreeSet;
 
 /**
  * Performs model enumeration on a BDD. The models are returned as a list of {@link Assignment assignments}.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 2.0.0
  */
 public final class BDDModelEnumerationFunction implements BDDFunction<List<Assignment>> {
@@ -53,8 +53,7 @@ public final class BDDModelEnumerationFunction implements BDDFunction<List<Assig
     private final Collection<Variable> variables;
 
     /**
-     * Constructs a new model enumeration function. The models are projected to
-     * a given set of variables.
+     * Constructs a new model enumeration function. The models are projected to a given set of variables.
      * @param variables the variables to which models are projected
      */
     public BDDModelEnumerationFunction(final Collection<Variable> variables) {
@@ -90,7 +89,8 @@ public final class BDDModelEnumerationFunction implements BDDFunction<List<Assig
         return new ArrayList<>(res);
     }
 
-    private void generateAllModels(final BDDKernel kernel, final List<Assignment> assignments, final byte[] model, final int[] relevantIndices, final int position) {
+    private void generateAllModels(final BDDKernel kernel, final List<Assignment> assignments, final byte[] model, final int[] relevantIndices,
+                                   final int position) {
         if (position == relevantIndices.length) {
             final Assignment assignment = new Assignment();
             for (final int i : relevantIndices) {

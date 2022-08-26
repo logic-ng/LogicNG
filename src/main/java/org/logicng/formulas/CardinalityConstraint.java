@@ -53,7 +53,7 @@ public final class CardinalityConstraint extends PBConstraint {
      * Constructs a new cardinality constraint.
      * @param literals   the literals
      * @param comparator the comparator
-     * @param rhs        the right hand side, has to follow the restrictions in the class description
+     * @param rhs        the right-hand side, has to follow the restrictions in the class description
      * @param f          the formula factory
      * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
      */

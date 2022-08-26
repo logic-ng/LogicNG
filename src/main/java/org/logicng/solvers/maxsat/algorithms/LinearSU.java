@@ -161,10 +161,9 @@ public class LinearSU extends MaxSAT {
                     if (newCost == 0) {
                         functions.push(new LNGIntVector(this.objFunction));
                         localCost = newCost;
-                        weights.push(localCost / currentWeight);
+                        weights.push(0);
                         posWeight++;
                         currentWeight = this.orderWeights.get(posWeight);
-                        localCost = 0;
                         this.solver = this.rebuildBMO(functions, weights, currentWeight);
                         if (this.verbosity != Verbosity.NONE) {
                             this.output.println("c LB : " + this.lbCost);
@@ -287,7 +286,7 @@ public class LinearSU extends MaxSAT {
     /**
      * Rebuilds a SAT solver with the current MaxSAT formula
      * @param functions     the functions
-     * @param rhs           the right hand side
+     * @param rhs           the right-hand side
      * @param currentWeight the current weight
      * @return the rebuilt solver
      */

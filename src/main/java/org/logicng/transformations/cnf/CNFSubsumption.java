@@ -44,10 +44,29 @@ import java.util.SortedSet;
  * I.e. performs as many subsumptions as possible.  A subsumption in a CNF means,
  * that e.g. a clause {@code A | B | C} is subsumed by another clause {@code A | B}
  * and can therefore be deleted for an equivalent CNF.
- * @version 2.0.0
+ * @version 2.3.0
  * @since 1.5.0
  */
 public final class CNFSubsumption extends Subsumption implements FormulaTransformation {
+
+    private static final CNFSubsumption INSTANCE = new CNFSubsumption();
+
+    /**
+     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
+     * In order to instantiate an object of this class, use the {@link #get()} method.
+     */
+    @Deprecated
+    public CNFSubsumption() {
+        // Intentionally left empty
+    }
+
+    /**
+     * Returns the singleton instance of this function.
+     * @return an instance of this function
+     */
+    public static CNFSubsumption get() {
+        return INSTANCE;
+    }
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {

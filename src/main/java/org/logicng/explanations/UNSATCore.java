@@ -64,7 +64,7 @@ public final class UNSATCore<T extends Proposition> {
 
     /**
      * Returns {@code true} if this core is a MUS and {@code false} if it is unknown whether it is a MUS.
-     * Note, if set to {@code false} this core might be a MUS but it is not yet verified.
+     * Note, if set to {@code false} this core might be a MUS, but it is not yet verified.
      * @return {@code true} if this core is a MUS and {@code false} if it is unknown whether it is a MUS.
      */
     public boolean isMUS() {

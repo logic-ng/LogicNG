@@ -35,10 +35,10 @@ import org.logicng.formulas.Variable;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +99,7 @@ public final class FormulaDimacsFileWriter {
         if (formula.type().equals(FType.FALSE)) {
             sb.append(String.format("0%n"));
         }
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }
@@ -114,7 +114,7 @@ public final class FormulaDimacsFileWriter {
         for (final Map.Entry<Variable, Long> entry : var2id.entrySet()) {
             sb.append(entry.getKey()).append(";").append(entry.getValue()).append(System.lineSeparator());
         }
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mappingFile), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(mappingFile.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

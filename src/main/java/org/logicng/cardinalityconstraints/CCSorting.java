@@ -96,7 +96,7 @@ public final class CCSorting {
 
     /**
      * Generates a sorter encoding for the given input.
-     * @param m         the the counter
+     * @param m         the counter
      * @param input     the input literals
      * @param result    the result of the encoding
      * @param output    the output literals
@@ -132,7 +132,6 @@ public final class CCSorting {
                 output.push(o1);
                 output.push(o2);
             } else {
-                assert m2 == 1;
                 this.comparator(input.get(0), input.get(1), o1, result, direction);
                 output.push(o1);
             }

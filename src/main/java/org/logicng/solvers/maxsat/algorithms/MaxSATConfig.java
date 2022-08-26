@@ -121,6 +121,46 @@ public final class MaxSATConfig extends Configuration {
     }
 
     /**
+     * Copy Constructor with another cardinality encoding.
+     * @param config              the configuration to copy
+     * @param cardinalityEncoding the cardinality encoding
+     */
+    public MaxSATConfig(final MaxSATConfig config, final CardinalityEncoding cardinalityEncoding) {
+        super(ConfigurationType.MAXSAT);
+        this.incrementalStrategy = config.incrementalStrategy;
+        this.amoEncoding = config.amoEncoding;
+        this.pbEncoding = config.pbEncoding;
+        this.cardinalityEncoding = cardinalityEncoding;
+        this.weightStrategy = config.weightStrategy;
+        this.solverType = config.solverType;
+        this.verbosity = config.verbosity;
+        this.output = config.output;
+        this.symmetry = config.symmetry;
+        this.limit = config.limit;
+        this.bmo = config.bmo;
+    }
+
+    /**
+     * Copy Constructor with another incrementality strategy.
+     * @param config              the configuration to copy
+     * @param incrementalStrategy the incrementality strategy
+     */
+    public MaxSATConfig(final MaxSATConfig config, final IncrementalStrategy incrementalStrategy) {
+        super(ConfigurationType.MAXSAT);
+        this.incrementalStrategy = incrementalStrategy;
+        this.amoEncoding = config.amoEncoding;
+        this.pbEncoding = config.pbEncoding;
+        this.cardinalityEncoding = config.cardinalityEncoding;
+        this.weightStrategy = config.weightStrategy;
+        this.solverType = config.solverType;
+        this.verbosity = config.verbosity;
+        this.output = config.output;
+        this.symmetry = config.symmetry;
+        this.limit = config.limit;
+        this.bmo = config.bmo;
+    }
+
+    /**
      * Returns a new builder for the configuration.
      * @return the builder
      */

@@ -340,7 +340,6 @@ public final class DRUPTrim {
             boolean fileSwitchFlag;
             int clauseNr = 0;
             while (true) {
-                final int lit = 0;
                 fileSwitchFlag = nZeros <= 0;
                 final LNGIntVector clause = currentFile.get(clauseNr++);
                 if (clause == null) {
@@ -364,9 +363,6 @@ public final class DRUPTrim {
                 }
                 if (clauseNr > currentFile.size() && fileSwitchFlag && !currentFile.empty()) {
                     break;
-                }
-                if (Math.abs(lit) > this.nVars) {
-                    throw new IllegalStateException(String.format("Illegal literal %d due to max var %d", lit, this.nVars));
                 }
                 final int hash = getHash(marks, ++mark, buffer);
                 if (del) {
@@ -534,7 +530,7 @@ public final class DRUPTrim {
                         this.removeWatch(clausePtr, 1);
                     }
 
-                    boolean gotoNextLemma = ad == 0;
+                    final boolean gotoNextLemma = ad == 0;
 
                     if (!gotoNextLemma) {
                         while (this.DB.get(clausePtr) != 0) {

@@ -123,7 +123,7 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
                                          final Collection<Variable> additionalVariables) {
         final List<Assignment> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
-        if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
+        if (solver.canSaveLoadState()) {
             stateBeforeEnumeration = solver.saveState();
         }
         boolean proceed = true;
@@ -177,7 +177,7 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
                 break;
             }
         }
-        if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
+        if (solver.canSaveLoadState()) {
             solver.loadState(stateBeforeEnumeration);
         }
         return models;

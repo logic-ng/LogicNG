@@ -78,7 +78,7 @@ public final class CCTotalizer {
      * @param result the result
      * @param vars   the variables
      * @param rhs    the right-hand side
-     * @throws IllegalArgumentException if the right hand side of the constraint was negative
+     * @throws IllegalArgumentException if the right-hand side of the constraint was negative
      */
     void buildAMK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
@@ -95,7 +95,7 @@ public final class CCTotalizer {
      * @param result the result
      * @param vars   the variables
      * @param rhs    the right-hand side
-     * @throws IllegalArgumentException if the right hand side of the constraint was negative
+     * @throws IllegalArgumentException if the right-hand side of the constraint was negative
      */
     void buildALK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
@@ -111,7 +111,7 @@ public final class CCTotalizer {
      * Builds an exactly-k constraint.
      * @param vars the variables
      * @param rhs  the right-hand side
-     * @throws IllegalArgumentException if the right hand side of the constraint was negative
+     * @throws IllegalArgumentException if the right-hand side of the constraint was negative
      */
     void buildEXK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);

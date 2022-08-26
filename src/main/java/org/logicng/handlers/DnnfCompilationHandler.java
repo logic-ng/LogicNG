@@ -36,7 +36,7 @@ package org.logicng.handlers;
 public interface DnnfCompilationHandler extends Handler {
 
     /**
-     * This method is called when an shannon expansion was performed.
+     * This method is called when a Shannon expansion was performed.
      * @return {@code true} when the computation should be continued, {@code false} if it should be aborted with a {@link java.util.concurrent.TimeoutException}
      */
     default boolean shannonExpansion() {

@@ -302,7 +302,7 @@ public abstract class MiniSatStyleSolver {
      * Compares two variables by their activity.
      * @param x the first variable
      * @param y the second variable
-     * @return {@code true} if the first variable's activity is larger then the second one's
+     * @return {@code true} if the first variable's activity is larger than the second one's
      */
     public boolean lt(final int x, final int y) {
         return this.vars.get(x).activity() > this.vars.get(y).activity();
@@ -435,7 +435,7 @@ public abstract class MiniSatStyleSolver {
      * Loads a given state in the solver.
      * <p>
      * ATTENTION: You can only load a state which was created by this instance of the solver before the current state.
-     * Only the sized of the internal data structures are stored, meaning you can track back in time and restore a solver
+     * Only the sizes of the internal data structures are stored, meaning you can track back in time and restore a solver
      * state with fewer variables and/or fewer clauses.  It is not possible to import a solver state from another solver
      * or another solving execution.
      * @param state the solver state to load
@@ -1019,13 +1019,27 @@ public abstract class MiniSatStyleSolver {
      * @return {@code true} if the literal is unit, {@code false} otherwise
      */
     protected boolean isUnit(final int lit, final MSClause clause) {
-        for (int i = 0; i < clause.size(); ++i) {
-            final int clauseLit = clause.get(i);
-            if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
-                return false;
+        if (!clause.isAtMost()) {
+            for (int i = 0; i < clause.size(); ++i) {
+                final int clauseLit = clause.get(i);
+                if (lit != clauseLit && this.model.get(var(clauseLit)) != sign(clauseLit)) {
+                    return false;
+                }
             }
+            return true;
+        } else {
+            int countPos = 0;
+            final int cardinality = clause.cardinality();
+            for (int i = 0; i < clause.size(); ++i) {
+                final int var = var(clause.get(i));
+                if (var(lit) != var && this.model.get(var)) {
+                    if (++countPos == cardinality) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
-        return true;
     }
 
     /**

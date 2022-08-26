@@ -90,8 +90,8 @@ public class BDDKernel {
         EQUIV(6, new int[]{1, 0, 0, 1}),
         NOT(10, new int[]{1, 1, 0, 0});
 
-        protected final int v;
-        protected final int[] tt;
+        final int v;
+        private final int[] tt;
 
         Operand(final int value, final int[] truthTable) {
             this.v = value;
@@ -105,13 +105,14 @@ public class BDDKernel {
     public static final int CACHEID_PATHCOU_ZERO = 0x8;
     public static final int CACHEID_FORALL = 0x1;
 
+    protected final BDDPrime prime;
     protected final FormulaFactory f;
     protected final SortedMap<Variable, Integer> var2idx;
     protected final SortedMap<Integer, Variable> idx2var;
 
     protected BDDReordering reordering;
 
-    protected int[] nodes; // All of the bdd nodes
+    protected int[] nodes; // All the bdd nodes
     protected int[] vars; // Set of defined BDD variables
     protected final int minfreenodes; // Minimal % of nodes that has to be left after a garbage collection
     protected int gbcollectnum; // Number of garbage collections
@@ -147,10 +148,11 @@ public class BDDKernel {
      */
     public BDDKernel(final FormulaFactory f, final int numVars, final int nodeSize, final int cacheSize) {
         this.f = f;
+        this.prime = new BDDPrime();
         this.var2idx = new TreeMap<>();
         this.idx2var = new TreeMap<>();
         this.reordering = new BDDReordering(this);
-        this.nodesize = BDDPrime.primeGTE(Math.max(nodeSize, 3));
+        this.nodesize = prime.primeGTE(Math.max(nodeSize, 3));
         this.nodes = new int[this.nodesize * 6];
         this.minfreenodes = 20;
         for (int n = 0; n < this.nodesize; n++) {
@@ -291,9 +293,9 @@ public class BDDKernel {
     }
 
     /**
-     * Returns the the variable for the given index or {@code null} if no such index exists.
+     * Returns the variable for the given index or {@code null} if no such index exists.
      * @param idx the index
-     * @return the the variable for the given index
+     * @return the variable for the given index
      */
     public Variable getVariableForIndex(final int idx) {
         return this.idx2var.get(idx);
@@ -413,7 +415,7 @@ public class BDDKernel {
 
     /**
      * Adds a reference for a given node.  Reference counting is done on externally referenced nodes only and the count for
-     * a specific node {@code r} can and must be increased using this function to avoid loosing the node in the next
+     * a specific node {@code r} can and must be increased using this function to avoid losing the node in the next
      * garbage collection.  If a BDD handler is given, the handler's {@link BDDHandler#newRefAdded()} method is called.
      * If the generation gets aborted due to the handler, the method will return {@link BDDKernel#BDD_ABORT} as result. If
      * {@code null} is passed as handler, the generation will continue without interruption.
@@ -599,7 +601,7 @@ public class BDDKernel {
         if (this.nodesize > oldsize + this.maxnodeincrease) {
             this.nodesize = oldsize + this.maxnodeincrease;
         }
-        this.nodesize = BDDPrime.primeLTE(this.nodesize);
+        this.nodesize = prime.primeLTE(this.nodesize);
         final int[] newnodes = new int[this.nodesize * 6];
         System.arraycopy(this.nodes, 0, newnodes, 0, this.nodes.length);
         this.nodes = newnodes;
@@ -857,5 +859,9 @@ public class BDDKernel {
     @FunctionalInterface
     protected interface BddOperation {
         int perform() throws BddReorderRequest;
+    }
+
+    public BDDPrime getPrime() {
+        return prime;
     }
 }

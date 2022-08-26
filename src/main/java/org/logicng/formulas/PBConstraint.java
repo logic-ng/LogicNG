@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 /**
  * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
- * @version 2.2.0
+ * @version 2.3.2
  * @since 1.0
  */
 public class PBConstraint extends Formula {
@@ -75,7 +75,6 @@ public class PBConstraint extends Formula {
     protected final int[] coefficients;
     protected CType comparator;
     protected int rhs;
-    protected List<Formula> encoding;
     protected int hashCode;
     protected int maxWeight;
 
@@ -84,7 +83,7 @@ public class PBConstraint extends Formula {
      * @param literals     the literals
      * @param coefficients the coefficients
      * @param comparator   the comparator
-     * @param rhs          the right hand side
+     * @param rhs          the right-hand side
      * @param f            the formula factory
      * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
      */
@@ -103,7 +102,6 @@ public class PBConstraint extends Formula {
         }
         this.comparator = comparator;
         this.rhs = rhs;
-        this.encoding = null;
         this.hashCode = 0;
     }
 
@@ -543,10 +541,12 @@ public class PBConstraint extends Formula {
      * @return the encoding
      */
     public List<Formula> getEncoding() {
-        if (this.encoding == null) {
-            this.encoding = this.f.pbEncoder().encode(this);
+        List<Formula> encoding = this.f.pbEncodingCache.get(this);
+        if (encoding == null) {
+            encoding = this.f.pbEncoder().encode(this);
+            this.f.pbEncodingCache.put(this, encoding);
         }
-        return Collections.unmodifiableList(this.encoding);
+        return Collections.unmodifiableList(encoding);
     }
 
     @Override

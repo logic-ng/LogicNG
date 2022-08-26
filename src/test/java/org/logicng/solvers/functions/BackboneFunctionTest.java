@@ -30,6 +30,7 @@ package org.logicng.solvers.functions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.logicng.LongRunningTag;
@@ -41,6 +42,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.FormulaReader;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.SolverState;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSat2Solver;
@@ -167,7 +169,7 @@ public class BackboneFunctionTest {
         solver.reset();
         solver.add(f.parse("(a => c | d) & (b => d | ~e) & (a | b)"));
         Backbone backbone = solver.execute(BackboneFunction.builder().variables(
-                f.variable("a"), f.variable("b"), f.variable("c"), f.variable("d"), f.variable("e"), f.variable("f"))
+                        f.variable("a"), f.variable("b"), f.variable("c"), f.variable("d"), f.variable("e"), f.variable("f"))
                 .build());
         assertThat(backbone.isSat()).isTrue();
         assertThat(backbone.getCompleteBackbone()).isEmpty();
@@ -366,6 +368,18 @@ public class BackboneFunctionTest {
             assertThat(backbone.getCompleteBackbone()).isEmpty();
             assertThat(backbone.isSat()).isFalse();
         }
+    }
+
+    @Test
+    public void testMiniCardSpecialCase() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final SATSolver miniCard = MiniSat.miniCard(f);
+        miniCard.add(f.parse("v1 + v2 + v3 + v4 + v5 + v6 = 1"));
+        miniCard.add(f.parse("v1234 + v50 + v60 = 1"));
+        miniCard.add(f.parse("(v1 => v1234) & (v2 => v1234) & (v3 => v1234) & (v4 => v1234) & (v5 => v50) & (v6 => v60)"));
+        miniCard.add(f.parse("~v6"));
+        final Backbone backboneMC = miniCard.backbone(Arrays.asList(f.variable("v6"), f.variable("v60")));
+        assertThat(backboneMC.getNegativeBackbone()).extracting(Variable::name).containsExactlyInAnyOrder("v6", "v60");
     }
 
     private SortedSet<Variable> v(final String s) {

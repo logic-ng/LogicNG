@@ -62,7 +62,7 @@ import org.logicng.solvers.datastructures.MSWatcher;
  * like the C++ version.
  * <p>
  * If the incremental mode is activated, this solver allows to save and load the solver state in an efficient manner.
- * Therefore clause deletion and simplifications are deactivated in this mode.  This mode is most efficient on small
+ * Therefore, clause deletion and simplifications are deactivated in this mode.  This mode is most efficient on small
  * to mid-size industrial formulas (up to 50,000 variables, 100,000 clauses).  Whenever you have lots of small formulas
  * to solve or need the ability to add and delete formulas from the solver, we recommend to consider this mode.
  * @version 2.1.0
@@ -214,7 +214,7 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
             currRestarts++;
         }
 
-        if (this.config.proofGeneration) {
+        if (this.config.proofGeneration && this.assumptions.empty()) {
             if (status == Tristate.FALSE) {
                 this.pgProof.push(new LNGIntVector(1, 0));
             }

@@ -235,6 +235,31 @@ public class ExtendedFormulaFactoryTest {
     }
 
     @Test
+    public void testCcEncodingClearance() {
+        final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
+        final Variable[] problemLits = new Variable[100];
+        for (int i = 0; i < 100; i++) {
+            problemLits[i] = eff.variable("v" + i);
+        }
+        final Formula amo1 = eff.amo(problemLits);
+
+        final FormulaFactoryState state = eff.save();
+
+        final Variable[] problemLits2 = new Variable[100];
+        for (int i = 0; i < 100; i++) {
+            problemLits2[i] = eff.variable("x" + i);
+        }
+        Formula amo2 = eff.amo(problemLits2);
+        amo2.nnf(); // first convert the new one
+        amo1.nnf(); // enforce the encoding
+
+        eff.load(state);
+        amo2 = null;
+        final Formula nnf = amo1.nnf();
+        assertThat(nnf.variables()).contains(eff.variable("@RESERVED_CC_1"));
+    }
+
+    @Test
     @LongRunningTag
     public void testDNFFactorization() {
         testCacheClearance(new DNFFactorization(), PredicateCacheEntry.IS_DNF, TransformationCacheEntry.FACTORIZED_DNF);
@@ -250,7 +275,7 @@ public class ExtendedFormulaFactoryTest {
         for (final Formula formula : formulas) {
             transformation.apply(formula, true);
             softly.assertThat((formula.predicateCacheEntry(predicateCacheEntry) != null && formula.predicateCacheEntry(predicateCacheEntry).equals(Tristate.TRUE)) || formula
-                    .transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula.toString() + " type: " + transformationCacheEntry).isTrue();
+                    .transformationCacheEntry(transformationCacheEntry) != null).as("CacheClearanceTest for " + formula + " type: " + transformationCacheEntry).isTrue();
         }
         eff.load(state);
         for (final Formula formula : formulas) {

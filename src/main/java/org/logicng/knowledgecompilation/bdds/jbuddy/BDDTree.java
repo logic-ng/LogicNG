@@ -256,7 +256,7 @@ public class BDDTree {
             return tnew;
         }
 
-        /* After this this section -> go to next */
+        /* After this section -> go to next */
         if (first > t.last) {
             final BDDTree next = addRangeRec(t.next, t, first, last, fixed, id, level2var);
             if (next != null) {

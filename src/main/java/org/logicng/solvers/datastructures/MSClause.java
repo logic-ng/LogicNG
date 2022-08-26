@@ -293,6 +293,14 @@ public final class MSClause {
         this.data.pop();
     }
 
+    /**
+     * Returns the right-hand k side of an at-most k constraint.
+     * @return the right-hand side
+     */
+    public int cardinality() {
+        return this.data.size() - this.atMostWatchers + 1;
+    }
+
     @Override
     public int hashCode() {
         return this.data.hashCode();

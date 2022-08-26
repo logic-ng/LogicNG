@@ -42,5 +42,6 @@ public enum ConfigurationType {
     MUS,
     CC_ENCODER,
     PB_ENCODER,
-    FORMULA_RANDOMIZER
+    FORMULA_RANDOMIZER,
+    ADVANCED_SIMPLIFIER
 }

@@ -33,15 +33,15 @@ import org.logicng.graphs.datastructures.Node;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * A dot file writer for a graph.  Writes the internal data structure of the formula to a dot file.
+ * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
  * @version 2.0.0
  * @since 1.2
  */
@@ -55,8 +55,8 @@ public final class GraphDotFileWriter {
     }
 
     /**
-     * Writes a given formula's internal data structure as a dimacs file.
-     * @param fileName the file name of the dimacs file to write
+     * Writes a given graph's internal data structure as a dot file.
+     * @param fileName the file name of the dot file to write
      * @param graph    the graph
      * @param <T>      the type of the graph content
      * @throws IOException if there was a problem writing the file
@@ -91,7 +91,7 @@ public final class GraphDotFileWriter {
         }
         sb.append("}");
 
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

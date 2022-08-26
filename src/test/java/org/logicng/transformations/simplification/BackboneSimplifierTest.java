@@ -42,7 +42,7 @@ import org.logicng.io.parsers.PropositionalParser;
  */
 public class BackboneSimplifierTest {
 
-    private final BackboneSimplifier backboneSimplifier = new BackboneSimplifier();
+    private final BackboneSimplifier backboneSimplifier = BackboneSimplifier.get();
 
     @Test
     public void testTrivialBackbones() throws ParserException {

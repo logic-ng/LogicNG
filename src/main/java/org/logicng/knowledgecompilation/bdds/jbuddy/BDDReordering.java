@@ -218,7 +218,7 @@ public class BDDReordering {
      * be a single variable.
      * <p>
      * During reordering, the child blocks of a parent block can be reordered, but they are kept
-     * together. So no other block can be moved in between the child blocks. Furthermore
+     * together. So no other block can be moved in between the child blocks. Furthermore,
      * variables in a block which are not in a child block will be left untouched.
      * <p>
      * Example: Lets assume we have a BDD with the variable ordering {@code v1, v2, v3, v4, v5, v6, v7}.
@@ -233,7 +233,7 @@ public class BDDReordering {
      * This means that the variables of {@code A} and {@code B} can never be mixed up in the order.
      * So during reordering the variables {@code v6} and {@code v7} can either be moved to the
      * front (before {@code A}) or remain at their position.
-     * Furthermore for example {@code v1} and {@code v2} will always stay together and neither
+     * Furthermore, for example {@code v1} and {@code v2} will always stay together and neither
      * {@code v3} nor any other variable can be moved in between them. On the other hand, the blocks
      * {@code A1}, {@code A2}, and {@code A3} can be swapped arbitrarily.
      * <p>
@@ -252,7 +252,7 @@ public class BDDReordering {
      * If a block is <b>fixed</b> (the example above assumed always blocks which are not fixed), its
      * immediate child blocks will remain in their order. E.g. if block {@code A} was fixed, the blocks
      * {@code A1}, {@code A2}, and {@code A3} would not be allowed to be swapped.
-     * Let's assume block {@code A} to be fixed an that we have two other unfixed blocks:
+     * Let's assume block {@code A} to be fixed and that we have two other unfixed blocks:
      * <ul>
      *     <li>{@code A11} reaching from {@code v1} to {@code v1}</li>
      *     <li>{@code A12} reaching from {@code v2} to {@code v2}</li>
@@ -269,8 +269,8 @@ public class BDDReordering {
      * </ul>
      * <p>
      * Each block (including all nested blocks) must be defined by a separate call to this method. The blocks
-     * may be added in an arbitrary order, so it is not required to add them top-down or buttom-up.
-     * However, the blocks <b>must not intersect</b>, except of one block containing the other. Furthermore
+     * may be added in an arbitrary order, so it is not required to add them top-down or bottom-up.
+     * However, the blocks <b>must not intersect</b>, except of one block containing the other. Furthermore,
      * both the {@code first} and the {@code last} variable must be known by the kernel and the level {@code first}
      * must be lower than the level of {@code last}.
      * @param first the variable at which the block starts (inclusive)
@@ -387,7 +387,7 @@ public class BDDReordering {
         BDDTree thisTree = t;
         BDDTree first = t;
         if (t == null) {
-            return t;
+            return null;
         }
         while (thisTree.getNext() != null) {
             final int best = reorderNodenum();
@@ -406,7 +406,7 @@ public class BDDReordering {
         BDDTree thisTree;
         BDDTree first = t;
         if (t == null) {
-            return t;
+            return null;
         }
         int lastsize;
 
@@ -436,7 +436,7 @@ public class BDDReordering {
         BDDTree first = t;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         while (thisTree.getNext() != null) {
@@ -454,7 +454,7 @@ public class BDDReordering {
         int lastsize;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         do {
@@ -484,7 +484,6 @@ public class BDDReordering {
                 blockdown(thisTree.getPrev());
                 next = thisTree.getNext();
             } else {
-                next = thisTree;
                 if (setfirst) {
                     first = thisTree.getPrev();
                 }
@@ -583,7 +582,7 @@ public class BDDReordering {
         int lastsize;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         do {
@@ -655,7 +654,7 @@ public class BDDReordering {
         int n;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         for (n = 0; n < num; n++) {
@@ -746,7 +745,7 @@ public class BDDReordering {
         int n, num = 0;
 
         if (t == null) {
-            return t;
+            return null;
         }
 
         for (thisTree = t; thisTree != null; thisTree = thisTree.getNext()) {
@@ -1068,7 +1067,7 @@ public class BDDReordering {
             this.levels[n].start = n * this.levels[n].maxsize;
             this.levels[n].size = this.levels[n].maxsize;
             if (this.levels[n].size >= 4) {
-                this.levels[n].size = BDDPrime.primeLTE(this.levels[n].size);
+                this.levels[n].size = this.k.getPrime().primeLTE(this.levels[n].size);
             }
         }
     }
@@ -1215,25 +1214,6 @@ public class BDDReordering {
                 }
             }
         }
-    }
-
-    protected int[] scanset(final int r) {
-        if (r < 0 || (r) >= this.k.nodesize || r >= 2 && this.k.low(r) == -1) {
-            throw new IllegalArgumentException("Invalid BDD " + r + " as input");
-        }
-        if (r < 2) {
-            return new int[0];
-        }
-        int num = 0;
-        for (int n = r; n > 1; n = this.k.high(n)) {
-            num++;
-        }
-        final int[] varset = new int[num];
-        num = 0;
-        for (int n = r; n > 1; n = this.k.high(n)) {
-            varset[num++] = this.k.level2var[this.k.level(n)];
-        }
-        return varset;
     }
 
     protected int reorderGain() {
