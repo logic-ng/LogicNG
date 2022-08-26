@@ -7,6 +7,7 @@ import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ public class VariableOccurrencesOnSolverFunctionTest extends TestWithExampleForm
 
     @Test
     public void testWithEmptySolver() {
-        final MiniSat solver = MiniSat.miniSat(this.f);
+        final SATSolver solver = MiniSat.miniSat(this.f);
         assertThat(solver.execute(new VariableOccurrencesOnSolverFunction())).isEmpty();
         final Map<Variable, Integer> countWithRelevantVariables = solver.execute(
                 new VariableOccurrencesOnSolverFunction(new HashSet<>(Arrays.asList(this.A, this.B, this.C))));
@@ -33,7 +34,7 @@ public class VariableOccurrencesOnSolverFunctionTest extends TestWithExampleForm
 
     @Test
     public void testWithAllVariables() throws ParserException {
-        final MiniSat solver = MiniSat.miniSat(this.f);
+        final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(a | b | c) & (~b | c) & (d | ~e) & x & (~a | e) & (a | d | b | g | h) & (~h | i) & y"));
         final Map<Variable, Integer> counts = solver.execute(new VariableOccurrencesOnSolverFunction());
         assertThat(counts).hasSize(10);
@@ -51,7 +52,7 @@ public class VariableOccurrencesOnSolverFunctionTest extends TestWithExampleForm
 
     @Test
     public void testWithRelevantVariables() throws ParserException {
-        final MiniSat solver = MiniSat.miniSat(this.f);
+        final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(a | b | c) & (~b | c) & (d | ~e) & x & (~a | e) & (a | d | b | g | h) & (~h | i) & y"));
         final Map<Variable, Integer> counts = solver.execute(
                 new VariableOccurrencesOnSolverFunction(new HashSet<>(Arrays.asList(this.A, this.C, this.X, this.J))));

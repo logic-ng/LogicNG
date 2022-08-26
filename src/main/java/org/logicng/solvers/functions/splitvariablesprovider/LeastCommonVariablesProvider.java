@@ -12,12 +12,12 @@ import java.util.SortedSet;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class LeastCommonVariableProvider extends SplitVariableProviderWithTakeRate {
+public class LeastCommonVariablesProvider extends SplitVariableProviderWithTakeRate {
 
     /**
      * Creates a split variable provider returning the least common variables with a take rate of {@code 0.5}.
      */
-    public LeastCommonVariableProvider() {
+    public LeastCommonVariablesProvider() {
         super(0.5);
     }
 
@@ -25,10 +25,10 @@ public class LeastCommonVariableProvider extends SplitVariableProviderWithTakeRa
      * Creates a split variable provider returning the least common variables.
      * <p>
      * The take rate specifies the number of variables which should be returned in {@link #getSplitVars}.
-     * So the result will contain {@code (int) (variables.size() * takeRate)} variables.
-     * @param takeRate the take rate, must be between 0 and 1 (each inclusive)
+     * So the result will contain {@code (int) Math.ceil(variables.size() * takeRate)} variables.
+     * @param takeRate the take rate, must be &gt; 0 and &lt;=1
      */
-    public LeastCommonVariableProvider(final double takeRate) {
+    public LeastCommonVariablesProvider(final double takeRate) {
         super(takeRate);
     }
 

@@ -16,8 +16,8 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariableProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariablesProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
@@ -47,8 +47,9 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     public static Collection<Object[]> splitProviders() {
         final List<Object[]> providers = new ArrayList<>();
-        providers.add(new Object[]{new LeastCommonVariableProvider(.5)});
-        providers.add(new Object[]{new MostCommonVariableProvider(.5)});
+        providers.add(new Object[]{null});
+        providers.add(new Object[]{new LeastCommonVariablesProvider()});
+        providers.add(new Object[]{new MostCommonVariablesProvider()});
         return providers;
     }
 
@@ -92,6 +93,24 @@ public class ModelEnumerationFunctionRecursiveTest {
         assertThat(toSets(firstRun)).containsExactlyInAnyOrderElementsOf(toSets(secondRun));
     }
 
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testModelEnumerationWithAdditionalVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A | B | C | D | E"));
+        final Variable a = this.f.variable("A");
+        final Variable b = this.f.variable("B");
+        final Variable c = this.f.variable("C");
+        final List<Model> models = solver.execute(ModelEnumerationFunctionRecursive.builder()
+                .splitVariableProvider(splitProvider)
+                .variables(Arrays.asList(a, b))
+                .additionalVariables(Arrays.asList(b, c)).build());
+        for (final Model model : models) {
+            final List<Variable> variables = model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
+            assertThat(variables).contains(b, c);
+        }
+    }
+
     @Test
     @LongRunningTag
     public void testRecursives() {
@@ -107,11 +126,11 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(0.5)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(0.5)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
@@ -229,6 +248,5 @@ public class ModelEnumerationFunctionRecursiveTest {
     private Set<Literal> set(final Literal... literals) {
         return new HashSet<>(Arrays.asList(literals));
     }
-
 
 }

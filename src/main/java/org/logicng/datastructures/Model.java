@@ -27,6 +27,10 @@ public class Model {
         return this.literals.size();
     }
 
+    public Assignment toAssignment(final boolean fastEvaluable) {
+        return new Assignment(literals, fastEvaluable);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
