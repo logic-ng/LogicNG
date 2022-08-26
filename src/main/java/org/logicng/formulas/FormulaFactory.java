@@ -59,6 +59,7 @@ import org.logicng.transformations.simplification.AdvancedSimplifierConfig;
 import org.logicng.util.FormulaRandomizerConfig;
 import org.logicng.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -907,6 +908,32 @@ public class FormulaFactory {
             this.posLiterals.put(name, var);
         }
         return var;
+    }
+
+    /**
+     * Creates a list of literals with the given names and positive phase.
+     * @param names the variable names
+     * @return a new list of literals with the given names and positive phase
+     */
+    public List<Variable> variables(final Collection<String> names) {
+        final List<Variable> variables = new ArrayList<>();
+        for (final String name : names) {
+            variables.add(variable(name));
+        }
+        return variables;
+    }
+
+    /**
+     * Creates a list of literals with the given names and positive phase.
+     * @param names the variable names
+     * @return a new list of literals with the given names and positive phase
+     */
+    public List<Variable> variables(final String... names) {
+        final List<Variable> variables = new ArrayList<>();
+        for (final String name : names) {
+            variables.add(variable(name));
+        }
+        return variables;
     }
 
     /**
