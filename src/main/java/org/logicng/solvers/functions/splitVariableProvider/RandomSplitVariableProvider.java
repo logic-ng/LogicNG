@@ -9,8 +9,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 /**
  * A split variable provider which provides random split variables.
@@ -30,7 +32,7 @@ public class RandomSplitVariableProvider extends SplitVariableProvider {
     }
 
     @Override
-    public SortedSet<Variable> getSplitVars(final Collection<Formula> formulas, final Collection<Variable> variables) {
+    public SortedSet<Variable> getSplitVars(final Supplier<Set<Formula>> formulasSupplier, final Collection<Variable> variables) {
         if (notWorthSplitting(variables)) {
             return Collections.emptySortedSet();
         }

@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +49,7 @@ public abstract class SplitVariableProvider {
     // * @param formulas the formulas
     // * @return the split variables
     // */
-    public abstract SortedSet<Variable> getSplitVars(final Collection<Formula> formulas, final Collection<Variable> variables);
+    public abstract SortedSet<Variable> getSplitVars(Supplier<Set<Formula>> formulasSupplier, Collection<Variable> variables);
 
     protected boolean notWorthSplitting(final Collection<Variable> variables) {
         return variables.size() < this.minNumberOfVars;

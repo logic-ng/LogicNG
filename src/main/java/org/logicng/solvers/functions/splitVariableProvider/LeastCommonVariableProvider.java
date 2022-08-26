@@ -7,8 +7,10 @@ import org.logicng.formulas.Variable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 /**
  * A split variable provider which provides split variables which occur particularly seldom in the formulas on the solver. The variables occurring in the
@@ -27,11 +29,11 @@ public class LeastCommonVariableProvider extends SplitVariableProvider {
     }
 
     @Override
-    public SortedSet<Variable> getSplitVars(final Collection<Formula> formulas, final Collection<Variable> variables) {
+    public SortedSet<Variable> getSplitVars(final Supplier<Set<Formula>> formulasSupplier, final Collection<Variable> variables) {
         if (notWorthSplitting(variables)) {
             return Collections.emptySortedSet();
         }
-        final Map<Integer, SortedSet<Variable>> occurrence2Vars = getOccurrence2Vars(formulas, variables);
+        final Map<Integer, SortedSet<Variable>> occurrence2Vars = getOccurrence2Vars(formulasSupplier.get(), variables);
         if (occurrence2Vars == null || occurrence2Vars.isEmpty()) {
             return Collections.emptySortedSet();
         }

@@ -5,7 +5,9 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.function.Supplier;
 
 /**
  * A split variable provider for which the variables are fixed.
@@ -22,7 +24,7 @@ public class FixedVariableProvider extends SplitVariableProvider {
     }
 
     @Override
-    public SortedSet<Variable> getSplitVars(final Collection<Formula> formulas, final Collection<Variable> variables) {
+    public SortedSet<Variable> getSplitVars(final Supplier<Set<Formula>> formulasSupplier, final Collection<Variable> variables) {
         return this.splitVariables;
     }
 }
