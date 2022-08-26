@@ -76,17 +76,18 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     protected final Collection<Variable> additionalVariables;
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
-    protected final int maxNumberOfVarsForSplit;
+    protected final int maxNumberOfModels;
     private static final int TWO = 2;
 
-    ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
-                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfVarsForSplit) {
+    ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables,
+                                      final Collection<Variable> additionalVariables,
+                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
         this.splitVariableProvider = splitVariableProvider;
-        this.maxNumberOfVarsForSplit = maxNumberOfVarsForSplit;
+        this.maxNumberOfModels = maxNumberOfModels;
     }
 
     /**
@@ -111,64 +112,40 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Supplier<Set<Formula>> formulasSupplier,
                                                 final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(formulasSupplier, relevantVars);
-        final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
-        final List<Model> assignments = enumerate(solver, resultSetter, initialSplitVars, Collections.emptyList(), handler);
-
-        // get split assignments
-        List<Model> splitAssignments = null;
-        SortedSet<Variable> splitVars = initialSplitVars;
-        if (handler.aborted()) {
-            boolean continueL = true;
-            while (continueL) {
-                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
-                splitVars = updateSplitVars(splitVars);
-                splitAssignments = enumerate(solver, resultSetter, splitVars, additionalVariables, handler1);
-                continueL = handler1.aborted();
-            }
-        } else {
-            splitAssignments = assignments;
-        }
-
-        if (splitAssignments.isEmpty()) {
-            return Collections.emptyList();
-        }
-        final List<Model> models = new ArrayList<>();
         final SolverState initialState = solver.saveState();
-        for (final Model splitAssignment : splitAssignments) {
-            final List<Model> splitModels = recursive(solver, splitAssignment, resultSetter, relevantVars, splitVars, initialState);
-            models.addAll(splitModels);
-            solver.loadState(initialState);
-        }
+        final List<Model> models = recursive(solver, null, resultSetter, relevantVars, initialSplitVars, additionalVariables, initialState);
+        solver.loadState(initialState);
         return models;
+
     }
 
     private List<Model> recursive(final MiniSat solver, final Model splitAssignment, final Consumer<Tristate> resultSetter,
                                   final Collection<Variable> relevantVars, final Collection<Variable> varsInInitialSplitAssignment,
+                                  final Collection<Variable> additionalVariables,
                                   final SolverState state) {
         final List<Model> models = new ArrayList<>();
-        solver.loadState(state);
-        solver.add(splitAssignment.formula(solver.factory()));
+        if (splitAssignment != null) {
+            solver.loadState(state);
+            solver.add(splitAssignment.formula(solver.factory()));
+        }
         //TODO potentiell sein lassen
         final SortedSet<Variable> leftOverVars = new TreeSet<>(relevantVars);
         leftOverVars.removeAll(varsInInitialSplitAssignment);
-        final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
+        final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfModels);
         final List<Model> modelsFound = enumerate(solver, resultSetter, leftOverVars, relevantVars, handler);
-        if (handler.aborted()) {
-            // get split assignments
+        if (splitAssignment == null || handler.aborted()) {
             List<Model> splitAssignments = null;
             SortedSet<Variable> splitVars = leftOverVars;
             boolean continueL = true;
             while (continueL) {
-                final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
-                final TreeSet<Variable> updatedSplitVars = updateSplitVars(splitVars);
-                splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, Collections.emptyList(), handler1);
-                continueL = handler1.aborted();
-                splitVars = updatedSplitVars;
+                splitVars = updateSplitVars(splitVars);
+                splitAssignments = enumerate(solver, resultSetter, splitVars, additionalVariables, handler);
+                continueL = handler.aborted();
             }
 
             final SolverState state1 = solver.saveState();
             for (final Model assignment : splitAssignments) {
-                final List<Model> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, state1);
+                final List<Model> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, additionalVariables, state1);
                 models.addAll(assignmentsNew);
             }
         } else {
@@ -181,23 +158,9 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         return splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    // private List<Model> getSplitAssignments(final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> initialSplitVars,
-    //                                              final Collection<Variable> additionalVariables) {
-    //     List<Model> splitAssignments = null;
-    //     SortedSet<Variable> splitVars = initialSplitVars;
-    //     boolean continueL = true;
-    //     while (continueL) {
-    //         final ModelEnumerationHandler handler = new NumberOfModelsHandler(1000);
-    //         final TreeSet<Variable> updatedSplitVars = splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
-    //         splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, additionalVariables, handler);
-    //         continueL = handler.aborted();
-    //         splitVars = updatedSplitVars;
-    //     }
-    //     return splitAssignments;
-    // }
-
     protected List<Model> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
                                     final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler) {
+        start(handler);
         final List<Model> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
         if (solver.getStyle() == MiniSat.SolverStyle.MINISAT && solver.isIncremental()) {
