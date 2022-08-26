@@ -109,18 +109,12 @@ public class ModelEnumerationFunctionRecursiveTest {
             final List<Model> models2 =
                     solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(0.5)).build());
 
-            // recursive call: random vars
-            final List<Model> models3 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider(1, 0.5)).build());
-
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
-            assertThat(models3.size()).isEqualTo(modelsNoSplit.size());
 
             final List<Set<Literal>> setNoSplit = getSetForAssignments(modelsNoSplit);
             assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(toSets(models1));
             assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(toSets(models2));
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(toSets(models3));
         }
     }
 
