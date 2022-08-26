@@ -39,4 +39,13 @@ public class RandomSplitVariableProvider extends SplitVariableProvider {
         Collections.shuffle(vars, this.random);
         return new TreeSet<>(vars.subList(0, getMinNumberOfSplitVars(variables)));
     }
+
+    @Override
+    public String toString() {
+        return "RandomSplitVariableProvider{" +
+                ", minNumberOfVars=" + minNumberOfVars +
+                ", lowerBound=" + lowerBound +
+                ", upperBound=" + upperBound +
+                '}';
+    }
 }

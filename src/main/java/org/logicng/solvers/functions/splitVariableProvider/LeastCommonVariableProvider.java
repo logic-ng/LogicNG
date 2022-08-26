@@ -49,4 +49,13 @@ public class LeastCommonVariableProvider extends SplitVariableProvider {
         }
         return splitVars;
     }
+
+    @Override
+    public String toString() {
+        return "LeastCommonVariableProvider{" +
+                "minNumberOfVars=" + minNumberOfVars +
+                ", lowerBound=" + lowerBound +
+                ", upperBound=" + upperBound +
+                '}';
+    }
 }

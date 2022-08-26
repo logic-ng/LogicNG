@@ -49,4 +49,13 @@ public class MostCommonVariableProvider extends SplitVariableProvider {
         }
         return splitVars;
     }
+
+    @Override
+    public String toString() {
+        return "MostCommonVariableProvider{" +
+                "minNumberOfVars=" + minNumberOfVars +
+                ", lowerBound=" + lowerBound +
+                ", upperBound=" + upperBound +
+                '}';
+    }
 }

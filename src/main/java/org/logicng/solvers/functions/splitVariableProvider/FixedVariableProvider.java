@@ -25,4 +25,11 @@ public class FixedVariableProvider extends SplitVariableProvider {
     public SortedSet<Variable> getSplitVars(final Supplier<Set<Formula>> formulasSupplier, final Collection<Variable> variables) {
         return this.splitVariables;
     }
+
+    @Override
+    public String toString() {
+        return "FixedVariableProvider{" +
+                "splitVariables=" + splitVariables +
+                '}';
+    }
 }
