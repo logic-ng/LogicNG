@@ -8,7 +8,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.functions.VariableProfileFunction;
-import org.logicng.solvers.functions.ModelEnumerationFunction;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,13 +41,12 @@ public abstract class SplitVariableProvider {
         this.upperBound = upperBound;
     }
 
-
-    /**
-     * Generates a set of split variables for a given formula. Such a set of split variables can then be used for the
-     * {@link ModelEnumerationFunction} and the {@link org.logicng.solvers.functions.AdvancedModelEnumerationFunction}.
-     * @param formulas the formulas
-     * @return the split variables
-     */
+    ///**
+    // * Generates a set of split variables for a given formula. Such a set of split variables can then be used for the
+    // * {@link ModelEnumerationFunction} and the {@link org.logicng.solvers.functions.AdvancedModelEnumerationFunction}.
+    // * @param formulas the formulas
+    // * @return the split variables
+    // */
     public abstract SortedSet<Variable> getSplitVars(final Collection<Formula> formulas, final Collection<Variable> variables);
 
     protected boolean notWorthSplitting(final Collection<Variable> variables) {
