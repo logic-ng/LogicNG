@@ -18,7 +18,6 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
 import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
-import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
@@ -89,18 +88,12 @@ public class ModelEnumerationFunctionTest {
             final List<Model> models2 =
                     solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(.5)).build());
 
-            // recursive call: random vars
-            final List<Model> models3 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider(42, .5)).build());
-
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
-            assertThat(models3.size()).isEqualTo(modelsNoSplit.size());
 
             final List<HashSet<Literal>> setNoSplit = getSetForAssignments(modelsNoSplit);
             assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models1));
             assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models2));
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models3));
         }
     }
 

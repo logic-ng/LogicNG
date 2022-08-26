@@ -16,7 +16,6 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
 import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
-import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariableProvider;
 import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
@@ -46,7 +45,6 @@ public class ModelEnumerationFunctionRecursiveTest {
         final List<Object[]> providers = new ArrayList<>();
         providers.add(new Object[]{new LeastCommonVariableProvider(.5)});
         providers.add(new Object[]{new MostCommonVariableProvider(.5)});
-        providers.add(new Object[]{new RandomSplitVariableProvider(42, .5)});
         return providers;
     }
 
