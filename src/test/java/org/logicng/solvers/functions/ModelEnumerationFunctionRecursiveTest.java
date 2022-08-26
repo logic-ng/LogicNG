@@ -15,8 +15,8 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariableProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariablesProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
@@ -123,11 +123,11 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(0.5)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(0.5)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());

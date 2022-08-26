@@ -25,7 +25,7 @@ public abstract class SplitVariableProviderWithTakeRate extends SplitVariablePro
 
     /**
      * Creates a new split variable provider with the given take rate.
-     * @param takeRate the take rate, must be between 0 and 1 (each inclusive)
+     * @param takeRate the take rate, must be &gt; 0 and &lt;=1
      */
     protected SplitVariableProviderWithTakeRate(final double takeRate) {
         if (takeRate < 0 || takeRate > 1) {
@@ -38,7 +38,7 @@ public abstract class SplitVariableProviderWithTakeRate extends SplitVariablePro
      * Returns a subset of the most or least common variables. The number of returned variables is
      * defined by the take rate (see {@link #numberOfVariablesToChoose}).
      * @param solver     the solver used to count the variable occurrences
-     * @param variables  the variables to choose from
+     * @param variables  the variables to choose from, in case of {@code null} all variables from the solver are considered
      * @param mostCommon {@code true} is the most common variables should be selected, {@code false}
      *                   if the least common variables should be selected
      * @return a subset of the most or least common variables
@@ -47,11 +47,11 @@ public abstract class SplitVariableProviderWithTakeRate extends SplitVariablePro
         final Comparator<Map.Entry<Variable, Integer>> comparator = mostCommon
                 ? Map.Entry.comparingByValue(Comparator.reverseOrder())
                 : Map.Entry.comparingByValue();
-        final Set<Variable> vars = new HashSet<>(variables);
+        final Set<Variable> vars = variables == null ? null : new HashSet<>(variables);
         final Map<Variable, Integer> variableOccurrences = solver.execute(new VariableOccurrencesOnSolverFunction(vars));
         return variableOccurrences.entrySet().stream()
                 .sorted(comparator)
-                .limit(numberOfVariablesToChoose(vars))
+                .limit(numberOfVariablesToChoose(vars != null ? vars : variableOccurrences.keySet()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
@@ -63,6 +63,6 @@ public abstract class SplitVariableProviderWithTakeRate extends SplitVariablePro
      * @return the number of variables which should be chosen
      */
     protected int numberOfVariablesToChoose(final Collection<Variable> variables) {
-        return (int) (variables.size() * this.takeRate);
+        return (int) Math.ceil(variables.size() * this.takeRate);
     }
 }

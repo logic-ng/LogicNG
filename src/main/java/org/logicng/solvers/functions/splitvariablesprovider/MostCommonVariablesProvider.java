@@ -12,12 +12,12 @@ import java.util.SortedSet;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class MostCommonVariableProvider extends SplitVariableProviderWithTakeRate {
+public class MostCommonVariablesProvider extends SplitVariableProviderWithTakeRate {
 
     /**
      * Creates a split variable provider returning the most common variables with a take rate of {@code 0.5}.
      */
-    public MostCommonVariableProvider() {
+    public MostCommonVariablesProvider() {
         super(0.5);
     }
 
@@ -25,10 +25,10 @@ public class MostCommonVariableProvider extends SplitVariableProviderWithTakeRat
      * Creates a split variable provider returning the most common variables.
      * <p>
      * The take rate specifies the number of variables which should be returned in {@link #getSplitVars}.
-     * So the result will contain {@code (int) (variables.size() * takeRate)} variables.
-     * @param takeRate the take rate, must be between 0 and 1 (each inclusive)
+     * So the result will contain {@code (int) Math.ceil(variables.size() * takeRate)} variables.
+     * @param takeRate the take rate, must be &gt; 0 and &lt;=1
      */
-    public MostCommonVariableProvider(final double takeRate) {
+    public MostCommonVariablesProvider(final double takeRate) {
         super(takeRate);
     }
 
@@ -36,5 +36,4 @@ public class MostCommonVariableProvider extends SplitVariableProviderWithTakeRat
     public SortedSet<Variable> getSplitVars(final SATSolver solver, final Collection<Variable> variables) {
         return chooseVariablesByOccurrences(solver, variables, true);
     }
-
 }
