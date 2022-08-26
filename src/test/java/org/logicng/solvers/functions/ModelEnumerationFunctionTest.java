@@ -16,8 +16,8 @@ import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariableProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariableProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariablesProvider;
+import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
@@ -82,11 +82,11 @@ public class ModelEnumerationFunctionTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(.5)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(.5)).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariablesProvider(.5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
@@ -362,7 +362,7 @@ public class ModelEnumerationFunctionTest {
 
             final long time0 = System.currentTimeMillis();
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(.5)).handler(handler2)
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).handler(handler2)
                             .maxNumberOfVarsForSplit(500).build());
             final long time1 = System.currentTimeMillis();
 
