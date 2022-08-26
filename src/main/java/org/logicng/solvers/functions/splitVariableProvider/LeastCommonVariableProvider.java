@@ -1,7 +1,6 @@
 package org.logicng.solvers.functions.splitVariableProvider;
 
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 import java.util.Collection;
@@ -20,12 +19,12 @@ import java.util.function.Supplier;
  */
 public class LeastCommonVariableProvider extends SplitVariableProvider {
 
-    public LeastCommonVariableProvider(final FormulaFactory f) {
-        super(f);
+    public LeastCommonVariableProvider() {
+        super();
     }
 
-    public LeastCommonVariableProvider(final FormulaFactory f, final int minNumberOfVars, final int lowerBound, final int upperBound) {
-        super(f, minNumberOfVars, lowerBound, upperBound);
+    public LeastCommonVariableProvider(final int minNumberOfVars, final int lowerBound, final int upperBound) {
+        super(minNumberOfVars, lowerBound, upperBound);
     }
 
     @Override

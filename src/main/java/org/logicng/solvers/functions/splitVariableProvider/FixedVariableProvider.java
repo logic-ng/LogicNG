@@ -1,7 +1,6 @@
 package org.logicng.solvers.functions.splitVariableProvider;
 
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 import java.util.Collection;
@@ -18,8 +17,7 @@ public class FixedVariableProvider extends SplitVariableProvider {
 
     private final SortedSet<Variable> splitVariables;
 
-    public FixedVariableProvider(final FormulaFactory f, final SortedSet<Variable> splitVariables) {
-        super(f);
+    public FixedVariableProvider(final SortedSet<Variable> splitVariables) {
         this.splitVariables = splitVariables;
     }
 

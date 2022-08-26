@@ -5,7 +5,6 @@ import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
 import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.functions.VariableProfileFunction;
 
@@ -26,18 +25,16 @@ import java.util.stream.Collectors;
  * @since 2.3.0
  */
 public abstract class SplitVariableProvider {
-    final FormulaFactory f;
     int minNumberOfVars = 12;
     int lowerBound = 50;
     protected int upperBound = 65;
     private final static double HUNDRED = 100;
 
-    public SplitVariableProvider(final FormulaFactory f) {
-        this.f = f;
+    public SplitVariableProvider() {
+        //do nothing
     }
 
-    public SplitVariableProvider(final FormulaFactory f, final int minNumberOfVars, final int lowerBound, final int upperBound) {
-        this.f = f;
+    public SplitVariableProvider(final int minNumberOfVars, final int lowerBound, final int upperBound) {
         this.minNumberOfVars = minNumberOfVars;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;

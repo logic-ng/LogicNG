@@ -1,7 +1,6 @@
 package org.logicng.solvers.functions.splitVariableProvider;
 
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 import java.util.ArrayList;
@@ -22,12 +21,12 @@ import java.util.function.Supplier;
 public class RandomSplitVariableProvider extends SplitVariableProvider {
     Random random = new Random(0);
 
-    public RandomSplitVariableProvider(final FormulaFactory f) {
-        super(f);
+    public RandomSplitVariableProvider() {
+        super();
     }
 
-    public RandomSplitVariableProvider(final FormulaFactory f, final int minNumberOfVars, final int lowerBound, final int randomSeed) {
-        super(f, minNumberOfVars, lowerBound, 100);
+    public RandomSplitVariableProvider(final int minNumberOfVars, final int lowerBound, final int randomSeed) {
+        super(minNumberOfVars, lowerBound, 100);
         this.random = new Random(randomSeed);
     }
 

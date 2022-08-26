@@ -292,7 +292,7 @@ public class ModelEnumerationFunctionTest {
 
             final long time0 = System.currentTimeMillis();
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler2)
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider()).handler(handler2)
                             .maxNumberOfVarsForSplit(500).build());
             final long time1 = System.currentTimeMillis();
 
