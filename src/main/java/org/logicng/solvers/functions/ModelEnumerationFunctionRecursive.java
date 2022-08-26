@@ -268,7 +268,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         protected Collection<Variable> additionalVariables;
         protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
-        protected int maxNumberOfVarsForSplit = 1000;
+        protected int maxNumberOfModels = 1000;
         protected boolean isRecursive = false;
 
         Builder() {
@@ -346,8 +346,8 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
             return this;
         }
 
-        public Builder maxNumberOfVarsForSplit(final int maxNumberOfVarsForSplit) {
-            this.maxNumberOfVarsForSplit = maxNumberOfVarsForSplit;
+        public Builder maxNumberOfModels(final int maxNumberOfModels) {
+            this.maxNumberOfModels = maxNumberOfModels;
             return this;
         }
 
@@ -357,7 +357,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
          */
         public ModelEnumerationFunctionRecursive build() {
             return new ModelEnumerationFunctionRecursive(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
-                    this.splitVariableProvider, this.maxNumberOfVarsForSplit);
+                    this.splitVariableProvider, this.maxNumberOfModels);
         }
     }
 }
