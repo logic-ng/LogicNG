@@ -9,7 +9,6 @@ import org.logicng.datastructures.Model;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.formulas.Variable;
 import org.logicng.functions.FormulaDepthFunction;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
@@ -24,10 +23,8 @@ import org.logicng.util.FormulaRandomizerConfig;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 /**
@@ -328,20 +325,7 @@ public class ModelEnumerationFunctionTest {
     //    }
     //}
 
-    private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
-        final List<Assignment> updatedModels = new ArrayList<>();
-        for (final Assignment assignment : models) {
-            final Assignment updatedAssignment = new Assignment();
-            for (final Literal literal : assignment.literals()) {
-                if (pmeVars.contains(literal.variable())) {
-                    updatedAssignment.addLiteral(literal);
-                }
-            }
-            updatedModels.add(updatedAssignment);
-        }
-        return updatedModels;
-    }
-
+    
     @Test
     public void testOneSplitProvider() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("RecursiveComparison.csv"));

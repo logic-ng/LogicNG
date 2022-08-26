@@ -123,11 +123,11 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
             solver.loadState(state);
             solver.add(splitAssignment.formula(solver.factory()));
         }
-        //TODO potentiell sein lassen
+        // TODO potentiell sein lassen
         final SortedSet<Variable> leftOverVars = new TreeSet<>(relevantVars);
         leftOverVars.removeAll(varsInInitialSplitAssignment);
         final ModelEnumerationHandler handler = new NumberOfModelsHandler(this.maxNumberOfModels);
-        final List<Model> modelsFound = enumerate(solver, resultSetter, leftOverVars, relevantVars, handler);
+        final List<Model> modelsFound = enumerate(solver, resultSetter, leftOverVars, additionalVariables, handler);
         if (splitAssignment == null || handler.aborted()) {
             List<Model> splitAssignments = null;
             SortedSet<Variable> splitVars = leftOverVars;
