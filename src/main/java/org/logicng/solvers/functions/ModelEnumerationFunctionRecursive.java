@@ -59,6 +59,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -102,17 +103,14 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         if (this.splitVariableProvider == null) {
             return enumerate(solver, resultSetter, this.variables, this.additionalVariables, this.handler);
         }
-        final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
-        if (formulasOnSolver.isEmpty()) {
-            return Collections.singletonList(new Model(Collections.emptyList()));
-        }
+        final Supplier<Set<Formula>> formulaSupplier = () -> solver.execute(FormulaOnSolverFunction.get());
         final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
-        return splitModelEnumeration(solver, resultSetter, formulasOnSolver, relevantVars, this.additionalVariables);
+        return splitModelEnumeration(solver, resultSetter, formulaSupplier, relevantVars, this.additionalVariables);
     }
 
-    protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
+    protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Supplier<Set<Formula>> formulasSupplier,
                                                 final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
-        final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
+        final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(formulasSupplier, relevantVars);
         final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
         final List<Model> assignments = enumerate(solver, resultSetter, initialSplitVars, Collections.emptyList(), handler);
 

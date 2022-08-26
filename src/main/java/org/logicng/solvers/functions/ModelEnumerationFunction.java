@@ -30,22 +30,17 @@ package org.logicng.solvers.functions;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
-import static org.logicng.formulas.FormulaFactory.CC_PREFIX;
-import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
-import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 import static org.logicng.handlers.Handler.start;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
-import org.logicng.solvers.functions.splitVariableProvider.SplitVariableProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,11 +48,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -66,21 +59,19 @@ import java.util.stream.Collectors;
  * @version 2.3.0
  * @since 2.0.0
  */
-public class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
+public final class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
 
-    protected final ModelEnumerationHandler handler;
-    protected final Collection<Variable> variables;
-    protected final Collection<Variable> additionalVariables;
-    protected final boolean fastEvaluable;
-    protected final SplitVariableProvider splitVariableProvider;
+    private final ModelEnumerationHandler handler;
+    private final Collection<Variable> variables;
+    private final Collection<Variable> additionalVariables;
+    private final boolean fastEvaluable;
 
-    ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
-                             final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider) {
+    private ModelEnumerationFunction(final ModelEnumerationHandler handler, final Collection<Variable> variables,
+                                     final Collection<Variable> additionalVariables, final boolean fastEvaluable) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
-        this.splitVariableProvider = splitVariableProvider;
     }
 
     /**
@@ -94,33 +85,6 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
     @Override
     public List<Assignment> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         start(this.handler);
-        if (this.splitVariableProvider == null) {
-            return enumerate(solver, resultSetter, this.variables, this.additionalVariables);
-        }
-        final Set<Formula> formulasOnSolver = solver.execute(FormulaOnSolverFunction.get());
-        if (formulasOnSolver.isEmpty()) {
-            return Collections.singletonList(new Assignment());
-        }
-        final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
-        return splitModelEnumeration(solver, resultSetter, formulasOnSolver, relevantVars, this.additionalVariables);
-    }
-
-    protected List<Assignment> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Formula> formulasOnSolver,
-                                                     final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
-        final SolverState initialState = solver.saveState();
-        final SortedSet<Variable> splitVars = this.splitVariableProvider.getSplitVars(formulasOnSolver, relevantVars);
-        final List<Assignment> splitAssignments = enumerate(solver, resultSetter, splitVars, Collections.emptyList());
-        final List<Assignment> models = new ArrayList<>();
-        for (final Assignment splitAssignment : splitAssignments) {
-            solver.add(splitAssignment.formula(solver.factory()));
-            models.addAll(enumerate(solver, resultSetter, relevantVars, additionalVariables));
-            solver.loadState(initialState);
-        }
-        return models;
-    }
-
-    protected List<Assignment> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
-                                         final Collection<Variable> additionalVariables) {
         final List<Assignment> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
         if (solver.canSaveLoadState()) {
@@ -128,7 +92,7 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         }
         boolean proceed = true;
         final LNGIntVector relevantIndices;
-        if (variables == null) {
+        if (this.variables == null) {
             if (!solver.getConfig().isAuxiliaryVariablesInModels()) {
                 relevantIndices = new LNGIntVector();
                 for (final Map.Entry<String, Integer> entry : solver.underlyingSolver().getName2idx().entrySet()) {
@@ -140,16 +104,15 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
                 relevantIndices = null;
             }
         } else {
-            relevantIndices = new LNGIntVector(variables.size());
-            for (final Variable var : variables) {
+            relevantIndices = new LNGIntVector(this.variables.size());
+            for (final Variable var : this.variables) {
                 relevantIndices.push(solver.underlyingSolver().idxForName(var.name()));
             }
         }
         LNGIntVector relevantAllIndices = null;
-        final SortedSet<Variable> uniqueAdditionalVariables =
-                new TreeSet<>(additionalVariables == null ? Collections.emptyList() : additionalVariables);
-        if (variables != null) {
-            uniqueAdditionalVariables.removeAll(variables);
+        final SortedSet<Variable> uniqueAdditionalVariables = new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
+        if (this.variables != null) {
+            uniqueAdditionalVariables.removeAll(this.variables);
         }
         if (relevantIndices != null) {
             if (uniqueAdditionalVariables.isEmpty()) {
@@ -164,11 +127,11 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
                 }
             }
         }
-        while (proceed && modelEnumerationSATCall(solver, handler)) {
+        while (proceed && modelEnumerationSATCall(solver, this.handler)) {
             final LNGBooleanVector modelFromSolver = solver.underlyingSolver().model();
             final Assignment model = solver.createAssignment(modelFromSolver, relevantAllIndices, this.fastEvaluable);
             models.add(model);
-            proceed = handler == null || handler.foundModel(model);
+            proceed = this.handler == null || this.handler.foundModel(model);
             if (model.size() > 0) {
                 final LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantIndices);
                 solver.underlyingSolver().addClause(blockingClause, null);
@@ -181,15 +144,6 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
             solver.loadState(stateBeforeEnumeration);
         }
         return models;
-    }
-
-    protected SortedSet<Variable> getVarsForEnumeration(final Collection<Variable> knownVariables) {
-        final SortedSet<Variable> relevantVars = knownVariables.stream().filter(this::isNotAuxiliaryVariable).collect(Collectors.toCollection(TreeSet::new));
-        return this.variables == null ? relevantVars : relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    private boolean isNotAuxiliaryVariable(final Variable var) {
-        return !var.name().startsWith(CC_PREFIX) && !var.name().startsWith(PB_PREFIX) && !var.name().startsWith(CNF_PREFIX);
     }
 
     private boolean modelEnumerationSATCall(final MiniSat solver, final ModelEnumerationHandler handler) {
@@ -231,13 +185,12 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
      * The builder for a model enumeration function.
      */
     public static class Builder {
-        protected ModelEnumerationHandler handler;
-        protected Collection<Variable> variables;
-        protected Collection<Variable> additionalVariables;
-        protected boolean fastEvaluable = false;
-        protected SplitVariableProvider splitVariableProvider = null;
+        private ModelEnumerationHandler handler;
+        private Collection<Variable> variables;
+        private Collection<Variable> additionalVariables;
+        private boolean fastEvaluable = false;
 
-        Builder() {
+        private Builder() {
             // Initialize only via factory
         }
 
@@ -272,7 +225,7 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
+         * Sets an additional set of variables which should occur in every model.
          * @param variables the additional variables for each model
          * @return the current builder
          */
@@ -282,7 +235,7 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
+         * Sets an additional set of variables which should occur in every model.
          * @param variables the additional variables for each model
          * @return the current builder
          */
@@ -302,22 +255,11 @@ public class ModelEnumerationFunction implements SolverFunction<List<Assignment>
         }
 
         /**
-         * Sets the split variable provider. If no split variable provider is given, enumeration is performed without splits. Else the enumeration is
-         * performed with the split variables provided by the {@link SplitVariableProvider}.
-         * @param splitVariableProvider the given split variable provider
-         * @return the builder
-         */
-        public Builder splitVariableProvider(final SplitVariableProvider splitVariableProvider) {
-            this.splitVariableProvider = splitVariableProvider;
-            return this;
-        }
-
-        /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunction build() {
-            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable, this.splitVariableProvider);
+            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable);
         }
     }
 }
