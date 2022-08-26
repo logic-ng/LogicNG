@@ -105,15 +105,15 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider()).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(0.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider()).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(0.5)).build());
 
             // recursive call: random vars
             final List<Model> models3 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider()).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider(1, 0.5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
