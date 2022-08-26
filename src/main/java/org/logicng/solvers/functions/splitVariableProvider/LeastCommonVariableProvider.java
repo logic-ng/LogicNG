@@ -1,61 +1,32 @@
 package org.logicng.solvers.functions.splitVariableProvider;
 
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
+import org.logicng.solvers.SATSolver;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.function.Supplier;
 
 /**
  * A split variable provider which provides split variables which occur particularly seldom in the formulas on the solver. The variables occurring in the
  * formulas are sorted by their occurrence. This provider returns those variables with the smallest occurrence.
- * @version 2.3.0
- * @since 2.3.0
+ * @version 2.4.0
+ * @since 2.4.0
  */
-public class LeastCommonVariableProvider extends SplitVariableProvider {
+public class LeastCommonVariableProvider extends SplitVariableProviderWithTakeRate {
 
-    public LeastCommonVariableProvider() {
-        super();
-    }
-
-    public LeastCommonVariableProvider(final int minNumberOfVars, final int lowerBound, final int upperBound) {
-        super(minNumberOfVars, lowerBound, upperBound);
-    }
-
-    @Override
-    public SortedSet<Variable> getSplitVars(final Supplier<Set<Formula>> formulasSupplier, final Collection<Variable> variables) {
-        if (notWorthSplitting(variables)) {
-            return Collections.emptySortedSet();
-        }
-        final Map<Integer, SortedSet<Variable>> occurrence2Vars = getOccurrence2Vars(formulasSupplier.get(), variables);
-        if (occurrence2Vars == null || occurrence2Vars.isEmpty()) {
-            return Collections.emptySortedSet();
-        }
-        final int minNumberOfSplitVars = getMinNumberOfSplitVars(variables);
-        final int maxNumberOfSplitVars = getMaxNumberOfSplitVars(variables);
-        final SortedSet<Variable> splitVars = new TreeSet<>();
-        if (!occurrence2Vars.entrySet().stream().findFirst().isPresent()) {
-            throw new IllegalStateException("Entry not found");
-        }
-        int counter = occurrence2Vars.entrySet().stream().findFirst().get().getKey();
-        while (splitVars.size() < minNumberOfSplitVars) {
-            fillSplitVars(occurrence2Vars, counter, minNumberOfSplitVars, maxNumberOfSplitVars, splitVars);
-            counter++;
-        }
-        return splitVars;
+    /**
+     * Creates a split variable provider returning the least common variables.
+     * <p>
+     * The take rate specifies the number of variables which should be returned in {@link #getSplitVars}.
+     * So the result will contain {@code (int) (variables.size() * takeRate)} variables.
+     * @param takeRate the take rate, must be between 0 and 1 (each inclusive)
+     */
+    public LeastCommonVariableProvider(final double takeRate) {
+        super(takeRate);
     }
 
     @Override
-    public String toString() {
-        return "LeastCommonVariableProvider{" +
-                "minNumberOfVars=" + minNumberOfVars +
-                ", lowerBound=" + lowerBound +
-                ", upperBound=" + upperBound +
-                '}';
+    public SortedSet<Variable> getSplitVars(final SATSolver solver, final Collection<Variable> variables) {
+        return chooseVariablesByOccurrences(solver, variables, false);
     }
 }

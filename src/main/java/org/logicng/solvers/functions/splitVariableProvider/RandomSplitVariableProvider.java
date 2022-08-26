@@ -1,51 +1,48 @@
 package org.logicng.solvers.functions.splitVariableProvider;
 
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
+import org.logicng.solvers.SATSolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.function.Supplier;
 
 /**
  * A split variable provider which provides random split variables.
- * @version 2.3.0
- * @since 2.3.0
+ * @version 2.4.0
+ * @since 2.4.0
  */
-public class RandomSplitVariableProvider extends SplitVariableProvider {
-    Random random = new Random(0);
+public class RandomSplitVariableProvider extends SplitVariableProviderWithTakeRate {
+    private final Random random;
 
-    public RandomSplitVariableProvider() {
-        super();
-    }
-
-    public RandomSplitVariableProvider(final int minNumberOfVars, final int lowerBound, final int randomSeed) {
-        super(minNumberOfVars, lowerBound, 100);
+    /**
+     * Creates a new random split variable provider with the given seed and the take rate.
+     * <p>
+     * The take rate specifies the number of variables which should be returned in {@link #getSplitVars}.
+     * So the result will contain {@code (int) (variables.size() * takeRate)} variables.
+     * @param randomSeed the seed for the random
+     * @param takeRate   the take rate, must be between 0 and 1 (each inclusive)
+     */
+    public RandomSplitVariableProvider(final int randomSeed, final double takeRate) {
+        super(takeRate);
         this.random = new Random(randomSeed);
     }
 
     @Override
-    public SortedSet<Variable> getSplitVars(final Supplier<Set<Formula>> formulasSupplier, final Collection<Variable> variables) {
-        if (notWorthSplitting(variables)) {
-            return Collections.emptySortedSet();
-        }
+    public SortedSet<Variable> getSplitVars(final SATSolver solver, final Collection<Variable> variables) {
         final List<Variable> vars = new ArrayList<>(variables);
         Collections.shuffle(vars, this.random);
-        return new TreeSet<>(vars.subList(0, getMinNumberOfSplitVars(variables)));
+        return new TreeSet<>(vars.subList(0, numberOfVariablesToChoose(vars)));
     }
 
     @Override
     public String toString() {
         return "RandomSplitVariableProvider{" +
-                ", minNumberOfVars=" + minNumberOfVars +
-                ", lowerBound=" + lowerBound +
-                ", upperBound=" + upperBound +
+                "takeRate=" + this.takeRate +
                 '}';
     }
 }

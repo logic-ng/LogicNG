@@ -111,7 +111,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
 
     protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Supplier<Set<Formula>> formulasSupplier,
                                                 final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
-        final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(formulasSupplier, relevantVars);
+        final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
         final SolverState initialState = solver.saveState();
         final List<Model> models = recursive(solver, null, resultSetter, relevantVars, initialSplitVars, additionalVariables, initialState);
         solver.loadState(initialState);
