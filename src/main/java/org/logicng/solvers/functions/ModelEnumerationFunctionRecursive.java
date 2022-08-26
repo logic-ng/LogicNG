@@ -40,7 +40,6 @@ import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
@@ -55,11 +54,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -80,8 +77,8 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     private static final int TWO = 2;
 
     ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables,
-                                      final Collection<Variable> additionalVariables,
-                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
+                                      final Collection<Variable> additionalVariables, final boolean fastEvaluable,
+                                      final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
@@ -104,13 +101,12 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         if (this.splitVariableProvider == null) {
             return enumerate(solver, resultSetter, this.variables, this.additionalVariables, this.handler);
         }
-        final Supplier<Set<Formula>> formulaSupplier = () -> solver.execute(FormulaOnSolverFunction.get());
         final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
-        return splitModelEnumeration(solver, resultSetter, formulaSupplier, relevantVars, this.additionalVariables);
+        return splitModelEnumeration(solver, resultSetter, relevantVars, this.additionalVariables);
     }
 
-    protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final Supplier<Set<Formula>> formulasSupplier,
-                                                final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
+    protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> relevantVars,
+                                                final Collection<Variable> additionalVariables) {
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
         final SolverState initialState = solver.saveState();
         final List<Model> models = recursive(solver, null, resultSetter, relevantVars, initialSplitVars, additionalVariables, initialState);
@@ -121,8 +117,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
 
     private List<Model> recursive(final MiniSat solver, final Model splitAssignment, final Consumer<Tristate> resultSetter,
                                   final Collection<Variable> relevantVars, final Collection<Variable> varsInInitialSplitAssignment,
-                                  final Collection<Variable> additionalVariables,
-                                  final SolverState state) {
+                                  final Collection<Variable> additionalVariables, final SolverState state) {
         final List<Model> models = new ArrayList<>();
         if (splitAssignment != null) {
             solver.loadState(state);
