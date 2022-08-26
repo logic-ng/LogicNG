@@ -72,7 +72,7 @@ public class ModelEnumerationFunctionTest {
     @LongRunningTag
     public void testRecursives() {
         for (int i = 1; i <= 100; i++) {
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
             final Formula formula = randomizer.formula(3);
 
             final SATSolver solver = MiniSat.miniSat(this.f);
@@ -83,15 +83,15 @@ public class ModelEnumerationFunctionTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider()).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider()).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(.5)).build());
 
             // recursive call: random vars
             final List<Model> models3 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider()).build());
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider(42, .5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
@@ -355,7 +355,7 @@ public class ModelEnumerationFunctionTest {
         fw.newLine();
         final SATSolver solver = MiniSat.miniSat(this.f);
         for (int i = 1; i <= 1000; i++) {
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).build());
             final Formula formula = randomizer.formula(3);
             final int numberOfVars = formula.variables().size();
             if (numberOfVars < 10) {
@@ -368,7 +368,7 @@ public class ModelEnumerationFunctionTest {
 
             final long time0 = System.currentTimeMillis();
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider()).handler(handler2)
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(.5)).handler(handler2)
                             .maxNumberOfVarsForSplit(500).build());
             final long time1 = System.currentTimeMillis();
 
