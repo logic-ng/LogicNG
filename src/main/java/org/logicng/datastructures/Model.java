@@ -4,6 +4,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,6 +13,10 @@ public class Model {
 
     public Model(final List<Literal> literals) {
         this.literals = literals;
+    }
+
+    public Model(final Literal... literals) {
+        this(Arrays.asList(literals));
     }
 
     public List<Literal> getLiterals() {
