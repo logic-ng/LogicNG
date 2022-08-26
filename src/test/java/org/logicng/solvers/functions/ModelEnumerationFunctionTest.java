@@ -325,7 +325,7 @@ public class ModelEnumerationFunctionTest {
     //    }
     //}
 
-    
+
     @Test
     public void testOneSplitProvider() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("RecursiveComparison.csv"));
@@ -347,7 +347,7 @@ public class ModelEnumerationFunctionTest {
             final long time0 = System.currentTimeMillis();
             final List<Model> models2 =
                     solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).handler(handler2)
-                            .maxNumberOfVarsForSplit(500).build());
+                            .maxNumberOfModels(500).build());
             final long time1 = System.currentTimeMillis();
 
             if (models2.size() < 10000) {

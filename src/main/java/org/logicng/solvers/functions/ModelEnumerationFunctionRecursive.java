@@ -42,7 +42,6 @@ import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
-import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
@@ -74,6 +73,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
     protected final int maxNumberOfModels;
+    //    protected final BiConsumer<LNGBooleanVector, LNGIntVector> sink;
     private static final int TWO = 2;
 
     ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables,
@@ -102,7 +102,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         }
         start(this.handler);
         if (this.splitVariableProvider == null) {
-            return enumerate(solver, resultSetter, this.variables, this.additionalVariables, this.handler);
+            return enumerate(solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
         }
         final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
         return splitModelEnumeration(solver, resultSetter, relevantVars, this.additionalVariables);
@@ -111,10 +111,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     protected List<Model> splitModelEnumeration(final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> relevantVars,
                                                 final Collection<Variable> additionalVariables) {
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
-        final SolverState initialState = solver.saveState();
-        final List<Model> models = enumerateRecursive(solver, new Model(), resultSetter, relevantVars, initialSplitVars, additionalVariables);
-        solver.loadState(initialState);
-        return models;
+        return enumerateRecursive(solver, new Model(), resultSetter, relevantVars, initialSplitVars, additionalVariables);
     }
 
     private List<Model> enumerateRecursive(final MiniSat solver, final Model splitAssignment, final Consumer<Tristate> resultSetter,
@@ -123,21 +120,18 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         final List<Model> models = new ArrayList<>();
         final SolverState state = solver.saveState();
         solver.add(splitAssignment.formula(solver.factory()));
-        final ModelEnumerationHandler handler = new NumberOfModelsHandler(this.maxNumberOfModels);
-        final List<Model> modelsFound = enumerate(solver, resultSetter, enumerationVars, additionalVars, handler);
-        final boolean isFirstCall = splitAssignment.getLiterals().isEmpty();
-        if (isFirstCall || handler.aborted()) {
-            List<Model> splitAssignments;
+        final List<Model> modelsFound = enumerate(solver, resultSetter, enumerationVars, additionalVars, this.maxNumberOfModels, this.handler);
+        if (modelsFound == null) {
+            List<Model> newSplitAssignments;
             SortedSet<Variable> newSplitVars = new TreeSet<>(enumerationVars);
             newSplitVars.removeAll(alreadyAssignedVars);
             do {
                 newSplitVars = updateSplitVars(newSplitVars);
-                splitAssignments = enumerate(solver, resultSetter, newSplitVars, additionalVars, handler);
-            } while (handler.aborted());
+                newSplitAssignments = enumerate(solver, resultSetter, newSplitVars, additionalVars, this.maxNumberOfModels, null);
+            } while (newSplitAssignments == null);
 
-            for (final Model assignment : splitAssignments) {
-                final List<Model> assignmentsNew = enumerateRecursive(solver, assignment, resultSetter, enumerationVars, newSplitVars, additionalVars);
-                models.addAll(assignmentsNew);
+            for (final Model assignment : newSplitAssignments) {
+                models.addAll(enumerateRecursive(solver, assignment, resultSetter, enumerationVars, newSplitVars, additionalVars));
             }
         } else {
             models.addAll(modelsFound);
@@ -151,7 +145,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     }
 
     protected List<Model> enumerate(final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
-                                    final Collection<Variable> additionalVariables, final ModelEnumerationHandler handler) {
+                                    final Collection<Variable> additionalVariables, final int maxModels, final ModelEnumerationHandler handler) {
         start(handler);
         final List<Model> models = new ArrayList<>();
         SolverState stateBeforeEnumeration = null;
@@ -196,12 +190,17 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
                 }
             }
         }
+        int foundModels = 0;
         while (proceed && modelEnumerationSATCall(solver, handler)) {
             final LNGBooleanVector modelFromSolver = solver.underlyingSolver().model();
+//            this.sink.accept(modelFromSolver, relevantAllIndices, handler);
             final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
             models.add(model);
+            if (++foundModels >= maxModels) {
+                return null;
+            }
             proceed = handler == null || handler.foundModel(model);
-            if (model.size() > 0) {
+            if (modelFromSolver.size() > 0) {
                 final LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantIndices);
                 solver.underlyingSolver().addClause(blockingClause, null);
                 resultSetter.accept(UNDEF);
@@ -269,7 +268,6 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
         protected int maxNumberOfModels = 1000;
-        protected boolean isRecursive = false;
 
         Builder() {
             // Initialize only via factory
