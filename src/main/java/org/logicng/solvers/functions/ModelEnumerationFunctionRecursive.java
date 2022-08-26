@@ -76,20 +76,16 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
     protected final boolean fastEvaluable;
     protected final SplitVariableProvider splitVariableProvider;
     protected final int maxNumberOfVarsForSplit;
-    protected boolean isRecursive;
     private static final int TWO = 2;
 
-    ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables,
-                                      final Collection<Variable> additionalVariables,
-                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfVarsForSplit,
-                                      final boolean isRecursive) {
+    ModelEnumerationFunctionRecursive(final ModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables,
+                                      final boolean fastEvaluable, final SplitVariableProvider splitVariableProvider, final int maxNumberOfVarsForSplit) {
         this.handler = handler;
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.fastEvaluable = fastEvaluable;
         this.splitVariableProvider = splitVariableProvider;
         this.maxNumberOfVarsForSplit = maxNumberOfVarsForSplit;
-        this.isRecursive = isRecursive;
     }
 
     /**
@@ -127,10 +123,9 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
             boolean continueL = true;
             while (continueL) {
                 final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
-                final TreeSet<Variable> updatedSplitVars = updateSplitVars(splitVars);
-                splitAssignments = enumerate(solver, resultSetter, updatedSplitVars, additionalVariables, handler1);
+                splitVars = updateSplitVars(splitVars);
+                splitAssignments = enumerate(solver, resultSetter, splitVars, additionalVariables, handler1);
                 continueL = handler1.aborted();
-                splitVars = updatedSplitVars;
             }
         } else {
             splitAssignments = assignments;
@@ -155,6 +150,7 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
         final List<Model> models = new ArrayList<>();
         solver.loadState(state);
         solver.add(splitAssignment.formula(solver.factory()));
+        //TODO potentiell sein lassen
         final SortedSet<Variable> leftOverVars = new TreeSet<>(relevantVars);
         leftOverVars.removeAll(varsInInitialSplitAssignment);
         final ModelEnumerationHandler handler = new NumberOfModelsHandler(maxNumberOfVarsForSplit);
@@ -174,7 +170,6 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
 
             final SolverState state1 = solver.saveState();
             for (final Model assignment : splitAssignments) {
-                this.isRecursive = true;
                 final List<Model> assignmentsNew = recursive(solver, assignment, resultSetter, relevantVars, splitVars, state1);
                 models.addAll(assignmentsNew);
             }
@@ -403,18 +398,13 @@ public class ModelEnumerationFunctionRecursive implements SolverFunction<List<Mo
             return this;
         }
 
-        public Builder isRecursive(final boolean isRecursive) {
-            this.isRecursive = isRecursive;
-            return this;
-        }
-
         /**
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunctionRecursive build() {
             return new ModelEnumerationFunctionRecursive(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
-                    this.splitVariableProvider, this.maxNumberOfVarsForSplit, this.isRecursive);
+                    this.splitVariableProvider, this.maxNumberOfVarsForSplit);
         }
     }
 }

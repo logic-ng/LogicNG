@@ -68,7 +68,6 @@ public class ModelEnumerationFunctionTest {
         assertThat(models).extracting(Assignment::fastEvaluable).containsOnly(true);
     }
 
-
     @Test
     public void testMeWithSplitAllProviders() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("testMeWithSplit.csv"));
@@ -202,7 +201,6 @@ public class ModelEnumerationFunctionTest {
             fw.flush();
         }
     }
-
 
     @Test
     public void testAdditionalVariables() throws IOException {
@@ -432,21 +430,20 @@ public class ModelEnumerationFunctionTest {
 
             final int depth = formula.apply(new FormulaDepthFunction());
             final String resultString =
-                    String.format("%d;%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%d;%b;%d;%b", i, depth, numberOfVars, models1.size(),
+                    String.format("%d;%d;%d;%d;%d;%d;%d;%d;%d;%d", i, depth, numberOfVars, models1.size(),
                             timeStandard,
                             // timeRecursive200, recursive200.isRecursive,
-                            timeRecursive300, recursive300.isRecursive,
-                            timeRecursive400, recursive400.isRecursive,
-                            timeRecursive600, recursive600.isRecursive,
-                            timeRecursive800, recursive800.isRecursive,
-                            timeRecursive1000, recursive1000.isRecursive);
+                            timeRecursive300,
+                            timeRecursive400,
+                            timeRecursive600,
+                            timeRecursive800,
+                            timeRecursive1000);
 
             fw.write(resultString);
             fw.newLine();
             fw.flush();
         }
     }
-
 
     @Test
     public void performanceTestMultipleSplits() throws IOException {
@@ -499,7 +496,6 @@ public class ModelEnumerationFunctionTest {
         }
     }
 
-
     @Test
     public void performanceTestOneSplitProvider() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("MePerformance.csv"));
@@ -549,7 +545,6 @@ public class ModelEnumerationFunctionTest {
             fw.flush();
         }
     }
-
 
     @Test
     public void fineTuneSingleSplitProvider() throws IOException {
