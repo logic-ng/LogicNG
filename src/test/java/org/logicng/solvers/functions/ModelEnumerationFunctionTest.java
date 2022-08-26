@@ -27,9 +27,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Units tests for {@link ModelEnumerationFunction}.
@@ -67,6 +69,65 @@ public class ModelEnumerationFunctionTest {
         models = solver.execute(ModelEnumerationFunction.builder().fastEvaluable(true).build());
         assertThat(models).extracting(Assignment::fastEvaluable).containsOnly(true);
     }
+
+    @Test
+    public void testRecursives() {
+        for (int i = 1; i <= 100; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).numVars(3).build());
+            final Formula formula = randomizer.formula(2);
+            final int numberOfVars = formula.variables().size();
+
+            System.out.println("Seed: " + i);
+            System.out.println("Formula:" + formula);
+
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(formula);
+
+            // no split
+            final List<Model> modelsNoSplit = solver.execute(ModelEnumerationFunctionModel.builder().build());
+            System.out.println("Models no split: " + modelsNoSplit);
+
+            // if (numberOfVars < 12) {
+            //     continue;
+            // }
+
+
+            // recursive call: least common vars
+            final List<Model> models1 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).build());
+            // if (models1.size() < 10000 || models1.size() > 500000) {
+            //     continue;
+            // }
+
+            // recursive call: most common vars
+            final List<Model> models2 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariableProvider(this.f)).build());
+
+            // recursive call: random vars
+            final List<Model> models3 =
+                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new RandomSplitVariableProvider(this.f)).build());
+
+
+            assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
+            assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
+            assertThat(models3.size()).isEqualTo(modelsNoSplit.size());
+
+
+            System.out.println("Models 1: " + models1.size());
+            System.out.println("Models split: " + models1);
+
+            final List<HashSet<Literal>> setNoSplit = getSetForModel(modelsNoSplit);
+
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModel(models1));
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModel(models2));
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModel(models3));
+        }
+    }
+
+    private List<HashSet<Literal>> getSetForModel(final List<Model> models) {
+        return models.stream().map(x -> new HashSet<>(x.getLiterals())).collect(Collectors.toList());
+    }
+
 
     @Test
     public void testMeWithSplitAllProviders() throws IOException {
@@ -334,7 +395,7 @@ public class ModelEnumerationFunctionTest {
     }
 
     @Test
-    public void testRecursives() throws IOException {
+    public void testRecursivesFineTune() throws IOException {
         final BufferedWriter fw = new BufferedWriter(new FileWriter("RecursivesStartingFrom300.csv"));
         fw.write(
                 "seed;depth;#vars;#combinations;time original (ms);time recursive 300 (ms);recursive?;time recursive 400 " +
