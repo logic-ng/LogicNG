@@ -61,6 +61,7 @@ public class ModelEnumerationFunctionRecursiveTest {
         solver.add(this.f.parse("A & (B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                 .splitVariableProvider(splitProvider)
+                .maxNumberOfModels(2)
                 .build());
         assertThat(toSets(models)).containsExactlyInAnyOrder(
                 set(this.f.variable("A"), this.f.variable("B"), this.f.variable("C")),

@@ -159,8 +159,13 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
             return this;
         }
 
+        /**
+         * The maximum number of models must be > 2.
+         * @param maxNumberOfModels the maximum number of models
+         * @return the maximum of the given maximal number of models and 3.
+         */
         public Builder maxNumberOfModels(final int maxNumberOfModels) {
-            this.maxNumberOfModels = maxNumberOfModels;
+            this.maxNumberOfModels = Math.max(maxNumberOfModels, 3);
             return this;
         }
 
