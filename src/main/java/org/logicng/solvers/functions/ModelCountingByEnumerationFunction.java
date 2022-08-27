@@ -52,7 +52,8 @@ import java.util.List;
 public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<Long> {
 
 
-    ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables, final boolean fastEvaluable,
+    ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
+                                       final Collection<Variable> additionalVariables, final boolean fastEvaluable,
                                        final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
         super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider, maxNumberOfModels);
     }
@@ -172,7 +173,8 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         private final List<Model> uncommittedModels = new ArrayList<>();
 
         @Override
-        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices, final AdvancedModelEnumerationHandler handler) {
+        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
+                                final Collection<Variable> additionalVarsNotOnSolver, final AdvancedModelEnumerationHandler handler) {
             final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
             this.uncommittedModels.add(model);
             return handler == null || handler.foundModel();
@@ -210,7 +212,8 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         private final List<LNGIntVector> uncommittedIndices = new ArrayList<>(100);
 
         @Override
-        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices, final AdvancedModelEnumerationHandler handler) {
+        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
+                                final Collection<Variable> additionalVarsNotOnSolver, final AdvancedModelEnumerationHandler handler) {
             this.uncommittedModels.add(modelFromSolver);
             this.uncommittedIndices.add(relevantAllIndices);
             return handler == null || handler.foundModel();

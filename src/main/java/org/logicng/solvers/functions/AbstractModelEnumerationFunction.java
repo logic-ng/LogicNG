@@ -101,14 +101,17 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         return collector.getResult();
     }
 
-    protected void splitModelEnumeration(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter, final SortedSet<Variable> relevantVars,
+    protected void splitModelEnumeration(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
+                                         final SortedSet<Variable> relevantVars,
                                          final Collection<Variable> additionalVariables) {
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
         enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, additionalVariables);
     }
 
-    private void enumerateRecursive(final EnumerationCollector<R> collector, final MiniSat solver, final Model splitAssignment, final Consumer<Tristate> resultSetter,
-                                    final Collection<Variable> enumerationVars, final Collection<Variable> nextSplitVars, final Collection<Variable> additionalVars) {
+    private void enumerateRecursive(final EnumerationCollector<R> collector, final MiniSat solver, final Model splitAssignment,
+                                    final Consumer<Tristate> resultSetter,
+                                    final Collection<Variable> enumerationVars, final Collection<Variable> nextSplitVars,
+                                    final Collection<Variable> additionalVars) {
         final SolverState state = solver.saveState();
         solver.add(splitAssignment.formula(solver.factory()));
         final boolean enumerationFinished = enumerate(collector, solver, resultSetter, enumerationVars, additionalVars, this.maxNumberOfModels, this.handler);
@@ -146,7 +149,8 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         return splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    protected boolean enumerate(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
+    protected boolean enumerate(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
+                                final Collection<Variable> variables,
                                 final Collection<Variable> additionalVariables, final int maxModels, final AdvancedModelEnumerationHandler handler) {
         start(handler);
         final SolverState stateBeforeEnumeration = solver.saveState();
@@ -189,13 +193,14 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             }
         }
         int foundModels = 0;
+        final SortedSet<Variable> additionalVarsNotOnSolver = CollectionHelper.difference(additionalVariables, solver.knownVariables(), TreeSet::new);
         while (proceed && modelEnumerationSATCall(solver, handler)) {
             final LNGBooleanVector modelFromSolver = solver.underlyingSolver().model();
             if (++foundModels >= maxModels) {
                 solver.loadState(stateBeforeEnumeration);
                 return false;
             }
-            proceed = collector.addModel(modelFromSolver, solver, relevantAllIndices, handler);
+            proceed = collector.addModel(modelFromSolver, solver, relevantAllIndices, additionalVarsNotOnSolver, handler);
             if (modelFromSolver.size() > 0) {
                 final LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantIndices);
                 solver.underlyingSolver().addClause(blockingClause, null);

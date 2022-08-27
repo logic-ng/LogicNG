@@ -194,8 +194,6 @@ public class ModelEnumerationFunctionRecursiveTest {
             System.out.println("\nSeed: " + i);
             System.out.println("Number of combinations: " + modelsRecursive.size());
 
-            // AdvancedModelEnumerationFunction.builder().splitVariableProvider(null);
-
             final List<Assignment> modelsOld =
                     solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
 
@@ -209,25 +207,11 @@ public class ModelEnumerationFunctionRecursiveTest {
             assertThat(modelsRecursive.size()).isEqualTo(modelsOld.size());
             assertThat(toSetsA(updatedModels1)).containsExactlyInAnyOrderElementsOf(toSetsA(updatedModels2));
 
-
             // check that models are buildable and every model contains all additional variables
             for (final Model model : modelsRecursive) {
                 final List<Variable> variablesInModel = model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
                 assertThat(variablesInModel).containsAll(additionalVars);
-
                 solver.add(model.getLiterals());
-                assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
-                solver.reset();
-
-            }
-
-            solver.reset();
-            solver.add(formula);
-
-            for (final Assignment model : modelsOld) {
-                final List<Variable> variablesInModel = model.literals().stream().map(Literal::variable).collect(Collectors.toList());
-                assertThat(variablesInModel).containsAll(additionalVars);
-                solver.add(model.literals());
                 assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
                 solver.reset();
             }

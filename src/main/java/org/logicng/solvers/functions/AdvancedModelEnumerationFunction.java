@@ -32,6 +32,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Model;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
@@ -52,7 +53,8 @@ import java.util.List;
 public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFunction<List<Model>> {
 
 
-    AdvancedModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables, final boolean fastEvaluable,
+    AdvancedModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
+                                     final Collection<Variable> additionalVariables, final boolean fastEvaluable,
                                      final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
         super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider, maxNumberOfModels);
     }
@@ -172,9 +174,13 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         private final List<Model> uncommittedModels = new ArrayList<>();
 
         @Override
-        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices, final AdvancedModelEnumerationHandler handler) {
+        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
+                                final Collection<Variable> additionalVariablesNotOnSolver, final AdvancedModelEnumerationHandler handler) {
             final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-            this.uncommittedModels.add(model);
+            final List<Literal> literalsModel = new ArrayList<>(additionalVariablesNotOnSolver);
+            literalsModel.addAll(model.getLiterals());
+            final Model modelWithAdditionalVarsNotOnSolver = new Model(literalsModel);
+            this.uncommittedModels.add(modelWithAdditionalVarsNotOnSolver);
             return handler == null || handler.foundModel();
         }
 
