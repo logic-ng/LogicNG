@@ -31,6 +31,7 @@ package org.logicng.modelcounting;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.logicng.testutils.TestUtil.modelCount;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
@@ -62,7 +63,7 @@ import java.util.stream.IntStream;
 
 /**
  * Unit tests for {@link ModelCounter}.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 2.0.0
  */
 public class ModelCounterTest extends TestWithExampleFormulas {
@@ -234,19 +235,5 @@ public class ModelCounterTest extends TestWithExampleFormulas {
         final SortedSet<Variable> variables = FormulaHelper.variables(formulas);
         final List<Assignment> models = solver.enumerateAllModels(variables);
         return modelCount(models, variables);
-    }
-
-    private static BigInteger modelCount(final List<Assignment> models, final SortedSet<Variable> variables) {
-        if (models.isEmpty()) {
-            return BigInteger.ZERO;
-        } else {
-            final Assignment firstModel = models.get(0);
-            final SortedSet<Variable> modelVars = new TreeSet<>(firstModel.positiveVariables());
-            modelVars.addAll(firstModel.negativeVariables());
-            final SortedSet<Variable> dontCareVars = variables.stream()
-                    .filter(var -> !modelVars.contains(var))
-                    .collect(Collectors.toCollection(TreeSet::new));
-            return BigInteger.valueOf(models.size()).multiply(BigInteger.valueOf(2).pow(dontCareVars.size()));
-        }
     }
 }

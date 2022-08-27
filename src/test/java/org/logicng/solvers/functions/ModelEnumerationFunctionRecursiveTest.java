@@ -1,6 +1,12 @@
 package org.logicng.solvers.functions;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.solvers.functions.AdvancedModelEnumerationFunction.ModelEnumerationCollector.getCartesianProduct;
+import static org.logicng.testutils.TestUtil.getDontCareVariables;
+import static org.logicng.testutils.TestUtil.modelCount;
+import static org.logicng.util.CollectionHelper.union;
+import static org.logicng.util.FormulaHelper.strings2literals;
+import static org.logicng.util.FormulaHelper.strings2vars;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -112,6 +118,60 @@ public class ModelEnumerationFunctionRecursiveTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDontCareVariables1(final SplitVariableProvider splitProvider) throws ParserException {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .splitVariableProvider(splitProvider)
+                .variables(strings2vars(Arrays.asList("A", "B", "C", "D"), this.f))
+                .build());
+        assertThat(toSets(models)).containsExactlyInAnyOrder(
+                // models with ~D
+                strings2literals(Arrays.asList("A", "~B", "C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("A", "B", "C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "~C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "B", "C", "~D"), "~", this.f),
+                // models with D
+                strings2literals(Arrays.asList("A", "~B", "C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("A", "B", "C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "~C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "B", "C", "D"), "~", this.f)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDontCareVariables2(final SplitVariableProvider splitProvider) throws ParserException {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .splitVariableProvider(splitProvider)
+                .variables(strings2vars(Arrays.asList("A", "C", "D", "E"), this.f))
+                .build());
+        assertThat(toSets(models)).containsExactlyInAnyOrder(
+                // models with ~D, ~E
+                strings2literals(Arrays.asList("A", "C", "~D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "~D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "~D", "~E"), "~", this.f),
+                // models with ~D, E
+                strings2literals(Arrays.asList("A", "C", "~D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "~D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "~D", "E"), "~", this.f),
+                // models with D, ~E
+                strings2literals(Arrays.asList("A", "C", "D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "D", "~E"), "~", this.f),
+                // models with D, E
+                strings2literals(Arrays.asList("A", "C", "D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "D", "E"), "~", this.f)
+        );
+    }
+
     @Test
     @LongRunningTag
     public void testRecursives() {
@@ -199,13 +259,13 @@ public class ModelEnumerationFunctionRecursiveTest {
                     solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
 
             final List<Assignment> updatedModels1 = restrictModelsToPmeVars(pmeVars, modelsRecursive);
-            final List<Assignment> updatedModels2 = restrictAssignmentsToPmeVars(pmeVars, modelsOld);
+            final List<Assignment> updatedModels2 = extendByDontCares(restrictAssignmentsToPmeVars(pmeVars, modelsOld), pmeVars);
             System.out.println("Pme vars: " + pmeVars);
             System.out.println("Additional vars: " + additionalVars);
             System.out.println("Models recursive: " + modelsRecursive);
             System.out.println("Models old: " + modelsOld);
 
-            assertThat(modelsRecursive.size()).isEqualTo(modelsOld.size());
+            assertThat(BigInteger.valueOf(modelsRecursive.size())).isEqualTo(modelCount(modelsOld, pmeVars));
             assertThat(toSetsA(updatedModels1)).containsExactlyInAnyOrderElementsOf(toSetsA(updatedModels2));
 
             // check that models are buildable and every model contains all additional variables
@@ -218,6 +278,19 @@ public class ModelEnumerationFunctionRecursiveTest {
             }
             solver.reset();
         }
+    }
+
+    private static List<Assignment> extendByDontCares(final List<Assignment> assignments, final SortedSet<Variable> variables) {
+        final SortedSet<Variable> dontCareVars = getDontCareVariables(assignments, variables);
+        final List<List<Literal>> cartesianProduct = getCartesianProduct(dontCareVars);
+        final List<Assignment> extendedAssignments = new ArrayList<>();
+        for (final Assignment assignment : assignments) {
+            final SortedSet<Literal> assignmentLiterals = assignment.literals();
+            for (final List<Literal> literals : cartesianProduct) {
+                extendedAssignments.add(new Assignment(union(assignmentLiterals, literals, TreeSet::new)));
+            }
+        }
+        return extendedAssignments;
     }
 
     private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
