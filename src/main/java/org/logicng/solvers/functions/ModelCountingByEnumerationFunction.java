@@ -30,7 +30,6 @@ package org.logicng.solvers.functions;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
-import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Model;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
@@ -53,13 +52,16 @@ import java.util.SortedSet;
  */
 public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<BigInteger> {
 
-
     ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
-                                       final Collection<Variable> additionalVariables, final boolean fastEvaluable,
-                                       final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
-        super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider, maxNumberOfModels);
+                                       final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
+                                       final int maxNumberOfModels) {
+        super(handler, variables, additionalVariables, splitVariableProvider, maxNumberOfModels);
     }
 
+    /**
+     * Returns the builder for this function.
+     * @return the builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -76,7 +78,6 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         protected AdvancedModelEnumerationHandler handler;
         protected Collection<Variable> variables;
         protected Collection<Variable> additionalVariables;
-        protected boolean fastEvaluable = false;
         protected SplitVariableProvider splitVariableProvider = null;
         protected int maxNumberOfModels = 1000;
 
@@ -135,16 +136,6 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         }
 
         /**
-         * Sets the flag whether the created assignment should be {@link Assignment#fastEvaluable() fast evaluable} assignments.
-         * @param fastEvaluable {@code true} if the created assignment should be fast evaluable, otherwise {@code false}
-         * @return the builder
-         */
-        public Builder fastEvaluable(final boolean fastEvaluable) {
-            this.fastEvaluable = fastEvaluable;
-            return this;
-        }
-
-        /**
          * Sets the split variable provider. If no split variable provider is given, enumeration is performed without splits. Else the enumeration is
          * performed with the split variables provided by the {@link SplitVariableProvider}.
          * @param splitVariableProvider the given split variable provider
@@ -165,7 +156,7 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
          * @return the model enumeration function
          */
         public ModelCountingByEnumerationFunction build() {
-            return new ModelCountingByEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
+            return new ModelCountingByEnumerationFunction(this.handler, this.variables, this.additionalVariables,
                     this.splitVariableProvider, this.maxNumberOfModels);
         }
     }

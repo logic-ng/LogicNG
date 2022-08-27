@@ -13,6 +13,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * Unit tests for {@link VariableOccurrencesOnSolverFunction}.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class VariableOccurrencesOnSolverFunctionTest extends TestWithExampleFormulas {
 
     protected final Variable E = this.f.variable("e");
