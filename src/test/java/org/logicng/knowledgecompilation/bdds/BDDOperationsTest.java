@@ -32,13 +32,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.logicng.RandomTag;
 import org.logicng.datastructures.Assignment;
+import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+import org.logicng.util.FormulaRandomizer;
+import org.logicng.util.FormulaRandomizerConfig;
 
 import java.math.BigInteger;
 import java.util.AbstractMap;
@@ -80,6 +84,31 @@ public class BDDOperationsTest {
         this.bddEquiv = BDDFactory.build(this.parser.parse("A <=> ~B"), this.kernel);
         this.bddOr = BDDFactory.build(this.parser.parse("A | B | ~C"), this.kernel);
         this.bddAnd = BDDFactory.build(this.parser.parse("A & B & ~C"), this.kernel);
+    }
+
+    @Test
+    public void testToFormula() throws ParserException {
+        assertThat(this.bddVerum.toFormula()).isEqualTo(this.f.verum());
+        assertThat(this.bddFalsum.toFormula()).isEqualTo(this.f.falsum());
+        assertThat(this.bddPosLit.toFormula()).isEqualTo(this.f.literal("A", true));
+        assertThat(this.bddNegLit.toFormula()).isEqualTo(this.f.literal("A", false));
+        assertThat(BDDFactory.build(this.f.literal("C", true)).toFormula()).isEqualTo(this.f.literal("C", true));
+        assertThat(BDDFactory.build(this.f.literal("C", false)).toFormula()).isEqualTo(this.f.literal("C", false));
+        compareFormula(this.bddImpl, "A => ~B");
+        compareFormula(this.bddEquiv, "A <=> ~B");
+        compareFormula(this.bddOr, "A | B | ~C");
+        compareFormula(this.bddAnd, "A & B & ~C");
+    }
+
+    @RandomTag
+    @Test
+    public void testToFormulaRandom() {
+        final FormulaFactory f = new FormulaFactory();
+        for (int i = 0; i < 100; i++) {
+            final Formula formula = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build()).formula(6);
+            final BDD bdd = BDDFactory.build(formula);
+            compareFormula(bdd, formula);
+        }
     }
 
     @Test
@@ -289,5 +318,15 @@ public class BDDOperationsTest {
         assertThat(this.bddEquiv.variableProfile()).containsExactly(a1, b2, c0);
         assertThat(this.bddOr.variableProfile()).containsExactly(a1, b1, c1);
         assertThat(this.bddAnd.variableProfile()).containsExactly(a1, b1, c1);
+    }
+
+    private void compareFormula(final BDD bdd, final String formula) throws ParserException {
+        compareFormula(bdd, bdd.kernel.factory().parse(formula));
+    }
+
+    private void compareFormula(final BDD bdd, final Formula compareFormula) {
+        final Formula bddFormula = bdd.toFormula();
+        System.out.println(bddFormula.numberOfAtoms());
+        assertThat(bddFormula.isEquivalentTo(compareFormula)).isTrue();
     }
 }

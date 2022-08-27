@@ -30,6 +30,7 @@ package org.logicng.knowledgecompilation.bdds;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;
@@ -105,6 +106,27 @@ public class BDD {
      */
     public <T> T apply(final BDDFunction<T> function) {
         return function.apply(this);
+    }
+
+    /**
+     * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
+     * @return the formula for this BDD
+     */
+    public Formula toFormula() {
+        return toFormula(this.index);
+    }
+
+    private Formula toFormula(final int index) {
+        final FormulaFactory f = this.kernel.factory();
+        if (index == BDDKernel.BDD_FALSE) {
+            return f.falsum();
+        } else if (index == BDDKernel.BDD_TRUE) {
+            return f.verum();
+        } else {
+            final Variable nodeVariable = this.kernel.idx2var().get(this.construction.bddVar(index));
+            return f.or(f.and(nodeVariable, toFormula(this.construction.bddHigh(index))),
+                    f.and(nodeVariable.negate(), toFormula(this.construction.bddLow(index))));
+        }
     }
 
     /**
@@ -185,7 +207,7 @@ public class BDD {
      * @return {@code true} if this BDD is a tautology, {@code false} otherwise
      */
     public boolean isTautology() {
-        return this.index == 1;
+        return this.index == BDDKernel.BDD_TRUE;
     }
 
     /**
@@ -193,7 +215,7 @@ public class BDD {
      * @return {@code true} if this BDD is a contradiction, {@code false} otherwise
      */
     public boolean isContradiction() {
-        return this.index == 0;
+        return this.index == BDDKernel.BDD_FALSE;
     }
 
     /**
