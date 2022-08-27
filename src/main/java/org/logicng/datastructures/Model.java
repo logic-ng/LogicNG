@@ -33,11 +33,12 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * A simple class representing a model of a formula.  In contrast to an {@link Assignment} a model just
+ * A simple immutable class representing a model of a formula.  In contrast to an {@link Assignment} a model just
  * stores a simple list of literals and cannot be used to evaluate or restrict a formula (because this would
  * be very inefficient).  In this case you want to use the {@link #assignment(boolean)} method to convert
  * the model to an assignment first.
@@ -74,7 +75,7 @@ public class Model {
      * @return the list of literals
      */
     public List<Literal> getLiterals() {
-        return this.literals;
+        return Collections.unmodifiableList(this.literals);
     }
 
     /**
