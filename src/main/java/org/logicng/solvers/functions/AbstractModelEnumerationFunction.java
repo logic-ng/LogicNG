@@ -33,6 +33,7 @@ import static org.logicng.datastructures.Tristate.UNDEF;
 import static org.logicng.formulas.FormulaFactory.CC_PREFIX;
 import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
 import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
+import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.handlers.Handler.start;
 
 import org.logicng.collections.LNGBooleanVector;
@@ -116,16 +117,22 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         solver.add(splitAssignment.formula(solver.factory()));
         final boolean enumerationFinished = enumerate(collector, solver, resultSetter, enumerationVars, additionalVars, this.maxNumberOfModels, this.handler);
         if (!enumerationFinished) {
+            if (!collector.rollback(this.handler)) {
+                solver.loadState(state);
+                return;
+            }
             SortedSet<Variable> newSplitVars = new TreeSet<>(nextSplitVars);
-            boolean splitSuccessful;
-            do {
+            while (!enumerate(collector, solver, resultSetter, newSplitVars, additionalVars, this.maxNumberOfModels, this.handler)) {
                 if (!collector.rollback(this.handler)) {
                     solver.loadState(state);
                     return;
                 }
                 newSplitVars = updateSplitVars(newSplitVars);
-                splitSuccessful = enumerate(collector, solver, resultSetter, newSplitVars, additionalVars, this.maxNumberOfModels, null);
-            } while (!splitSuccessful);
+            }
+            if (aborted(this.handler)) {
+                collector.rollback(this.handler);
+                return;
+            }
 
             final List<Model> newSplitAssignments = collector.rollbackAndReturnModels(solver, this.handler);
             final SortedSet<Variable> recursiveSplitVars = updateSplitVars(CollectionHelper.difference(enumerationVars, nextSplitVars, TreeSet::new));
