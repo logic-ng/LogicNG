@@ -142,6 +142,32 @@ public class ModelEnumerationFunctionRecursiveTest {
     }
 
     @Test
+    @LongRunningTag
+    public void testRecursivesCounting() {
+        for (int i = 1; i <= 100; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
+            final Formula formula = randomizer.formula(3);
+
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(formula);
+
+            // no split
+            final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
+
+            // recursive call: least common vars
+            final long count1 =
+                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
+
+            // recursive call: most common vars
+            final long count2 =
+                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
+
+            assertThat(count1).isEqualTo(modelsNoSplit.size());
+            assertThat(count2).isEqualTo(modelsNoSplit.size());
+        }
+    }
+
+    @Test
     public void testAdditionalVariables() {
         final SATSolver solver = MiniSat.miniSat(this.f);
 

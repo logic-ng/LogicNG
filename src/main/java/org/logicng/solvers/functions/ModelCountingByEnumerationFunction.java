@@ -49,11 +49,11 @@ import java.util.List;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFunction<List<Model>> {
+public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<Long> {
 
 
-    AdvancedModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables, final boolean fastEvaluable,
-                                     final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
+    ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables, final boolean fastEvaluable,
+                                       final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
         super(handler, variables, additionalVariables, fastEvaluable, splitVariableProvider, maxNumberOfModels);
     }
 
@@ -62,8 +62,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
     }
 
     @Override
-    EnumerationCollector<List<Model>> newCollector() {
-        return new ModelEnumerationCollector();
+    EnumerationCollector<Long> newCollector() {
+        return new ModelCountCollector();
     }
 
     /**
@@ -161,8 +161,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
-        public AdvancedModelEnumerationFunction build() {
-            return new AdvancedModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
+        public ModelCountingByEnumerationFunction build() {
+            return new ModelCountingByEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
                     this.splitVariableProvider, this.maxNumberOfModels);
         }
     }
@@ -201,6 +201,51 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         @Override
         public List<Model> getResult() {
             return this.committedModels;
+        }
+    }
+
+    static class ModelCountCollector implements EnumerationCollector<Long> {
+        private long committedCount = 0;
+        private final List<LNGBooleanVector> uncommittedModels = new ArrayList<>(100);
+        private final List<LNGIntVector> uncommittedIndices = new ArrayList<>(100);
+
+        @Override
+        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices, final AdvancedModelEnumerationHandler handler) {
+            this.uncommittedModels.add(modelFromSolver);
+            this.uncommittedIndices.add(relevantAllIndices);
+            return handler == null || handler.foundModel();
+        }
+
+        @Override
+        public boolean commit(final AdvancedModelEnumerationHandler handler) {
+            this.committedCount += this.uncommittedModels.size();
+            return clearUncommitted(handler);
+        }
+
+        @Override
+        public boolean rollback(final AdvancedModelEnumerationHandler handler) {
+            return clearUncommitted(handler);
+        }
+
+        @Override
+        public List<Model> rollbackAndReturnModels(final MiniSat solver, final AdvancedModelEnumerationHandler handler) {
+            final List<Model> modelsToReturn = new ArrayList<>(this.uncommittedModels.size());
+            for (int i = 0; i < this.uncommittedModels.size(); i++) {
+                modelsToReturn.add(solver.createModel(this.uncommittedModels.get(i), this.uncommittedIndices.get(i)));
+            }
+            rollback(handler);
+            return modelsToReturn;
+        }
+
+        @Override
+        public Long getResult() {
+            return this.committedCount;
+        }
+
+        private boolean clearUncommitted(final AdvancedModelEnumerationHandler handler) {
+            this.uncommittedModels.clear();
+            this.uncommittedIndices.clear();
+            return handler == null || handler.commit();
         }
     }
 }

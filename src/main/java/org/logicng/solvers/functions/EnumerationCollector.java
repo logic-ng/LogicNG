@@ -16,7 +16,7 @@ public interface EnumerationCollector<R> {
 
     boolean rollback(AdvancedModelEnumerationHandler handler);
 
-    List<Model> rollbackAndReturnModels(AdvancedModelEnumerationHandler handler);
+    List<Model> rollbackAndReturnModels(final MiniSat solver, AdvancedModelEnumerationHandler handler);
 
     R getResult();
 }

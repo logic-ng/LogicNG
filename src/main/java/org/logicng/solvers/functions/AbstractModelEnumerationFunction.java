@@ -124,7 +124,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
                 splitSuccessful = enumerate(collector, solver, resultSetter, newSplitVars, additionalVars, this.maxNumberOfModels, null);
             } while (!splitSuccessful);
 
-            final List<Model> newSplitAssignments = collector.rollbackAndReturnModels(this.handler);
+            final List<Model> newSplitAssignments = collector.rollbackAndReturnModels(solver, this.handler);
             final SortedSet<Variable> recursiveSplitVars = updateSplitVars(CollectionHelper.difference(enumerationVars, nextSplitVars, TreeSet::new));
             for (final Model newSplitAssignment : newSplitAssignments) {
                 enumerateRecursive(collector, solver, newSplitAssignment, resultSetter, enumerationVars, recursiveSplitVars, additionalVars);
