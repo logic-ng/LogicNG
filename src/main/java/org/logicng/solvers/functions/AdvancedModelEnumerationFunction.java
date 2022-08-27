@@ -28,6 +28,9 @@
 
 package org.logicng.solvers.functions;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Assignment;
@@ -39,9 +42,11 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -64,8 +69,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
     }
 
     @Override
-    EnumerationCollector<List<Model>> newCollector() {
-        return new ModelEnumerationCollector();
+    EnumerationCollector<List<Model>> newCollector(final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
+        return new ModelEnumerationCollector(dontCareVariables, additionalVariablesNotKnownBySolver);
     }
 
     /**
@@ -109,7 +114,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the current builder
          */
         public Builder variables(final Variable... variables) {
-            this.variables = Arrays.asList(variables);
+            this.variables = asList(variables);
             return this;
         }
 
@@ -129,7 +134,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the current builder
          */
         public Builder additionalVariables(final Variable... variables) {
-            this.additionalVariables = Arrays.asList(variables);
+            this.additionalVariables = asList(variables);
             return this;
         }
 
@@ -172,15 +177,28 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
     static class ModelEnumerationCollector implements EnumerationCollector<List<Model>> {
         private final List<Model> committedModels = new ArrayList<>();
         private final List<Model> uncommittedModels = new ArrayList<>();
+        private final List<List<Literal>> baseModels;
+        private final SortedSet<Variable> additionalVariablesNotKnownBySolver;
+
+        public ModelEnumerationCollector(final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
+            this.baseModels = getCartesianProduct(dontCareVariables);
+            this.additionalVariablesNotKnownBySolver = additionalVariablesNotKnownBySolver;
+        }
 
         @Override
         public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
-                                final Collection<Variable> additionalVariablesNotOnSolver, final AdvancedModelEnumerationHandler handler) {
+                                final AdvancedModelEnumerationHandler handler) {
             final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-            final List<Literal> literalsModel = new ArrayList<>(additionalVariablesNotOnSolver);
-            literalsModel.addAll(model.getLiterals());
-            final Model modelWithAdditionalVarsNotOnSolver = new Model(literalsModel);
-            this.uncommittedModels.add(modelWithAdditionalVarsNotOnSolver);
+            final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotKnownBySolver);
+            modelLiterals.addAll(model.getLiterals());
+            final List<Model> allModels = new ArrayList<>(this.baseModels.size());
+            for (final List<Literal> baseModel : this.baseModels) {
+                final List<Literal> completeModel = new ArrayList<>(baseModel.size() + modelLiterals.size());
+                completeModel.addAll(baseModel);
+                completeModel.addAll(modelLiterals);
+                allModels.add(new Model(completeModel));
+            }
+            this.uncommittedModels.addAll(allModels);
             return handler == null || handler.foundModel();
         }
 
@@ -207,6 +225,26 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         @Override
         public List<Model> getResult() {
             return this.committedModels;
+        }
+
+        static List<List<Literal>> getCartesianProduct(final Collection<Variable> dontCares) {
+            if (dontCares.isEmpty()) {
+                return singletonList(Collections.emptyList());
+            }
+            final List<List<Literal>> modelsToFactorOut = dontCares.stream().map(v -> asList(v, v.negate())).collect(Collectors.toList());
+            List<List<Literal>> currentResult = singletonList(Collections.emptyList());
+            for (final List<Literal> newModels : modelsToFactorOut) {
+                final List<List<Literal>> newResult = new ArrayList<>();
+                for (final Literal newModel : newModels) {
+                    for (final List<Literal> existingModel : currentResult) {
+                        final List<Literal> extendedModel = new ArrayList<>(existingModel);
+                        extendedModel.add(newModel);
+                        newResult.add(extendedModel);
+                    }
+                }
+                currentResult = newResult;
+            }
+            return currentResult;
         }
     }
 }

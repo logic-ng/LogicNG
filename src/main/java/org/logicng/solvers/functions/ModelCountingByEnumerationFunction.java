@@ -37,10 +37,12 @@ import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -49,7 +51,7 @@ import java.util.List;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<Long> {
+public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<BigInteger> {
 
 
     ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
@@ -63,8 +65,8 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
     }
 
     @Override
-    EnumerationCollector<Long> newCollector() {
-        return new ModelCountCollector();
+    EnumerationCollector<BigInteger> newCollector(final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
+        return new ModelCountCollector(dontCareVariables);
     }
 
     /**
@@ -168,52 +170,19 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         }
     }
 
-    static class ModelEnumerationCollector implements EnumerationCollector<List<Model>> {
-        private final List<Model> committedModels = new ArrayList<>();
-        private final List<Model> uncommittedModels = new ArrayList<>();
-
-        @Override
-        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
-                                final Collection<Variable> additionalVarsNotOnSolver, final AdvancedModelEnumerationHandler handler) {
-            final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-            this.uncommittedModels.add(model);
-            return handler == null || handler.foundModel();
-        }
-
-        @Override
-        public boolean commit(final AdvancedModelEnumerationHandler handler) {
-            this.committedModels.addAll(this.uncommittedModels);
-            this.uncommittedModels.clear();
-            return handler == null || handler.commit();
-        }
-
-        @Override
-        public boolean rollback(final AdvancedModelEnumerationHandler handler) {
-            this.uncommittedModels.clear();
-            return handler == null || handler.rollback();
-        }
-
-        @Override
-        public List<Model> rollbackAndReturnModels(final MiniSat solver, final AdvancedModelEnumerationHandler handler) {
-            final List<Model> modelsToReturn = new ArrayList<>(this.uncommittedModels);
-            rollback(handler);
-            return modelsToReturn;
-        }
-
-        @Override
-        public List<Model> getResult() {
-            return this.committedModels;
-        }
-    }
-
-    static class ModelCountCollector implements EnumerationCollector<Long> {
-        private long committedCount = 0;
+    static class ModelCountCollector implements EnumerationCollector<BigInteger> {
+        private final BigInteger dontCareFactor;
+        private BigInteger committedCount = BigInteger.ZERO;
         private final List<LNGBooleanVector> uncommittedModels = new ArrayList<>(100);
         private final List<LNGIntVector> uncommittedIndices = new ArrayList<>(100);
 
+        public ModelCountCollector(final SortedSet<Variable> dontCareVariables) {
+            this.dontCareFactor = BigInteger.valueOf(2).pow(dontCareVariables.size());
+        }
+
         @Override
         public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
-                                final Collection<Variable> additionalVarsNotOnSolver, final AdvancedModelEnumerationHandler handler) {
+                                final AdvancedModelEnumerationHandler handler) {
             this.uncommittedModels.add(modelFromSolver);
             this.uncommittedIndices.add(relevantAllIndices);
             return handler == null || handler.foundModel();
@@ -221,7 +190,7 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
 
         @Override
         public boolean commit(final AdvancedModelEnumerationHandler handler) {
-            this.committedCount += this.uncommittedModels.size();
+            this.committedCount = this.committedCount.add(BigInteger.valueOf(this.uncommittedModels.size()).multiply(this.dontCareFactor));
             return clearUncommitted(handler);
         }
 
@@ -241,7 +210,7 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         }
 
         @Override
-        public Long getResult() {
+        public BigInteger getResult() {
             return this.committedCount;
         }
 

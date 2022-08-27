@@ -22,6 +22,7 @@ import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvide
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -155,11 +156,11 @@ public class ModelEnumerationFunctionRecursiveTest {
             final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
 
             // recursive call: least common vars
-            final long count1 =
+            final BigInteger count1 =
                     solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
 
             // recursive call: most common vars
-            final long count2 =
+            final BigInteger count2 =
                     solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
 
             assertThat(count1).isEqualTo(modelsNoSplit.size());
