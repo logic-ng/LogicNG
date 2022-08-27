@@ -122,7 +122,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
                 return;
             }
             SortedSet<Variable> newSplitVars = new TreeSet<>(nextSplitVars);
-            while (!enumerate(collector, solver, resultSetter, newSplitVars, additionalVars, this.maxNumberOfModels, this.handler)) {
+            while (!enumerate(collector, solver, resultSetter, newSplitVars, null, this.maxNumberOfModels, this.handler)) {
                 if (!collector.rollback(this.handler)) {
                     solver.loadState(state);
                     return;

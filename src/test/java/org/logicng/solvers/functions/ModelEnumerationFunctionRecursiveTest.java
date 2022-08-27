@@ -32,6 +32,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,19 +104,21 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     @ParameterizedTest
     @MethodSource("splitProviders")
-    public void testModelEnumerationWithAdditionalVariables(final SplitVariableProvider splitProvider) throws ParserException {
+    public void testAdditionalVariablesSimple(final SplitVariableProvider splitProvider) throws ParserException {
         final SATSolver solver = MiniSat.miniSat(this.f);
-        solver.add(this.f.parse("A | B | C | D | E"));
+        solver.add(this.f.parse("A & C | B & ~C"));
         final Variable a = this.f.variable("A");
         final Variable b = this.f.variable("B");
         final Variable c = this.f.variable("C");
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                 .splitVariableProvider(splitProvider)
                 .variables(Arrays.asList(a, b))
-                .additionalVariables(Arrays.asList(b, c)).build());
+                .maxNumberOfModels(3)
+                .additionalVariables(Collections.singletonList(c)).build());
+        assertThat(models).hasSize(3); // (A, B), (A, ~B), (~A, B)
         for (final Model model : models) {
             final List<Variable> variables = model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
-            assertThat(variables).contains(b, c);
+            assertThat(variables).containsExactly(a, b, c);
         }
     }
 
@@ -235,7 +238,7 @@ public class ModelEnumerationFunctionRecursiveTest {
 
         for (int i = 1; i <= 1000; i++) {
             // given
-            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(10).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(20).build());
             final Formula formula = randomizer.formula(4);
             solver.add(formula);
 
@@ -251,6 +254,7 @@ public class ModelEnumerationFunctionRecursiveTest {
             final List<Model> modelsRecursive =
                     solver.execute(AdvancedModelEnumerationFunction.builder()
                             .splitVariableProvider(new LeastCommonVariablesProvider())
+                            .maxNumberOfModels(10)
                             .variables(pmeVars).additionalVariables(additionalVars).build());
 
             System.out.println("\nSeed: " + i);
