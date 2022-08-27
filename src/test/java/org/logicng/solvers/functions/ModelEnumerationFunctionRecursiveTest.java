@@ -126,11 +126,11 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
@@ -156,11 +156,11 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final long count1 =
-                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
+                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
 
             // recursive call: most common vars
             final long count2 =
-                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
+                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
 
             assertThat(count1).isEqualTo(modelsNoSplit.size());
             assertThat(count2).isEqualTo(modelsNoSplit.size());
