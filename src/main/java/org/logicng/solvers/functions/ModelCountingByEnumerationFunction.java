@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * A solver function for enumerating models on the solver.
  * <p>
- * Model enumeration functions are instantiated via their builder {@link Builder()}.
+ * Model enumeration functions are instantiated via their builder {@link Builder}.
  * @version 2.4.0
  * @since 2.4.0
  */
