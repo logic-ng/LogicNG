@@ -31,17 +31,17 @@ public class SplitVariableProviderTest extends TestWithExampleFormulas {
         final SortedSet<Variable> varSet = varSet("a b c d e f g h i j");
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(a | b | c) & (~b | c) & (d | ~e) & (~a | e) & (a | d | b | g | h) & (~h | i) & (f | g | j) & (f | b | j | ~g) & (g | c)"));
-        assertThat(new LeastCommonVariablesProvider(.1).getSplitVars(solver, null)).containsExactly(this.f.variable("i"));
-        assertThat(new LeastCommonVariablesProvider(.1).getSplitVars(solver, varSet)).containsExactly(this.f.variable("i"));
-        assertThat(new LeastCommonVariablesProvider(.0001).getSplitVars(solver, null)).containsExactly(this.f.variable("i"));
-        assertThat(new LeastCommonVariablesProvider(.2).getSplitVars(solver, null))
+        assertThat(new LeastCommonVariablesProvider(.1, 100).getSplitVars(solver, null)).containsExactly(this.f.variable("i"));
+        assertThat(new LeastCommonVariablesProvider(.1, 100).getSplitVars(solver, varSet)).containsExactly(this.f.variable("i"));
+        assertThat(new LeastCommonVariablesProvider(.0001, 100).getSplitVars(solver, null)).containsExactly(this.f.variable("i"));
+        assertThat(new LeastCommonVariablesProvider(.2, 100).getSplitVars(solver, null))
                 .hasSize(2).contains(this.f.variable("i")).containsAnyElementsOf(varSet("e d f h j"));
-        assertThat(new LeastCommonVariablesProvider(.6).getSplitVars(solver, null)).containsExactlyElementsOf(varSet("e d f i h j"));
-        assertThat(new LeastCommonVariablesProvider(.25).getSplitVars(solver, varSet("a b g"))).containsExactly(this.A);
-        assertThat(new LeastCommonVariablesProvider(.5).getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c"));
+        assertThat(new LeastCommonVariablesProvider(.6, 100).getSplitVars(solver, null)).containsExactlyElementsOf(varSet("e d f i h j"));
+        assertThat(new LeastCommonVariablesProvider(.25, 100).getSplitVars(solver, varSet("a b g"))).containsExactly(this.A);
+        assertThat(new LeastCommonVariablesProvider(.5, 100).getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c"));
         assertThat(new LeastCommonVariablesProvider().getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c"));
-        assertThat(new LeastCommonVariablesProvider(1).getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c b g"));
-        assertThat(new LeastCommonVariablesProvider(1).getSplitVars(solver, null)).containsExactlyElementsOf(varSet);
+        assertThat(new LeastCommonVariablesProvider(1, 100).getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c b g"));
+        assertThat(new LeastCommonVariablesProvider(1, 100).getSplitVars(solver, null)).containsExactlyElementsOf(varSet);
     }
 
     @Test
@@ -50,16 +50,16 @@ public class SplitVariableProviderTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(a | b | c) & (~b | c) & (d | ~e) & (~a | e) & (a | d | b | g | h) & (~h | i) & (f | g | j) & (f | b | j | ~g) & (g | c)"));
         final Map<Variable, Integer> maps = solver.execute(new VariableOccurrencesOnSolverFunction());
-        assertThat(new MostCommonVariablesProvider(.2).getSplitVars(solver, null)).containsExactlyElementsOf(varSet("b g"));
-        assertThat(new MostCommonVariablesProvider(.2).getSplitVars(solver, varSet)).containsExactlyElementsOf(varSet("b g"));
-        assertThat(new MostCommonVariablesProvider(.0001).getSplitVars(solver, null)).hasSize(1).containsAnyElementsOf(varSet("b g"));
-        assertThat(new MostCommonVariablesProvider(.4).getSplitVars(solver, null)).containsExactlyElementsOf(varSet("b g a c"));
-        assertThat(new MostCommonVariablesProvider(.9).getSplitVars(solver, null)).containsAll(varSet("a b c d e f g h j"));
-        assertThat(new MostCommonVariablesProvider(.25).getSplitVars(solver, varSet("f i c"))).containsExactly(this.C);
-        assertThat(new MostCommonVariablesProvider(.5).getSplitVars(solver, varSet("c b f h"))).containsExactlyElementsOf(varSet("b c"));
+        assertThat(new MostCommonVariablesProvider(.2, 100).getSplitVars(solver, null)).containsExactlyElementsOf(varSet("b g"));
+        assertThat(new MostCommonVariablesProvider(.2, 100).getSplitVars(solver, varSet)).containsExactlyElementsOf(varSet("b g"));
+        assertThat(new MostCommonVariablesProvider(.0001, 100).getSplitVars(solver, null)).hasSize(1).containsAnyElementsOf(varSet("b g"));
+        assertThat(new MostCommonVariablesProvider(.4, 100).getSplitVars(solver, null)).containsExactlyElementsOf(varSet("b g a c"));
+        assertThat(new MostCommonVariablesProvider(.9, 100).getSplitVars(solver, null)).containsAll(varSet("a b c d e f g h j"));
+        assertThat(new MostCommonVariablesProvider(.25, 100).getSplitVars(solver, varSet("f i c"))).containsExactly(this.C);
+        assertThat(new MostCommonVariablesProvider(.5, 100).getSplitVars(solver, varSet("c b f h"))).containsExactlyElementsOf(varSet("b c"));
         assertThat(new MostCommonVariablesProvider().getSplitVars(solver, varSet("c b f h"))).containsExactlyElementsOf(varSet("b c"));
-        assertThat(new MostCommonVariablesProvider(1).getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c b g"));
-        assertThat(new MostCommonVariablesProvider(1).getSplitVars(solver, null)).containsExactlyElementsOf(varSet);
+        assertThat(new MostCommonVariablesProvider(1, 100).getSplitVars(solver, varSet("a c b g"))).containsExactlyElementsOf(varSet("a c b g"));
+        assertThat(new MostCommonVariablesProvider(1, 100).getSplitVars(solver, null)).containsExactlyElementsOf(varSet);
     }
 
     private SortedSet<Variable> varSet(final String varString) {

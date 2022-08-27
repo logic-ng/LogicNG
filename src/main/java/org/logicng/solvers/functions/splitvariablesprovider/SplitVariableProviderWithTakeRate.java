@@ -22,16 +22,19 @@ import java.util.stream.Collectors;
  */
 public abstract class SplitVariableProviderWithTakeRate extends SplitVariableProvider {
     protected final double takeRate;
+    protected final int maximumNumberOfVariables;
 
     /**
      * Creates a new split variable provider with the given take rate.
-     * @param takeRate the take rate, must be &gt; 0 and &lt;=1
+     * @param takeRate                 the take rate, must be &gt; 0 and &lt;=1
+     * @param maximumNumberOfVariables the maximum number of variables which should be selected
      */
-    protected SplitVariableProviderWithTakeRate(final double takeRate) {
+    protected SplitVariableProviderWithTakeRate(final double takeRate, final int maximumNumberOfVariables) {
         if (takeRate < 0 || takeRate > 1) {
             throw new IllegalArgumentException("Take rate must be a value between 0 and 1");
         }
         this.takeRate = takeRate;
+        this.maximumNumberOfVariables = maximumNumberOfVariables;
     }
 
     /**
@@ -63,6 +66,6 @@ public abstract class SplitVariableProviderWithTakeRate extends SplitVariablePro
      * @return the number of variables which should be chosen
      */
     protected int numberOfVariablesToChoose(final Collection<Variable> variables) {
-        return (int) Math.ceil(variables.size() * this.takeRate);
+        return Math.min(this.maximumNumberOfVariables, (int) Math.ceil(variables.size() * this.takeRate));
     }
 }

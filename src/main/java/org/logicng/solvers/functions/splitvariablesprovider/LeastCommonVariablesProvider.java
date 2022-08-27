@@ -18,18 +18,19 @@ public class LeastCommonVariablesProvider extends SplitVariableProviderWithTakeR
      * Creates a split variable provider returning the least common variables with a take rate of {@code 0.5}.
      */
     public LeastCommonVariablesProvider() {
-        super(0.5);
+        super(0.5, 18);
     }
 
     /**
      * Creates a split variable provider returning the least common variables.
      * <p>
      * The take rate specifies the number of variables which should be returned in {@link #getSplitVars}.
-     * So the result will contain {@code (int) Math.ceil(variables.size() * takeRate)} variables.
-     * @param takeRate the take rate, must be &gt; 0 and &lt;=1
+     * So the result will contain {@code Math.min(maximumNumberOfVariables, (int) Math.ceil(variables.size() * takeRate))} variables.
+     * @param takeRate                 the take rate, must be &gt; 0 and &lt;=1
+     * @param maximumNumberOfVariables the maximum number of variables which should be selected
      */
-    public LeastCommonVariablesProvider(final double takeRate) {
-        super(takeRate);
+    public LeastCommonVariablesProvider(final double takeRate, final int maximumNumberOfVariables) {
+        super(takeRate, maximumNumberOfVariables);
     }
 
     @Override
