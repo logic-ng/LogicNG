@@ -10,6 +10,8 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.functions.FormulaDepthFunction;
+import org.logicng.handlers.AdvancedModelEnumerationHandler;
+import org.logicng.handlers.AdvancedNumberOfModelsHandler;
 import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
@@ -79,11 +81,11 @@ public class ModelEnumerationFunctionTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariablesProvider(.5)).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider(.5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
@@ -342,11 +344,11 @@ public class ModelEnumerationFunctionTest {
             solver.add(formula);
 
             final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
-            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
+            final AdvancedModelEnumerationHandler handler2 = new AdvancedNumberOfModelsHandler(2500000);
 
             final long time0 = System.currentTimeMillis();
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).handler(handler2)
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider(.5)).handler(handler2)
                             .maxNumberOfModels(500).build());
             final long time1 = System.currentTimeMillis();
 
@@ -420,40 +422,40 @@ public class ModelEnumerationFunctionTest {
     //         System.out.println("\nSeed: " + i);
     //
     //         // recursive 300
-    //         final ModelEnumerationFunctionRecursive recursive300 =
-    //                 ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //         final AdvancedModelEnumerationFunction recursive300 =
+    //                 AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                         .maxNumberOfVarsForSplit(300).build();
     //         final long time100 = System.currentTimeMillis();
     //         final List<Model> models300 = solver.execute(recursive300);
     //         final long time10 = System.currentTimeMillis();
     //
     //         // recursive 400
-    //         final ModelEnumerationFunctionRecursive recursive400 =
-    //                 ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //         final AdvancedModelEnumerationFunction recursive400 =
+    //                 AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                         .maxNumberOfVarsForSplit(400).build();
     //         final long time20 = System.currentTimeMillis();
     //         final List<Model> models2 = solver.execute(recursive400);
     //         final long time2 = System.currentTimeMillis();
     //
     //         // recursive 600
-    //         final ModelEnumerationFunctionRecursive recursive600 =
-    //                 ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //         final AdvancedModelEnumerationFunction recursive600 =
+    //                 AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                         .maxNumberOfVarsForSplit(600).build();
     //         final long time30 = System.currentTimeMillis();
     //         final List<Model> models3 = solver.execute(recursive600);
     //         final long time3 = System.currentTimeMillis();
     //
     //         // recursive 800
-    //         final ModelEnumerationFunctionRecursive recursive800 =
-    //                 ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //         final AdvancedModelEnumerationFunction recursive800 =
+    //                 AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                         .maxNumberOfVarsForSplit(800).build();
     //         final long time40 = System.currentTimeMillis();
     //         final List<Model> models4 = solver.execute(recursive800);
     //         final long time4 = System.currentTimeMillis();
     //
     //         // recursive 1000
-    //         final ModelEnumerationFunctionRecursive recursive1000 =
-    //                 ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler5)
+    //         final AdvancedModelEnumerationFunction recursive1000 =
+    //                 AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler5)
     //                         .maxNumberOfVarsForSplit(1000).build();
     //         final long time50 = System.currentTimeMillis();
     //         final List<Model> models5 = solver.execute(recursive1000);
@@ -665,40 +667,40 @@ public class ModelEnumerationFunctionTest {
     //        System.out.println("\nSeed: " + i);
     //
     //        // recursive 300
-    //        final ModelEnumerationFunctionRecursive recursive300 =
-    //                ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //        final AdvancedModelEnumerationFunction recursive300 =
+    //                AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                        .maxNumberOfVarsForSplit(300).build();
     //        final long time100 = System.currentTimeMillis();
     //        final List<Model> models300 = solver.execute(recursive300);
     //        final long time10 = System.currentTimeMillis();
     //
     //        // recursive 400
-    //        final ModelEnumerationFunctionRecursive recursive400 =
-    //                ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //        final AdvancedModelEnumerationFunction recursive400 =
+    //                AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                        .maxNumberOfVarsForSplit(400).build();
     //        final long time20 = System.currentTimeMillis();
     //        final List<Model> models2 = solver.execute(recursive400);
     //        final long time2 = System.currentTimeMillis();
     //
     //        // recursive 600
-    //        final ModelEnumerationFunctionRecursive recursive600 =
-    //                ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //        final AdvancedModelEnumerationFunction recursive600 =
+    //                AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                        .maxNumberOfVarsForSplit(600).build();
     //        final long time30 = System.currentTimeMillis();
     //        final List<Model> models3 = solver.execute(recursive600);
     //        final long time3 = System.currentTimeMillis();
     //
     //        // recursive 800
-    //        final ModelEnumerationFunctionRecursive recursive800 =
-    //                ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
+    //        final AdvancedModelEnumerationFunction recursive800 =
+    //                AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f))
     //                        .maxNumberOfVarsForSplit(800).build();
     //        final long time40 = System.currentTimeMillis();
     //        final List<Model> models4 = solver.execute(recursive800);
     //        final long time4 = System.currentTimeMillis();
     //
     //        // recursive 1000
-    //        final ModelEnumerationFunctionRecursive recursive1000 =
-    //                ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler5)
+    //        final AdvancedModelEnumerationFunction recursive1000 =
+    //                AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariableProvider(this.f)).handler(handler5)
     //                        .maxNumberOfVarsForSplit(1000).build();
     //        final long time50 = System.currentTimeMillis();
     //        final List<Model> models5 = solver.execute(recursive1000);

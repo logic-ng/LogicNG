@@ -58,7 +58,7 @@ public class ModelEnumerationFunctionRecursiveTest {
     public void testSimple1(final SplitVariableProvider splitProvider) throws ParserException {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
-        final List<Model> models = solver.execute(ModelEnumerationFunctionRecursive.builder()
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                 .splitVariableProvider(splitProvider)
                 .build());
         assertThat(toSets(models)).containsExactlyInAnyOrder(
@@ -73,7 +73,7 @@ public class ModelEnumerationFunctionRecursiveTest {
     public void testSimple2(final SplitVariableProvider splitProvider) throws ParserException {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
-        final List<Model> models = solver.execute(ModelEnumerationFunctionRecursive.builder()
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                 .splitVariableProvider(splitProvider)
                 .build());
         assertThat(models).hasSize(5);
@@ -84,7 +84,7 @@ public class ModelEnumerationFunctionRecursiveTest {
     public void testMultipleModelEnumeration(final SplitVariableProvider splitProvider) throws ParserException {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
-        final ModelEnumerationFunctionRecursive meFunction = ModelEnumerationFunctionRecursive.builder()
+        final AdvancedModelEnumerationFunction meFunction = AdvancedModelEnumerationFunction.builder()
                 .splitVariableProvider(splitProvider)
                 .build();
         final List<Model> firstRun = solver.execute(meFunction);
@@ -101,7 +101,7 @@ public class ModelEnumerationFunctionRecursiveTest {
         final Variable a = this.f.variable("A");
         final Variable b = this.f.variable("B");
         final Variable c = this.f.variable("C");
-        final List<Model> models = solver.execute(ModelEnumerationFunctionRecursive.builder()
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
                 .splitVariableProvider(splitProvider)
                 .variables(Arrays.asList(a, b))
                 .additionalVariables(Arrays.asList(b, c)).build());
@@ -126,11 +126,11 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final List<Model> models1 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider(0.5)).build());
 
             // recursive call: most common vars
             final List<Model> models2 =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
+                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider(0.5)).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
@@ -161,14 +161,14 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // when
             final List<Model> modelsRecursive =
-                    solver.execute(ModelEnumerationFunctionRecursive.builder()
+                    solver.execute(AdvancedModelEnumerationFunction.builder()
                             .splitVariableProvider(new LeastCommonVariablesProvider())
                             .variables(pmeVars).additionalVariables(additionalVars).build());
 
             System.out.println("\nSeed: " + i);
             System.out.println("Number of combinations: " + modelsRecursive.size());
 
-            // ModelEnumerationFunctionRecursive.builder().splitVariableProvider(null);
+            // AdvancedModelEnumerationFunction.builder().splitVariableProvider(null);
 
             final List<Assignment> modelsOld =
                     solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
