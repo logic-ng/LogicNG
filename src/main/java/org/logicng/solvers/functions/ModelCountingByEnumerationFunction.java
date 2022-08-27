@@ -45,12 +45,11 @@ import java.util.List;
 /**
  * A solver function for enumerating models on the solver.
  * <p>
- * Model enumeration functions are instantiated via their builder {@link Builder()}.
+ * Model enumeration functions are instantiated via their builder {@link Builder}.
  * @version 2.4.0
  * @since 2.4.0
  */
 public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<Long> {
-
 
     ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables, final boolean fastEvaluable,
                                        final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
@@ -164,43 +163,6 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
         public ModelCountingByEnumerationFunction build() {
             return new ModelCountingByEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable,
                     this.splitVariableProvider, this.maxNumberOfModels);
-        }
-    }
-
-    static class ModelEnumerationCollector implements EnumerationCollector<List<Model>> {
-        private final List<Model> committedModels = new ArrayList<>();
-        private final List<Model> uncommittedModels = new ArrayList<>();
-
-        @Override
-        public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices, final AdvancedModelEnumerationHandler handler) {
-            final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-            this.uncommittedModels.add(model);
-            return handler == null || handler.foundModel();
-        }
-
-        @Override
-        public boolean commit(final AdvancedModelEnumerationHandler handler) {
-            this.committedModels.addAll(this.uncommittedModels);
-            this.uncommittedModels.clear();
-            return handler == null || handler.commit();
-        }
-
-        @Override
-        public boolean rollback(final AdvancedModelEnumerationHandler handler) {
-            this.uncommittedModels.clear();
-            return handler == null || handler.rollback();
-        }
-
-        @Override
-        public List<Model> rollbackAndReturnModels(final MiniSat solver, final AdvancedModelEnumerationHandler handler) {
-            final List<Model> modelsToReturn = new ArrayList<>(this.uncommittedModels);
-            rollback(handler);
-            return modelsToReturn;
-        }
-
-        @Override
-        public List<Model> getResult() {
-            return this.committedModels;
         }
     }
 

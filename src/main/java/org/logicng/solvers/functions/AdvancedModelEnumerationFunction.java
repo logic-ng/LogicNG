@@ -45,12 +45,11 @@ import java.util.List;
 /**
  * A solver function for enumerating models on the solver.
  * <p>
- * Model enumeration functions are instantiated via their builder {@link Builder()}.
+ * Model enumeration functions are instantiated via their builder {@link Builder}.
  * @version 2.4.0
  * @since 2.4.0
  */
 public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFunction<List<Model>> {
-
 
     AdvancedModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables, final Collection<Variable> additionalVariables, final boolean fastEvaluable,
                                      final SplitVariableProvider splitVariableProvider, final int maxNumberOfModels) {
