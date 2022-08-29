@@ -30,6 +30,7 @@ package org.logicng.knowledgecompilation.bdds;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;
@@ -108,11 +109,105 @@ public class BDD {
     }
 
     /**
+     * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
+     * @return the formula for this BDD
+     */
+    public Formula toFormula() {
+        return toFormula(this.index);
+    }
+
+    private Formula toFormula(final int index) {
+        final FormulaFactory f = this.kernel.factory();
+        if (index == BDDKernel.BDD_FALSE) {
+            return f.falsum();
+        } else if (index == BDDKernel.BDD_TRUE) {
+            return f.verum();
+        } else {
+            final Variable nodeVariable = this.kernel.idx2var().get(this.construction.bddVar(index));
+            return f.or(f.and(nodeVariable, toFormula(this.construction.bddHigh(index))),
+                    f.and(nodeVariable.negate(), toFormula(this.construction.bddLow(index))));
+        }
+    }
+
+    /**
+     * Returns a new BDD which is the negation of this BDD.
+     * @return the negation of this BDD
+     */
+    public BDD negate() {
+        return new BDD(this.kernel.addRef(this.construction.not(this.index), null), this.kernel);
+    }
+
+    /**
+     * Returns a new BDD which is the implication of this BDD to the given other BDD.  Both BDDs must use the same kernel.
+     * @param other the other BDD
+     * @return the implication from this BDD to the other BDD
+     * @throws IllegalArgumentException if the two BDDs don't have the same kernel
+     */
+    public BDD implies(final BDD other) {
+        if (other.kernel != this.kernel) {
+            throw new IllegalArgumentException("Only BDDs with the same kernel can be processed");
+        }
+        return new BDD(this.kernel.addRef(this.construction.implication(this.index, other.index), null), this.kernel);
+    }
+
+    /**
+     * Returns a new BDD which is the implication of the other given BDD to this BDD.  Both BDDs must use the same kernel.
+     * @param other the other BDD
+     * @return the implication from the other BDD to this BDD
+     * @throws IllegalArgumentException if the two BDDs don't have the same kernel
+     */
+    public BDD impliedBy(final BDD other) {
+        if (other.kernel != this.kernel) {
+            throw new IllegalArgumentException("Only BDDs with the same kernel can be processed");
+        }
+        return new BDD(this.kernel.addRef(this.construction.implication(other.index, this.index), null), this.kernel);
+    }
+
+    /**
+     * Returns a new BDD which is the equivalence of this BDD and the other given BDD.  Both BDDs must use the same kernel.
+     * @param other the other BDD
+     * @return the equivalence of this and the other BDD
+     * @throws IllegalArgumentException if the two BDDs don't have the same kernel
+     */
+    public BDD equivalence(final BDD other) {
+        if (other.kernel != this.kernel) {
+            throw new IllegalArgumentException("Only BDDs with the same kernel can be processed");
+        }
+        return new BDD(this.kernel.addRef(this.construction.equivalence(this.index, other.index), null), this.kernel);
+    }
+
+    /**
+     * Returns a new BDD which is the conjunction of this BDD and the given other BDD.  Both BDDs must use the same kernel.
+     * @param other the other BDD
+     * @return the conjunction of the two BDDs
+     * @throws IllegalArgumentException if the two BDDs don't have the same kernel
+     */
+    public BDD and(final BDD other) {
+        if (other.kernel != this.kernel) {
+            throw new IllegalArgumentException("Only BDDs with the same kernel can be processed");
+        }
+        return new BDD(this.kernel.addRef(this.construction.and(this.index, other.index), null), this.kernel);
+    }
+
+    /**
+     * Returns a new BDD which is the disjunction of this BDD and the given other BDD.  Both BDDs must use the same kernel.
+     * @param other the other BDD
+     * @return the disjunction of the two BDDs
+     * @throws IllegalArgumentException if the two BDDs don't have the same kernel
+     */
+    public BDD or(final BDD other) {
+        if (other.kernel != this.kernel) {
+            throw new IllegalArgumentException("Only BDDs with the same kernel can be processed");
+        }
+        return new BDD(this.kernel.addRef(this.construction.or(this.index, other.index), null), this.kernel);
+    }
+
+    /**
      * Returns {@code true} if this BDD is a tautology, {@code false} otherwise.
      * @return {@code true} if this BDD is a tautology, {@code false} otherwise
      */
     public boolean isTautology() {
-        return this.index == 1;
+        return this.index == BDDKernel.BDD_TRUE;
     }
 
     /**
@@ -120,7 +215,7 @@ public class BDD {
      * @return {@code true} if this BDD is a contradiction, {@code false} otherwise
      */
     public boolean isContradiction() {
-        return this.index == 0;
+        return this.index == BDDKernel.BDD_FALSE;
     }
 
     /**
