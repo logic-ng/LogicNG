@@ -11,3 +11,4 @@ jobs:
     - uses: mattermost/action-mattermost-notify@master
       env:
         MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+        MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME }}
