@@ -58,7 +58,7 @@ import java.util.TreeSet;
 
 /**
  * The internal representation of a BDD.
- * @version 2.3.0
+ * @version 2.4.0
  * @since 1.4.0
  */
 public class BDD {
