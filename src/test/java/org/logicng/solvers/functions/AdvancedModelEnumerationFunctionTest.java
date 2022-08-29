@@ -1,41 +1,40 @@
-//package org.logicng.solvers.functions;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//import org.junit.jupiter.api.Test;
-//import org.logicng.datastructures.Model;
-//import org.logicng.formulas.Formula;
-//import org.logicng.formulas.FormulaFactory;
-//import org.logicng.functions.FormulaDepthFunction;
-//import org.logicng.handlers.ModelEnumerationHandler;
-//import org.logicng.handlers.NumberOfModelsHandler;
-//import org.logicng.solvers.MiniSat;
-//import org.logicng.solvers.SATSolver;
-//import org.logicng.solvers.SolverState;
-//import org.logicng.solvers.functions.splitVariableProvider.LeastCommonVariableProvider;
-//import org.logicng.solvers.functions.splitVariableProvider.MostCommonVariableProvider;
-//import org.logicng.solvers.functions.splitVariableProvider.RandomSplitVariableProvider;
-//import org.logicng.util.FormulaRandomizer;
-//import org.logicng.util.FormulaRandomizerConfig;
-//
-//import java.io.BufferedWriter;
-//import java.io.FileWriter;
-//import java.io.IOException;
-//import java.util.List;
-//
-///**
-// * Units tests for {@link AdvancedModelEnumerationFunction}.
-// * @version 2.3.0
-// * @since 2.3.0
-// */
-//public class AdvancedModelEnumerationFunctionTest {
-//
-//    private final FormulaFactory f;
-//
-//    public AdvancedModelEnumerationFunctionTest() {
-//        this.f = new FormulaFactory();
-//    }
-//
+package org.logicng.solvers.functions;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.solvers.functions.AdvancedModelEnumerationFunction.ModelEnumerationCollector.getCartesianProduct;
+
+import org.junit.jupiter.api.Test;
+import org.logicng.TestWithExampleFormulas;
+
+/**
+ * Units tests for {@link AdvancedModelEnumerationFunction}.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
+public class AdvancedModelEnumerationFunctionTest extends TestWithExampleFormulas {
+
+    @Test
+    public void testGetCartesianProduct() {
+        assertThat(getCartesianProduct(emptyList())).containsExactly(emptyList());
+        assertThat(getCartesianProduct(singletonList(this.A))).containsExactly(
+                singletonList(this.A),
+                singletonList(this.NA));
+        assertThat(getCartesianProduct(asList(this.A, this.B, this.C))).containsExactly(
+                asList(this.A, this.B, this.C),
+                asList(this.A, this.B, this.NC),
+                asList(this.A, this.NB, this.C),
+                asList(this.A, this.NB, this.NC),
+                asList(this.NA, this.B, this.C),
+                asList(this.NA, this.B, this.NC),
+                asList(this.NA, this.NB, this.C),
+                asList(this.NA, this.NB, this.NC)
+        );
+    }
+}
+
 //    @Test
 //    public void computeWithComponentsWithSplit() {
 //        for (int i = 18; i <= 18; i++) {

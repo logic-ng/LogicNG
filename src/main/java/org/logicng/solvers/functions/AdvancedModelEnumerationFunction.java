@@ -29,6 +29,7 @@
 package org.logicng.solvers.functions;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import org.logicng.collections.LNGBooleanVector;
@@ -41,10 +42,8 @@ import org.logicng.solvers.MiniSat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -197,24 +196,29 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
             return this.committedModels;
         }
 
-        static List<List<Literal>> getCartesianProduct(final Collection<Variable> dontCares) {
-            if (dontCares.isEmpty()) {
-                return singletonList(Collections.emptyList());
-            }
-            final List<List<Literal>> modelsToFactorOut = dontCares.stream().map(v -> asList(v, v.negate())).collect(Collectors.toList());
-            List<List<Literal>> currentResult = singletonList(Collections.emptyList());
-            for (final List<Literal> newModels : modelsToFactorOut) {
-                final List<List<Literal>> newResult = new ArrayList<>();
-                for (final Literal newModel : newModels) {
-                    for (final List<Literal> existingModel : currentResult) {
-                        final List<Literal> extendedModel = new ArrayList<>(existingModel);
-                        extendedModel.add(newModel);
-                        newResult.add(extendedModel);
-                    }
+        /**
+         * Returns the Cartesian product for the given variables, i.e. all combinations of literals are generated
+         * with each variable occurring positively and negatively.
+         * @param variables the variables, must not be {@code null}
+         * @return the Cartesian product
+         */
+        static List<List<Literal>> getCartesianProduct(final Collection<Variable> variables) {
+            List<List<Literal>> result = singletonList(emptyList());
+            for (final Variable var : variables) {
+                final List<List<Literal>> extended = new ArrayList<>(result.size() * 2);
+                for (final List<Literal> literals : result) {
+                    extended.add(extendedByLiteral(literals, var));
+                    extended.add(extendedByLiteral(literals, var.negate()));
                 }
-                currentResult = newResult;
+                result = extended;
             }
-            return currentResult;
+            return result;
+        }
+
+        private static List<Literal> extendedByLiteral(final List<Literal> literals, final Literal lit) {
+            final ArrayList<Literal> extended = new ArrayList<>(literals);
+            extended.add(lit);
+            return extended;
         }
     }
 }

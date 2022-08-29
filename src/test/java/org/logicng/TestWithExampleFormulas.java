@@ -52,6 +52,7 @@ public abstract class TestWithExampleFormulas {
     protected final Variable Y = this.f.variable("y");
     protected final Literal NA = this.f.literal("a", false);
     protected final Literal NB = this.f.literal("b", false);
+    protected final Literal NC = this.f.literal("c", false);
     protected final Literal NX = this.f.literal("x", false);
     protected final Literal NY = this.f.literal("y", false);
 
