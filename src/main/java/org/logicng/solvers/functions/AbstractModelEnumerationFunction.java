@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 /**
  * A solver function for enumerating models on the solver.
  * @version 2.4.0
- * @since 2.0.0
+ * @since 2.4.0
  */
 public abstract class AbstractModelEnumerationFunction<R> implements SolverFunction<R> {
 
@@ -69,7 +69,6 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     protected final Collection<Variable> additionalVariables;
     protected final SplitVariableProvider splitVariableProvider;
     protected final int maxNumberOfModels;
-    private static final int TWO = 2;
 
     AbstractModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
                                      final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
@@ -103,15 +102,13 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     protected void splitModelEnumeration(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
-                                         final SortedSet<Variable> relevantVars,
-                                         final Collection<Variable> additionalVariables) {
+                                         final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
         final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
         enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, additionalVariables);
     }
 
     private void enumerateRecursive(final EnumerationCollector<R> collector, final MiniSat solver, final Model splitAssignment,
-                                    final Consumer<Tristate> resultSetter,
-                                    final Collection<Variable> enumerationVars, final Collection<Variable> nextSplitVars,
+                                    final Consumer<Tristate> resultSetter, final Collection<Variable> enumerationVars, final Collection<Variable> nextSplitVars,
                                     final Collection<Variable> additionalVars) {
         final SolverState state = solver.saveState();
         solver.add(splitAssignment.formula(solver.factory()));
@@ -153,11 +150,12 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     private static SortedSet<Variable> updateSplitVars(final SortedSet<Variable> splitVars) {
-        return splitVars.stream().limit(splitVars.size() / TWO).collect(Collectors.toCollection(TreeSet::new));
+        return splitVars.stream().limit(splitVars.size() / 2).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    protected static <R> boolean enumerate(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter, final Collection<Variable> variables,
-                                           final Collection<Variable> additionalVariables, final int maxModels, final AdvancedModelEnumerationHandler handler) {
+    protected static <R> boolean enumerate(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
+                                           final Collection<Variable> variables, final Collection<Variable> additionalVariables, final int maxModels,
+                                           final AdvancedModelEnumerationHandler handler) {
         start(handler);
         final SolverState stateBeforeEnumeration = solver.saveState();
         boolean proceed = true;
@@ -219,7 +217,9 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     protected SortedSet<Variable> getVarsForEnumeration(final Collection<Variable> knownVariables) {
-        final SortedSet<Variable> relevantVars = knownVariables.stream().filter(AbstractModelEnumerationFunction::isNotAuxiliaryVariable).collect(Collectors.toCollection(TreeSet::new));
+        final SortedSet<Variable> relevantVars = knownVariables.stream()
+                .filter(AbstractModelEnumerationFunction::isNotAuxiliaryVariable)
+                .collect(Collectors.toCollection(TreeSet::new));
         return this.variables == null ? relevantVars : relevantVars.stream().filter(this.variables::contains).collect(Collectors.toCollection(TreeSet::new));
     }
 
