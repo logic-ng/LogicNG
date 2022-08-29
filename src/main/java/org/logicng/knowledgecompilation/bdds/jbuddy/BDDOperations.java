@@ -34,6 +34,10 @@ import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.CACHEID_SAT
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.MARKOFF;
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.MARKON;
 
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +45,7 @@ import java.util.List;
 
 /**
  * A collection of operations on a BDD kernel.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 2.0.0
  */
 public class BDDOperations {
@@ -454,5 +458,45 @@ public class BDDOperations {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
+     * If {@code dnfStyle} is activated, the {@code true} paths are followed to generate the formula.
+     * If {@code dnfStyle} is deactivated, the {@code false} paths are followed to generate the formula and the resulting formula is negated.
+     * Depending on the formula and the number of satisfying assignments, the generated formula can be more compact using the {@code true} paths
+     * or {@code false} paths, respectively.
+     * @param r        the BDD root node
+     * @param dnfStyle the extraction style
+     * @return the formula
+     */
+    public Formula toFormula(final int r, final boolean dnfStyle) {
+        this.k.initRef();
+        final Formula formula = toFormulaRec(r, dnfStyle);
+        return dnfStyle ? formula : formula.negate();
+    }
+
+    protected Formula toFormulaRec(final int r, final boolean dnfStyle) {
+        final FormulaFactory f = this.k.factory();
+        if (this.k.isOne(r)) {
+            return f.constant(dnfStyle);
+        }
+        if (this.k.isZero(r)) {
+            return f.constant(!dnfStyle);
+        }
+        final Variable var = this.k.idx2var.get(this.k.level(r));
+        final int low = this.k.low(r);
+        final Formula lowFormula = isRelevant(low, dnfStyle)
+                ? f.and(var.negate(), toFormulaRec(low, dnfStyle))
+                : f.falsum();
+        final int high = this.k.high(r);
+        final Formula rightFormula = isRelevant(high, dnfStyle)
+                ? f.and(var, toFormulaRec(high, dnfStyle))
+                : f.falsum();
+        return f.or(lowFormula, rightFormula);
+    }
+
+    private boolean isRelevant(final int r, final boolean dnfStyle) {
+        return dnfStyle && !this.k.isZero(r) || !dnfStyle && !this.k.isOne(r);
     }
 }
