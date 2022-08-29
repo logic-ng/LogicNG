@@ -38,7 +38,6 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,10 +55,9 @@ import java.util.stream.Collectors;
  */
 public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFunction<List<Model>> {
 
-    AdvancedModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
-                                     final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
-                                     final int maxNumberOfModels) {
-        super(handler, variables, additionalVariables, splitVariableProvider, maxNumberOfModels);
+    AdvancedModelEnumerationFunction(final Collection<Variable> variables, final Collection<Variable> additionalVariables,
+                                     final AdvancedModelEnumerationConfig config) {
+        super(variables, additionalVariables, configuration(variables, config));
     }
 
     /**
@@ -79,24 +77,12 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
      * The builder for a model enumeration function.
      */
     public static class Builder {
-        protected AdvancedModelEnumerationHandler handler;
-        protected Collection<Variable> variables;
-        protected Collection<Variable> additionalVariables;
-        protected SplitVariableProvider splitVariableProvider = null;
-        protected int maxNumberOfModels = 1000;
+        private Collection<Variable> variables;
+        private Collection<Variable> additionalVariables;
+        private AdvancedModelEnumerationConfig configuration;
 
         Builder() {
             // Initialize only via factory
-        }
-
-        /**
-         * Sets the model enumeration handler for this function
-         * @param handler the handler
-         * @return the current builder
-         */
-        public Builder handler(final AdvancedModelEnumerationHandler handler) {
-            this.handler = handler;
-            return this;
         }
 
         /**
@@ -140,23 +126,12 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         }
 
         /**
-         * Sets the split variable provider. If no split variable provider is given, enumeration is performed without splits. Else the enumeration is
-         * performed with the split variables provided by the {@link SplitVariableProvider}.
-         * @param splitVariableProvider the given split variable provider
-         * @return the builder
+         * Sets the configuration for the model enumeration split algorithm.
+         * @param configuration the configuration
+         * @return the current builder
          */
-        public Builder splitVariableProvider(final SplitVariableProvider splitVariableProvider) {
-            this.splitVariableProvider = splitVariableProvider;
-            return this;
-        }
-
-        /**
-         * The maximum number of models must be &gt; 2.
-         * @param maxNumberOfModels the maximum number of models
-         * @return the builder
-         */
-        public Builder maxNumberOfModels(final int maxNumberOfModels) {
-            this.maxNumberOfModels = Math.max(maxNumberOfModels, 3);
+        public Builder configuration(final AdvancedModelEnumerationConfig configuration) {
+            this.configuration = configuration;
             return this;
         }
 
@@ -165,8 +140,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the model enumeration function
          */
         public AdvancedModelEnumerationFunction build() {
-            return new AdvancedModelEnumerationFunction(this.handler, this.variables, this.additionalVariables,
-                    this.splitVariableProvider, this.maxNumberOfModels);
+            return new AdvancedModelEnumerationFunction(this.variables, this.additionalVariables, this.configuration);
         }
     }
 

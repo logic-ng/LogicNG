@@ -34,12 +34,12 @@ import org.logicng.datastructures.Model;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
-import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -52,10 +52,8 @@ import java.util.SortedSet;
  */
 public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigInteger> {
 
-    ModelCountingFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
-                          final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
-                          final int maxNumberOfModels) {
-        super(handler, variables, additionalVariables, splitVariableProvider, maxNumberOfModels);
+    ModelCountingFunction(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
+        super(variables, Collections.emptyList(), configuration(variables, config));
     }
 
     /**
@@ -75,24 +73,11 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
      * The builder for a model enumeration function.
      */
     public static class Builder {
-        protected AdvancedModelEnumerationHandler handler;
-        protected Collection<Variable> variables;
-        protected Collection<Variable> additionalVariables;
-        protected SplitVariableProvider splitVariableProvider = null;
-        protected int maxNumberOfModels = 1000;
+        private Collection<Variable> variables;
+        private AdvancedModelEnumerationConfig configuration;
 
         Builder() {
             // Initialize only via factory
-        }
-
-        /**
-         * Sets the model enumeration handler for this function
-         * @param handler the handler
-         * @return the current builder
-         */
-        public Builder handler(final AdvancedModelEnumerationHandler handler) {
-            this.handler = handler;
-            return this;
         }
 
         /**
@@ -116,38 +101,12 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
-         * @param variables the additional variables for each model
+         * Sets the configuration for the model enumeration split algorithm.
+         * @param configuration the configuration
          * @return the current builder
          */
-        public Builder additionalVariables(final Collection<Variable> variables) {
-            this.additionalVariables = variables;
-            return this;
-        }
-
-        /**
-         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
-         * @param variables the additional variables for each model
-         * @return the current builder
-         */
-        public Builder additionalVariables(final Variable... variables) {
-            this.additionalVariables = Arrays.asList(variables);
-            return this;
-        }
-
-        /**
-         * Sets the split variable provider. If no split variable provider is given, enumeration is performed without splits. Else the enumeration is
-         * performed with the split variables provided by the {@link SplitVariableProvider}.
-         * @param splitVariableProvider the given split variable provider
-         * @return the builder
-         */
-        public Builder splitVariableProvider(final SplitVariableProvider splitVariableProvider) {
-            this.splitVariableProvider = splitVariableProvider;
-            return this;
-        }
-
-        public Builder maxNumberOfModels(final int maxNumberOfModels) {
-            this.maxNumberOfModels = maxNumberOfModels;
+        public Builder configuration(final AdvancedModelEnumerationConfig configuration) {
+            this.configuration = configuration;
             return this;
         }
 
@@ -156,8 +115,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
          * @return the model enumeration function
          */
         public ModelCountingFunction build() {
-            return new ModelCountingFunction(this.handler, this.variables, this.additionalVariables,
-                    this.splitVariableProvider, this.maxNumberOfModels);
+            return new ModelCountingFunction(this.variables, this.configuration);
         }
     }
 

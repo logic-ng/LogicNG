@@ -49,6 +49,7 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.pseudobooleans.PBConfig;
 import org.logicng.pseudobooleans.PBEncoder;
+import org.logicng.solvers.functions.AdvancedModelEnumerationConfig;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
@@ -178,6 +179,7 @@ public class FormulaFactory {
         configMap.put(ConfigurationType.MAXSAT, MaxSATConfig.builder().build());
         configMap.put(ConfigurationType.MUS, MUSConfig.builder().build());
         configMap.put(ConfigurationType.ADVANCED_SIMPLIFIER, AdvancedSimplifierConfig.builder().build());
+        configMap.put(ConfigurationType.ADVANCED_MODEL_ENUMERATION, AdvancedModelEnumerationConfig.builder().build());
         configMap.put(ConfigurationType.FORMULA_RANDOMIZER, FormulaRandomizerConfig.builder().build());
         return configMap;
     }

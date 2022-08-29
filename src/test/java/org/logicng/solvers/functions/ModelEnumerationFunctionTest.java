@@ -3,23 +3,13 @@ package org.logicng.solvers.functions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.LongRunningTag;
 import org.logicng.datastructures.Assignment;
-import org.logicng.datastructures.Model;
-import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariablesProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
-import org.logicng.util.FormulaRandomizer;
-import org.logicng.util.FormulaRandomizerConfig;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Units tests for {@link ModelEnumerationFunction}.
@@ -56,44 +46,6 @@ public class ModelEnumerationFunctionTest {
         assertThat(models).extracting(Assignment::fastEvaluable).containsOnly(false);
         models = solver.execute(ModelEnumerationFunction.builder().fastEvaluable(true).build());
         assertThat(models).extracting(Assignment::fastEvaluable).containsOnly(true);
-    }
-
-    @Test
-    @LongRunningTag
-    public void testRecursives() {
-        for (int i = 1; i <= 100; i++) {
-            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
-            final Formula formula = randomizer.formula(3);
-
-            final SATSolver solver = MiniSat.miniSat(this.f);
-            solver.add(formula);
-
-            // no split
-            final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
-
-            // recursive call: least common vars
-            final List<Model> models1 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
-
-            // recursive call: most common vars
-            final List<Model> models2 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
-
-            assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
-            assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
-
-            final List<HashSet<Literal>> setNoSplit = getSetForAssignments(modelsNoSplit);
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models1));
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models2));
-        }
-    }
-
-    private List<HashSet<Literal>> getSetForModels(final List<Model> models) {
-        return models.stream().map(x -> new HashSet<>(x.getLiterals())).collect(Collectors.toList());
-    }
-
-    private List<HashSet<Literal>> getSetForAssignments(final List<Assignment> models) {
-        return models.stream().map(x -> new HashSet<>(x.literals())).collect(Collectors.toList());
     }
 
     // @Test

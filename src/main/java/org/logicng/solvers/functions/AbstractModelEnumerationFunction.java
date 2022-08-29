@@ -38,8 +38,10 @@ import static org.logicng.handlers.Handler.start;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
+import org.logicng.configurations.ConfigurationType;
 import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
@@ -59,25 +61,25 @@ import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
+ * @param <R> The result type of the model enumeration function.  Can be e.g. a model count, a list of models, or a BDD.
  * @version 2.4.0
  * @since 2.4.0
  */
 public abstract class AbstractModelEnumerationFunction<R> implements SolverFunction<R> {
 
-    protected final AdvancedModelEnumerationHandler handler;
     protected final Collection<Variable> variables;
     protected final Collection<Variable> additionalVariables;
+    protected final AdvancedModelEnumerationHandler handler;
     protected final SplitVariableProvider splitVariableProvider;
     protected final int maxNumberOfModels;
 
-    AbstractModelEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
-                                     final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
-                                     final int maxNumberOfModels) {
-        this.handler = handler;
+    AbstractModelEnumerationFunction(final Collection<Variable> variables, final Collection<Variable> additionalVariables,
+                                     final AdvancedModelEnumerationConfig configuration) {
         this.variables = variables;
         this.additionalVariables = additionalVariables;
-        this.splitVariableProvider = splitVariableProvider;
-        this.maxNumberOfModels = maxNumberOfModels;
+        this.handler = configuration.handler;
+        this.splitVariableProvider = configuration.splitVariableProvider;
+        this.maxNumberOfModels = configuration.maxNumberOfModels;
     }
 
     abstract EnumerationCollector<R> newCollector(final SortedSet<Variable> dontCareVariables, SortedSet<Variable> additionalVariablesNotKnownBySolver);
@@ -260,5 +262,13 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             }
         }
         return blockingClause;
+    }
+
+    protected static FormulaFactory factory(final Collection<Variable> variables) {
+        return variables.isEmpty() ? new FormulaFactory() : variables.iterator().next().factory();
+    }
+
+    protected static AdvancedModelEnumerationConfig configuration(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
+        return config == null ? (AdvancedModelEnumerationConfig) factory(variables).configurationFor(ConfigurationType.ADVANCED_MODEL_ENUMERATION) : config;
     }
 }

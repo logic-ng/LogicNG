@@ -11,7 +11,7 @@ import static org.logicng.util.FormulaHelper.strings2vars;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.logicng.LongRunningTag;
+import org.logicng.RandomTag;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Model;
 import org.logicng.datastructures.Tristate;
@@ -64,12 +64,10 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testSimple1(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
-        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .splitVariableProvider(splitProvider)
-                .maxNumberOfModels(2)
-                .build());
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
         assertThat(toSets(models)).containsExactlyInAnyOrder(
                 set(this.f.variable("A"), this.f.variable("B"), this.f.variable("C")),
                 set(this.f.variable("A"), this.f.variable("B"), this.f.literal("C", false)),
@@ -80,22 +78,20 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testSimple2(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
-        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .splitVariableProvider(splitProvider)
-                .build());
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
         assertThat(models).hasSize(5);
     }
 
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testMultipleModelEnumeration(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
-        final AdvancedModelEnumerationFunction meFunction = AdvancedModelEnumerationFunction.builder()
-                .splitVariableProvider(splitProvider)
-                .build();
+        final AdvancedModelEnumerationFunction meFunction = AdvancedModelEnumerationFunction.builder().configuration(config).build();
         final List<Model> firstRun = solver.execute(meFunction);
         final List<Model> secondRun = solver.execute(meFunction);
         assertThat(firstRun).hasSize(5);
@@ -105,16 +101,17 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testAdditionalVariablesSimple(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & C | B & ~C"));
         final Variable a = this.f.variable("A");
         final Variable b = this.f.variable("B");
         final Variable c = this.f.variable("C");
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .splitVariableProvider(splitProvider)
                 .variables(Arrays.asList(a, b))
-                .maxNumberOfModels(3)
-                .additionalVariables(Collections.singletonList(c)).build());
+                .additionalVariables(Collections.singletonList(c))
+                .configuration(config)
+                .build());
         assertThat(models).hasSize(3); // (A, B), (A, ~B), (~A, B)
         for (final Model model : models) {
             final List<Variable> variables = model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
@@ -125,11 +122,12 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDontCareVariables1(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .splitVariableProvider(splitProvider)
                 .variables(strings2vars(Arrays.asList("A", "B", "C", "D"), this.f))
+                .configuration(config)
                 .build());
         assertThat(toSets(models)).containsExactlyInAnyOrder(
                 // models with ~D
@@ -150,11 +148,12 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDontCareVariables2(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .splitVariableProvider(splitProvider)
                 .variables(strings2vars(Arrays.asList("A", "C", "D", "E"), this.f))
+                .configuration(config)
                 .build());
         assertThat(toSets(models)).containsExactlyInAnyOrder(
                 // models with ~D, ~E
@@ -177,7 +176,7 @@ public class ModelEnumerationFunctionRecursiveTest {
     }
 
     @Test
-    @LongRunningTag
+    @RandomTag
     public void testRecursives() {
         for (int i = 1; i <= 100; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
@@ -190,24 +189,26 @@ public class ModelEnumerationFunctionRecursiveTest {
             final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
 
             // recursive call: least common vars
-            final List<Model> models1 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
+            final AdvancedModelEnumerationConfig configLcv =
+                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build();
+            final List<Model> models1 = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(configLcv).build());
 
             // recursive call: most common vars
-            final List<Model> models2 =
-                    solver.execute(AdvancedModelEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
+            final AdvancedModelEnumerationConfig configMcv =
+                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new MostCommonVariablesProvider()).build();
+            final List<Model> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(configMcv).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
 
-            final List<Set<Literal>> setNoSplit = toSetsA(modelsNoSplit);
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(toSets(models1));
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(toSets(models2));
+            final List<HashSet<Literal>> setNoSplit = getSetForAssignments(modelsNoSplit);
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models1));
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models2));
         }
     }
 
     @Test
-    @LongRunningTag
+    @RandomTag
     public void testRecursivesCounting() {
         for (int i = 1; i <= 100; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
@@ -220,12 +221,16 @@ public class ModelEnumerationFunctionRecursiveTest {
             final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
 
             // recursive call: least common vars
+            final AdvancedModelEnumerationConfig configLcv =
+                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build();
             final BigInteger count1 =
-                    solver.execute(ModelCountingFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
+                    solver.execute(ModelCountingFunction.builder().configuration(configLcv).build());
 
             // recursive call: most common vars
+            final AdvancedModelEnumerationConfig configMcv =
+                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new MostCommonVariablesProvider()).build();
             final BigInteger count2 =
-                    solver.execute(ModelCountingFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
+                    solver.execute(ModelCountingFunction.builder().configuration(configMcv).build());
 
             assertThat(count1).isEqualTo(modelsNoSplit.size());
             assertThat(count2).isEqualTo(modelsNoSplit.size());
@@ -235,6 +240,10 @@ public class ModelEnumerationFunctionRecursiveTest {
     @Test
     public void testAdditionalVariables() {
         final SATSolver solver = MiniSat.miniSat(this.f);
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder()
+                .splitVariableProvider(new LeastCommonVariablesProvider())
+                .maxNumberOfModels(10)
+                .build();
 
         for (int i = 1; i <= 1000; i++) {
             // given
@@ -251,24 +260,16 @@ public class ModelEnumerationFunctionRecursiveTest {
             final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
 
             // when
-            final List<Model> modelsRecursive =
-                    solver.execute(AdvancedModelEnumerationFunction.builder()
-                            .splitVariableProvider(new LeastCommonVariablesProvider())
-                            .maxNumberOfModels(10)
-                            .variables(pmeVars).additionalVariables(additionalVars).build());
-
-            System.out.println("\nSeed: " + i);
-            System.out.println("Number of combinations: " + modelsRecursive.size());
+            final List<Model> modelsRecursive = solver.execute(AdvancedModelEnumerationFunction.builder()
+                    .variables(pmeVars)
+                    .additionalVariables(additionalVars)
+                    .configuration(config).build());
 
             final List<Assignment> modelsOld =
                     solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
 
             final List<Assignment> updatedModels1 = restrictModelsToPmeVars(pmeVars, modelsRecursive);
             final List<Assignment> updatedModels2 = extendByDontCares(restrictAssignmentsToPmeVars(pmeVars, modelsOld), pmeVars);
-            System.out.println("Pme vars: " + pmeVars);
-            System.out.println("Additional vars: " + additionalVars);
-            System.out.println("Models recursive: " + modelsRecursive);
-            System.out.println("Models old: " + modelsOld);
 
             assertThat(BigInteger.valueOf(modelsRecursive.size())).isEqualTo(modelCount(modelsOld, pmeVars));
             assertThat(toSetsA(updatedModels1)).containsExactlyInAnyOrderElementsOf(toSetsA(updatedModels2));
@@ -338,4 +339,11 @@ public class ModelEnumerationFunctionRecursiveTest {
         return new HashSet<>(Arrays.asList(literals));
     }
 
+    private List<HashSet<Literal>> getSetForModels(final List<Model> models) {
+        return models.stream().map(x -> new HashSet<>(x.getLiterals())).collect(Collectors.toList());
+    }
+
+    private List<HashSet<Literal>> getSetForAssignments(final List<Assignment> models) {
+        return models.stream().map(x -> new HashSet<>(x.literals())).collect(Collectors.toList());
+    }
 }
