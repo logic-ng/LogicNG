@@ -63,12 +63,26 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     @ParameterizedTest
     @MethodSource("splitProviders")
+    public void testEmptyEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        final Formula formula = this.f.parse("A & (B | C)");
+        solver.add(formula);
+        List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().configuration(config).build());
+        assertThat(models).containsExactly(new Model());
+        models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().additionalVariables(formula.variables()).configuration(config).build());
+        assertThat(models).hasSize(1);
+        assertThat(variables(models.get(0))).containsAll(formula.variables());
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
     public void testSimple1(final SplitVariableProvider splitProvider) throws ParserException {
         final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
-        assertThat(toSets(models)).containsExactlyInAnyOrder(
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
                 set(this.f.variable("A"), this.f.variable("B"), this.f.variable("C")),
                 set(this.f.variable("A"), this.f.variable("B"), this.f.literal("C", false)),
                 set(this.f.variable("A"), this.f.literal("B", false), this.f.variable("C"))
@@ -95,7 +109,7 @@ public class ModelEnumerationFunctionRecursiveTest {
         final List<Model> firstRun = solver.execute(meFunction);
         final List<Model> secondRun = solver.execute(meFunction);
         assertThat(firstRun).hasSize(5);
-        assertThat(toSets(firstRun)).containsExactlyInAnyOrderElementsOf(toSets(secondRun));
+        assertThat(modelsToSets(firstRun)).containsExactlyInAnyOrderElementsOf(modelsToSets(secondRun));
     }
 
     @ParameterizedTest
@@ -114,8 +128,7 @@ public class ModelEnumerationFunctionRecursiveTest {
                 .build());
         assertThat(models).hasSize(3); // (A, B), (A, ~B), (~A, B)
         for (final Model model : models) {
-            final List<Variable> variables = model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
-            assertThat(variables).containsExactly(a, b, c);
+            assertThat(variables(model)).containsExactly(a, b, c);
         }
     }
 
@@ -129,7 +142,7 @@ public class ModelEnumerationFunctionRecursiveTest {
                 .variables(strings2vars(Arrays.asList("A", "B", "C", "D"), this.f))
                 .configuration(config)
                 .build());
-        assertThat(toSets(models)).containsExactlyInAnyOrder(
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
                 // models with ~D
                 strings2literals(Arrays.asList("A", "~B", "C", "~D"), "~", this.f),
                 strings2literals(Arrays.asList("A", "B", "C", "~D"), "~", this.f),
@@ -155,7 +168,7 @@ public class ModelEnumerationFunctionRecursiveTest {
                 .variables(strings2vars(Arrays.asList("A", "C", "D", "E"), this.f))
                 .configuration(config)
                 .build());
-        assertThat(toSets(models)).containsExactlyInAnyOrder(
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
                 // models with ~D, ~E
                 strings2literals(Arrays.asList("A", "C", "~D", "~E"), "~", this.f),
                 strings2literals(Arrays.asList("~A", "C", "~D", "~E"), "~", this.f),
@@ -201,9 +214,9 @@ public class ModelEnumerationFunctionRecursiveTest {
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
             assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
 
-            final List<HashSet<Literal>> setNoSplit = getSetForAssignments(modelsNoSplit);
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models1));
-            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(getSetForModels(models2));
+            final List<Set<Literal>> setNoSplit = assignmentsToSets(modelsNoSplit);
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(modelsToSets(models1));
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(modelsToSets(models2));
         }
     }
 
@@ -272,12 +285,11 @@ public class ModelEnumerationFunctionRecursiveTest {
             final List<Assignment> updatedModels2 = extendByDontCares(restrictAssignmentsToPmeVars(pmeVars, modelsOld), pmeVars);
 
             assertThat(BigInteger.valueOf(modelsRecursive.size())).isEqualTo(modelCount(modelsOld, pmeVars));
-            assertThat(toSetsA(updatedModels1)).containsExactlyInAnyOrderElementsOf(toSetsA(updatedModels2));
+            assertThat(assignmentsToSets(updatedModels1)).containsExactlyInAnyOrderElementsOf(assignmentsToSets(updatedModels2));
 
             // check that models are buildable and every model contains all additional variables
             for (final Model model : modelsRecursive) {
-                final List<Variable> variablesInModel = model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
-                assertThat(variablesInModel).containsAll(additionalVars);
+                assertThat(variables(model)).containsAll(additionalVars);
                 solver.add(model.getLiterals());
                 assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
                 solver.reset();
@@ -327,23 +339,19 @@ public class ModelEnumerationFunctionRecursiveTest {
         return updatedModels;
     }
 
-    private List<Set<Literal>> toSets(final List<Model> models) {
+    private static List<Set<Literal>> modelsToSets(final List<Model> models) {
         return models.stream().map(x -> new HashSet<>(x.getLiterals())).collect(Collectors.toList());
     }
 
-    private List<Set<Literal>> toSetsA(final List<Assignment> models) {
+    private static List<Set<Literal>> assignmentsToSets(final List<Assignment> models) {
         return models.stream().map(x -> new HashSet<>(x.literals())).collect(Collectors.toList());
     }
 
-    private Set<Literal> set(final Literal... literals) {
+    private static Set<Literal> set(final Literal... literals) {
         return new HashSet<>(Arrays.asList(literals));
     }
 
-    private List<HashSet<Literal>> getSetForModels(final List<Model> models) {
-        return models.stream().map(x -> new HashSet<>(x.getLiterals())).collect(Collectors.toList());
-    }
-
-    private List<HashSet<Literal>> getSetForAssignments(final List<Assignment> models) {
-        return models.stream().map(x -> new HashSet<>(x.literals())).collect(Collectors.toList());
+    private static List<Variable> variables(final Model model) {
+        return model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
     }
 }
