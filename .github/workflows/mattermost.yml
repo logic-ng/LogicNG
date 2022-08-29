@@ -1,0 +1,13 @@
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Create the Mattermost Message
+      run: |
+        echo "{\"text\":\"New Commit or PR on GitHub\"}" > mattermost.json
+    - uses: mattermost/action-mattermost-notify@master
+      env:
+        MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
