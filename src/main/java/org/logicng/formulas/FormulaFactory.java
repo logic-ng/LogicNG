@@ -80,7 +80,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 2.3.2
+ * @version 2.4.0
  * @since 1.0
  */
 public class FormulaFactory {

@@ -10,6 +10,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Two overloaded factory methods `mk` in `MiniSat` to construct a solver by formula factory, solver style and optional configuration.
 - Methods to directly apply Boolean functions on BDDs
 - Added `toFormula` method on BDDs to generate a formula via Shannon expansion
+- Convenience methods `variables(Collection<String> names)` and `variables(String... names)` for creating a list of variables in the `FormulaFactory` class. 
 
 ### Changed
 

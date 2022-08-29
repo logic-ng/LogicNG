@@ -54,7 +54,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for {@link BDDFactory} operations.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.4.0
  */
 public class BDDOperationsTest {
@@ -326,7 +326,6 @@ public class BDDOperationsTest {
 
     private void compareFormula(final BDD bdd, final Formula compareFormula) {
         final Formula bddFormula = bdd.toFormula();
-        System.out.println(bddFormula.numberOfAtoms());
         assertThat(bddFormula.isEquivalentTo(compareFormula)).isTrue();
     }
 }
