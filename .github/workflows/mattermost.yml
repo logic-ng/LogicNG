@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Create the Mattermost Message
       run: |
-        echo "{\"text\":\"New Commit or PR on GitHub\"}" > mattermost.json
+        echo "{\"text\":\"New Commit or PR on GitHub\", \"username\":\"GitHub\"}" > mattermost.json
     - uses: mattermost/action-mattermost-notify@master
       env:
         MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
