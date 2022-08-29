@@ -56,7 +56,7 @@ import java.util.function.Consumer;
  * A solver function for enumerating models on the solver.
  * <p>
  * Model enumeration functions are instantiated via their builder {@link #builder()}.
- * @version 2.3.0
+ * @version 2.4.0
  * @since 2.0.0
  */
 public final class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {
@@ -160,7 +160,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
      * @param relevantVars    the indices of the relevant variables.  If {@code null} all variables are relevant.
      * @return the blocking clause for the given model and relevant variables
      */
-    private LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
+    static LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
         final LNGIntVector blockingClause;
         if (relevantVars != null) {
             blockingClause = new LNGIntVector(relevantVars.size());

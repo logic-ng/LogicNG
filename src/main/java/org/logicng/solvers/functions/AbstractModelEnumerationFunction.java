@@ -35,6 +35,8 @@ import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
 import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.handlers.Handler.start;
+import static org.logicng.solvers.functions.ModelEnumerationFunction.generateBlockingClause;
+import static org.logicng.util.CollectionHelper.difference;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
@@ -48,7 +50,6 @@ import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
-import org.logicng.util.CollectionHelper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -90,23 +91,18 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             throw new IllegalArgumentException("Recursive model enumeration function can only be applied to solvers with load/save state capability.");
         }
         start(this.handler);
-        final SortedSet<Variable> additionalVarsNotOnSolver = CollectionHelper.difference(this.additionalVariables, solver.knownVariables(), TreeSet::new);
-        final SortedSet<Variable> dontCareVariables = CollectionHelper.difference(this.variables, solver.knownVariables(), TreeSet::new);
+        final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, solver.knownVariables(), TreeSet::new);
+        final SortedSet<Variable> dontCareVariables = difference(this.variables, solver.knownVariables(), TreeSet::new);
         final EnumerationCollector<R> collector = newCollector(dontCareVariables, additionalVarsNotOnSolver);
         if (this.splitVariableProvider == null) {
             enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
             collector.commit(this.handler);
-            return collector.getResult();
+        } else {
+            final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
+            final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
+            enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, this.additionalVariables);
         }
-        final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
-        splitModelEnumeration(collector, solver, resultSetter, relevantVars, this.additionalVariables);
         return collector.getResult();
-    }
-
-    protected void splitModelEnumeration(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
-                                         final SortedSet<Variable> relevantVars, final Collection<Variable> additionalVariables) {
-        final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
-        enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, additionalVariables);
     }
 
     private void enumerateRecursive(final EnumerationCollector<R> collector, final MiniSat solver, final Model splitAssignment,
@@ -134,7 +130,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             }
 
             final List<Model> newSplitAssignments = collector.rollbackAndReturnModels(solver, this.handler);
-            final SortedSet<Variable> recursiveSplitVars = updateSplitVars(CollectionHelper.difference(enumerationVars, nextSplitVars, TreeSet::new));
+            final SortedSet<Variable> recursiveSplitVars = updateSplitVars(difference(enumerationVars, nextSplitVars, TreeSet::new));
             for (final Model newSplitAssignment : newSplitAssignments) {
                 enumerateRecursive(collector, solver, newSplitAssignment, resultSetter, enumerationVars, recursiveSplitVars, additionalVars);
                 if (!collector.commit(this.handler)) {
@@ -235,33 +231,6 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         }
         final Tristate tristate = solver.sat(handler.satHandler());
         return !handler.aborted() && tristate == TRUE;
-    }
-
-    /**
-     * Generates a blocking clause from a given model and a set of relevant variables.
-     * @param modelFromSolver the current model for which the blocking clause should be generated
-     * @param relevantVars    the indices of the relevant variables.  If {@code null} all variables are relevant.
-     * @return the blocking clause for the given model and relevant variables
-     */
-    private static LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
-        final LNGIntVector blockingClause;
-        if (relevantVars != null) {
-            blockingClause = new LNGIntVector(relevantVars.size());
-            for (int i = 0; i < relevantVars.size(); i++) {
-                final int varIndex = relevantVars.get(i);
-                if (varIndex != -1) {
-                    final boolean varAssignment = modelFromSolver.get(varIndex);
-                    blockingClause.push(varAssignment ? (varIndex * 2) ^ 1 : varIndex * 2);
-                }
-            }
-        } else {
-            blockingClause = new LNGIntVector(modelFromSolver.size());
-            for (int i = 0; i < modelFromSolver.size(); i++) {
-                final boolean varAssignment = modelFromSolver.get(i);
-                blockingClause.push(varAssignment ? (i * 2) ^ 1 : i * 2);
-            }
-        }
-        return blockingClause;
     }
 
     protected static FormulaFactory factory(final Collection<Variable> variables) {
