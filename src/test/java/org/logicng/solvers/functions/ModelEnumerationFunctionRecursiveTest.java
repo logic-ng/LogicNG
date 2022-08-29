@@ -221,11 +221,11 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final BigInteger count1 =
-                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
+                    solver.execute(ModelCountingFunction.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build());
 
             // recursive call: most common vars
             final BigInteger count2 =
-                    solver.execute(ModelCountingByEnumerationFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
+                    solver.execute(ModelCountingFunction.builder().splitVariableProvider(new MostCommonVariablesProvider()).build());
 
             assertThat(count1).isEqualTo(modelsNoSplit.size());
             assertThat(count2).isEqualTo(modelsNoSplit.size());

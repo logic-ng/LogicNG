@@ -50,11 +50,11 @@ import java.util.SortedSet;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class ModelCountingByEnumerationFunction extends AbstractModelEnumerationFunction<BigInteger> {
+public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigInteger> {
 
-    ModelCountingByEnumerationFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
-                                       final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
-                                       final int maxNumberOfModels) {
+    ModelCountingFunction(final AdvancedModelEnumerationHandler handler, final Collection<Variable> variables,
+                          final Collection<Variable> additionalVariables, final SplitVariableProvider splitVariableProvider,
+                          final int maxNumberOfModels) {
         super(handler, variables, additionalVariables, splitVariableProvider, maxNumberOfModels);
     }
 
@@ -155,8 +155,8 @@ public class ModelCountingByEnumerationFunction extends AbstractModelEnumeration
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
-        public ModelCountingByEnumerationFunction build() {
-            return new ModelCountingByEnumerationFunction(this.handler, this.variables, this.additionalVariables,
+        public ModelCountingFunction build() {
+            return new ModelCountingFunction(this.handler, this.variables, this.additionalVariables,
                     this.splitVariableProvider, this.maxNumberOfModels);
         }
     }
