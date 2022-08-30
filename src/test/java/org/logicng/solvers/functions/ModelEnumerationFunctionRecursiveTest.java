@@ -63,6 +63,19 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     @ParameterizedTest
     @MethodSource("splitProviders")
+    public void testTautology(final SplitVariableProvider splitProvider) {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().configuration(config).build());
+        assertThat(models).containsExactly(new Model());
+        final List<Variable> additionalVars = this.f.variables("A", "B");
+        models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().additionalVariables(additionalVars).configuration(config).build());
+        assertThat(models).hasSize(1);
+        assertThat(variables(models.get(0))).containsAll(additionalVars);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
     public void testEmptyEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
         final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
         final SATSolver solver = MiniSat.miniSat(this.f);

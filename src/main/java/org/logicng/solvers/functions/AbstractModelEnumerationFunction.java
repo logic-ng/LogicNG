@@ -91,14 +91,15 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             throw new IllegalArgumentException("Recursive model enumeration function can only be applied to solvers with load/save state capability.");
         }
         start(this.handler);
-        final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, solver.knownVariables(), TreeSet::new);
-        final SortedSet<Variable> dontCareVariables = difference(this.variables, solver.knownVariables(), TreeSet::new);
+        final SortedSet<Variable> knownVariables = solver.knownVariables();
+        final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, knownVariables, TreeSet::new);
+        final SortedSet<Variable> dontCareVariables = difference(this.variables, knownVariables, TreeSet::new);
         final EnumerationCollector<R> collector = newCollector(dontCareVariables, additionalVarsNotOnSolver);
         if (this.splitVariableProvider == null) {
             enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
             collector.commit(this.handler);
         } else {
-            final SortedSet<Variable> relevantVars = getVarsForEnumeration(solver.knownVariables());
+            final SortedSet<Variable> relevantVars = getVarsForEnumeration(knownVariables);
             final SortedSet<Variable> initialSplitVars = this.splitVariableProvider.getSplitVars(solver, relevantVars);
             enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, this.additionalVariables);
         }
@@ -122,7 +123,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
                     solver.loadState(state);
                     return;
                 }
-                newSplitVars = updateSplitVars(newSplitVars);
+                newSplitVars = reduceSplitVars(newSplitVars);
             }
             if (aborted(this.handler)) {
                 collector.rollback(this.handler);
@@ -130,7 +131,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             }
 
             final List<Model> newSplitAssignments = collector.rollbackAndReturnModels(solver, this.handler);
-            final SortedSet<Variable> recursiveSplitVars = updateSplitVars(difference(enumerationVars, nextSplitVars, TreeSet::new));
+            final SortedSet<Variable> recursiveSplitVars = reduceSplitVars(difference(enumerationVars, nextSplitVars, TreeSet::new));
             for (final Model newSplitAssignment : newSplitAssignments) {
                 enumerateRecursive(collector, solver, newSplitAssignment, resultSetter, enumerationVars, recursiveSplitVars, additionalVars);
                 if (!collector.commit(this.handler)) {
@@ -147,7 +148,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         solver.loadState(state);
     }
 
-    private static SortedSet<Variable> updateSplitVars(final SortedSet<Variable> splitVars) {
+    private static SortedSet<Variable> reduceSplitVars(final SortedSet<Variable> splitVars) {
         return splitVars.stream().limit(splitVars.size() / 2).collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -226,11 +227,9 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     private static boolean modelEnumerationSATCall(final MiniSat solver, final AdvancedModelEnumerationHandler handler) {
-        if (handler == null) {
-            return solver.sat((SATHandler) null) == TRUE;
-        }
-        final Tristate tristate = solver.sat(handler.satHandler());
-        return !handler.aborted() && tristate == TRUE;
+        final SATHandler satHandler = handler == null ? null : handler.satHandler();
+        final boolean sat = solver.sat(satHandler) == TRUE;
+        return !aborted(handler) && sat;
     }
 
     protected static FormulaFactory factory(final Collection<Variable> variables) {
