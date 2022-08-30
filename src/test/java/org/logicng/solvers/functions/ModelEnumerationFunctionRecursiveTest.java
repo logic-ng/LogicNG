@@ -22,6 +22,7 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.functions.splitvariablesprovider.FixedVariableProvider;
 import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariablesProvider;
 import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
@@ -199,6 +200,21 @@ public class ModelEnumerationFunctionRecursiveTest {
                 strings2literals(Arrays.asList("~A", "C", "D", "E"), "~", this.f),
                 strings2literals(Arrays.asList("~A", "~C", "D", "E"), "~", this.f)
         );
+    }
+
+    @Test
+    public void testDontCareVariables3() throws ParserException {
+        final FixedVariableProvider provider = new FixedVariableProvider(new TreeSet<>(this.f.variables("X")));
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(provider).maxNumberOfModels(3).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        final Formula formula = this.f.parse("A | B | (X & ~X)"); // X will be simplified out and become a don't care variable unknown by the solver
+        solver.add(formula);
+        final SortedSet<Variable> enumerationVars = new TreeSet<>(this.f.variables("A", "B", "X"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(enumerationVars)
+                .configuration(config)
+                .build());
+        assertThat(models).hasSize(6);
     }
 
     @Test
