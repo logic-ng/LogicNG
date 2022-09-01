@@ -85,7 +85,7 @@ public final class FormulaDotFileWriter {
      * @param fileName      the file name of the dot file to write
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
-     * @param colorConfig   the color configuration
+     * @param colorConfig   the color configuration, must not be {@code null}
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final Formula formula, final boolean alignLiterals, final ColorConfig colorConfig) throws IOException {
@@ -97,7 +97,7 @@ public final class FormulaDotFileWriter {
      * @param file          the file of the dot file to write
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
-     * @param colorConfig   the color configuration
+     * @param colorConfig   the color configuration, must not be {@code null}
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final Formula formula, final boolean alignLiterals, final ColorConfig colorConfig) throws IOException {
@@ -131,7 +131,7 @@ public final class FormulaDotFileWriter {
      * @param formula     the formula
      * @param sb          the current string builder
      * @param ids         the current ID mapping
-     * @param colorConfig
+     * @param colorConfig the color configuration, must not be {@code null}
      */
     private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids, final ColorConfig colorConfig) {
         switch (formula.type()) {
@@ -179,7 +179,7 @@ public final class FormulaDotFileWriter {
         }
         id = ids.size();
         ids.put(not, id);
-        sb.append("  id").append(id).append(String.format(" ")).append(opNodeWithColor("¬", colorConfig));
+        sb.append("  id").append(id).append(" ").append(opNodeWithColor("¬", colorConfig));
         sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(arrowStyle(null, colorConfig));
     }
 
@@ -220,7 +220,7 @@ public final class FormulaDotFileWriter {
     }
 
     private static String arrowStyle(final String label, final ColorConfig colorConfig) {
-        return String.format(" [%scolor=\"%s\", fontcolor=\"%s\"];%n", label == null ? "" : "label=" + label + ", ", colorConfig.edges, colorConfig.edges);
+        return String.format(" [%scolor=\"%s\", fontcolor=\"%s\"];%n", label == null ? "" : "label=" + label + ", ", colorConfig.arrows, colorConfig.arrows);
     }
 
     /**
@@ -229,27 +229,27 @@ public final class FormulaDotFileWriter {
     public static class ColorConfig {
         private final DotNodeColor literalNodes;
         private final DotNodeColor operatorNodes;
-        private final String edges;
+        private final String arrows;
 
         /**
-         * Constructs a new default color configuration: black text and strokes, white fill.
+         * Constructs a new default color configuration: black text, strokes and arrows, white background.
          */
         public ColorConfig() {
             this.literalNodes = new DotNodeColor();
             this.operatorNodes = new DotNodeColor();
-            this.edges = "black";
+            this.arrows = "black";
         }
 
         /**
          * Constructs a new color configuration.
          * @param literalNodes  the color of literal (terminal) nodes
          * @param operatorNodes the color of operator (inner) nodes
-         * @param edges         the color of the arrows
+         * @param arrows        the color of the arrows
          */
-        public ColorConfig(final DotNodeColor literalNodes, final DotNodeColor operatorNodes, final String edges) {
+        public ColorConfig(final DotNodeColor literalNodes, final DotNodeColor operatorNodes, final String arrows) {
             this.literalNodes = literalNodes;
             this.operatorNodes = operatorNodes;
-            this.edges = edges;
+            this.arrows = arrows;
         }
     }
 }
