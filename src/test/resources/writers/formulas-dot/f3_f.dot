@@ -1,17 +1,17 @@
 digraph G {
-  id0 [shape=box, label="a"];
-  id1 [shape=box, label="b"];
-  id2 [shape=box, label="¬c"];
-  id3 [label="∧"];
-  id3 -> id0;
-  id3 -> id1;
-  id4 [label="∨"];
-  id4 -> id0;
-  id4 -> id1;
-  id5 [label="⇒"];
-  id5 -> id2 [label="l"];
-  id5 -> id4 [label="r"];
-  id6 [label="⇔"];
-  id6 -> id3 [label="l"];
-  id6 -> id5 [label="r"];
+  id0 [shape=box, style=filled, color="black", fontcolor="black", fillcolor="white", label="a"];
+  id1 [shape=box, style=filled, color="black", fontcolor="black", fillcolor="white", label="b"];
+  id2 [shape=box, style=filled, color="black", fontcolor="black", fillcolor="white", label="¬c"];
+  id3 [label="∧", style=filled, color="black", fontcolor="black", fillcolor="white"];
+  id3 -> id0 [color="black", fontcolor="black"];
+  id3 -> id1 [color="black", fontcolor="black"];
+  id4 [label="∨", style=filled, color="black", fontcolor="black", fillcolor="white"];
+  id4 -> id0 [color="black", fontcolor="black"];
+  id4 -> id1 [color="black", fontcolor="black"];
+  id5 [label="⇒", style=filled, color="black", fontcolor="black", fillcolor="white"];
+  id5 -> id2 [label=l, color="black", fontcolor="black"];
+  id5 -> id4 [label=r, color="black", fontcolor="black"];
+  id6 [label="⇔", style=filled, color="black", fontcolor="black", fillcolor="white"];
+  id6 -> id3 [color="black", fontcolor="black"];
+  id6 -> id5 [color="black", fontcolor="black"];
 }

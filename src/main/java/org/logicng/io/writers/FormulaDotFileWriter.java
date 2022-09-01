@@ -46,7 +46,7 @@ import java.util.Map;
 
 /**
  * A dot file writer for a formula.  Writes the internal data structure of the formula to a dot file.
- * @version 1.1
+ * @version 2.4.0
  * @since 1.0
  */
 public final class FormulaDotFileWriter {
@@ -59,14 +59,37 @@ public final class FormulaDotFileWriter {
     }
 
     /**
-     * Writes a given formula's internal data structure as a dot file.
+     * Writes a given formula's internal data structure as a dot file with the default color configuration.
      * @param fileName      the file name of the dot file to write
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final Formula formula, final boolean alignLiterals) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
+        write(fileName, formula, alignLiterals, new ColorConfig());
+    }
+
+    /**
+     * Writes a given formula's internal data structure as a dot file with the default color configuration.
+     * @param file          the file of the dot file to write
+     * @param formula       the formula
+     * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
+        write(file, formula, alignLiterals, new ColorConfig());
+    }
+
+    /**
+     * Writes a given formula's internal data structure as a dot file.
+     * @param fileName      the file name of the dot file to write
+     * @param formula       the formula
+     * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
+     * @param colorConfig   the color configuration
+     * @throws IOException if there was a problem writing the file
+     */
+    public static void write(final String fileName, final Formula formula, final boolean alignLiterals, final ColorConfig colorConfig) throws IOException {
+        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals, colorConfig);
     }
 
     /**
@@ -74,9 +97,10 @@ public final class FormulaDotFileWriter {
      * @param file          the file of the dot file to write
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
+     * @param colorConfig   the color configuration
      * @throws IOException if there was a problem writing the file
      */
-    public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
+    public static void write(final File file, final Formula formula, final boolean alignLiterals, final ColorConfig colorConfig) throws IOException {
         final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
         final Map<Formula, Integer> ids = new HashMap<>();
         if (alignLiterals && !formula.literals().isEmpty()) {
@@ -85,14 +109,16 @@ public final class FormulaDotFileWriter {
         int id = 0;
         for (final Literal lit : formula.literals()) {
             ids.put(lit, id);
-            sb.append("  id").append(id).append(" [shape=box, label=\"").
+            sb.append("  id").append(id).append(" [shape=box, ")
+                    .append(colorConfig.literalNodes.toDotString())
+                    .append(", label=\"").
                     append(lit.phase() ? lit.name() : "¬" + lit.name()).append(String.format("\"];%n"));
             id++;
         }
         if (alignLiterals && !formula.literals().isEmpty()) {
             sb.append(String.format("}%n"));
         }
-        generateDotString(formula, sb, ids);
+        generateDotString(formula, sb, ids, colorConfig);
         sb.append(String.format("}%n"));
         try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
@@ -102,11 +128,12 @@ public final class FormulaDotFileWriter {
 
     /**
      * Generates the dot string for a formula
-     * @param formula the formula
-     * @param sb      the current string builder
-     * @param ids     the current ID mapping
+     * @param formula     the formula
+     * @param sb          the current string builder
+     * @param ids         the current ID mapping
+     * @param colorConfig
      */
-    private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids) {
+    private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids, final ColorConfig colorConfig) {
         switch (formula.type()) {
             case FALSE:
                 sb.append(String.format("  false;%n"));
@@ -119,25 +146,25 @@ public final class FormulaDotFileWriter {
             case PBC:
                 final int id = ids.size();
                 ids.put(formula, id);
-                sb.append("  id").append(id).append(" [label=\"").append(formula).append(String.format("\"];%n"));
+                sb.append("  id").append(id).append(" ").append(opNodeWithColor(formula.toString(), colorConfig));
                 for (final Formula operand : ((PBConstraint) formula).operands()) {
-                    sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
+                    sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(arrowStyle(null, colorConfig));
                 }
                 break;
             case NOT:
-                generateNotDotString((Not) formula, sb, ids);
+                generateNotDotString((Not) formula, sb, ids, colorConfig);
                 break;
             case IMPL:
-                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇒", true);
+                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇒", true, colorConfig);
                 break;
             case EQUIV:
-                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇔", true);
+                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇔", false, colorConfig);
                 break;
             case AND:
-                generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
+                generateNaryDotString((NAryOperator) formula, sb, ids, "∧", colorConfig);
                 break;
             case OR:
-                generateNaryDotString((NAryOperator) formula, sb, ids, "∨");
+                generateNaryDotString((NAryOperator) formula, sb, ids, "∨", colorConfig);
                 break;
             default:
                 throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
@@ -145,46 +172,84 @@ public final class FormulaDotFileWriter {
 
     }
 
-    private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids) {
+    private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids, final ColorConfig colorConfig) {
         final int id;
         if (!ids.containsKey(not.operand())) {
-            generateDotString(not.operand(), sb, ids);
+            generateDotString(not.operand(), sb, ids, colorConfig);
         }
         id = ids.size();
         ids.put(not, id);
-        sb.append("  id").append(id).append(String.format(" [label=\"¬\"];%n"));
-        sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(String.format(";%n"));
+        sb.append("  id").append(id).append(String.format(" ")).append(opNodeWithColor("¬", colorConfig));
+        sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(arrowStyle(null, colorConfig));
     }
 
     private static void generateBinaryDotString(final BinaryOperator formula, final StringBuilder sb,
-                                                final Map<Formula, Integer> ids, final String op, final boolean directions) {
+                                                final Map<Formula, Integer> ids, final String op, final boolean directions, final ColorConfig colorConfig) {
         if (!ids.containsKey(formula.left())) {
-            generateDotString(formula.left(), sb, ids);
+            generateDotString(formula.left(), sb, ids, colorConfig);
         }
         if (!ids.containsKey(formula.right())) {
-            generateDotString(formula.right(), sb, ids);
+            generateDotString(formula.right(), sb, ids, colorConfig);
         }
         final int id = ids.size();
         ids.put(formula, id);
-        sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
+        sb.append("  id").append(id).append(" ").append(opNodeWithColor(op, colorConfig));
         sb.append("  id").append(id).append(" -> id").append(ids.get(formula.left()));
-        sb.append(directions ? String.format(" [label=\"l\"];%n") : String.format(";%n"));
+        sb.append(directions ? arrowStyle("l", colorConfig) : arrowStyle(null, colorConfig));
         sb.append("  id").append(id).append(" -> id").append(ids.get(formula.right()));
-        sb.append(directions ? String.format(" [label=\"r\"];%n") : String.format(";%n"));
+        sb.append(directions ? arrowStyle("r", colorConfig) : arrowStyle(null, colorConfig));
     }
 
     private static void generateNaryDotString(final NAryOperator formula, final StringBuilder sb,
-                                              final Map<Formula, Integer> ids, final String op) {
+                                              final Map<Formula, Integer> ids, final String op, final ColorConfig colorConfig) {
         for (final Formula operand : formula) {
             if (!ids.containsKey(operand)) {
-                generateDotString(operand, sb, ids);
+                generateDotString(operand, sb, ids, colorConfig);
             }
         }
         final int id = ids.size();
         ids.put(formula, id);
-        sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
+        sb.append("  id").append(id).append(" ").append(opNodeWithColor(op, colorConfig));
         for (final Formula operand : formula) {
-            sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
+            sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(arrowStyle(null, colorConfig));
+        }
+    }
+
+    private static String opNodeWithColor(final String operand, final ColorConfig colorConfig) {
+        return String.format("[label=\"%s\", %s];%n", operand, colorConfig.operatorNodes.toDotString());
+    }
+
+    private static String arrowStyle(final String label, final ColorConfig colorConfig) {
+        return String.format(" [%scolor=\"%s\", fontcolor=\"%s\"];%n", label == null ? "" : "label=" + label + ", ", colorConfig.edges, colorConfig.edges);
+    }
+
+    /**
+     * Color configuration for the formula dot file writer.
+     */
+    public static class ColorConfig {
+        private final DotNodeColor literalNodes;
+        private final DotNodeColor operatorNodes;
+        private final String edges;
+
+        /**
+         * Constructs a new default color configuration: black text and strokes, white fill.
+         */
+        public ColorConfig() {
+            this.literalNodes = new DotNodeColor();
+            this.operatorNodes = new DotNodeColor();
+            this.edges = "black";
+        }
+
+        /**
+         * Constructs a new color configuration.
+         * @param literalNodes  the color of literal (terminal) nodes
+         * @param operatorNodes the color of operator (inner) nodes
+         * @param edges         the color of the arrows
+         */
+        public ColorConfig(final DotNodeColor literalNodes, final DotNodeColor operatorNodes, final String edges) {
+            this.literalNodes = literalNodes;
+            this.operatorNodes = operatorNodes;
+            this.edges = edges;
         }
     }
 }

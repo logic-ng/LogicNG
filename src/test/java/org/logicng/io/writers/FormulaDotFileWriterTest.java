@@ -43,7 +43,7 @@ import java.io.IOException;
 
 /**
  * Unit tests for the {@link FormulaDotFileWriter}.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class FormulaDotFileWriterTest {
@@ -86,9 +86,26 @@ public class FormulaDotFileWriterTest {
         testFiles("f7", f7);
     }
 
+    @Test
+    public void testColors() throws ParserException, IOException {
+        final Formula f8 = this.pp.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
+        final FormulaDotFileWriter.ColorConfig conf = new FormulaDotFileWriter.ColorConfig(new DotNodeColor("red", "white", "#004f93"),
+                new DotNodeColor("yellow", "orange", "black"), "purple");
+        testFiles("f8", f8, conf);
+    }
+
     private void testFiles(final String fileName, final Formula formula) throws IOException {
-        FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.dot", formula, true);
-        FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
+        testFiles(fileName, formula, null);
+    }
+
+    private void testFiles(final String fileName, final Formula formula, final FormulaDotFileWriter.ColorConfig colorConfig) throws IOException {
+        if (colorConfig != null) {
+            FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.dot", formula, true, colorConfig);
+            FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false, colorConfig);
+        } else {
+            FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_t.dot", formula, true);
+            FormulaDotFileWriter.write("src/test/resources/writers/temp/" + fileName + "_f", formula, false);
+        }
         final File expectedT = new File("src/test/resources/writers/formulas-dot/" + fileName + "_t.dot");
         final File expectedF = new File("src/test/resources/writers/formulas-dot/" + fileName + "_f.dot");
         final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_t.dot");

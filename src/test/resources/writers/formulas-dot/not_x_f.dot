@@ -1,3 +1,3 @@
 digraph G {
-  id0 [shape=box, label="¬x"];
+  id0 [shape=box, style=filled, color="black", fontcolor="black", fillcolor="white", label="¬x"];
 }
