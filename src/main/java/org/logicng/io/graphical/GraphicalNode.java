@@ -26,47 +26,78 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.graphs.io;
+package org.logicng.io.graphical;
 
-import org.logicng.graphs.datastructures.Graph;
-import org.logicng.io.graphical.translators.GraphTranslator;
+import java.util.Objects;
 
-import java.io.File;
-import java.io.IOException;
+public class GraphicalNode {
+    final String id;
+    final String label;
+    final boolean terminal;
+    final GraphicalNodeStyle style;
 
-/**
- * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
- * @version 2.4.0
- * @since 1.2
- */
-public final class GraphDotFileWriter {
-
-    /**
-     * Private constructor.
-     */
-    private GraphDotFileWriter() {
-        // Intentionally left empty.
+    public GraphicalNode(final String id, final String label) {
+        this(id, label, false, new GraphicalNodeStyle());
     }
 
-    /**
-     * Writes a given graph's internal data structure as a dot file.
-     * @param fileName the file name of the dot file to write
-     * @param graph    the graph
-     * @param <T>      the type of the graph content
-     * @throws IOException if there was a problem writing the file
-     */
-    public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
+    public GraphicalNode(final String id, final String label, final boolean terminal) {
+        this(id, label, terminal, new GraphicalNodeStyle());
     }
 
-    /**
-     * Writes a given graph's internal data structure as a dot file.
-     * @param file  the file of the dot file to write
-     * @param graph the graph
-     * @param <T>   the type of the graph content
-     * @throws IOException if there was a problem writing the file
-     */
-    public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-        GraphTranslator.builder().build().translate(graph).writeDot(file);
+    public GraphicalNode(final String id, final String label, final GraphicalNodeStyle style) {
+        this(id, label, false, style);
+    }
+
+    public GraphicalNode(final String id, final String label, final boolean terminal, final GraphicalNodeStyle style) {
+        this.id = id;
+        this.label = label;
+        this.terminal = terminal;
+        this.style = style;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public boolean isTerminal() {
+        return this.terminal;
+    }
+
+    public GraphicalNodeStyle getStyle() {
+        return this.style;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final GraphicalNode that = (GraphicalNode) o;
+        return this.terminal == that.terminal &&
+                Objects.equals(this.id, that.id) &&
+                Objects.equals(this.label, that.label) &&
+                Objects.equals(this.style, that.style);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.label, this.terminal, this.style);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphicalNode{" +
+                "id='" + this.id + '\'' +
+                ", label='" + this.label + '\'' +
+                ", terminal=" + this.terminal +
+                ", style=" + this.style +
+                '}';
     }
 }

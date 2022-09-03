@@ -30,10 +30,18 @@ package org.logicng.io.writers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
+import static org.logicng.io.graphical.GraphicalColor.BLACK;
+import static org.logicng.io.graphical.GraphicalColor.BLUE;
+import static org.logicng.io.graphical.GraphicalColor.RED;
+import static org.logicng.io.graphical.GraphicalColor.TURQUOISE;
+import static org.logicng.io.graphical.GraphicalColor.WHITE;
+import static org.logicng.io.graphical.GraphicalColor.YELLOW;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.io.graphical.GraphicalColor;
+import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.io.parsers.PseudoBooleanParser;
@@ -89,9 +97,14 @@ public class FormulaDotFileWriterTest {
     @Test
     public void testColors() throws ParserException, IOException {
         final Formula f8 = this.pp.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
-        final FormulaDotFileWriter.ColorConfig conf = new FormulaDotFileWriter.ColorConfig(new DotNodeColor("red", "white", "#004f93"),
-                new DotNodeColor("yellow", "orange", "black"), "purple");
+        final FormulaDotFileWriter.ColorConfig conf = new FormulaDotFileWriter.ColorConfig(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, RED,
+                WHITE, BLUE), new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, YELLOW, TURQUOISE, BLACK), "purple");
         testFiles("f8", f8, conf);
+    }
+
+    @Test
+    public void test() {
+        System.out.println(GraphicalColor.rgb(0, 0, 0).getHexValue());
     }
 
     private void testFiles(final String fileName, final Formula formula) throws IOException {

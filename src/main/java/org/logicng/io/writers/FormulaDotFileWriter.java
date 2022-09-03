@@ -34,6 +34,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.NAryOperator;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
+import org.logicng.io.graphical.GraphicalNodeStyle;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -227,16 +228,16 @@ public final class FormulaDotFileWriter {
      * Color configuration for the formula dot file writer.
      */
     public static class ColorConfig {
-        private final DotNodeColor literalNodes;
-        private final DotNodeColor operatorNodes;
+        private final GraphicalNodeStyle literalNodes;
+        private final GraphicalNodeStyle operatorNodes;
         private final String arrows;
 
         /**
          * Constructs a new default color configuration: black text, strokes and arrows, white background.
          */
         public ColorConfig() {
-            this.literalNodes = new DotNodeColor();
-            this.operatorNodes = new DotNodeColor();
+            this.literalNodes = new GraphicalNodeStyle();
+            this.operatorNodes = new GraphicalNodeStyle();
             this.arrows = "black";
         }
 
@@ -246,7 +247,7 @@ public final class FormulaDotFileWriter {
          * @param operatorNodes the color of operator (inner) nodes
          * @param arrows        the color of the arrows
          */
-        public ColorConfig(final DotNodeColor literalNodes, final DotNodeColor operatorNodes, final String arrows) {
+        public ColorConfig(final GraphicalNodeStyle literalNodes, final GraphicalNodeStyle operatorNodes, final String arrows) {
             this.literalNodes = literalNodes;
             this.operatorNodes = operatorNodes;
             this.arrows = arrows;

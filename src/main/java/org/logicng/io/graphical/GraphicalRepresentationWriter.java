@@ -26,47 +26,36 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.graphs.io;
-
-import org.logicng.graphs.datastructures.Graph;
-import org.logicng.io.graphical.translators.GraphTranslator;
+package org.logicng.io.graphical;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
-/**
- * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
- * @version 2.4.0
- * @since 1.2
- */
-public final class GraphDotFileWriter {
+public interface GraphicalRepresentationWriter {
 
-    /**
-     * Private constructor.
-     */
-    private GraphDotFileWriter() {
-        // Intentionally left empty.
+    void write(final Writer writer, GraphicalRepresentation representation) throws IOException;
+
+    default void write(final String fileName, final GraphicalRepresentation representation) throws IOException {
+        write(new File(fileName), representation);
     }
 
-    /**
-     * Writes a given graph's internal data structure as a dot file.
-     * @param fileName the file name of the dot file to write
-     * @param graph    the graph
-     * @param <T>      the type of the graph content
-     * @throws IOException if there was a problem writing the file
-     */
-    public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
+    default void write(final File file, final GraphicalRepresentation representation) throws IOException {
+        try (final Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
+            write(writer, representation);
+        }
     }
 
-    /**
-     * Writes a given graph's internal data structure as a dot file.
-     * @param file  the file of the dot file to write
-     * @param graph the graph
-     * @param <T>   the type of the graph content
-     * @throws IOException if there was a problem writing the file
-     */
-    public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-        GraphTranslator.builder().build().translate(graph).writeDot(file);
+    default String stringValue(final GraphicalRepresentation representation) {
+        try (final Writer writer = new StringWriter()) {
+            write(writer, representation);
+            return writer.toString();
+        } catch (final IOException e) {
+            throw new IllegalStateException("IO Exception", e);
+        }
     }
 }

@@ -26,47 +26,58 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.graphs.io;
+package org.logicng.io.graphical;
 
-import org.logicng.graphs.datastructures.Graph;
-import org.logicng.io.graphical.translators.GraphTranslator;
+import static org.logicng.io.graphical.GraphicalColor.BLACK;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Objects;
 
-/**
- * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
- * @version 2.4.0
- * @since 1.2
- */
-public final class GraphDotFileWriter {
+public class GraphicalEdgeStyle {
+    public enum LineType {SOLID, DOTTED, BOLD}
 
-    /**
-     * Private constructor.
-     */
-    private GraphDotFileWriter() {
-        // Intentionally left empty.
+    private final LineType lineType;
+    private final GraphicalColor color;
+
+    public GraphicalEdgeStyle() {
+        this.lineType = LineType.SOLID;
+        this.color = BLACK;
     }
 
-    /**
-     * Writes a given graph's internal data structure as a dot file.
-     * @param fileName the file name of the dot file to write
-     * @param graph    the graph
-     * @param <T>      the type of the graph content
-     * @throws IOException if there was a problem writing the file
-     */
-    public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
+    public GraphicalEdgeStyle(final LineType lineType, final GraphicalColor color) {
+        this.lineType = lineType;
+        this.color = color;
     }
 
-    /**
-     * Writes a given graph's internal data structure as a dot file.
-     * @param file  the file of the dot file to write
-     * @param graph the graph
-     * @param <T>   the type of the graph content
-     * @throws IOException if there was a problem writing the file
-     */
-    public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-        GraphTranslator.builder().build().translate(graph).writeDot(file);
+    public LineType getLineType() {
+        return this.lineType;
+    }
+
+    public GraphicalColor getColor() {
+        return this.color;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final GraphicalEdgeStyle that = (GraphicalEdgeStyle) o;
+        return this.lineType == that.lineType && Objects.equals(this.color, that.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.lineType, this.color);
+    }
+
+    @Override
+    public String toString() {
+        return "GraphicalEdgeStyle{" +
+                "lineType=" + this.lineType +
+                ", color=" + this.color +
+                '}';
     }
 }
