@@ -28,15 +28,10 @@
 
 package org.logicng.io.graphical.translators;
 
-import static org.logicng.io.graphical.GraphicalColor.WHITE;
-
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.Node;
-import org.logicng.io.graphical.GraphicalColor;
 import org.logicng.io.graphical.GraphicalEdge;
-import org.logicng.io.graphical.GraphicalEdgeStyle;
 import org.logicng.io.graphical.GraphicalNode;
-import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.graphical.GraphicalRepresentation;
 
 import java.util.HashMap;
@@ -44,18 +39,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class GraphTranslator {
+public class GraphTranslator extends GraphicalTranslator {
 
-    private static final String ID = "id";
+    GraphTranslator(final GraphicalTranslatorBuilder<GraphTranslator> builder) {
+        super(builder.getBackgroundColor(), builder.isAlginTerminal(), builder.getEdgeStyle(), builder.getNodeStyle());
+    }
 
-    private final GraphicalColor backgroundColor;
-    private final GraphicalEdgeStyle edgeStyle;
-    private final GraphicalNodeStyle nodeStyle;
-
-    public GraphTranslator(final Builder builder) {
-        this.backgroundColor = builder.backgroundColor;
-        this.edgeStyle = builder.edgeStyle;
-        this.nodeStyle = builder.nodeStyle;
+    public static GraphicalTranslatorBuilder<GraphTranslator> builder() {
+        return new GraphicalTranslatorBuilder<>(GraphTranslator::new);
     }
 
     public <T> GraphicalRepresentation translate(final Graph<T> graph) {
@@ -90,52 +81,5 @@ public class GraphTranslator {
         }
 
         return graphicalRepresentation;
-    }
-
-    /**
-     * Returns a new builder for the translator.
-     * @return the builder
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
-     * The builder for a graph translator.
-     */
-    public static class Builder {
-
-        private GraphicalColor backgroundColor = WHITE;
-        private GraphicalEdgeStyle edgeStyle = new GraphicalEdgeStyle();
-        private GraphicalNodeStyle nodeStyle = new GraphicalNodeStyle();
-
-        public Builder backgroundColor(final GraphicalColor color) {
-            this.backgroundColor = color;
-            return this;
-        }
-
-        public Builder backgroundColor(final String hexColor) {
-            this.backgroundColor = GraphicalColor.hex(hexColor);
-            return this;
-        }
-
-        public Builder backgroundColor(final int red, final int green, final int blue) {
-            this.backgroundColor = GraphicalColor.rgb(red, green, blue);
-            return this;
-        }
-
-        public Builder edgeStyle(final GraphicalEdgeStyle edgeStyle) {
-            this.edgeStyle = edgeStyle;
-            return this;
-        }
-
-        public Builder nodeStyle(final GraphicalNodeStyle nodeStyle) {
-            this.nodeStyle = nodeStyle;
-            return this;
-        }
-
-        public GraphTranslator build() {
-            return new GraphTranslator(this);
-        }
     }
 }
