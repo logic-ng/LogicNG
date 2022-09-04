@@ -19,6 +19,11 @@ import org.logicng.io.graphical.GraphicalRepresentation;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Unit tests for {@link GraphTranslator}.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class GraphTranslatorTest {
 
     @Test

@@ -1,0 +1,6 @@
+digraph G {
+  bgcolor="#ffffff"
+
+  id0 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="x"]
+
+}

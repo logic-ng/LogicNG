@@ -34,6 +34,8 @@ public class GraphicalColor {
 
     public static GraphicalColor BLACK = new GraphicalColor("#000000");
     public static GraphicalColor WHITE = new GraphicalColor("#ffffff");
+    public static GraphicalColor GRAY_DARK = new GraphicalColor("#777777");
+    public static GraphicalColor GRAY_LIGHT = new GraphicalColor("#e4e4e4");
     public static GraphicalColor RED = new GraphicalColor("#ea2027");
     public static GraphicalColor GREEN = new GraphicalColor("#009432");
     public static GraphicalColor BLUE = new GraphicalColor("#004f93");

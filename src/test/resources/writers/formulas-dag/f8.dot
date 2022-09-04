@@ -1,0 +1,32 @@
+digraph G {
+  bgcolor="#020202"
+
+{ rank = same;
+  id0 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="A"]
+  id1 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="¬A"]
+  id2 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="B"]
+  id3 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="C"]
+  id4 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="X"]
+  id5 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a"]
+  id6 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="b"]
+  id7 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="c"]
+}
+  id8 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="⇒"]
+  id9 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="⇔"]
+  id10 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="∧"]
+  id11 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="∨"]
+  id12 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a + b + c <= 2"]
+
+  id10 -> id2 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id11 -> id1 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id11 -> id3 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id11 -> id4 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id10 -> id11 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id9 -> id0 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id9 -> id10 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id12 -> id5 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id12 -> id6 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id12 -> id7 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id8 -> id9 [color="#1289a7", fontcolor="#1289a7", style=bold, label="l"]
+  id8 -> id12 [color="#1289a7", fontcolor="#1289a7", style=bold, label="r"]
+}
