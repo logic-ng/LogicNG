@@ -29,6 +29,7 @@
 package org.logicng.io.writers;
 
 import org.logicng.formulas.Formula;
+import org.logicng.io.graphical.translators.FormulaAstTranslator;
 import org.logicng.io.graphical.translators.FormulaDagTranslator;
 
 import java.io.File;
@@ -38,7 +39,11 @@ import java.io.IOException;
  * A dot file writer for a formula.  Writes the internal data structure of the formula to a dot file.
  * @version 2.4.0
  * @since 1.0
+ * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
+ * to use graph writer use {@link FormulaDagTranslator} or {@link FormulaAstTranslator} within the new
+ * graphical writer framework.
  */
+@Deprecated
 public final class FormulaDotFileWriter {
 
     /**

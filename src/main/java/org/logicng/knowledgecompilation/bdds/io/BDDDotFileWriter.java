@@ -36,9 +36,12 @@ import java.io.IOException;
 
 /**
  * A dot file writer for BDDs.  Writes the internal data structure of a BDD to a dot file.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.4.0
+ * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
+ * to use graph writer use {@link BddTranslator} within the new graphical writer framework.
  */
+@Deprecated
 public final class BDDDotFileWriter {
 
     private static final String CONST_TRUE = "const_true";

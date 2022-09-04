@@ -20,6 +20,9 @@ src/test/resources/partialweightedmaxsat/log.txt
 
 # test temporary files
 src/test/resources/writers/temp/*.dot
+src/test/resources/writers/temp/*.txt
+src/test/resources/writers/temp/*.cnf
+src/test/resources/writers/temp/*.map
 
 # LSP
 .settings

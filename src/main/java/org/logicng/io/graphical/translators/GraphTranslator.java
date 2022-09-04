@@ -70,7 +70,7 @@ public class GraphTranslator extends GraphicalTranslator {
                 if (!doneNodes.contains(neighbour)) {
                     GraphicalNode neighbourNode = nodes.get(neighbour);
                     if (neighbourNode == null) {
-                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), styleMapper.computeStyle(node.content()));
+                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), styleMapper.computeStyle(neighbour.content()));
                         graphicalRepresentation.addNode(neighbourNode);
                         nodes.put(neighbour, neighbourNode);
                     }

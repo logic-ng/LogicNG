@@ -38,7 +38,10 @@ import java.io.IOException;
  * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
  * @version 2.4.0
  * @since 1.2
+ * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
+ * to use graph writer use {@link GraphTranslator} within the new graphical writer framework.
  */
+@Deprecated
 public final class GraphDotFileWriter {
 
     /**
