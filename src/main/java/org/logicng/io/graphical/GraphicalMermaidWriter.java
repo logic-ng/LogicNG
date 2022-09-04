@@ -56,8 +56,6 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     private static void writePreamble(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
         writer.write("graph TD");
         writer.newLine();
-        writer.write(String.format("background: %s", representation.getBackground().getHexValue()));
-        writer.newLine();
     }
 
     private static void writeNodes(final BufferedWriter bufferedWriter, final GraphicalRepresentation representation) throws IOException {
@@ -75,10 +73,11 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         int counter = 0;
         for (final GraphicalEdge edge : representation.getEdges()) {
             final String edgeSymbol = edgeSymbolString(edge, representation.isDirected());
-            final String string = String.format("  %s %s %s", edge.getSource().id, edgeSymbol, edge.getDestination().id);
-            writer.write(string);
+            writer.write(String.format("  %s %s %s", edge.getSource().id, edgeSymbol, edge.getDestination().id));
             writer.newLine();
-            writer.write(String.format("    linkStyle %d stroke:%s", counter++, edge.getStyle().getColor().getHexValue()));
+            final String dottedString = edge.getStyle().getLineType() == GraphicalEdgeStyle.LineType.DOTTED ? ",stroke-dasharray:3" : "";
+            writer.write(String.format("    linkStyle %d stroke:%s,stroke-width:%dpx%s", counter++, edge.getStyle().getColor().getHexValue(),
+                    edge.getStyle().getLineType() == GraphicalEdgeStyle.LineType.BOLD ? 4 : 2, dottedString));
             writer.newLine();
         }
     }
@@ -105,19 +104,7 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     }
 
     private static String edgeSymbolString(final GraphicalEdge edge, final boolean directed) {
-        final String edgeConnetor = edgeConnector(edge.getStyle().getLineType(), directed);
+        final String edgeConnetor = directed ? "-->" : "---";
         return edge.getLabel() == null ? edgeConnetor : String.format("%s|\"%s\"|", edgeConnetor, edge.getLabel());
-    }
-
-    private static String edgeConnector(final GraphicalEdgeStyle.LineType lineType, final boolean directed) {
-        switch (lineType) {
-            case DOTTED:
-                return directed ? "_._>" : "_._";
-            case BOLD:
-                return directed ? "==>" : "===";
-            case SOLID:
-            default:
-                return directed ? "-->" : "---";
-        }
     }
 }

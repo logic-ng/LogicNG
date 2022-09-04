@@ -10,11 +10,11 @@ import java.util.function.Function;
 
 public class GraphicalTranslatorBuilder<T extends GraphicalTranslator> {
 
-    private GraphicalColor backgroundColor = WHITE;
-    private boolean alginTerminal;
-    private GraphicalEdgeStyle edgeStyle = new GraphicalEdgeStyle();
-    private GraphicalNodeStyle nodeStyle = new GraphicalNodeStyle();
-    private final Function<GraphicalTranslatorBuilder<T>, T> constructor;
+    protected GraphicalColor backgroundColor = WHITE;
+    protected boolean alginTerminal;
+    protected GraphicalEdgeStyle edgeStyle = new GraphicalEdgeStyle();
+    protected GraphicalNodeStyle nodeStyle = new GraphicalNodeStyle();
+    protected final Function<GraphicalTranslatorBuilder<T>, T> constructor;
 
     public GraphicalTranslatorBuilder(final Function<GraphicalTranslatorBuilder<T>, T> constructor) {
         this.constructor = constructor;
