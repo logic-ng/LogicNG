@@ -1,0 +1,32 @@
+digraph G {
+  bgcolor="#020202"
+
+{ rank = same;
+  id2 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="A"]
+  id4 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="B"]
+  id6 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="~A"]
+  id7 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="C"]
+  id8 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="X"]
+  id10 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a"]
+  id11 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="b"]
+  id12 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="c"]
+}
+  id0 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="(A <=> B & (~A | C | X)) => (a + b + c <= 2)"]
+  id1 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="A <=> B & (~A | C | X)"]
+  id3 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="B & (~A | C | X)"]
+  id5 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="~A | C | X"]
+  id9 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a + b + c <= 2"]
+
+  id3 -> id4 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id5 -> id6 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id5 -> id7 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id5 -> id8 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id3 -> id5 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id1 -> id2 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id1 -> id3 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id9 -> id10 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id9 -> id11 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id9 -> id12 [color="#1289a7", fontcolor="#1289a7", style=bold]
+  id0 -> id1 [color="#1289a7", fontcolor="#1289a7", style=bold, label="l"]
+  id0 -> id9 [color="#1289a7", fontcolor="#1289a7", style=bold, label="r"]
+}

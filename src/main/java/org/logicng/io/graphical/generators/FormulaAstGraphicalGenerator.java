@@ -51,7 +51,8 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
      * @param builder the builder
      */
     FormulaAstGraphicalGenerator(final GraphicalGeneratorBuilder<FormulaAstGraphicalGenerator, Formula> builder) {
-        super(builder.backgroundColor, builder.alginTerminals, builder.edgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper);
+        super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+                builder.labelMapper);
     }
 
     /**
@@ -136,8 +137,9 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
         return node;
     }
 
-    private GraphicalNode addNode(final Formula formula, final String label, final boolean terminal, final GraphicalRepresentation graphicalRepresentation) {
-        final GraphicalNode node = new GraphicalNode(ID + graphicalRepresentation.getNodes().size(), label, terminal, style(formula));
+    private GraphicalNode addNode(final Formula formula, final String defaultLabel, final boolean terminal, final GraphicalRepresentation graphicalRepresentation) {
+        final GraphicalNode node =
+                new GraphicalNode(ID + graphicalRepresentation.getNodes().size(), labelOrDefault(formula, defaultLabel), terminal, style(formula));
         graphicalRepresentation.addNode(node);
         return node;
     }

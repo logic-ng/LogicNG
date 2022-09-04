@@ -109,7 +109,7 @@ public class FormulaDagGraphicalGeneratorTest {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
                 .backgroundColor("#020202")
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
                 .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .build();
@@ -137,8 +137,9 @@ public class FormulaDagGraphicalGeneratorTest {
         };
 
         final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
                 .nodeStyleMapper(mapper)
+                .labelMapper((f) -> "Formula Type: " + f.type())
                 .build();
 
         testFiles("f9", f9, generator);

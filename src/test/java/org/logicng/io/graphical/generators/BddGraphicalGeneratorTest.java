@@ -93,7 +93,7 @@ public class BddGraphicalGeneratorTest {
                 .falseNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, PURPLE, WHITE, PURPLE))
                 .trueNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, CYAN, WHITE, CYAN))
                 .negativeEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, PURPLE))
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
                 .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, ORANGE, BLACK, ORANGE))
                 .backgroundColor(GRAY_LIGHT)
                 .alignTerminals(true)
@@ -109,7 +109,11 @@ public class BddGraphicalGeneratorTest {
         final BDDKernel kernel = new BDDKernel(f, ordering, 1000, 1000);
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
-        testFiles("formula-dynamic", bdd, BddGraphicalGenerator.builder().nodeStyleMapper(new MyMapperNode(kernel)).build());
+        final BddGraphicalGenerator generator = BddGraphicalGenerator.builder()
+                .nodeStyleMapper(new MyStyleMapper(kernel))
+                .labelMapper(new MyLabelMapper(kernel))
+                .build();
+        testFiles("formula-dynamic", bdd, generator);
     }
 
     private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator generator) throws IOException {
@@ -121,14 +125,14 @@ public class BddGraphicalGeneratorTest {
         assertThat(contentOf(tempT)).isEqualTo(contentOf(expectedT));
     }
 
-    private static class MyMapperNode extends BddNodeStyleMapper {
+    private static class MyStyleMapper extends BddNodeStyleMapper {
 
         final GraphicalNodeStyle falseStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, RED, WHITE);
         final GraphicalNodeStyle trueStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, GREEN, WHITE);
         final GraphicalNodeStyle bStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, ORANGE, BLACK, ORANGE);
         final GraphicalNodeStyle otherStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, CYAN, WHITE, CYAN);
 
-        public MyMapperNode(final BDDKernel kernel) {
+        public MyStyleMapper(final BDDKernel kernel) {
             super(kernel);
         }
 
@@ -144,6 +148,29 @@ public class BddGraphicalGeneratorTest {
                     return this.bStyle;
                 } else {
                     return this.otherStyle;
+                }
+            }
+        }
+    }
+
+    private static class MyLabelMapper extends BddLabelMapper {
+
+        public MyLabelMapper(final BDDKernel kernel) {
+            super(kernel);
+        }
+
+        @Override
+        public String computeLabel(final Integer index) {
+            if (isFalse(index)) {
+                return "falsch";
+            } else if (isTrue(index)) {
+                return "wahr";
+            } else {
+                final Variable variable = variable(index);
+                if (variable.name().equals("B")) {
+                    return "B!!";
+                } else {
+                    return variable.name();
                 }
             }
         }

@@ -42,6 +42,7 @@ import org.logicng.io.graphical.GraphicalNodeStyle;
  */
 @FunctionalInterface
 public interface NodeStyleMapper<T> {
+   
     /**
      * Computes a style for the given node content.
      * @param content the content of the node

@@ -1,63 +1,63 @@
 graph TD
-  id0["0"]
+  id0["value: 0"]
     style id0 stroke:#009432,color:#000000,fill:#009432
-  id1["6"]
+  id1["value: 6"]
     style id1 stroke:#009432,color:#000000,fill:#009432
-  id2(["13"])
+  id2(["value: 13"])
     style id2 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id3(["19"])
+  id3(["value: 19"])
     style id3 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id4(("28"))
+  id4(("value: 28"))
     style id4 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id5["1"]
+  id5["value: 1"]
     style id5 stroke:#009432,color:#000000,fill:#009432
-  id6(("21"))
+  id6(("value: 21"))
     style id6 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id7["7"]
+  id7["value: 7"]
     style id7 stroke:#009432,color:#000000,fill:#009432
-  id8(["15"])
+  id8(["value: 15"])
     style id8 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id9["2"]
+  id9["value: 2"]
     style id9 stroke:#009432,color:#000000,fill:#009432
-  id10["4"]
+  id10["value: 4"]
     style id10 stroke:#009432,color:#000000,fill:#009432
-  id11["3"]
+  id11["value: 3"]
     style id11 stroke:#009432,color:#000000,fill:#009432
-  id12(["16"])
+  id12(["value: 16"])
     style id12 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id13["9"]
+  id13["value: 9"]
     style id13 stroke:#009432,color:#000000,fill:#009432
-  id14["10"]
+  id14["value: 10"]
     style id14 stroke:#009432,color:#000000,fill:#009432
-  id15(["14"])
+  id15(["value: 14"])
     style id15 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id16["5"]
+  id16["value: 5"]
     style id16 stroke:#009432,color:#000000,fill:#009432
-  id17["8"]
+  id17["value: 8"]
     style id17 stroke:#009432,color:#000000,fill:#009432
-  id18(["17"])
+  id18(["value: 17"])
     style id18 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id19(("23"))
+  id19(("value: 23"))
     style id19 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id20(("25"))
+  id20(("value: 25"))
     style id20 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id21(("24"))
+  id21(("value: 24"))
     style id21 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id22(("27"))
+  id22(("value: 27"))
     style id22 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id23(["12"])
+  id23(["value: 12"])
     style id23 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id24(["20"])
+  id24(["value: 20"])
     style id24 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id25(["18"])
+  id25(["value: 18"])
     style id25 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id26(("29"))
+  id26(("value: 29"))
     style id26 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id27(["11"])
+  id27(["value: 11"])
     style id27 stroke:#f79f1f,color:#000000,fill:#f79f1f
-  id28(("22"))
+  id28(("value: 22"))
     style id28 stroke:#ea2027,color:#ffffff,fill:#ea2027
-  id29(("26"))
+  id29(("value: 26"))
     style id29 stroke:#ea2027,color:#ffffff,fill:#ea2027
 
   id0 --- id1

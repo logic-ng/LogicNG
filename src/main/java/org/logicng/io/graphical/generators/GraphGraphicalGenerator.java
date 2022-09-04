@@ -52,7 +52,8 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
      * @param builder the builder
      */
     GraphGraphicalGenerator(final GraphicalGeneratorBuilder<GraphGraphicalGenerator<T>, T> builder) {
-        super(builder.backgroundColor, builder.alginTerminals, builder.edgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper);
+        super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+                builder.labelMapper);
     }
 
     /**
@@ -78,7 +79,7 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
         for (final Node<T> node : graph.nodes()) {
             GraphicalNode graphicalNode = nodes.get(node);
             if (graphicalNode == null) {
-                graphicalNode = new GraphicalNode(ID + counter++, node.content().toString(), style(node.content()));
+                graphicalNode = new GraphicalNode(ID + counter++, labelOrDefault(node.content(), node.content().toString()), style(node.content()));
                 graphicalRepresentation.addNode(graphicalNode);
                 nodes.put(node, graphicalNode);
             }
@@ -86,7 +87,8 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
                 if (!doneNodes.contains(neighbour)) {
                     GraphicalNode neighbourNode = nodes.get(neighbour);
                     if (neighbourNode == null) {
-                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), style(neighbour.content()));
+                        neighbourNode = new GraphicalNode(ID + counter++, labelOrDefault(neighbour.content(), neighbour.content().toString()),
+                                style(neighbour.content()));
                         graphicalRepresentation.addNode(neighbourNode);
                         nodes.put(neighbour, neighbourNode);
                     }

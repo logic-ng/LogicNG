@@ -28,53 +28,24 @@
 
 package org.logicng.io.graphical.generators;
 
-import org.logicng.io.graphical.GraphicalColor;
-import org.logicng.io.graphical.GraphicalEdgeStyle;
-import org.logicng.io.graphical.GraphicalNodeStyle;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
- * An abstract super class for graphical generators.
- * @param <C> the type of the content from which the nodes are generated
+ * An abstract super class for a label mapper for a graphical representation of a BDD.
  * @version 2.4.0
  * @since 2.4.0
  */
-public abstract class GraphicalGenerator<C> {
-    protected static final String ID = "id";
-
-    protected final GraphicalColor backgroundColor;
-    protected final boolean alignTerminals;
-    protected final GraphicalEdgeStyle edgeStyle;
-    protected final GraphicalNodeStyle defaultNodeStyle;
-    private final NodeStyleMapper<C> nodeStyleMapper;
-    private final LabelMapper<C> labelMapper;
-
-    protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals, final GraphicalEdgeStyle edgeStyle,
-                                 final GraphicalNodeStyle defaultNodeStyle, final NodeStyleMapper<C> nodeStyleMapper, final LabelMapper<C> labelMapper) {
-        this.backgroundColor = backgroundColor;
-        this.alignTerminals = alignTerminals;
-        this.edgeStyle = edgeStyle;
-        this.defaultNodeStyle = defaultNodeStyle;
-        this.nodeStyleMapper = nodeStyleMapper;
-        this.labelMapper = labelMapper;
-    }
+public abstract class BddLabelMapper extends BddMapper implements LabelMapper<Integer> {
 
     /**
-     * Computes the style for a node.  If no style mapper is configured the default style is applied, otherwise, the
-     * style mapper is used to dynamically compute the style for the given content.
-     * @param content the content to style
-     * @return the node style
+     * Constructs a new BDD label mapper for a given BDD kernel.  The BDDs which
+     * must be constructed with this kernel.
+     * @param kernel a BDD kernel
      */
-    protected GraphicalNodeStyle style(final C content) {
-        return this.nodeStyleMapper != null ? this.nodeStyleMapper.computeStyle(content) : this.defaultNodeStyle;
+    public BddLabelMapper(final BDDKernel kernel) {
+        super(kernel);
     }
 
-    /**
-     * Computes the label with the label mapper or returns the default value if no label mapper is configured.
-     * @param content      the content for which to compute the label
-     * @param defaultLabel the default label
-     * @return the label
-     */
-    protected String labelOrDefault(final C content, final String defaultLabel) {
-        return this.labelMapper == null ? defaultLabel : this.labelMapper.computeLabel(content);
-    }
+    @Override
+    public abstract String computeLabel(final Integer content);
 }

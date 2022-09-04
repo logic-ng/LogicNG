@@ -1,14 +1,14 @@
 digraph G {
   bgcolor="#ffffff"
 
-  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ea2027", fillcolor="#ffffff", label="false"]
-  id1 [shape=box, style=filled, color="#009432", fontcolor="#009432", fillcolor="#ffffff", label="true"]
+  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ea2027", fillcolor="#ffffff", label="falsch"]
+  id1 [shape=box, style=filled, color="#009432", fontcolor="#009432", fillcolor="#ffffff", label="wahr"]
   id8 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="D"]
   id9 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="D"]
   id12 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="C"]
-  id17 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B"]
+  id17 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B!!"]
   id18 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="C"]
-  id19 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B"]
+  id19 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B!!"]
   id20 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="A"]
 
   id8 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]

@@ -70,7 +70,7 @@ public class GraphGraphicalGeneratorTest {
         final GraphGraphicalGenerator<String> generator = GraphGraphicalGenerator.<String>builder()
                 .backgroundColor(GraphicalColor.hex("#4f4f4f"))
                 .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, GREEN, ORANGE))
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE))
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE))
                 .build();
         testFiles("small-fixedStyle", g, generator);
     }
@@ -102,7 +102,11 @@ public class GraphGraphicalGeneratorTest {
                 return style3;
             }
         };
-        testFiles("30-dynamic", g, GraphGraphicalGenerator.<Long>builder().nodeStyleMapper(mapper).build());
+        final GraphGraphicalGenerator<Long> generator = GraphGraphicalGenerator.<Long>builder()
+                .labelMapper((l) -> "value: " + l)
+                .nodeStyleMapper(mapper)
+                .build();
+        testFiles("30-dynamic", g, generator);
     }
 
     @Test

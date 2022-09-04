@@ -21,23 +21,23 @@ graph TD
     style id9 stroke:#ffc612,color:#000000,fill:#ffc612
   id10(("d"))
     style id10 stroke:#ffc612,color:#000000,fill:#ffc612
-  id11(["⇒"])
+  id11(["Formula Type: IMPL"])
     style id11 stroke:#000000,color:#000000,fill:#ffffff
-  id12(["⇔"])
+  id12(["Formula Type: EQUIV"])
     style id12 stroke:#000000,color:#000000,fill:#ffffff
-  id13(["∧"])
+  id13(["Formula Type: AND"])
     style id13 stroke:#000000,color:#000000,fill:#ffffff
-  id14(["∨"])
+  id14(["Formula Type: OR"])
     style id14 stroke:#000000,color:#000000,fill:#ffffff
-  id15(["∧"])
+  id15(["Formula Type: AND"])
     style id15 stroke:#000000,color:#000000,fill:#ffffff
-  id16["a + b + c <= 2"]
+  id16["Formula Type: PBC"]
     style id16 stroke:#777777,color:#777777,fill:#e4e4e4
-  id17(["⇒"])
+  id17(["Formula Type: IMPL"])
     style id17 stroke:#000000,color:#000000,fill:#ffffff
-  id18(["∨"])
+  id18(["Formula Type: OR"])
     style id18 stroke:#000000,color:#000000,fill:#ffffff
-  id19(["∧"])
+  id19(["Formula Type: AND"])
     style id19 stroke:#000000,color:#000000,fill:#ffffff
 
   id13 --> id2

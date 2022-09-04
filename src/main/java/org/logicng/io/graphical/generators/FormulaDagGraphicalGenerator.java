@@ -55,7 +55,8 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
      * @param builder the builder
      */
     FormulaDagGraphicalGenerator(final GraphicalGeneratorBuilder<FormulaDagGraphicalGenerator, Formula> builder) {
-        super(builder.backgroundColor, builder.alginTerminals, builder.edgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper);
+        super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+                builder.labelMapper);
     }
 
     /**
@@ -151,11 +152,11 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
         return pair.first();
     }
 
-    private Pair<GraphicalNode, Boolean> addNode(final Formula formula, final String label, final boolean terminal,
+    private Pair<GraphicalNode, Boolean> addNode(final Formula formula, final String defaultLabel, final boolean terminal,
                                                  final GraphicalRepresentation graphicalRepresentation, final Map<Formula, GraphicalNode> nodes) {
         GraphicalNode node = nodes.get(formula);
         if (node == null) {
-            node = new GraphicalNode(ID + nodes.size(), label, terminal, style(formula));
+            node = new GraphicalNode(ID + nodes.size(), labelOrDefault(formula, defaultLabel), terminal, style(formula));
             graphicalRepresentation.addNode(node);
             nodes.put(formula, node);
             return new Pair<>(node, false);

@@ -47,9 +47,10 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     protected GraphicalColor backgroundColor = WHITE;
     protected boolean alginTerminals;
-    protected GraphicalEdgeStyle edgeStyle = new GraphicalEdgeStyle();
+    protected GraphicalEdgeStyle defaultEdgeStyle = new GraphicalEdgeStyle();
     protected GraphicalNodeStyle defaultNodeStyle = new GraphicalNodeStyle();
     protected NodeStyleMapper<C> nodeStyleMapper = null;
+    protected LabelMapper<C> labelMapper = null;
     protected final Function<GraphicalGeneratorBuilder<T, C>, T> constructor;
 
     /**
@@ -106,18 +107,18 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
     }
 
     /**
-     * The default edge style for all edges in the graph.  In a BDD graph this is the style
+     * Sets the default edge style for all edges in the graph.  In a BDD graph this is the style
      * of the positive (high) edges.
      * @param edgeStyle the edge style
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T, C> edgeStyle(final GraphicalEdgeStyle edgeStyle) {
-        this.edgeStyle = edgeStyle;
+    public GraphicalGeneratorBuilder<T, C> defaultEdgeStyle(final GraphicalEdgeStyle edgeStyle) {
+        this.defaultEdgeStyle = edgeStyle;
         return this;
     }
 
     /**
-     * The default node style for all nodes in the graph.  If no dynamic node styling is configured via {@link #nodeStyleMapper(NodeStyleMapper)})},
+     * Sets the default node style for all nodes in the graph.  If no dynamic node styling is configured via {@link #nodeStyleMapper(NodeStyleMapper)})},
      * this style will be applied to all nodes.
      * @param nodeStyle the node style
      * @return the current builder
@@ -128,13 +129,23 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
     }
 
     /**
-     * The node style mapper for dynamically styling nodes in the graph.  If this mapper is configured, the default node style is ignored
+     * Sets the node style mapper for dynamically styling nodes in the graph.  If this mapper is configured, the default node style is ignored
      * and each node is styled be the computed style of {@link NodeStyleMapper#computeStyle(Object)}.
      * @param nodeStyleMapper the node style mapper
      * @return the current builder
      */
     public GraphicalGeneratorBuilder<T, C> nodeStyleMapper(final NodeStyleMapper<C> nodeStyleMapper) {
         this.nodeStyleMapper = nodeStyleMapper;
+        return this;
+    }
+
+    /**
+     * Sets the label mapper for dynamically computing labels for nodes in the graph.
+     * @param labelMapper the label mapper
+     * @return the current builder
+     */
+    public GraphicalGeneratorBuilder<T, C> labelMapper(final LabelMapper<C> labelMapper) {
+        this.labelMapper = labelMapper;
         return this;
     }
 

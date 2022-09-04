@@ -109,7 +109,7 @@ public class FormulaAstGraphicalGeneratorTest {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
                 .backgroundColor("#020202")
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
                 .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .build();
@@ -137,11 +137,24 @@ public class FormulaAstGraphicalGeneratorTest {
         };
 
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
                 .nodeStyleMapper(mapper)
                 .build();
 
         testFiles("f9", f9, generator);
+    }
+
+    @Test
+    public void testWithLabelMapper() throws ParserException, IOException {
+        final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
+        final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
+                .backgroundColor("#020202")
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
+                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, BLUE, WHITE, BLUE))
+                .alignTerminals(true)
+                .labelMapper(Formula::toString)
+                .build();
+        testFiles("f8-ownLabels", f8, generator);
     }
 
     private void testFiles(final String fileName, final Formula formula, final FormulaAstGraphicalGenerator generator) throws IOException {

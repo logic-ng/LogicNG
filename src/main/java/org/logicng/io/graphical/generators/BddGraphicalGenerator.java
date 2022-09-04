@@ -31,6 +31,8 @@ package org.logicng.io.graphical.generators;
 import static org.logicng.io.graphical.GraphicalColor.GREEN;
 import static org.logicng.io.graphical.GraphicalColor.RED;
 import static org.logicng.io.graphical.GraphicalColor.WHITE;
+import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.BDD_FALSE;
+import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.BDD_TRUE;
 
 import org.logicng.io.graphical.GraphicalEdge;
 import org.logicng.io.graphical.GraphicalEdgeStyle;
@@ -38,7 +40,6 @@ import org.logicng.io.graphical.GraphicalNode;
 import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.graphical.GraphicalRepresentation;
 import org.logicng.knowledgecompilation.bdds.BDD;
-import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
 import java.util.Map;
@@ -59,7 +60,8 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
      * @param builder the builder
      */
     BddGraphicalGenerator(final GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> builder) {
-        super(builder.backgroundColor, builder.alginTerminals, builder.edgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper);
+        super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+                builder.labelMapper);
         final BddTranslatorBuilder bddBuilder = (BddTranslatorBuilder) builder;
         this.negativeEdgeStyle = bddBuilder.negativeEdgeStyle;
     }
@@ -82,38 +84,38 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
 
         final GraphicalRepresentation graphicalRepresentation = new GraphicalRepresentation(this.alignTerminals, true, this.backgroundColor);
         if (!bdd.isTautology()) {
-            final GraphicalNode falseNode = new GraphicalNode(ID + BDDKernel.BDD_FALSE, "false", true, style(BDDKernel.BDD_FALSE));
+            final GraphicalNode falseNode = new GraphicalNode(ID + BDD_FALSE, labelOrDefault(BDD_FALSE, "false"), true, style(BDD_FALSE));
             graphicalRepresentation.addNode(falseNode);
-            index2Node.put(BDDKernel.BDD_FALSE, falseNode);
+            index2Node.put(BDD_FALSE, falseNode);
         }
         if (!bdd.isContradiction()) {
-            final GraphicalNode trueNode = new GraphicalNode(ID + BDDKernel.BDD_TRUE, "true", true, style(BDDKernel.BDD_TRUE));
+            final GraphicalNode trueNode = new GraphicalNode(ID + BDD_TRUE, labelOrDefault(BDD_TRUE, "true"), true, style(BDD_TRUE));
             graphicalRepresentation.addNode(trueNode);
-            index2Node.put(BDDKernel.BDD_TRUE, trueNode);
+            index2Node.put(BDD_TRUE, trueNode);
         }
         for (final int[] internalNode : new BDDOperations(bdd.underlyingKernel()).allNodes(bdd.index())) {
             final int index = internalNode[0];
-            final String label = bdd.underlyingKernel().getVariableForIndex(internalNode[1]).name();
-            final int lowIndex = internalNode[2];
-            final int highIndex = internalNode[3];
-            final GraphicalNode node = getOrAddNode(index, label, graphicalRepresentation, index2Node);
-            final GraphicalNode lowNode = getOrAddNode(lowIndex, label, graphicalRepresentation, index2Node);
-            final GraphicalNode highNode = getOrAddNode(highIndex, label, graphicalRepresentation, index2Node);
+            final String defaultLabel = bdd.underlyingKernel().getVariableForIndex(internalNode[1]).name();
+            addNode(index, labelOrDefault(index, defaultLabel), graphicalRepresentation, index2Node);
+        }
+        for (final int[] internalNode : new BDDOperations(bdd.underlyingKernel()).allNodes(bdd.index())) {
+            final GraphicalNode node = index2Node.get(internalNode[0]);
+            final GraphicalNode lowNode = index2Node.get(internalNode[2]);
+            final GraphicalNode highNode = index2Node.get(internalNode[3]);
             graphicalRepresentation.addEdge(new GraphicalEdge(node, lowNode, this.negativeEdgeStyle));
             graphicalRepresentation.addEdge(new GraphicalEdge(node, highNode, this.edgeStyle));
         }
         return graphicalRepresentation;
     }
 
-    private GraphicalNode getOrAddNode(final int index, final String label, final GraphicalRepresentation graphicalRepresentation,
-                                       final Map<Integer, GraphicalNode> index2Node) {
+    private void addNode(final int index, final String label, final GraphicalRepresentation graphicalRepresentation,
+                         final Map<Integer, GraphicalNode> index2Node) {
         GraphicalNode node = index2Node.get(index);
         if (node == null) {
             node = new GraphicalNode(ID + index, label, false, style(index));
             graphicalRepresentation.addNode(node);
             index2Node.put(index, node);
         }
-        return node;
     }
 
     /**
@@ -137,11 +139,11 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          */
         BddTranslatorBuilder(final Function<GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer>, BddGraphicalGenerator> constructor) {
             super(constructor);
-            this.edgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+            this.defaultEdgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
             this.nodeStyleMapper = (index) -> {
-                if (index == BDDKernel.BDD_FALSE) {
+                if (index == BDD_FALSE) {
                     return this.defaultFalseNodeStyle;
-                } else if (index == BDDKernel.BDD_TRUE) {
+                } else if (index == BDD_TRUE) {
                     return this.defaultTrueNodeStyle;
                 } else {
                     return this.defaultNodeStyle;
