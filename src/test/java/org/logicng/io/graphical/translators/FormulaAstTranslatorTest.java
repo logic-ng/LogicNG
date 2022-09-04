@@ -57,11 +57,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Unit tests for {@link FormulaDagTranslator}.
+ * Unit tests for {@link FormulaAstTranslator}.
  * @version 2.4.0
  * @since 2.4.0
  */
-public class FormulaDagTranslatorTest {
+public class FormulaAstTranslatorTest {
     private FormulaFactory f;
     private PseudoBooleanParser p;
 
@@ -73,14 +73,14 @@ public class FormulaDagTranslatorTest {
 
     @Test
     public void testConstants() throws IOException {
-        testFiles("false", this.f.falsum(), FormulaDagTranslator.builder().build());
-        testFiles("true", this.f.verum(), FormulaDagTranslator.builder().build());
+        testFiles("false", this.f.falsum(), FormulaAstTranslator.builder().build());
+        testFiles("true", this.f.verum(), FormulaAstTranslator.builder().build());
     }
 
     @Test
     public void testLiterals() throws IOException {
-        testFiles("x", this.f.variable("x"), FormulaDagTranslator.builder().build());
-        testFiles("not_x", this.f.literal("x", false), FormulaDagTranslator.builder().build());
+        testFiles("x", this.f.variable("x"), FormulaAstTranslator.builder().build());
+        testFiles("not_x", this.f.literal("x", false), FormulaAstTranslator.builder().build());
     }
 
     @Test
@@ -90,25 +90,25 @@ public class FormulaDagTranslatorTest {
         final Formula f3 = this.p.parse("(a & b) <=> (~c => (a | b))");
         final Formula f4 = this.p.parse("~(a & b) | b & ~c");
         final Formula f5 = this.p.parse("a | ~b | (2*a + 3*~b + 4*c <= 23)");
-        testFiles("f1", f1, FormulaDagTranslator.builder().build());
-        testFiles("f2", f2, FormulaDagTranslator.builder().build());
-        testFiles("f3", f3, FormulaDagTranslator.builder().build());
-        testFiles("f4", f4, FormulaDagTranslator.builder().build());
-        testFiles("f5", f5, FormulaDagTranslator.builder().build());
+        testFiles("f1", f1, FormulaAstTranslator.builder().build());
+        testFiles("f2", f2, FormulaAstTranslator.builder().build());
+        testFiles("f3", f3, FormulaAstTranslator.builder().build());
+        testFiles("f4", f4, FormulaAstTranslator.builder().build());
+        testFiles("f5", f5, FormulaAstTranslator.builder().build());
     }
 
     @Test
     public void testDuplicateFormulaParts() throws ParserException, IOException {
         final Formula f6 = this.p.parse("(a & b) | (c & ~(a & b))");
-        testFiles("f6", f6, FormulaDagTranslator.builder().build());
+        testFiles("f6", f6, FormulaAstTranslator.builder().build());
         final Formula f7 = this.p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))");
-        testFiles("f7", f7, FormulaDagTranslator.builder().build());
+        testFiles("f7", f7, FormulaAstTranslator.builder().build());
     }
 
     @Test
     public void testFixedStyle() throws ParserException, IOException {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
-        final FormulaDagTranslator translator = FormulaDagTranslator.builder()
+        final FormulaAstTranslator translator = FormulaAstTranslator.builder()
                 .backgroundColor("#020202")
                 .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.LineType.BOLD, CYAN))
                 .nodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
@@ -137,7 +137,7 @@ public class FormulaDagTranslatorTest {
             }
         };
 
-        final FormulaDagTranslator translator = FormulaDagTranslator.builder()
+        final FormulaAstTranslator translator = FormulaAstTranslator.builder()
                 .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.LineType.SOLID, PURPLE))
                 .build();
 
@@ -149,26 +149,26 @@ public class FormulaDagTranslatorTest {
         System.out.println(GraphicalColor.rgb(0, 0, 0).getHexValue());
     }
 
-    private void testFiles(final String fileName, final Formula formula, final FormulaDagTranslator translator) throws IOException {
+    private void testFiles(final String fileName, final Formula formula, final FormulaAstTranslator translator) throws IOException {
         testFiles(fileName, formula, translator, null);
     }
 
-    private void testFiles(final String fileName, final Formula formula, final FormulaDagTranslator translator, final StyleMapper<Formula> mapper) throws IOException {
+    private void testFiles(final String fileName, final Formula formula, final FormulaAstTranslator translator, final StyleMapper<Formula> mapper) throws IOException {
         if (mapper == null) {
             final GraphicalRepresentation representation = translator.translate(formula);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+            representation.writeDot("src/test/resources/writers/temp/" + fileName + "-ast.dot");
+            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "-ast.txt");
         } else {
             final GraphicalRepresentation representation = translator.translate(formula, mapper);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+            representation.writeDot("src/test/resources/writers/temp/" + fileName + "-ast.dot");
+            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "-ast.txt");
         }
-        final File expectedDot = new File("src/test/resources/writers/formulas-dag/" + fileName + ".dot");
-        final File tempDot = new File("src/test/resources/writers/temp/" + fileName + ".dot");
+        final File expectedDot = new File("src/test/resources/writers/formulas-ast/" + fileName + "-ast.dot");
+        final File tempDot = new File("src/test/resources/writers/temp/" + fileName + "-ast.dot");
         assertThat(contentOf(tempDot)).isEqualTo(contentOf(expectedDot));
 
-        final File expectedMermaid = new File("src/test/resources/writers/formulas-dag/" + fileName + ".txt");
-        final File tempMermaid = new File("src/test/resources/writers/temp/" + fileName + ".txt");
+        final File expectedMermaid = new File("src/test/resources/writers/formulas-ast/" + fileName + "-ast.txt");
+        final File tempMermaid = new File("src/test/resources/writers/temp/" + fileName + "-ast.txt");
         assertThat(contentOf(tempMermaid)).isEqualTo(contentOf(expectedMermaid));
     }
 }

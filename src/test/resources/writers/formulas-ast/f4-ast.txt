@@ -1,0 +1,32 @@
+graph TD
+  id0(["∨"])
+    style id0 stroke:#000000,color:#000000,fill:#ffffff
+  id1(["¬"])
+    style id1 stroke:#000000,color:#000000,fill:#ffffff
+  id2(["∧"])
+    style id2 stroke:#000000,color:#000000,fill:#ffffff
+  id3(["a"])
+    style id3 stroke:#000000,color:#000000,fill:#ffffff
+  id4(["b"])
+    style id4 stroke:#000000,color:#000000,fill:#ffffff
+  id5(["∧"])
+    style id5 stroke:#000000,color:#000000,fill:#ffffff
+  id6(["b"])
+    style id6 stroke:#000000,color:#000000,fill:#ffffff
+  id7(["¬c"])
+    style id7 stroke:#000000,color:#000000,fill:#ffffff
+
+  id2 --> id3
+    linkStyle 0 stroke:#000000,stroke-width:2px
+  id2 --> id4
+    linkStyle 1 stroke:#000000,stroke-width:2px
+  id1 --> id2
+    linkStyle 2 stroke:#000000,stroke-width:2px
+  id0 --> id1
+    linkStyle 3 stroke:#000000,stroke-width:2px
+  id5 --> id6
+    linkStyle 4 stroke:#000000,stroke-width:2px
+  id5 --> id7
+    linkStyle 5 stroke:#000000,stroke-width:2px
+  id0 --> id5
+    linkStyle 6 stroke:#000000,stroke-width:2px

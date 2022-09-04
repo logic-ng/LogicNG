@@ -1,0 +1,56 @@
+graph TD
+  id0(["∨"])
+    style id0 stroke:#000000,color:#000000,fill:#ffffff
+  id1(["∧"])
+    style id1 stroke:#000000,color:#000000,fill:#ffffff
+  id2(["c"])
+    style id2 stroke:#000000,color:#000000,fill:#ffffff
+  id3(["d"])
+    style id3 stroke:#000000,color:#000000,fill:#ffffff
+  id4(["∧"])
+    style id4 stroke:#000000,color:#000000,fill:#ffffff
+  id5(["a"])
+    style id5 stroke:#000000,color:#000000,fill:#ffffff
+  id6(["b"])
+    style id6 stroke:#000000,color:#000000,fill:#ffffff
+  id7(["⇔"])
+    style id7 stroke:#000000,color:#000000,fill:#ffffff
+  id8(["∧"])
+    style id8 stroke:#000000,color:#000000,fill:#ffffff
+  id9(["c"])
+    style id9 stroke:#000000,color:#000000,fill:#ffffff
+  id10(["d"])
+    style id10 stroke:#000000,color:#000000,fill:#ffffff
+  id11(["∧"])
+    style id11 stroke:#000000,color:#000000,fill:#ffffff
+  id12(["a"])
+    style id12 stroke:#000000,color:#000000,fill:#ffffff
+  id13(["b"])
+    style id13 stroke:#000000,color:#000000,fill:#ffffff
+
+  id1 --> id2
+    linkStyle 0 stroke:#000000,stroke-width:2px
+  id1 --> id3
+    linkStyle 1 stroke:#000000,stroke-width:2px
+  id0 --> id1
+    linkStyle 2 stroke:#000000,stroke-width:2px
+  id4 --> id5
+    linkStyle 3 stroke:#000000,stroke-width:2px
+  id4 --> id6
+    linkStyle 4 stroke:#000000,stroke-width:2px
+  id0 --> id4
+    linkStyle 5 stroke:#000000,stroke-width:2px
+  id8 --> id9
+    linkStyle 6 stroke:#000000,stroke-width:2px
+  id8 --> id10
+    linkStyle 7 stroke:#000000,stroke-width:2px
+  id11 --> id12
+    linkStyle 8 stroke:#000000,stroke-width:2px
+  id11 --> id13
+    linkStyle 9 stroke:#000000,stroke-width:2px
+  id7 --> id8
+    linkStyle 10 stroke:#000000,stroke-width:2px
+  id7 --> id11
+    linkStyle 11 stroke:#000000,stroke-width:2px
+  id0 --> id7
+    linkStyle 12 stroke:#000000,stroke-width:2px

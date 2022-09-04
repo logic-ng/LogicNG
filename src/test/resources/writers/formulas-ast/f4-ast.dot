@@ -1,0 +1,20 @@
+digraph G {
+  bgcolor="#ffffff"
+
+  id0 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="∨"]
+  id1 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="¬"]
+  id2 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="∧"]
+  id3 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="a"]
+  id4 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="b"]
+  id5 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="∧"]
+  id6 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="b"]
+  id7 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="¬c"]
+
+  id2 -> id3 [color="#000000", fontcolor="#000000", style=solid]
+  id2 -> id4 [color="#000000", fontcolor="#000000", style=solid]
+  id1 -> id2 [color="#000000", fontcolor="#000000", style=solid]
+  id0 -> id1 [color="#000000", fontcolor="#000000", style=solid]
+  id5 -> id6 [color="#000000", fontcolor="#000000", style=solid]
+  id5 -> id7 [color="#000000", fontcolor="#000000", style=solid]
+  id0 -> id5 [color="#000000", fontcolor="#000000", style=solid]
+}

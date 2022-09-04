@@ -1,0 +1,84 @@
+graph TD
+  id0(["⇒"])
+    style id0 stroke:#000000,color:#000000,fill:#ffffff
+  id1(["⇔"])
+    style id1 stroke:#000000,color:#000000,fill:#ffffff
+  id2(("A"))
+    style id2 stroke:#006266,color:#ffffff,fill:#006266
+  id3(["∧"])
+    style id3 stroke:#000000,color:#000000,fill:#ffffff
+  id4(("B"))
+    style id4 stroke:#006266,color:#ffffff,fill:#006266
+  id5(["∨"])
+    style id5 stroke:#000000,color:#000000,fill:#ffffff
+  id6(("¬A"))
+    style id6 stroke:#006266,color:#ffffff,fill:#006266
+  id7(("C"))
+    style id7 stroke:#006266,color:#ffffff,fill:#006266
+  id8(("X"))
+    style id8 stroke:#006266,color:#ffffff,fill:#006266
+  id9(["∧"])
+    style id9 stroke:#000000,color:#000000,fill:#ffffff
+  id10["a + b + c <= 2"]
+    style id10 stroke:#777777,color:#777777,fill:#e4e4e4
+  id11(("a"))
+    style id11 stroke:#ffc612,color:#000000,fill:#ffc612
+  id12(("b"))
+    style id12 stroke:#ffc612,color:#000000,fill:#ffc612
+  id13(("c"))
+    style id13 stroke:#ffc612,color:#000000,fill:#ffc612
+  id14(["⇒"])
+    style id14 stroke:#000000,color:#000000,fill:#ffffff
+  id15(["∨"])
+    style id15 stroke:#000000,color:#000000,fill:#ffffff
+  id16(("¬a"))
+    style id16 stroke:#ffc612,color:#000000,fill:#ffc612
+  id17(("d"))
+    style id17 stroke:#ffc612,color:#000000,fill:#ffc612
+  id18(["∧"])
+    style id18 stroke:#000000,color:#000000,fill:#ffffff
+  id19(("X"))
+    style id19 stroke:#006266,color:#ffffff,fill:#006266
+  id20(("¬B"))
+    style id20 stroke:#006266,color:#ffffff,fill:#006266
+
+  id3 --> id4
+    linkStyle 0 stroke:#5758bb,stroke-width:2px
+  id5 --> id6
+    linkStyle 1 stroke:#5758bb,stroke-width:2px
+  id5 --> id7
+    linkStyle 2 stroke:#5758bb,stroke-width:2px
+  id5 --> id8
+    linkStyle 3 stroke:#5758bb,stroke-width:2px
+  id3 --> id5
+    linkStyle 4 stroke:#5758bb,stroke-width:2px
+  id1 --> id2
+    linkStyle 5 stroke:#5758bb,stroke-width:2px
+  id1 --> id3
+    linkStyle 6 stroke:#5758bb,stroke-width:2px
+  id10 --> id11
+    linkStyle 7 stroke:#5758bb,stroke-width:2px
+  id10 --> id12
+    linkStyle 8 stroke:#5758bb,stroke-width:2px
+  id10 --> id13
+    linkStyle 9 stroke:#5758bb,stroke-width:2px
+  id9 --> id10
+    linkStyle 10 stroke:#5758bb,stroke-width:2px
+  id15 --> id16
+    linkStyle 11 stroke:#5758bb,stroke-width:2px
+  id15 --> id17
+    linkStyle 12 stroke:#5758bb,stroke-width:2px
+  id18 --> id19
+    linkStyle 13 stroke:#5758bb,stroke-width:2px
+  id18 --> id20
+    linkStyle 14 stroke:#5758bb,stroke-width:2px
+  id14 -->|"l"| id15
+    linkStyle 15 stroke:#5758bb,stroke-width:2px
+  id14 -->|"r"| id18
+    linkStyle 16 stroke:#5758bb,stroke-width:2px
+  id9 --> id14
+    linkStyle 17 stroke:#5758bb,stroke-width:2px
+  id0 -->|"l"| id1
+    linkStyle 18 stroke:#5758bb,stroke-width:2px
+  id0 -->|"r"| id9
+    linkStyle 19 stroke:#5758bb,stroke-width:2px
