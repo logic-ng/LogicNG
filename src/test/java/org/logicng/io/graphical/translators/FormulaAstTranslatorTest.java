@@ -154,15 +154,10 @@ public class FormulaAstTranslatorTest {
     }
 
     private void testFiles(final String fileName, final Formula formula, final FormulaAstTranslator translator, final StyleMapper<Formula> mapper) throws IOException {
-        if (mapper == null) {
-            final GraphicalRepresentation representation = translator.translate(formula);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + "-ast.dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "-ast.txt");
-        } else {
-            final GraphicalRepresentation representation = translator.translate(formula, mapper);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + "-ast.dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "-ast.txt");
-        }
+        final GraphicalRepresentation representation = mapper == null ? translator.translate(formula) : translator.translate(formula, mapper);
+        representation.writeDot("src/test/resources/writers/temp/" + fileName + "-ast.dot");
+        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "-ast.txt");
+       
         final File expectedDot = new File("src/test/resources/writers/formulas-ast/" + fileName + "-ast.dot");
         final File tempDot = new File("src/test/resources/writers/temp/" + fileName + "-ast.dot");
         assertThat(contentOf(tempDot)).isEqualTo(contentOf(expectedDot));

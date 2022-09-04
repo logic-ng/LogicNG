@@ -154,15 +154,10 @@ public class FormulaDagTranslatorTest {
     }
 
     private void testFiles(final String fileName, final Formula formula, final FormulaDagTranslator translator, final StyleMapper<Formula> mapper) throws IOException {
-        if (mapper == null) {
-            final GraphicalRepresentation representation = translator.translate(formula);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
-        } else {
-            final GraphicalRepresentation representation = translator.translate(formula, mapper);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
-        }
+        final GraphicalRepresentation representation = mapper == null ? translator.translate(formula) : translator.translate(formula, mapper);
+        representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
+        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+       
         final File expectedDot = new File("src/test/resources/writers/formulas-dag/" + fileName + ".dot");
         final File tempDot = new File("src/test/resources/writers/temp/" + fileName + ".dot");
         assertThat(contentOf(tempDot)).isEqualTo(contentOf(expectedDot));

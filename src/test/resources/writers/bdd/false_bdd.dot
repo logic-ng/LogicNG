@@ -1,3 +1,6 @@
 digraph G {
-  const_false [shape=box, label="$false", style = bold, color = red];
+  bgcolor="#ffffff"
+
+  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ffffff", fillcolor="#ea2027", label="false"]
+
 }

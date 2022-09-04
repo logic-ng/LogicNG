@@ -118,15 +118,10 @@ public class GraphTranslatorTest {
     }
 
     private <T> void testFiles(final String fileName, final Graph<T> g, final GraphTranslator translator, final StyleMapper<T> mapper) throws IOException {
-        if (mapper == null) {
-            final GraphicalRepresentation representation = translator.translate(g);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
-        } else {
-            final GraphicalRepresentation representation = translator.translate(g, mapper);
-            representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-            representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
-        }
+        final GraphicalRepresentation representation = mapper == null ? translator.translate(g) : translator.translate(g, mapper);
+        representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
+        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+
         final File expectedDot = new File("src/test/resources/writers/graph/" + fileName + ".dot");
         final File tempDot = new File("src/test/resources/writers/temp/" + fileName + ".dot");
         assertThat(contentOf(tempDot)).isEqualTo(contentOf(expectedDot));

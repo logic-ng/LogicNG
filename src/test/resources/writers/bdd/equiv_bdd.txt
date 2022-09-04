@@ -1,0 +1,24 @@
+graph TD
+  id0["false"]
+    style id0 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id1["true"]
+    style id1 stroke:#009432,color:#ffffff,fill:#009432
+  id6(["C"])
+    style id6 stroke:#000000,color:#000000,fill:#ffffff
+  id7(["C"])
+    style id7 stroke:#000000,color:#000000,fill:#ffffff
+  id11(["A"])
+    style id11 stroke:#000000,color:#000000,fill:#ffffff
+
+  id6 --> id0
+    linkStyle 0 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+  id6 --> id1
+    linkStyle 1 stroke:#009432,stroke-width:2px
+  id7 --> id1
+    linkStyle 2 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+  id7 --> id0
+    linkStyle 3 stroke:#009432,stroke-width:2px
+  id11 --> id6
+    linkStyle 4 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+  id11 --> id7
+    linkStyle 5 stroke:#009432,stroke-width:2px

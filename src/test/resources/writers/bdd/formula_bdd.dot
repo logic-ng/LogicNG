@@ -1,25 +1,28 @@
 digraph G {
-  const_true [shape=box, label="$true", style = bold, color = darkgreen];
-  const_false [shape=box, label="$false", style = bold, color = red];
-  id_8 [shape=ellipse, label="D"];
-  id_8 -> const_false [style = dotted, color = red];
-  id_8 -> const_true [color = darkgreen];
-  id_9 [shape=ellipse, label="D"];
-  id_9 -> const_true [style = dotted, color = red];
-  id_9 -> const_false [color = darkgreen];
-  id_21 [shape=ellipse, label="C"];
-  id_21 -> const_false [style = dotted, color = red];
-  id_21 -> id_8 [color = darkgreen];
-  id_26 [shape=ellipse, label="B"];
-  id_26 -> id_9 [style = dotted, color = red];
-  id_26 -> const_false [color = darkgreen];
-  id_27 [shape=ellipse, label="C"];
-  id_27 -> id_8 [style = dotted, color = red];
-  id_27 -> const_false [color = darkgreen];
-  id_28 [shape=ellipse, label="B"];
-  id_28 -> id_27 [style = dotted, color = red];
-  id_28 -> id_21 [color = darkgreen];
-  id_29 [shape=ellipse, label="A"];
-  id_29 -> id_26 [style = dotted, color = red];
-  id_29 -> id_28 [color = darkgreen];
+  bgcolor="#ffffff"
+
+  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ffffff", fillcolor="#ea2027", label="false"]
+  id1 [shape=box, style=filled, color="#009432", fontcolor="#ffffff", fillcolor="#009432", label="true"]
+  id8 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="D"]
+  id9 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="D"]
+  id21 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="C"]
+  id26 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="B"]
+  id27 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="C"]
+  id28 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="B"]
+  id29 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="A"]
+
+  id8 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id8 -> id1 [color="#009432", fontcolor="#009432", style=solid]
+  id9 -> id1 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id9 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id21 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id21 -> id8 [color="#009432", fontcolor="#009432", style=solid]
+  id26 -> id9 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id26 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id27 -> id8 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id27 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id28 -> id27 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id28 -> id21 [color="#009432", fontcolor="#009432", style=solid]
+  id29 -> id26 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id29 -> id28 [color="#009432", fontcolor="#009432", style=solid]
 }

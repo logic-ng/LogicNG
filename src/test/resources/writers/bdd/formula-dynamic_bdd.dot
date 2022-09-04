@@ -1,0 +1,28 @@
+digraph G {
+  bgcolor="#ffffff"
+
+  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ea2027", fillcolor="#ffffff", label="false"]
+  id1 [shape=box, style=filled, color="#009432", fontcolor="#009432", fillcolor="#ffffff", label="true"]
+  id8 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="D"]
+  id9 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="D"]
+  id12 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="C"]
+  id17 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B"]
+  id18 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="C"]
+  id19 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B"]
+  id20 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="A"]
+
+  id8 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id8 -> id1 [color="#009432", fontcolor="#009432", style=solid]
+  id9 -> id1 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id9 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id12 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id12 -> id8 [color="#009432", fontcolor="#009432", style=solid]
+  id17 -> id9 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id17 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id18 -> id8 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id18 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id19 -> id18 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id19 -> id12 [color="#009432", fontcolor="#009432", style=solid]
+  id20 -> id17 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id20 -> id19 [color="#009432", fontcolor="#009432", style=solid]
+}
