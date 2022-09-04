@@ -29,8 +29,8 @@
 package org.logicng.io.writers;
 
 import org.logicng.formulas.Formula;
-import org.logicng.io.graphical.translators.FormulaAstTranslator;
-import org.logicng.io.graphical.translators.FormulaDagTranslator;
+import org.logicng.io.graphical.generators.FormulaAstGraphicalGenerator;
+import org.logicng.io.graphical.generators.FormulaDagGraphicalGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import java.io.IOException;
  * @version 2.4.0
  * @since 1.0
  * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
- * to use graph writer use {@link FormulaDagTranslator} or {@link FormulaAstTranslator} within the new
+ * to use graph writer use {@link FormulaDagGraphicalGenerator} or {@link FormulaAstGraphicalGenerator} within the new
  * graphical writer framework.
  */
 @Deprecated
@@ -72,6 +72,6 @@ public final class FormulaDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
-        FormulaDagTranslator.builder().alignTerminals(alignLiterals).build().translate(formula).writeDot(file);
+        FormulaDagGraphicalGenerator.builder().alignTerminals(alignLiterals).build().translate(formula).writeDot(file);
     }
 }

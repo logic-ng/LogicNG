@@ -26,64 +26,64 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical;
+package org.logicng.io.graphical.generators;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import org.logicng.formulas.Variable;
+import org.logicng.io.graphical.GraphicalNodeStyle;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDConstruction;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
- * An interface for writers of graphical representations of formulas, BDDs, and graphs.
+ * An abstract super class for a style mapper for a graphical representation of a BDD.
+ * <p>
+ * Since the {@link BddGraphicalGenerator} uses only the indices of BDD nodes, this class provides
+ * some helper methods which simplify styling the BDD by extracting the content of the BDD nodes
+ * as constants and variables.
  * @version 2.4.0
  * @since 2.4.0
  */
-public interface GraphicalRepresentationWriter {
+public abstract class BddNodeStyleMapper implements NodeStyleMapper<Integer> {
+
+    private final BDDKernel kernel;
+    private final BDDConstruction bddConstruction;
 
     /**
-     * Writes a given graphical representation with the given writer.
-     * @param writer         the writer
-     * @param representation the representation to write
-     * @throws IOException if there is a problem during writing
+     * Constructs a new BDD style mapper for a given BDD kernel.  The BDDs which are styled
+     * must be constructed with this kernel.
+     * @param kernel a BDD kernel
      */
-    void write(final Writer writer, GraphicalRepresentation representation) throws IOException;
+    public BddNodeStyleMapper(final BDDKernel kernel) {
+        this.kernel = kernel;
+        this.bddConstruction = new BDDConstruction(kernel);
+    }
+
+    @Override
+    public abstract GraphicalNodeStyle computeStyle(final Integer index);
 
     /**
-     * Writes a given graphical representation to a file with the given file name.
-     * @param fileName       the file name for the output file
-     * @param representation the representation to write
-     * @throws IOException if there is a problem during writing the file
+     * Returns the variable for the node with the given index
+     * @param index the index
+     * @return the variable
      */
-    default void write(final String fileName, final GraphicalRepresentation representation) throws IOException {
-        write(new File(fileName), representation);
+    protected Variable variable(final int index) {
+        return this.kernel.getVariableForIndex(this.bddConstruction.bddVar(index));
     }
 
     /**
-     * Writes a given graphical representation to a given file.
-     * @param file           the file for the output
-     * @param representation the representation to write
-     * @throws IOException if there is a problem during writing the file
+     * Returns true if the index is the terminal node for FALSE.
+     * @param index the index
+     * @return whether the index is the terminal FALSE node
      */
-    default void write(final File file, final GraphicalRepresentation representation) throws IOException {
-        try (final Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
-            write(writer, representation);
-        }
+    protected boolean isFalse(final int index) {
+        return index == BDDKernel.BDD_FALSE;
     }
 
     /**
-     * Returns the string value of this writer's graphical representation.
-     * @param representation the representation
-     * @return the string value of the representation
+     * Returns true if the index is the terminal node for TRUE.
+     * @param index the index
+     * @return whether the index is the terminal TRUE node
      */
-    default String stringValue(final GraphicalRepresentation representation) {
-        try (final Writer writer = new StringWriter()) {
-            write(writer, representation);
-            return writer.toString();
-        } catch (final IOException e) {
-            throw new IllegalStateException("IO Exception", e);
-        }
+    protected boolean isTrue(final int index) {
+        return index == BDDKernel.BDD_TRUE;
     }
 }

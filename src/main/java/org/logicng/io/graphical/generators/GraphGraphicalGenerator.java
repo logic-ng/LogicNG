@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical.translators;
+package org.logicng.io.graphical.generators;
 
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.Node;
@@ -39,21 +39,47 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class GraphTranslator extends GraphicalTranslator {
+/**
+ * The graphical generator for representations of graphs {@link Graph}.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
+public class GraphGraphicalGenerator extends GraphicalGenerator {
 
-    GraphTranslator(final GraphicalTranslatorBuilder<GraphTranslator> builder) {
+    /**
+     * Constructs a new generator with the given builder's configuration.
+     * @param builder the builder
+     */
+    GraphGraphicalGenerator(final GraphicalGeneratorBuilder<GraphGraphicalGenerator> builder) {
         super(builder.getBackgroundColor(), builder.isAlginTerminal(), builder.getEdgeStyle(), builder.getNodeStyle());
     }
 
-    public static GraphicalTranslatorBuilder<GraphTranslator> builder() {
-        return new GraphicalTranslatorBuilder<>(GraphTranslator::new);
+    /**
+     * Returns the builder for this generator.
+     * @return the builder
+     */
+    public static GraphicalGeneratorBuilder<GraphGraphicalGenerator> builder() {
+        return new GraphicalGeneratorBuilder<>(GraphGraphicalGenerator::new);
     }
 
+    /**
+     * Translates a given graph in its graphical representation.
+     * @param graph the graph to translate
+     * @param <T>   the content type of the graph's nodes
+     * @return the graphical representation
+     */
     public <T> GraphicalRepresentation translate(final Graph<T> graph) {
         return translate(graph, (t) -> this.nodeStyle);
     }
 
-    public <T> GraphicalRepresentation translate(final Graph<T> graph, final StyleMapper<T> styleMapper) {
+    /**
+     * Translates a given graph in its graphical representation.
+     * @param graph           the graph to translate
+     * @param nodeStyleMapper the node style mapper for dynamically styling nodes
+     * @param <T>             the content type of the graph's nodes
+     * @return the graphical representation
+     */
+    public <T> GraphicalRepresentation translate(final Graph<T> graph, final NodeStyleMapper<T> nodeStyleMapper) {
         int counter = 0;
         final Map<Node<T>, GraphicalNode> nodes = new HashMap<>();
         final Set<Node<T>> doneNodes = new HashSet<>();
@@ -62,7 +88,7 @@ public class GraphTranslator extends GraphicalTranslator {
         for (final Node<T> node : graph.nodes()) {
             GraphicalNode graphicalNode = nodes.get(node);
             if (graphicalNode == null) {
-                graphicalNode = new GraphicalNode(ID + counter++, node.content().toString(), styleMapper.computeStyle(node.content()));
+                graphicalNode = new GraphicalNode(ID + counter++, node.content().toString(), nodeStyleMapper.computeStyle(node.content()));
                 graphicalRepresentation.addNode(graphicalNode);
                 nodes.put(node, graphicalNode);
             }
@@ -70,7 +96,7 @@ public class GraphTranslator extends GraphicalTranslator {
                 if (!doneNodes.contains(neighbour)) {
                     GraphicalNode neighbourNode = nodes.get(neighbour);
                     if (neighbourNode == null) {
-                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), styleMapper.computeStyle(neighbour.content()));
+                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), nodeStyleMapper.computeStyle(neighbour.content()));
                         graphicalRepresentation.addNode(neighbourNode);
                         nodes.put(neighbour, neighbourNode);
                     }

@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical.translators;
+package org.logicng.io.graphical.generators;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
@@ -48,18 +48,18 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Unit tests for {@link GraphTranslator}.
+ * Unit tests for {@link GraphGraphicalGenerator}.
  * @version 2.4.0
  * @since 2.4.0
  */
-public class GraphTranslatorTest {
+public class GraphGraphicalGeneratorTest {
 
     @Test
     public void testSmallDefault() throws IOException {
         final Graph<String> g = new Graph<>();
         g.connect(g.node("A"), g.node("B"));
         g.node("C");
-        testFiles("small", g, GraphTranslator.builder().build());
+        testFiles("small", g, GraphGraphicalGenerator.builder().build());
     }
 
     @Test
@@ -67,11 +67,11 @@ public class GraphTranslatorTest {
         final Graph<String> g = new Graph<>();
         g.connect(g.node("A"), g.node("B"));
         g.node("C");
-        final GraphicalTranslatorBuilder<GraphTranslator> builder = GraphTranslator.builder();
+        final GraphicalGeneratorBuilder<GraphGraphicalGenerator> builder = GraphGraphicalGenerator.builder();
         builder.backgroundColor(GraphicalColor.hex("#4f4f4f"));
         builder.nodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, GREEN, ORANGE));
-        builder.edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.LineType.DOTTED, WHITE));
-        final GraphTranslator translator = builder
+        builder.edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE));
+        final GraphGraphicalGenerator translator = builder
                 .build();
         testFiles("small-fixedStyle", g, translator);
     }
@@ -82,7 +82,7 @@ public class GraphTranslatorTest {
         for (long i = 0; i < 30; i++) {
             g.node(i);
         }
-        testFiles("30", g, GraphTranslator.builder().build());
+        testFiles("30", g, GraphGraphicalGenerator.builder().build());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class GraphTranslatorTest {
         final GraphicalNodeStyle style1 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, BLACK, GREEN);
         final GraphicalNodeStyle style2 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, ORANGE, BLACK, ORANGE);
         final GraphicalNodeStyle style3 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, RED, WHITE, RED);
-        final StyleMapper<Long> mapper = (l) -> {
+        final NodeStyleMapper<Long> mapper = (l) -> {
             if (l <= 10) {
                 return style1;
             } else if (l <= 20) {
@@ -103,21 +103,21 @@ public class GraphTranslatorTest {
                 return style3;
             }
         };
-        testFiles("30-dynamic", g, GraphTranslator.builder().build(), mapper);
+        testFiles("30-dynamic", g, GraphGraphicalGenerator.builder().build(), mapper);
     }
 
     @Test
     public void test50p1() throws IOException {
         final Graph<Long> g = GraphTest.getLongGraph("50");
         g.node(51L);
-        testFiles("50p1", g, GraphTranslator.builder().build());
+        testFiles("50p1", g, GraphGraphicalGenerator.builder().build());
     }
 
-    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphTranslator translator) throws IOException {
+    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator translator) throws IOException {
         testFiles(fileName, g, translator, null);
     }
 
-    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphTranslator translator, final StyleMapper<T> mapper) throws IOException {
+    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator translator, final NodeStyleMapper<T> mapper) throws IOException {
         final GraphicalRepresentation representation = mapper == null ? translator.translate(g) : translator.translate(g, mapper);
         representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
         representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");

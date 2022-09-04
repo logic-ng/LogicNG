@@ -26,11 +26,30 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical.translators;
+package org.logicng.io.graphical.generators;
 
+import org.logicng.io.graphical.GraphicalColor;
+import org.logicng.io.graphical.GraphicalEdgeStyle;
 import org.logicng.io.graphical.GraphicalNodeStyle;
 
-@FunctionalInterface
-public interface StyleMapper<T> {
-    GraphicalNodeStyle computeStyle(T content);
+/**
+ * An abstract super class for graphical generators.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
+public abstract class GraphicalGenerator {
+    protected static final String ID = "id";
+
+    protected final GraphicalColor backgroundColor;
+    protected final boolean alignTerminals;
+    protected final GraphicalEdgeStyle edgeStyle;
+    protected final GraphicalNodeStyle nodeStyle;
+
+    protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals, final GraphicalEdgeStyle edgeStyle,
+                                 final GraphicalNodeStyle nodeStyle) {
+        this.backgroundColor = backgroundColor;
+        this.alignTerminals = alignTerminals;
+        this.edgeStyle = edgeStyle;
+        this.nodeStyle = nodeStyle;
+    }
 }

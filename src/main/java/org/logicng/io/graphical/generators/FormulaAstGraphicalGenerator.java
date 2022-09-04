@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical.translators;
+package org.logicng.io.graphical.generators;
 
 import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.FType;
@@ -39,92 +39,116 @@ import org.logicng.io.graphical.GraphicalEdge;
 import org.logicng.io.graphical.GraphicalNode;
 import org.logicng.io.graphical.GraphicalRepresentation;
 
-public class FormulaAstTranslator extends GraphicalTranslator {
+/**
+ * The graphical generator for representations of ASTs (abstract syntax trees) of a formula.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
+public class FormulaAstGraphicalGenerator extends GraphicalGenerator {
 
-    FormulaAstTranslator(final GraphicalTranslatorBuilder<FormulaAstTranslator> builder) {
+    /**
+     * Constructs a new generator with the given builder's configuration.
+     * @param builder the builder
+     */
+    FormulaAstGraphicalGenerator(final GraphicalGeneratorBuilder<FormulaAstGraphicalGenerator> builder) {
         super(builder.getBackgroundColor(), builder.isAlginTerminal(), builder.getEdgeStyle(), builder.getNodeStyle());
     }
 
-    public static GraphicalTranslatorBuilder<FormulaAstTranslator> builder() {
-        return new GraphicalTranslatorBuilder<>(FormulaAstTranslator::new);
+    /**
+     * Returns the builder for this generator.
+     * @return the builder
+     */
+    public static GraphicalGeneratorBuilder<FormulaAstGraphicalGenerator> builder() {
+        return new GraphicalGeneratorBuilder<>(FormulaAstGraphicalGenerator::new);
     }
 
+    /**
+     * Translates a given formula's AST in its graphical representation.
+     * @param formula the formula
+     * @return the graphical representation
+     */
     public GraphicalRepresentation translate(final Formula formula) {
         return translate(formula, (f) -> this.nodeStyle);
     }
 
-    public GraphicalRepresentation translate(final Formula formula, final StyleMapper<Formula> styleMapper) {
+    /**
+     * Translates a given formula's AST in its graphical representation.
+     * @param formula         the formula
+     * @param nodeStyleMapper the node style mapper for dynamically styling nodes
+     * @return the graphical representation
+     */
+    public GraphicalRepresentation translate(final Formula formula, final NodeStyleMapper<Formula> nodeStyleMapper) {
         final GraphicalRepresentation graphicalRepresentation = new GraphicalRepresentation(this.alignTerminals, true, this.backgroundColor);
-        walkFormula(formula, graphicalRepresentation, styleMapper);
+        walkFormula(formula, graphicalRepresentation, nodeStyleMapper);
         return graphicalRepresentation;
     }
 
-    private GraphicalNode walkFormula(final Formula formula, final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
+    private GraphicalNode walkFormula(final Formula formula, final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
         switch (formula.type()) {
             case FALSE:
             case TRUE:
             case LITERAL:
-                return walkAtomicFormula(formula, graphicalRepresentation, styleMapper);
+                return walkAtomicFormula(formula, graphicalRepresentation, nodeStyleMapper);
             case PBC:
-                return walkPBConstraint(formula, graphicalRepresentation, styleMapper);
+                return walkPBConstraint(formula, graphicalRepresentation, nodeStyleMapper);
             case NOT:
-                return walkNotString((Not) formula, graphicalRepresentation, styleMapper);
+                return walkNotString((Not) formula, graphicalRepresentation, nodeStyleMapper);
             case IMPL:
             case EQUIV:
-                return walkBinaryString((BinaryOperator) formula, graphicalRepresentation, styleMapper);
+                return walkBinaryString((BinaryOperator) formula, graphicalRepresentation, nodeStyleMapper);
             case AND:
             case OR:
-                return walkNaryString((NAryOperator) formula, graphicalRepresentation, styleMapper);
+                return walkNaryString((NAryOperator) formula, graphicalRepresentation, nodeStyleMapper);
             default:
                 throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
         }
     }
 
-    private GraphicalNode walkAtomicFormula(final Formula formula, final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
+    private GraphicalNode walkAtomicFormula(final Formula formula, final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
         final String label = formula.type() == FType.LITERAL ? litString((Literal) formula) : formula.toString();
-        return addNode(formula, label, true, graphicalRepresentation, styleMapper);
+        return addNode(formula, label, true, graphicalRepresentation, nodeStyleMapper);
     }
 
-    private GraphicalNode walkPBConstraint(final Formula formula, final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
-        final GraphicalNode pbNode = addNode(formula, formula.toString(), false, graphicalRepresentation, styleMapper);
+    private GraphicalNode walkPBConstraint(final Formula formula, final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
+        final GraphicalNode pbNode = addNode(formula, formula.toString(), false, graphicalRepresentation, nodeStyleMapper);
         for (final Literal operand : ((PBConstraint) formula).operands()) {
-            final GraphicalNode literalNode = addNode(operand, litString(operand), true, graphicalRepresentation, styleMapper);
+            final GraphicalNode literalNode = addNode(operand, litString(operand), true, graphicalRepresentation, nodeStyleMapper);
             graphicalRepresentation.addEdge(new GraphicalEdge(pbNode, literalNode, this.edgeStyle));
         }
         return pbNode;
     }
 
-    private GraphicalNode walkNotString(final Not not, final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
-        final GraphicalNode node = addNode(not, "¬", false, graphicalRepresentation, styleMapper);
-        final GraphicalNode operandNode = walkFormula(not.operand(), graphicalRepresentation, styleMapper);
+    private GraphicalNode walkNotString(final Not not, final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
+        final GraphicalNode node = addNode(not, "¬", false, graphicalRepresentation, nodeStyleMapper);
+        final GraphicalNode operandNode = walkFormula(not.operand(), graphicalRepresentation, nodeStyleMapper);
         graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, this.edgeStyle));
         return node;
     }
 
-    private GraphicalNode walkBinaryString(final BinaryOperator op, final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
+    private GraphicalNode walkBinaryString(final BinaryOperator op, final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
         final boolean isImpl = op.type() == FType.IMPL;
         final String label = isImpl ? "⇒" : "⇔";
-        final GraphicalNode node = addNode(op, label, false, graphicalRepresentation, styleMapper);
-        final GraphicalNode leftNode = walkFormula(op.left(), graphicalRepresentation, styleMapper);
-        final GraphicalNode rightNode = walkFormula(op.right(), graphicalRepresentation, styleMapper);
+        final GraphicalNode node = addNode(op, label, false, graphicalRepresentation, nodeStyleMapper);
+        final GraphicalNode leftNode = walkFormula(op.left(), graphicalRepresentation, nodeStyleMapper);
+        final GraphicalNode rightNode = walkFormula(op.right(), graphicalRepresentation, nodeStyleMapper);
         graphicalRepresentation.addEdge(new GraphicalEdge(node, leftNode, isImpl ? "l" : null, this.edgeStyle));
         graphicalRepresentation.addEdge(new GraphicalEdge(node, rightNode, isImpl ? "r" : null, this.edgeStyle));
         return node;
     }
 
-    private GraphicalNode walkNaryString(final NAryOperator op, final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
+    private GraphicalNode walkNaryString(final NAryOperator op, final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
         final String label = op.type() == FType.AND ? "∧" : "∨";
-        final GraphicalNode node = addNode(op, label, false, graphicalRepresentation, styleMapper);
+        final GraphicalNode node = addNode(op, label, false, graphicalRepresentation, nodeStyleMapper);
         for (final Formula operand : op) {
-            final GraphicalNode operandNode = walkFormula(operand, graphicalRepresentation, styleMapper);
+            final GraphicalNode operandNode = walkFormula(operand, graphicalRepresentation, nodeStyleMapper);
             graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, this.edgeStyle));
         }
         return node;
     }
 
     private static GraphicalNode addNode(final Formula formula, final String label, final boolean terminal,
-                                         final GraphicalRepresentation graphicalRepresentation, final StyleMapper<Formula> styleMapper) {
-        final GraphicalNode node = new GraphicalNode(ID + graphicalRepresentation.getNodes().size(), label, terminal, styleMapper.computeStyle(formula));
+                                         final GraphicalRepresentation graphicalRepresentation, final NodeStyleMapper<Formula> nodeStyleMapper) {
+        final GraphicalNode node = new GraphicalNode(ID + graphicalRepresentation.getNodes().size(), label, terminal, nodeStyleMapper.computeStyle(formula));
         graphicalRepresentation.addNode(node);
         return node;
     }

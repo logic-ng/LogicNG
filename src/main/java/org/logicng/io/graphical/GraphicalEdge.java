@@ -30,20 +30,35 @@ package org.logicng.io.graphical;
 
 import java.util.Objects;
 
+/**
+ * A single edge in a graphical representation of a formula, BDD, or graph.  An edge connects two nodes and holds
+ * an optional label and an edge style.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class GraphicalEdge {
     private final GraphicalNode source;
     private final GraphicalNode destination;
     private final String label;
     private final GraphicalEdgeStyle style;
 
-    public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final GraphicalEdgeStyle edgeStyle) {
-        this(source, destination, null, edgeStyle);
+    /**
+     * Constructs a new graphical edge with the given values and without label.
+     * @param source      the source node of the edge
+     * @param destination the destination node of the edge
+     * @param style       the style of this edge
+     */
+    public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final GraphicalEdgeStyle style) {
+        this(source, destination, null, style);
     }
 
-    public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final String label) {
-        this(source, destination, label, new GraphicalEdgeStyle());
-    }
-
+    /**
+     * Constructs a new graphical edge with the given values.
+     * @param source      the source node of the edge
+     * @param destination the destination node of the edge
+     * @param label       the optional label (can be null)
+     * @param style       the style of this edge
+     */
     public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final String label, final GraphicalEdgeStyle style) {
         this.source = source;
         this.destination = destination;

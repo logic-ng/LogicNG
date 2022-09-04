@@ -32,6 +32,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * A writer which writes a graphical representation as a Mermaid.js file.  This writer is thread-safe.
+ * <p>
+ * More information on Mermaid.js including a live code editor can be found
+ * <a href="https://mermaid-js.github.io/mermaid/#/">here</a>.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
 
     private static final GraphicalMermaidWriter INSTANCE = new GraphicalMermaidWriter();
@@ -40,6 +48,10 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         // Singleton Pattern
     }
 
+    /**
+     * Returns the singleton instance of this writer.
+     * @return the singleton instance
+     */
     public static GraphicalMermaidWriter get() {
         return INSTANCE;
     }
@@ -47,13 +59,13 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     @Override
     public void write(final Writer writer, final GraphicalRepresentation representation) throws IOException {
         final BufferedWriter bufferedWriter = new BufferedWriter(writer);
-        writePreamble(bufferedWriter, representation);
+        writePreamble(bufferedWriter);
         writeNodes(bufferedWriter, representation);
         writeEdges(bufferedWriter, representation);
         bufferedWriter.close();
     }
 
-    private static void writePreamble(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
+    private static void writePreamble(final BufferedWriter writer) throws IOException {
         writer.write("graph TD");
         writer.newLine();
     }
@@ -75,9 +87,9 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
             final String edgeSymbol = edgeSymbolString(edge, representation.isDirected());
             writer.write(String.format("  %s %s %s", edge.getSource().id, edgeSymbol, edge.getDestination().id));
             writer.newLine();
-            final String dottedString = edge.getStyle().getLineType() == GraphicalEdgeStyle.LineType.DOTTED ? ",stroke-dasharray:3" : "";
+            final String dottedString = edge.getStyle().getType() == GraphicalEdgeStyle.EdgeType.DOTTED ? ",stroke-dasharray:3" : "";
             writer.write(String.format("    linkStyle %d stroke:%s,stroke-width:%dpx%s", counter++, edge.getStyle().getColor().getHexValue(),
-                    edge.getStyle().getLineType() == GraphicalEdgeStyle.LineType.BOLD ? 4 : 2, dottedString));
+                    edge.getStyle().getType() == GraphicalEdgeStyle.EdgeType.BOLD ? 4 : 2, dottedString));
             writer.newLine();
         }
     }

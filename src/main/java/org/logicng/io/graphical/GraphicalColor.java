@@ -30,6 +30,13 @@ package org.logicng.io.graphical;
 
 import java.util.Objects;
 
+/**
+ * A color for graphical representations of formulas, BDDs, and graphs.
+ * <p>
+ * A color can be generated from RGB or Hex values.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class GraphicalColor {
 
     public static GraphicalColor BLACK = new GraphicalColor("#000000");
@@ -51,10 +58,23 @@ public class GraphicalColor {
         this.hexValue = hexValue;
     }
 
+    /**
+     * Constructs a new color from a hex value.  The string must be of the form "#aabbcc".  E.g. the default
+     * red has the representation "#ea2027".
+     * @param hexValue the hex value
+     * @return the color object
+     */
     public static GraphicalColor hex(final String hexValue) {
         return new GraphicalColor(hexValue);
     }
 
+    /**
+     * Constructs a new color from an RGB value.  Each value must be between 0 and 255.
+     * @param red   the red value
+     * @param green the green value
+     * @param blue  the blue value
+     * @return the color object
+     */
     public static GraphicalColor rgb(final int red, final int green, final int blue) {
         if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
             throw new IllegalArgumentException("Invalid RGB value (must be between 0 and 255)");

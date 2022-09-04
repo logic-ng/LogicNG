@@ -29,7 +29,7 @@
 package org.logicng.graphs.io;
 
 import org.logicng.graphs.datastructures.Graph;
-import org.logicng.io.graphical.translators.GraphTranslator;
+import org.logicng.io.graphical.generators.GraphGraphicalGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.io.IOException;
  * @version 2.4.0
  * @since 1.2
  * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
- * to use graph writer use {@link GraphTranslator} within the new graphical writer framework.
+ * to use graph writer use {@link GraphGraphicalGenerator} within the new graphical writer framework.
  */
 @Deprecated
 public final class GraphDotFileWriter {
@@ -70,6 +70,6 @@ public final class GraphDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-        GraphTranslator.builder().build().translate(graph).writeDot(file);
+        GraphGraphicalGenerator.builder().build().translate(graph).writeDot(file);
     }
 }

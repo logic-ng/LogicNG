@@ -28,7 +28,7 @@
 
 package org.logicng.knowledgecompilation.bdds.io;
 
-import org.logicng.io.graphical.translators.BddTranslator;
+import org.logicng.io.graphical.generators.BddGraphicalGenerator;
 import org.logicng.knowledgecompilation.bdds.BDD;
 
 import java.io.File;
@@ -39,7 +39,7 @@ import java.io.IOException;
  * @version 2.4.0
  * @since 1.4.0
  * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
- * to use graph writer use {@link BddTranslator} within the new graphical writer framework.
+ * to use graph writer use {@link BddGraphicalGenerator} within the new graphical writer framework.
  */
 @Deprecated
 public final class BDDDotFileWriter {
@@ -72,6 +72,6 @@ public final class BDDDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final BDD bdd) throws IOException {
-        BddTranslator.builder().build().translate(bdd).writeDot(file);
+        BddGraphicalGenerator.builder().build().translate(bdd).writeDot(file);
     }
 }

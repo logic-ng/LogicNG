@@ -30,24 +30,35 @@ package org.logicng.io.graphical;
 
 import java.util.Objects;
 
+/**
+ * A single node in a graphical representation of a formula, BDD, or graph.  A node holds a unique ID, a label,
+ * a flag whether this is a terminal node or not, and a node style.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class GraphicalNode {
     final String id;
     final String label;
     final boolean terminal;
     final GraphicalNodeStyle style;
 
-    public GraphicalNode(final String id, final String label) {
-        this(id, label, false, new GraphicalNodeStyle());
-    }
-
-    public GraphicalNode(final String id, final String label, final boolean terminal) {
-        this(id, label, terminal, new GraphicalNodeStyle());
-    }
-
+    /**
+     * Constructs a new non-terminal graphical node with the given values.
+     * @param id    the unique ID
+     * @param label the label
+     * @param style the style of the node
+     */
     public GraphicalNode(final String id, final String label, final GraphicalNodeStyle style) {
         this(id, label, false, style);
     }
 
+    /**
+     * Constructs a new graphical node with the given values.
+     * @param id       the unique ID
+     * @param label    the label
+     * @param terminal whether it is a terminal node or not
+     * @param style    the style of the node
+     */
     public GraphicalNode(final String id, final String label, final boolean terminal, final GraphicalNodeStyle style) {
         this.id = id;
         this.label = label;

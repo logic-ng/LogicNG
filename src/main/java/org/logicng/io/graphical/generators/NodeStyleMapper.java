@@ -26,35 +26,26 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical.translators;
+package org.logicng.io.graphical.generators;
 
-import org.logicng.formulas.Variable;
 import org.logicng.io.graphical.GraphicalNodeStyle;
-import org.logicng.knowledgecompilation.bdds.jbuddy.BDDConstruction;
-import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
-public abstract class BddStyleMapper implements StyleMapper<Integer> {
-
-    private final BDDKernel kernel;
-    private final BDDConstruction bddConstruction;
-
-    public BddStyleMapper(final BDDKernel kernel) {
-        this.kernel = kernel;
-        this.bddConstruction = new BDDConstruction(kernel);
-    }
-
-    @Override
-    public abstract GraphicalNodeStyle computeStyle(final Integer index);
-
-    protected Variable variable(final int index) {
-        return this.kernel.getVariableForIndex(this.bddConstruction.bddVar(index));
-    }
-
-    protected boolean isFalse(final int index) {
-        return index == BDDKernel.BDD_FALSE;
-    }
-
-    protected boolean isTrue(final int index) {
-        return index == BDDKernel.BDD_TRUE;
-    }
+/**
+ * A style mapper for generating graphical representations of formulas, BDDs and graphs.
+ * This mapper can be used to compute a node style for the given node content.
+ * <p>
+ * This can be used to style nodes of a graphical representation dynamically depending
+ * on the content of the node.
+ * @param <T> the type of the node content
+ * @version 2.4.0
+ * @since 2.4.0
+ */
+@FunctionalInterface
+public interface NodeStyleMapper<T> {
+    /**
+     * Computes a style for the given node content.
+     * @param content the content of the node
+     * @return the style for the node with this content
+     */
+    GraphicalNodeStyle computeStyle(T content);
 }

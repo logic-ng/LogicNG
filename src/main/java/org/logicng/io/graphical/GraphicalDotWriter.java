@@ -32,6 +32,13 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * A writer which writes a graphical representation as a DOT file.  This writer is thread-safe.
+ * <p>
+ * The DOT file specification can be found <a href="https://graphviz.org/doc/info/lang.html">here</a>.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class GraphicalDotWriter implements GraphicalRepresentationWriter {
 
     private static final GraphicalDotWriter INSTANCE = new GraphicalDotWriter();
@@ -40,6 +47,10 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         // Singleton Pattern
     }
 
+    /**
+     * Returns the singleton instance of this writer.
+     * @return the singleton instance
+     */
     public static GraphicalDotWriter get() {
         return INSTANCE;
     }
@@ -89,7 +100,7 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         for (final GraphicalEdge edge : representation.getEdges()) {
             final String edgeSymbol = representation.isDirected() ? "->" : "--";
             final String label = edge.getLabel() != null ? String.format(", label=\"%s\"", edge.getLabel()) : "";
-            final String edgeStyle = edgeStyleString(edge.getStyle().getLineType());
+            final String edgeStyle = edgeStyleString(edge.getStyle().getType());
             final String string = String.format("  %s %s %s [color=\"%s\", fontcolor=\"%s\", style=%s%s]", edge.getSource().id, edgeSymbol,
                     edge.getDestination().id, edge.getStyle().getColor().getHexValue(), edge.getStyle().getColor().getHexValue(), edgeStyle, label);
             writer.write(string);
@@ -120,8 +131,8 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         }
     }
 
-    private static String edgeStyleString(final GraphicalEdgeStyle.LineType lineType) {
-        switch (lineType) {
+    private static String edgeStyleString(final GraphicalEdgeStyle.EdgeType edgeType) {
+        switch (edgeType) {
             case DOTTED:
                 return "dotted";
             case BOLD:

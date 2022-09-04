@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.io.graphical.translators;
+package org.logicng.io.graphical.generators;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
@@ -57,11 +57,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Unit tests for {@link FormulaAstTranslator}.
+ * Unit tests for {@link FormulaDagGraphicalGenerator}.
  * @version 2.4.0
  * @since 2.4.0
  */
-public class FormulaAstTranslatorTest {
+public class FormulaDagGraphicalGeneratorTest {
     private FormulaFactory f;
     private PseudoBooleanParser p;
 
@@ -73,14 +73,14 @@ public class FormulaAstTranslatorTest {
 
     @Test
     public void testConstants() throws IOException {
-        testFiles("false", this.f.falsum(), FormulaAstTranslator.builder().build());
-        testFiles("true", this.f.verum(), FormulaAstTranslator.builder().build());
+        testFiles("false", this.f.falsum(), FormulaDagGraphicalGenerator.builder().build());
+        testFiles("true", this.f.verum(), FormulaDagGraphicalGenerator.builder().build());
     }
 
     @Test
     public void testLiterals() throws IOException {
-        testFiles("x", this.f.variable("x"), FormulaAstTranslator.builder().build());
-        testFiles("not_x", this.f.literal("x", false), FormulaAstTranslator.builder().build());
+        testFiles("x", this.f.variable("x"), FormulaDagGraphicalGenerator.builder().build());
+        testFiles("not_x", this.f.literal("x", false), FormulaDagGraphicalGenerator.builder().build());
     }
 
     @Test
@@ -90,27 +90,27 @@ public class FormulaAstTranslatorTest {
         final Formula f3 = this.p.parse("(a & b) <=> (~c => (a | b))");
         final Formula f4 = this.p.parse("~(a & b) | b & ~c");
         final Formula f5 = this.p.parse("a | ~b | (2*a + 3*~b + 4*c <= 23)");
-        testFiles("f1", f1, FormulaAstTranslator.builder().build());
-        testFiles("f2", f2, FormulaAstTranslator.builder().build());
-        testFiles("f3", f3, FormulaAstTranslator.builder().build());
-        testFiles("f4", f4, FormulaAstTranslator.builder().build());
-        testFiles("f5", f5, FormulaAstTranslator.builder().build());
+        testFiles("f1", f1, FormulaDagGraphicalGenerator.builder().build());
+        testFiles("f2", f2, FormulaDagGraphicalGenerator.builder().build());
+        testFiles("f3", f3, FormulaDagGraphicalGenerator.builder().build());
+        testFiles("f4", f4, FormulaDagGraphicalGenerator.builder().build());
+        testFiles("f5", f5, FormulaDagGraphicalGenerator.builder().build());
     }
 
     @Test
     public void testDuplicateFormulaParts() throws ParserException, IOException {
         final Formula f6 = this.p.parse("(a & b) | (c & ~(a & b))");
-        testFiles("f6", f6, FormulaAstTranslator.builder().build());
+        testFiles("f6", f6, FormulaDagGraphicalGenerator.builder().build());
         final Formula f7 = this.p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))");
-        testFiles("f7", f7, FormulaAstTranslator.builder().build());
+        testFiles("f7", f7, FormulaDagGraphicalGenerator.builder().build());
     }
 
     @Test
     public void testFixedStyle() throws ParserException, IOException {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
-        final FormulaAstTranslator translator = FormulaAstTranslator.builder()
+        final FormulaDagGraphicalGenerator translator = FormulaDagGraphicalGenerator.builder()
                 .backgroundColor("#020202")
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.LineType.BOLD, CYAN))
+                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
                 .nodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .build();
@@ -126,7 +126,7 @@ public class FormulaAstTranslatorTest {
         final GraphicalNodeStyle style3 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, TURQUOISE, WHITE, TURQUOISE);
         final GraphicalNodeStyle style4 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, BLACK, BLACK, WHITE);
 
-        final StyleMapper<Formula> mapper = (formula) -> {
+        final NodeStyleMapper<Formula> mapper = (formula) -> {
             if (formula.type() == FType.PBC) {
                 return style1;
             } else if (formula.type() == FType.LITERAL) {
@@ -137,8 +137,8 @@ public class FormulaAstTranslatorTest {
             }
         };
 
-        final FormulaAstTranslator translator = FormulaAstTranslator.builder()
-                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.LineType.SOLID, PURPLE))
+        final FormulaDagGraphicalGenerator translator = FormulaDagGraphicalGenerator.builder()
+                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
                 .build();
 
         testFiles("f9", f9, translator, mapper);
@@ -149,21 +149,21 @@ public class FormulaAstTranslatorTest {
         System.out.println(GraphicalColor.rgb(0, 0, 0).getHexValue());
     }
 
-    private void testFiles(final String fileName, final Formula formula, final FormulaAstTranslator translator) throws IOException {
+    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator translator) throws IOException {
         testFiles(fileName, formula, translator, null);
     }
 
-    private void testFiles(final String fileName, final Formula formula, final FormulaAstTranslator translator, final StyleMapper<Formula> mapper) throws IOException {
+    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator translator, final NodeStyleMapper<Formula> mapper) throws IOException {
         final GraphicalRepresentation representation = mapper == null ? translator.translate(formula) : translator.translate(formula, mapper);
-        representation.writeDot("src/test/resources/writers/temp/" + fileName + "-ast.dot");
-        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "-ast.txt");
-       
-        final File expectedDot = new File("src/test/resources/writers/formulas-ast/" + fileName + "-ast.dot");
-        final File tempDot = new File("src/test/resources/writers/temp/" + fileName + "-ast.dot");
+        representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
+        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+
+        final File expectedDot = new File("src/test/resources/writers/formulas-dag/" + fileName + ".dot");
+        final File tempDot = new File("src/test/resources/writers/temp/" + fileName + ".dot");
         assertThat(contentOf(tempDot)).isEqualTo(contentOf(expectedDot));
 
-        final File expectedMermaid = new File("src/test/resources/writers/formulas-ast/" + fileName + "-ast.txt");
-        final File tempMermaid = new File("src/test/resources/writers/temp/" + fileName + "-ast.txt");
+        final File expectedMermaid = new File("src/test/resources/writers/formulas-dag/" + fileName + ".txt");
+        final File tempMermaid = new File("src/test/resources/writers/temp/" + fileName + ".txt");
         assertThat(contentOf(tempMermaid)).isEqualTo(contentOf(expectedMermaid));
     }
 }

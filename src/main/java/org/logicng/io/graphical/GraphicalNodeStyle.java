@@ -34,10 +34,8 @@ import static org.logicng.io.graphical.GraphicalColor.WHITE;
 import java.util.Objects;
 
 /**
- * Style information for a graphical node.  This specifies the shape and text, stroke, and background color
- * of a single node type in a graphical output.
- * <p>
- * For color names use standard hexadecimal notation with a leading hash, e.g. "#22ee33".
+ * The style of a node in a graphical representation of a formula, BDD, or graph.  The style consists of the
+ * shape, and the stroke, text, and background color.
  * @version 2.4.0
  * @since 2.4.0
  */
@@ -51,7 +49,7 @@ public class GraphicalNodeStyle {
     private final GraphicalColor backgroundColor;
 
     /**
-     * Constructs a new color configuration with default values: black text and strokes and white background.
+     * Constructs a new default edge style: an ellipse with black stroke and text and a white background.
      */
     public GraphicalNodeStyle() {
         this.shape = Shape.ELLIPSE;
@@ -61,9 +59,9 @@ public class GraphicalNodeStyle {
     }
 
     /**
-     * Constructs a new node style definition.
+     * Constructs a new node style with the given values.
      * @param shape           the shape of the node
-     * @param strokeColor     the color for the node strokes of the node
+     * @param strokeColor     the color for the node strokes
      * @param textColor       the color for the text of the node
      * @param backgroundColor the color for the background of the node
      */
@@ -99,7 +97,10 @@ public class GraphicalNodeStyle {
             return false;
         }
         final GraphicalNodeStyle that = (GraphicalNodeStyle) o;
-        return this.shape == that.shape && Objects.equals(this.strokeColor, that.strokeColor) && Objects.equals(this.textColor, that.textColor) && Objects.equals(this.backgroundColor, that.backgroundColor);
+        return this.shape == that.shape &&
+                Objects.equals(this.strokeColor, that.strokeColor) &&
+                Objects.equals(this.textColor, that.textColor) &&
+                Objects.equals(this.backgroundColor, that.backgroundColor);
     }
 
     @Override
