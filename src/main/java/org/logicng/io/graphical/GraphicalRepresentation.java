@@ -117,6 +117,14 @@ public class GraphicalRepresentation {
         return this.nodes;
     }
 
+    public List<GraphicalNode> getTerminalNodes() {
+        return this.nodes.stream().filter(GraphicalNode::isTerminal).collect(Collectors.toList());
+    }
+
+    public List<GraphicalNode> getNonTerminalNodes() {
+        return this.nodes.stream().filter(n -> !n.isTerminal()).collect(Collectors.toList());
+    }
+
     public List<GraphicalEdge> getEdges() {
         return this.edges;
     }

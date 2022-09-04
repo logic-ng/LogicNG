@@ -74,14 +74,6 @@ public class GraphicalNodeStyle {
         this.backgroundColor = backgroundColor;
     }
 
-    /**
-     * Returns a string containing the colors specified in the dot graph format. The string can be used within a dot file for a node.
-     * @return the dot string with the colors set
-     */
-    public String toDotString() {
-        return String.format("style=filled, color=\"%s\", fontcolor=\"%s\", fillcolor=\"%s\"", this.strokeColor, this.textColor, this.backgroundColor);
-    }
-
     public Shape getShape() {
         return this.shape;
     }

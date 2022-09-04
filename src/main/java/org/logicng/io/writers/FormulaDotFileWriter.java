@@ -29,7 +29,7 @@
 package org.logicng.io.writers;
 
 import org.logicng.formulas.Formula;
-import org.logicng.io.graphical.translators.FormulaDAGTranslator;
+import org.logicng.io.graphical.translators.FormulaDagTranslator;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +67,6 @@ public final class FormulaDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
-        FormulaDAGTranslator.builder().alignTerminals(alignLiterals).build().translate(formula).writeDot(file);
+        FormulaDagTranslator.builder().alignTerminals(alignLiterals).build().translate(formula).writeDot(file);
     }
 }

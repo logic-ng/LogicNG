@@ -43,21 +43,21 @@ import org.logicng.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FormulaDAGTranslator extends GraphicalTranslator {
+public class FormulaDagTranslator extends GraphicalTranslator {
 
-    FormulaDAGTranslator(final GraphicalTranslatorBuilder<FormulaDAGTranslator> builder) {
+    FormulaDagTranslator(final GraphicalTranslatorBuilder<FormulaDagTranslator> builder) {
         super(builder.getBackgroundColor(), builder.isAlginTerminal(), builder.getEdgeStyle(), builder.getNodeStyle());
     }
 
-    public static GraphicalTranslatorBuilder<FormulaDAGTranslator> builder() {
-        return new GraphicalTranslatorBuilder<>(FormulaDAGTranslator::new);
+    public static GraphicalTranslatorBuilder<FormulaDagTranslator> builder() {
+        return new GraphicalTranslatorBuilder<>(FormulaDagTranslator::new);
     }
 
-    public <T> GraphicalRepresentation translate(final Formula formula) {
+    public GraphicalRepresentation translate(final Formula formula) {
         return translate(formula, (f) -> this.nodeStyle);
     }
 
-    public <T> GraphicalRepresentation translate(final Formula formula, final StyleMapper<Formula> styleMapper) {
+    public GraphicalRepresentation translate(final Formula formula, final StyleMapper<Formula> styleMapper) {
         final Map<Formula, GraphicalNode> nodes = new HashMap<>();
 
         final GraphicalRepresentation graphicalRepresentation = new GraphicalRepresentation(this.alignTerminals, true, this.backgroundColor);
@@ -76,12 +76,12 @@ public class FormulaDAGTranslator extends GraphicalTranslator {
         switch (formula.type()) {
             case FALSE:
             case TRUE:
-                final Pair<GraphicalNode, Boolean> constPair = addNode(formula, formula.toString(), graphicalRepresentation, nodes, styleMapper);
+                final Pair<GraphicalNode, Boolean> constPair = addNode(formula, formula.toString(), true, graphicalRepresentation, nodes, styleMapper);
                 return constPair.first();
             case LITERAL:
                 return nodes.get(formula); // since this is a literal, it has to be already present
             case PBC:
-                final Pair<GraphicalNode, Boolean> pbPair = addNode(formula, formula.toString(), graphicalRepresentation, nodes, styleMapper);
+                final Pair<GraphicalNode, Boolean> pbPair = addNode(formula, formula.toString(), false, graphicalRepresentation, nodes, styleMapper);
                 if (!pbPair.second()) {
                     for (final Formula operand : ((PBConstraint) formula).operands()) {
                         final GraphicalNode literalNode = nodes.get(operand); // since this is a literal, it has to be already present
@@ -104,7 +104,7 @@ public class FormulaDAGTranslator extends GraphicalTranslator {
 
     private GraphicalNode walkNotString(final Not not, final GraphicalRepresentation graphicalRepresentation, final Map<Formula, GraphicalNode> nodes,
                                         final StyleMapper<Formula> styleMapper) {
-        final Pair<GraphicalNode, Boolean> pair = addNode(not, "¬", graphicalRepresentation, nodes, styleMapper);
+        final Pair<GraphicalNode, Boolean> pair = addNode(not, "¬", false, graphicalRepresentation, nodes, styleMapper);
         if (!pair.second()) {
             final GraphicalNode operandNode = walkFormula(not.operand(), graphicalRepresentation, nodes, styleMapper);
             graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), operandNode, this.edgeStyle));
@@ -116,7 +116,7 @@ public class FormulaDAGTranslator extends GraphicalTranslator {
                                            final Map<Formula, GraphicalNode> nodes, final StyleMapper<Formula> styleMapper) {
         final boolean isImpl = op.type() == FType.IMPL;
         final String label = isImpl ? "⇒" : "⇔";
-        final Pair<GraphicalNode, Boolean> pair = addNode(op, label, graphicalRepresentation, nodes, styleMapper);
+        final Pair<GraphicalNode, Boolean> pair = addNode(op, label, false, graphicalRepresentation, nodes, styleMapper);
         if (!pair.second()) {
             final GraphicalNode leftNode = walkFormula(op.left(), graphicalRepresentation, nodes, styleMapper);
             final GraphicalNode rightNode = walkFormula(op.right(), graphicalRepresentation, nodes, styleMapper);
@@ -129,7 +129,7 @@ public class FormulaDAGTranslator extends GraphicalTranslator {
     private GraphicalNode walkNaryString(final NAryOperator op, final GraphicalRepresentation graphicalRepresentation,
                                          final Map<Formula, GraphicalNode> nodes, final StyleMapper<Formula> styleMapper) {
         final String label = op.type() == FType.AND ? "∧" : "∨";
-        final Pair<GraphicalNode, Boolean> pair = addNode(op, label, graphicalRepresentation, nodes, styleMapper);
+        final Pair<GraphicalNode, Boolean> pair = addNode(op, label, false, graphicalRepresentation, nodes, styleMapper);
         if (!pair.second()) {
             for (final Formula operand : op) {
                 final GraphicalNode operandNode = walkFormula(operand, graphicalRepresentation, nodes, styleMapper);
@@ -139,11 +139,12 @@ public class FormulaDAGTranslator extends GraphicalTranslator {
         return pair.first();
     }
 
-    private static Pair<GraphicalNode, Boolean> addNode(final Formula formula, final String label, final GraphicalRepresentation graphicalRepresentation,
+    private static Pair<GraphicalNode, Boolean> addNode(final Formula formula, final String label, final boolean terminal,
+                                                        final GraphicalRepresentation graphicalRepresentation,
                                                         final Map<Formula, GraphicalNode> nodes, final StyleMapper<Formula> styleMapper) {
         GraphicalNode node = nodes.get(formula);
         if (node == null) {
-            node = new GraphicalNode(ID + nodes.size(), label, true, styleMapper.computeStyle(formula));
+            node = new GraphicalNode(ID + nodes.size(), label, terminal, styleMapper.computeStyle(formula));
             graphicalRepresentation.addNode(node);
             nodes.put(formula, node);
             return new Pair<>(node, false);

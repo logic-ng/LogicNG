@@ -63,13 +63,24 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
     }
 
     private static void writeNodes(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
-        //TODO terminal alignment
-        for (final GraphicalNode node : representation.getNodes()) {
-            final String string = String.format("  %s [shape=%s, style=filled, color=\"%s\", fontcolor=\"%s\", fillcolor=\"%s\", label=\"%s\"]",
-                    node.id, shapeString(node.style.getShape()), node.style.getStrokeColor().getHexValue(), node.style.getTextColor().getHexValue(),
-                    node.style.getBackgroundColor().getHexValue(), node.label);
-            writer.write(string);
+        if (representation.isAlignTerminals()) {
+            writer.write("{ rank = same;");
             writer.newLine();
+            for (final GraphicalNode terminalNode : representation.getTerminalNodes()) {
+                writer.write(nodeString(terminalNode));
+                writer.newLine();
+            }
+            writer.write("}");
+            writer.newLine();
+            for (final GraphicalNode nonTerminalNode : representation.getNonTerminalNodes()) {
+                writer.write(nodeString(nonTerminalNode));
+                writer.newLine();
+            }
+        } else {
+            for (final GraphicalNode node : representation.getNodes()) {
+                writer.write(nodeString(node));
+                writer.newLine();
+            }
         }
         writer.newLine();
     }
@@ -89,6 +100,12 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
     private static void writeClosing(final BufferedWriter writer) throws IOException {
         writer.write("}");
         writer.newLine();
+    }
+
+    private static String nodeString(final GraphicalNode node) {
+        return String.format("  %s [shape=%s, style=filled, color=\"%s\", fontcolor=\"%s\", fillcolor=\"%s\", label=\"%s\"]",
+                node.id, shapeString(node.style.getShape()), node.style.getStrokeColor().getHexValue(), node.style.getTextColor().getHexValue(),
+                node.style.getBackgroundColor().getHexValue(), node.label);
     }
 
     private static String shapeString(final GraphicalNodeStyle.Shape shape) {

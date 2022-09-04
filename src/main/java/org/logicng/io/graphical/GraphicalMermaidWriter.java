@@ -56,6 +56,8 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     private static void writePreamble(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
         writer.write("graph TD");
         writer.newLine();
+        writer.write(String.format("background: %s", representation.getBackground().getHexValue()));
+        writer.newLine();
     }
 
     private static void writeNodes(final BufferedWriter bufferedWriter, final GraphicalRepresentation representation) throws IOException {
