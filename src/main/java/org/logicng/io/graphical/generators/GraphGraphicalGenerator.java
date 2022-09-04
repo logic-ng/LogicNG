@@ -53,7 +53,7 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
      */
     GraphGraphicalGenerator(final GraphicalGeneratorBuilder<GraphGraphicalGenerator<T>, T> builder) {
         super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
-                builder.labelMapper);
+                builder.labelMapper, builder.edgeMapper);
     }
 
     /**
@@ -92,7 +92,7 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
                         graphicalRepresentation.addNode(neighbourNode);
                         nodes.put(neighbour, neighbourNode);
                     }
-                    graphicalRepresentation.addEdge(new GraphicalEdge(graphicalNode, neighbourNode, this.edgeStyle));
+                    graphicalRepresentation.addEdge(new GraphicalEdge(graphicalNode, neighbourNode, edgeStyle(node.content(), neighbour.content())));
                 }
             }
             doneNodes.add(node);

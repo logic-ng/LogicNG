@@ -52,7 +52,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
      */
     FormulaAstGraphicalGenerator(final GraphicalGeneratorBuilder<FormulaAstGraphicalGenerator, Formula> builder) {
         super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
-                builder.labelMapper);
+                builder.labelMapper, builder.edgeMapper);
     }
 
     /**
@@ -104,7 +104,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
         final GraphicalNode pbNode = addNode(formula, formula.toString(), false, graphicalRepresentation);
         for (final Literal operand : ((PBConstraint) formula).operands()) {
             final GraphicalNode literalNode = addNode(operand, litString(operand), true, graphicalRepresentation);
-            graphicalRepresentation.addEdge(new GraphicalEdge(pbNode, literalNode, this.edgeStyle));
+            graphicalRepresentation.addEdge(new GraphicalEdge(pbNode, literalNode, edgeStyle(formula, operand)));
         }
         return pbNode;
     }
@@ -112,7 +112,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
     private GraphicalNode walkNotString(final Not not, final GraphicalRepresentation graphicalRepresentation) {
         final GraphicalNode node = addNode(not, "¬", false, graphicalRepresentation);
         final GraphicalNode operandNode = walkFormula(not.operand(), graphicalRepresentation);
-        graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, this.edgeStyle));
+        graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, edgeStyle(not, not.operand())));
         return node;
     }
 
@@ -122,8 +122,8 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
         final GraphicalNode node = addNode(op, label, false, graphicalRepresentation);
         final GraphicalNode leftNode = walkFormula(op.left(), graphicalRepresentation);
         final GraphicalNode rightNode = walkFormula(op.right(), graphicalRepresentation);
-        graphicalRepresentation.addEdge(new GraphicalEdge(node, leftNode, isImpl ? "l" : null, this.edgeStyle));
-        graphicalRepresentation.addEdge(new GraphicalEdge(node, rightNode, isImpl ? "r" : null, this.edgeStyle));
+        graphicalRepresentation.addEdge(new GraphicalEdge(node, leftNode, isImpl ? "l" : null, edgeStyle(op, op.left())));
+        graphicalRepresentation.addEdge(new GraphicalEdge(node, rightNode, isImpl ? "r" : null, edgeStyle(op, op.right())));
         return node;
     }
 
@@ -132,7 +132,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
         final GraphicalNode node = addNode(op, label, false, graphicalRepresentation);
         for (final Formula operand : op) {
             final GraphicalNode operandNode = walkFormula(operand, graphicalRepresentation);
-            graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, this.edgeStyle));
+            graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, edgeStyle(op, operand)));
         }
         return node;
     }

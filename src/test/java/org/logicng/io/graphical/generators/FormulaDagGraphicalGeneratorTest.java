@@ -145,6 +145,29 @@ public class FormulaDagGraphicalGeneratorTest {
         testFiles("f9", f9, generator);
     }
 
+    @Test
+    public void testEdgeMapper() throws ParserException, IOException {
+        final Formula f10 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
+
+        final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_DARK);
+        final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, BLACK);
+
+        final EdgeStyleMapper<Formula> edgeMapper = (source, dest) -> {
+            if (source.type() == FType.PBC) {
+                return style1;
+            } else {
+                return style2;
+            }
+        };
+
+        final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .edgeMapper(edgeMapper)
+                .build();
+
+        testFiles("f10", f10, generator);
+    }
+
     private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator generator) throws IOException {
         final GraphicalRepresentation representation = generator.translate(formula);
         representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");

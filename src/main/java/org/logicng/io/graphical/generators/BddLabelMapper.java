@@ -38,8 +38,7 @@ import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 public abstract class BddLabelMapper extends BddMapper implements LabelMapper<Integer> {
 
     /**
-     * Constructs a new BDD label mapper for a given BDD kernel.  The BDDs which
-     * must be constructed with this kernel.
+     * Constructs a new BDD label mapper for a given BDD kernel.  The BDDs must be constructed with this kernel.
      * @param kernel a BDD kernel
      */
     public BddLabelMapper(final BDDKernel kernel) {

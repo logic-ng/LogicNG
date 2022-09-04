@@ -54,6 +54,7 @@ import java.util.function.Function;
 public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
 
     private final GraphicalEdgeStyle negativeEdgeStyle;
+    private final EdgeStyleMapper<Integer> negativeEdgeStyleMapper;
 
     /**
      * Constructs a new generator with the given builder's configuration.
@@ -61,9 +62,10 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
      */
     BddGraphicalGenerator(final GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> builder) {
         super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
-                builder.labelMapper);
+                builder.labelMapper, builder.edgeMapper);
         final BddTranslatorBuilder bddBuilder = (BddTranslatorBuilder) builder;
         this.negativeEdgeStyle = bddBuilder.negativeEdgeStyle;
+        this.negativeEdgeStyleMapper = bddBuilder.negativeEdgeMapper;
     }
 
     /**
@@ -99,11 +101,14 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
             addNode(index, labelOrDefault(index, defaultLabel), graphicalRepresentation, index2Node);
         }
         for (final int[] internalNode : new BDDOperations(bdd.underlyingKernel()).allNodes(bdd.index())) {
-            final GraphicalNode node = index2Node.get(internalNode[0]);
-            final GraphicalNode lowNode = index2Node.get(internalNode[2]);
-            final GraphicalNode highNode = index2Node.get(internalNode[3]);
-            graphicalRepresentation.addEdge(new GraphicalEdge(node, lowNode, this.negativeEdgeStyle));
-            graphicalRepresentation.addEdge(new GraphicalEdge(node, highNode, this.edgeStyle));
+            final int index = internalNode[0];
+            final int lowIndex = internalNode[2];
+            final int highIndex = internalNode[3];
+            final GraphicalNode node = index2Node.get(index);
+            final GraphicalNode lowNode = index2Node.get(lowIndex);
+            final GraphicalNode highNode = index2Node.get(highIndex);
+            graphicalRepresentation.addEdge(new GraphicalEdge(node, lowNode, negativeEdgeStyle(index, lowIndex)));
+            graphicalRepresentation.addEdge(new GraphicalEdge(node, highNode, edgeStyle(index, highIndex)));
         }
         return graphicalRepresentation;
     }
@@ -116,6 +121,10 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
             graphicalRepresentation.addNode(node);
             index2Node.put(index, node);
         }
+    }
+
+    private GraphicalEdgeStyle negativeEdgeStyle(final Integer source, final Integer destination) {
+        return this.negativeEdgeStyleMapper != null ? this.negativeEdgeStyleMapper.computeStyle(source, destination) : this.negativeEdgeStyle;
     }
 
     /**
@@ -132,6 +141,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
         private GraphicalNodeStyle defaultTrueNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, WHITE, GREEN);
         private GraphicalNodeStyle defaultFalseNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, WHITE, RED);
         private GraphicalEdgeStyle negativeEdgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
+        private EdgeStyleMapper<Integer> negativeEdgeMapper = null;
 
         /**
          * Constructs a new builder with the given constructor for the graphical generator.
@@ -180,6 +190,18 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          */
         public BddTranslatorBuilder negativeEdgeStyle(final GraphicalEdgeStyle negativeEdgeStyle) {
             this.negativeEdgeStyle = negativeEdgeStyle;
+            return this;
+        }
+
+        /**
+         * Sets the negative edge mapper for dynamically computing edge styles for negative edges in the BDD.  If this mapper is configured,
+         * the default edge style for negative edges is ignored and each edge is styled by the computed style of
+         * {@link EdgeStyleMapper#computeStyle(Object, Object)}.
+         * @param negativeEdgeMapper the edge mapper
+         * @return the current builder
+         */
+        public BddTranslatorBuilder negativeEdgeMapper(final EdgeStyleMapper<Integer> negativeEdgeMapper) {
+            this.negativeEdgeMapper = negativeEdgeMapper;
             return this;
         }
     }

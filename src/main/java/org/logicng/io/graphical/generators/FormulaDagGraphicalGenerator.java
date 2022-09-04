@@ -56,7 +56,7 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
      */
     FormulaDagGraphicalGenerator(final GraphicalGeneratorBuilder<FormulaDagGraphicalGenerator, Formula> builder) {
         super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
-                builder.labelMapper);
+                builder.labelMapper, builder.edgeMapper);
     }
 
     /**
@@ -99,7 +99,7 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
                 if (!pbPair.second()) {
                     for (final Formula operand : ((PBConstraint) formula).operands()) {
                         final GraphicalNode literalNode = nodes.get(operand); // since this is a literal, it has to be already present
-                        graphicalRepresentation.addEdge(new GraphicalEdge(pbPair.first(), literalNode, this.edgeStyle));
+                        graphicalRepresentation.addEdge(new GraphicalEdge(pbPair.first(), literalNode, edgeStyle(formula, operand)));
                     }
                 }
                 return pbPair.first();
@@ -120,7 +120,7 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
         final Pair<GraphicalNode, Boolean> pair = addNode(not, "¬", false, graphicalRepresentation, nodes);
         if (!pair.second()) {
             final GraphicalNode operandNode = walkFormula(not.operand(), graphicalRepresentation, nodes);
-            graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), operandNode, this.edgeStyle));
+            graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), operandNode, edgeStyle(not, not.operand())));
         }
         return pair.first();
     }
@@ -133,8 +133,8 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
         if (!pair.second()) {
             final GraphicalNode leftNode = walkFormula(op.left(), graphicalRepresentation, nodes);
             final GraphicalNode rightNode = walkFormula(op.right(), graphicalRepresentation, nodes);
-            graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), leftNode, isImpl ? "l" : null, this.edgeStyle));
-            graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), rightNode, isImpl ? "r" : null, this.edgeStyle));
+            graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), leftNode, isImpl ? "l" : null, edgeStyle(op, op.left())));
+            graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), rightNode, isImpl ? "r" : null, edgeStyle(op, op.right())));
         }
         return pair.first();
     }
@@ -146,7 +146,7 @@ public class FormulaDagGraphicalGenerator extends GraphicalGenerator<Formula> {
         if (!pair.second()) {
             for (final Formula operand : op) {
                 final GraphicalNode operandNode = walkFormula(operand, graphicalRepresentation, nodes);
-                graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), operandNode, this.edgeStyle));
+                graphicalRepresentation.addEdge(new GraphicalEdge(pair.first(), operandNode, edgeStyle(op, operand)));
             }
         }
         return pair.first();

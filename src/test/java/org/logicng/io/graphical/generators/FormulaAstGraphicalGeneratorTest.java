@@ -145,6 +145,29 @@ public class FormulaAstGraphicalGeneratorTest {
     }
 
     @Test
+    public void testEdgeMapper() throws ParserException, IOException {
+        final Formula f10 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
+
+        final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_DARK);
+        final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, BLACK);
+
+        final EdgeStyleMapper<Formula> edgeMapper = (source, dest) -> {
+            if (source.type() == FType.PBC) {
+                return style1;
+            } else {
+                return style2;
+            }
+        };
+
+        final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
+                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .edgeMapper(edgeMapper)
+                .build();
+
+        testFiles("f10", f10, generator);
+    }
+
+    @Test
     public void testWithLabelMapper() throws ParserException, IOException {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()

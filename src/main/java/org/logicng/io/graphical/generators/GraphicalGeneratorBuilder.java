@@ -51,6 +51,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
     protected GraphicalNodeStyle defaultNodeStyle = new GraphicalNodeStyle();
     protected NodeStyleMapper<C> nodeStyleMapper = null;
     protected LabelMapper<C> labelMapper = null;
+    protected EdgeStyleMapper<C> edgeMapper = null;
     protected final Function<GraphicalGeneratorBuilder<T, C>, T> constructor;
 
     /**
@@ -108,7 +109,8 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     /**
      * Sets the default edge style for all edges in the graph.  In a BDD graph this is the style
-     * of the positive (high) edges.
+     * of the positive (high) edges.  If no dynamic edge styling is configured via {@link #edgeMapper(EdgeStyleMapper)},
+     * this style will be applied to all edges.
      * @param edgeStyle the edge style
      * @return the current builder
      */
@@ -130,7 +132,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     /**
      * Sets the node style mapper for dynamically styling nodes in the graph.  If this mapper is configured, the default node style is ignored
-     * and each node is styled be the computed style of {@link NodeStyleMapper#computeStyle(Object)}.
+     * and each node is styled by the computed style of {@link NodeStyleMapper#computeStyle(Object)}.
      * @param nodeStyleMapper the node style mapper
      * @return the current builder
      */
@@ -146,6 +148,18 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
      */
     public GraphicalGeneratorBuilder<T, C> labelMapper(final LabelMapper<C> labelMapper) {
         this.labelMapper = labelMapper;
+        return this;
+    }
+
+    /**
+     * Sets the edge mapper for dynamically computing edge styles for edged in the graph.  If this mapper is configured,
+     * the default edge style is ignored and each edge is styled by the computed style of {@link EdgeStyleMapper#computeStyle(Object, Object)}.
+     * For BDDs this mapper is only used for positive (high) edges.
+     * @param edgeMapper the edge mapper
+     * @return the current builder
+     */
+    public GraphicalGeneratorBuilder<T, C> edgeMapper(final EdgeStyleMapper<C> edgeMapper) {
+        this.edgeMapper = edgeMapper;
         return this;
     }
 

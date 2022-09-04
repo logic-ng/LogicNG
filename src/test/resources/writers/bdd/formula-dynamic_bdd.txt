@@ -31,17 +31,17 @@ graph TD
   id12 --> id8
     linkStyle 5 stroke:#009432,stroke-width:2px
   id17 --> id9
-    linkStyle 6 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 6 stroke:#ea2027,stroke-width:4px
   id17 --> id0
-    linkStyle 7 stroke:#009432,stroke-width:2px
+    linkStyle 7 stroke:#009432,stroke-width:4px
   id18 --> id8
     linkStyle 8 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
   id18 --> id0
     linkStyle 9 stroke:#009432,stroke-width:2px
   id19 --> id18
-    linkStyle 10 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 10 stroke:#ea2027,stroke-width:4px
   id19 --> id12
-    linkStyle 11 stroke:#009432,stroke-width:2px
+    linkStyle 11 stroke:#009432,stroke-width:4px
   id20 --> id17
     linkStyle 12 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
   id20 --> id19

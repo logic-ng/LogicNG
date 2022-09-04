@@ -28,20 +28,25 @@
 
 package org.logicng.io.graphical.generators;
 
+import org.logicng.io.graphical.GraphicalEdgeStyle;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
+
 /**
- * A label mapper for generating graphical representations of formulas, BDDs and graphs.
- * This mapper can be used to compute a label for the given node content.
- * @param <T> the type of the node content
+ * An abstract super class for an edge mapper for a graphical representation of a BDD.
  * @version 2.4.0
  * @since 2.4.0
  */
-@FunctionalInterface
-public interface LabelMapper<T> {
+public abstract class BddEdgeMapper extends BddMapper implements EdgeStyleMapper<Integer> {
 
     /**
-     * Computes a label for the given node content.
-     * @param content the content of the node
-     * @return the label for the node with this content
+     * Constructs a new BDD edge mapper for a given BDD kernel.  The BDDs must be constructed with this kernel.
+     * @param kernel a BDD kernel
      */
-    String computeLabel(T content);
+    public BddEdgeMapper(final BDDKernel kernel) {
+        super(kernel);
+    }
+
+    @Override
+    public abstract GraphicalEdgeStyle computeStyle(final Integer source, final Integer destination);
 }
+

@@ -43,19 +43,22 @@ public abstract class GraphicalGenerator<C> {
 
     protected final GraphicalColor backgroundColor;
     protected final boolean alignTerminals;
-    protected final GraphicalEdgeStyle edgeStyle;
+    protected final GraphicalEdgeStyle defaultEdgeStyle;
     protected final GraphicalNodeStyle defaultNodeStyle;
     private final NodeStyleMapper<C> nodeStyleMapper;
     private final LabelMapper<C> labelMapper;
+    private final EdgeStyleMapper<C> edgeStyleMapper;
 
-    protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals, final GraphicalEdgeStyle edgeStyle,
-                                 final GraphicalNodeStyle defaultNodeStyle, final NodeStyleMapper<C> nodeStyleMapper, final LabelMapper<C> labelMapper) {
+    protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals, final GraphicalEdgeStyle defaultEdgeStyle,
+                                 final GraphicalNodeStyle defaultNodeStyle, final NodeStyleMapper<C> nodeStyleMapper, final LabelMapper<C> labelMapper,
+                                 final EdgeStyleMapper<C> edgeStyleMapper) {
         this.backgroundColor = backgroundColor;
         this.alignTerminals = alignTerminals;
-        this.edgeStyle = edgeStyle;
+        this.defaultEdgeStyle = defaultEdgeStyle;
         this.defaultNodeStyle = defaultNodeStyle;
         this.nodeStyleMapper = nodeStyleMapper;
         this.labelMapper = labelMapper;
+        this.edgeStyleMapper = edgeStyleMapper;
     }
 
     /**
@@ -76,5 +79,16 @@ public abstract class GraphicalGenerator<C> {
      */
     protected String labelOrDefault(final C content, final String defaultLabel) {
         return this.labelMapper == null ? defaultLabel : this.labelMapper.computeLabel(content);
+    }
+
+    /**
+     * Computes the style for an edge.  If no style mapper is configured the default style is applied, otherwise, the
+     * style mapper is used to dynamically compute the style for the given edge.
+     * @param source      the content of the source node
+     * @param destination the content of the destination node
+     * @return the node style
+     */
+    protected GraphicalEdgeStyle edgeStyle(final C source, final C destination) {
+        return this.edgeStyleMapper != null ? this.edgeStyleMapper.computeStyle(source, destination) : this.defaultEdgeStyle;
     }
 }

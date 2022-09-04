@@ -28,20 +28,22 @@
 
 package org.logicng.io.graphical.generators;
 
+import org.logicng.io.graphical.GraphicalEdgeStyle;
+
 /**
- * A label mapper for generating graphical representations of formulas, BDDs and graphs.
- * This mapper can be used to compute a label for the given node content.
+ * A style mapper for generating graphical representations of formulas, BDDs and graphs.
+ * This mapper can be used to compute an edge style for the given edge between two node contents.
  * @param <T> the type of the node content
  * @version 2.4.0
  * @since 2.4.0
  */
-@FunctionalInterface
-public interface LabelMapper<T> {
+public interface EdgeStyleMapper<T> {
 
     /**
-     * Computes a label for the given node content.
-     * @param content the content of the node
-     * @return the label for the node with this content
+     * Computes a style for the given edge between two node contents.
+     * @param source      the content of the source node
+     * @param destination the content of the destination node
+     * @return the style for the node with this content
      */
-    String computeLabel(T content);
+    GraphicalEdgeStyle computeStyle(T source, T destination);
 }

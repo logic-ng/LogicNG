@@ -31,6 +31,7 @@ package org.logicng.io.graphical.generators;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
 import static org.logicng.io.graphical.GraphicalColor.BLACK;
+import static org.logicng.io.graphical.GraphicalColor.GRAY_LIGHT;
 import static org.logicng.io.graphical.GraphicalColor.GREEN;
 import static org.logicng.io.graphical.GraphicalColor.ORANGE;
 import static org.logicng.io.graphical.GraphicalColor.RED;
@@ -93,6 +94,7 @@ public class GraphGraphicalGeneratorTest {
         final GraphicalNodeStyle style1 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, BLACK, GREEN);
         final GraphicalNodeStyle style2 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, ORANGE, BLACK, ORANGE);
         final GraphicalNodeStyle style3 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, RED, WHITE, RED);
+
         final NodeStyleMapper<Long> mapper = (l) -> {
             if (l <= 10) {
                 return style1;
@@ -102,9 +104,25 @@ public class GraphGraphicalGeneratorTest {
                 return style3;
             }
         };
+
+        final GraphicalEdgeStyle eStyle1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+        final GraphicalEdgeStyle eStyle2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, ORANGE);
+        final GraphicalEdgeStyle eStyle3 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_LIGHT);
+
+        final EdgeStyleMapper<Long> edgeMapper = (l1, l2) -> {
+            if (l1 <= 10 && l2 <= 10) {
+                return eStyle1;
+            } else if (l1 <= 20 && l2 <= 20) {
+                return eStyle2;
+            } else {
+                return eStyle3;
+            }
+        };
+
         final GraphGraphicalGenerator<Long> generator = GraphGraphicalGenerator.<Long>builder()
                 .labelMapper((l) -> "value: " + l)
                 .nodeStyleMapper(mapper)
+                .edgeMapper(edgeMapper)
                 .build();
         testFiles("30-dynamic", g, generator);
     }

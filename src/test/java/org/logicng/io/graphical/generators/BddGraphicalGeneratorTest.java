@@ -110,8 +110,10 @@ public class BddGraphicalGeneratorTest {
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
         final BddGraphicalGenerator generator = BddGraphicalGenerator.builder()
+                .negativeEdgeMapper(new MyNegEdgeMapper(kernel))
                 .nodeStyleMapper(new MyStyleMapper(kernel))
                 .labelMapper(new MyLabelMapper(kernel))
+                .edgeMapper(new MyPosEdgeMapper(kernel))
                 .build();
         testFiles("formula-dynamic", bdd, generator);
     }
@@ -173,6 +175,36 @@ public class BddGraphicalGeneratorTest {
                     return variable.name();
                 }
             }
+        }
+    }
+
+    private static class MyPosEdgeMapper extends BddEdgeMapper {
+
+        final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+        final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, GREEN);
+
+        public MyPosEdgeMapper(final BDDKernel kernel) {
+            super(kernel);
+        }
+
+        @Override
+        public GraphicalEdgeStyle computeStyle(final Integer source, final Integer destination) {
+            return variable(source).name().equals("B") ? this.style2 : this.style1;
+        }
+    }
+
+    private static class MyNegEdgeMapper extends BddEdgeMapper {
+
+        final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
+        final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, RED);
+
+        public MyNegEdgeMapper(final BDDKernel kernel) {
+            super(kernel);
+        }
+
+        @Override
+        public GraphicalEdgeStyle computeStyle(final Integer source, final Integer destination) {
+            return variable(source).name().equals("B") ? this.style2 : this.style1;
         }
     }
 }
