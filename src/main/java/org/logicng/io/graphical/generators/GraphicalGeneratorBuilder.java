@@ -39,22 +39,24 @@ import java.util.function.Function;
 /**
  * A builder for graphical generators with some common options.
  * @param <T> the type of the generator which is built at the end
+ * @param <C> the type of content from which the nodes are generated
  * @version 2.4.0
  * @since 2.4.0
  */
-public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
+public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     protected GraphicalColor backgroundColor = WHITE;
-    protected boolean alginTerminal;
+    protected boolean alginTerminals;
     protected GraphicalEdgeStyle edgeStyle = new GraphicalEdgeStyle();
-    protected GraphicalNodeStyle nodeStyle = new GraphicalNodeStyle();
-    protected final Function<GraphicalGeneratorBuilder<T>, T> constructor;
+    protected GraphicalNodeStyle defaultNodeStyle = new GraphicalNodeStyle();
+    protected NodeStyleMapper<C> nodeStyleMapper = null;
+    protected final Function<GraphicalGeneratorBuilder<T, C>, T> constructor;
 
     /**
      * Constructs a new builder with the given constructor for the graphical generator.
      * @param constructor the constructor for the graphical generator
      */
-    GraphicalGeneratorBuilder(final Function<GraphicalGeneratorBuilder<T>, T> constructor) {
+    GraphicalGeneratorBuilder(final Function<GraphicalGeneratorBuilder<T, C>, T> constructor) {
         this.constructor = constructor;
     }
 
@@ -63,7 +65,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
      * @param color the color
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T> backgroundColor(final GraphicalColor color) {
+    public GraphicalGeneratorBuilder<T, C> backgroundColor(final GraphicalColor color) {
         this.backgroundColor = color;
         return this;
     }
@@ -73,7 +75,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
      * @param hexColor the hex color value in the format "#beef41"
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T> backgroundColor(final String hexColor) {
+    public GraphicalGeneratorBuilder<T, C> backgroundColor(final String hexColor) {
         this.backgroundColor = GraphicalColor.hex(hexColor);
         return this;
     }
@@ -85,7 +87,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
      * @param blue  the blue value
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T> backgroundColor(final int red, final int green, final int blue) {
+    public GraphicalGeneratorBuilder<T, C> backgroundColor(final int red, final int green, final int blue) {
         this.backgroundColor = GraphicalColor.rgb(red, green, blue);
         return this;
     }
@@ -98,8 +100,8 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
      * @param alignTerminals whether the terminal nodes should be on the same level
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T> alignTerminals(final boolean alignTerminals) {
-        this.alginTerminal = alignTerminals;
+    public GraphicalGeneratorBuilder<T, C> alignTerminals(final boolean alignTerminals) {
+        this.alginTerminals = alignTerminals;
         return this;
     }
 
@@ -109,19 +111,30 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
      * @param edgeStyle the edge style
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T> edgeStyle(final GraphicalEdgeStyle edgeStyle) {
+    public GraphicalGeneratorBuilder<T, C> edgeStyle(final GraphicalEdgeStyle edgeStyle) {
         this.edgeStyle = edgeStyle;
         return this;
     }
 
     /**
-     * The default node style for all nodes in the graph.  If no dynamic node styling (c.f. {@link NodeStyleMapper}) is used,
-     * all nodes have this style
+     * The default node style for all nodes in the graph.  If no dynamic node styling is configured via {@link #nodeStyleMapper(NodeStyleMapper)})},
+     * this style will be applied to all nodes.
      * @param nodeStyle the node style
      * @return the current builder
      */
-    public GraphicalGeneratorBuilder<T> nodeStyle(final GraphicalNodeStyle nodeStyle) {
-        this.nodeStyle = nodeStyle;
+    public GraphicalGeneratorBuilder<T, C> defaultNodeStyle(final GraphicalNodeStyle nodeStyle) {
+        this.defaultNodeStyle = nodeStyle;
+        return this;
+    }
+
+    /**
+     * The node style mapper for dynamically styling nodes in the graph.  If this mapper is configured, the default node style is ignored
+     * and each node is styled be the computed style of {@link NodeStyleMapper#computeStyle(Object)}.
+     * @param nodeStyleMapper the node style mapper
+     * @return the current builder
+     */
+    public GraphicalGeneratorBuilder<T, C> nodeStyleMapper(final NodeStyleMapper<C> nodeStyleMapper) {
+        this.nodeStyleMapper = nodeStyleMapper;
         return this;
     }
 
@@ -131,21 +144,5 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator> {
      */
     public T build() {
         return this.constructor.apply(this);
-    }
-
-    public GraphicalColor getBackgroundColor() {
-        return this.backgroundColor;
-    }
-
-    public boolean isAlginTerminal() {
-        return this.alginTerminal;
-    }
-
-    public GraphicalEdgeStyle getEdgeStyle() {
-        return this.edgeStyle;
-    }
-
-    public GraphicalNodeStyle getNodeStyle() {
-        return this.nodeStyle;
     }
 }

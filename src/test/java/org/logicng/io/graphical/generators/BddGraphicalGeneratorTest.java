@@ -89,16 +89,16 @@ public class BddGraphicalGeneratorTest {
         final BDDKernel kernel = new BDDKernel(f, ordering, 1000, 1000);
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
-        final BddGraphicalGenerator translator = BddGraphicalGenerator.builder()
+        final BddGraphicalGenerator generator = BddGraphicalGenerator.builder()
                 .falseNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, PURPLE, WHITE, PURPLE))
                 .trueNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, CYAN, WHITE, CYAN))
                 .negativeEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, PURPLE))
                 .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
-                .nodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, ORANGE, BLACK, ORANGE))
+                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, ORANGE, BLACK, ORANGE))
                 .backgroundColor(GRAY_LIGHT)
                 .alignTerminals(true)
                 .build();
-        testFiles("formula-fixedStyle", bdd, translator);
+        testFiles("formula-fixedStyle", bdd, generator);
     }
 
     @Test
@@ -109,15 +109,11 @@ public class BddGraphicalGeneratorTest {
         final BDDKernel kernel = new BDDKernel(f, ordering, 1000, 1000);
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
-        testFiles("formula-dynamic", bdd, BddGraphicalGenerator.builder().build(), new MyMapperNode(kernel));
+        testFiles("formula-dynamic", bdd, BddGraphicalGenerator.builder().nodeStyleMapper(new MyMapperNode(kernel)).build());
     }
 
-    private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator translator) throws IOException {
-        testFiles(fileName, bdd, translator, null);
-    }
-
-    private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator translator, final NodeStyleMapper<Integer> mapper) throws IOException {
-        final GraphicalRepresentation representation = mapper == null ? translator.translate(bdd) : translator.translate(bdd, mapper);
+    private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator generator) throws IOException {
+        final GraphicalRepresentation representation = generator.translate(bdd);
         representation.writeDot("src/test/resources/writers/temp/" + fileName + "_bdd.dot");
         representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "_bdd.txt");
         final File expectedT = new File("src/test/resources/writers/bdd/" + fileName + "_bdd.dot");

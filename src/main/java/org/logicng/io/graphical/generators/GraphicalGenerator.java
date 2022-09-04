@@ -34,22 +34,29 @@ import org.logicng.io.graphical.GraphicalNodeStyle;
 
 /**
  * An abstract super class for graphical generators.
+ * @param <C> the type of the content from which the nodes are generated
  * @version 2.4.0
  * @since 2.4.0
  */
-public abstract class GraphicalGenerator {
+public abstract class GraphicalGenerator<C> {
     protected static final String ID = "id";
 
     protected final GraphicalColor backgroundColor;
     protected final boolean alignTerminals;
     protected final GraphicalEdgeStyle edgeStyle;
-    protected final GraphicalNodeStyle nodeStyle;
+    protected final GraphicalNodeStyle defaultNodeStyle;
+    protected final NodeStyleMapper<C> nodeStyleMapper;
 
     protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals, final GraphicalEdgeStyle edgeStyle,
-                                 final GraphicalNodeStyle nodeStyle) {
+                                 final GraphicalNodeStyle defaultNodeStyle, final NodeStyleMapper<C> nodeStyleMapper) {
         this.backgroundColor = backgroundColor;
         this.alignTerminals = alignTerminals;
         this.edgeStyle = edgeStyle;
-        this.nodeStyle = nodeStyle;
+        this.defaultNodeStyle = defaultNodeStyle;
+        this.nodeStyleMapper = nodeStyleMapper;
+    }
+
+    protected GraphicalNodeStyle style(final C content) {
+        return this.nodeStyleMapper != null ? this.nodeStyleMapper.computeStyle(content) : this.defaultNodeStyle;
     }
 }

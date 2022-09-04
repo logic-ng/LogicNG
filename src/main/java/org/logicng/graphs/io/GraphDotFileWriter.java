@@ -70,6 +70,6 @@ public final class GraphDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-        GraphGraphicalGenerator.builder().build().translate(graph).writeDot(file);
+        GraphGraphicalGenerator.<T>builder().build().translate(graph).writeDot(file);
     }
 }

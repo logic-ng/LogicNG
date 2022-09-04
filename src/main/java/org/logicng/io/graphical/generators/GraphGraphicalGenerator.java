@@ -41,45 +41,35 @@ import java.util.Set;
 
 /**
  * The graphical generator for representations of graphs {@link Graph}.
+ * @param <T> the type of the graph's node content
  * @version 2.4.0
  * @since 2.4.0
  */
-public class GraphGraphicalGenerator extends GraphicalGenerator {
+public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
 
     /**
      * Constructs a new generator with the given builder's configuration.
      * @param builder the builder
      */
-    GraphGraphicalGenerator(final GraphicalGeneratorBuilder<GraphGraphicalGenerator> builder) {
-        super(builder.getBackgroundColor(), builder.isAlginTerminal(), builder.getEdgeStyle(), builder.getNodeStyle());
+    GraphGraphicalGenerator(final GraphicalGeneratorBuilder<GraphGraphicalGenerator<T>, T> builder) {
+        super(builder.backgroundColor, builder.alginTerminals, builder.edgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper);
     }
 
     /**
      * Returns the builder for this generator.
+     * @param <T> the type of the graph's node content
      * @return the builder
      */
-    public static GraphicalGeneratorBuilder<GraphGraphicalGenerator> builder() {
+    public static <T> GraphicalGeneratorBuilder<GraphGraphicalGenerator<T>, T> builder() {
         return new GraphicalGeneratorBuilder<>(GraphGraphicalGenerator::new);
     }
 
     /**
      * Translates a given graph in its graphical representation.
      * @param graph the graph to translate
-     * @param <T>   the content type of the graph's nodes
      * @return the graphical representation
      */
-    public <T> GraphicalRepresentation translate(final Graph<T> graph) {
-        return translate(graph, (t) -> this.nodeStyle);
-    }
-
-    /**
-     * Translates a given graph in its graphical representation.
-     * @param graph           the graph to translate
-     * @param nodeStyleMapper the node style mapper for dynamically styling nodes
-     * @param <T>             the content type of the graph's nodes
-     * @return the graphical representation
-     */
-    public <T> GraphicalRepresentation translate(final Graph<T> graph, final NodeStyleMapper<T> nodeStyleMapper) {
+    public GraphicalRepresentation translate(final Graph<T> graph) {
         int counter = 0;
         final Map<Node<T>, GraphicalNode> nodes = new HashMap<>();
         final Set<Node<T>> doneNodes = new HashSet<>();
@@ -88,7 +78,7 @@ public class GraphGraphicalGenerator extends GraphicalGenerator {
         for (final Node<T> node : graph.nodes()) {
             GraphicalNode graphicalNode = nodes.get(node);
             if (graphicalNode == null) {
-                graphicalNode = new GraphicalNode(ID + counter++, node.content().toString(), nodeStyleMapper.computeStyle(node.content()));
+                graphicalNode = new GraphicalNode(ID + counter++, node.content().toString(), style(node.content()));
                 graphicalRepresentation.addNode(graphicalNode);
                 nodes.put(node, graphicalNode);
             }
@@ -96,7 +86,7 @@ public class GraphGraphicalGenerator extends GraphicalGenerator {
                 if (!doneNodes.contains(neighbour)) {
                     GraphicalNode neighbourNode = nodes.get(neighbour);
                     if (neighbourNode == null) {
-                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), nodeStyleMapper.computeStyle(neighbour.content()));
+                        neighbourNode = new GraphicalNode(ID + counter++, neighbour.content().toString(), style(neighbour.content()));
                         graphicalRepresentation.addNode(neighbourNode);
                         nodes.put(neighbour, neighbourNode);
                     }

@@ -46,7 +46,6 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
-import org.logicng.io.graphical.GraphicalColor;
 import org.logicng.io.graphical.GraphicalEdgeStyle;
 import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.graphical.GraphicalRepresentation;
@@ -108,13 +107,13 @@ public class FormulaDagGraphicalGeneratorTest {
     @Test
     public void testFixedStyle() throws ParserException, IOException {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
-        final FormulaDagGraphicalGenerator translator = FormulaDagGraphicalGenerator.builder()
+        final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
                 .backgroundColor("#020202")
                 .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
-                .nodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
+                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .build();
-        testFiles("f8", f8, translator);
+        testFiles("f8", f8, generator);
     }
 
     @Test
@@ -137,24 +136,16 @@ public class FormulaDagGraphicalGeneratorTest {
             }
         };
 
-        final FormulaDagGraphicalGenerator translator = FormulaDagGraphicalGenerator.builder()
+        final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
                 .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .nodeStyleMapper(mapper)
                 .build();
 
-        testFiles("f9", f9, translator, mapper);
+        testFiles("f9", f9, generator);
     }
 
-    @Test
-    public void test() {
-        System.out.println(GraphicalColor.rgb(0, 0, 0).getHexValue());
-    }
-
-    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator translator) throws IOException {
-        testFiles(fileName, formula, translator, null);
-    }
-
-    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator translator, final NodeStyleMapper<Formula> mapper) throws IOException {
-        final GraphicalRepresentation representation = mapper == null ? translator.translate(formula) : translator.translate(formula, mapper);
+    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator generator) throws IOException {
+        final GraphicalRepresentation representation = generator.translate(formula);
         representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
         representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
 

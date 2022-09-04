@@ -50,22 +50,18 @@ import java.util.function.Function;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class BddGraphicalGenerator extends GraphicalGenerator {
+public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
 
-    private final GraphicalNodeStyle trueNodeStyle;
-    private final GraphicalNodeStyle falseNodeStyle;
     private final GraphicalEdgeStyle negativeEdgeStyle;
 
     /**
      * Constructs a new generator with the given builder's configuration.
      * @param builder the builder
      */
-    BddGraphicalGenerator(final GraphicalGeneratorBuilder<BddGraphicalGenerator> builder) {
-        super(builder.getBackgroundColor(), builder.isAlginTerminal(), builder.getEdgeStyle(), builder.getNodeStyle());
+    BddGraphicalGenerator(final GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> builder) {
+        super(builder.backgroundColor, builder.alginTerminals, builder.edgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper);
         final BddTranslatorBuilder bddBuilder = (BddTranslatorBuilder) builder;
         this.negativeEdgeStyle = bddBuilder.negativeEdgeStyle;
-        this.trueNodeStyle = bddBuilder.trueNodeStyle;
-        this.falseNodeStyle = bddBuilder.falseNodeStyle;
     }
 
     /**
@@ -82,35 +78,16 @@ public class BddGraphicalGenerator extends GraphicalGenerator {
      * @return the graphical representation
      */
     public GraphicalRepresentation translate(final BDD bdd) {
-        final NodeStyleMapper<Integer> nodeStyleMapper = (index) -> {
-            if (index == BDDKernel.BDD_FALSE) {
-                return this.falseNodeStyle;
-            } else if (index == BDDKernel.BDD_TRUE) {
-                return this.trueNodeStyle;
-            } else {
-                return this.nodeStyle;
-            }
-        };
-        return translate(bdd, nodeStyleMapper);
-    }
-
-    /**
-     * Translates a given BDD in its graphical representation.
-     * @param bdd             the BDD
-     * @param nodeStyleMapper the node style mapper for dynamically styling nodes
-     * @return the graphical representation
-     */
-    public GraphicalRepresentation translate(final BDD bdd, final NodeStyleMapper<Integer> nodeStyleMapper) {
         final Map<Integer, GraphicalNode> index2Node = new TreeMap<>();
 
         final GraphicalRepresentation graphicalRepresentation = new GraphicalRepresentation(this.alignTerminals, true, this.backgroundColor);
         if (!bdd.isTautology()) {
-            final GraphicalNode falseNode = new GraphicalNode(ID + BDDKernel.BDD_FALSE, "false", true, nodeStyleMapper.computeStyle(BDDKernel.BDD_FALSE));
+            final GraphicalNode falseNode = new GraphicalNode(ID + BDDKernel.BDD_FALSE, "false", true, style(BDDKernel.BDD_FALSE));
             graphicalRepresentation.addNode(falseNode);
             index2Node.put(BDDKernel.BDD_FALSE, falseNode);
         }
         if (!bdd.isContradiction()) {
-            final GraphicalNode trueNode = new GraphicalNode(ID + BDDKernel.BDD_TRUE, "true", true, nodeStyleMapper.computeStyle(BDDKernel.BDD_TRUE));
+            final GraphicalNode trueNode = new GraphicalNode(ID + BDDKernel.BDD_TRUE, "true", true, style(BDDKernel.BDD_TRUE));
             graphicalRepresentation.addNode(trueNode);
             index2Node.put(BDDKernel.BDD_TRUE, trueNode);
         }
@@ -119,20 +96,20 @@ public class BddGraphicalGenerator extends GraphicalGenerator {
             final String label = bdd.underlyingKernel().getVariableForIndex(internalNode[1]).name();
             final int lowIndex = internalNode[2];
             final int highIndex = internalNode[3];
-            final GraphicalNode node = getOrAddNode(index, label, nodeStyleMapper, graphicalRepresentation, index2Node);
-            final GraphicalNode lowNode = getOrAddNode(lowIndex, label, nodeStyleMapper, graphicalRepresentation, index2Node);
-            final GraphicalNode highNode = getOrAddNode(highIndex, label, nodeStyleMapper, graphicalRepresentation, index2Node);
+            final GraphicalNode node = getOrAddNode(index, label, graphicalRepresentation, index2Node);
+            final GraphicalNode lowNode = getOrAddNode(lowIndex, label, graphicalRepresentation, index2Node);
+            final GraphicalNode highNode = getOrAddNode(highIndex, label, graphicalRepresentation, index2Node);
             graphicalRepresentation.addEdge(new GraphicalEdge(node, lowNode, this.negativeEdgeStyle));
             graphicalRepresentation.addEdge(new GraphicalEdge(node, highNode, this.edgeStyle));
         }
         return graphicalRepresentation;
     }
 
-    private static GraphicalNode getOrAddNode(final int index, final String label, final NodeStyleMapper<Integer> nodeStyleMapper,
-                                              final GraphicalRepresentation graphicalRepresentation, final Map<Integer, GraphicalNode> index2Node) {
+    private GraphicalNode getOrAddNode(final int index, final String label, final GraphicalRepresentation graphicalRepresentation,
+                                       final Map<Integer, GraphicalNode> index2Node) {
         GraphicalNode node = index2Node.get(index);
         if (node == null) {
-            node = new GraphicalNode(ID + index, label, false, nodeStyleMapper.computeStyle(index));
+            node = new GraphicalNode(ID + index, label, false, style(index));
             graphicalRepresentation.addNode(node);
             index2Node.put(index, node);
         }
@@ -148,38 +125,49 @@ public class BddGraphicalGenerator extends GraphicalGenerator {
      * @version 2.4.0
      * @since 2.4.0
      */
-    public static class BddTranslatorBuilder extends GraphicalGeneratorBuilder<BddGraphicalGenerator> {
+    public static class BddTranslatorBuilder extends GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> {
 
-        private GraphicalNodeStyle trueNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, WHITE, GREEN);
-        private GraphicalNodeStyle falseNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, WHITE, RED);
+        private GraphicalNodeStyle defaultTrueNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, WHITE, GREEN);
+        private GraphicalNodeStyle defaultFalseNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, WHITE, RED);
         private GraphicalEdgeStyle negativeEdgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
 
         /**
          * Constructs a new builder with the given constructor for the graphical generator.
          * @param constructor the constructor for the graphical generator
          */
-        BddTranslatorBuilder(final Function<GraphicalGeneratorBuilder<BddGraphicalGenerator>, BddGraphicalGenerator> constructor) {
+        BddTranslatorBuilder(final Function<GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer>, BddGraphicalGenerator> constructor) {
             super(constructor);
             this.edgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+            this.nodeStyleMapper = (index) -> {
+                if (index == BDDKernel.BDD_FALSE) {
+                    return this.defaultFalseNodeStyle;
+                } else if (index == BDDKernel.BDD_TRUE) {
+                    return this.defaultTrueNodeStyle;
+                } else {
+                    return this.defaultNodeStyle;
+                }
+            };
         }
 
         /**
-         * Sets the default style for the TRUE terminal node of the BDD.
+         * Sets the default style for the TRUE terminal node of the BDD.  This style will be ignored when a dynamic
+         * node style mapper is configured.
          * @param trueNodeStyle the node style
          * @return the current builder
          */
         public BddTranslatorBuilder trueNodeStyle(final GraphicalNodeStyle trueNodeStyle) {
-            this.trueNodeStyle = trueNodeStyle;
+            this.defaultTrueNodeStyle = trueNodeStyle;
             return this;
         }
 
         /**
-         * Sets the default style for the FALSE terminal node of the BDD.
+         * Sets the default style for the FALSE terminal node of the BDD.  This style will be ignored when a dynamic
+         * node style mapper is configured.
          * @param falseNodeStyle the node style
          * @return the current builder
          */
         public BddTranslatorBuilder falseNodeStyle(final GraphicalNodeStyle falseNodeStyle) {
-            this.falseNodeStyle = falseNodeStyle;
+            this.defaultFalseNodeStyle = falseNodeStyle;
             return this;
         }
 

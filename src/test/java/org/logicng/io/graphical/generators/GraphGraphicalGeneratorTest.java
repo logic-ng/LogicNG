@@ -59,7 +59,7 @@ public class GraphGraphicalGeneratorTest {
         final Graph<String> g = new Graph<>();
         g.connect(g.node("A"), g.node("B"));
         g.node("C");
-        testFiles("small", g, GraphGraphicalGenerator.builder().build());
+        testFiles("small", g, GraphGraphicalGenerator.<String>builder().build());
     }
 
     @Test
@@ -67,13 +67,12 @@ public class GraphGraphicalGeneratorTest {
         final Graph<String> g = new Graph<>();
         g.connect(g.node("A"), g.node("B"));
         g.node("C");
-        final GraphicalGeneratorBuilder<GraphGraphicalGenerator> builder = GraphGraphicalGenerator.builder();
-        builder.backgroundColor(GraphicalColor.hex("#4f4f4f"));
-        builder.nodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, GREEN, ORANGE));
-        builder.edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE));
-        final GraphGraphicalGenerator translator = builder
+        final GraphGraphicalGenerator<String> generator = GraphGraphicalGenerator.<String>builder()
+                .backgroundColor(GraphicalColor.hex("#4f4f4f"))
+                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, GREEN, ORANGE))
+                .edgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE))
                 .build();
-        testFiles("small-fixedStyle", g, translator);
+        testFiles("small-fixedStyle", g, generator);
     }
 
     @Test
@@ -82,7 +81,7 @@ public class GraphGraphicalGeneratorTest {
         for (long i = 0; i < 30; i++) {
             g.node(i);
         }
-        testFiles("30", g, GraphGraphicalGenerator.builder().build());
+        testFiles("30", g, GraphGraphicalGenerator.<Long>builder().build());
     }
 
     @Test
@@ -103,22 +102,18 @@ public class GraphGraphicalGeneratorTest {
                 return style3;
             }
         };
-        testFiles("30-dynamic", g, GraphGraphicalGenerator.builder().build(), mapper);
+        testFiles("30-dynamic", g, GraphGraphicalGenerator.<Long>builder().nodeStyleMapper(mapper).build());
     }
 
     @Test
     public void test50p1() throws IOException {
         final Graph<Long> g = GraphTest.getLongGraph("50");
         g.node(51L);
-        testFiles("50p1", g, GraphGraphicalGenerator.builder().build());
+        testFiles("50p1", g, GraphGraphicalGenerator.<Long>builder().build());
     }
 
-    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator translator) throws IOException {
-        testFiles(fileName, g, translator, null);
-    }
-
-    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator translator, final NodeStyleMapper<T> mapper) throws IOException {
-        final GraphicalRepresentation representation = mapper == null ? translator.translate(g) : translator.translate(g, mapper);
+    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator<T> generator) throws IOException {
+        final GraphicalRepresentation representation = generator.translate(g);
         representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
         representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
 
