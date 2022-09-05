@@ -130,7 +130,7 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     }
 
     private static String nodeStyleString(final String id, final GraphicalNodeStyle style) {
-        if (!style.hasStyle()) {
+        if (!style.hasStyle() || (style.getStrokeColor() == null && style.getTextColor() == null && style.getBackgroundColor() == null)) {
             return null;
         }
         final List<String> attributes = new ArrayList<>();
