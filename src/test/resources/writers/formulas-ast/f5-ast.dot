@@ -1,18 +1,17 @@
 digraph G {
-  bgcolor="#ffffff"
 
-  id0 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="∨"]
-  id1 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="a"]
-  id2 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="¬b"]
-  id3 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="2*a + 3*~b + 4*c <= 23"]
-  id4 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="a"]
-  id5 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="¬b"]
-  id6 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="c"]
+  id0 [label="∨"]
+  id1 [label="a"]
+  id2 [label="¬b"]
+  id3 [label="2*a + 3*~b + 4*c <= 23"]
+  id4 [label="a"]
+  id5 [label="¬b"]
+  id6 [label="c"]
 
-  id0 -> id1 [color="#000000", fontcolor="#000000", style=solid]
-  id0 -> id2 [color="#000000", fontcolor="#000000", style=solid]
-  id3 -> id4 [color="#000000", fontcolor="#000000", style=solid]
-  id3 -> id5 [color="#000000", fontcolor="#000000", style=solid]
-  id3 -> id6 [color="#000000", fontcolor="#000000", style=solid]
-  id0 -> id3 [color="#000000", fontcolor="#000000", style=solid]
+  id0 -> id1
+  id0 -> id2
+  id3 -> id4
+  id3 -> id5
+  id3 -> id6
+  id0 -> id3
 }

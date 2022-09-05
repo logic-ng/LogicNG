@@ -1,11 +1,10 @@
 digraph G {
-  bgcolor="#ffffff"
 
-  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ffffff", fillcolor="#ea2027", label="false"]
-  id1 [shape=box, style=filled, color="#009432", fontcolor="#ffffff", fillcolor="#009432", label="true"]
-  id6 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="C"]
-  id7 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="C"]
-  id11 [shape=ellipse, style=filled, color="#000000", fontcolor="#000000", fillcolor="#ffffff", label="A"]
+  id0 [label="false", shape=box, color="#ea2027", fontcolor="#ffffff", style=filled, fillcolor="#ea2027"]
+  id1 [label="true", shape=box, color="#009432", fontcolor="#ffffff", style=filled, fillcolor="#009432"]
+  id6 [label="C"]
+  id7 [label="C"]
+  id11 [label="A"]
 
   id6 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
   id6 -> id1 [color="#009432", fontcolor="#009432", style=solid]

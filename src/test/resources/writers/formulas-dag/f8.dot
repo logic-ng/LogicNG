@@ -2,20 +2,20 @@ digraph G {
   bgcolor="#020202"
 
 { rank = same;
-  id0 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="A"]
-  id1 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="¬A"]
-  id2 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="B"]
-  id3 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="C"]
-  id4 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="X"]
-  id5 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a"]
-  id6 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="b"]
-  id7 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="c"]
+  id0 [label="A", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id1 [label="¬A", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id2 [label="B", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id3 [label="C", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id4 [label="X", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id5 [label="a", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id6 [label="b", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id7 [label="c", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
 }
-  id8 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="⇒"]
-  id9 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="⇔"]
-  id10 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="∧"]
-  id11 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="∨"]
-  id12 [shape=circle, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a + b + c <= 2"]
+  id8 [label="⇒", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id9 [label="⇔", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id10 [label="∧", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id11 [label="∨", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id12 [label="a + b + c <= 2", shape=circle, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
 
   id10 -> id2 [color="#1289a7", fontcolor="#1289a7", style=bold]
   id11 -> id1 [color="#1289a7", fontcolor="#1289a7", style=bold]

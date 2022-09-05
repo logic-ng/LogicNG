@@ -53,6 +53,11 @@ import java.util.function.Function;
  */
 public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
 
+    public static final GraphicalNodeStyle DEFAULT_TRUE_NODE_STYLE = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, WHITE, GREEN);
+    public static final GraphicalNodeStyle DEFAULT_FALSE_NODE_STYLE = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, WHITE, RED);
+    public static final GraphicalEdgeStyle DEFAULT_TRUE_EDGE_STYLE = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+    public static final GraphicalEdgeStyle DEFAULT_FALSE_EDGE_STYLE = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
+
     private final GraphicalEdgeStyle negativeEdgeStyle;
     private final EdgeStyleMapper<Integer> negativeEdgeStyleMapper;
 
@@ -138,9 +143,9 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
      */
     public static class BddTranslatorBuilder extends GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> {
 
-        private GraphicalNodeStyle defaultTrueNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, WHITE, GREEN);
-        private GraphicalNodeStyle defaultFalseNodeStyle = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, WHITE, RED);
-        private GraphicalEdgeStyle negativeEdgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
+        private GraphicalNodeStyle defaultTrueNodeStyle = DEFAULT_TRUE_NODE_STYLE;
+        private GraphicalNodeStyle defaultFalseNodeStyle = DEFAULT_FALSE_NODE_STYLE;
+        private GraphicalEdgeStyle negativeEdgeStyle = DEFAULT_FALSE_EDGE_STYLE;
         private EdgeStyleMapper<Integer> negativeEdgeMapper = null;
 
         /**
@@ -149,7 +154,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          */
         BddTranslatorBuilder(final Function<GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer>, BddGraphicalGenerator> constructor) {
             super(constructor);
-            this.defaultEdgeStyle = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+            this.defaultEdgeStyle = DEFAULT_TRUE_EDGE_STYLE;
             this.nodeStyleMapper = (index) -> {
                 if (index == BDD_FALSE) {
                     return this.defaultFalseNodeStyle;

@@ -37,10 +37,10 @@ import java.util.Objects;
  * @since 2.4.0
  */
 public class GraphicalEdge {
-    private final GraphicalNode source;
-    private final GraphicalNode destination;
-    private final String label;
-    private final GraphicalEdgeStyle style;
+    final GraphicalNode source;
+    final GraphicalNode destination;
+    final String label;
+    final GraphicalEdgeStyle style;
 
     /**
      * Constructs a new graphical edge with the given values and without label.

@@ -28,9 +28,6 @@
 
 package org.logicng.io.graphical;
 
-import static org.logicng.io.graphical.GraphicalColor.BLACK;
-import static org.logicng.io.graphical.GraphicalColor.WHITE;
-
 import java.util.Objects;
 
 /**
@@ -41,6 +38,12 @@ import java.util.Objects;
  */
 public class GraphicalNodeStyle {
 
+    /**
+     * A special node style which does not set any style, so the framework's (dot/Mermaid.js)
+     * default theming is applied.
+     */
+    public static GraphicalNodeStyle NO_NODE_STYLE = new GraphicalNodeStyle(null, null, null, null);
+
     public enum Shape {RECTANGLE, ELLIPSE, CIRCLE}
 
     private final Shape shape;
@@ -49,13 +52,13 @@ public class GraphicalNodeStyle {
     private final GraphicalColor backgroundColor;
 
     /**
-     * Constructs a new default edge style: an ellipse with black stroke and text and a white background.
+     * Constructs a new default node style with no set values.  This defaults to the framework's default theming.
      */
     public GraphicalNodeStyle() {
-        this.shape = Shape.ELLIPSE;
-        this.strokeColor = BLACK;
-        this.textColor = BLACK;
-        this.backgroundColor = WHITE;
+        this.shape = null;
+        this.strokeColor = null;
+        this.textColor = null;
+        this.backgroundColor = null;
     }
 
     /**
@@ -70,6 +73,14 @@ public class GraphicalNodeStyle {
         this.strokeColor = strokeColor;
         this.textColor = textColor;
         this.backgroundColor = backgroundColor;
+    }
+
+    /**
+     * Returns whether this style has any value set.  If not is equivalent to {@link GraphicalNodeStyle#NO_NODE_STYLE}.
+     * @return whether this style has any value set
+     */
+    public boolean hasStyle() {
+        return this.shape != null || this.strokeColor != null || this.textColor != null || this.backgroundColor != null;
     }
 
     public Shape getShape() {

@@ -31,6 +31,8 @@ package org.logicng.io.graphical;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A writer which writes a graphical representation as a Mermaid.js file.  This writer is thread-safe.
@@ -43,6 +45,10 @@ import java.io.Writer;
 public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
 
     private static final GraphicalMermaidWriter INSTANCE = new GraphicalMermaidWriter();
+
+    private static final GraphicalNodeStyle.Shape DEFAULT_NODE_SHAPE = GraphicalNodeStyle.Shape.ELLIPSE;
+    private static final int DEFAULT_LINE_WIDTH = 2;
+    private static final int DEFAULT_LINE_WIDTH_BOLD = 4;
 
     private GraphicalMermaidWriter() {
         // Singleton Pattern
@@ -74,9 +80,11 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         for (final GraphicalNode node : representation.getNodes()) {
             bufferedWriter.write(String.format("  %s", nodeString(node)));
             bufferedWriter.newLine();
-            bufferedWriter.write(String.format("    style %s stroke:%s,color:%s,fill:%s", node.id, node.style.getStrokeColor().getHexValue(),
-                    node.style.getTextColor().getHexValue(), node.style.getBackgroundColor().getHexValue()));
-            bufferedWriter.newLine();
+            final String nodeStyleString = nodeStyleString(node.id, node.getStyle());
+            if (nodeStyleString != null) {
+                bufferedWriter.write(nodeStyleString);
+                bufferedWriter.newLine();
+            }
         }
         bufferedWriter.newLine();
     }
@@ -87,17 +95,18 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
             final String edgeSymbol = edgeSymbolString(edge, representation.isDirected());
             writer.write(String.format("  %s %s %s", edge.getSource().id, edgeSymbol, edge.getDestination().id));
             writer.newLine();
-            final String dottedString = edge.getStyle().getType() == GraphicalEdgeStyle.EdgeType.DOTTED ? ",stroke-dasharray:3" : "";
-            writer.write(String.format("    linkStyle %d stroke:%s,stroke-width:%dpx%s", counter++, edge.getStyle().getColor().getHexValue(),
-                    edge.getStyle().getType() == GraphicalEdgeStyle.EdgeType.BOLD ? 4 : 2, dottedString));
-            writer.newLine();
+            final String edgeStyleString = edgeStyleString(counter++, edge.getStyle());
+            if (edgeStyleString != null) {
+                writer.write(edgeStyleString);
+                writer.newLine();
+            }
         }
     }
 
     private static String nodeString(final GraphicalNode node) {
         final String start;
         final String end;
-        switch (node.style.getShape()) {
+        switch (node.style.getShape() != null ? node.style.getShape() : DEFAULT_NODE_SHAPE) {
             case RECTANGLE:
                 start = "[";
                 end = "]";
@@ -118,5 +127,46 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     private static String edgeSymbolString(final GraphicalEdge edge, final boolean directed) {
         final String edgeConnetor = directed ? "-->" : "---";
         return edge.getLabel() == null ? edgeConnetor : String.format("%s|\"%s\"|", edgeConnetor, edge.getLabel());
+    }
+
+    private static String nodeStyleString(final String id, final GraphicalNodeStyle style) {
+        if (!style.hasStyle()) {
+            return null;
+        }
+        final List<String> attributes = new ArrayList<>();
+        if (style.getStrokeColor() != null) {
+            attributes.add(String.format("stroke:%s", style.getStrokeColor().getHexValue()));
+        }
+        if (style.getTextColor() != null) {
+            attributes.add(String.format("color:%s", style.getTextColor().getHexValue()));
+        }
+        if (style.getBackgroundColor() != null) {
+            attributes.add(String.format("fill:%s", style.getBackgroundColor().getHexValue()));
+        }
+        return String.format("    style %s %s", id, String.join(",", attributes));
+    }
+
+    private static String edgeStyleString(final int counter, final GraphicalEdgeStyle style) {
+        if (!style.hasStyle()) {
+            return null;
+        }
+        final List<String> attributes = new ArrayList<>();
+        if (style.getColor() != null) {
+            attributes.add(String.format("stroke:%s", style.getColor().getHexValue()));
+        }
+        if (style.getType() != null) {
+            switch (style.getType()) {
+                case SOLID:
+                    attributes.add(String.format("stroke-width:%d", DEFAULT_LINE_WIDTH));
+                    break;
+                case BOLD:
+                    attributes.add(String.format("stroke-width:%d", DEFAULT_LINE_WIDTH_BOLD));
+                    break;
+                case DOTTED:
+                    attributes.add(String.format("stroke-width:%d,stroke-dasharray:3", DEFAULT_LINE_WIDTH));
+                    break;
+            }
+        }
+        return String.format("    linkStyle %d %s", counter, String.join(",", attributes));
     }
 }

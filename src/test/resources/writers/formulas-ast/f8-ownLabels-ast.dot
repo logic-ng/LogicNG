@@ -2,20 +2,20 @@ digraph G {
   bgcolor="#020202"
 
 { rank = same;
-  id2 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="A"]
-  id4 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="B"]
-  id6 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="~A"]
-  id7 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="C"]
-  id8 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="X"]
-  id10 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a"]
-  id11 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="b"]
-  id12 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="c"]
+  id2 [label="A", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id4 [label="B", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id6 [label="~A", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id7 [label="C", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id8 [label="X", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id10 [label="a", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id11 [label="b", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id12 [label="c", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
 }
-  id0 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="(A <=> B & (~A | C | X)) => (a + b + c <= 2)"]
-  id1 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="A <=> B & (~A | C | X)"]
-  id3 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="B & (~A | C | X)"]
-  id5 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="~A | C | X"]
-  id9 [shape=box, style=filled, color="#004f93", fontcolor="#ffffff", fillcolor="#004f93", label="a + b + c <= 2"]
+  id0 [label="(A <=> B & (~A | C | X)) => (a + b + c <= 2)", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id1 [label="A <=> B & (~A | C | X)", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id3 [label="B & (~A | C | X)", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id5 [label="~A | C | X", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
+  id9 [label="a + b + c <= 2", shape=box, color="#004f93", fontcolor="#ffffff", style=filled, fillcolor="#004f93"]
 
   id3 -> id4 [color="#1289a7", fontcolor="#1289a7", style=bold]
   id5 -> id6 [color="#1289a7", fontcolor="#1289a7", style=bold]

@@ -4,15 +4,13 @@ graph TD
   id1["true"]
     style id1 stroke:#009432,color:#ffffff,fill:#009432
   id7(["C"])
-    style id7 stroke:#000000,color:#000000,fill:#ffffff
   id10(["A"])
-    style id10 stroke:#000000,color:#000000,fill:#ffffff
 
   id7 --> id1
-    linkStyle 0 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 0 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id7 --> id0
-    linkStyle 1 stroke:#009432,stroke-width:2px
+    linkStyle 1 stroke:#009432,stroke-width:2
   id10 --> id1
-    linkStyle 2 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 2 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id10 --> id7
-    linkStyle 3 stroke:#009432,stroke-width:2px
+    linkStyle 3 stroke:#009432,stroke-width:2

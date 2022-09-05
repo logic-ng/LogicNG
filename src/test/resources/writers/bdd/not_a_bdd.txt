@@ -4,9 +4,8 @@ graph TD
   id1["true"]
     style id1 stroke:#009432,color:#ffffff,fill:#009432
   id3(["A"])
-    style id3 stroke:#000000,color:#000000,fill:#ffffff
 
   id3 --> id1
-    linkStyle 0 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 0 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id3 --> id0
-    linkStyle 1 stroke:#009432,stroke-width:2px
+    linkStyle 1 stroke:#009432,stroke-width:2

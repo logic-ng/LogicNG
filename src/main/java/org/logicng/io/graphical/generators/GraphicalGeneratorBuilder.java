@@ -28,8 +28,6 @@
 
 package org.logicng.io.graphical.generators;
 
-import static org.logicng.io.graphical.GraphicalColor.WHITE;
-
 import org.logicng.io.graphical.GraphicalColor;
 import org.logicng.io.graphical.GraphicalEdgeStyle;
 import org.logicng.io.graphical.GraphicalNodeStyle;
@@ -45,7 +43,7 @@ import java.util.function.Function;
  */
 public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
-    protected GraphicalColor backgroundColor = WHITE;
+    protected GraphicalColor backgroundColor = null;
     protected boolean alginTerminals;
     protected GraphicalEdgeStyle defaultEdgeStyle = new GraphicalEdgeStyle();
     protected GraphicalNodeStyle defaultNodeStyle = new GraphicalNodeStyle();

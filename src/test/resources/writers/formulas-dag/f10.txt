@@ -1,82 +1,45 @@
 graph TD
   id0(["A"])
-    style id0 stroke:#000000,color:#000000,fill:#ffffff
   id1(["¬A"])
-    style id1 stroke:#000000,color:#000000,fill:#ffffff
   id2(["B"])
-    style id2 stroke:#000000,color:#000000,fill:#ffffff
   id3(["¬B"])
-    style id3 stroke:#000000,color:#000000,fill:#ffffff
   id4(["C"])
-    style id4 stroke:#000000,color:#000000,fill:#ffffff
   id5(["X"])
-    style id5 stroke:#000000,color:#000000,fill:#ffffff
   id6(["a"])
-    style id6 stroke:#000000,color:#000000,fill:#ffffff
   id7(["¬a"])
-    style id7 stroke:#000000,color:#000000,fill:#ffffff
   id8(["b"])
-    style id8 stroke:#000000,color:#000000,fill:#ffffff
   id9(["c"])
-    style id9 stroke:#000000,color:#000000,fill:#ffffff
   id10(["d"])
-    style id10 stroke:#000000,color:#000000,fill:#ffffff
   id11(["⇒"])
-    style id11 stroke:#000000,color:#000000,fill:#ffffff
   id12(["⇔"])
-    style id12 stroke:#000000,color:#000000,fill:#ffffff
   id13(["∧"])
-    style id13 stroke:#000000,color:#000000,fill:#ffffff
   id14(["∨"])
-    style id14 stroke:#000000,color:#000000,fill:#ffffff
   id15(["∧"])
-    style id15 stroke:#000000,color:#000000,fill:#ffffff
   id16(["a + b + c <= 2"])
-    style id16 stroke:#000000,color:#000000,fill:#ffffff
   id17(["⇒"])
-    style id17 stroke:#000000,color:#000000,fill:#ffffff
   id18(["∨"])
-    style id18 stroke:#000000,color:#000000,fill:#ffffff
   id19(["∧"])
-    style id19 stroke:#000000,color:#000000,fill:#ffffff
 
   id13 --> id2
-    linkStyle 0 stroke:#000000,stroke-width:2px
   id14 --> id1
-    linkStyle 1 stroke:#000000,stroke-width:2px
   id14 --> id4
-    linkStyle 2 stroke:#000000,stroke-width:2px
   id14 --> id5
-    linkStyle 3 stroke:#000000,stroke-width:2px
   id13 --> id14
-    linkStyle 4 stroke:#000000,stroke-width:2px
   id12 --> id0
-    linkStyle 5 stroke:#000000,stroke-width:2px
   id12 --> id13
-    linkStyle 6 stroke:#000000,stroke-width:2px
   id16 --> id6
-    linkStyle 7 stroke:#777777,stroke-width:2px,stroke-dasharray:3
+    linkStyle 7 stroke:#777777,stroke-width:2,stroke-dasharray:3
   id16 --> id8
-    linkStyle 8 stroke:#777777,stroke-width:2px,stroke-dasharray:3
+    linkStyle 8 stroke:#777777,stroke-width:2,stroke-dasharray:3
   id16 --> id9
-    linkStyle 9 stroke:#777777,stroke-width:2px,stroke-dasharray:3
+    linkStyle 9 stroke:#777777,stroke-width:2,stroke-dasharray:3
   id15 --> id16
-    linkStyle 10 stroke:#000000,stroke-width:2px
   id18 --> id7
-    linkStyle 11 stroke:#000000,stroke-width:2px
   id18 --> id10
-    linkStyle 12 stroke:#000000,stroke-width:2px
   id19 --> id5
-    linkStyle 13 stroke:#000000,stroke-width:2px
   id19 --> id3
-    linkStyle 14 stroke:#000000,stroke-width:2px
   id17 -->|"l"| id18
-    linkStyle 15 stroke:#000000,stroke-width:2px
   id17 -->|"r"| id19
-    linkStyle 16 stroke:#000000,stroke-width:2px
   id15 --> id17
-    linkStyle 17 stroke:#000000,stroke-width:2px
   id11 -->|"l"| id12
-    linkStyle 18 stroke:#000000,stroke-width:2px
   id11 -->|"r"| id15
-    linkStyle 19 stroke:#000000,stroke-width:2px

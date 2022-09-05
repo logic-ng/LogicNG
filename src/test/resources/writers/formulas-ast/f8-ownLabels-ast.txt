@@ -27,26 +27,26 @@ graph TD
     style id12 stroke:#004f93,color:#ffffff,fill:#004f93
 
   id3 --> id4
-    linkStyle 0 stroke:#1289a7,stroke-width:4px
+    linkStyle 0 stroke:#1289a7,stroke-width:4
   id5 --> id6
-    linkStyle 1 stroke:#1289a7,stroke-width:4px
+    linkStyle 1 stroke:#1289a7,stroke-width:4
   id5 --> id7
-    linkStyle 2 stroke:#1289a7,stroke-width:4px
+    linkStyle 2 stroke:#1289a7,stroke-width:4
   id5 --> id8
-    linkStyle 3 stroke:#1289a7,stroke-width:4px
+    linkStyle 3 stroke:#1289a7,stroke-width:4
   id3 --> id5
-    linkStyle 4 stroke:#1289a7,stroke-width:4px
+    linkStyle 4 stroke:#1289a7,stroke-width:4
   id1 --> id2
-    linkStyle 5 stroke:#1289a7,stroke-width:4px
+    linkStyle 5 stroke:#1289a7,stroke-width:4
   id1 --> id3
-    linkStyle 6 stroke:#1289a7,stroke-width:4px
+    linkStyle 6 stroke:#1289a7,stroke-width:4
   id9 --> id10
-    linkStyle 7 stroke:#1289a7,stroke-width:4px
+    linkStyle 7 stroke:#1289a7,stroke-width:4
   id9 --> id11
-    linkStyle 8 stroke:#1289a7,stroke-width:4px
+    linkStyle 8 stroke:#1289a7,stroke-width:4
   id9 --> id12
-    linkStyle 9 stroke:#1289a7,stroke-width:4px
+    linkStyle 9 stroke:#1289a7,stroke-width:4
   id0 -->|"l"| id1
-    linkStyle 10 stroke:#1289a7,stroke-width:4px
+    linkStyle 10 stroke:#1289a7,stroke-width:4
   id0 -->|"r"| id9
-    linkStyle 11 stroke:#1289a7,stroke-width:4px
+    linkStyle 11 stroke:#1289a7,stroke-width:4

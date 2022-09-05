@@ -1,24 +1,13 @@
 graph TD
   id0(["a"])
-    style id0 stroke:#000000,color:#000000,fill:#ffffff
   id1(["¬b"])
-    style id1 stroke:#000000,color:#000000,fill:#ffffff
   id2(["c"])
-    style id2 stroke:#000000,color:#000000,fill:#ffffff
   id3(["∨"])
-    style id3 stroke:#000000,color:#000000,fill:#ffffff
   id4(["2*a + 3*~b + 4*c <= 23"])
-    style id4 stroke:#000000,color:#000000,fill:#ffffff
 
   id3 --> id0
-    linkStyle 0 stroke:#000000,stroke-width:2px
   id3 --> id1
-    linkStyle 1 stroke:#000000,stroke-width:2px
   id4 --> id0
-    linkStyle 2 stroke:#000000,stroke-width:2px
   id4 --> id1
-    linkStyle 3 stroke:#000000,stroke-width:2px
   id4 --> id2
-    linkStyle 4 stroke:#000000,stroke-width:2px
   id3 --> id4
-    linkStyle 5 stroke:#000000,stroke-width:2px

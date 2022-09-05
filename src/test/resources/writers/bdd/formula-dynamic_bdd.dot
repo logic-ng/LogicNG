@@ -1,15 +1,14 @@
 digraph G {
-  bgcolor="#ffffff"
 
-  id0 [shape=box, style=filled, color="#ea2027", fontcolor="#ea2027", fillcolor="#ffffff", label="falsch"]
-  id1 [shape=box, style=filled, color="#009432", fontcolor="#009432", fillcolor="#ffffff", label="wahr"]
-  id8 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="D"]
-  id9 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="D"]
-  id12 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="C"]
-  id17 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B!!"]
-  id18 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="C"]
-  id19 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B!!"]
-  id20 [shape=circle, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="A"]
+  id0 [label="falsch", shape=box, color="#ea2027", fontcolor="#ea2027", style=filled, fillcolor="#ffffff"]
+  id1 [label="wahr", shape=box, color="#009432", fontcolor="#009432", style=filled, fillcolor="#ffffff"]
+  id8 [label="D", shape=circle, color="#1289a7", fontcolor="#ffffff", style=filled, fillcolor="#1289a7"]
+  id9 [label="D", shape=circle, color="#1289a7", fontcolor="#ffffff", style=filled, fillcolor="#1289a7"]
+  id12 [label="C", shape=circle, color="#1289a7", fontcolor="#ffffff", style=filled, fillcolor="#1289a7"]
+  id17 [label="B!!", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id18 [label="C", shape=circle, color="#1289a7", fontcolor="#ffffff", style=filled, fillcolor="#1289a7"]
+  id19 [label="B!!", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id20 [label="A", shape=circle, color="#1289a7", fontcolor="#ffffff", style=filled, fillcolor="#1289a7"]
 
   id8 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
   id8 -> id1 [color="#009432", fontcolor="#009432", style=solid]

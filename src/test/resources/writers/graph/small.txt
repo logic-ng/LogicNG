@@ -1,10 +1,6 @@
 graph TD
   id0(["A"])
-    style id0 stroke:#000000,color:#000000,fill:#ffffff
   id1(["B"])
-    style id1 stroke:#000000,color:#000000,fill:#ffffff
   id2(["C"])
-    style id2 stroke:#000000,color:#000000,fill:#ffffff
 
   id0 --- id1
-    linkStyle 0 stroke:#000000,stroke-width:2px

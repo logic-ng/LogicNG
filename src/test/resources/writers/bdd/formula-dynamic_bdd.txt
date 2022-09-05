@@ -19,30 +19,30 @@ graph TD
     style id20 stroke:#1289a7,color:#ffffff,fill:#1289a7
 
   id8 --> id0
-    linkStyle 0 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 0 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id8 --> id1
-    linkStyle 1 stroke:#009432,stroke-width:2px
+    linkStyle 1 stroke:#009432,stroke-width:2
   id9 --> id1
-    linkStyle 2 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 2 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id9 --> id0
-    linkStyle 3 stroke:#009432,stroke-width:2px
+    linkStyle 3 stroke:#009432,stroke-width:2
   id12 --> id0
-    linkStyle 4 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 4 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id12 --> id8
-    linkStyle 5 stroke:#009432,stroke-width:2px
+    linkStyle 5 stroke:#009432,stroke-width:2
   id17 --> id9
-    linkStyle 6 stroke:#ea2027,stroke-width:4px
+    linkStyle 6 stroke:#ea2027,stroke-width:4
   id17 --> id0
-    linkStyle 7 stroke:#009432,stroke-width:4px
+    linkStyle 7 stroke:#009432,stroke-width:4
   id18 --> id8
-    linkStyle 8 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 8 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id18 --> id0
-    linkStyle 9 stroke:#009432,stroke-width:2px
+    linkStyle 9 stroke:#009432,stroke-width:2
   id19 --> id18
-    linkStyle 10 stroke:#ea2027,stroke-width:4px
+    linkStyle 10 stroke:#ea2027,stroke-width:4
   id19 --> id12
-    linkStyle 11 stroke:#009432,stroke-width:4px
+    linkStyle 11 stroke:#009432,stroke-width:4
   id20 --> id17
-    linkStyle 12 stroke:#ea2027,stroke-width:2px,stroke-dasharray:3
+    linkStyle 12 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
   id20 --> id19
-    linkStyle 13 stroke:#009432,stroke-width:2px
+    linkStyle 13 stroke:#009432,stroke-width:2

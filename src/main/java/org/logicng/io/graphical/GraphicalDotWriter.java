@@ -31,6 +31,8 @@ package org.logicng.io.graphical;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A writer which writes a graphical representation as a DOT file.  This writer is thread-safe.
@@ -68,8 +70,10 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
     private static void writePreamble(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
         writer.write(String.format("%s {", representation.isDirected() ? "digraph G" : "strict graph"));
         writer.newLine();
-        writer.write(String.format("  bgcolor=\"%s\"", representation.getBackground().getHexValue()));
-        writer.newLine();
+        if (representation.getBackground() != null) {
+            writer.write(String.format("  bgcolor=\"%s\"", representation.getBackground().getHexValue()));
+            writer.newLine();
+        }
         writer.newLine();
     }
 
@@ -98,12 +102,7 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
 
     private static void writeEdges(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
         for (final GraphicalEdge edge : representation.getEdges()) {
-            final String edgeSymbol = representation.isDirected() ? "->" : "--";
-            final String label = edge.getLabel() != null ? String.format(", label=\"%s\"", edge.getLabel()) : "";
-            final String edgeStyle = edgeStyleString(edge.getStyle().getType());
-            final String string = String.format("  %s %s %s [color=\"%s\", fontcolor=\"%s\", style=%s%s]", edge.getSource().id, edgeSymbol,
-                    edge.getDestination().id, edge.getStyle().getColor().getHexValue(), edge.getStyle().getColor().getHexValue(), edgeStyle, label);
-            writer.write(string);
+            writer.write(edgeString(edge, representation.isDirected()));
             writer.newLine();
         }
     }
@@ -114,9 +113,36 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
     }
 
     private static String nodeString(final GraphicalNode node) {
-        return String.format("  %s [shape=%s, style=filled, color=\"%s\", fontcolor=\"%s\", fillcolor=\"%s\", label=\"%s\"]",
-                node.id, shapeString(node.style.getShape()), node.style.getStrokeColor().getHexValue(), node.style.getTextColor().getHexValue(),
-                node.style.getBackgroundColor().getHexValue(), node.label);
+        final List<String> attributes = new ArrayList<>();
+        if (node.style.getShape() != null) {
+            attributes.add(String.format("shape=%s", shapeString(node.style.getShape())));
+        }
+        if (node.style.getStrokeColor() != null) {
+            attributes.add(String.format("color=\"%s\"", node.style.getStrokeColor().getHexValue()));
+        }
+        if (node.style.getTextColor() != null) {
+            attributes.add(String.format("fontcolor=\"%s\"", node.style.getTextColor().getHexValue()));
+        }
+        if (node.style.getBackgroundColor() != null) {
+            attributes.add(String.format("style=filled, fillcolor=\"%s\"", node.style.getBackgroundColor().getHexValue()));
+        }
+        return String.format("  %s [label=\"%s\"%s]", node.id, node.label, attributes.isEmpty() ? "" : ", " + String.join(", ", attributes));
+    }
+
+    private static String edgeString(final GraphicalEdge edge, final boolean isDirected) {
+        final List<String> attributes = new ArrayList<>();
+        if (edge.style.getColor() != null) {
+            attributes.add(String.format("color=\"%1$s\", fontcolor=\"%1$s\"", edge.style.getColor().getHexValue()));
+        }
+        if (edge.style.getType() != null) {
+            attributes.add(String.format("style=%s", edgeStyleString(edge.style.getType())));
+        }
+        if (edge.label != null) {
+            attributes.add(String.format("label=\"%s\"", edge.label));
+        }
+        final String attributeString = attributes.isEmpty() ? "" : " [" + String.join(", ", attributes) + "]";
+        final String edgeSymbol = isDirected ? "->" : "--";
+        return String.format("  %s %s %s%s", edge.source.id, edgeSymbol, edge.destination.id, attributeString);
     }
 
     private static String shapeString(final GraphicalNodeStyle.Shape shape) {

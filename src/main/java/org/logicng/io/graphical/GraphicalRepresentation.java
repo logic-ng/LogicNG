@@ -28,8 +28,6 @@
 
 package org.logicng.io.graphical;
 
-import static org.logicng.io.graphical.GraphicalColor.WHITE;
-
 import org.logicng.io.graphical.generators.FormulaAstGraphicalGenerator;
 import org.logicng.io.graphical.generators.FormulaDagGraphicalGenerator;
 import org.logicng.io.graphical.generators.GraphGraphicalGenerator;
@@ -68,12 +66,12 @@ public class GraphicalRepresentation {
     private final List<GraphicalEdge> edges;
 
     /**
-     * Generates a new graphical representation with the given values and a white background.
+     * Generates a new graphical representation with the given values and no background.
      * @param alignTerminals a flag whether all terminal nodes should be layouted on the same level (only possible in DOT output)
      * @param directed       a flag whether the graph of the representation is directed or undirected
      */
     public GraphicalRepresentation(final boolean alignTerminals, final boolean directed) {
-        this(alignTerminals, directed, WHITE, new ArrayList<>(), new ArrayList<>());
+        this(alignTerminals, directed, null, new ArrayList<>(), new ArrayList<>());
     }
 
     /**

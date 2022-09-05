@@ -70,7 +70,7 @@ public class GraphGraphicalGeneratorTest {
         g.node("C");
         final GraphGraphicalGenerator<String> generator = GraphGraphicalGenerator.<String>builder()
                 .backgroundColor(GraphicalColor.hex("#4f4f4f"))
-                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, RED, GREEN, ORANGE))
+                .defaultNodeStyle(new GraphicalNodeStyle(null, RED, GREEN, null))
                 .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE))
                 .build();
         testFiles("small-fixedStyle", g, generator);
@@ -105,7 +105,7 @@ public class GraphGraphicalGeneratorTest {
             }
         };
 
-        final GraphicalEdgeStyle eStyle1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
+        final GraphicalEdgeStyle eStyle1 = new GraphicalEdgeStyle(null, GREEN);
         final GraphicalEdgeStyle eStyle2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, ORANGE);
         final GraphicalEdgeStyle eStyle3 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_LIGHT);
 

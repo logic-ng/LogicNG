@@ -1,6 +1,5 @@
 digraph G {
-  bgcolor="#ffffff"
 
-  id1 [shape=box, style=filled, color="#009432", fontcolor="#ffffff", fillcolor="#009432", label="true"]
+  id1 [label="true", shape=box, color="#009432", fontcolor="#ffffff", style=filled, fillcolor="#009432"]
 
 }

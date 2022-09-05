@@ -28,8 +28,6 @@
 
 package org.logicng.io.graphical;
 
-import static org.logicng.io.graphical.GraphicalColor.BLACK;
-
 import java.util.Objects;
 
 /**
@@ -41,6 +39,12 @@ import java.util.Objects;
 public class GraphicalEdgeStyle {
 
     /**
+     * A special edge style which does not set any style, so the framework's (dot/Mermaid.js)
+     * default theming is applied.
+     */
+    public static GraphicalEdgeStyle NO_EDGE_STYLE = new GraphicalEdgeStyle(null, null);
+
+    /**
      * The different edge types.
      */
     public enum EdgeType {SOLID, DOTTED, BOLD}
@@ -49,11 +53,11 @@ public class GraphicalEdgeStyle {
     private final GraphicalColor color;
 
     /**
-     * Constructs a new default edge style: a solid black line.
+     * Constructs a new default edge style with no set values.  This defaults to the framework's default theming.
      */
     public GraphicalEdgeStyle() {
-        this.type = EdgeType.SOLID;
-        this.color = BLACK;
+        this.type = null;
+        this.color = null;
     }
 
     /**
@@ -64,6 +68,14 @@ public class GraphicalEdgeStyle {
     public GraphicalEdgeStyle(final EdgeType type, final GraphicalColor color) {
         this.type = type;
         this.color = color;
+    }
+
+    /**
+     * Returns whether this style has any value set.  If not is equivalent to {@link GraphicalEdgeStyle#NO_EDGE_STYLE}.
+     * @return whether this style has any value set
+     */
+    public boolean hasStyle() {
+        return this.type != null || this.color != null;
     }
 
     public EdgeType getType() {

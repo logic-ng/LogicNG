@@ -2,16 +2,16 @@ digraph G {
   bgcolor="#e4e4e4"
 
 { rank = same;
-  id0 [shape=box, style=filled, color="#5758bb", fontcolor="#ffffff", fillcolor="#5758bb", label="false"]
-  id1 [shape=box, style=filled, color="#1289a7", fontcolor="#ffffff", fillcolor="#1289a7", label="true"]
+  id0 [label="false", shape=box, color="#5758bb", fontcolor="#ffffff", style=filled, fillcolor="#5758bb"]
+  id1 [label="true", shape=box, color="#1289a7", fontcolor="#ffffff", style=filled, fillcolor="#1289a7"]
 }
-  id8 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="D"]
-  id9 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="D"]
-  id12 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="C"]
-  id17 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B"]
-  id18 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="C"]
-  id19 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="B"]
-  id20 [shape=circle, style=filled, color="#f79f1f", fontcolor="#000000", fillcolor="#f79f1f", label="A"]
+  id8 [label="D", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id9 [label="D", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id12 [label="C", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id17 [label="B", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id18 [label="C", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id19 [label="B", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
+  id20 [label="A", shape=circle, color="#f79f1f", fontcolor="#000000", style=filled, fillcolor="#f79f1f"]
 
   id8 -> id0 [color="#5758bb", fontcolor="#5758bb", style=dotted]
   id8 -> id1 [color="#1289a7", fontcolor="#1289a7", style=bold]

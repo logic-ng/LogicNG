@@ -1,10 +1,10 @@
 graph TD
-  id0["A"]
-    style id0 stroke:#ea2027,color:#009432,fill:#f79f1f
-  id1["B"]
-    style id1 stroke:#ea2027,color:#009432,fill:#f79f1f
-  id2["C"]
-    style id2 stroke:#ea2027,color:#009432,fill:#f79f1f
+  id0(["A"])
+    style id0 stroke:#ea2027,color:#009432
+  id1(["B"])
+    style id1 stroke:#ea2027,color:#009432
+  id2(["C"])
+    style id2 stroke:#ea2027,color:#009432
 
   id0 --- id1
-    linkStyle 0 stroke:#ffffff,stroke-width:2px,stroke-dasharray:3
+    linkStyle 0 stroke:#ffffff,stroke-width:2,stroke-dasharray:3

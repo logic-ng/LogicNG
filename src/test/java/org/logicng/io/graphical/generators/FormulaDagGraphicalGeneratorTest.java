@@ -39,6 +39,7 @@ import static org.logicng.io.graphical.GraphicalColor.PURPLE;
 import static org.logicng.io.graphical.GraphicalColor.TURQUOISE;
 import static org.logicng.io.graphical.GraphicalColor.WHITE;
 import static org.logicng.io.graphical.GraphicalColor.YELLOW;
+import static org.logicng.io.graphical.GraphicalEdgeStyle.NO_EDGE_STYLE;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -150,13 +151,12 @@ public class FormulaDagGraphicalGeneratorTest {
         final Formula f10 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
         final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_DARK);
-        final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, BLACK);
 
         final EdgeStyleMapper<Formula> edgeMapper = (source, dest) -> {
             if (source.type() == FType.PBC) {
                 return style1;
             } else {
-                return style2;
+                return NO_EDGE_STYLE;
             }
         };
 

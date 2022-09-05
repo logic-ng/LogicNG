@@ -1,4 +1,3 @@
 graph TD
   id0(["$false"])
-    style id0 stroke:#000000,color:#000000,fill:#ffffff
 

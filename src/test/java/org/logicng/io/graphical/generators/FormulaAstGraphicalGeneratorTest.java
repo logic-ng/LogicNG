@@ -39,6 +39,7 @@ import static org.logicng.io.graphical.GraphicalColor.PURPLE;
 import static org.logicng.io.graphical.GraphicalColor.TURQUOISE;
 import static org.logicng.io.graphical.GraphicalColor.WHITE;
 import static org.logicng.io.graphical.GraphicalColor.YELLOW;
+import static org.logicng.io.graphical.GraphicalEdgeStyle.NO_EDGE_STYLE;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,7 +124,7 @@ public class FormulaAstGraphicalGeneratorTest {
         final GraphicalNodeStyle style1 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GRAY_DARK, GRAY_DARK, GRAY_LIGHT);
         final GraphicalNodeStyle style2 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, YELLOW, BLACK, YELLOW);
         final GraphicalNodeStyle style3 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, TURQUOISE, WHITE, TURQUOISE);
-        final GraphicalNodeStyle style4 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, BLACK, BLACK, WHITE);
+        final GraphicalNodeStyle style4 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, BLACK, BLACK, null);
 
         final NodeStyleMapper<Formula> mapper = (formula) -> {
             if (formula.type() == FType.PBC) {
@@ -137,7 +138,8 @@ public class FormulaAstGraphicalGeneratorTest {
         };
 
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
-                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .backgroundColor("#444444")
+                .defaultEdgeStyle(NO_EDGE_STYLE)
                 .nodeStyleMapper(mapper)
                 .build();
 
