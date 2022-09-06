@@ -178,7 +178,7 @@ public class BddGraphicalGeneratorTest {
         }
     }
 
-    private static class MyPosEdgeMapper extends BddEdgeMapper {
+    private static class MyPosEdgeMapper extends BddEdgeStyleMapper {
 
         final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
         final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, GREEN);
@@ -193,7 +193,7 @@ public class BddGraphicalGeneratorTest {
         }
     }
 
-    private static class MyNegEdgeMapper extends BddEdgeMapper {
+    private static class MyNegEdgeMapper extends BddEdgeStyleMapper {
 
         final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
         final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, RED);

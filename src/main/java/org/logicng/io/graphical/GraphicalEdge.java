@@ -46,7 +46,7 @@ public class GraphicalEdge {
      * Constructs a new graphical edge with the given values and without label.
      * @param source      the source node of the edge
      * @param destination the destination node of the edge
-     * @param style       the style of this edge
+     * @param style       the style of the edge
      */
     public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final GraphicalEdgeStyle style) {
         this(source, destination, null, style);
@@ -57,7 +57,7 @@ public class GraphicalEdge {
      * @param source      the source node of the edge
      * @param destination the destination node of the edge
      * @param label       the optional label (can be null)
-     * @param style       the style of this edge
+     * @param style       the style of the edge
      */
     public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final String label, final GraphicalEdgeStyle style) {
         this.source = source;
@@ -66,18 +66,34 @@ public class GraphicalEdge {
         this.style = style;
     }
 
+    /**
+     * Returns the source node of this edge.
+     * @return the source node of this edge
+     */
     public GraphicalNode getSource() {
         return this.source;
     }
 
+    /**
+     * Returns the destination node of this edge.
+     * @return the destination node of this edge
+     */
     public GraphicalNode getDestination() {
         return this.destination;
     }
 
+    /**
+     * Returns the label of this edge.
+     * @return the label of this edge
+     */
     public String getLabel() {
         return this.label;
     }
 
+    /**
+     * Returns the style of this edge
+     * @return the style of this edge
+     */
     public GraphicalEdgeStyle getStyle() {
         return this.style;
     }
@@ -107,7 +123,7 @@ public class GraphicalEdge {
         return "GraphicalEdge{" +
                 "source=" + this.source +
                 ", destination=" + this.destination +
-                ", text='" + this.label + '\'' +
+                ", label='" + this.label + '\'' +
                 ", style=" + this.style +
                 '}';
     }

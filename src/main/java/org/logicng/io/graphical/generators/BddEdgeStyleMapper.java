@@ -36,13 +36,13 @@ import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
  * @version 2.4.0
  * @since 2.4.0
  */
-public abstract class BddEdgeMapper extends BddMapper implements EdgeStyleMapper<Integer> {
+public abstract class BddEdgeStyleMapper extends BddMapper implements EdgeStyleMapper<Integer> {
 
     /**
      * Constructs a new BDD edge mapper for a given BDD kernel.  The BDDs must be constructed with this kernel.
      * @param kernel a BDD kernel
      */
-    public BddEdgeMapper(final BDDKernel kernel) {
+    public BddEdgeStyleMapper(final BDDKernel kernel) {
         super(kernel);
     }
 

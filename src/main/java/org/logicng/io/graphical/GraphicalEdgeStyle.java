@@ -61,7 +61,7 @@ public class GraphicalEdgeStyle {
     }
 
     /**
-     * Constructs a new edge style with a given line type and color
+     * Constructs a new edge style with a given edge type and color.
      * @param type  the edge type
      * @param color the color
      */
@@ -71,17 +71,25 @@ public class GraphicalEdgeStyle {
     }
 
     /**
-     * Returns whether this style has any value set.  If not is equivalent to {@link GraphicalEdgeStyle#NO_EDGE_STYLE}.
+     * Returns whether this style has any value set.  If not it is equivalent to {@link GraphicalEdgeStyle#NO_EDGE_STYLE}.
      * @return whether this style has any value set
      */
     public boolean hasStyle() {
         return this.type != null || this.color != null;
     }
 
+    /**
+     * Returns the type of this edge style.
+     * @return the type of this edge style
+     */
     public EdgeType getType() {
         return this.type;
     }
 
+    /**
+     * Returns the color of this edge style.
+     * @return the color of this edge style
+     */
     public GraphicalColor getColor() {
         return this.color;
     }

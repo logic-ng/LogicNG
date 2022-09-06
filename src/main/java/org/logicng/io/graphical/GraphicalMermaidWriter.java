@@ -125,8 +125,8 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     }
 
     private static String edgeSymbolString(final GraphicalEdge edge, final boolean directed) {
-        final String edgeConnetor = directed ? "-->" : "---";
-        return edge.getLabel() == null ? edgeConnetor : String.format("%s|\"%s\"|", edgeConnetor, edge.getLabel());
+        final String edgeConnector = directed ? "-->" : "---";
+        return edge.getLabel() == null ? edgeConnector : String.format("%s|\"%s\"|", edgeConnector, edge.getLabel());
     }
 
     private static String nodeStyleString(final String id, final GraphicalNodeStyle style) {

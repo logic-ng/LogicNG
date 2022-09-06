@@ -66,9 +66,9 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
      * @param builder the builder
      */
     BddGraphicalGenerator(final GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> builder) {
-        super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+        super(builder.backgroundColor, builder.alignTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
                 builder.labelMapper, builder.edgeMapper);
-        final BddTranslatorBuilder bddBuilder = (BddTranslatorBuilder) builder;
+        final BddGraphicalGeneratorBuilder bddBuilder = (BddGraphicalGeneratorBuilder) builder;
         this.negativeEdgeStyle = bddBuilder.negativeEdgeStyle;
         this.negativeEdgeStyleMapper = bddBuilder.negativeEdgeMapper;
     }
@@ -77,26 +77,25 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
      * Returns the builder for this generator.
      * @return the builder
      */
-    public static BddTranslatorBuilder builder() {
-        return new BddTranslatorBuilder(BddGraphicalGenerator::new);
+    public static BddGraphicalGeneratorBuilder builder() {
+        return new BddGraphicalGeneratorBuilder(BddGraphicalGenerator::new);
     }
 
     /**
-     * Translates a given BDD in its graphical representation.
+     * Translates a given BDD into its graphical representation.
      * @param bdd the BDD
      * @return the graphical representation
      */
     public GraphicalRepresentation translate(final BDD bdd) {
         final Map<Integer, GraphicalNode> index2Node = new TreeMap<>();
-
         final GraphicalRepresentation graphicalRepresentation = new GraphicalRepresentation(this.alignTerminals, true, this.backgroundColor);
         if (!bdd.isTautology()) {
-            final GraphicalNode falseNode = new GraphicalNode(ID + BDD_FALSE, labelOrDefault(BDD_FALSE, "false"), true, style(BDD_FALSE));
+            final GraphicalNode falseNode = new GraphicalNode(ID + BDD_FALSE, labelOrDefault(BDD_FALSE, "false"), true, nodeStyle(BDD_FALSE));
             graphicalRepresentation.addNode(falseNode);
             index2Node.put(BDD_FALSE, falseNode);
         }
         if (!bdd.isContradiction()) {
-            final GraphicalNode trueNode = new GraphicalNode(ID + BDD_TRUE, labelOrDefault(BDD_TRUE, "true"), true, style(BDD_TRUE));
+            final GraphicalNode trueNode = new GraphicalNode(ID + BDD_TRUE, labelOrDefault(BDD_TRUE, "true"), true, nodeStyle(BDD_TRUE));
             graphicalRepresentation.addNode(trueNode);
             index2Node.put(BDD_TRUE, trueNode);
         }
@@ -122,7 +121,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
                          final Map<Integer, GraphicalNode> index2Node) {
         GraphicalNode node = index2Node.get(index);
         if (node == null) {
-            node = new GraphicalNode(ID + index, label, false, style(index));
+            node = new GraphicalNode(ID + index, label, false, nodeStyle(index));
             graphicalRepresentation.addNode(node);
             index2Node.put(index, node);
         }
@@ -135,13 +134,13 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
     /**
      * An extension of the builder for graphical generators to include BDD specific values.
      * <p>
-     * Since only the additional methods of this builder can return an object of the type {@link BddTranslatorBuilder},
+     * Since only the additional methods of this builder can return an object of the type {@link BddGraphicalGeneratorBuilder},
      * you have to configure all BDD-specific values of this builder _before_ you configure the values
      * of the super builder {@link GraphicalGeneratorBuilder}.
      * @version 2.4.0
      * @since 2.4.0
      */
-    public static class BddTranslatorBuilder extends GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> {
+    public static class BddGraphicalGeneratorBuilder extends GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer> {
 
         private GraphicalNodeStyle defaultTrueNodeStyle = DEFAULT_TRUE_NODE_STYLE;
         private GraphicalNodeStyle defaultFalseNodeStyle = DEFAULT_FALSE_NODE_STYLE;
@@ -152,7 +151,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          * Constructs a new builder with the given constructor for the graphical generator.
          * @param constructor the constructor for the graphical generator
          */
-        BddTranslatorBuilder(final Function<GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer>, BddGraphicalGenerator> constructor) {
+        BddGraphicalGeneratorBuilder(final Function<GraphicalGeneratorBuilder<BddGraphicalGenerator, Integer>, BddGraphicalGenerator> constructor) {
             super(constructor);
             this.defaultEdgeStyle = DEFAULT_TRUE_EDGE_STYLE;
             this.nodeStyleMapper = (index) -> {
@@ -172,7 +171,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          * @param trueNodeStyle the node style
          * @return the current builder
          */
-        public BddTranslatorBuilder trueNodeStyle(final GraphicalNodeStyle trueNodeStyle) {
+        public BddGraphicalGeneratorBuilder trueNodeStyle(final GraphicalNodeStyle trueNodeStyle) {
             this.defaultTrueNodeStyle = trueNodeStyle;
             return this;
         }
@@ -183,7 +182,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          * @param falseNodeStyle the node style
          * @return the current builder
          */
-        public BddTranslatorBuilder falseNodeStyle(final GraphicalNodeStyle falseNodeStyle) {
+        public BddGraphicalGeneratorBuilder falseNodeStyle(final GraphicalNodeStyle falseNodeStyle) {
             this.defaultFalseNodeStyle = falseNodeStyle;
             return this;
         }
@@ -193,7 +192,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          * @param negativeEdgeStyle the edge style
          * @return the current builder
          */
-        public BddTranslatorBuilder negativeEdgeStyle(final GraphicalEdgeStyle negativeEdgeStyle) {
+        public BddGraphicalGeneratorBuilder negativeEdgeStyle(final GraphicalEdgeStyle negativeEdgeStyle) {
             this.negativeEdgeStyle = negativeEdgeStyle;
             return this;
         }
@@ -205,7 +204,7 @@ public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
          * @param negativeEdgeMapper the edge mapper
          * @return the current builder
          */
-        public BddTranslatorBuilder negativeEdgeMapper(final EdgeStyleMapper<Integer> negativeEdgeMapper) {
+        public BddGraphicalGeneratorBuilder negativeEdgeMapper(final EdgeStyleMapper<Integer> negativeEdgeMapper) {
             this.negativeEdgeMapper = negativeEdgeMapper;
             return this;
         }

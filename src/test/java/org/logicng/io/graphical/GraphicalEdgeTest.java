@@ -111,6 +111,5 @@ public class GraphicalEdgeTest {
         assertThat(this.grUndirected.getDotString()).contains("id1 -- id2 [color=\"#000000\", fontcolor=\"#000000\", style=bold]");
         assertThat(this.grUndirected.getMermaidString()).contains("id1 --- id2");
         assertThat(this.grUndirected.getMermaidString()).contains("linkStyle 0 stroke:#000000,stroke-width:4");
-        System.out.println(this.grUndirected.getMermaidString());
     }
 }

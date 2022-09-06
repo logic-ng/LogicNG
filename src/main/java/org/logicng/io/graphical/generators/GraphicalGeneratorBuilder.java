@@ -44,7 +44,7 @@ import java.util.function.Function;
 public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     protected GraphicalColor backgroundColor = null;
-    protected boolean alginTerminals;
+    protected boolean alignTerminals;
     protected GraphicalEdgeStyle defaultEdgeStyle = new GraphicalEdgeStyle();
     protected GraphicalNodeStyle defaultNodeStyle = new GraphicalNodeStyle();
     protected NodeStyleMapper<C> nodeStyleMapper = null;
@@ -72,7 +72,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     /**
      * Sets the background color for the graph as hex color value.
-     * @param hexColor the hex color value in the format "#beef41"
+     * @param hexColor the hex color value in the format "#aabbcc"
      * @return the current builder
      */
     public GraphicalGeneratorBuilder<T, C> backgroundColor(final String hexColor) {
@@ -81,7 +81,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
     }
 
     /**
-     * Sets the background color for the graph as RGB value
+     * Sets the background color for the graph as RGB value.
      * @param red   the red value
      * @param green the green value
      * @param blue  the blue value
@@ -93,15 +93,15 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
     }
 
     /**
-     * Sets whether all terminal nodes of the graph should be layouted on the same level.
+     * Sets whether all terminal nodes of the graph should be aligned on the same level.
      * <p>
-     * This flag is only applied to BDD and formula DAG and AST graphs. It can only be layouted
+     * This flag is only applied to BDD and formula DAG and AST graphs. It can only be applied
      * by DOT, not by Mermaid.js.
      * @param alignTerminals whether the terminal nodes should be on the same level
      * @return the current builder
      */
     public GraphicalGeneratorBuilder<T, C> alignTerminals(final boolean alignTerminals) {
-        this.alginTerminals = alignTerminals;
+        this.alignTerminals = alignTerminals;
         return this;
     }
 
@@ -150,7 +150,7 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
     }
 
     /**
-     * Sets the edge mapper for dynamically computing edge styles for edged in the graph.  If this mapper is configured,
+     * Sets the edge mapper for dynamically styling edges in the graph.  If this mapper is configured,
      * the default edge style is ignored and each edge is styled by the computed style of {@link EdgeStyleMapper#computeStyle(Object, Object)}.
      * For BDDs this mapper is only used for positive (high) edges.
      * @param edgeMapper the edge mapper

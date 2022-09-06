@@ -51,7 +51,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
      * @param builder the builder
      */
     FormulaAstGraphicalGenerator(final GraphicalGeneratorBuilder<FormulaAstGraphicalGenerator, Formula> builder) {
-        super(builder.backgroundColor, builder.alginTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+        super(builder.backgroundColor, builder.alignTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
                 builder.labelMapper, builder.edgeMapper);
     }
 
@@ -64,7 +64,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
     }
 
     /**
-     * Translates a given formula's AST in its graphical representation.
+     * Translates a given formula's AST into its graphical representation.
      * @param formula the formula
      * @return the graphical representation
      */
@@ -81,17 +81,17 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
             case LITERAL:
                 return walkAtomicFormula(formula, graphicalRepresentation);
             case PBC:
-                return walkPBConstraint(formula, graphicalRepresentation);
+                return walkPBConstraint((PBConstraint) formula, graphicalRepresentation);
             case NOT:
-                return walkNotString((Not) formula, graphicalRepresentation);
+                return walkNotFormula((Not) formula, graphicalRepresentation);
             case IMPL:
             case EQUIV:
-                return walkBinaryString((BinaryOperator) formula, graphicalRepresentation);
+                return walkBinaryFormula((BinaryOperator) formula, graphicalRepresentation);
             case AND:
             case OR:
-                return walkNaryString((NAryOperator) formula, graphicalRepresentation);
+                return walkNaryFormula((NAryOperator) formula, graphicalRepresentation);
             default:
-                throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
+                throw new IllegalArgumentException("Encountered unknown formula type " + formula.type());
         }
     }
 
@@ -100,23 +100,23 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
         return addNode(formula, label, true, graphicalRepresentation);
     }
 
-    private GraphicalNode walkPBConstraint(final Formula formula, final GraphicalRepresentation graphicalRepresentation) {
-        final GraphicalNode pbNode = addNode(formula, formula.toString(), false, graphicalRepresentation);
-        for (final Literal operand : ((PBConstraint) formula).operands()) {
+    private GraphicalNode walkPBConstraint(final PBConstraint pbc, final GraphicalRepresentation graphicalRepresentation) {
+        final GraphicalNode pbNode = addNode(pbc, pbc.toString(), false, graphicalRepresentation);
+        for (final Literal operand : pbc.operands()) {
             final GraphicalNode literalNode = addNode(operand, litString(operand), true, graphicalRepresentation);
-            graphicalRepresentation.addEdge(new GraphicalEdge(pbNode, literalNode, edgeStyle(formula, operand)));
+            graphicalRepresentation.addEdge(new GraphicalEdge(pbNode, literalNode, edgeStyle(pbc, operand)));
         }
         return pbNode;
     }
 
-    private GraphicalNode walkNotString(final Not not, final GraphicalRepresentation graphicalRepresentation) {
+    private GraphicalNode walkNotFormula(final Not not, final GraphicalRepresentation graphicalRepresentation) {
         final GraphicalNode node = addNode(not, "¬", false, graphicalRepresentation);
         final GraphicalNode operandNode = walkFormula(not.operand(), graphicalRepresentation);
         graphicalRepresentation.addEdge(new GraphicalEdge(node, operandNode, edgeStyle(not, not.operand())));
         return node;
     }
 
-    private GraphicalNode walkBinaryString(final BinaryOperator op, final GraphicalRepresentation graphicalRepresentation) {
+    private GraphicalNode walkBinaryFormula(final BinaryOperator op, final GraphicalRepresentation graphicalRepresentation) {
         final boolean isImpl = op.type() == FType.IMPL;
         final String label = isImpl ? "⇒" : "⇔";
         final GraphicalNode node = addNode(op, label, false, graphicalRepresentation);
@@ -127,7 +127,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
         return node;
     }
 
-    private GraphicalNode walkNaryString(final NAryOperator op, final GraphicalRepresentation graphicalRepresentation) {
+    private GraphicalNode walkNaryFormula(final NAryOperator op, final GraphicalRepresentation graphicalRepresentation) {
         final String label = op.type() == FType.AND ? "∧" : "∨";
         final GraphicalNode node = addNode(op, label, false, graphicalRepresentation);
         for (final Formula operand : op) {
@@ -139,7 +139,7 @@ public class FormulaAstGraphicalGenerator extends GraphicalGenerator<Formula> {
 
     private GraphicalNode addNode(final Formula formula, final String defaultLabel, final boolean terminal, final GraphicalRepresentation graphicalRepresentation) {
         final GraphicalNode node =
-                new GraphicalNode(ID + graphicalRepresentation.getNodes().size(), labelOrDefault(formula, defaultLabel), terminal, style(formula));
+                new GraphicalNode(ID + graphicalRepresentation.getNodes().size(), labelOrDefault(formula, defaultLabel), terminal, nodeStyle(formula));
         graphicalRepresentation.addNode(node);
         return node;
     }

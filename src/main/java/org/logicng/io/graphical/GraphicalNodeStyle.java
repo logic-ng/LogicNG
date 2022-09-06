@@ -44,6 +44,9 @@ public class GraphicalNodeStyle {
      */
     public static GraphicalNodeStyle NO_NODE_STYLE = new GraphicalNodeStyle(null, null, null, null);
 
+    /**
+     * The shape of the node.
+     */
     public enum Shape {RECTANGLE, ELLIPSE, CIRCLE}
 
     private final Shape shape;
@@ -76,25 +79,41 @@ public class GraphicalNodeStyle {
     }
 
     /**
-     * Returns whether this style has any value set.  If not is equivalent to {@link GraphicalNodeStyle#NO_NODE_STYLE}.
+     * Returns whether this style has any value set.  If not it is equivalent to {@link GraphicalNodeStyle#NO_NODE_STYLE}.
      * @return whether this style has any value set
      */
     public boolean hasStyle() {
         return this.shape != null || this.strokeColor != null || this.textColor != null || this.backgroundColor != null;
     }
 
+    /**
+     * Returns the shape of this node style.
+     * @return the shape of this node style
+     */
     public Shape getShape() {
         return this.shape;
     }
 
+    /**
+     * Returns the stroke color of this node style.
+     * @return the stroke color of this node style
+     */
     public GraphicalColor getStrokeColor() {
         return this.strokeColor;
     }
 
+    /**
+     * Returns the text color of this node style.
+     * @return the text color of this node style
+     */
     public GraphicalColor getTextColor() {
         return this.textColor;
     }
 
+    /**
+     * Returns the background color of this node style.
+     * @return the background color of this node style
+     */
     public GraphicalColor getBackgroundColor() {
         return this.backgroundColor;
     }

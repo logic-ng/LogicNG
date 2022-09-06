@@ -67,7 +67,7 @@ public abstract class GraphicalGenerator<C> {
      * @param content the content to style
      * @return the node style
      */
-    protected GraphicalNodeStyle style(final C content) {
+    protected GraphicalNodeStyle nodeStyle(final C content) {
         return this.nodeStyleMapper != null ? this.nodeStyleMapper.computeStyle(content) : this.defaultNodeStyle;
     }
 
@@ -86,7 +86,7 @@ public abstract class GraphicalGenerator<C> {
      * style mapper is used to dynamically compute the style for the given edge.
      * @param source      the content of the source node
      * @param destination the content of the destination node
-     * @return the node style
+     * @return the edge style
      */
     protected GraphicalEdgeStyle edgeStyle(final C source, final C destination) {
         return this.edgeStyleMapper != null ? this.edgeStyleMapper.computeStyle(source, destination) : this.defaultEdgeStyle;

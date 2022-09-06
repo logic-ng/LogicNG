@@ -67,7 +67,7 @@ public class GraphicalRepresentation {
 
     /**
      * Generates a new graphical representation with the given values and no background.
-     * @param alignTerminals a flag whether all terminal nodes should be layouted on the same level (only possible in DOT output)
+     * @param alignTerminals a flag whether all terminal nodes should be aligned on the same level (only possible in DOT output)
      * @param directed       a flag whether the graph of the representation is directed or undirected
      */
     public GraphicalRepresentation(final boolean alignTerminals, final boolean directed) {
@@ -76,7 +76,7 @@ public class GraphicalRepresentation {
 
     /**
      * Generates a new graphical representation with the given values.
-     * @param alignTerminals a flag whether all terminal nodes should be layouted on the same level (only possible in DOT output)
+     * @param alignTerminals a flag whether all terminal nodes should be aligned on the same level (only possible in DOT output)
      * @param directed       a flag whether the graph of the representation is directed or undirected
      * @param background     the background color (only possible in DOT output)
      */
@@ -86,7 +86,7 @@ public class GraphicalRepresentation {
 
     /**
      * Generates a new graphical representation with the given values.
-     * @param alignTerminals a flag whether all terminal nodes should be layouted on the same level (only possible in DOT output)
+     * @param alignTerminals a flag whether all terminal nodes should be aligned on the same level (only possible in DOT output)
      * @param directed       a flag whether the graph of the representation is directed or undirected
      * @param background     the background color (only possible in DOT output)
      * @param nodes          the nodes of the graph
@@ -169,30 +169,58 @@ public class GraphicalRepresentation {
         return GraphicalMermaidWriter.get().stringValue(this);
     }
 
+    /**
+     * Returns whether all terminal nodes should be aligned on the same level (only possible in DOT output).
+     * @return {@code true} if all terminal nodes should be aligned on the same level (only possible in DOT output), otherwise {@code false}
+     */
     public boolean isAlignTerminals() {
         return this.alignTerminals;
     }
 
+    /**
+     * Returns whether the graph of the representation is directed or undirected.
+     * @return {@code true} if the graph of the representation is directed, otherwise {@code false}
+     */
     public boolean isDirected() {
         return this.directed;
     }
 
+    /**
+     * Returns the background color (only possible in DOT output).
+     * @return the background color (only possible in DOT output)
+     */
     public GraphicalColor getBackground() {
         return this.background;
     }
 
+    /**
+     * Returns the nodes of this graph.
+     * @return the nodes of this graph
+     */
     public List<GraphicalNode> getNodes() {
         return this.nodes;
     }
 
+    /**
+     * Returns the terminal nodes of this graph.
+     * @return the terminal nodes of this graph
+     */
     public List<GraphicalNode> getTerminalNodes() {
         return this.nodes.stream().filter(GraphicalNode::isTerminal).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the non-terminal nodes of this graph.
+     * @return the non-terminal nodes of this graph
+     */
     public List<GraphicalNode> getNonTerminalNodes() {
         return this.nodes.stream().filter(n -> !n.isTerminal()).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the edges of this graph.
+     * @return the edges of this graph
+     */
     public List<GraphicalEdge> getEdges() {
         return this.edges;
     }
@@ -201,6 +229,8 @@ public class GraphicalRepresentation {
     public String toString() {
         return "GraphicalRepresentation{" +
                 "alignTerminals=" + this.alignTerminals +
+                ", directed=" + this.directed +
+                ", background=" + this.background +
                 ", nodes=" + this.nodes.stream().map(n -> n.id + ":" + n.label).collect(Collectors.joining(", ")) +
                 ", edges=" + this.edges.stream().map(e -> e.getSource().label + " -- " + e.getDestination().label).collect(Collectors.joining(", ")) +
                 '}';

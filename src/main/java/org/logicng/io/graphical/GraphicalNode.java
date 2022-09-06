@@ -66,18 +66,34 @@ public class GraphicalNode {
         this.style = style;
     }
 
+    /**
+     * Returns the id of this node.
+     * @return the if of this node
+     */
     public String getId() {
         return this.id;
     }
 
+    /**
+     * Returns the label of this node.
+     * @return the label of this node
+     */
     public String getLabel() {
         return this.label;
     }
 
+    /**
+     * Returns whether this node is a terminal.
+     * @return {@code true} if this node is a terminal, otherwise {@code false}
+     */
     public boolean isTerminal() {
         return this.terminal;
     }
 
+    /**
+     * Returns the style of this node.
+     * @return the style of this node
+     */
     public GraphicalNodeStyle getStyle() {
         return this.style;
     }
