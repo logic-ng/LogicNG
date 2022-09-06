@@ -1,4 +1,5 @@
-![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.3.2-ff69b4.svg)
+![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) [![Maven Central](https://img.shields.io/maven-central/v/org.logicng/logicng.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22org.logicng%22%20AND%20a:%22logicng%22)
+
 
 <img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
 
