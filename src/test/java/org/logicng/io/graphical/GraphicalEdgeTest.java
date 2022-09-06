@@ -30,16 +30,14 @@ package org.logicng.io.graphical;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.io.graphical.GraphicalColor.BLACK;
-import static org.logicng.io.graphical.GraphicalEdgeStyle.NO_EDGE_STYLE;
-import static org.logicng.io.graphical.GraphicalNodeStyle.NO_NODE_STYLE;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class GraphicalEdgeTest {
 
-    private final GraphicalNode n1 = new GraphicalNode("id1", "ID 1", NO_NODE_STYLE);
-    private final GraphicalNode n2 = new GraphicalNode("id2", "ID 2", NO_NODE_STYLE);
+    private final GraphicalNode n1 = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.noStyle());
+    private final GraphicalNode n2 = new GraphicalNode("id2", "ID 2", GraphicalNodeStyle.noStyle());
     private GraphicalRepresentation grUndirected;
     private GraphicalRepresentation grDirected;
 
@@ -55,7 +53,7 @@ public class GraphicalEdgeTest {
 
     @Test
     public void testNoStyle() {
-        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, NO_EDGE_STYLE);
+        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.noStyle());
         this.grDirected.addEdge(edge);
         this.grUndirected.addEdge(edge);
 
@@ -70,7 +68,7 @@ public class GraphicalEdgeTest {
 
     @Test
     public void testOnlyEdgeType() {
-        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, null));
+        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, null));
         this.grDirected.addEdge(edge);
         this.grUndirected.addEdge(edge);
 
@@ -85,7 +83,7 @@ public class GraphicalEdgeTest {
 
     @Test
     public void testOnlyColor() {
-        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, new GraphicalEdgeStyle(null, BLACK));
+        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.style(null, BLACK));
         this.grDirected.addEdge(edge);
         this.grUndirected.addEdge(edge);
 
@@ -100,7 +98,7 @@ public class GraphicalEdgeTest {
 
     @Test
     public void testAll() {
-        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, BLACK));
+        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, BLACK));
         this.grDirected.addEdge(edge);
         this.grUndirected.addEdge(edge);
 

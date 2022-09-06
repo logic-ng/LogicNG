@@ -42,7 +42,7 @@ public class GraphicalNodeStyle {
      * A special node style which does not set any style, so the framework's (dot/Mermaid.js)
      * default theming is applied.
      */
-    public static GraphicalNodeStyle NO_NODE_STYLE = new GraphicalNodeStyle(null, null, null, null);
+    private static final GraphicalNodeStyle NO_NODE_STYLE = new GraphicalNodeStyle(null, null, null, null);
 
     /**
      * The shape of the node.
@@ -55,13 +55,26 @@ public class GraphicalNodeStyle {
     private final GraphicalColor backgroundColor;
 
     /**
-     * Constructs a new default node style with no set values.  This defaults to the framework's default theming.
+     * Private constructor.  Use factory methods to construct an instance.
+     * @param shape           the shape of the node
+     * @param strokeColor     the color for the node strokes
+     * @param textColor       the color for the text of the node
+     * @param backgroundColor the color for the background of the node
      */
-    public GraphicalNodeStyle() {
-        this.shape = null;
-        this.strokeColor = null;
-        this.textColor = null;
-        this.backgroundColor = null;
+    private GraphicalNodeStyle(final Shape shape, final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
+        this.shape = shape;
+        this.strokeColor = strokeColor;
+        this.textColor = textColor;
+        this.backgroundColor = backgroundColor;
+    }
+
+    /**
+     * Returns a special node style which does not set any style, so the framework's (dot/Mermaid.js)
+     * default theming is applied.
+     * @return special node style which does not set any style
+     */
+    public static GraphicalNodeStyle noStyle() {
+        return NO_NODE_STYLE;
     }
 
     /**
@@ -70,12 +83,14 @@ public class GraphicalNodeStyle {
      * @param strokeColor     the color for the node strokes
      * @param textColor       the color for the text of the node
      * @param backgroundColor the color for the background of the node
+     * @return the new node style
      */
-    public GraphicalNodeStyle(final Shape shape, final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
-        this.shape = shape;
-        this.strokeColor = strokeColor;
-        this.textColor = textColor;
-        this.backgroundColor = backgroundColor;
+    public static GraphicalNodeStyle style(final Shape shape, final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
+        if (shape == null && strokeColor == null && textColor == null && backgroundColor == null) {
+            return NO_NODE_STYLE;
+        } else {
+            return new GraphicalNodeStyle(shape, strokeColor, textColor, backgroundColor);
+        }
     }
 
     /**
@@ -83,7 +98,7 @@ public class GraphicalNodeStyle {
      * @return whether this style has any value set
      */
     public boolean hasStyle() {
-        return this.shape != null || this.strokeColor != null || this.textColor != null || this.backgroundColor != null;
+        return !this.equals(NO_NODE_STYLE);
     }
 
     /**

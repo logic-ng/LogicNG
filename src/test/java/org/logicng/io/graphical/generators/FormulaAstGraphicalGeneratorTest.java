@@ -39,7 +39,7 @@ import static org.logicng.io.graphical.GraphicalColor.PURPLE;
 import static org.logicng.io.graphical.GraphicalColor.TURQUOISE;
 import static org.logicng.io.graphical.GraphicalColor.WHITE;
 import static org.logicng.io.graphical.GraphicalColor.YELLOW;
-import static org.logicng.io.graphical.GraphicalEdgeStyle.NO_EDGE_STYLE;
+import static org.logicng.io.graphical.GraphicalEdgeStyle.noStyle;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,8 +110,8 @@ public class FormulaAstGraphicalGeneratorTest {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
                 .backgroundColor("#020202")
-                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
-                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
+                .defaultNodeStyle(GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .build();
         testFiles("f8", f8, generator);
@@ -121,10 +121,10 @@ public class FormulaAstGraphicalGeneratorTest {
     public void testDynamicStyle() throws ParserException, IOException {
         final Formula f9 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
-        final GraphicalNodeStyle style1 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GRAY_DARK, GRAY_DARK, GRAY_LIGHT);
-        final GraphicalNodeStyle style2 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, YELLOW, BLACK, YELLOW);
-        final GraphicalNodeStyle style3 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, TURQUOISE, WHITE, TURQUOISE);
-        final GraphicalNodeStyle style4 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, BLACK, BLACK, null);
+        final GraphicalNodeStyle style1 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, GRAY_DARK, GRAY_DARK, GRAY_LIGHT);
+        final GraphicalNodeStyle style2 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, YELLOW, BLACK, YELLOW);
+        final GraphicalNodeStyle style3 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, TURQUOISE, WHITE, TURQUOISE);
+        final GraphicalNodeStyle style4 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.ELLIPSE, BLACK, BLACK, null);
 
         final NodeStyleMapper<Formula> mapper = (formula) -> {
             if (formula.type() == FType.PBC) {
@@ -139,7 +139,7 @@ public class FormulaAstGraphicalGeneratorTest {
 
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
                 .backgroundColor("#444444")
-                .defaultEdgeStyle(NO_EDGE_STYLE)
+                .defaultEdgeStyle(noStyle())
                 .nodeStyleMapper(mapper)
                 .build();
 
@@ -150,8 +150,8 @@ public class FormulaAstGraphicalGeneratorTest {
     public void testEdgeMapper() throws ParserException, IOException {
         final Formula f10 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
-        final GraphicalEdgeStyle style1 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_DARK);
-        final GraphicalEdgeStyle style2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, BLACK);
+        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_DARK);
+        final GraphicalEdgeStyle style2 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, BLACK);
 
         final EdgeStyleMapper<Formula> edgeMapper = (source, dest) -> {
             if (source.type() == FType.PBC) {
@@ -162,7 +162,7 @@ public class FormulaAstGraphicalGeneratorTest {
         };
 
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
-                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
                 .edgeMapper(edgeMapper)
                 .build();
 
@@ -174,8 +174,8 @@ public class FormulaAstGraphicalGeneratorTest {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaAstGraphicalGenerator generator = FormulaAstGraphicalGenerator.builder()
                 .backgroundColor("#020202")
-                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
-                .defaultNodeStyle(new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, BLUE, WHITE, BLUE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
+                .defaultNodeStyle(GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .labelMapper(Formula::toString)
                 .build();

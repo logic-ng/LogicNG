@@ -42,7 +42,7 @@ public class GraphicalEdgeStyle {
      * A special edge style which does not set any style, so the framework's (dot/Mermaid.js)
      * default theming is applied.
      */
-    public static GraphicalEdgeStyle NO_EDGE_STYLE = new GraphicalEdgeStyle(null, null);
+    private static final GraphicalEdgeStyle NO_EDGE_STYLE = new GraphicalEdgeStyle(null, null);
 
     /**
      * The different edge types.
@@ -53,21 +53,36 @@ public class GraphicalEdgeStyle {
     private final GraphicalColor color;
 
     /**
-     * Constructs a new default edge style with no set values.  This defaults to the framework's default theming.
-     */
-    public GraphicalEdgeStyle() {
-        this.type = null;
-        this.color = null;
-    }
-
-    /**
-     * Constructs a new edge style with a given edge type and color.
+     * Private constructor.  Use factory methods to construct an instance.
      * @param type  the edge type
      * @param color the color
      */
-    public GraphicalEdgeStyle(final EdgeType type, final GraphicalColor color) {
+    private GraphicalEdgeStyle(final EdgeType type, final GraphicalColor color) {
         this.type = type;
         this.color = color;
+    }
+
+    /**
+     * Returns a special edge style which does not set any style, so the framework's (dot/Mermaid.js)
+     * default theming is applied.
+     * @return special edge style which does not set any style
+     */
+    public static GraphicalEdgeStyle noStyle() {
+        return NO_EDGE_STYLE;
+    }
+
+    /**
+     * Constructs a new edge style with a given edge type and color
+     * @param type  the edge type
+     * @param color the color
+     * @return the new edge style
+     */
+    public static GraphicalEdgeStyle style(final EdgeType type, final GraphicalColor color) {
+        if (type == null && color == null) {
+            return NO_EDGE_STYLE;
+        } else {
+            return new GraphicalEdgeStyle(type, color);
+        }
     }
 
     /**
@@ -75,7 +90,7 @@ public class GraphicalEdgeStyle {
      * @return whether this style has any value set
      */
     public boolean hasStyle() {
-        return this.type != null || this.color != null;
+        return !this.equals(NO_EDGE_STYLE);
     }
 
     /**

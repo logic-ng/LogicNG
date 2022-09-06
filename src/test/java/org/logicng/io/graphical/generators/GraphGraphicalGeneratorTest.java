@@ -70,8 +70,8 @@ public class GraphGraphicalGeneratorTest {
         g.node("C");
         final GraphGraphicalGenerator<String> generator = GraphGraphicalGenerator.<String>builder()
                 .backgroundColor(GraphicalColor.hex("#4f4f4f"))
-                .defaultNodeStyle(new GraphicalNodeStyle(null, RED, GREEN, null))
-                .defaultEdgeStyle(new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE))
+                .defaultNodeStyle(GraphicalNodeStyle.style(null, RED, GREEN, null))
+                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, WHITE))
                 .build();
         testFiles("small-fixedStyle", g, generator);
     }
@@ -91,9 +91,9 @@ public class GraphGraphicalGeneratorTest {
         for (long i = 0; i < 30; i++) {
             g.node(i);
         }
-        final GraphicalNodeStyle style1 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, BLACK, GREEN);
-        final GraphicalNodeStyle style2 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.ELLIPSE, ORANGE, BLACK, ORANGE);
-        final GraphicalNodeStyle style3 = new GraphicalNodeStyle(GraphicalNodeStyle.Shape.CIRCLE, RED, WHITE, RED);
+        final GraphicalNodeStyle style1 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, BLACK, GREEN);
+        final GraphicalNodeStyle style2 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.ELLIPSE, ORANGE, BLACK, ORANGE);
+        final GraphicalNodeStyle style3 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, RED, WHITE, RED);
 
         final NodeStyleMapper<Long> mapper = (l) -> {
             if (l <= 10) {
@@ -105,9 +105,9 @@ public class GraphGraphicalGeneratorTest {
             }
         };
 
-        final GraphicalEdgeStyle eStyle1 = new GraphicalEdgeStyle(null, GREEN);
-        final GraphicalEdgeStyle eStyle2 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.SOLID, ORANGE);
-        final GraphicalEdgeStyle eStyle3 = new GraphicalEdgeStyle(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_LIGHT);
+        final GraphicalEdgeStyle eStyle1 = GraphicalEdgeStyle.style(null, GREEN);
+        final GraphicalEdgeStyle eStyle2 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, ORANGE);
+        final GraphicalEdgeStyle eStyle3 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_LIGHT);
 
         final EdgeStyleMapper<Long> edgeMapper = (l1, l2) -> {
             if (l1 <= 10 && l2 <= 10) {

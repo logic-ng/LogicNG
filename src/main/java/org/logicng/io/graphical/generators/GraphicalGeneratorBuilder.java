@@ -45,8 +45,8 @@ public class GraphicalGeneratorBuilder<T extends GraphicalGenerator<C>, C> {
 
     protected GraphicalColor backgroundColor = null;
     protected boolean alignTerminals;
-    protected GraphicalEdgeStyle defaultEdgeStyle = new GraphicalEdgeStyle();
-    protected GraphicalNodeStyle defaultNodeStyle = new GraphicalNodeStyle();
+    protected GraphicalEdgeStyle defaultEdgeStyle = GraphicalEdgeStyle.noStyle();
+    protected GraphicalNodeStyle defaultNodeStyle = GraphicalNodeStyle.noStyle();
     protected NodeStyleMapper<C> nodeStyleMapper = null;
     protected LabelMapper<C> labelMapper = null;
     protected EdgeStyleMapper<C> edgeMapper = null;
