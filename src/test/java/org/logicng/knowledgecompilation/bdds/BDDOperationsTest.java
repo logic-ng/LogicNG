@@ -103,9 +103,9 @@ public class BDDOperationsTest {
     @Test
     public void testToFormulaStyles() throws ParserException {
         final BDD bdd = BDDFactory.build(this.f.parse("~A | ~B | ~C"), this.kernel);
-        final Formula expDnfStyle = this.f.parse("~A | A & (~B | B & ~C)");
-        assertThat(bdd.toFormula()).isEqualTo(expDnfStyle);
-        assertThat(bdd.toFormula(true)).isEqualTo(expDnfStyle);
+        final Formula expFollowPathsToTrue = this.f.parse("~A | A & (~B | B & ~C)");
+        assertThat(bdd.toFormula()).isEqualTo(expFollowPathsToTrue);
+        assertThat(bdd.toFormula(true)).isEqualTo(expFollowPathsToTrue);
         assertThat(bdd.toFormula(false)).isEqualTo(this.f.parse("~(A & B & C)"));
     }
 
@@ -334,9 +334,9 @@ public class BDDOperationsTest {
     }
 
     private void compareFormula(final BDD bdd, final Formula compareFormula) {
-        final Formula bddFormulaDnfStyle = bdd.toFormula(true);
-        final Formula bddFormulaCnfStyle = bdd.toFormula(false);
-        assertThat(bddFormulaDnfStyle.isEquivalentTo(compareFormula)).isTrue();
-        assertThat(bddFormulaCnfStyle.isEquivalentTo(compareFormula)).isTrue();
+        final Formula bddFormulaFollowPathsToTrue = bdd.toFormula(true);
+        final Formula bddFormulaFollowPathsToFalse = bdd.toFormula(false);
+        assertThat(bddFormulaFollowPathsToTrue.isEquivalentTo(compareFormula)).isTrue();
+        assertThat(bddFormulaFollowPathsToFalse.isEquivalentTo(compareFormula)).isTrue();
     }
 }

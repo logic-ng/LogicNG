@@ -462,41 +462,41 @@ public class BDDOperations {
 
     /**
      * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
-     * If {@code dnfStyle} is activated, the {@code true} paths are followed to generate the formula.
-     * If {@code dnfStyle} is deactivated, the {@code false} paths are followed to generate the formula and the resulting formula is negated.
+     * If {@code followPathsToTrue} is activated, the paths leading to the {@code true} terminal are followed to generate the formula.
+     * If {@code followPathsToTrue} is deactivated, the paths leading to the {@code false} terminal are followed to generate the formula and the resulting formula is negated.
      * Depending on the formula and the number of satisfying assignments, the generated formula can be more compact using the {@code true} paths
      * or {@code false} paths, respectively.
-     * @param r        the BDD root node
-     * @param dnfStyle the extraction style
+     * @param r                 the BDD root node
+     * @param followPathsToTrue the extraction style
      * @return the formula
      */
-    public Formula toFormula(final int r, final boolean dnfStyle) {
+    public Formula toFormula(final int r, final boolean followPathsToTrue) {
         this.k.initRef();
-        final Formula formula = toFormulaRec(r, dnfStyle);
-        return dnfStyle ? formula : formula.negate();
+        final Formula formula = toFormulaRec(r, followPathsToTrue);
+        return followPathsToTrue ? formula : formula.negate();
     }
 
-    protected Formula toFormulaRec(final int r, final boolean dnfStyle) {
+    protected Formula toFormulaRec(final int r, final boolean followPathsToTrue) {
         final FormulaFactory f = this.k.factory();
         if (this.k.isOne(r)) {
-            return f.constant(dnfStyle);
+            return f.constant(followPathsToTrue);
         }
         if (this.k.isZero(r)) {
-            return f.constant(!dnfStyle);
+            return f.constant(!followPathsToTrue);
         }
         final Variable var = this.k.idx2var.get(this.k.level(r));
         final int low = this.k.low(r);
-        final Formula lowFormula = isRelevant(low, dnfStyle)
-                ? f.and(var.negate(), toFormulaRec(low, dnfStyle))
+        final Formula lowFormula = isRelevant(low, followPathsToTrue)
+                ? f.and(var.negate(), toFormulaRec(low, followPathsToTrue))
                 : f.falsum();
         final int high = this.k.high(r);
-        final Formula rightFormula = isRelevant(high, dnfStyle)
-                ? f.and(var, toFormulaRec(high, dnfStyle))
+        final Formula rightFormula = isRelevant(high, followPathsToTrue)
+                ? f.and(var, toFormulaRec(high, followPathsToTrue))
                 : f.falsum();
         return f.or(lowFormula, rightFormula);
     }
 
-    private boolean isRelevant(final int r, final boolean dnfStyle) {
-        return dnfStyle && !this.k.isZero(r) || !dnfStyle && !this.k.isOne(r);
+    private boolean isRelevant(final int r, final boolean followPathsToTrue) {
+        return followPathsToTrue && !this.k.isZero(r) || !followPathsToTrue && !this.k.isOne(r);
     }
 }

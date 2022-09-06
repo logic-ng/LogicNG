@@ -117,15 +117,15 @@ public class BDD {
 
     /**
      * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
-     * If {@code dnfStyle} is activated, the {@code true} paths are followed to generate the formula.
-     * If {@code dnfStyle} is deactivated, the {@code false} paths are followed to generate the formula and the resulting formula is negated.
+     * If {@code followPathsToTrue} is activated, the paths leading to the {@code true} terminal are followed to generate the formula.
+     * If {@code followPathsToTrue} is deactivated, the paths leading to the {@code false} terminal are followed to generate the formula and the resulting formula is negated.
      * Depending on the formula and the number of satisfying assignments, the generated formula can be more compact using the {@code true} paths
      * or {@code false} paths, respectively.
-     * @param dnfStyle the extraction style
+     * @param followPathsToTrue the extraction style
      * @return the formula for this BDD
      */
-    public Formula toFormula(final boolean dnfStyle) {
-        return this.operations.toFormula(this.index, dnfStyle);
+    public Formula toFormula(final boolean followPathsToTrue) {
+        return this.operations.toFormula(this.index, followPathsToTrue);
     }
 
     /**
