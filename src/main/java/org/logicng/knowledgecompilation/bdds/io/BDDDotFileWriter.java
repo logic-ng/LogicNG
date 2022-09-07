@@ -44,6 +44,8 @@ import java.io.IOException;
 @Deprecated
 public final class BDDDotFileWriter {
 
+    private static final String DOT_EXTENSION = ".dot";
+
     /**
      * Private constructor.
      */
@@ -58,7 +60,7 @@ public final class BDDDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final BDD bdd) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), bdd);
+        write(new File(fileName.endsWith(DOT_EXTENSION) ? fileName : fileName + DOT_EXTENSION), bdd);
     }
 
     /**

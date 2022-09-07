@@ -46,6 +46,8 @@ import java.io.IOException;
 @Deprecated
 public final class FormulaDotFileWriter {
 
+    private static final String DOT_EXTENSION = ".dot";
+
     /**
      * Private constructor.
      */
@@ -55,13 +57,13 @@ public final class FormulaDotFileWriter {
 
     /**
      * Writes a given formula's internal data structure as a dot file with the default style configuration.
-     * @param fileName      the file name of the dot file to write
+     * @param fileName      the file name of the dot file to write, will be extended by suffix {@code .dot} if not already present
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final Formula formula, final boolean alignLiterals) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
+        write(new File(fileName.endsWith(DOT_EXTENSION) ? fileName : fileName + DOT_EXTENSION), formula, alignLiterals);
     }
 
     /**

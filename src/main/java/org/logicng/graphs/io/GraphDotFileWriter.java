@@ -44,6 +44,8 @@ import java.io.IOException;
 @Deprecated
 public final class GraphDotFileWriter {
 
+    private static final String DOT_EXTENSION = ".dot";
+
     /**
      * Private constructor.
      */
@@ -53,13 +55,13 @@ public final class GraphDotFileWriter {
 
     /**
      * Writes a given graph's internal data structure as a dot file.
-     * @param fileName the file name of the dot file to write
+     * @param fileName the file name of the dot file to write, will be extended by suffix {@code .dot} if not already present
      * @param graph    the graph
      * @param <T>      the type of the graph content
      * @throws IOException if there was a problem writing the file
      */
     public static <T> void write(final String fileName, final Graph<T> graph) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), graph);
+        write(new File(fileName.endsWith(DOT_EXTENSION) ? fileName : fileName + DOT_EXTENSION), graph);
     }
 
     /**

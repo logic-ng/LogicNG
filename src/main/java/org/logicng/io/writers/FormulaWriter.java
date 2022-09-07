@@ -54,7 +54,7 @@ public final class FormulaWriter {
     }
 
     /**
-     * Writes a given formula to a file.
+     * Writes a given formula to a file using the formula formatter of the formula's formula factory.
      * @param fileName          the file name of the file
      * @param formula           the formula to write
      * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
@@ -80,7 +80,7 @@ public final class FormulaWriter {
     }
 
     /**
-     * Writes a given formula to a file.
+     * Writes a given formula to a file using the formula formatter of the formula's formula factory.
      * @param file              the file
      * @param formula           the formula to write
      * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
@@ -92,7 +92,7 @@ public final class FormulaWriter {
     }
 
     /**
-     * Writes a given formula to a file  with a given formula formatter.
+     * Writes a given formula to a file with a given formula formatter.
      * @param file              the file
      * @param formula           the formula to write
      * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
