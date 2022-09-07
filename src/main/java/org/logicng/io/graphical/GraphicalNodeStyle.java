@@ -85,12 +85,46 @@ public class GraphicalNodeStyle {
      * @param backgroundColor the color for the background of the node
      * @return the new node style
      */
-    public static GraphicalNodeStyle style(final Shape shape, final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
+    public static GraphicalNodeStyle style(final Shape shape, final GraphicalColor strokeColor, final GraphicalColor textColor,
+                                           final GraphicalColor backgroundColor) {
         if (shape == null && strokeColor == null && textColor == null && backgroundColor == null) {
             return NO_NODE_STYLE;
         } else {
             return new GraphicalNodeStyle(shape, strokeColor, textColor, backgroundColor);
         }
+    }
+
+    /**
+     * Constructs a new circle node style with the given values.
+     * @param strokeColor     the color for the node strokes
+     * @param textColor       the color for the text of the node
+     * @param backgroundColor the color for the background of the node
+     * @return the new node style
+     */
+    public static GraphicalNodeStyle circle(final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
+        return new GraphicalNodeStyle(Shape.CIRCLE, strokeColor, textColor, backgroundColor);
+    }
+
+    /**
+     * Constructs a new ellipse node style with the given values.
+     * @param strokeColor     the color for the node strokes
+     * @param textColor       the color for the text of the node
+     * @param backgroundColor the color for the background of the node
+     * @return the new node style
+     */
+    public static GraphicalNodeStyle ellipse(final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
+        return new GraphicalNodeStyle(Shape.ELLIPSE, strokeColor, textColor, backgroundColor);
+    }
+
+    /**
+     * Constructs a new rectangle node style with the given values.
+     * @param strokeColor     the color for the node strokes
+     * @param textColor       the color for the text of the node
+     * @param backgroundColor the color for the background of the node
+     * @return the new node style
+     */
+    public static GraphicalNodeStyle rectangle(final GraphicalColor strokeColor, final GraphicalColor textColor, final GraphicalColor backgroundColor) {
+        return new GraphicalNodeStyle(Shape.RECTANGLE, strokeColor, textColor, backgroundColor);
     }
 
     /**

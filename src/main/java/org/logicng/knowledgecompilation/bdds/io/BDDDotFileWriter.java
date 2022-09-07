@@ -44,10 +44,6 @@ import java.io.IOException;
 @Deprecated
 public final class BDDDotFileWriter {
 
-    private static final String CONST_TRUE = "const_true";
-    private static final String CONST_FALSE = "const_false";
-    private static final String NODE_PREFIX = "id_";
-
     /**
      * Private constructor.
      */

@@ -110,8 +110,8 @@ public class FormulaDagGraphicalGeneratorTest {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
                 .backgroundColor("#020202")
-                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
-                .defaultNodeStyle(GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, BLUE, WHITE, BLUE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.bold(CYAN))
+                .defaultNodeStyle(GraphicalNodeStyle.circle(BLUE, WHITE, BLUE))
                 .alignTerminals(true)
                 .build();
         testFiles("f8", f8, generator);
@@ -121,10 +121,10 @@ public class FormulaDagGraphicalGeneratorTest {
     public void testDynamicStyle() throws ParserException, IOException {
         final Formula f9 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
-        final GraphicalNodeStyle style1 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, GRAY_DARK, GRAY_DARK, GRAY_LIGHT);
-        final GraphicalNodeStyle style2 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, YELLOW, BLACK, YELLOW);
-        final GraphicalNodeStyle style3 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, TURQUOISE, WHITE, TURQUOISE);
-        final GraphicalNodeStyle style4 = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.ELLIPSE, BLACK, BLACK, WHITE);
+        final GraphicalNodeStyle style1 = GraphicalNodeStyle.rectangle(GRAY_DARK, GRAY_DARK, GRAY_LIGHT);
+        final GraphicalNodeStyle style2 = GraphicalNodeStyle.circle(YELLOW, BLACK, YELLOW);
+        final GraphicalNodeStyle style3 = GraphicalNodeStyle.circle(TURQUOISE, WHITE, TURQUOISE);
+        final GraphicalNodeStyle style4 = GraphicalNodeStyle.ellipse(BLACK, BLACK, WHITE);
 
         final NodeStyleMapper<Formula> mapper = (formula) -> {
             if (formula.type() == FType.PBC) {
@@ -138,7 +138,7 @@ public class FormulaDagGraphicalGeneratorTest {
         };
 
         final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
-                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.solid(PURPLE))
                 .nodeStyleMapper(mapper)
                 .labelMapper((f) -> "Formula Type: " + f.type())
                 .build();
@@ -150,7 +150,7 @@ public class FormulaDagGraphicalGeneratorTest {
     public void testEdgeMapper() throws ParserException, IOException {
         final Formula f10 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
-        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, GRAY_DARK);
+        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.dotted(GRAY_DARK);
 
         final EdgeStyleMapper<Formula> edgeMapper = (source, dest) -> {
             if (source.type() == FType.PBC) {
@@ -161,7 +161,7 @@ public class FormulaDagGraphicalGeneratorTest {
         };
 
         final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
-                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, PURPLE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.solid(PURPLE))
                 .edgeMapper(edgeMapper)
                 .build();
 

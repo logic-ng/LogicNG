@@ -90,11 +90,11 @@ public class BddGraphicalGeneratorTest {
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
         final BddGraphicalGenerator generator = BddGraphicalGenerator.builder()
-                .falseNodeStyle(GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, PURPLE, WHITE, PURPLE))
-                .trueNodeStyle(GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, CYAN, WHITE, CYAN))
-                .negativeEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, PURPLE))
-                .defaultEdgeStyle(GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, CYAN))
-                .defaultNodeStyle(GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, ORANGE, BLACK, ORANGE))
+                .falseNodeStyle(GraphicalNodeStyle.rectangle(PURPLE, WHITE, PURPLE))
+                .trueNodeStyle(GraphicalNodeStyle.rectangle(CYAN, WHITE, CYAN))
+                .negativeEdgeStyle(GraphicalEdgeStyle.dotted(PURPLE))
+                .defaultEdgeStyle(GraphicalEdgeStyle.bold(CYAN))
+                .defaultNodeStyle(GraphicalNodeStyle.circle(ORANGE, BLACK, ORANGE))
                 .backgroundColor(GRAY_LIGHT)
                 .alignTerminals(true)
                 .build();
@@ -129,10 +129,10 @@ public class BddGraphicalGeneratorTest {
 
     private static class MyStyleMapper extends BddNodeStyleMapper {
 
-        final GraphicalNodeStyle falseStyle = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, RED, RED, WHITE);
-        final GraphicalNodeStyle trueStyle = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, GREEN, WHITE);
-        final GraphicalNodeStyle bStyle = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, ORANGE, BLACK, ORANGE);
-        final GraphicalNodeStyle otherStyle = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, CYAN, WHITE, CYAN);
+        final GraphicalNodeStyle falseStyle = GraphicalNodeStyle.rectangle(RED, RED, WHITE);
+        final GraphicalNodeStyle trueStyle = GraphicalNodeStyle.rectangle(GREEN, GREEN, WHITE);
+        final GraphicalNodeStyle bStyle = GraphicalNodeStyle.circle(ORANGE, BLACK, ORANGE);
+        final GraphicalNodeStyle otherStyle = GraphicalNodeStyle.circle(CYAN, WHITE, CYAN);
 
         public MyStyleMapper(final BDDKernel kernel) {
             super(kernel);
@@ -180,8 +180,8 @@ public class BddGraphicalGeneratorTest {
 
     private static class MyPosEdgeMapper extends BddEdgeStyleMapper {
 
-        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
-        final GraphicalEdgeStyle style2 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, GREEN);
+        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.solid(GREEN);
+        final GraphicalEdgeStyle style2 = GraphicalEdgeStyle.bold(GREEN);
 
         public MyPosEdgeMapper(final BDDKernel kernel) {
             super(kernel);
@@ -195,8 +195,8 @@ public class BddGraphicalGeneratorTest {
 
     private static class MyNegEdgeMapper extends BddEdgeStyleMapper {
 
-        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
-        final GraphicalEdgeStyle style2 = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, RED);
+        final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.dotted(RED);
+        final GraphicalEdgeStyle style2 = GraphicalEdgeStyle.bold(RED);
 
         public MyNegEdgeMapper(final BDDKernel kernel) {
             super(kernel);

@@ -57,7 +57,7 @@ public class GraphicalNodeTest {
 
     @Test
     public void testOnlyShape() {
-        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, null, null, null));
+        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.rectangle(null, null, null));
         this.gr.addNode(node);
         assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=box]");
         assertThat(this.gr.getMermaidString()).contains("id1[\"ID 1\"]");
@@ -93,7 +93,7 @@ public class GraphicalNodeTest {
 
     @Test
     public void testMixed1() {
-        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, null, null, BLUE));
+        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.circle(null, null, BLUE));
         this.gr.addNode(node);
         assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=circle, style=filled, fillcolor=\"#004f93\"]");
         assertThat(this.gr.getMermaidString()).contains("id1((\"ID 1\"))");
@@ -102,7 +102,7 @@ public class GraphicalNodeTest {
 
     @Test
     public void testMixed2() {
-        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, null, WHITE, BLUE));
+        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.circle(null, WHITE, BLUE));
         this.gr.addNode(node);
         assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=circle, fontcolor=\"#ffffff\", style=filled, fillcolor=\"#004f93\"]");
         assertThat(this.gr.getMermaidString()).contains("id1((\"ID 1\"))");
@@ -111,7 +111,7 @@ public class GraphicalNodeTest {
 
     @Test
     public void testAll() {
-        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.CIRCLE, YELLOW, WHITE, BLUE));
+        final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.circle(YELLOW, WHITE, BLUE));
         this.gr.addNode(node);
         assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=circle, color=\"#ffc612\", fontcolor=\"#ffffff\", style=filled, fillcolor=\"#004f93\"]");
         assertThat(this.gr.getMermaidString()).contains("id1((\"ID 1\"))");

@@ -53,10 +53,10 @@ import java.util.function.Function;
  */
 public class BddGraphicalGenerator extends GraphicalGenerator<Integer> {
 
-    public static final GraphicalNodeStyle DEFAULT_TRUE_NODE_STYLE = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, GREEN, WHITE, GREEN);
-    public static final GraphicalNodeStyle DEFAULT_FALSE_NODE_STYLE = GraphicalNodeStyle.style(GraphicalNodeStyle.Shape.RECTANGLE, RED, WHITE, RED);
-    public static final GraphicalEdgeStyle DEFAULT_TRUE_EDGE_STYLE = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.SOLID, GREEN);
-    public static final GraphicalEdgeStyle DEFAULT_FALSE_EDGE_STYLE = GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, RED);
+    public static final GraphicalNodeStyle DEFAULT_TRUE_NODE_STYLE = GraphicalNodeStyle.rectangle(GREEN, WHITE, GREEN);
+    public static final GraphicalNodeStyle DEFAULT_FALSE_NODE_STYLE = GraphicalNodeStyle.rectangle(RED, WHITE, RED);
+    public static final GraphicalEdgeStyle DEFAULT_TRUE_EDGE_STYLE = GraphicalEdgeStyle.solid(GREEN);
+    public static final GraphicalEdgeStyle DEFAULT_FALSE_EDGE_STYLE = GraphicalEdgeStyle.dotted(RED);
 
     private final GraphicalEdgeStyle negativeEdgeStyle;
     private final EdgeStyleMapper<Integer> negativeEdgeStyleMapper;

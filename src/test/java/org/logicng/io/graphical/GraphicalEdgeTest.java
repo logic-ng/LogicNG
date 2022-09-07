@@ -68,7 +68,7 @@ public class GraphicalEdgeTest {
 
     @Test
     public void testOnlyEdgeType() {
-        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.DOTTED, null));
+        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.dotted(null));
         this.grDirected.addEdge(edge);
         this.grUndirected.addEdge(edge);
 
@@ -98,7 +98,7 @@ public class GraphicalEdgeTest {
 
     @Test
     public void testAll() {
-        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.style(GraphicalEdgeStyle.EdgeType.BOLD, BLACK));
+        final GraphicalEdge edge = new GraphicalEdge(this.n1, this.n2, GraphicalEdgeStyle.bold(BLACK));
         this.grDirected.addEdge(edge);
         this.grUndirected.addEdge(edge);
 

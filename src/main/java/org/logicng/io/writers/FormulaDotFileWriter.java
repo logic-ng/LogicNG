@@ -61,7 +61,7 @@ public final class FormulaDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final Formula formula, final boolean alignLiterals) throws IOException {
-        write(fileName, formula, alignLiterals);
+        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
     }
 
     /**

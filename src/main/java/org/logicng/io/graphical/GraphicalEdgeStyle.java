@@ -72,7 +72,7 @@ public class GraphicalEdgeStyle {
     }
 
     /**
-     * Constructs a new edge style with a given edge type and color
+     * Constructs a new edge style with a given edge type and color.
      * @param type  the edge type
      * @param color the color
      * @return the new edge style
@@ -83,6 +83,33 @@ public class GraphicalEdgeStyle {
         } else {
             return new GraphicalEdgeStyle(type, color);
         }
+    }
+
+    /**
+     * Constructs a new solid edge style with a color.
+     * @param color the color
+     * @return the new edge style
+     */
+    public static GraphicalEdgeStyle solid(final GraphicalColor color) {
+        return new GraphicalEdgeStyle(EdgeType.SOLID, color);
+    }
+
+    /**
+     * Constructs a new dotted edge style with a color.
+     * @param color the color
+     * @return the new edge style
+     */
+    public static GraphicalEdgeStyle dotted(final GraphicalColor color) {
+        return new GraphicalEdgeStyle(EdgeType.DOTTED, color);
+    }
+
+    /**
+     * Constructs a new bold edge style with a color.
+     * @param color the color
+     * @return the new edge style
+     */
+    public static GraphicalEdgeStyle bold(final GraphicalColor color) {
+        return new GraphicalEdgeStyle(EdgeType.BOLD, color);
     }
 
     /**
