@@ -1,0 +1,45 @@
+graph TD
+  id0(["A"])
+  id1(["¬A"])
+  id2(["B"])
+  id3(["¬B"])
+  id4(["C"])
+  id5(["X"])
+  id6(["a"])
+  id7(["¬a"])
+  id8(["b"])
+  id9(["c"])
+  id10(["d"])
+  id11(["⇒"])
+  id12(["⇔"])
+  id13(["∧"])
+  id14(["∨"])
+  id15(["∧"])
+  id16(["a + b + c <= 2"])
+  id17(["⇒"])
+  id18(["∨"])
+  id19(["∧"])
+
+  id13 --> id2
+  id14 --> id1
+  id14 --> id4
+  id14 --> id5
+  id13 --> id14
+  id12 --> id0
+  id12 --> id13
+  id16 --> id6
+    linkStyle 7 stroke:#777777,stroke-width:2,stroke-dasharray:3
+  id16 --> id8
+    linkStyle 8 stroke:#777777,stroke-width:2,stroke-dasharray:3
+  id16 --> id9
+    linkStyle 9 stroke:#777777,stroke-width:2,stroke-dasharray:3
+  id15 --> id16
+  id18 --> id7
+  id18 --> id10
+  id19 --> id5
+  id19 --> id3
+  id17 -->|"l"| id18
+  id17 -->|"r"| id19
+  id15 --> id17
+  id11 -->|"l"| id12
+  id11 -->|"r"| id15

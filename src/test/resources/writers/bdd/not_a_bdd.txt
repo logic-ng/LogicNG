@@ -1,0 +1,11 @@
+graph TD
+  id0["false"]
+    style id0 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id1["true"]
+    style id1 stroke:#009432,color:#ffffff,fill:#009432
+  id3(["A"])
+
+  id3 --> id1
+    linkStyle 0 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id3 --> id0
+    linkStyle 1 stroke:#009432,stroke-width:2

@@ -1,0 +1,63 @@
+graph TD
+  id0(["⇒"])
+  id1(["⇔"])
+  id2(["A"])
+  id3(["∧"])
+  id4(["B"])
+  id5(["∨"])
+  id6(["¬A"])
+  id7(["C"])
+  id8(["X"])
+  id9(["∧"])
+  id10(["a + b + c <= 2"])
+  id11(["a"])
+  id12(["b"])
+  id13(["c"])
+  id14(["⇒"])
+  id15(["∨"])
+  id16(["¬a"])
+  id17(["d"])
+  id18(["∧"])
+  id19(["X"])
+  id20(["¬B"])
+
+  id3 --> id4
+    linkStyle 0 stroke:#000000,stroke-width:2
+  id5 --> id6
+    linkStyle 1 stroke:#000000,stroke-width:2
+  id5 --> id7
+    linkStyle 2 stroke:#000000,stroke-width:2
+  id5 --> id8
+    linkStyle 3 stroke:#000000,stroke-width:2
+  id3 --> id5
+    linkStyle 4 stroke:#000000,stroke-width:2
+  id1 --> id2
+    linkStyle 5 stroke:#000000,stroke-width:2
+  id1 --> id3
+    linkStyle 6 stroke:#000000,stroke-width:2
+  id10 --> id11
+    linkStyle 7 stroke:#777777,stroke-width:2,stroke-dasharray:3
+  id10 --> id12
+    linkStyle 8 stroke:#777777,stroke-width:2,stroke-dasharray:3
+  id10 --> id13
+    linkStyle 9 stroke:#777777,stroke-width:2,stroke-dasharray:3
+  id9 --> id10
+    linkStyle 10 stroke:#000000,stroke-width:2
+  id15 --> id16
+    linkStyle 11 stroke:#000000,stroke-width:2
+  id15 --> id17
+    linkStyle 12 stroke:#000000,stroke-width:2
+  id18 --> id19
+    linkStyle 13 stroke:#000000,stroke-width:2
+  id18 --> id20
+    linkStyle 14 stroke:#000000,stroke-width:2
+  id14 -->|"l"| id15
+    linkStyle 15 stroke:#000000,stroke-width:2
+  id14 -->|"r"| id18
+    linkStyle 16 stroke:#000000,stroke-width:2
+  id9 --> id14
+    linkStyle 17 stroke:#000000,stroke-width:2
+  id0 -->|"l"| id1
+    linkStyle 18 stroke:#000000,stroke-width:2
+  id0 -->|"r"| id9
+    linkStyle 19 stroke:#000000,stroke-width:2

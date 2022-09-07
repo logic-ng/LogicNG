@@ -1,0 +1,21 @@
+graph TD
+  id0(["∨"])
+  id1(["∧"])
+  id2(["a"])
+  id3(["b"])
+  id4(["∧"])
+  id5(["c"])
+  id6(["¬"])
+  id7(["∧"])
+  id8(["a"])
+  id9(["b"])
+
+  id1 --> id2
+  id1 --> id3
+  id0 --> id1
+  id4 --> id5
+  id7 --> id8
+  id7 --> id9
+  id6 --> id7
+  id4 --> id6
+  id0 --> id4

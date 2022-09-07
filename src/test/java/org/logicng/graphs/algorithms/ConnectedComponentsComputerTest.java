@@ -142,7 +142,7 @@ public class ConnectedComponentsComputerTest {
                 formulas.add(formula.transform(new CNFFactorization()));
             }
         }
-        final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromCnf(formulas);
+        final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulas);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
         final List<List<Formula>> split = ConnectedComponentsComputation.splitFormulasByComponent(originalFormulas, ccs);
         assertThat(split).hasSize(4);
@@ -155,6 +155,7 @@ public class ConnectedComponentsComputerTest {
     @Test
     public void testFormulaSplitIllegal() {
         final FormulaFactory f = new FormulaFactory();
+        @SuppressWarnings("deprecation")
         final Graph<Variable> graph = ConstraintGraphGenerator.generateFromCnf(f.variable("B"));
         final Set<Set<Node<Variable>>> ccs = Collections.singleton(Collections.singleton(graph.node(f.variable("B"))));
         assertThatThrownBy(() -> ConnectedComponentsComputation.splitFormulasByComponent(Collections.singletonList(f.variable("A")), ccs))

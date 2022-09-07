@@ -28,26 +28,24 @@
 
 package org.logicng.knowledgecompilation.bdds.io;
 
+import org.logicng.io.graphical.GraphicalDotWriter;
+import org.logicng.io.graphical.generators.BddGraphicalGenerator;
 import org.logicng.knowledgecompilation.bdds.BDD;
-import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 /**
  * A dot file writer for BDDs.  Writes the internal data structure of a BDD to a dot file.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.4.0
+ * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
+ * to use graph writer use {@link BddGraphicalGenerator} within the new graphical writer framework.
  */
+@Deprecated
 public final class BDDDotFileWriter {
 
-    private static final String CONST_TRUE = "const_true";
-    private static final String CONST_FALSE = "const_false";
-    private static final String NODE_PREFIX = "id_";
+    private static final String DOT_EXTENSION = ".dot";
 
     /**
      * Private constructor.
@@ -63,7 +61,7 @@ public final class BDDDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final BDD bdd) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), bdd);
+        write(new File(fileName.endsWith(DOT_EXTENSION) ? fileName : fileName + DOT_EXTENSION), bdd);
     }
 
     /**
@@ -73,33 +71,6 @@ public final class BDDDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final BDD bdd) throws IOException {
-        final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
-        if (!bdd.isContradiction()) {
-            sb.append(String.format("  %s [shape=box, label=\"$true\", style = bold, color = darkgreen];%n", CONST_TRUE));
-        }
-        if (!bdd.isTautology()) {
-            sb.append(String.format("  %s [shape=box, label=\"$false\", style = bold, color = red];%n", CONST_FALSE));
-        }
-        for (final int[] internalNode : new BDDOperations(bdd.underlyingKernel()).allNodes(bdd.index())) {
-            sb.append(String.format("  %s%d [shape=ellipse, label=\"%s\"];%n", NODE_PREFIX, internalNode[0], bdd.underlyingKernel().getVariableForIndex(internalNode[1]).name()));
-            sb.append(String.format("  %s%d -> %s [style = dotted, color = red];%n", NODE_PREFIX, internalNode[0], getNodeString(internalNode[2])));
-            sb.append(String.format("  %s%d -> %s [color = darkgreen];%n", NODE_PREFIX, internalNode[0], getNodeString(internalNode[3])));
-        }
-        sb.append("}").append(System.lineSeparator());
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
-            writer.append(sb);
-            writer.flush();
-        }
-    }
-
-    private static String getNodeString(final int i) {
-        switch (i) {
-            case 0:
-                return CONST_FALSE;
-            case 1:
-                return CONST_TRUE;
-            default:
-                return NODE_PREFIX + i;
-        }
+        BddGraphicalGenerator.builder().build().translate(bdd).write(file, GraphicalDotWriter.get());
     }
 }

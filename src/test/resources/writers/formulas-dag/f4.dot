@@ -1,0 +1,18 @@
+digraph G {
+
+  id0 [label="a"]
+  id1 [label="b"]
+  id2 [label="¬c"]
+  id3 [label="∨"]
+  id4 [label="¬"]
+  id5 [label="∧"]
+  id6 [label="∧"]
+
+  id5 -> id0
+  id5 -> id1
+  id4 -> id5
+  id3 -> id4
+  id6 -> id1
+  id6 -> id2
+  id3 -> id6
+}

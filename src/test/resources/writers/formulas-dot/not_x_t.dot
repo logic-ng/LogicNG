@@ -1,5 +1,0 @@
-digraph G {
-{ rank = same;
-  id0 [shape=box, label="¬x"];
-}
-}
