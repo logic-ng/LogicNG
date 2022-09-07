@@ -118,55 +118,32 @@ public class GraphicalRepresentation {
     }
 
     /**
-     * Writes this representation as DOT file with the given file name.
+     * Writes this representation to a file with the given file name using the given writer.
      * @param fileName the file name
+     * @param writer   the writer
      * @throws IOException if there is a problem writing the file
      */
-    public void writeDot(final String fileName) throws IOException {
-        GraphicalDotWriter.get().write(fileName, this);
+    public void write(final String fileName, final GraphicalRepresentationWriter writer) throws IOException {
+        writer.write(fileName, this);
     }
 
     /**
-     * Writes this representation as DOT file in the given file
-     * @param file the file
+     * Writes this representation to the given file using the given writer.
+     * @param file   the file
+     * @param writer the writer
      * @throws IOException if there is a problem writing the file
      */
-    public void writeDot(final File file) throws IOException {
-        GraphicalDotWriter.get().write(file, this);
+    public void write(final File file, final GraphicalRepresentationWriter writer) throws IOException {
+        writer.write(file, this);
     }
 
     /**
-     * Writes this representation as Mermaid.js file with the given file name.
-     * @param fileName the file name
-     * @throws IOException if there is a problem writing the file
+     * Returns this representation as a string using the given writer.
+     * @param writer the writer
+     * @return this representation as a string
      */
-    public void writeMermaid(final String fileName) throws IOException {
-        GraphicalMermaidWriter.get().write(fileName, this);
-    }
-
-    /**
-     * Writes this representation as Mermaid.js file in the given file
-     * @param file the file
-     * @throws IOException if there is a problem writing the file
-     */
-    public void writeMermaid(final File file) throws IOException {
-        GraphicalMermaidWriter.get().write(file, this);
-    }
-
-    /**
-     * Returns the DOT string of this representation.
-     * @return the DOT string
-     */
-    public String getDotString() {
-        return GraphicalDotWriter.get().stringValue(this);
-    }
-
-    /**
-     * Returns the Mermaid.js string of this representation.
-     * @return the Mermaid.js string
-     */
-    public String getMermaidString() {
-        return GraphicalMermaidWriter.get().stringValue(this);
+    public String writeString(final GraphicalRepresentationWriter writer) {
+        return writer.stringValue(this);
     }
 
     /**

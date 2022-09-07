@@ -47,7 +47,9 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.io.graphical.GraphicalDotWriter;
 import org.logicng.io.graphical.GraphicalEdgeStyle;
+import org.logicng.io.graphical.GraphicalMermaidWriter;
 import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.graphical.GraphicalRepresentation;
 import org.logicng.io.parsers.ParserException;
@@ -170,8 +172,8 @@ public class FormulaDagGraphicalGeneratorTest {
 
     private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator generator) throws IOException {
         final GraphicalRepresentation representation = generator.translate(formula);
-        representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+        representation.write("src/test/resources/writers/temp/" + fileName + ".dot", GraphicalDotWriter.get());
+        representation.write("src/test/resources/writers/temp/" + fileName + ".txt", GraphicalMermaidWriter.get());
 
         final File expectedDot = new File("src/test/resources/writers/formulas-dag/" + fileName + ".dot");
         final File tempDot = new File("src/test/resources/writers/temp/" + fileName + ".dot");

@@ -29,6 +29,7 @@
 package org.logicng.graphs.io;
 
 import org.logicng.graphs.datastructures.Graph;
+import org.logicng.io.graphical.GraphicalDotWriter;
 import org.logicng.io.graphical.generators.GraphGraphicalGenerator;
 
 import java.io.File;
@@ -72,6 +73,6 @@ public final class GraphDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static <T> void write(final File file, final Graph<T> graph) throws IOException {
-        GraphGraphicalGenerator.<T>builder().build().translate(graph).writeDot(file);
+        GraphGraphicalGenerator.<T>builder().build().translate(graph).write(file, GraphicalDotWriter.get());
     }
 }

@@ -42,7 +42,9 @@ import static org.logicng.io.graphical.GraphicalColor.WHITE;
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.io.graphical.GraphicalDotWriter;
 import org.logicng.io.graphical.GraphicalEdgeStyle;
+import org.logicng.io.graphical.GraphicalMermaidWriter;
 import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.graphical.GraphicalRepresentation;
 import org.logicng.io.parsers.ParserException;
@@ -120,8 +122,8 @@ public class BddGraphicalGeneratorTest {
 
     private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator generator) throws IOException {
         final GraphicalRepresentation representation = generator.translate(bdd);
-        representation.writeDot("src/test/resources/writers/temp/" + fileName + "_bdd.dot");
-        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + "_bdd.txt");
+        representation.write("src/test/resources/writers/temp/" + fileName + "_bdd.dot", GraphicalDotWriter.get());
+        representation.write("src/test/resources/writers/temp/" + fileName + "_bdd.txt", GraphicalMermaidWriter.get());
         final File expectedT = new File("src/test/resources/writers/bdd/" + fileName + "_bdd.dot");
         final File tempT = new File("src/test/resources/writers/temp/" + fileName + "_bdd.dot");
         assertThat(contentOf(tempT)).isEqualTo(contentOf(expectedT));

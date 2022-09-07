@@ -41,7 +41,9 @@ import org.junit.jupiter.api.Test;
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.GraphTest;
 import org.logicng.io.graphical.GraphicalColor;
+import org.logicng.io.graphical.GraphicalDotWriter;
 import org.logicng.io.graphical.GraphicalEdgeStyle;
+import org.logicng.io.graphical.GraphicalMermaidWriter;
 import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.io.graphical.GraphicalRepresentation;
 
@@ -136,8 +138,8 @@ public class GraphGraphicalGeneratorTest {
 
     private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator<T> generator) throws IOException {
         final GraphicalRepresentation representation = generator.translate(g);
-        representation.writeDot("src/test/resources/writers/temp/" + fileName + ".dot");
-        representation.writeMermaid("src/test/resources/writers/temp/" + fileName + ".txt");
+        representation.write("src/test/resources/writers/temp/" + fileName + ".dot", GraphicalDotWriter.get());
+        representation.write("src/test/resources/writers/temp/" + fileName + ".txt", GraphicalMermaidWriter.get());
 
         final File expectedDot = new File("src/test/resources/writers/graph/" + fileName + ".dot");
         final File tempDot = new File("src/test/resources/writers/temp/" + fileName + ".dot");

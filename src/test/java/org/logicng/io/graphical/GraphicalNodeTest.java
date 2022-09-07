@@ -39,6 +39,9 @@ import org.junit.jupiter.api.Test;
 
 public class GraphicalNodeTest {
 
+    private static final GraphicalDotWriter dotWriter = GraphicalDotWriter.get();
+    private static final GraphicalMermaidWriter mermaidWriter = GraphicalMermaidWriter.get();
+
     private GraphicalRepresentation gr;
 
     @BeforeEach
@@ -50,72 +53,72 @@ public class GraphicalNodeTest {
     public void testNoStyleNode() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", noStyle());
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1([\"ID 1\"])");
-        assertThat(this.gr.getMermaidString()).doesNotContain("style");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1([\"ID 1\"])");
+        assertThat(this.gr.writeString(mermaidWriter)).doesNotContain("style");
     }
 
     @Test
     public void testOnlyShape() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.rectangle(null, null, null));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=box]");
-        assertThat(this.gr.getMermaidString()).contains("id1[\"ID 1\"]");
-        assertThat(this.gr.getMermaidString()).doesNotContain("style");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", shape=box]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1[\"ID 1\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).doesNotContain("style");
     }
 
     @Test
     public void testOnlyStrokeColor() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(null, BLUE, null, null));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", color=\"#004f93\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1([\"ID 1\"])");
-        assertThat(this.gr.getMermaidString()).contains("style id1 stroke:#004f93");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", color=\"#004f93\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1([\"ID 1\"])");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("style id1 stroke:#004f93");
     }
 
     @Test
     public void testOnlyTextColor() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(null, null, BLUE, null));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", fontcolor=\"#004f93\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1([\"ID 1\"])");
-        assertThat(this.gr.getMermaidString()).contains("style id1 color:#004f93");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", fontcolor=\"#004f93\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1([\"ID 1\"])");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("style id1 color:#004f93");
     }
 
     @Test
     public void testOnlyBackgroundColor() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.style(null, null, null, BLUE));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", style=filled, fillcolor=\"#004f93\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1([\"ID 1\"])");
-        assertThat(this.gr.getMermaidString()).contains("style id1 fill:#004f93");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", style=filled, fillcolor=\"#004f93\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1([\"ID 1\"])");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("style id1 fill:#004f93");
     }
 
     @Test
     public void testMixed1() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.circle(null, null, BLUE));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=circle, style=filled, fillcolor=\"#004f93\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1((\"ID 1\"))");
-        assertThat(this.gr.getMermaidString()).contains("style id1 fill:#004f93");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", shape=circle, style=filled, fillcolor=\"#004f93\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1((\"ID 1\"))");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("style id1 fill:#004f93");
     }
 
     @Test
     public void testMixed2() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.circle(null, WHITE, BLUE));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=circle, fontcolor=\"#ffffff\", style=filled, fillcolor=\"#004f93\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1((\"ID 1\"))");
-        assertThat(this.gr.getMermaidString()).contains("style id1 color:#ffffff,fill:#004f93");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", shape=circle, fontcolor=\"#ffffff\", style=filled, fillcolor=\"#004f93\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1((\"ID 1\"))");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("style id1 color:#ffffff,fill:#004f93");
     }
 
     @Test
     public void testAll() {
         final GraphicalNode node = new GraphicalNode("id1", "ID 1", GraphicalNodeStyle.circle(YELLOW, WHITE, BLUE));
         this.gr.addNode(node);
-        assertThat(this.gr.getDotString()).contains("id1 [label=\"ID 1\", shape=circle, color=\"#ffc612\", fontcolor=\"#ffffff\", style=filled, fillcolor=\"#004f93\"]");
-        assertThat(this.gr.getMermaidString()).contains("id1((\"ID 1\"))");
-        assertThat(this.gr.getMermaidString()).contains("style id1 stroke:#ffc612,color:#ffffff,fill:#004f93");
+        assertThat(this.gr.writeString(dotWriter)).contains("id1 [label=\"ID 1\", shape=circle, color=\"#ffc612\", fontcolor=\"#ffffff\", style=filled, fillcolor=\"#004f93\"]");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("id1((\"ID 1\"))");
+        assertThat(this.gr.writeString(mermaidWriter)).contains("style id1 stroke:#ffc612,color:#ffffff,fill:#004f93");
     }
 
 }

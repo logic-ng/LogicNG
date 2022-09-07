@@ -29,6 +29,7 @@
 package org.logicng.io.writers;
 
 import org.logicng.formulas.Formula;
+import org.logicng.io.graphical.GraphicalDotWriter;
 import org.logicng.io.graphical.generators.FormulaAstGraphicalGenerator;
 import org.logicng.io.graphical.generators.FormulaDagGraphicalGenerator;
 
@@ -74,6 +75,6 @@ public final class FormulaDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
-        FormulaDagGraphicalGenerator.builder().alignTerminals(alignLiterals).build().translate(formula).writeDot(file);
+        FormulaDagGraphicalGenerator.builder().alignTerminals(alignLiterals).build().translate(formula).write(file, GraphicalDotWriter.get());
     }
 }

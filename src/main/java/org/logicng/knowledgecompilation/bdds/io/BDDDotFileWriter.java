@@ -28,6 +28,7 @@
 
 package org.logicng.knowledgecompilation.bdds.io;
 
+import org.logicng.io.graphical.GraphicalDotWriter;
 import org.logicng.io.graphical.generators.BddGraphicalGenerator;
 import org.logicng.knowledgecompilation.bdds.BDD;
 
@@ -70,6 +71,6 @@ public final class BDDDotFileWriter {
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final BDD bdd) throws IOException {
-        BddGraphicalGenerator.builder().build().translate(bdd).writeDot(file);
+        BddGraphicalGenerator.builder().build().translate(bdd).write(file, GraphicalDotWriter.get());
     }
 }
