@@ -37,10 +37,10 @@ import java.util.Objects;
  * @since 2.4.0
  */
 public class GraphicalNode {
-    final String id;
-    final String label;
-    final boolean terminal;
-    final GraphicalNodeStyle style;
+    private final String id;
+    private final String label;
+    private final boolean terminal;
+    private final GraphicalNodeStyle style;
 
     /**
      * Constructs a new non-terminal graphical node with the given values.

@@ -113,36 +113,38 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
     }
 
     private static String nodeString(final GraphicalNode node) {
+        final GraphicalNodeStyle style = node.getStyle();
         final List<String> attributes = new ArrayList<>();
-        if (node.style.getShape() != null) {
-            attributes.add(String.format("shape=%s", shapeString(node.style.getShape())));
+        if (style.getShape() != null) {
+            attributes.add(String.format("shape=%s", shapeString(style.getShape())));
         }
-        if (node.style.getStrokeColor() != null) {
-            attributes.add(String.format("color=\"%s\"", node.style.getStrokeColor().getHexValue()));
+        if (style.getStrokeColor() != null) {
+            attributes.add(String.format("color=\"%s\"", style.getStrokeColor().getHexValue()));
         }
-        if (node.style.getTextColor() != null) {
-            attributes.add(String.format("fontcolor=\"%s\"", node.style.getTextColor().getHexValue()));
+        if (style.getTextColor() != null) {
+            attributes.add(String.format("fontcolor=\"%s\"", style.getTextColor().getHexValue()));
         }
-        if (node.style.getBackgroundColor() != null) {
-            attributes.add(String.format("style=filled, fillcolor=\"%s\"", node.style.getBackgroundColor().getHexValue()));
+        if (style.getBackgroundColor() != null) {
+            attributes.add(String.format("style=filled, fillcolor=\"%s\"", style.getBackgroundColor().getHexValue()));
         }
-        return String.format("  %s [label=\"%s\"%s]", node.id, node.label, attributes.isEmpty() ? "" : ", " + String.join(", ", attributes));
+        return String.format("  %s [label=\"%s\"%s]", node.getId(), node.getLabel(), attributes.isEmpty() ? "" : ", " + String.join(", ", attributes));
     }
 
     private static String edgeString(final GraphicalEdge edge, final boolean isDirected) {
+        final GraphicalEdgeStyle style = edge.getStyle();
         final List<String> attributes = new ArrayList<>();
-        if (edge.style.getColor() != null) {
-            attributes.add(String.format("color=\"%1$s\", fontcolor=\"%1$s\"", edge.style.getColor().getHexValue()));
+        if (style.getColor() != null) {
+            attributes.add(String.format("color=\"%1$s\", fontcolor=\"%1$s\"", style.getColor().getHexValue()));
         }
-        if (edge.style.getType() != null) {
-            attributes.add(String.format("style=%s", edgeStyleString(edge.style.getType())));
+        if (style.getType() != null) {
+            attributes.add(String.format("style=%s", edgeStyleString(style.getType())));
         }
-        if (edge.label != null) {
-            attributes.add(String.format("label=\"%s\"", edge.label));
+        if (edge.getLabel() != null) {
+            attributes.add(String.format("label=\"%s\"", edge.getLabel()));
         }
         final String attributeString = attributes.isEmpty() ? "" : " [" + String.join(", ", attributes) + "]";
         final String edgeSymbol = isDirected ? "->" : "--";
-        return String.format("  %s %s %s%s", edge.source.id, edgeSymbol, edge.destination.id, attributeString);
+        return String.format("  %s %s %s%s", edge.getSource().getId(), edgeSymbol, edge.getDestination().getId(), attributeString);
     }
 
     private static String shapeString(final GraphicalNodeStyle.Shape shape) {

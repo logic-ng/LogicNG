@@ -80,7 +80,7 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         for (final GraphicalNode node : representation.getNodes()) {
             bufferedWriter.write(String.format("  %s", nodeString(node)));
             bufferedWriter.newLine();
-            final String nodeStyleString = nodeStyleString(node.id, node.getStyle());
+            final String nodeStyleString = nodeStyleString(node.getId(), node.getStyle());
             if (nodeStyleString != null) {
                 bufferedWriter.write(nodeStyleString);
                 bufferedWriter.newLine();
@@ -93,7 +93,7 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         int counter = 0;
         for (final GraphicalEdge edge : representation.getEdges()) {
             final String edgeSymbol = edgeSymbolString(edge, representation.isDirected());
-            writer.write(String.format("  %s %s %s", edge.getSource().id, edgeSymbol, edge.getDestination().id));
+            writer.write(String.format("  %s %s %s", edge.getSource().getId(), edgeSymbol, edge.getDestination().getId()));
             writer.newLine();
             final String edgeStyleString = edgeStyleString(counter++, edge.getStyle());
             if (edgeStyleString != null) {
@@ -106,7 +106,7 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     private static String nodeString(final GraphicalNode node) {
         final String start;
         final String end;
-        switch (node.style.getShape() != null ? node.style.getShape() : DEFAULT_NODE_SHAPE) {
+        switch (node.getStyle().getShape() != null ? node.getStyle().getShape() : DEFAULT_NODE_SHAPE) {
             case RECTANGLE:
                 start = "[";
                 end = "]";
@@ -121,7 +121,7 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
                 end = "])";
                 break;
         }
-        return String.format("%s%s\"%s\"%s", node.id, start, node.label, end);
+        return String.format("%s%s\"%s\"%s", node.getId(), start, node.getLabel(), end);
     }
 
     private static String edgeSymbolString(final GraphicalEdge edge, final boolean directed) {

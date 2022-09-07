@@ -231,8 +231,9 @@ public class GraphicalRepresentation {
                 "alignTerminals=" + this.alignTerminals +
                 ", directed=" + this.directed +
                 ", background=" + this.background +
-                ", nodes=" + this.nodes.stream().map(n -> n.id + ":" + n.label).collect(Collectors.joining(", ")) +
-                ", edges=" + this.edges.stream().map(e -> e.getSource().label + " -- " + e.getDestination().label).collect(Collectors.joining(", ")) +
+                ", nodes=" + this.nodes.stream().map(n -> n.getId() + ":" + n.getLabel()).collect(Collectors.joining(", ")) +
+                ", edges=" + this.edges.stream().map(e -> e.getSource().getLabel() + " -- "
+                + e.getDestination().getLabel()).collect(Collectors.joining(", ")) +
                 '}';
     }
 }
