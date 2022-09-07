@@ -341,7 +341,7 @@ public class OptimizationFunctionTest implements LogicNGTest {
         assertThat(maximumModel).isNull();
         assertThat(handlerMax.aborted()).isTrue();
 
-        final TimeoutOptimizationHandler handlerTooShort = new TimeoutOptimizationHandler(1L);
+        final TimeoutOptimizationHandler handlerTooShort = new TimeoutOptimizationHandler(0L);
         final Assignment model = optimize(Collections.singleton(formula), formula.variables(), Collections.emptyList(), false, solver, handlerTooShort);
         assertThat(model).isNull();
         assertThat(handlerTooShort.aborted()).isTrue();
