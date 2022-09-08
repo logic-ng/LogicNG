@@ -412,10 +412,6 @@ public class MiniSat extends SATSolver {
     public Assignment createAssignment(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
         return createAssignment(vec, relevantIndices, false);
     }
-    
-    public Model createModel(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
-        return createModel(vec, relevantIndices, false);
-    }
 
     /**
      * Creates an assignment from a Boolean vector of the solver. The flag {@code fastEvaluable} determines if the created
@@ -427,35 +423,27 @@ public class MiniSat extends SATSolver {
      * @return the assignment
      */
     public Assignment createAssignment(final LNGBooleanVector vec, final LNGIntVector relevantIndices, final boolean fastEvaluable) {
-        final Assignment model = new Assignment(fastEvaluable);
-        if (relevantIndices == null) {
-            for (int i = 0; i < vec.size(); i++) {
-                final String name = this.solver.nameForIdx(i);
-                if (isRelevantVariable(name)) {
-                    model.addLiteral(this.f.literal(name, vec.get(i)));
-                }
-            }
-        } else {
-            for (int i = 0; i < relevantIndices.size(); i++) {
-                final int index = relevantIndices.get(i);
-                if (index != -1) {
-                    final String name = this.solver.nameForIdx(index);
-                    if (isRelevantVariable(name)) {
-                        model.addLiteral(this.f.literal(name, vec.get(index)));
-                    }
-                }
-            }
-        }
-        return model;
+        return new Assignment(createLiterals(vec, relevantIndices), fastEvaluable);
     }
 
-    public Model createModel(final LNGBooleanVector vec, final LNGIntVector relevantIndices, final boolean fastEvaluable) {
-        final List<Literal> model = new ArrayList<>(vec.size());
+    /**
+     * Creates a model from a Boolean vector of the solver.
+     * @param vec             the vector of the solver
+     * @param relevantIndices the solver's indices of the relevant variables for the model.  If {@code null}, all
+     *                        variables are relevant.
+     * @return the model
+     */
+    public Model createModel(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
+        return new Model(createLiterals(vec, relevantIndices));
+    }
+
+    private List<Literal> createLiterals(final LNGBooleanVector vec, final LNGIntVector relevantIndices) {
+        final List<Literal> literals = new ArrayList<>(vec.size());
         if (relevantIndices == null) {
             for (int i = 0; i < vec.size(); i++) {
                 final String name = this.solver.nameForIdx(i);
                 if (isRelevantVariable(name)) {
-                    model.add(this.f.literal(name, vec.get(i)));
+                    literals.add(this.f.literal(name, vec.get(i)));
                 }
             }
         } else {
@@ -464,12 +452,12 @@ public class MiniSat extends SATSolver {
                 if (index != -1) {
                     final String name = this.solver.nameForIdx(index);
                     if (isRelevantVariable(name)) {
-                        model.add(this.f.literal(name, vec.get(index)));
+                        literals.add(this.f.literal(name, vec.get(index)));
                     }
                 }
             }
         }
-        return new Model(model);
+        return literals;
     }
 
     /**
