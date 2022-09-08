@@ -18,9 +18,25 @@ public interface AdvancedModelEnumerationHandler extends Handler {
         return satHandler() != null && satHandler().aborted();
     }
 
+    /**
+     * This method is called every time new models are found.
+     * <p>
+     * The found models are in an uncommitted state until they are confirmed by calling {@link #commit()}.
+     * It is also possible to roll back the uncommitted models by calling {@link #rollback()}.
+     * @param numberOfModels the number of found models
+     * @return {@code true} if the computation should continue, otherwise {@code false}
+     */
     boolean foundModels(int numberOfModels);
 
+    /**
+     * All founds models since the last commit call are confirmed and cannot be rolled back.
+     * @return {@code true} if the computation should continue, otherwise {@code false}
+     */
     boolean commit();
 
+    /**
+     * All found models since the last commit should be discarded.
+     * @return {@code true} if the computation should continue, otherwise {@code false}
+     */
     boolean rollback();
 }

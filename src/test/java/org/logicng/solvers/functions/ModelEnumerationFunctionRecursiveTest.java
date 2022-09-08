@@ -7,6 +7,7 @@ import static org.logicng.testutils.TestUtil.modelCount;
 import static org.logicng.util.CollectionHelper.union;
 import static org.logicng.util.FormulaHelper.strings2literals;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -47,11 +48,7 @@ import java.util.stream.Collectors;
  */
 public class ModelEnumerationFunctionRecursiveTest {
 
-    private final FormulaFactory f;
-
-    public ModelEnumerationFunctionRecursiveTest() {
-        this.f = new FormulaFactory();
-    }
+    private FormulaFactory f;
 
     public static Collection<Object[]> splitProviders() {
         final List<Object[]> providers = new ArrayList<>();
@@ -59,6 +56,11 @@ public class ModelEnumerationFunctionRecursiveTest {
         providers.add(new Object[]{new LeastCommonVariablesProvider()});
         providers.add(new Object[]{new MostCommonVariablesProvider()});
         return providers;
+    }
+
+    @BeforeEach
+    public void init() {
+        this.f = new FormulaFactory();
     }
 
     @ParameterizedTest

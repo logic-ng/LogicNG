@@ -70,8 +70,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
 
     @Override
     EnumerationCollector<List<Model>> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables,
-                                                   final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
-        return new ModelEnumerationCollector(dontCareVariables, additionalVariablesNotKnownBySolver);
+                                                   final SortedSet<Variable> dontCareVariablesNotOnSolver, final SortedSet<Variable> additionalVariablesNotOnSolver) {
+        return new ModelEnumerationCollector(dontCareVariablesNotOnSolver, additionalVariablesNotOnSolver);
     }
 
     /**
@@ -151,9 +151,9 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         private final List<List<Literal>> baseModels;
         private final SortedSet<Variable> additionalVariablesNotKnownBySolver;
 
-        public ModelEnumerationCollector(final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
-            this.baseModels = getCartesianProduct(dontCareVariables);
-            this.additionalVariablesNotKnownBySolver = additionalVariablesNotKnownBySolver;
+        public ModelEnumerationCollector(final SortedSet<Variable> dontCareVariablesNotOnSolver, final SortedSet<Variable> additionalVariablesNotOnSolver) {
+            this.baseModels = getCartesianProduct(dontCareVariablesNotOnSolver);
+            this.additionalVariablesNotKnownBySolver = additionalVariablesNotOnSolver;
         }
 
         @Override

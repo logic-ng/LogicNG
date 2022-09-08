@@ -73,9 +73,9 @@ public class BddModelEnumerationFunction extends AbstractModelEnumerationFunctio
     }
 
     @Override
-    EnumerationCollector<BDD> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariables,
-                                           final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
-        return new BddModelEnumerationCollector(f, this.variables, knownVariables, dontCareVariables.size());
+    EnumerationCollector<BDD> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                           final SortedSet<Variable> additionalVariablesNotOnSolver) {
+        return new BddModelEnumerationCollector(f, this.variables, knownVariables, dontCareVariablesNotOnSolver.size());
     }
 
     /**
@@ -135,14 +135,14 @@ public class BddModelEnumerationFunction extends AbstractModelEnumerationFunctio
         private final int dontCareFactor;
 
         public BddModelEnumerationCollector(final FormulaFactory f, final Collection<Variable> variables, final SortedSet<Variable> knownVariables,
-                                            final int numberDontCareVariables) {
+                                            final int numberDontCareVariablesNotOnSolver) {
             final List<Variable> sortedVariables = variables != null
                     ? new ArrayList<>(new TreeSet<>(variables))
                     : new ArrayList<>(knownVariables);
             final int numVars = sortedVariables.size();
             this.kernel = new BDDKernel(f, sortedVariables, numVars * 30, numVars * 50);
             this.committedModels = BDDFactory.build(f.falsum(), this.kernel);
-            this.dontCareFactor = (int) Math.pow(2, numberDontCareVariables);
+            this.dontCareFactor = (int) Math.pow(2, numberDontCareVariablesNotOnSolver);
         }
 
         @Override

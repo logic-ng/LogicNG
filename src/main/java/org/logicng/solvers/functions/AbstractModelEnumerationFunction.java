@@ -83,8 +83,8 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         this.maxNumberOfModels = configuration.maxNumberOfModels;
     }
 
-    abstract EnumerationCollector<R> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariables,
-                                                  SortedSet<Variable> additionalVariablesNotKnownBySolver);
+    abstract EnumerationCollector<R> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                                  SortedSet<Variable> additionalVariablesNotOnSolver);
 
     @Override
     public R apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
@@ -94,8 +94,8 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         start(this.handler);
         final SortedSet<Variable> knownVariables = solver.knownVariables();
         final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, knownVariables, TreeSet::new);
-        final SortedSet<Variable> dontCareVariables = difference(this.variables, knownVariables, TreeSet::new);
-        final EnumerationCollector<R> collector = newCollector(solver.factory(), knownVariables, dontCareVariables, additionalVarsNotOnSolver);
+        final SortedSet<Variable> dontCareVariablesNotOnSolver = difference(this.variables, knownVariables, TreeSet::new);
+        final EnumerationCollector<R> collector = newCollector(solver.factory(), knownVariables, dontCareVariablesNotOnSolver, additionalVarsNotOnSolver);
         if (this.splitVariableProvider == null) {
             enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
             collector.commit(this.handler);

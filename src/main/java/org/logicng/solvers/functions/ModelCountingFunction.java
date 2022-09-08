@@ -66,9 +66,9 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
     }
 
     @Override
-    EnumerationCollector<BigInteger> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariables,
-                                                  final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
-        return new ModelCountCollector(dontCareVariables);
+    EnumerationCollector<BigInteger> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                                  final SortedSet<Variable> additionalVariablesNotOnSolver) {
+        return new ModelCountCollector(dontCareVariablesNotOnSolver.size());
     }
 
     /**
@@ -122,13 +122,13 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
     }
 
     static class ModelCountCollector implements EnumerationCollector<BigInteger> {
-        private final BigInteger dontCareFactor;
         private BigInteger committedCount = BigInteger.ZERO;
         private final List<LNGBooleanVector> uncommittedModels = new ArrayList<>(100);
         private final List<LNGIntVector> uncommittedIndices = new ArrayList<>(100);
+        private final BigInteger dontCareFactor;
 
-        public ModelCountCollector(final SortedSet<Variable> dontCareVariables) {
-            this.dontCareFactor = BigInteger.valueOf(2).pow(dontCareVariables.size());
+        public ModelCountCollector(final int numberDontCareVariablesNotOnSolver) {
+            this.dontCareFactor = BigInteger.valueOf(2).pow(numberDontCareVariablesNotOnSolver);
         }
 
         @Override
