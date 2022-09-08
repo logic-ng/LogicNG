@@ -82,7 +82,7 @@ public class Model {
      * Returns the size of this model.
      * @return the size of this model
      */
-    public long size() {
+    public int size() {
         return this.literals.size();
     }
 
