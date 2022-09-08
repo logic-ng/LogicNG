@@ -83,7 +83,8 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         this.maxNumberOfModels = configuration.maxNumberOfModels;
     }
 
-    abstract EnumerationCollector<R> newCollector(final SortedSet<Variable> dontCareVariables, SortedSet<Variable> additionalVariablesNotKnownBySolver);
+    abstract EnumerationCollector<R> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariables,
+                                                  SortedSet<Variable> additionalVariablesNotKnownBySolver);
 
     @Override
     public R apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
@@ -94,7 +95,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         final SortedSet<Variable> knownVariables = solver.knownVariables();
         final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, knownVariables, TreeSet::new);
         final SortedSet<Variable> dontCareVariables = difference(this.variables, knownVariables, TreeSet::new);
-        final EnumerationCollector<R> collector = newCollector(dontCareVariables, additionalVarsNotOnSolver);
+        final EnumerationCollector<R> collector = newCollector(solver.factory(), knownVariables, dontCareVariables, additionalVarsNotOnSolver);
         if (this.splitVariableProvider == null) {
             enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
             collector.commit(this.handler);
@@ -233,7 +234,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     protected static FormulaFactory factory(final Collection<Variable> variables) {
-        return variables.isEmpty() ? new FormulaFactory() : variables.iterator().next().factory();
+        return variables == null || variables.isEmpty() ? new FormulaFactory() : variables.iterator().next().factory();
     }
 
     protected static AdvancedModelEnumerationConfig configuration(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {

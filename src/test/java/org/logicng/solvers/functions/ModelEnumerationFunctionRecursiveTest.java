@@ -6,7 +6,6 @@ import static org.logicng.testutils.TestUtil.getDontCareVariables;
 import static org.logicng.testutils.TestUtil.modelCount;
 import static org.logicng.util.CollectionHelper.union;
 import static org.logicng.util.FormulaHelper.strings2literals;
-import static org.logicng.util.FormulaHelper.strings2vars;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -153,7 +152,7 @@ public class ModelEnumerationFunctionRecursiveTest {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .variables(strings2vars(Arrays.asList("A", "B", "C", "D"), this.f))
+                .variables(this.f.variables("A", "B", "C", "D"))
                 .configuration(config)
                 .build());
         assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
@@ -179,7 +178,7 @@ public class ModelEnumerationFunctionRecursiveTest {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-                .variables(strings2vars(Arrays.asList("A", "C", "D", "E"), this.f))
+                .variables(this.f.variables("A", "C", "D", "E"))
                 .configuration(config)
                 .build());
         assertThat(modelsToSets(models)).containsExactlyInAnyOrder(

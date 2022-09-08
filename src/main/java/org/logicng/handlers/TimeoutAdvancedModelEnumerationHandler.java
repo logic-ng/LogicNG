@@ -65,7 +65,7 @@ public class TimeoutAdvancedModelEnumerationHandler extends TimeoutModelEnumerat
     }
 
     @Override
-    public boolean foundModel() {
+    public boolean foundModels(final int numberOfModel) {
         return !timeLimitExceeded();
     }
 

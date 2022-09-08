@@ -2,8 +2,8 @@ package org.logicng.handlers;
 
 /**
  * Interface for a handler for the advanced enumeration of models.
- * @version 2.1.0
- * @since 1.0
+ * @version 2.4.0
+ * @since 2.4.0
  */
 public interface AdvancedModelEnumerationHandler extends Handler {
 
@@ -18,7 +18,7 @@ public interface AdvancedModelEnumerationHandler extends Handler {
         return satHandler() != null && satHandler().aborted();
     }
 
-    boolean foundModel();
+    boolean foundModels(int numberOfModels);
 
     boolean commit();
 

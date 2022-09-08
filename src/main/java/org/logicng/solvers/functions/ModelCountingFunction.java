@@ -31,6 +31,7 @@ package org.logicng.solvers.functions;
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.datastructures.Model;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
@@ -65,7 +66,8 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
     }
 
     @Override
-    EnumerationCollector<BigInteger> newCollector(final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
+    EnumerationCollector<BigInteger> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariables,
+                                                  final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
         return new ModelCountCollector(dontCareVariables);
     }
 
@@ -134,7 +136,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
                                 final AdvancedModelEnumerationHandler handler) {
             this.uncommittedModels.add(modelFromSolver);
             this.uncommittedIndices.add(relevantAllIndices);
-            return handler == null || handler.foundModel();
+            return handler == null || handler.foundModels(this.dontCareFactor.intValue());
         }
 
         @Override

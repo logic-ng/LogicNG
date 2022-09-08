@@ -29,8 +29,6 @@
 package org.logicng.solvers.functions;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
@@ -39,25 +37,31 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
+import org.logicng.knowledgecompilation.bdds.BDD;
+import org.logicng.knowledgecompilation.bdds.BDDFactory;
+import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.solvers.MiniSat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
- * A solver function for enumerating models on the solver.
+ * A solver function for enumerating models on the solver and storing the result in a BDD.
+ * If used with a subset of the original formula's variables this performs an existential
+ * quantifier elimination (or projection) of the original formula into a BDD.
  * <p>
  * Model enumeration functions are instantiated via their builder {@link Builder}.
  * @version 2.4.0
  * @since 2.4.0
  */
-public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFunction<List<Model>> {
+public class BddModelEnumerationFunction extends AbstractModelEnumerationFunction<BDD> {
 
-    AdvancedModelEnumerationFunction(final Collection<Variable> variables, final Collection<Variable> additionalVariables,
-                                     final AdvancedModelEnumerationConfig config) {
-        super(variables, additionalVariables, configuration(variables, config));
+    BddModelEnumerationFunction(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
+        super(variables, Collections.emptyList(), configuration(variables, config));
     }
 
     /**
@@ -69,17 +73,16 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
     }
 
     @Override
-    EnumerationCollector<List<Model>> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables,
-                                                   final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
-        return new ModelEnumerationCollector(dontCareVariables, additionalVariablesNotKnownBySolver);
+    EnumerationCollector<BDD> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariables,
+                                           final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
+        return new BddModelEnumerationCollector(f, this.variables, knownVariables, dontCareVariables.size());
     }
 
     /**
-     * The builder for a model enumeration function.
+     * The builder for a BDD model enumeration function.
      */
     public static class Builder {
         private Collection<Variable> variables;
-        private Collection<Variable> additionalVariables;
         private AdvancedModelEnumerationConfig configuration;
 
         Builder() {
@@ -107,26 +110,6 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
-         * @param variables the additional variables for each model
-         * @return the current builder
-         */
-        public Builder additionalVariables(final Collection<Variable> variables) {
-            this.additionalVariables = variables;
-            return this;
-        }
-
-        /**
-         * Sets an additional set of variables which should occur in every model. Only set this field if 'variables' is non-empty.
-         * @param variables the additional variables for each model
-         * @return the current builder
-         */
-        public Builder additionalVariables(final Variable... variables) {
-            this.additionalVariables = asList(variables);
-            return this;
-        }
-
-        /**
          * Sets the configuration for the model enumeration split algorithm.
          * @param configuration the configuration
          * @return the current builder
@@ -140,44 +123,51 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
-        public AdvancedModelEnumerationFunction build() {
-            return new AdvancedModelEnumerationFunction(this.variables, this.additionalVariables, this.configuration);
+        public BddModelEnumerationFunction build() {
+            return new BddModelEnumerationFunction(this.variables, this.configuration);
         }
     }
 
-    static class ModelEnumerationCollector implements EnumerationCollector<List<Model>> {
-        private final List<Model> committedModels = new ArrayList<>();
+    static class BddModelEnumerationCollector implements EnumerationCollector<BDD> {
+        private final BDDKernel kernel;
+        private BDD committedModels;
         private final List<Model> uncommittedModels = new ArrayList<>();
-        private final List<List<Literal>> baseModels;
-        private final SortedSet<Variable> additionalVariablesNotKnownBySolver;
+        private final int dontCareFactor;
 
-        public ModelEnumerationCollector(final SortedSet<Variable> dontCareVariables, final SortedSet<Variable> additionalVariablesNotKnownBySolver) {
-            this.baseModels = getCartesianProduct(dontCareVariables);
-            this.additionalVariablesNotKnownBySolver = additionalVariablesNotKnownBySolver;
+        public BddModelEnumerationCollector(final FormulaFactory f, final Collection<Variable> variables, final SortedSet<Variable> knownVariables,
+                                            final int numberDontCareVariables) {
+            final List<Variable> sortedVariables = variables != null
+                    ? new ArrayList<>(new TreeSet<>(variables))
+                    : new ArrayList<>(knownVariables);
+            final int numVars = sortedVariables.size();
+            this.kernel = new BDDKernel(f, sortedVariables, numVars * 30, numVars * 50);
+            this.committedModels = BDDFactory.build(f.falsum(), this.kernel);
+            this.dontCareFactor = (int) Math.pow(2, numberDontCareVariables);
         }
 
         @Override
         public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
                                 final AdvancedModelEnumerationHandler handler) {
             final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-            final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotKnownBySolver);
-            modelLiterals.addAll(model.getLiterals());
-            final List<Model> allModels = new ArrayList<>(this.baseModels.size());
-            for (final List<Literal> baseModel : this.baseModels) {
-                final List<Literal> completeModel = new ArrayList<>(baseModel.size() + modelLiterals.size());
-                completeModel.addAll(baseModel);
-                completeModel.addAll(modelLiterals);
-                allModels.add(new Model(completeModel));
-            }
-            this.uncommittedModels.addAll(allModels);
-            return handler == null || handler.foundModels(allModels.size());
+            this.uncommittedModels.add(model);
+            return handler == null || handler.foundModels(this.dontCareFactor);
         }
 
         @Override
         public boolean commit(final AdvancedModelEnumerationHandler handler) {
-            this.committedModels.addAll(this.uncommittedModels);
+            for (final Model uncommittedModel : this.uncommittedModels) {
+                this.committedModels = this.committedModels.or(model2Bdd(uncommittedModel));
+            }
             this.uncommittedModels.clear();
             return handler == null || handler.commit();
+        }
+
+        private BDD model2Bdd(final Model model) {
+            BDD bdd = BDDFactory.build(this.kernel.factory().verum(), this.kernel);
+            for (final Literal literal : model.getLiterals()) {
+                bdd = bdd.and(BDDFactory.build(literal, this.kernel));
+            }
+            return bdd;
         }
 
         @Override
@@ -194,33 +184,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         }
 
         @Override
-        public List<Model> getResult() {
+        public BDD getResult() {
             return this.committedModels;
-        }
-
-        /**
-         * Returns the Cartesian product for the given variables, i.e. all combinations of literals are generated
-         * with each variable occurring positively and negatively.
-         * @param variables the variables, must not be {@code null}
-         * @return the Cartesian product
-         */
-        static List<List<Literal>> getCartesianProduct(final Collection<Variable> variables) {
-            List<List<Literal>> result = singletonList(emptyList());
-            for (final Variable var : variables) {
-                final List<List<Literal>> extended = new ArrayList<>(result.size() * 2);
-                for (final List<Literal> literals : result) {
-                    extended.add(extendedByLiteral(literals, var));
-                    extended.add(extendedByLiteral(literals, var.negate()));
-                }
-                result = extended;
-            }
-            return result;
-        }
-
-        private static List<Literal> extendedByLiteral(final List<Literal> literals, final Literal lit) {
-            final ArrayList<Literal> extended = new ArrayList<>(literals);
-            extended.add(lit);
-            return extended;
         }
     }
 }
