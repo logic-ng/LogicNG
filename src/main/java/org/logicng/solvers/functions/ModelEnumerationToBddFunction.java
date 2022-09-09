@@ -58,9 +58,9 @@ import java.util.TreeSet;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class BddModelEnumerationFunction extends AbstractModelEnumerationFunction<BDD> {
+public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunction<BDD> {
 
-    BddModelEnumerationFunction(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
+    ModelEnumerationToBddFunction(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
         super(variables, Collections.emptyList(), configuration(variables, config));
     }
 
@@ -123,8 +123,8 @@ public class BddModelEnumerationFunction extends AbstractModelEnumerationFunctio
          * Builds the model enumeration function with the current builder's configuration.
          * @return the model enumeration function
          */
-        public BddModelEnumerationFunction build() {
-            return new BddModelEnumerationFunction(this.variables, this.configuration);
+        public ModelEnumerationToBddFunction build() {
+            return new ModelEnumerationToBddFunction(this.variables, this.configuration);
         }
     }
 

@@ -30,11 +30,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Units tests for {@link BddModelEnumerationFunction}.
+ * Units tests for {@link ModelEnumerationToBddFunction}.
  * @version 2.4.0
  * @since 2.4.0
  */
-public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
+public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
 
     private FormulaFactory f;
 
@@ -58,7 +58,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.literal("A", true));
         solver.add(this.f.literal("A", false));
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder().variables().configuration(config).build());
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
         assertThat(bdd.isContradiction()).isTrue();
     }
 
@@ -67,7 +67,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
     public void testTautology(final SplitVariableProvider splitProvider) {
         final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder().variables().configuration(config).build());
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
         assertThat(bdd.isTautology()).isTrue();
     }
 
@@ -78,7 +78,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A & (B | C)");
         solver.add(formula);
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder().variables().configuration(config).build());
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
         assertThat(bdd.isTautology()).isTrue();
     }
 
@@ -89,7 +89,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A & (B | C)");
         solver.add(formula);
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder().configuration(config).build());
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
         compareModels(formula, formula.variables(), bdd);
     }
 
@@ -100,7 +100,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         solver.add(formula);
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder().configuration(config).build());
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
         assertThat(bdd.modelCount()).isEqualTo(5);
         compareModels(formula, formula.variables(), bdd);
     }
@@ -112,7 +112,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         solver.add(formula);
-        final BddModelEnumerationFunction meFunction = BddModelEnumerationFunction.builder().configuration(config).build();
+        final ModelEnumerationToBddFunction meFunction = ModelEnumerationToBddFunction.builder().configuration(config).build();
         final BDD firstRun = solver.execute(meFunction);
         final BDD secondRun = solver.execute(meFunction);
         assertThat(firstRun.modelCount()).isEqualTo(5);
@@ -129,7 +129,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         final List<Variable> variables = this.f.variables("A", "B", "C", "D");
         solver.add(formula);
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder()
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder()
                 .variables(variables)
                 .configuration(config)
                 .build());
@@ -145,7 +145,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         final List<Variable> variables = this.f.variables("A", "C", "D", "E");
         solver.add(formula);
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder()
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder()
                 .variables(variables)
                 .configuration(config)
                 .build());
@@ -161,7 +161,7 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
         final Formula formula = this.f.parse("A | B | (X & ~X)"); // X will be simplified out and become a don't care variable unknown by the solver
         solver.add(formula);
         final SortedSet<Variable> variables = new TreeSet<>(this.f.variables("A", "B", "X"));
-        final BDD bdd = solver.execute(BddModelEnumerationFunction.builder()
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder()
                 .variables(variables)
                 .configuration(config)
                 .build());
@@ -182,12 +182,12 @@ public class BddModelEnumerationFunctionTest extends TestWithExampleFormulas {
             // recursive call: least common vars
             final AdvancedModelEnumerationConfig configLcv =
                     AdvancedModelEnumerationConfig.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build();
-            final BDD bdd1 = solver.execute(BddModelEnumerationFunction.builder().variables(formula.variables()).configuration(configLcv).build());
+            final BDD bdd1 = solver.execute(ModelEnumerationToBddFunction.builder().variables(formula.variables()).configuration(configLcv).build());
 
             // recursive call: most common vars
             final AdvancedModelEnumerationConfig configMcv =
                     AdvancedModelEnumerationConfig.builder().splitVariableProvider(new MostCommonVariablesProvider()).build();
-            final BDD bdd2 = solver.execute(BddModelEnumerationFunction.builder().variables(formula.variables()).configuration(configMcv).build());
+            final BDD bdd2 = solver.execute(ModelEnumerationToBddFunction.builder().variables(formula.variables()).configuration(configMcv).build());
 
             compareModels(formula, formula.variables(), bdd1);
             compareModels(formula, formula.variables(), bdd2);
