@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -55,7 +56,7 @@ import java.util.SortedSet;
  */
 public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFunction<List<Model>> {
 
-    AdvancedModelEnumerationFunction(final Collection<Variable> variables, final Collection<Variable> additionalVariables,
+    AdvancedModelEnumerationFunction(final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables,
                                      final AdvancedModelEnumerationConfig config) {
         super(variables, additionalVariables, configuration(variables, config));
     }
@@ -78,8 +79,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
      * The builder for a model enumeration function.
      */
     public static class Builder {
-        private Collection<Variable> variables;
-        private Collection<Variable> additionalVariables;
+        private SortedSet<Variable> variables;
+        private SortedSet<Variable> additionalVariables;
         private AdvancedModelEnumerationConfig configuration;
 
         Builder() {
@@ -92,7 +93,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the current builder
          */
         public Builder variables(final Collection<Variable> variables) {
-            this.variables = variables;
+            this.variables = new TreeSet<>(variables);
             return this;
         }
 
@@ -102,7 +103,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the current builder
          */
         public Builder variables(final Variable... variables) {
-            this.variables = asList(variables);
+            this.variables = new TreeSet<>(asList(variables));
             return this;
         }
 
@@ -112,7 +113,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the current builder
          */
         public Builder additionalVariables(final Collection<Variable> variables) {
-            this.additionalVariables = variables;
+            this.additionalVariables = new TreeSet<>(variables);
             return this;
         }
 
@@ -122,7 +123,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @return the current builder
          */
         public Builder additionalVariables(final Variable... variables) {
-            this.additionalVariables = asList(variables);
+            this.additionalVariables = new TreeSet<>(asList(variables));
             return this;
         }
 
@@ -204,7 +205,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
          * @param variables the variables, must not be {@code null}
          * @return the Cartesian product
          */
-        static List<List<Literal>> getCartesianProduct(final Collection<Variable> variables) {
+        static List<List<Literal>> getCartesianProduct(final SortedSet<Variable> variables) {
             List<List<Literal>> result = singletonList(emptyList());
             for (final Variable var : variables) {
                 final List<List<Literal>> extended = new ArrayList<>(result.size() * 2);

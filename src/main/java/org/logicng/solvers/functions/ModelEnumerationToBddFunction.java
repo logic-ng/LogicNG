@@ -60,8 +60,8 @@ import java.util.TreeSet;
  */
 public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunction<BDD> {
 
-    ModelEnumerationToBddFunction(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
-        super(variables, Collections.emptyList(), configuration(variables, config));
+    ModelEnumerationToBddFunction(final SortedSet<Variable> variables, final AdvancedModelEnumerationConfig config) {
+        super(variables, Collections.emptySortedSet(), configuration(variables, config));
     }
 
     /**
@@ -82,7 +82,7 @@ public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunct
      * The builder for a BDD model enumeration function.
      */
     public static class Builder {
-        private Collection<Variable> variables;
+        private SortedSet<Variable> variables;
         private AdvancedModelEnumerationConfig configuration;
 
         Builder() {
@@ -95,7 +95,7 @@ public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunct
          * @return the current builder
          */
         public Builder variables(final Collection<Variable> variables) {
-            this.variables = variables;
+            this.variables = new TreeSet<>(variables);
             return this;
         }
 
@@ -105,7 +105,7 @@ public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunct
          * @return the current builder
          */
         public Builder variables(final Variable... variables) {
-            this.variables = asList(variables);
+            this.variables = new TreeSet<>(asList(variables));
             return this;
         }
 
@@ -134,10 +134,10 @@ public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunct
         private final List<Model> uncommittedModels = new ArrayList<>();
         private final int dontCareFactor;
 
-        public BddModelEnumerationCollector(final FormulaFactory f, final Collection<Variable> variables, final SortedSet<Variable> knownVariables,
+        public BddModelEnumerationCollector(final FormulaFactory f, final SortedSet<Variable> variables, final SortedSet<Variable> knownVariables,
                                             final int numberDontCareVariablesNotOnSolver) {
             final List<Variable> sortedVariables = variables != null
-                    ? new ArrayList<>(new TreeSet<>(variables))
+                    ? new ArrayList<>(variables)
                     : new ArrayList<>(knownVariables);
             final int numVars = sortedVariables.size();
             this.kernel = new BDDKernel(f, sortedVariables, numVars * 30, numVars * 50);

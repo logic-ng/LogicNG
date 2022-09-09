@@ -51,7 +51,6 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -68,13 +67,13 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractModelEnumerationFunction<R> implements SolverFunction<R> {
 
-    protected final Collection<Variable> variables;
-    protected final Collection<Variable> additionalVariables;
+    protected final SortedSet<Variable> variables;
+    protected final SortedSet<Variable> additionalVariables;
     protected final AdvancedModelEnumerationHandler handler;
     protected final SplitVariableProvider splitVariableProvider;
     protected final int maxNumberOfModels;
 
-    AbstractModelEnumerationFunction(final Collection<Variable> variables, final Collection<Variable> additionalVariables,
+    AbstractModelEnumerationFunction(final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables,
                                      final AdvancedModelEnumerationConfig configuration) {
         this.variables = variables;
         this.additionalVariables = additionalVariables;
@@ -108,8 +107,8 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     private void enumerateRecursive(final EnumerationCollector<R> collector, final MiniSat solver, final Model splitAssignment,
-                                    final Consumer<Tristate> resultSetter, final Collection<Variable> enumerationVars, final Collection<Variable> nextSplitVars,
-                                    final Collection<Variable> additionalVars) {
+                                    final Consumer<Tristate> resultSetter, final SortedSet<Variable> enumerationVars, final SortedSet<Variable> nextSplitVars,
+                                    final SortedSet<Variable> additionalVars) {
         final SolverState state = solver.saveState();
         solver.add(splitAssignment.formula(solver.factory()));
         final boolean enumerationFinished = enumerate(collector, solver, resultSetter, enumerationVars, additionalVars, this.maxNumberOfModels, this.handler);
@@ -154,7 +153,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     }
 
     protected static <R> boolean enumerate(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
-                                           final Collection<Variable> variables, final Collection<Variable> additionalVariables, final int maxModels,
+                                           final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables, final int maxModels,
                                            final AdvancedModelEnumerationHandler handler) {
         start(handler);
         final SolverState stateBeforeEnumeration = solver.saveState();
@@ -216,7 +215,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         return true;
     }
 
-    protected SortedSet<Variable> getVarsForEnumeration(final Collection<Variable> knownVariables) {
+    protected SortedSet<Variable> getVarsForEnumeration(final SortedSet<Variable> knownVariables) {
         final SortedSet<Variable> relevantVars = knownVariables.stream()
                 .filter(AbstractModelEnumerationFunction::isNotAuxiliaryVariable)
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -233,11 +232,11 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         return !aborted(handler) && sat;
     }
 
-    protected static FormulaFactory factory(final Collection<Variable> variables) {
-        return variables == null || variables.isEmpty() ? new FormulaFactory() : variables.iterator().next().factory();
+    protected static FormulaFactory factory(final SortedSet<Variable> variables) {
+        return variables == null || variables.isEmpty() ? new FormulaFactory() : variables.first().factory();
     }
 
-    protected static AdvancedModelEnumerationConfig configuration(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
+    protected static AdvancedModelEnumerationConfig configuration(final SortedSet<Variable> variables, final AdvancedModelEnumerationConfig config) {
         return config == null ? (AdvancedModelEnumerationConfig) factory(variables).configurationFor(ConfigurationType.ADVANCED_MODEL_ENUMERATION) : config;
     }
 }

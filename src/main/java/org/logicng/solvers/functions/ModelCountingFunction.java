@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -53,8 +54,8 @@ import java.util.SortedSet;
  */
 public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigInteger> {
 
-    ModelCountingFunction(final Collection<Variable> variables, final AdvancedModelEnumerationConfig config) {
-        super(variables, Collections.emptyList(), configuration(variables, config));
+    ModelCountingFunction(final SortedSet<Variable> variables, final AdvancedModelEnumerationConfig config) {
+        super(variables, Collections.emptySortedSet(), configuration(variables, config));
     }
 
     /**
@@ -75,7 +76,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
      * The builder for a model enumeration function.
      */
     public static class Builder {
-        private Collection<Variable> variables;
+        private SortedSet<Variable> variables;
         private AdvancedModelEnumerationConfig configuration;
 
         Builder() {
@@ -88,7 +89,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
          * @return the current builder
          */
         public Builder variables(final Collection<Variable> variables) {
-            this.variables = variables;
+            this.variables = new TreeSet<>(variables);
             return this;
         }
 
@@ -98,7 +99,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
          * @return the current builder
          */
         public Builder variables(final Variable... variables) {
-            this.variables = Arrays.asList(variables);
+            this.variables = new TreeSet<>(Arrays.asList(variables));
             return this;
         }
 

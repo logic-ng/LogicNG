@@ -116,6 +116,22 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     @ParameterizedTest
     @MethodSource("splitProviders")
+    public void testDuplicateEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(this.f.variables("A", "A", "B"))
+                .configuration(config).build());
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                set(this.f.variable("A"), this.f.variable("B")),
+                set(this.f.variable("A"), this.f.literal("B", false))
+        );
+        assertThat(models).extracting(Model::size).allMatch(size -> size == 2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
     public void testMultipleModelEnumeration(final SplitVariableProvider splitProvider) throws ParserException {
         final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
@@ -145,6 +161,20 @@ public class ModelEnumerationFunctionRecursiveTest {
         for (final Model model : models) {
             assertThat(variables(model)).containsExactly(a, b, c);
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDuplicateAdditionalVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(this.f.variables("A"))
+                .additionalVariables(this.f.variables("B", "B"))
+                .configuration(config).build());
+        assertThat(models).hasSize(1);
+        assertThat(models).extracting(Model::size).allMatch(size -> size == 2);
     }
 
     @ParameterizedTest

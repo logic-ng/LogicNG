@@ -2,12 +2,15 @@ package org.logicng.solvers.functions;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySortedSet;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.solvers.functions.AdvancedModelEnumerationFunction.ModelEnumerationCollector.getCartesianProduct;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
+
+import java.util.TreeSet;
 
 /**
  * Units tests for {@link AdvancedModelEnumerationFunction}.
@@ -18,11 +21,11 @@ public class AdvancedModelEnumerationFunctionTest extends TestWithExampleFormula
 
     @Test
     public void testGetCartesianProduct() {
-        assertThat(getCartesianProduct(emptyList())).containsExactly(emptyList());
-        assertThat(getCartesianProduct(singletonList(this.A))).containsExactly(
+        assertThat(getCartesianProduct(emptySortedSet())).containsExactly(emptyList());
+        assertThat(getCartesianProduct(new TreeSet<>(singletonList(this.A)))).containsExactly(
                 singletonList(this.A),
                 singletonList(this.NA));
-        assertThat(getCartesianProduct(asList(this.A, this.B, this.C))).containsExactly(
+        assertThat(getCartesianProduct(new TreeSet<>(asList(this.A, this.B, this.C)))).containsExactly(
                 asList(this.A, this.B, this.C),
                 asList(this.A, this.B, this.NC),
                 asList(this.A, this.NB, this.C),
