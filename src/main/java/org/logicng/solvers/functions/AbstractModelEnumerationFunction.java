@@ -155,7 +155,6 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     protected static <R> boolean enumerate(final EnumerationCollector<R> collector, final MiniSat solver, final Consumer<Tristate> resultSetter,
                                            final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables, final int maxModels,
                                            final AdvancedModelEnumerationHandler handler) {
-        start(handler);
         final SolverState stateBeforeEnumeration = solver.saveState();
         boolean proceed = true;
         final LNGIntVector relevantIndices;

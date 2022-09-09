@@ -19,6 +19,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.AdvancedNumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
@@ -265,6 +266,18 @@ public class ModelEnumerationFunctionRecursiveTest {
                 .configuration(config)
                 .build());
         assertThat(models).hasSize(6);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testHandlerWithNumModelsLimit(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedNumberOfModelsHandler handler = new AdvancedNumberOfModelsHandler(3);
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().handler(handler).maxNumberOfModels(3).splitVariableProvider(splitProvider).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
+        assertThat(handler.aborted()).isTrue();
+        assertThat(models).hasSize(3);
     }
 
     @Test

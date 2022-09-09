@@ -12,6 +12,7 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.AdvancedNumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.solvers.MiniSat;
@@ -167,6 +168,18 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
                 .build());
         assertThat(bdd.modelCount()).isEqualTo(6);
         compareModels(formula, variables, bdd);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testHandlerWithNumModelsLimit(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedNumberOfModelsHandler handler = new AdvancedNumberOfModelsHandler(3);
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().handler(handler).maxNumberOfModels(3).splitVariableProvider(splitProvider).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
+        assertThat(handler.aborted()).isTrue();
+        assertThat(bdd.modelCount()).isEqualTo(3);
     }
 
     @RandomTag
