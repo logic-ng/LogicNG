@@ -116,6 +116,25 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     @ParameterizedTest
     @MethodSource("splitProviders")
+    public void testResultLiteralOrderIndependentFromInputOrder(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
+        final List<Model> modelsABC = solver.execute(AdvancedModelEnumerationFunction.builder().variables(this.f.variables("A", "B", "C")).configuration(config).build());
+        final List<Model> modelsBCA = solver.execute(AdvancedModelEnumerationFunction.builder().variables(this.f.variables("B", "C", "A")).configuration(config).build());
+
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                set(this.f.variable("A"), this.f.variable("B"), this.f.variable("C")),
+                set(this.f.variable("A"), this.f.variable("B"), this.f.literal("C", false)),
+                set(this.f.variable("A"), this.f.literal("B", false), this.f.variable("C"))
+        );
+        assertThat(models).containsExactlyInAnyOrderElementsOf(modelsABC);
+        assertThat(modelsABC).containsExactlyInAnyOrderElementsOf(modelsBCA);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
     public void testDuplicateEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
         final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
