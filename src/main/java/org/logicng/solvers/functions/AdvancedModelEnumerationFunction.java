@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
@@ -148,7 +149,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
 
     static class ModelEnumerationCollector implements EnumerationCollector<List<Model>> {
         private final List<Model> committedModels = new ArrayList<>();
-        private final List<Model> uncommittedModels = new ArrayList<>();
+        private final List<List<Literal>> uncommittedModels = new ArrayList<>();
         private final List<List<Literal>> baseModels;
         private final SortedSet<Variable> additionalVariablesNotKnownBySolver;
 
@@ -163,20 +164,13 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
             final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
             final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotKnownBySolver);
             modelLiterals.addAll(model.getLiterals());
-            final List<Model> allModels = new ArrayList<>(this.baseModels.size());
-            for (final List<Literal> baseModel : this.baseModels) {
-                final List<Literal> completeModel = new ArrayList<>(baseModel.size() + modelLiterals.size());
-                completeModel.addAll(baseModel);
-                completeModel.addAll(modelLiterals);
-                allModels.add(new Model(completeModel));
-            }
-            this.uncommittedModels.addAll(allModels);
-            return handler == null || handler.foundModels(allModels.size());
+            this.uncommittedModels.add(modelLiterals);
+            return handler == null || handler.foundModels(this.baseModels.size());
         }
 
         @Override
         public boolean commit(final AdvancedModelEnumerationHandler handler) {
-            this.committedModels.addAll(this.uncommittedModels);
+            this.committedModels.addAll(expandUncommittedModels());
             this.uncommittedModels.clear();
             return handler == null || handler.commit();
         }
@@ -189,7 +183,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
 
         @Override
         public List<Model> rollbackAndReturnModels(final MiniSat solver, final AdvancedModelEnumerationHandler handler) {
-            final List<Model> modelsToReturn = new ArrayList<>(this.uncommittedModels);
+            final List<Model> modelsToReturn = this.uncommittedModels.stream().map(Model::new).collect(Collectors.toList());
             rollback(handler);
             return modelsToReturn;
         }
@@ -197,6 +191,19 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         @Override
         public List<Model> getResult() {
             return this.committedModels;
+        }
+
+        private List<Model> expandUncommittedModels() {
+            final List<Model> expanded = new ArrayList<>(this.baseModels.size());
+            for (final List<Literal> baseModel : this.baseModels) {
+                for (final List<Literal> uncommittedModel : this.uncommittedModels) {
+                    final List<Literal> completeModel = new ArrayList<>(baseModel.size() + uncommittedModel.size());
+                    completeModel.addAll(baseModel);
+                    completeModel.addAll(uncommittedModel);
+                    expanded.add(new Model(completeModel));
+                }
+            }
+            return expanded;
         }
 
         /**
