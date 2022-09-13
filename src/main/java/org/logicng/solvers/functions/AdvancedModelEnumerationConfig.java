@@ -32,7 +32,6 @@ import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
 
 /**
  * The configuration object for the {@link AdvancedModelEnumerationFunction}.
@@ -42,8 +41,7 @@ import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvide
 public class AdvancedModelEnumerationConfig extends Configuration {
 
     final AdvancedModelEnumerationHandler handler;
-    final SplitVariableProvider splitVariableProvider;
-    final int maxNumberOfModels;
+    final AdvancedModelEnumerationStrategy strategy;
 
     /**
      * Constructs a new configuration with a given type.
@@ -52,8 +50,7 @@ public class AdvancedModelEnumerationConfig extends Configuration {
     private AdvancedModelEnumerationConfig(final Builder builder) {
         super(ConfigurationType.ADVANCED_MODEL_ENUMERATION);
         this.handler = builder.handler;
-        this.splitVariableProvider = builder.splitVariableProvider;
-        this.maxNumberOfModels = builder.maxNumberOfModels;
+        this.strategy = builder.strategy;
     }
 
     /**
@@ -66,13 +63,14 @@ public class AdvancedModelEnumerationConfig extends Configuration {
 
     /**
      * The builder for a model enumeration configuration.
+     * @version 2.4.0
+     * @since 2.4.0
      */
     public static class Builder {
-        protected AdvancedModelEnumerationHandler handler = null;
-        protected SplitVariableProvider splitVariableProvider = new MostCommonVariablesProvider();
-        protected int maxNumberOfModels = 500;
+        private AdvancedModelEnumerationHandler handler = null;
+        private AdvancedModelEnumerationStrategy strategy = DefaultAdvancedModelEnumerationStrategy.builder().build();
 
-        Builder() {
+        private Builder() {
             // Initialize only via factory
         }
 
@@ -87,24 +85,15 @@ public class AdvancedModelEnumerationConfig extends Configuration {
         }
 
         /**
-         * Sets the split variable provider. If no split variable provider is given, enumeration is performed without splits. Otherwise, the enumeration is
-         * performed with the split variables provided by the {@link SplitVariableProvider}.  The default value is the most common variables provider.
-         * @param splitVariableProvider the given split variable provider
-         * @return the builder
+         * Sets the model enumeration strategy for this function. The default is the {@link DefaultAdvancedModelEnumerationStrategy} with the
+         * {@link MostCommonVariablesProvider} and a maximum number of models of 500.
+         * <p>
+         * In case of {@code null} the computation will fall back to the default model enumeration without split assignments
+         * @param strategy the strategy
+         * @return the current builder
          */
-        public Builder splitVariableProvider(final SplitVariableProvider splitVariableProvider) {
-            this.splitVariableProvider = splitVariableProvider;
-            return this;
-        }
-
-        /**
-         * The maximum number of models before a model split is performed.  In order to guarantee termination of the enumeration algorithm,
-         * this number must be &gt; 2.  If a smaller number is provided, it is automatically set to 3.  The default value is 500.
-         * @param maxNumberOfModels the maximum number of models
-         * @return the builder
-         */
-        public Builder maxNumberOfModels(final int maxNumberOfModels) {
-            this.maxNumberOfModels = Math.max(maxNumberOfModels, 3);
+        public Builder strategy(final AdvancedModelEnumerationStrategy strategy) {
+            this.strategy = strategy;
             return this;
         }
 

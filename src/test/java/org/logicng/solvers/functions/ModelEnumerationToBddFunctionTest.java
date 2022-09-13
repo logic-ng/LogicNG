@@ -55,7 +55,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testContradiction(final SplitVariableProvider splitProvider) {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.literal("A", true));
         solver.add(this.f.literal("A", false));
@@ -66,7 +68,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testTautology(final SplitVariableProvider splitProvider) {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
         assertThat(bdd.isTautology()).isTrue();
@@ -75,7 +79,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testEmptyEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A & (B | C)");
         solver.add(formula);
@@ -86,7 +92,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testSimple1(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A & (B | C)");
         solver.add(formula);
@@ -97,7 +105,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testSimple2(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         solver.add(formula);
@@ -109,7 +119,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testMultipleModelEnumeration(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         solver.add(formula);
@@ -125,7 +137,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDontCareVariables1(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         final List<Variable> variables = this.f.variables("A", "B", "C", "D");
@@ -141,7 +155,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDontCareVariables2(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         final List<Variable> variables = this.f.variables("A", "C", "D", "E");
@@ -156,8 +172,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
 
     @Test
     public void testDontCareVariables3() throws ParserException {
-        final FixedVariableProvider provider = new FixedVariableProvider(new TreeSet<>(this.f.variables("X")));
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(provider).maxNumberOfModels(3).build();
+        final FixedVariableProvider splitProvider = new FixedVariableProvider(new TreeSet<>(this.f.variables("X")));
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A | B | (X & ~X)"); // X will be simplified out and become a don't care variable unknown by the solver
         solver.add(formula);
@@ -174,7 +191,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @MethodSource("splitProviders")
     public void testHandlerWithNumModelsLimit(final SplitVariableProvider splitProvider) throws ParserException {
         final AdvancedNumberOfModelsHandler handler = new AdvancedNumberOfModelsHandler(3);
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().handler(handler).maxNumberOfModels(3).splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().handler(handler)
+                        .strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
@@ -194,12 +213,12 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
 
             // recursive call: least common vars
             final AdvancedModelEnumerationConfig configLcv =
-                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build();
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
             final BDD bdd1 = solver.execute(ModelEnumerationToBddFunction.builder().variables(formula.variables()).configuration(configLcv).build());
 
             // recursive call: most common vars
             final AdvancedModelEnumerationConfig configMcv =
-                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new MostCommonVariablesProvider()).build();
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new MostCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
             final BDD bdd2 = solver.execute(ModelEnumerationToBddFunction.builder().variables(formula.variables()).configuration(configMcv).build());
 
             compareModels(formula, formula.variables(), bdd1);

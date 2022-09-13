@@ -67,7 +67,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testTautology(final SplitVariableProvider splitProvider) {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().configuration(config).build());
         assertThat(models).containsExactly(new Model());
@@ -80,7 +82,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testEmptyEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A & (B | C)");
         solver.add(formula);
@@ -94,7 +98,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testSimple1(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
@@ -108,7 +114,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testSimple2(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
@@ -118,7 +126,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testResultLiteralOrderIndependentFromInputOrder(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
@@ -137,7 +147,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDuplicateEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
@@ -153,7 +165,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testMultipleModelEnumeration(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final AdvancedModelEnumerationFunction meFunction = AdvancedModelEnumerationFunction.builder().configuration(config).build();
@@ -166,7 +180,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testAdditionalVariablesSimple(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & C | B & ~C"));
         final Variable a = this.f.variable("A");
@@ -186,7 +202,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDuplicateAdditionalVariables(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("A & (B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
@@ -200,7 +218,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDontCareVariables1(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
@@ -226,7 +246,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @ParameterizedTest
     @MethodSource("splitProviders")
     public void testDontCareVariables2(final SplitVariableProvider splitProvider) throws ParserException {
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(500).build())
+                        .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
@@ -255,8 +277,9 @@ public class ModelEnumerationFunctionRecursiveTest {
 
     @Test
     public void testDontCareVariables3() throws ParserException {
-        final FixedVariableProvider provider = new FixedVariableProvider(new TreeSet<>(this.f.variables("X")));
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().splitVariableProvider(provider).maxNumberOfModels(3).build();
+        final FixedVariableProvider splitProvider = new FixedVariableProvider(new TreeSet<>(this.f.variables("X")));
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A | B | (X & ~X)"); // X will be simplified out and become a don't care variable unknown by the solver
         solver.add(formula);
@@ -272,7 +295,9 @@ public class ModelEnumerationFunctionRecursiveTest {
     @MethodSource("splitProviders")
     public void testHandlerWithNumModelsLimit(final SplitVariableProvider splitProvider) throws ParserException {
         final AdvancedNumberOfModelsHandler handler = new AdvancedNumberOfModelsHandler(3);
-        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder().handler(handler).maxNumberOfModels(3).splitVariableProvider(splitProvider).build();
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().handler(handler)
+                        .strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
         final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
@@ -295,12 +320,12 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final AdvancedModelEnumerationConfig configLcv =
-                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build();
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
             final List<Model> models1 = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(configLcv).build());
 
             // recursive call: most common vars
             final AdvancedModelEnumerationConfig configMcv =
-                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new MostCommonVariablesProvider()).build();
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new MostCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
             final List<Model> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(configMcv).build());
 
             assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
@@ -327,13 +352,13 @@ public class ModelEnumerationFunctionRecursiveTest {
 
             // recursive call: least common vars
             final AdvancedModelEnumerationConfig configLcv =
-                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new LeastCommonVariablesProvider()).build();
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
             final BigInteger count1 =
                     solver.execute(ModelCountingFunction.builder().configuration(configLcv).build());
 
             // recursive call: most common vars
             final AdvancedModelEnumerationConfig configMcv =
-                    AdvancedModelEnumerationConfig.builder().splitVariableProvider(new MostCommonVariablesProvider()).build();
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new MostCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
             final BigInteger count2 =
                     solver.execute(ModelCountingFunction.builder().configuration(configMcv).build());
 
@@ -346,8 +371,7 @@ public class ModelEnumerationFunctionRecursiveTest {
     public void testAdditionalVariables() {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder()
-                .splitVariableProvider(new LeastCommonVariablesProvider())
-                .maxNumberOfModels(10)
+                .strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(10).build())
                 .build();
 
         for (int i = 1; i <= 1000; i++) {
