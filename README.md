@@ -12,6 +12,10 @@ or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
 Its main focus lies on memory-efficient data-structures for Boolean formulas and efficient algorithms for manipulating and solving them. The library is designed
 to be used in industrial systems which have to manipulate and solve millions of formulas per day.
 
+## White Paper
+
+An extensive white paper with a lot of interesting use cases of LogicNG for configuration problems can be found [here](https://logicng.org/assets/documents/logicng-whitepaper.pdf).
+
 ## Philosophy
 
 The most important philosophy of the library is to avoid unnecessary object creation. Therefore formulas can only be generated via formula factories. A formula
