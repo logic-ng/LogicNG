@@ -77,6 +77,7 @@ public class Totalizer extends Encoding {
     protected MaxSATConfig.IncrementalStrategy incrementalStrategy;
     protected int currentCardinalityRhs;
     protected boolean joinMode;
+    private LNGIntVector ilits;
 
     /**
      * Constructs a new totalizer with a given incremental strategy.
@@ -93,6 +94,7 @@ public class Totalizer extends Encoding {
         this.totalizerIterativeRhs = new LNGIntVector();
         this.cardinalityInlits = new LNGIntVector();
         this.cardinalityOutlits = new LNGIntVector();
+        this.ilits = new LNGIntVector();
     }
 
     /**
@@ -156,6 +158,9 @@ public class Totalizer extends Encoding {
         this.currentCardinalityRhs = rhs;
         this.adder(s, leftCardinalityOutlits, rightCardinalityOutlits, this.cardinalityOutlits);
         this.currentCardinalityRhs = oldCardinality;
+        for (int i = 0; i < lits.size(); i++) {
+            this.ilits.push(lits.get(i));
+        }
     }
 
     /**
@@ -220,6 +225,7 @@ public class Totalizer extends Encoding {
             this.joinMode = true;
         }
         this.hasEncoding = true;
+        this.ilits = new LNGIntVector(lits);
     }
 
     protected void toCNF(final MiniSatStyleSolver s, final LNGIntVector lits) {
@@ -307,6 +313,22 @@ public class Totalizer extends Encoding {
             }
             this.totalizerIterativeRhs.set(z, rhs);
         }
+    }
+
+    /**
+     * Returns the totalizer's literals.
+     * @return the literals
+     */
+    public LNGIntVector lits() {
+        return this.ilits;
+    }
+
+    /**
+     * Returns the totalizer's output literals.
+     * @return the literals
+     */
+    public LNGIntVector outputs() {
+        return this.cardinalityOutlits;
     }
 
     @Override

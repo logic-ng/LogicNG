@@ -255,6 +255,20 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
+    public void testOLL() throws IOException {
+        for (final String file : files) {
+            final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+            readCNF(solver, "src/test/resources/maxsat/" + file);
+            assertThat(solver.solve()).isEqualTo(OPTIMUM);
+            assertThat(solver.result()).isEqualTo(1);
+        }
+        final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+        readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+        assertThat(solver.solve()).isEqualTo(OPTIMUM);
+        assertThat(solver.result()).isEqualTo(0);
+    }
+
+    @Test
     public void testSingle() throws IOException {
         final MaxSATSolver solver = MaxSATSolver.incWBO(this.f, MaxSATConfig.builder().cardinality(CardinalityEncoding.MTOTALIZER)
                 .solver(MaxSATConfig.SolverType.GLUCOSE).verbosity(SOME).output(this.logStream).build());

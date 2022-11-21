@@ -115,6 +115,16 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
+    public void testOLL() throws IOException {
+        for (int i = 0; i < files.length; i++) {
+            final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+            readCNF(solver, "src/test/resources/partialmaxsat/" + files[i]);
+            assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+            assertThat(solver.result()).isEqualTo(results[i]);
+        }
+    }
+
+    @Test
     public void testIncWBO() throws IOException {
         final MaxSATConfig[] configs = new MaxSATConfig[1];
         configs[0] = MaxSATConfig.builder().verbosity(SOME).output(this.logStream).build();
