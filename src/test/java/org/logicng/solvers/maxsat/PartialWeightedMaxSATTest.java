@@ -30,6 +30,7 @@ package org.logicng.solvers.maxsat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.solvers.maxsat.MaxSATReader.readCnfToSolver;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
@@ -38,7 +39,6 @@ import org.logicng.LongRunningTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.handlers.TimeoutMaxSATHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MaxSATSolver;
@@ -46,17 +46,13 @@ import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 import org.logicng.testutils.PigeonHoleGenerator;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
@@ -119,7 +115,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-                readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
+                readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
                 assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
                 assertThat(solver.result()).isEqualTo(results[i]);
             }
@@ -135,7 +131,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.incWBO(this.f, config);
-                readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
+                readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
                 assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
                 assertThat(solver.result()).isEqualTo(results[i]);
             }
@@ -150,7 +146,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.linearSU(this.f, config);
-                readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
+                readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
                 assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
                 assertThat(solver.result()).isEqualTo(results[i]);
             }
@@ -166,7 +162,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.wmsu3(this.f, config);
-                readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
+                readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
                 assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
                 assertThat(solver.result()).isEqualTo(results[i]);
             }
@@ -180,7 +176,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < bmoFiles.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.wmsu3(this.f, config);
-                readCNF(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
+                readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
                 assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
                 assertThat(solver.result()).isEqualTo(bmoResults[i]);
             }
@@ -195,7 +191,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < bmoFiles.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.linearSU(this.f, config);
-                readCNF(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
+                readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
                 assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
                 assertThat(solver.result()).isEqualTo(bmoResults[i]);
             }
@@ -206,13 +202,13 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     public void testOLL() throws IOException {
         for (int i = 0; i < bmoFiles.length; i++) {
             final MaxSATSolver solver = MaxSATSolver.oll(this.f);
-            readCNF(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
+            readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
             assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
             assertThat(solver.result()).isEqualTo(bmoResults[i]);
         }
         for (int i = 0; i < files.length; i++) {
             final MaxSATSolver solver = MaxSATSolver.oll(this.f);
-            readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
+            readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
             assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
             assertThat(solver.result()).isEqualTo(results[i]);
         }
@@ -222,7 +218,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     @LongRunningTag
     public void testLargeOLL() throws IOException {
         final MaxSATSolver solver = MaxSATSolver.oll(this.f);
-        readCNF(solver, "src/test/resources/partialweightedmaxsat/large/large_industrial.wcnf");
+        readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/large/large_industrial.wcnf");
         assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
         assertThat(solver.result()).isEqualTo(68974);
     }
@@ -369,39 +365,5 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
         result = solver.solve(handler);
         assertThat(handler.aborted()).isFalse();
         assertThat(result).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
-    }
-
-    private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {
-        final BufferedReader reader = new BufferedReader(new FileReader(fileName));
-        int hardWeight = 0;
-        while (reader.ready()) {
-            final String line = reader.readLine();
-            if (line.startsWith("p wcnf")) {
-                final String[] header = line.split(" ", -1);
-                hardWeight = Integer.parseInt(header[4]);
-                break;
-            }
-        }
-        String[] tokens;
-        final List<Literal> literals = new ArrayList<>();
-        while (reader.ready()) {
-            tokens = reader.readLine().split(" ");
-            assert tokens.length >= 3;
-            assert "0".equals(tokens[tokens.length - 1]);
-            literals.clear();
-            final int weight = Integer.parseInt(tokens[0]);
-            for (int i = 1; i < tokens.length - 1; i++) {
-                if (!tokens[i].isEmpty()) {
-                    final int parsedLit = Integer.parseInt(tokens[i]);
-                    final String var = "v" + Math.abs(parsedLit);
-                    literals.add(parsedLit > 0 ? this.f.literal(var, true) : this.f.literal(var, false));
-                }
-            }
-            if (weight == hardWeight) {
-                solver.addHardFormula(this.f.or(literals));
-            } else {
-                solver.addSoftFormula(this.f.or(literals), weight);
-            }
-        }
     }
 }

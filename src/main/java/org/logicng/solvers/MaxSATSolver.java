@@ -58,7 +58,7 @@ import java.util.TreeSet;
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 2.3.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class MaxSATSolver {

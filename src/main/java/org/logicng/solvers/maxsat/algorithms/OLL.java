@@ -16,6 +16,11 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+/**
+ * OLL Solver.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class OLL extends MaxSAT {
     private MiniSatStyleSolver solver;
     private final Encoder encoder;
