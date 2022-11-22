@@ -34,6 +34,7 @@ import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEnco
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
 
 import org.junit.jupiter.api.Test;
+import org.logicng.LongRunningTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -199,6 +200,31 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
                 assertThat(solver.result()).isEqualTo(bmoResults[i]);
             }
         }
+    }
+
+    @Test
+    public void testOLL() throws IOException {
+        for (int i = 0; i < bmoFiles.length; i++) {
+            final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+            readCNF(solver, "src/test/resources/partialweightedmaxsat/bmo/" + bmoFiles[i]);
+            assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+            assertThat(solver.result()).isEqualTo(bmoResults[i]);
+        }
+        for (int i = 0; i < files.length; i++) {
+            final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+            readCNF(solver, "src/test/resources/partialweightedmaxsat/" + files[i]);
+            assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+            assertThat(solver.result()).isEqualTo(results[i]);
+        }
+    }
+
+    @Test
+    @LongRunningTag
+    public void testLargeOLL() throws IOException {
+        final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+        readCNF(solver, "src/test/resources/partialweightedmaxsat/large/large_industrial.wcnf");
+        assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+        assertThat(solver.result()).isEqualTo(68974);
     }
 
     @Test
