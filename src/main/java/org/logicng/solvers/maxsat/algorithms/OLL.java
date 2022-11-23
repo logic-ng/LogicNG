@@ -18,6 +18,9 @@ import java.util.TreeMap;
 
 /**
  * OLL Solver.
+ * <p>
+ * Based on "Unsatisfiability-based optimization in clasp*"
+ * by Andres, Kaufmann, Matheis, and Schaub.
  * @version 2.4.0
  * @since 2.4.0
  */

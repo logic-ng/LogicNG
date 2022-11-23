@@ -568,6 +568,14 @@ public class MaxSATSolver {
         return this.f;
     }
 
+    /**
+     * Returns the algorithm for this solver.
+     * @return the algorithm
+     */
+    public Algorithm getAlgorithm() {
+        return this.algorithm;
+    }
+
     @Override
     public String toString() {
         return String.format("MaxSATSolver{result=%s, var2index=%s}", this.result, this.var2index);

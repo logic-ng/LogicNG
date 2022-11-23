@@ -216,11 +216,20 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
 
     @Test
     @LongRunningTag
-    public void testLargeOLL() throws IOException {
+    public void testLargeOLL1() throws IOException {
         final MaxSATSolver solver = MaxSATSolver.oll(this.f);
         readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/large/large_industrial.wcnf");
         assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
         assertThat(solver.result()).isEqualTo(68974);
+    }
+
+    @Test
+    @LongRunningTag
+    public void testLargeOLL2() throws IOException {
+        final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+        readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/large/t3g3-5555.spn.wcnf");
+        assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+        assertThat(solver.result()).isEqualTo(1100610);
     }
 
     @Test
