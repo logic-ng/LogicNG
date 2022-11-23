@@ -233,7 +233,7 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testOLLwithLargeWeights() throws IOException {
+    public void testOLLWithLargeWeights() throws IOException {
         final MaxSATSolver solver = MaxSATSolver.oll(this.f);
         readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/large/large_weights.wcnf");
         assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);

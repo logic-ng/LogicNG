@@ -519,6 +519,11 @@ public class OLL extends MaxSAT {
         return nextWeight;
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
+
     private static class IntTriple {
         private final int id;
         private final int bound;

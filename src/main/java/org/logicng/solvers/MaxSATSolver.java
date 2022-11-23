@@ -357,7 +357,7 @@ public class MaxSATSolver {
      * @return whether this solver can handle weighted instances or not
      */
     public boolean isWeighted() {
-        return this.algorithm == Algorithm.INC_WBO || this.algorithm == Algorithm.WMSU3 || this.algorithm == Algorithm.WBO;
+        return this.algorithm == Algorithm.INC_WBO || this.algorithm == Algorithm.WMSU3 || this.algorithm == Algorithm.WBO || this.algorithm == Algorithm.OLL;
     }
 
     /**
@@ -561,19 +561,19 @@ public class MaxSATSolver {
     }
 
     /**
-     * Returns the formula factory for this solver.
-     * @return the formula factory
-     */
-    public FormulaFactory factory() {
-        return this.f;
-    }
-
-    /**
      * Returns the algorithm for this solver.
      * @return the algorithm
      */
     public Algorithm getAlgorithm() {
         return this.algorithm;
+    }
+
+    /**
+     * Returns the formula factory for this solver.
+     * @return the formula factory
+     */
+    public FormulaFactory factory() {
+        return this.f;
     }
 
     @Override

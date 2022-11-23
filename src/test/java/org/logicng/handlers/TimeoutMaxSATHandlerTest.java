@@ -43,7 +43,8 @@ class TimeoutMaxSATHandlerTest {
                 MaxSATSolver.linearSU(this.f),
                 MaxSATSolver.linearUS(this.f),
                 MaxSATSolver.msu3(this.f),
-                MaxSATSolver.wmsu3(this.f)
+                MaxSATSolver.wmsu3(this.f),
+                MaxSATSolver.oll(this.f)
         );
     }
 
