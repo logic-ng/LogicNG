@@ -30,7 +30,7 @@ LogicNG is released in the Maven Central Repository. To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>2.3.2</version>
+  <version>2.4.0</version>
 </dependency>
 ```
 
