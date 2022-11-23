@@ -350,6 +350,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testWithRelaxation() throws ParserException {
         final PropositionalParser parser = new PropositionalParser(this.f);
         final Formula one = parser.parse("a & b & (c | ~d)");
@@ -832,6 +833,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddWithoutUnknown() throws ParserException {
         final PropositionalParser parser = new PropositionalParser(this.f);
         final Formula phi = parser.parse("x1 & (~x2 | x3) & (x4 | ~x5)");

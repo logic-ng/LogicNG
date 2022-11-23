@@ -1,0 +1,46 @@
+digraph G {
+  bgcolor="#444444"
+
+  id0 [label="⇒", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id1 [label="⇔", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id2 [label="A", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+  id3 [label="∧", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id4 [label="B", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+  id5 [label="∨", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id6 [label="¬A", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+  id7 [label="C", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+  id8 [label="X", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+  id9 [label="∧", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id10 [label="a + b + c <= 2", shape=box, color="#777777", fontcolor="#777777", style=filled, fillcolor="#e4e4e4"]
+  id11 [label="a", shape=circle, color="#ffc612", fontcolor="#000000", style=filled, fillcolor="#ffc612"]
+  id12 [label="b", shape=circle, color="#ffc612", fontcolor="#000000", style=filled, fillcolor="#ffc612"]
+  id13 [label="c", shape=circle, color="#ffc612", fontcolor="#000000", style=filled, fillcolor="#ffc612"]
+  id14 [label="⇒", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id15 [label="∨", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id16 [label="¬a", shape=circle, color="#ffc612", fontcolor="#000000", style=filled, fillcolor="#ffc612"]
+  id17 [label="d", shape=circle, color="#ffc612", fontcolor="#000000", style=filled, fillcolor="#ffc612"]
+  id18 [label="∧", shape=ellipse, color="#000000", fontcolor="#000000"]
+  id19 [label="X", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+  id20 [label="¬B", shape=circle, color="#006266", fontcolor="#ffffff", style=filled, fillcolor="#006266"]
+
+  id3 -> id4
+  id5 -> id6
+  id5 -> id7
+  id5 -> id8
+  id3 -> id5
+  id1 -> id2
+  id1 -> id3
+  id10 -> id11
+  id10 -> id12
+  id10 -> id13
+  id9 -> id10
+  id15 -> id16
+  id15 -> id17
+  id18 -> id19
+  id18 -> id20
+  id14 -> id15 [label="l"]
+  id14 -> id18 [label="r"]
+  id9 -> id14
+  id0 -> id1 [label="l"]
+  id0 -> id9 [label="r"]
+}

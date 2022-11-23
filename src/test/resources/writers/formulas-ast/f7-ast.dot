@@ -1,0 +1,31 @@
+digraph G {
+
+  id0 [label="∨"]
+  id1 [label="∧"]
+  id2 [label="c"]
+  id3 [label="d"]
+  id4 [label="∧"]
+  id5 [label="a"]
+  id6 [label="b"]
+  id7 [label="⇔"]
+  id8 [label="∧"]
+  id9 [label="c"]
+  id10 [label="d"]
+  id11 [label="∧"]
+  id12 [label="a"]
+  id13 [label="b"]
+
+  id1 -> id2
+  id1 -> id3
+  id0 -> id1
+  id4 -> id5
+  id4 -> id6
+  id0 -> id4
+  id8 -> id9
+  id8 -> id10
+  id11 -> id12
+  id11 -> id13
+  id7 -> id8
+  id7 -> id11
+  id0 -> id7
+}

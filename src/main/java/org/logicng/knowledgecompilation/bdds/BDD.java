@@ -30,7 +30,6 @@ package org.logicng.knowledgecompilation.bdds;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDNode;
@@ -113,20 +112,20 @@ public class BDD {
      * @return the formula for this BDD
      */
     public Formula toFormula() {
-        return toFormula(this.index);
+        return this.operations.toFormula(this.index, true);
     }
 
-    private Formula toFormula(final int index) {
-        final FormulaFactory f = this.kernel.factory();
-        if (index == BDDKernel.BDD_FALSE) {
-            return f.falsum();
-        } else if (index == BDDKernel.BDD_TRUE) {
-            return f.verum();
-        } else {
-            final Variable nodeVariable = this.kernel.idx2var().get(this.construction.bddVar(index));
-            return f.or(f.and(nodeVariable, toFormula(this.construction.bddHigh(index))),
-                    f.and(nodeVariable.negate(), toFormula(this.construction.bddLow(index))));
-        }
+    /**
+     * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
+     * If {@code followPathsToTrue} is activated, the paths leading to the {@code true} terminal are followed to generate the formula.
+     * If {@code followPathsToTrue} is deactivated, the paths leading to the {@code false} terminal are followed to generate the formula and the resulting formula is negated.
+     * Depending on the formula and the number of satisfying assignments, the generated formula can be more compact using the {@code true} paths
+     * or {@code false} paths, respectively.
+     * @param followPathsToTrue the extraction style
+     * @return the formula for this BDD
+     */
+    public Formula toFormula(final boolean followPathsToTrue) {
+        return this.operations.toFormula(this.index, followPathsToTrue);
     }
 
     /**

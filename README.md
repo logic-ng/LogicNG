@@ -1,10 +1,11 @@
-![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-blue.svg) ![Version](https://img.shields.io/badge/version-2.3.2-ff69b4.svg)
+![build](https://github.com/logic-ng/LogicNG/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/logic-ng/LogicNG/branch/development/graph/badge.svg)](https://codecov.io/gh/logic-ng/LogicNG) ![License](https://img.shields.io/badge/license-Apache%202-ff69b4.svg) [![Maven Central](https://img.shields.io/maven-central/v/org.logicng/logicng.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22org.logicng%22%20AND%20a:%22logicng%22)
 
-<img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300">
+
+<a href="https://www.logicng.org"><img src="https://github.com/logic-ng/LogicNG/blob/master/doc/logo/logo_big.png" alt="logo" width="300"></a>
 
 ## Introduction
 
-LogicNG is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools
+<a href="https://www.logicng.org">LogicNG</a> is a Java Library for creating, manipulating and solving Boolean and Pseudo-Boolean formulas. It includes 100% Java implementations of popular tools
 like [MiniSAT](http://minisat.se), [Glucose](http://www.labri.fr/perso/lsimon/glucose/), [PBLib](http://tools.computational-logic.org/content/pblib.php),
 or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
 
@@ -79,11 +80,9 @@ miniSat.add(formula);
 Tristate result = miniSat.sat();
 ```
 
-There is a [Tutorial](https://github.com/logic-ng/LogicNG/wiki/Chapter-1%3A-Introduction-And-Problem-Modelling) for a a more in-depth introduction to LogicNG.
+### Documentation and Tutorial
 
-### Documentation
-
-For an extensive documentation see the [wiki](https://github.com/logic-ng/LogicNG/wiki).
+For a tutorial and an extensive documentation see the [LogicNG webpage](https://www.logicng.org).
 
 ## License & Commercial Support
 

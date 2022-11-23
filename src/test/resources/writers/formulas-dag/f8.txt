@@ -1,0 +1,52 @@
+graph TD
+  id0(("A"))
+    style id0 stroke:#004f93,color:#ffffff,fill:#004f93
+  id1(("¬A"))
+    style id1 stroke:#004f93,color:#ffffff,fill:#004f93
+  id2(("B"))
+    style id2 stroke:#004f93,color:#ffffff,fill:#004f93
+  id3(("C"))
+    style id3 stroke:#004f93,color:#ffffff,fill:#004f93
+  id4(("X"))
+    style id4 stroke:#004f93,color:#ffffff,fill:#004f93
+  id5(("a"))
+    style id5 stroke:#004f93,color:#ffffff,fill:#004f93
+  id6(("b"))
+    style id6 stroke:#004f93,color:#ffffff,fill:#004f93
+  id7(("c"))
+    style id7 stroke:#004f93,color:#ffffff,fill:#004f93
+  id8(("⇒"))
+    style id8 stroke:#004f93,color:#ffffff,fill:#004f93
+  id9(("⇔"))
+    style id9 stroke:#004f93,color:#ffffff,fill:#004f93
+  id10(("∧"))
+    style id10 stroke:#004f93,color:#ffffff,fill:#004f93
+  id11(("∨"))
+    style id11 stroke:#004f93,color:#ffffff,fill:#004f93
+  id12(("a + b + c <= 2"))
+    style id12 stroke:#004f93,color:#ffffff,fill:#004f93
+
+  id10 --> id2
+    linkStyle 0 stroke:#1289a7,stroke-width:4
+  id11 --> id1
+    linkStyle 1 stroke:#1289a7,stroke-width:4
+  id11 --> id3
+    linkStyle 2 stroke:#1289a7,stroke-width:4
+  id11 --> id4
+    linkStyle 3 stroke:#1289a7,stroke-width:4
+  id10 --> id11
+    linkStyle 4 stroke:#1289a7,stroke-width:4
+  id9 --> id0
+    linkStyle 5 stroke:#1289a7,stroke-width:4
+  id9 --> id10
+    linkStyle 6 stroke:#1289a7,stroke-width:4
+  id12 --> id5
+    linkStyle 7 stroke:#1289a7,stroke-width:4
+  id12 --> id6
+    linkStyle 8 stroke:#1289a7,stroke-width:4
+  id12 --> id7
+    linkStyle 9 stroke:#1289a7,stroke-width:4
+  id8 -->|"l"| id9
+    linkStyle 10 stroke:#1289a7,stroke-width:4
+  id8 -->|"r"| id12
+    linkStyle 11 stroke:#1289a7,stroke-width:4

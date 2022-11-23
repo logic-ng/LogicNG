@@ -1,13 +1,15 @@
 digraph G {
-  const_true [shape=box, label="$true", style = bold, color = darkgreen];
-  const_false [shape=box, label="$false", style = bold, color = red];
-  id_6 [shape=ellipse, label="C"];
-  id_6 -> const_false [style = dotted, color = red];
-  id_6 -> const_true [color = darkgreen];
-  id_7 [shape=ellipse, label="C"];
-  id_7 -> const_true [style = dotted, color = red];
-  id_7 -> const_false [color = darkgreen];
-  id_11 [shape=ellipse, label="A"];
-  id_11 -> id_6 [style = dotted, color = red];
-  id_11 -> id_7 [color = darkgreen];
+
+  id0 [label="false", shape=box, color="#ea2027", fontcolor="#ffffff", style=filled, fillcolor="#ea2027"]
+  id1 [label="true", shape=box, color="#009432", fontcolor="#ffffff", style=filled, fillcolor="#009432"]
+  id6 [label="C"]
+  id7 [label="C"]
+  id11 [label="A"]
+
+  id6 -> id0 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id6 -> id1 [color="#009432", fontcolor="#009432", style=solid]
+  id7 -> id1 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id7 -> id0 [color="#009432", fontcolor="#009432", style=solid]
+  id11 -> id6 [color="#ea2027", fontcolor="#ea2027", style=dotted]
+  id11 -> id7 [color="#009432", fontcolor="#009432", style=solid]
 }

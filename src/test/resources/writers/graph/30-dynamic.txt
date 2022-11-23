@@ -1,0 +1,116 @@
+graph TD
+  id0["value: 0"]
+    style id0 stroke:#009432,color:#000000,fill:#009432
+  id1["value: 6"]
+    style id1 stroke:#009432,color:#000000,fill:#009432
+  id2(["value: 13"])
+    style id2 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id3(["value: 19"])
+    style id3 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id4(("value: 28"))
+    style id4 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id5["value: 1"]
+    style id5 stroke:#009432,color:#000000,fill:#009432
+  id6(("value: 21"))
+    style id6 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id7["value: 7"]
+    style id7 stroke:#009432,color:#000000,fill:#009432
+  id8(["value: 15"])
+    style id8 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id9["value: 2"]
+    style id9 stroke:#009432,color:#000000,fill:#009432
+  id10["value: 4"]
+    style id10 stroke:#009432,color:#000000,fill:#009432
+  id11["value: 3"]
+    style id11 stroke:#009432,color:#000000,fill:#009432
+  id12(["value: 16"])
+    style id12 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id13["value: 9"]
+    style id13 stroke:#009432,color:#000000,fill:#009432
+  id14["value: 10"]
+    style id14 stroke:#009432,color:#000000,fill:#009432
+  id15(["value: 14"])
+    style id15 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id16["value: 5"]
+    style id16 stroke:#009432,color:#000000,fill:#009432
+  id17["value: 8"]
+    style id17 stroke:#009432,color:#000000,fill:#009432
+  id18(["value: 17"])
+    style id18 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id19(("value: 23"))
+    style id19 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id20(("value: 25"))
+    style id20 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id21(("value: 24"))
+    style id21 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id22(("value: 27"))
+    style id22 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id23(["value: 12"])
+    style id23 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id24(["value: 20"])
+    style id24 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id25(["value: 18"])
+    style id25 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id26(("value: 29"))
+    style id26 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id27(["value: 11"])
+    style id27 stroke:#f79f1f,color:#000000,fill:#f79f1f
+  id28(("value: 22"))
+    style id28 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id29(("value: 26"))
+    style id29 stroke:#ea2027,color:#ffffff,fill:#ea2027
+
+  id0 --- id1
+    linkStyle 0 stroke:#009432
+  id0 --- id2
+    linkStyle 1 stroke:#f79f1f,stroke-width:2
+  id1 --- id2
+    linkStyle 2 stroke:#f79f1f,stroke-width:2
+  id1 --- id3
+    linkStyle 3 stroke:#f79f1f,stroke-width:2
+  id1 --- id4
+    linkStyle 4 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id5 --- id6
+    linkStyle 5 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id6 --- id7
+    linkStyle 6 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id6 --- id8
+    linkStyle 7 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id9 --- id4
+    linkStyle 8 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id4 --- id10
+    linkStyle 9 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id11 --- id12
+    linkStyle 10 stroke:#f79f1f,stroke-width:2
+  id12 --- id13
+    linkStyle 11 stroke:#f79f1f,stroke-width:2
+  id12 --- id14
+    linkStyle 12 stroke:#f79f1f,stroke-width:2
+  id12 --- id15
+    linkStyle 13 stroke:#f79f1f,stroke-width:2
+  id16 --- id17
+    linkStyle 14 stroke:#009432
+  id17 --- id18
+    linkStyle 15 stroke:#f79f1f,stroke-width:2
+  id17 --- id19
+    linkStyle 16 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id17 --- id20
+    linkStyle 17 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id18 --- id21
+    linkStyle 18 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id18 --- id22
+    linkStyle 19 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id13 --- id23
+    linkStyle 20 stroke:#f79f1f,stroke-width:2
+  id13 --- id24
+    linkStyle 21 stroke:#f79f1f,stroke-width:2
+  id23 --- id15
+    linkStyle 22 stroke:#f79f1f,stroke-width:2
+  id24 --- id25
+    linkStyle 23 stroke:#f79f1f,stroke-width:2
+  id14 --- id25
+    linkStyle 24 stroke:#f79f1f,stroke-width:2
+  id8 --- id26
+    linkStyle 25 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3
+  id21 --- id22
+    linkStyle 26 stroke:#e4e4e4,stroke-width:2,stroke-dasharray:3

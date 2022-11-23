@@ -47,6 +47,7 @@ import org.logicng.solvers.maxsat.algorithms.LinearUS;
 import org.logicng.solvers.maxsat.algorithms.MSU3;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
+import org.logicng.solvers.maxsat.algorithms.OLL;
 import org.logicng.solvers.maxsat.algorithms.WBO;
 import org.logicng.solvers.maxsat.algorithms.WMSU3;
 
@@ -57,14 +58,14 @@ import java.util.TreeSet;
 
 /**
  * A wrapper for the OpenWBO solver.
- * @version 2.3.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class MaxSATSolver {
 
     private static final String SEL_PREFIX = "@SEL_SOFT_";
 
-    protected enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3}
+    protected enum Algorithm {WBO, INC_WBO, LINEAR_SU, LINEAR_US, MSU3, WMSU3, OLL}
 
     protected final MaxSATConfig configuration;
     protected final Algorithm algorithm;
@@ -332,6 +333,26 @@ public class MaxSATSolver {
     }
 
     /**
+     * Returns a new MaxSAT solver using weighted OLL as algorithm with the MaxSAT configuration from the formula factory.
+     * @param f the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver oll(final FormulaFactory f) {
+        final MaxSATConfig conf = new MaxSATConfig((MaxSATConfig) f.configurationFor(ConfigurationType.MAXSAT), MaxSATConfig.IncrementalStrategy.ITERATIVE);
+        return new MaxSATSolver(f, conf, Algorithm.OLL);
+    }
+
+    /**
+     * Returns a new MaxSAT solver using weighted OLL as algorithm with the given configuration.
+     * @param config the configuration
+     * @param f      the formula factory
+     * @return the MaxSAT solver
+     */
+    public static MaxSATSolver oll(final FormulaFactory f, final MaxSATConfig config) {
+        return new MaxSATSolver(f, config, Algorithm.OLL);
+    }
+
+    /**
      * Returns whether this solver can handle weighted instances or not.
      * @return whether this solver can handle weighted instances or not
      */
@@ -366,6 +387,9 @@ public class MaxSATSolver {
                 break;
             case WMSU3:
                 this.solver = new WMSU3(this.configuration);
+                break;
+            case OLL:
+                this.solver = new OLL(this.configuration);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown MaxSAT algorithm: " + this.algorithm);
@@ -542,6 +566,14 @@ public class MaxSATSolver {
      */
     public FormulaFactory factory() {
         return this.f;
+    }
+
+    /**
+     * Returns the algorithm for this solver.
+     * @return the algorithm
+     */
+    public Algorithm getAlgorithm() {
+        return this.algorithm;
     }
 
     @Override

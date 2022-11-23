@@ -357,6 +357,24 @@ public class Encoder {
         return this.pbEncoding == PBEncoding.SWC && this.swc.hasCreatedEncoding();
     }
 
+    /**
+     * Returns the totalizer's literals.
+     * @return the literals
+     */
+    public LNGIntVector lits() {
+        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER && this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
+        return this.totalizer.lits();
+    }
+
+    /**
+     * Returns the totalizer's output literals.
+     * @return the literals
+     */
+    public LNGIntVector outputs() {
+        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER && this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
+        return this.totalizer.outputs();
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName();

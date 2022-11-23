@@ -1,0 +1,6 @@
+graph TD
+  id0(["A"])
+  id1(["B"])
+  id2(["C"])
+
+  id0 --- id1

@@ -1,0 +1,9 @@
+strict graph {
+  bgcolor="#4f4f4f"
+
+  id0 [label="A", color="#ea2027", fontcolor="#009432"]
+  id1 [label="B", color="#ea2027", fontcolor="#009432"]
+  id2 [label="C", color="#ea2027", fontcolor="#009432"]
+
+  id0 -- id1 [color="#ffffff", fontcolor="#ffffff", style=dotted]
+}
