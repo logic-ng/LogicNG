@@ -44,6 +44,7 @@ import org.logicng.knowledgecompilation.bdds.orderings.VariableOrderingProvider;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.NNFPredicate;
+import org.logicng.predicates.satisfiability.ContradictionPredicate;
 import org.logicng.predicates.satisfiability.SATPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.transformations.NNFTransformation;
@@ -271,13 +272,38 @@ public abstract class Formula implements Iterable<Formula> {
 
     /**
      * Returns whether this formula is satisfiable.
-     * A new SAT solver is used to check the satisfiability. This is a convenience method. If you want to
+     * A new SAT solver is used to check the satisfiability. This is a convenience method for the
+     * predicate {@link org.logicng.predicates.satisfiability.SATPredicate}. If you want to
      * have more influence on the solver (e.g. which solver type or configuration) you must create and
      * use a {@link org.logicng.solvers.SATSolver} on your own.
      * @return {@code true} when this formula is satisfiable, {@code false} otherwise
      */
     public boolean isSatisfiable() {
         return this.holds(new SATPredicate(this.f));
+    }
+
+    /**
+     * Returns whether this formula is a tautology, hence always true.
+     * A new SAT solver is used to check the tautology. This is a convenience method for the
+     * predicate {@link org.logicng.predicates.satisfiability.TautologyPredicate}. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is a tautology, {@code false} otherwise
+     */
+    public boolean isTautology() {
+        return this.holds(new TautologyPredicate(this.f));
+    }
+
+    /**
+     * Returns whether this formula is a contradiction, hence always false.
+     * A new SAT solver is used to check the contradiction. This is a convenience method for the
+     * predicate {@link org.logicng.predicates.satisfiability.ContradictionPredicate}. If you want to
+     * have more influence on the solver (e.g. which solver type or configuration) you must create and
+     * use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is a contradiction, {@code false} otherwise
+     */
+    public boolean isContradiction() {
+        return this.holds(new ContradictionPredicate(this.f));
     }
 
     /**
