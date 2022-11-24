@@ -2,13 +2,13 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0] - 2022-mm-dd
+## [2.4.0] - 2022-11-24
 
 ### Added
 
 - Completely rewritten graphical outputs of formulas, BDDs, and graphs in the package `org.logicng.io.graphical`. It is now possible to configure the
   generated graphs by dynamically styling nodes, edges, and computing node labels. Also, there are now two possible output formats: GraphViz DOT and Mermaid.js.
-- Convenience methods `isSatisfiable`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class.
+- Convenience methods `isSatisfiable`, `isTautology`, `isContradiction`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class.
 - New OLL algorithm for OpenWBO for more efficient weighted MaxSAT solving.
 - Two overloaded factory methods `mk` in `MiniSat` to construct a solver by formula factory, solver style and optional configuration.
 - Methods to directly apply Boolean functions on BDDs
