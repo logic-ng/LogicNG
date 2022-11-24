@@ -48,10 +48,13 @@ import java.util.TreeSet;
 
 /**
  * A dimacs file writer for a formula.  Writes the internal data structure of the formula to a dimacs file.
- * @version 1.2
+ * @version 2.4.0
  * @since 1.2
  */
 public final class FormulaDimacsFileWriter {
+
+    private static final String CNF_EXTENSION = ".cnf";
+    private static final String MAP_EXTENSION = ".map";
 
     /**
      * Private constructor.
@@ -62,14 +65,14 @@ public final class FormulaDimacsFileWriter {
 
     /**
      * Writes a given formula's internal data structure as a dimacs file.  Must only be called with a formula which is in CNF.
-     * @param fileName     the file name of the dimacs file to write
-     * @param formula      the formula
+     * @param fileName     the file name of the dimacs file to write, will be extended by suffix {@code .cnf} if not already present
+     * @param formula      the formula in CNF
      * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
      * @throws IOException              if there was a problem writing the file
      * @throws IllegalArgumentException if the formula was not in CNF
      */
     public static void write(final String fileName, final Formula formula, final boolean writeMapping) throws IOException {
-        final File file = new File(fileName.endsWith(".cnf") ? fileName : fileName + ".cnf");
+        final File file = new File(fileName.endsWith(CNF_EXTENSION) ? fileName : fileName + CNF_EXTENSION);
         final SortedMap<Variable, Long> var2id = new TreeMap<>();
         long i = 1;
         for (final Variable var : new TreeSet<>(formula.variables())) {
@@ -104,7 +107,7 @@ public final class FormulaDimacsFileWriter {
             writer.flush();
         }
         if (writeMapping) {
-            final String mappingFileName = (fileName.endsWith(".cnf") ? fileName.substring(0, fileName.length() - 4) : fileName) + ".map";
+            final String mappingFileName = (fileName.endsWith(CNF_EXTENSION) ? fileName.substring(0, fileName.length() - 4) : fileName) + MAP_EXTENSION;
             writeMapping(new File(mappingFileName), var2id);
         }
     }

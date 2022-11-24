@@ -59,7 +59,7 @@ public final class DimacsReader {
     }
 
     /**
-     * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas.
+     * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas. The prefix {@code v} is used for the variables names.
      * @param file the file
      * @param f    the formula factory
      * @return the list of formulas (clauses)
@@ -106,7 +106,7 @@ public final class DimacsReader {
     }
 
     /**
-     * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas.
+     * Reads a given DIMACS CNF file and returns the contained clauses as a list of formulas. The prefix {@code v} is used for the variables names.
      * @param fileName the file name
      * @param f        the formula factory
      * @return the list of formulas (clauses)

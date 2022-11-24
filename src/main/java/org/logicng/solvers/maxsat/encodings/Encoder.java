@@ -59,7 +59,7 @@ import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
  * Encoders for cardinality constraints, pseudo Booleans and AMO constraints.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class Encoder {
@@ -355,6 +355,24 @@ public class Encoder {
      */
     public boolean hasPBEncoding() {
         return this.pbEncoding == PBEncoding.SWC && this.swc.hasCreatedEncoding();
+    }
+
+    /**
+     * Returns the totalizer's literals.
+     * @return the literals
+     */
+    public LNGIntVector lits() {
+        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER && this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
+        return this.totalizer.lits();
+    }
+
+    /**
+     * Returns the totalizer's output literals.
+     * @return the literals
+     */
+    public LNGIntVector outputs() {
+        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER && this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
+        return this.totalizer.outputs();
     }
 
     @Override

@@ -41,7 +41,6 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDConstant;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDInnerNode;
 import org.logicng.knowledgecompilation.bdds.functions.LngBDDFunction;
-import org.logicng.knowledgecompilation.bdds.io.BDDDotFileWriter;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDOperations;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDReordering;
@@ -52,7 +51,6 @@ import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -326,15 +324,6 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
             }
         }
         return false;
-    }
-
-    private void drawBdd(final BDD bdd, final String name) {
-        try {
-            BDDDotFileWriter.write("dot/" + name + ".dot", bdd);
-            Runtime.getRuntime().exec("dot -Tpng -O dot/" + name + ".dot").waitFor();
-        } catch (final IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static class SwapStats {

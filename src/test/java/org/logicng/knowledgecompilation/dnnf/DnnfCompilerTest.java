@@ -140,7 +140,7 @@ public class DnnfCompilerTest {
                 formulas.add(formula.transform(new CNFFactorization()));
             }
         }
-        final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromCnf(formulas);
+        final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulas);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
         final List<List<Formula>> split = ConnectedComponentsComputation.splitFormulasByComponent(originalFormulas, ccs);
         BigInteger multipliedCount = BigInteger.ONE;

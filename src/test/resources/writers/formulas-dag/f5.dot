@@ -1,0 +1,15 @@
+digraph G {
+
+  id0 [label="a"]
+  id1 [label="¬b"]
+  id2 [label="c"]
+  id3 [label="∨"]
+  id4 [label="2*a + 3*~b + 4*c <= 23"]
+
+  id3 -> id0
+  id3 -> id1
+  id4 -> id0
+  id4 -> id1
+  id4 -> id2
+  id3 -> id4
+}

@@ -28,28 +28,26 @@
 
 package org.logicng.io.writers;
 
-import org.logicng.formulas.BinaryOperator;
 import org.logicng.formulas.Formula;
-import org.logicng.formulas.Literal;
-import org.logicng.formulas.NAryOperator;
-import org.logicng.formulas.Not;
-import org.logicng.formulas.PBConstraint;
+import org.logicng.io.graphical.GraphicalDotWriter;
+import org.logicng.io.graphical.generators.FormulaAstGraphicalGenerator;
+import org.logicng.io.graphical.generators.FormulaDagGraphicalGenerator;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A dot file writer for a formula.  Writes the internal data structure of the formula to a dot file.
- * @version 1.1
+ * @version 2.4.0
  * @since 1.0
+ * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
+ * to use graph writer use {@link FormulaDagGraphicalGenerator} or {@link FormulaAstGraphicalGenerator} within the new
+ * graphical writer framework.
  */
+@Deprecated
 public final class FormulaDotFileWriter {
+
+    private static final String DOT_EXTENSION = ".dot";
 
     /**
      * Private constructor.
@@ -59,132 +57,24 @@ public final class FormulaDotFileWriter {
     }
 
     /**
-     * Writes a given formula's internal data structure as a dot file.
-     * @param fileName      the file name of the dot file to write
+     * Writes a given formula's internal data structure as a dot file with the default style configuration.
+     * @param fileName      the file name of the dot file to write, will be extended by suffix {@code .dot} if not already present
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final Formula formula, final boolean alignLiterals) throws IOException {
-        write(new File(fileName.endsWith(".dot") ? fileName : fileName + ".dot"), formula, alignLiterals);
+        write(new File(fileName.endsWith(DOT_EXTENSION) ? fileName : fileName + DOT_EXTENSION), formula, alignLiterals);
     }
 
     /**
-     * Writes a given formula's internal data structure as a dot file.
+     * Writes a given formula's internal data structure as a dot file with the default style configuration.
      * @param file          the file of the dot file to write
      * @param formula       the formula
      * @param alignLiterals indicates whether all literals should be aligned at the same vertical level
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final Formula formula, final boolean alignLiterals) throws IOException {
-        final StringBuilder sb = new StringBuilder(String.format("digraph G {%n"));
-        final Map<Formula, Integer> ids = new HashMap<>();
-        if (alignLiterals && !formula.literals().isEmpty()) {
-            sb.append(String.format("{ rank = same;%n"));
-        }
-        int id = 0;
-        for (final Literal lit : formula.literals()) {
-            ids.put(lit, id);
-            sb.append("  id").append(id).append(" [shape=box, label=\"").
-                    append(lit.phase() ? lit.name() : "¬" + lit.name()).append(String.format("\"];%n"));
-            id++;
-        }
-        if (alignLiterals && !formula.literals().isEmpty()) {
-            sb.append(String.format("}%n"));
-        }
-        generateDotString(formula, sb, ids);
-        sb.append(String.format("}%n"));
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
-            writer.append(sb);
-            writer.flush();
-        }
-    }
-
-    /**
-     * Generates the dot string for a formula
-     * @param formula the formula
-     * @param sb      the current string builder
-     * @param ids     the current ID mapping
-     */
-    private static void generateDotString(final Formula formula, final StringBuilder sb, final Map<Formula, Integer> ids) {
-        switch (formula.type()) {
-            case FALSE:
-                sb.append(String.format("  false;%n"));
-                break;
-            case TRUE:
-                sb.append(String.format("  true;%n"));
-                break;
-            case LITERAL:
-                break;
-            case PBC:
-                final int id = ids.size();
-                ids.put(formula, id);
-                sb.append("  id").append(id).append(" [label=\"").append(formula).append(String.format("\"];%n"));
-                for (final Formula operand : ((PBConstraint) formula).operands()) {
-                    sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
-                }
-                break;
-            case NOT:
-                generateNotDotString((Not) formula, sb, ids);
-                break;
-            case IMPL:
-                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇒", true);
-                break;
-            case EQUIV:
-                generateBinaryDotString((BinaryOperator) formula, sb, ids, "⇔", true);
-                break;
-            case AND:
-                generateNaryDotString((NAryOperator) formula, sb, ids, "∧");
-                break;
-            case OR:
-                generateNaryDotString((NAryOperator) formula, sb, ids, "∨");
-                break;
-            default:
-                throw new IllegalArgumentException("Cannot write the formula type " + formula.type());
-        }
-
-    }
-
-    private static void generateNotDotString(final Not not, final StringBuilder sb, final Map<Formula, Integer> ids) {
-        final int id;
-        if (!ids.containsKey(not.operand())) {
-            generateDotString(not.operand(), sb, ids);
-        }
-        id = ids.size();
-        ids.put(not, id);
-        sb.append("  id").append(id).append(String.format(" [label=\"¬\"];%n"));
-        sb.append("  id").append(id).append(" -> id").append(ids.get(not.operand())).append(String.format(";%n"));
-    }
-
-    private static void generateBinaryDotString(final BinaryOperator formula, final StringBuilder sb,
-                                                final Map<Formula, Integer> ids, final String op, final boolean directions) {
-        if (!ids.containsKey(formula.left())) {
-            generateDotString(formula.left(), sb, ids);
-        }
-        if (!ids.containsKey(formula.right())) {
-            generateDotString(formula.right(), sb, ids);
-        }
-        final int id = ids.size();
-        ids.put(formula, id);
-        sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
-        sb.append("  id").append(id).append(" -> id").append(ids.get(formula.left()));
-        sb.append(directions ? String.format(" [label=\"l\"];%n") : String.format(";%n"));
-        sb.append("  id").append(id).append(" -> id").append(ids.get(formula.right()));
-        sb.append(directions ? String.format(" [label=\"r\"];%n") : String.format(";%n"));
-    }
-
-    private static void generateNaryDotString(final NAryOperator formula, final StringBuilder sb,
-                                              final Map<Formula, Integer> ids, final String op) {
-        for (final Formula operand : formula) {
-            if (!ids.containsKey(operand)) {
-                generateDotString(operand, sb, ids);
-            }
-        }
-        final int id = ids.size();
-        ids.put(formula, id);
-        sb.append("  id").append(id).append(" [label=\"").append(op).append(String.format("\"];%n"));
-        for (final Formula operand : formula) {
-            sb.append("  id").append(id).append(" -> id").append(ids.get(operand)).append(String.format(";%n"));
-        }
+        FormulaDagGraphicalGenerator.builder().alignTerminals(alignLiterals).build().translate(formula).write(file, GraphicalDotWriter.get());
     }
 }

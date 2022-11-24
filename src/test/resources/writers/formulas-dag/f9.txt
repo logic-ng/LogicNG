@@ -1,0 +1,82 @@
+graph TD
+  id0(("A"))
+    style id0 stroke:#006266,color:#ffffff,fill:#006266
+  id1(("¬A"))
+    style id1 stroke:#006266,color:#ffffff,fill:#006266
+  id2(("B"))
+    style id2 stroke:#006266,color:#ffffff,fill:#006266
+  id3(("¬B"))
+    style id3 stroke:#006266,color:#ffffff,fill:#006266
+  id4(("C"))
+    style id4 stroke:#006266,color:#ffffff,fill:#006266
+  id5(("X"))
+    style id5 stroke:#006266,color:#ffffff,fill:#006266
+  id6(("a"))
+    style id6 stroke:#ffc612,color:#000000,fill:#ffc612
+  id7(("¬a"))
+    style id7 stroke:#ffc612,color:#000000,fill:#ffc612
+  id8(("b"))
+    style id8 stroke:#ffc612,color:#000000,fill:#ffc612
+  id9(("c"))
+    style id9 stroke:#ffc612,color:#000000,fill:#ffc612
+  id10(("d"))
+    style id10 stroke:#ffc612,color:#000000,fill:#ffc612
+  id11(["Formula Type: IMPL"])
+    style id11 stroke:#000000,color:#000000,fill:#ffffff
+  id12(["Formula Type: EQUIV"])
+    style id12 stroke:#000000,color:#000000,fill:#ffffff
+  id13(["Formula Type: AND"])
+    style id13 stroke:#000000,color:#000000,fill:#ffffff
+  id14(["Formula Type: OR"])
+    style id14 stroke:#000000,color:#000000,fill:#ffffff
+  id15(["Formula Type: AND"])
+    style id15 stroke:#000000,color:#000000,fill:#ffffff
+  id16["Formula Type: PBC"]
+    style id16 stroke:#777777,color:#777777,fill:#e4e4e4
+  id17(["Formula Type: IMPL"])
+    style id17 stroke:#000000,color:#000000,fill:#ffffff
+  id18(["Formula Type: OR"])
+    style id18 stroke:#000000,color:#000000,fill:#ffffff
+  id19(["Formula Type: AND"])
+    style id19 stroke:#000000,color:#000000,fill:#ffffff
+
+  id13 --> id2
+    linkStyle 0 stroke:#5758bb,stroke-width:2
+  id14 --> id1
+    linkStyle 1 stroke:#5758bb,stroke-width:2
+  id14 --> id4
+    linkStyle 2 stroke:#5758bb,stroke-width:2
+  id14 --> id5
+    linkStyle 3 stroke:#5758bb,stroke-width:2
+  id13 --> id14
+    linkStyle 4 stroke:#5758bb,stroke-width:2
+  id12 --> id0
+    linkStyle 5 stroke:#5758bb,stroke-width:2
+  id12 --> id13
+    linkStyle 6 stroke:#5758bb,stroke-width:2
+  id16 --> id6
+    linkStyle 7 stroke:#5758bb,stroke-width:2
+  id16 --> id8
+    linkStyle 8 stroke:#5758bb,stroke-width:2
+  id16 --> id9
+    linkStyle 9 stroke:#5758bb,stroke-width:2
+  id15 --> id16
+    linkStyle 10 stroke:#5758bb,stroke-width:2
+  id18 --> id7
+    linkStyle 11 stroke:#5758bb,stroke-width:2
+  id18 --> id10
+    linkStyle 12 stroke:#5758bb,stroke-width:2
+  id19 --> id5
+    linkStyle 13 stroke:#5758bb,stroke-width:2
+  id19 --> id3
+    linkStyle 14 stroke:#5758bb,stroke-width:2
+  id17 -->|"l"| id18
+    linkStyle 15 stroke:#5758bb,stroke-width:2
+  id17 -->|"r"| id19
+    linkStyle 16 stroke:#5758bb,stroke-width:2
+  id15 --> id17
+    linkStyle 17 stroke:#5758bb,stroke-width:2
+  id11 -->|"l"| id12
+    linkStyle 18 stroke:#5758bb,stroke-width:2
+  id11 -->|"r"| id15
+    linkStyle 19 stroke:#5758bb,stroke-width:2

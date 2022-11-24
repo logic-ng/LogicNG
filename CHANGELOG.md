@@ -2,6 +2,25 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2022-11-24
+
+### Added
+
+- Completely rewritten graphical outputs of formulas, BDDs, and graphs in the package `org.logicng.io.graphical`. It is now possible to configure the
+  generated graphs by dynamically styling nodes, edges, and computing node labels. Also, there are now two possible output formats: GraphViz DOT and Mermaid.js.
+- Convenience methods `isSatisfiable`, `isTautology`, `isContradiction`, `implies`, `isImpliedBy` and `isEquivalentTo` in the `Formula` class.
+- New OLL algorithm for OpenWBO for more efficient weighted MaxSAT solving.
+- Two overloaded factory methods `mk` in `MiniSat` to construct a solver by formula factory, solver style and optional configuration.
+- Methods to directly apply Boolean functions on BDDs
+- Added `toFormula` method on BDDs to generate a formula via Shannon expansion
+- Convenience methods `variables(Collection<String> names)` and `variables(String... names)` for creating a list of variables in the `FormulaFactory` class.
+
+### Changed
+
+- Methods `generateFromCnf(Formula formula)` and `generateFromCnf(Collection<Formula> formulas)` in `ConstraintGraphGenerator` are now deprecated, since the
+  constraint graph generation is not CNF specific. Both methods will be removed with LogicNG 3.0. Instead, use the general
+  method `generateFromFormulas(Collection<Formula> formulas)`.
+
 ## [2.3.2] - 2022-08-02
 
 ### Changed

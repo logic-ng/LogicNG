@@ -34,6 +34,10 @@ import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.CACHEID_SAT
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.MARKOFF;
 import static org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel.MARKON;
 
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +45,7 @@ import java.util.List;
 
 /**
  * A collection of operations on a BDD kernel.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 2.0.0
  */
 public class BDDOperations {
@@ -454,5 +458,45 @@ public class BDDOperations {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
+     * If {@code followPathsToTrue} is activated, the paths leading to the {@code true} terminal are followed to generate the formula.
+     * If {@code followPathsToTrue} is deactivated, the paths leading to the {@code false} terminal are followed to generate the formula and the resulting formula is negated.
+     * Depending on the formula and the number of satisfying assignments, the generated formula can be more compact using the {@code true} paths
+     * or {@code false} paths, respectively.
+     * @param r                 the BDD root node
+     * @param followPathsToTrue the extraction style
+     * @return the formula
+     */
+    public Formula toFormula(final int r, final boolean followPathsToTrue) {
+        this.k.initRef();
+        final Formula formula = toFormulaRec(r, followPathsToTrue);
+        return followPathsToTrue ? formula : formula.negate();
+    }
+
+    protected Formula toFormulaRec(final int r, final boolean followPathsToTrue) {
+        final FormulaFactory f = this.k.factory();
+        if (this.k.isOne(r)) {
+            return f.constant(followPathsToTrue);
+        }
+        if (this.k.isZero(r)) {
+            return f.constant(!followPathsToTrue);
+        }
+        final Variable var = this.k.idx2var.get(this.k.level(r));
+        final int low = this.k.low(r);
+        final Formula lowFormula = isRelevant(low, followPathsToTrue)
+                ? f.and(var.negate(), toFormulaRec(low, followPathsToTrue))
+                : f.falsum();
+        final int high = this.k.high(r);
+        final Formula rightFormula = isRelevant(high, followPathsToTrue)
+                ? f.and(var, toFormulaRec(high, followPathsToTrue))
+                : f.falsum();
+        return f.or(lowFormula, rightFormula);
+    }
+
+    private boolean isRelevant(final int r, final boolean followPathsToTrue) {
+        return followPathsToTrue && !this.k.isZero(r) || !followPathsToTrue && !this.k.isOne(r);
     }
 }

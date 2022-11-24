@@ -37,6 +37,7 @@ import org.logicng.solvers.maxsat.algorithms.LinearUS;
 import org.logicng.solvers.maxsat.algorithms.MSU3;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
+import org.logicng.solvers.maxsat.algorithms.OLL;
 import org.logicng.solvers.maxsat.algorithms.WBO;
 import org.logicng.solvers.maxsat.algorithms.WMSU3;
 
@@ -44,7 +45,7 @@ import java.util.Arrays;
 
 /**
  * Unit tests for the package {@link org.logicng.solvers.maxsat}.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.1
  */
 public class MaxSATClassTest {
@@ -61,7 +62,7 @@ public class MaxSATClassTest {
     }
 
     @Test
-    public void testMaxSATenum() {
+    public void testMaxSATEnum() {
         assertThat(Arrays.asList(MaxSAT.ProblemType.values()).contains(MaxSAT.ProblemType.valueOf("UNWEIGHTED"))).isTrue();
         assertThat(Arrays.asList(MaxSAT.MaxSATResult.values()).contains(MaxSAT.MaxSATResult.valueOf("OPTIMUM"))).isTrue();
     }
@@ -80,5 +81,7 @@ public class MaxSATClassTest {
         assertThat(linearSu.toString()).isEqualTo("LinearSU");
         final MaxSAT linearUs = new LinearUS();
         assertThat(linearUs.toString()).isEqualTo("LinearUS");
+        final MaxSAT oll = new OLL();
+        assertThat(oll.toString()).isEqualTo("OLL");
     }
 }

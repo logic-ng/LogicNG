@@ -30,6 +30,7 @@ package org.logicng.solvers.maxsat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.solvers.maxsat.MaxSATReader.readCnfToSolver;
 import static org.logicng.solvers.maxsat.algorithms.MaxSAT.MaxSATResult.OPTIMUM;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.CardinalityEncoding;
 import static org.logicng.solvers.maxsat.algorithms.MaxSATConfig.Verbosity.SOME;
@@ -39,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
@@ -47,17 +47,13 @@ import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Unit tests for the MaxSAT solvers.
- * @version 2.0.0
+ * @version 2.4.0
  * @since 1.0
  */
 public class PureMaxSATTest extends TestWithExampleFormulas {
@@ -159,12 +155,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-                readCNF(solver, "src/test/resources/maxsat/" + file);
+                readCnfToSolver(solver, "src/test/resources/maxsat/" + file);
                 assertThat(solver.solve()).isEqualTo(OPTIMUM);
                 assertThat(solver.result()).isEqualTo(1);
             }
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-            readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+            readCnfToSolver(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
             assertThat(solver.solve()).isEqualTo(OPTIMUM);
             assertThat(solver.result()).isEqualTo(0);
         }
@@ -178,12 +174,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.incWBO(this.f, config);
-                readCNF(solver, "src/test/resources/maxsat/" + file);
+                readCnfToSolver(solver, "src/test/resources/maxsat/" + file);
                 assertThat(solver.solve()).isEqualTo(OPTIMUM);
                 assertThat(solver.result()).isEqualTo(1);
             }
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-            readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+            readCnfToSolver(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
             assertThat(solver.solve()).isEqualTo(OPTIMUM);
             assertThat(solver.result()).isEqualTo(0);
         }
@@ -197,12 +193,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.linearSU(this.f, config);
-                readCNF(solver, "src/test/resources/maxsat/" + file);
+                readCnfToSolver(solver, "src/test/resources/maxsat/" + file);
                 assertThat(solver.solve()).isEqualTo(OPTIMUM);
                 assertThat(solver.result()).isEqualTo(1);
             }
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-            readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+            readCnfToSolver(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
             assertThat(solver.solve()).isEqualTo(OPTIMUM);
             assertThat(solver.result()).isEqualTo(0);
         }
@@ -220,12 +216,12 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.linearUS(this.f, config);
-                readCNF(solver, "src/test/resources/maxsat/" + file);
+                readCnfToSolver(solver, "src/test/resources/maxsat/" + file);
                 assertThat(solver.solve()).isEqualTo(OPTIMUM);
                 assertThat(solver.result()).isEqualTo(1);
             }
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-            readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+            readCnfToSolver(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
             assertThat(solver.solve()).isEqualTo(OPTIMUM);
             assertThat(solver.result()).isEqualTo(0);
         }
@@ -243,22 +239,36 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
         for (final MaxSATConfig config : configs) {
             for (final String file : files) {
                 final MaxSATSolver solver = MaxSATSolver.msu3(this.f, config);
-                readCNF(solver, "src/test/resources/maxsat/" + file);
+                readCnfToSolver(solver, "src/test/resources/maxsat/" + file);
                 assertThat(solver.solve()).isEqualTo(OPTIMUM);
                 assertThat(solver.result()).isEqualTo(1);
             }
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
-            readCNF(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+            readCnfToSolver(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
             assertThat(solver.solve()).isEqualTo(OPTIMUM);
             assertThat(solver.result()).isEqualTo(0);
         }
     }
 
     @Test
+    public void testOLL() throws IOException {
+        for (final String file : files) {
+            final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+            readCnfToSolver(solver, "src/test/resources/maxsat/" + file);
+            assertThat(solver.solve()).isEqualTo(OPTIMUM);
+            assertThat(solver.result()).isEqualTo(1);
+        }
+        final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+        readCnfToSolver(solver, "src/test/resources/sat/9symml_gr_rcs_w6.shuffled.cnf");
+        assertThat(solver.solve()).isEqualTo(OPTIMUM);
+        assertThat(solver.result()).isEqualTo(0);
+    }
+
+    @Test
     public void testSingle() throws IOException {
         final MaxSATSolver solver = MaxSATSolver.incWBO(this.f, MaxSATConfig.builder().cardinality(CardinalityEncoding.MTOTALIZER)
                 .solver(MaxSATConfig.SolverType.GLUCOSE).verbosity(SOME).output(this.logStream).build());
-        readCNF(solver, "src/test/resources/maxsat/c-fat200-2.clq.cnf");
+        readCnfToSolver(solver, "src/test/resources/maxsat/c-fat200-2.clq.cnf");
         assertThat(solver.solve()).isEqualTo(OPTIMUM);
         assertThat(solver.result()).isEqualTo(26);
         final MaxSAT.Stats stats = solver.stats();
@@ -335,34 +345,6 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
             }
             solver.solve();
             assertThat(solver.toString()).isEqualTo(expected);
-        }
-    }
-
-    private void readCNF(final MaxSATSolver solver, final String fileName) throws IOException {
-        final BufferedReader reader = new BufferedReader(new FileReader(fileName));
-        boolean cont = true;
-        while (reader.ready() && cont) {
-            final String line = reader.readLine().trim();
-            if (line.startsWith("p")) {
-                cont = false;
-            }
-
-        }
-        String[] tokens;
-        final List<Literal> literals = new ArrayList<>();
-        while (reader.ready()) {
-            tokens = reader.readLine().split(" ");
-            assert tokens.length >= 2;
-            assert "0".equals(tokens[tokens.length - 1]);
-            literals.clear();
-            for (int i = 0; i < tokens.length - 1; i++) {
-                if (!tokens[i].isEmpty()) {
-                    final int parsedLit = Integer.parseInt(tokens[i]);
-                    final String var = "v" + Math.abs(parsedLit);
-                    literals.add(parsedLit > 0 ? this.f.literal(var, true) : this.f.literal(var, false));
-                }
-            }
-            solver.addSoftFormula(this.f.or(literals), 1);
         }
     }
 }

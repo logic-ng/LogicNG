@@ -1,3 +1,5 @@
 digraph G {
-  const_true [shape=box, label="$true", style = bold, color = darkgreen];
+
+  id1 [label="true", shape=box, color="#009432", fontcolor="#ffffff", style=filled, fillcolor="#009432"]
+
 }

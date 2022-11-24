@@ -1,0 +1,61 @@
+strict graph {
+
+  id0 [label="0"]
+  id1 [label="6"]
+  id2 [label="13"]
+  id3 [label="19"]
+  id4 [label="28"]
+  id5 [label="1"]
+  id6 [label="21"]
+  id7 [label="7"]
+  id8 [label="15"]
+  id9 [label="2"]
+  id10 [label="4"]
+  id11 [label="3"]
+  id12 [label="16"]
+  id13 [label="9"]
+  id14 [label="10"]
+  id15 [label="14"]
+  id16 [label="5"]
+  id17 [label="8"]
+  id18 [label="17"]
+  id19 [label="23"]
+  id20 [label="25"]
+  id21 [label="24"]
+  id22 [label="27"]
+  id23 [label="12"]
+  id24 [label="20"]
+  id25 [label="18"]
+  id26 [label="29"]
+  id27 [label="11"]
+  id28 [label="22"]
+  id29 [label="26"]
+
+  id0 -- id1
+  id0 -- id2
+  id1 -- id2
+  id1 -- id3
+  id1 -- id4
+  id5 -- id6
+  id6 -- id7
+  id6 -- id8
+  id9 -- id4
+  id4 -- id10
+  id11 -- id12
+  id12 -- id13
+  id12 -- id14
+  id12 -- id15
+  id16 -- id17
+  id17 -- id18
+  id17 -- id19
+  id17 -- id20
+  id18 -- id21
+  id18 -- id22
+  id13 -- id23
+  id13 -- id24
+  id23 -- id15
+  id24 -- id25
+  id14 -- id25
+  id8 -- id26
+  id21 -- id22
+}

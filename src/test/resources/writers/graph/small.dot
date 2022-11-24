@@ -1,0 +1,8 @@
+strict graph {
+
+  id0 [label="A"]
+  id1 [label="B"]
+  id2 [label="C"]
+
+  id0 -- id1
+}

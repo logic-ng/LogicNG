@@ -1,0 +1,41 @@
+graph TD
+  id0["false"]
+    style id0 stroke:#ea2027,color:#ffffff,fill:#ea2027
+  id1["true"]
+    style id1 stroke:#009432,color:#ffffff,fill:#009432
+  id8(["D"])
+  id9(["D"])
+  id21(["C"])
+  id26(["B"])
+  id27(["C"])
+  id28(["B"])
+  id29(["A"])
+
+  id8 --> id0
+    linkStyle 0 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id8 --> id1
+    linkStyle 1 stroke:#009432,stroke-width:2
+  id9 --> id1
+    linkStyle 2 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id9 --> id0
+    linkStyle 3 stroke:#009432,stroke-width:2
+  id21 --> id0
+    linkStyle 4 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id21 --> id8
+    linkStyle 5 stroke:#009432,stroke-width:2
+  id26 --> id9
+    linkStyle 6 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id26 --> id0
+    linkStyle 7 stroke:#009432,stroke-width:2
+  id27 --> id8
+    linkStyle 8 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id27 --> id0
+    linkStyle 9 stroke:#009432,stroke-width:2
+  id28 --> id27
+    linkStyle 10 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id28 --> id21
+    linkStyle 11 stroke:#009432,stroke-width:2
+  id29 --> id26
+    linkStyle 12 stroke:#ea2027,stroke-width:2,stroke-dasharray:3
+  id29 --> id28
+    linkStyle 13 stroke:#009432,stroke-width:2
