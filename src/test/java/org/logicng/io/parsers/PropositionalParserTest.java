@@ -40,7 +40,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Unit Tests for the class {@link PropositionalParser}.
- * @version 2.0.0
+ * @version 2.4.1
  * @since 1.0
  */
 public class PropositionalParserTest extends TestWithExampleFormulas {
@@ -72,6 +72,13 @@ public class PropositionalParserTest extends TestWithExampleFormulas {
         assertThat(parser.parse("~a1")).isEqualTo(this.f.literal("a1", false));
         assertThat(parser.parse("~aA_Bb_Cc_12_3")).isEqualTo(this.f.literal("aA_Bb_Cc_12_3", false));
         assertThat(parser.parse("~@aA_Bb_Cc_12_3")).isEqualTo(this.f.literal("@aA_Bb_Cc_12_3", false));
+        assertThat(parser.parse("#")).isEqualTo(this.f.literal("#", true));
+        assertThat(parser.parse("~#")).isEqualTo(this.f.literal("#", false));
+        assertThat(parser.parse("~A#B")).isEqualTo(this.f.literal("A#B", false));
+        assertThat(parser.parse("A#B")).isEqualTo(this.f.literal("A#B", true));
+        assertThat(parser.parse("~A#B")).isEqualTo(this.f.literal("A#B", false));
+        assertThat(parser.parse("#A#B_")).isEqualTo(this.f.literal("#A#B_", true));
+        assertThat(parser.parse("~#A#B_")).isEqualTo(this.f.literal("#A#B_", false));
     }
 
     @Test
@@ -250,7 +257,7 @@ public class PropositionalParserTest extends TestWithExampleFormulas {
 
     @Test
     public void testIllegalFormula9() {
-        final String string = "#";
+        final String string = "@A@B";
         final InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
         assertThatThrownBy(() -> new PropositionalParser(this.f).parse(stream)).isInstanceOf(ParserException.class);
     }

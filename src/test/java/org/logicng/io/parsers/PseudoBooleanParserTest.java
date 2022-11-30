@@ -40,7 +40,7 @@ import org.logicng.formulas.Literal;
 
 /**
  * Unit Tests for the class {@link PseudoBooleanParser}.
- * @version 2.0.0
+ * @version 4.4.1
  * @since 1.0
  */
 public class PseudoBooleanParserTest extends TestWithExampleFormulas {
@@ -69,6 +69,13 @@ public class PseudoBooleanParserTest extends TestWithExampleFormulas {
         assertThat(parser.parse("~A")).isEqualTo(this.f.literal("A", false));
         assertThat(parser.parse("~a")).isEqualTo(this.f.literal("a", false));
         assertThat(parser.parse("~aA_Bb_Cc_12_3")).isEqualTo(this.f.literal("aA_Bb_Cc_12_3", false));
+        assertThat(parser.parse("#")).isEqualTo(this.f.literal("#", true));
+        assertThat(parser.parse("~#")).isEqualTo(this.f.literal("#", false));
+        assertThat(parser.parse("~A#B")).isEqualTo(this.f.literal("A#B", false));
+        assertThat(parser.parse("A#B")).isEqualTo(this.f.literal("A#B", true));
+        assertThat(parser.parse("~A#B")).isEqualTo(this.f.literal("A#B", false));
+        assertThat(parser.parse("#A#B_")).isEqualTo(this.f.literal("#A#B_", true));
+        assertThat(parser.parse("~#A#B_")).isEqualTo(this.f.literal("#A#B_", false));
     }
 
     @Test

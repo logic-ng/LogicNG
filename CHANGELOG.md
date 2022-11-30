@@ -2,6 +2,12 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2022-12-01
+
+### Changed
+
+- Allowing symbol `#` in variable names for the `PropositionalParser` and the `PseudoBooleanParser`.
+
 ## [2.4.0] - 2022-11-24
 
 ### Added
