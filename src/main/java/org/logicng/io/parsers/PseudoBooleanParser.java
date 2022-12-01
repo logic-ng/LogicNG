@@ -54,13 +54,13 @@ import org.logicng.formulas.FormulaFactory;
  * Brackets are {@code (} and {@code )}.  For variable names, there are the following rules:
  * <ul>
  * <li>must begin with a alphabetic character, {@code _}, {@code @}, or {@code #}</li>
- * <li>can only contain alphanumerical character, or {@code _}</li>
+ * <li>can only contain alphanumerical character, {@code _}, or {@code #}</li>
  * <li>{@code @} is only allowed at the beginning of the variable name and is reserved for special internal variables</li>
  * </ul>
  * <p>
  * A valid pseudo Boolean expression is of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where the {@code c_i} are coefficients,
  * {@code l_i} are literals, and {@code R} is one of {@code =, >, >=, <, <=}.
- * @version 1.2
+ * @version 2.4.1
  * @since 1.0
  */
 public final class PseudoBooleanParser extends FormulaParser {
