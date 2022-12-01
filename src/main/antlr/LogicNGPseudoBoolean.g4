@@ -105,7 +105,7 @@ add returns [List<Literal> literals, List<Integer> coeffs]
 
 
 NUMBER   : [\-]?[0-9]+;
-LITERAL  : [~]?[A-Za-z0-9_@][A-Za-z0-9_]*;
+LITERAL  : [~]?[A-Za-z0-9_@#][A-Za-z0-9_#]*;
 TRUE     : '$true';
 FALSE    : '$false';
 LBR      : '(';

@@ -2,6 +2,13 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2022-12-01
+
+### Changed
+
+- Allowing symbol `#` in variable names for the `PropositionalParser` and the `PseudoBooleanParser`.
+- Set the Java Jigsaw automatic module name to `logicng` in the manifest.
+
 ## [2.4.0] - 2022-11-24
 
 ### Added
