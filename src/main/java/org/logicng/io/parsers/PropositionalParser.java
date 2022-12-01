@@ -46,7 +46,7 @@ import org.logicng.formulas.FormulaFactory;
  * </ul>
  * Brackets are {@code (} and {@code )}.  For variable names, there are the following rules:
  * <ul>
- * <li>must begin with a alphabetic character, {@code _} or {@code @}</li>
+ * <li>must begin with a alphabetic character, {@code _}, {@code @}, or {@code #}</li>
  * <li>can only contain alphanumerical character, or {@code _}</li>
  * <li>{@code @} is only allowed at the beginning of the variable name and is reserved for special internal variables</li>
  * </ul>
