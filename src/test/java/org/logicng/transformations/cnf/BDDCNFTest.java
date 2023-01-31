@@ -42,7 +42,7 @@ import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
  * Unit Tests for {@link BDDCNFTransformation}.
- * @version 2.3.0
+ * @version 2.4.2
  * @since 1.4.0
  */
 public class BDDCNFTest extends TestWithExampleFormulas {
@@ -160,7 +160,7 @@ public class BDDCNFTest extends TestWithExampleFormulas {
     @Test
     public void testCC() throws ParserException {
         final PseudoBooleanParser p = new PseudoBooleanParser(this.f);
-        final Formula f1 = p.parse("a <=> (1 * b <= 1)");
+        final Formula f1 = p.parse("a <=> (1 * b <= 0)");
         final Formula f2 = p.parse("~(1 * b <= 1)");
         final Formula f3 = p.parse("(1 * b + 1 * c + 1 * d <= 1)");
         final Formula f4 = p.parse("~(1 * b + 1 * c + 1 * d <= 1)");
