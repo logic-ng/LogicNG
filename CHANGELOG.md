@@ -4,6 +4,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.4.2] - 2023-xx-xx
 
+### Changed
+
+- Added side effect note in `SATSolver` for the four assumption solving methods. 
+
 ### Fixed
 
 - Fixed edge case in method `add(Formula formula, Proposition proposition)` in `MiniSat`. If a formula is added to the SAT solver, it can happen that a variable is not added to the solver because it was removed during the CNF transformation. A `model()` call or model enumeration will not produce models containing this variable since it was not added to the solver. The fix ensures that all variables of the original formula are added to the solver and thus, a found model includes the variable. 
