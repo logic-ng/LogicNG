@@ -2,6 +2,13 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [x.y.z] - 2023-mm-dd
+
+### Changed
+
+- Changed Java Version to JDK 11
+- switched to ANTLR 4.10
+
 ## [2.4.1] - 2022-12-01
 
 ### Changed
@@ -359,4 +366,3 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Initial Release of LogicNG
-
