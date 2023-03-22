@@ -1,13 +1,17 @@
-# Changelog
+# LogicNG Java 11 Changelog
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [x.y.z] - 2023-mm-dd
+## [2.4.2] - 2023-03-22
 
 ### Changed
 
+- Changed artifact id to `logicng-j11` (for Java 11 only)
 - Changed Java Version to JDK 11
-- switched to ANTLR 4.10
+- switched to ANTLR 4.11.1
+
+# LogicNG Java 8 Changelog
+
 
 ## [2.4.1] - 2022-12-01
 
