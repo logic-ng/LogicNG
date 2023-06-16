@@ -233,6 +233,14 @@ public class PartialWeightedMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
+    public void testOLLWithLargeWeights() throws IOException {
+        final MaxSATSolver solver = MaxSATSolver.oll(this.f);
+        readCnfToSolver(solver, "src/test/resources/partialweightedmaxsat/large/large_weights.wcnf");
+        assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
+        assertThat(solver.result()).isEqualTo(90912);
+    }
+
+    @Test
     public void testTimeoutHandlerWBO() {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
         configs[0] = MaxSATConfig.builder().weight(MaxSATConfig.WeightStrategy.NONE).verbosity(SOME).output(this.logStream).build();

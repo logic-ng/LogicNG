@@ -69,7 +69,7 @@ import java.util.TreeSet;
 
 /**
  * Wrapper for the MiniSAT-style SAT solvers.
- * @version 2.4.0
+ * @version 2.4.2
  * @since 1.0
  */
 public class MiniSat extends SATSolver {
@@ -242,6 +242,18 @@ public class MiniSat extends SATSolver {
             }
         } else {
             addFormulaAsCNF(formula, proposition);
+        }
+        addAllOriginalVariables(formula);
+    }
+
+    /**
+     * Adds all variables of the given formula to the solver if not already present.
+     * This method can be used to ensure that the internal solver knows the given variables.
+     * @param originalFormula the original formula
+     */
+    private void addAllOriginalVariables(final Formula originalFormula) {
+        for (final Variable var : originalFormula.variables()) {
+            getOrAddIndex(var);
         }
     }
 

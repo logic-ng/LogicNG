@@ -12,9 +12,13 @@ or [OpenWBO](http://sat.inesc-id.pt/open-wbo/).
 Its main focus lies on memory-efficient data-structures for Boolean formulas and efficient algorithms for manipulating and solving them. The library is designed
 to be used in industrial systems which have to manipulate and solve millions of formulas per day.
 
+## White Paper
+
+An extensive white paper with a lot of interesting use cases of LogicNG for configuration problems can be found [here](https://logicng.org/assets/documents/logicng-whitepaper.pdf).
+
 ## Philosophy
 
-The most important philosophy of the library is to avoid unnecessary object creation. Therefore formulas can only be generated via formula factories. A formula
+The most important philosophy of the library is to avoid unnecessary object creation. Therefore, formulas can only be generated via formula factories. A formula
 factory assures that a formula is only created once in memory. If another instance of the same formula is created by the user, the already existing one is
 returned by the factory. This leads to a small memory footprint and fast execution of algorithms. Formulas can cache the results of algorithms executed on them
 and since every formula is hold only once in memory it is assured that the same algorithm on the same formula is also executed only once.
@@ -30,7 +34,7 @@ LogicNG is released in the Maven Central Repository. To include it just add
 <dependency>
   <groupId>org.logicng</groupId>
   <artifactId>logicng</artifactId>
-  <version>2.3.2</version>
+  <version>2.4.1</version>
 </dependency>
 ```
 

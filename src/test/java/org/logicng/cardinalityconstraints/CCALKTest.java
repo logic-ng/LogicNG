@@ -46,7 +46,7 @@ import java.util.Arrays;
 
 /**
  * Unit tests for the at-least-k configs.
- * @version 2.0.0
+ * @version 2.4.2
  * @since 1.0
  */
 public class CCALKTest implements LogicNGTest {
@@ -66,7 +66,7 @@ public class CCALKTest implements LogicNGTest {
         int counter = 0;
         for (final CCConfig config : this.configs) {
             f.putConfiguration(config);
-            testCC(10, 0, 1, f);
+            testCC(10, 0, 1024, f);
             testCC(10, 1, 1023, f);
             testCC(10, 2, 1013, f);
             testCC(10, 3, 968, f);

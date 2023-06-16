@@ -130,6 +130,28 @@ public class FormulaTest {
     }
 
     @Test
+    public void testIsTautology() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula f1 = f.parse("(a | b) & (c | ~d)");
+        final Formula f2 = f.parse("(a & b) | (~a & b) | (a & ~b) | (~a & ~b)");
+        assertThat(f.falsum().isTautology()).isFalse();
+        assertThat(f.verum().isTautology()).isTrue();
+        assertThat(f1.isTautology()).isFalse();
+        assertThat(f2.isTautology()).isTrue();
+    }
+
+    @Test
+    public void testIsContradiction() throws ParserException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula f1 = f.parse("(a | b) & (c | ~d)");
+        final Formula f2 = f.parse("~a & ~b & (a | b)");
+        assertThat(f.falsum().isContradiction()).isTrue();
+        assertThat(f.verum().isContradiction()).isFalse();
+        assertThat(f1.isContradiction()).isFalse();
+        assertThat(f2.isContradiction()).isTrue();
+    }
+
+    @Test
     public void testImplies() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula f1 = f.parse("(a | b) & (c | ~d)");

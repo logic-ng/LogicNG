@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * MaxSat tests with a long running time.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public class MaxSatLongRunningTest {
 
     @LongRunningTag

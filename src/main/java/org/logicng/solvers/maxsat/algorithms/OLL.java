@@ -449,7 +449,7 @@ public class OLL extends MaxSAT {
                 for (final Integer it : cardinalityAssumptions) {
                     final IntTriple softId = this.boundMapping.get(it);
                     assert softId != null;
-                    if (softId.bound >= this.minWeight) {
+                    if (softId.weight >= this.minWeight) {
                         assumptions.push(not(it));
                     }
                 }
@@ -517,6 +517,11 @@ public class OLL extends MaxSAT {
             }
         }
         return nextWeight;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
     }
 
     private static class IntTriple {
