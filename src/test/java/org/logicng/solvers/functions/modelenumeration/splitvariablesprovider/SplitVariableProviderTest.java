@@ -1,6 +1,4 @@
-package org.logicng.solvers.functions.splitvariablesprovider;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package org.logicng.solvers.functions.modelenumeration.splitvariablesprovider;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
@@ -13,6 +11,8 @@ import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SplitVariableProviderTest extends TestWithExampleFormulas {
 

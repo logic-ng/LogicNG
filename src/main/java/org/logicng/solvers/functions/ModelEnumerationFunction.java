@@ -41,6 +41,7 @@ import org.logicng.handlers.ModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
+import org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,7 +134,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
             models.add(model);
             proceed = this.handler == null || this.handler.foundModel(model);
             if (model.size() > 0) {
-                final LNGIntVector blockingClause = generateBlockingClause(modelFromSolver, relevantIndices);
+                final LNGIntVector blockingClause = ModelEnumerationCommon.generateBlockingClause(modelFromSolver, relevantIndices);
                 solver.underlyingSolver().addClause(blockingClause, null);
                 resultSetter.accept(UNDEF);
             } else {
@@ -152,33 +153,6 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
         final Tristate tristate = solver.sat(handler.satHandler());
         return !handler.aborted() && tristate == TRUE;
-    }
-
-    /**
-     * Generates a blocking clause from a given model and a set of relevant variables.
-     * @param modelFromSolver the current model for which the blocking clause should be generated
-     * @param relevantVars    the indices of the relevant variables.  If {@code null} all variables are relevant.
-     * @return the blocking clause for the given model and relevant variables
-     */
-    static LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
-        final LNGIntVector blockingClause;
-        if (relevantVars != null) {
-            blockingClause = new LNGIntVector(relevantVars.size());
-            for (int i = 0; i < relevantVars.size(); i++) {
-                final int varIndex = relevantVars.get(i);
-                if (varIndex != -1) {
-                    final boolean varAssignment = modelFromSolver.get(varIndex);
-                    blockingClause.push(varAssignment ? (varIndex * 2) ^ 1 : varIndex * 2);
-                }
-            }
-        } else {
-            blockingClause = new LNGIntVector(modelFromSolver.size());
-            for (int i = 0; i < modelFromSolver.size(); i++) {
-                final boolean varAssignment = modelFromSolver.get(i);
-                blockingClause.push(varAssignment ? (i * 2) ^ 1 : i * 2);
-            }
-        }
-        return blockingClause;
     }
 
     /**

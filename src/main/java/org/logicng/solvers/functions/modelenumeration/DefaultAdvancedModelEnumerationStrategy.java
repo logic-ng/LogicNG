@@ -1,9 +1,9 @@
-package org.logicng.solvers.functions;
+package org.logicng.solvers.functions.modelenumeration;
 
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.MostCommonVariablesProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.SplitVariableProvider;
 
 import java.util.Collection;
 import java.util.SortedSet;

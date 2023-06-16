@@ -26,12 +26,13 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.solvers.functions;
+package org.logicng.solvers.functions.modelenumeration;
 
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
+import org.logicng.solvers.functions.AdvancedModelEnumerationFunction;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.MostCommonVariablesProvider;
 
 /**
  * The configuration object for the {@link AdvancedModelEnumerationFunction}.

@@ -49,7 +49,7 @@ import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.pseudobooleans.PBConfig;
 import org.logicng.pseudobooleans.PBEncoder;
-import org.logicng.solvers.functions.AdvancedModelEnumerationConfig;
+import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;

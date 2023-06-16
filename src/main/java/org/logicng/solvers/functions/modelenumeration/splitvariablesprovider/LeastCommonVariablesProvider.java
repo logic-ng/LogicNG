@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.solvers.functions.splitvariablesprovider;
+package org.logicng.solvers.functions.modelenumeration.splitvariablesprovider;
 
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.SATSolver;

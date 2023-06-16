@@ -26,29 +26,37 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.solvers.functions.splitvariablesprovider;
+package org.logicng.solvers.functions.modelenumeration;
 
-import org.logicng.formulas.Variable;
-import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.ModelEnumerationFunction;
+import org.logicng.collections.LNGBooleanVector;
+import org.logicng.collections.LNGIntVector;
 
-import java.util.Collection;
-import java.util.SortedSet;
-
-/**
- * An interface for split variable providers for model enumeration functions.
- * @version 2.4.0
- * @since 2.4.0
- */
-public abstract class SplitVariableProvider {
+public interface ModelEnumerationCommon {
 
     /**
-     * Generates a set of split variables for a given formula.
-     * <p>
-     * Such a set of split variables can then be used for the {@link ModelEnumerationFunction}.
-     * @param solver    the solver
-     * @param variables the variables from which the split variables should be chosen
-     * @return the split variables
+     * Generates a blocking clause from a given model and a set of relevant variables.
+     * @param modelFromSolver the current model for which the blocking clause should be generated
+     * @param relevantVars    the indices of the relevant variables.  If {@code null} all variables are relevant.
+     * @return the blocking clause for the given model and relevant variables
      */
-    public abstract SortedSet<Variable> getSplitVars(final SATSolver solver, final Collection<Variable> variables);
+    static LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
+        final LNGIntVector blockingClause;
+        if (relevantVars != null) {
+            blockingClause = new LNGIntVector(relevantVars.size());
+            for (int i = 0; i < relevantVars.size(); i++) {
+                final int varIndex = relevantVars.get(i);
+                if (varIndex != -1) {
+                    final boolean varAssignment = modelFromSolver.get(varIndex);
+                    blockingClause.push(varAssignment ? (varIndex * 2) ^ 1 : varIndex * 2);
+                }
+            }
+        } else {
+            blockingClause = new LNGIntVector(modelFromSolver.size());
+            for (int i = 0; i < modelFromSolver.size(); i++) {
+                final boolean varAssignment = modelFromSolver.get(i);
+                blockingClause.push(varAssignment ? (i * 2) ^ 1 : i * 2);
+            }
+        }
+        return blockingClause;
+    }
 }

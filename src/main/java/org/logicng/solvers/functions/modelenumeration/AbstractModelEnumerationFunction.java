@@ -26,7 +26,7 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-package org.logicng.solvers.functions;
+package org.logicng.solvers.functions.modelenumeration;
 
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
@@ -35,7 +35,7 @@ import static org.logicng.formulas.FormulaFactory.CNF_PREFIX;
 import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.handlers.Handler.start;
-import static org.logicng.solvers.functions.ModelEnumerationFunction.generateBlockingClause;
+import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.generateBlockingClause;
 import static org.logicng.util.CollectionHelper.difference;
 
 import org.logicng.collections.LNGBooleanVector;
@@ -49,6 +49,7 @@ import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
+import org.logicng.solvers.functions.SolverFunction;
 
 import java.util.Collections;
 import java.util.List;
@@ -71,16 +72,16 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
     protected final AdvancedModelEnumerationHandler handler;
     protected final AdvancedModelEnumerationStrategy strategy;
 
-    AbstractModelEnumerationFunction(final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables,
-                                     final AdvancedModelEnumerationConfig configuration) {
+    protected AbstractModelEnumerationFunction(final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables,
+                                               final AdvancedModelEnumerationConfig configuration) {
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.handler = configuration.handler;
         this.strategy = configuration.strategy;
     }
 
-    abstract EnumerationCollector<R> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
-                                                  SortedSet<Variable> additionalVariablesNotOnSolver);
+    protected abstract EnumerationCollector<R> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                                            SortedSet<Variable> additionalVariablesNotOnSolver);
 
     @Override
     public R apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {

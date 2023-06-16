@@ -23,10 +23,12 @@ import org.logicng.handlers.AdvancedNumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.functions.splitvariablesprovider.FixedVariableProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.LeastCommonVariablesProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.MostCommonVariablesProvider;
-import org.logicng.solvers.functions.splitvariablesprovider.SplitVariableProvider;
+import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
+import org.logicng.solvers.functions.modelenumeration.DefaultAdvancedModelEnumerationStrategy;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.FixedVariableProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.LeastCommonVariablesProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.MostCommonVariablesProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.SplitVariableProvider;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 

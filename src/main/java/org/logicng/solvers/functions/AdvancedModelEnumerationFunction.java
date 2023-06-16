@@ -40,6 +40,9 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.functions.modelenumeration.AbstractModelEnumerationFunction;
+import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
+import org.logicng.solvers.functions.modelenumeration.EnumerationCollector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,8 +74,8 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
     }
 
     @Override
-    EnumerationCollector<List<Model>> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables,
-                                                   final SortedSet<Variable> dontCareVariablesNotOnSolver, final SortedSet<Variable> additionalVariablesNotOnSolver) {
+    protected EnumerationCollector<List<Model>> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables,
+                                                             final SortedSet<Variable> dontCareVariablesNotOnSolver, final SortedSet<Variable> additionalVariablesNotOnSolver) {
         return new ModelEnumerationCollector(dontCareVariablesNotOnSolver, additionalVariablesNotOnSolver);
     }
 

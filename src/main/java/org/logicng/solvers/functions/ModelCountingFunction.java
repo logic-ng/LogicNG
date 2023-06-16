@@ -35,6 +35,9 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedModelEnumerationHandler;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.functions.modelenumeration.AbstractModelEnumerationFunction;
+import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
+import org.logicng.solvers.functions.modelenumeration.EnumerationCollector;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -67,8 +70,8 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
     }
 
     @Override
-    EnumerationCollector<BigInteger> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
-                                                  final SortedSet<Variable> additionalVariablesNotOnSolver) {
+    protected EnumerationCollector<BigInteger> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                                            final SortedSet<Variable> additionalVariablesNotOnSolver) {
         return new ModelCountCollector(dontCareVariablesNotOnSolver.size());
     }
 

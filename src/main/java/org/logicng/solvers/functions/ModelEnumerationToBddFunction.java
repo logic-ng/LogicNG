@@ -41,6 +41,9 @@ import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.functions.modelenumeration.AbstractModelEnumerationFunction;
+import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
+import org.logicng.solvers.functions.modelenumeration.EnumerationCollector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,8 +76,8 @@ public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunct
     }
 
     @Override
-    EnumerationCollector<BDD> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
-                                           final SortedSet<Variable> additionalVariablesNotOnSolver) {
+    protected EnumerationCollector<BDD> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                                     final SortedSet<Variable> additionalVariablesNotOnSolver) {
         return new BddModelEnumerationCollector(f, this.variables, knownVariables, dontCareVariablesNotOnSolver.size());
     }
 

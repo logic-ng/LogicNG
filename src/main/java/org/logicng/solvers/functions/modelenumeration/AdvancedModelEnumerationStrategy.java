@@ -1,4 +1,4 @@
-package org.logicng.solvers.functions;
+package org.logicng.solvers.functions.modelenumeration;
 
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.SATSolver;
@@ -12,6 +12,7 @@ import java.util.SortedSet;
  * @since 2.4.0
  */
 public interface AdvancedModelEnumerationStrategy {
+
 
     /**
      * Returns the maximum number of models to be enumerated on the given recursion depth.
