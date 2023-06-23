@@ -146,12 +146,14 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         @Override
         public boolean commit(final AdvancedModelEnumerationHandler handler) {
             this.committedCount = this.committedCount.add(BigInteger.valueOf(this.uncommittedModels.size()).multiply(this.dontCareFactor));
-            return clearUncommitted(handler);
+            clearUncommitted();
+            return handler == null || handler.commit();
         }
 
         @Override
         public boolean rollback(final AdvancedModelEnumerationHandler handler) {
-            return clearUncommitted(handler);
+            clearUncommitted();
+            return handler == null || handler.rollback();
         }
 
         @Override
@@ -169,10 +171,9 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
             return this.committedCount;
         }
 
-        private boolean clearUncommitted(final AdvancedModelEnumerationHandler handler) {
+        private void clearUncommitted() {
             this.uncommittedModels.clear();
             this.uncommittedIndices.clear();
-            return handler == null || handler.commit();
         }
     }
 }
