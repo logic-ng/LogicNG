@@ -1,8 +1,5 @@
 package org.logicng.solvers.functions;
 
-import static java.util.Collections.emptySortedSet;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +14,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.AdvancedNumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
-import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
@@ -30,18 +26,18 @@ import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.Spl
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.math.BigInteger;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Units tests for {@link ModelEnumerationToBddFunction}.
+ * Units tests for {@link ModelCountingFunction}.
+ *
  * @version 2.4.0
  * @since 2.4.0
  */
-public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
+public class ModelCountingFunctionTest extends TestWithExampleFormulas {
 
     private FormulaFactory f;
 
@@ -60,26 +56,13 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
 
     @ParameterizedTest
     @MethodSource("splitProviders")
-    public void testContradiction(final SplitVariableProvider splitProvider) {
-        final AdvancedModelEnumerationConfig config =
-                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
-                        .build();
-        final SATSolver solver = MiniSat.miniSat(this.f);
-        solver.add(this.f.literal("A", true));
-        solver.add(this.f.literal("A", false));
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
-        assertThat(bdd.isContradiction()).isTrue();
-    }
-
-    @ParameterizedTest
-    @MethodSource("splitProviders")
     public void testTautology(final SplitVariableProvider splitProvider) {
         final AdvancedModelEnumerationConfig config =
                 AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
                         .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
-        assertThat(bdd.isTautology()).isTrue();
+        BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().variables().configuration(config).build());
+        assertThat(numberOfModels).isEqualTo(1);
     }
 
     @ParameterizedTest
@@ -91,8 +74,8 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("A & (B | C)");
         solver.add(formula);
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().variables().configuration(config).build());
-        assertThat(bdd.isTautology()).isTrue();
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().variables().configuration(config).build());
+        assertThat(numberOfModels).isEqualTo(1);
     }
 
     @ParameterizedTest
@@ -102,10 +85,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
                 AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
                         .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        final Formula formula = this.f.parse("A & (B | C)");
-        solver.add(formula);
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
-        compareModels(formula, formula.variables(), bdd);
+        solver.add(this.f.parse("A & (B | C)"));
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().configuration(config).build());
+        assertThat(numberOfModels).isEqualTo(3);
     }
 
     @ParameterizedTest
@@ -115,11 +97,9 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
                 AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
                         .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        final Formula formula = this.f.parse("(~A | C) & (~B | C)");
-        solver.add(formula);
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
-        assertThat(bdd.modelCount()).isEqualTo(5);
-        compareModels(formula, formula.variables(), bdd);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().configuration(config).build());
+        assertThat(numberOfModels).isEqualTo(5);
     }
 
     @ParameterizedTest
@@ -131,13 +111,11 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         solver.add(formula);
-        final ModelEnumerationToBddFunction meFunction = ModelEnumerationToBddFunction.builder().configuration(config).build();
-        final BDD firstRun = solver.execute(meFunction);
-        final BDD secondRun = solver.execute(meFunction);
-        assertThat(firstRun.modelCount()).isEqualTo(5);
-        assertThat(secondRun.modelCount()).isEqualTo(5);
-        compareModels(formula, formula.variables(), firstRun);
-        compareModels(formula, formula.variables(), secondRun);
+        final ModelCountingFunction meFunction = ModelCountingFunction.builder().configuration(config).build();
+        final BigInteger firstRun = solver.execute(meFunction);
+        final BigInteger secondRun = solver.execute(meFunction);
+        assertThat(firstRun).isEqualTo(5);
+        assertThat(secondRun).isEqualTo(5);
     }
 
     @ParameterizedTest
@@ -150,12 +128,11 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         final List<Variable> variables = this.f.variables("A", "B", "C", "D");
         solver.add(formula);
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder()
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder()
                 .variables(variables)
                 .configuration(config)
                 .build());
-        assertThat(bdd.modelCount()).isEqualTo(10);
-        compareModels(formula, variables, bdd);
+        assertThat(numberOfModels).isEqualTo(10);
     }
 
     @ParameterizedTest
@@ -168,12 +145,11 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         final Formula formula = this.f.parse("(~A | C) & (~B | C)");
         final List<Variable> variables = this.f.variables("A", "C", "D", "E");
         solver.add(formula);
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder()
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder()
                 .variables(variables)
                 .configuration(config)
                 .build());
-        assertThat(bdd.modelCount()).isEqualTo(12);
-        compareModels(formula, variables, bdd);
+        assertThat(numberOfModels).isEqualTo(12);
     }
 
     @Test
@@ -185,12 +161,11 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         final Formula formula = this.f.parse("A | B | (X & ~X)"); // X will be simplified out and become a don't care variable unknown by the solver
         solver.add(formula);
         final SortedSet<Variable> variables = new TreeSet<>(this.f.variables("A", "B", "X"));
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder()
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder()
                 .variables(variables)
                 .configuration(config)
                 .build());
-        assertThat(bdd.modelCount()).isEqualTo(6);
-        compareModels(formula, variables, bdd);
+        assertThat(numberOfModels).isEqualTo(6);
     }
 
     @ParameterizedTest
@@ -202,33 +177,38 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
                         .strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
         final SATSolver solver = MiniSat.miniSat(this.f);
         solver.add(this.f.parse("(~A | C) & (~B | C)"));
-        final BDD bdd = solver.execute(ModelEnumerationToBddFunction.builder().configuration(config).build());
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().configuration(config).build());
         assertThat(handler.aborted()).isTrue();
-        assertThat(bdd.modelCount()).isEqualTo(3);
+        assertThat(numberOfModels).isEqualTo(3);
     }
 
-    @RandomTag
     @Test
+    @RandomTag
     public void testRandomFormulas() {
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 100; i++) {
             final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
             final Formula formula = randomizer.formula(3);
 
             final SATSolver solver = MiniSat.miniSat(this.f);
             solver.add(formula);
 
+            // no split
+            final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
+
             // recursive call: least common vars
             final AdvancedModelEnumerationConfig configLcv =
                     AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
-            final BDD bdd1 = solver.execute(ModelEnumerationToBddFunction.builder().variables(formula.variables()).configuration(configLcv).build());
+            final BigInteger count1 =
+                    solver.execute(ModelCountingFunction.builder().configuration(configLcv).build());
 
             // recursive call: most common vars
             final AdvancedModelEnumerationConfig configMcv =
                     AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new MostCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
-            final BDD bdd2 = solver.execute(ModelEnumerationToBddFunction.builder().variables(formula.variables()).configuration(configMcv).build());
+            final BigInteger count2 =
+                    solver.execute(ModelCountingFunction.builder().configuration(configMcv).build());
 
-            compareModels(formula, formula.variables(), bdd1);
-            compareModels(formula, formula.variables(), bdd2);
+            assertThat(count1).isEqualTo(modelsNoSplit.size());
+            assertThat(count2).isEqualTo(modelsNoSplit.size());
         }
     }
 
@@ -239,8 +219,8 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         solver.sat();
 
         final EnumerationCollectorTestHandler handler = new EnumerationCollectorTestHandler();
-        final ModelEnumerationToBddFunction.BddModelEnumerationCollector collector = new ModelEnumerationToBddFunction.BddModelEnumerationCollector(this.f, this.EQ1.variables(), emptySortedSet(), 0);
-        assertThat(collector.getResult().modelCount()).isZero();
+        final ModelCountingFunction.ModelCountCollector collector = new ModelCountingFunction.ModelCountCollector(0);
+        assertThat(collector.getResult().intValue()).isZero();
         assertThat(handler.getFoundModels()).isZero();
         assertThat(handler.getCommitCalls()).isZero();
         assertThat(handler.getRollbackCalls()).isZero();
@@ -248,21 +228,21 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         final LNGBooleanVector modelFromSolver1 = new LNGBooleanVector(true, true);
         final LNGBooleanVector modelFromSolver2 = new LNGBooleanVector(false, false);
 
-        final Model expectedModel1 = new Model(this.A, this.B);
+        //final Model expectedModel1 = new Model(this.A, this.B);
         final Model expectedModel2 = new Model(this.NA, this.NB);
 
         collector.addModel(modelFromSolver1, solver, null, handler);
-        assertThat(collector.getResult().enumerateAllModels()).isEmpty();
+        assertThat(collector.getResult().intValue()).isZero();
         assertThat(handler.getFoundModels()).isEqualTo(1);
         assertThat(handler.getCommitCalls()).isZero();
         assertThat(handler.getRollbackCalls()).isZero();
 
         collector.commit(handler);
-        assertThat(collector.getResult().enumerateAllModels()).containsExactly(expectedModel1.assignment(false));
+        assertThat(collector.getResult().intValue()).isEqualTo(1);
         assertThat(handler.getFoundModels()).isEqualTo(1);
         assertThat(handler.getCommitCalls()).isEqualTo(1);
         assertThat(handler.getRollbackCalls()).isZero();
-        final BDD result1 = collector.getResult();
+        final BigInteger result1 = collector.getResult();
 
         collector.addModel(modelFromSolver2, solver, null, handler);
         assertThat(collector.getResult()).isEqualTo(result1);
@@ -286,11 +266,11 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
 
         collector.addModel(modelFromSolver2, solver, null, handler);
         collector.commit(handler);
-        assertThat(collector.getResult().enumerateAllModels()).containsExactlyInAnyOrder(expectedModel1.assignment(false), expectedModel2.assignment(false));
+        assertThat(collector.getResult().intValue()).isEqualTo(2);
         assertThat(handler.getFoundModels()).isEqualTo(4);
         assertThat(handler.getCommitCalls()).isEqualTo(2);
         assertThat(handler.getRollbackCalls()).isEqualTo(2);
-        final BDD result2 = collector.getResult();
+        final BigInteger result2 = collector.getResult();
 
         collector.rollback(handler);
         assertThat(collector.getResult()).isEqualTo(result2);
@@ -298,19 +278,5 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
         assertThat(handler.getFoundModels()).isEqualTo(4);
         assertThat(handler.getCommitCalls()).isEqualTo(2);
         assertThat(handler.getRollbackCalls()).isEqualTo(4);
-    }
-
-    private void compareModels(final Formula formula, final Collection<Variable> variables, final BDD bdd) {
-        final FormulaFactory factory = formula.factory();
-        final SATSolver solver = MiniSat.miniSat(factory);
-        solver.add(formula);
-        final Variable taut = factory.variable("@TAUT");
-        for (final Variable variable : variables) {
-            solver.add(factory.or(taut.negate(), variable));
-        }
-        solver.add(taut.negate());
-        final List<Assignment> formulaModels = solver.enumerateAllModels(variables);
-        final List<Assignment> bddModels = bdd.enumerateAllModels(variables);
-        assertThat(formulaModels).containsExactlyInAnyOrderElementsOf(bddModels);
     }
 }

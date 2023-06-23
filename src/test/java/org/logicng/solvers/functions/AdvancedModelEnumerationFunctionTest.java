@@ -6,11 +6,42 @@ import static java.util.Collections.emptySortedSet;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.logicng.solvers.functions.AdvancedModelEnumerationFunction.ModelEnumerationCollector.getCartesianProduct;
+import static org.logicng.testutils.TestUtil.getDontCareVariables;
+import static org.logicng.testutils.TestUtil.modelCount;
+import static org.logicng.util.CollectionHelper.union;
+import static org.logicng.util.FormulaHelper.strings2literals;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
+import org.logicng.collections.LNGBooleanVector;
+import org.logicng.datastructures.Assignment;
+import org.logicng.datastructures.Model;
+import org.logicng.datastructures.Tristate;
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
+import org.logicng.formulas.Variable;
+import org.logicng.handlers.*;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.SATSolver;
+import org.logicng.solvers.functions.modelenumeration.AdvancedModelEnumerationConfig;
+import org.logicng.solvers.functions.modelenumeration.DefaultAdvancedModelEnumerationStrategy;
+import org.logicng.solvers.functions.modelenumeration.EnumerationCollectorTestHandler;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.FixedVariableProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.LeastCommonVariablesProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.MostCommonVariablesProvider;
+import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.SplitVariableProvider;
+import org.logicng.util.FormulaRandomizer;
+import org.logicng.util.FormulaRandomizerConfig;
 
-import java.util.TreeSet;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Units tests for {@link AdvancedModelEnumerationFunction}.
@@ -18,6 +49,422 @@ import java.util.TreeSet;
  * @since 2.4.0
  */
 public class AdvancedModelEnumerationFunctionTest extends TestWithExampleFormulas {
+
+    private FormulaFactory f;
+
+    public static Collection<Object[]> splitProviders() {
+        final List<Object[]> providers = new ArrayList<>();
+        providers.add(new Object[]{null});
+        providers.add(new Object[]{new LeastCommonVariablesProvider()});
+        providers.add(new Object[]{new MostCommonVariablesProvider()});
+        return providers;
+    }
+
+    @BeforeEach
+    public void init() {
+        this.f = new FormulaFactory();
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testContradiction(final SplitVariableProvider splitProvider) {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.literal("A", true));
+        solver.add(this.f.literal("A", false));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().configuration(config).build());
+        assertThat(models).isEmpty();
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testTautology(final SplitVariableProvider splitProvider) {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().configuration(config).build());
+        assertThat(models).containsExactly(new Model());
+        final List<Variable> additionalVars = this.f.variables("A", "B");
+        models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().additionalVariables(additionalVars).configuration(config).build());
+        assertThat(models).hasSize(1);
+        assertThat(variables(models.get(0))).containsAll(additionalVars);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testEmptyEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        final Formula formula = this.f.parse("A & (B | C)");
+        solver.add(formula);
+        List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().configuration(config).build());
+        assertThat(models).containsExactly(new Model());
+        models = solver.execute(AdvancedModelEnumerationFunction.builder().variables().additionalVariables(formula.variables()).configuration(config).build());
+        assertThat(models).hasSize(1);
+        assertThat(variables(models.get(0))).containsAll(formula.variables());
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testSimple1(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                set(this.f.variable("A"), this.f.variable("B"), this.f.variable("C")),
+                set(this.f.variable("A"), this.f.variable("B"), this.f.literal("C", false)),
+                set(this.f.variable("A"), this.f.literal("B", false), this.f.variable("C"))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testSimple2(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
+        assertThat(models).hasSize(5);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testResultLiteralOrderIndependentFromInputOrder(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
+        final List<Model> modelsABC = solver.execute(AdvancedModelEnumerationFunction.builder().variables(this.f.variables("A", "B", "C")).configuration(config).build());
+        final List<Model> modelsBCA = solver.execute(AdvancedModelEnumerationFunction.builder().variables(this.f.variables("B", "C", "A")).configuration(config).build());
+
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                set(this.f.variable("A"), this.f.variable("B"), this.f.variable("C")),
+                set(this.f.variable("A"), this.f.variable("B"), this.f.literal("C", false)),
+                set(this.f.variable("A"), this.f.literal("B", false), this.f.variable("C"))
+        );
+        assertThat(models).containsExactlyInAnyOrderElementsOf(modelsABC);
+        assertThat(modelsABC).containsExactlyInAnyOrderElementsOf(modelsBCA);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDuplicateEnumerationVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(this.f.variables("A", "A", "B"))
+                .configuration(config).build());
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                set(this.f.variable("A"), this.f.variable("B")),
+                set(this.f.variable("A"), this.f.literal("B", false))
+        );
+        assertThat(models).extracting(Model::size).allMatch(size -> size == 2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testMultipleModelEnumeration(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final AdvancedModelEnumerationFunction meFunction = AdvancedModelEnumerationFunction.builder().configuration(config).build();
+        final List<Model> firstRun = solver.execute(meFunction);
+        final List<Model> secondRun = solver.execute(meFunction);
+        assertThat(firstRun).hasSize(5);
+        assertThat(modelsToSets(firstRun)).containsExactlyInAnyOrderElementsOf(modelsToSets(secondRun));
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testAdditionalVariablesSimple(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & C | B & ~C"));
+        final Variable a = this.f.variable("A");
+        final Variable b = this.f.variable("B");
+        final Variable c = this.f.variable("C");
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(Arrays.asList(a, b))
+                .additionalVariables(Collections.singletonList(c))
+                .configuration(config)
+                .build());
+        assertThat(models).hasSize(3); // (A, B), (A, ~B), (~A, B)
+        for (final Model model : models) {
+            assertThat(variables(model)).containsExactly(a, b, c);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDuplicateAdditionalVariables(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("A & (B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(this.f.variables("A"))
+                .additionalVariables(this.f.variables("B", "B"))
+                .configuration(config).build());
+        assertThat(models).hasSize(1);
+        assertThat(models).extracting(Model::size).allMatch(size -> size == 2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDontCareVariables1(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(this.f.variables("A", "B", "C", "D"))
+                .configuration(config)
+                .build());
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                // models with ~D
+                strings2literals(Arrays.asList("A", "~B", "C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("A", "B", "C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "~C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "C", "~D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "B", "C", "~D"), "~", this.f),
+                // models with D
+                strings2literals(Arrays.asList("A", "~B", "C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("A", "B", "C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "~C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~B", "C", "D"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "B", "C", "D"), "~", this.f)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testDontCareVariables2(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
+                        .build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(this.f.variables("A", "C", "D", "E"))
+                .configuration(config)
+                .build());
+        assertThat(modelsToSets(models)).containsExactlyInAnyOrder(
+                // models with ~D, ~E
+                strings2literals(Arrays.asList("A", "C", "~D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "~D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "~D", "~E"), "~", this.f),
+                // models with ~D, E
+                strings2literals(Arrays.asList("A", "C", "~D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "~D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "~D", "E"), "~", this.f),
+                // models with D, ~E
+                strings2literals(Arrays.asList("A", "C", "D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "D", "~E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "D", "~E"), "~", this.f),
+                // models with D, E
+                strings2literals(Arrays.asList("A", "C", "D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "C", "D", "E"), "~", this.f),
+                strings2literals(Arrays.asList("~A", "~C", "D", "E"), "~", this.f)
+        );
+    }
+
+    @Test
+    public void testDontCareVariables3() throws ParserException {
+        final FixedVariableProvider splitProvider = new FixedVariableProvider(new TreeSet<>(this.f.variables("X")));
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        final Formula formula = this.f.parse("A | B | (X & ~X)"); // X will be simplified out and become a don't care variable unknown by the solver
+        solver.add(formula);
+        final SortedSet<Variable> enumerationVars = new TreeSet<>(this.f.variables("A", "B", "X"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
+                .variables(enumerationVars)
+                .configuration(config)
+                .build());
+        assertThat(models).hasSize(6);
+    }
+
+    @ParameterizedTest
+    @MethodSource("splitProviders")
+    public void testHandlerWithNumModelsLimit(final SplitVariableProvider splitProvider) throws ParserException {
+        final AdvancedNumberOfModelsHandler handler = new AdvancedNumberOfModelsHandler(3);
+        final AdvancedModelEnumerationConfig config =
+                AdvancedModelEnumerationConfig.builder().handler(handler)
+                        .strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(3).build()).build();
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        solver.add(this.f.parse("(~A | C) & (~B | C)"));
+        final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(config).build());
+        assertThat(handler.aborted()).isTrue();
+        assertThat(models).hasSize(3);
+    }
+
+    @Test
+    public void testAdditionalVariables() {
+        final SATSolver solver = MiniSat.miniSat(this.f);
+        final AdvancedModelEnumerationConfig config = AdvancedModelEnumerationConfig.builder()
+                .strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(10).build())
+                .build();
+
+        for (int i = 1; i <= 1000; i++) {
+            // given
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(20).build());
+            final Formula formula = randomizer.formula(4);
+            solver.add(formula);
+
+            final List<Variable> varsFormula = new ArrayList<>(formula.variables());
+            final int numberOfVars = formula.variables().size();
+            final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 5);
+            final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
+
+            final int additionalVarsStart = Math.min(4 * minNumberOfVars, numberOfVars);
+            final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
+
+            // when
+            final List<Model> modelsRecursive = solver.execute(AdvancedModelEnumerationFunction.builder()
+                    .variables(pmeVars)
+                    .additionalVariables(additionalVars)
+                    .configuration(config).build());
+
+            final List<Assignment> modelsOld =
+                    solver.execute(ModelEnumerationFunction.builder().variables(pmeVars).additionalVariables(additionalVars).build());
+
+            final List<Assignment> updatedModels1 = restrictModelsToPmeVars(pmeVars, modelsRecursive);
+            final List<Assignment> updatedModels2 = extendByDontCares(restrictAssignmentsToPmeVars(pmeVars, modelsOld), pmeVars);
+
+            assertThat(BigInteger.valueOf(modelsRecursive.size())).isEqualTo(modelCount(modelsOld, pmeVars));
+            assertThat(assignmentsToSets(updatedModels1)).containsExactlyInAnyOrderElementsOf(assignmentsToSets(updatedModels2));
+
+            // check that models are buildable and every model contains all additional variables
+            for (final Model model : modelsRecursive) {
+                assertThat(variables(model)).containsAll(additionalVars);
+                solver.add(model.getLiterals());
+                assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
+                solver.reset();
+            }
+            solver.reset();
+        }
+    }
+
+    @Test
+    @RandomTag
+    public void testRandomFormulas() {
+        for (int i = 1; i <= 100; i++) {
+            final FormulaRandomizer randomizer = new FormulaRandomizer(this.f, FormulaRandomizerConfig.builder().seed(i).numVars(15).build());
+            final Formula formula = randomizer.formula(3);
+
+            final SATSolver solver = MiniSat.miniSat(this.f);
+            solver.add(formula);
+
+            // no split
+            final List<Assignment> modelsNoSplit = solver.execute(ModelEnumerationFunction.builder().build());
+
+            // recursive call: least common vars
+            final AdvancedModelEnumerationConfig configLcv =
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new LeastCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
+            final List<Model> models1 = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(configLcv).build());
+
+            // recursive call: most common vars
+            final AdvancedModelEnumerationConfig configMcv =
+                    AdvancedModelEnumerationConfig.builder().strategy(DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(new MostCommonVariablesProvider()).maxNumberOfModels(500).build()).build();
+            final List<Model> models2 = solver.execute(AdvancedModelEnumerationFunction.builder().configuration(configMcv).build());
+
+            assertThat(models1.size()).isEqualTo(modelsNoSplit.size());
+            assertThat(models2.size()).isEqualTo(modelsNoSplit.size());
+
+            final List<Set<Literal>> setNoSplit = assignmentsToSets(modelsNoSplit);
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(modelsToSets(models1));
+            assertThat(setNoSplit).containsExactlyInAnyOrderElementsOf(modelsToSets(models2));
+        }
+    }
+
+    @Test
+    public void testCollector() {
+        final MiniSat solver = MiniSat.miniSat(this.f);
+        solver.add(this.EQ1);
+        solver.sat();
+
+        final EnumerationCollectorTestHandler handler = new EnumerationCollectorTestHandler();
+        final AdvancedModelEnumerationFunction.ModelEnumerationCollector collector = new AdvancedModelEnumerationFunction.ModelEnumerationCollector(emptySortedSet(), emptySortedSet());
+        assertThat(collector.getResult()).isEmpty();
+        assertThat(handler.getFoundModels()).isZero();
+        assertThat(handler.getCommitCalls()).isZero();
+        assertThat(handler.getRollbackCalls()).isZero();
+
+        final LNGBooleanVector modelFromSolver1 = new LNGBooleanVector(true, true);
+        final LNGBooleanVector modelFromSolver2 = new LNGBooleanVector(false, false);
+
+        final Model expectedModel1 = new Model(this.A, this.B);
+        final Model expectedModel2 = new Model(this.NA, this.NB);
+
+        collector.addModel(modelFromSolver1, solver, null, handler);
+        assertThat(collector.getResult()).isEmpty();
+        assertThat(handler.getFoundModels()).isEqualTo(1);
+        assertThat(handler.getCommitCalls()).isZero();
+        assertThat(handler.getRollbackCalls()).isZero();
+
+        collector.commit(handler);
+        assertThat(collector.getResult()).containsExactly(expectedModel1);
+        assertThat(handler.getFoundModels()).isEqualTo(1);
+        assertThat(handler.getCommitCalls()).isEqualTo(1);
+        assertThat(handler.getRollbackCalls()).isZero();
+        final List<Model> result1 = collector.getResult();
+
+        collector.addModel(modelFromSolver2, solver, null, handler);
+        assertThat(collector.getResult()).isEqualTo(result1);
+        assertThat(handler.getFoundModels()).isEqualTo(2);
+        assertThat(handler.getCommitCalls()).isEqualTo(1);
+        assertThat(handler.getRollbackCalls()).isZero();
+
+        collector.rollback(handler);
+        assertThat(collector.getResult()).isEqualTo(result1);
+        assertThat(handler.getFoundModels()).isEqualTo(2);
+        assertThat(handler.getCommitCalls()).isEqualTo(1);
+        assertThat(handler.getRollbackCalls()).isEqualTo(1);
+
+        collector.addModel(modelFromSolver2, solver, null, handler);
+        final List<Model> rollbackModels = collector.rollbackAndReturnModels(solver, handler);
+        assertThat(rollbackModels).containsExactly(expectedModel2);
+        assertThat(collector.getResult()).isEqualTo(result1);
+        assertThat(handler.getFoundModels()).isEqualTo(3);
+        assertThat(handler.getCommitCalls()).isEqualTo(1);
+        assertThat(handler.getRollbackCalls()).isEqualTo(2);
+
+        collector.addModel(modelFromSolver2, solver, null, handler);
+        collector.commit(handler);
+        assertThat(collector.getResult()).containsExactlyInAnyOrder(expectedModel1, expectedModel2);
+        assertThat(handler.getFoundModels()).isEqualTo(4);
+        assertThat(handler.getCommitCalls()).isEqualTo(2);
+        assertThat(handler.getRollbackCalls()).isEqualTo(2);
+        final List<Model> result2 = collector.getResult();
+
+        collector.rollback(handler);
+        assertThat(collector.getResult()).isEqualTo(result2);
+        assertThat(collector.rollbackAndReturnModels(solver, handler)).isEmpty();
+        assertThat(handler.getFoundModels()).isEqualTo(4);
+        assertThat(handler.getCommitCalls()).isEqualTo(2);
+        assertThat(handler.getRollbackCalls()).isEqualTo(4);
+    }
 
     @Test
     public void testGetCartesianProduct() {
@@ -36,257 +483,61 @@ public class AdvancedModelEnumerationFunctionTest extends TestWithExampleFormula
                 asList(this.NA, this.NB, this.NC)
         );
     }
-}
 
-//    @Test
-//    public void computeWithComponentsWithSplit() {
-//        for (int i = 18; i <= 18; i++) {
-//            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-//            final Formula formula = randomizer.formula(3);
-//            final int numberOfVars = formula.variables().size();
-//            if (numberOfVars < 10) {
-//                continue;
-//            }
-//            final SATSolver solver = MiniSat.miniSat(this.f);
-//            solver.add(formula);
-//
-//            final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
-//            System.out.println("Seed: " + i + ", models: " + models.size() + "\n");
-//        }
-//    }
-//
-//    @Test
-//    public void testNewImplementation() throws IOException {
-//        final BufferedWriter fw = new BufferedWriter(new FileWriter("advancedME.csv"));
-//        fw.write("seed;depth;#vars;#combinations;time classic;time advanced no components;time advanced with components;formula");
-//        fw.newLine();
-//        for (int i = 1; i <= 1000; i++) {
-//            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-//            final Formula formula = randomizer.formula(3);
-//            final int numberOfVars = formula.variables().size();
-//            if (numberOfVars < 10) {
-//                continue;
-//            }
-//            final SATSolver solver = MiniSat.miniSat(this.f);
-//            solver.add(formula);
-//            System.out.println("\nSeed: " + i + ", formula: " + formula);
-//
-//            final long t1 = System.currentTimeMillis();
-//
-//            // advanced enumeration, no components
-//            final List<Model> modelsAdvNoComp = solver.execute(AdvancedModelEnumerationFunction.builder().build());
-//            if (modelsAdvNoComp.size() < 100 || modelsAdvNoComp.size() > 100000) {
-//                continue;
-//            }
-//
-//            final long t2 = System.currentTimeMillis();
-//            final long timeAdvancedNoComponents = t2 - t1;
-//            System.out.println("Time advanced enumeration no components: " + timeAdvancedNoComponents);
-//
-//            // classic enumeration
-//            final List<Model> modelsClassic = solver.execute(ModelEnumerationFunctionModel.builder().build());
-//
-//            final long t3 = System.currentTimeMillis();
-//            final long timeClassic = t3 - t2;
-//            System.out.println("Time classic enumeration: " + timeClassic);
-//
-//            // advanced enumeration, with components
-//            final List<Model> modelsAdvWithComp = solver.execute(AdvancedModelEnumerationFunction.builder().computeWithComponents(true).build());
-//            final long t4 = System.currentTimeMillis();
-//            final long timeAdvancedWithComponents = t4 - t3;
-//            System.out.println("Time advanced enumeration with components: " + timeAdvancedWithComponents);
-//
-//            assertThat(modelsClassic.size()).isEqualTo(modelsAdvNoComp.size());
-//            assertThat(modelsClassic.size()).isEqualTo(modelsAdvWithComp.size());
-//            assertThat(modelsClassic).containsExactlyInAnyOrderElementsOf(modelsAdvNoComp);
-//            assertThat(modelsClassic).containsExactlyInAnyOrderElementsOf(modelsAdvWithComp);
-//
-//            final int depth = formula.apply(new FormulaDepthFunction());
-//            final String resultString =
-//                    String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, modelsClassic.size(), timeClassic, timeAdvancedNoComponents,
-//                            timeAdvancedWithComponents, formula);
-//            fw.write(resultString);
-//            fw.newLine();
-//            fw.flush();
-//        }
-//    }
-//
-//
-//    @Test
-//    public void testPme() {
-//        final SATSolver solver = MiniSat.miniSat(this.f);
-//        final SolverState initialState = solver.saveState();
-//        for (int i = 1; i <= 1000; i++) {
-//            solver.loadState(initialState);
-//            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-//            final Formula formula = randomizer.formula(5);
-//            solver.add(formula);
-//            final long t1 = System.currentTimeMillis();
-//            final List<Model> modelsWithComponents = solver.execute(
-//                    AdvancedModelEnumerationFunction.builder().computeWithComponents(true)
-//                            .variables(f.variable("v01"), f.variable("v02"), f.variable("v03"), f.variable("v04"), f.variable("v05"), f.variable("v06"),
-//                                    f.variable("v07"), f.variable("v08"), f.variable("v09"),
-//                                    f.variable("v10"), f.variable("v11"), f.variable("v12")).build());
-//            if (modelsWithComponents.size() < 100) {
-//                continue;
-//            }
-//            System.out.println("\nSeed: " + i + ", number of models: " + modelsWithComponents.size());
-//            final long t2 = System.currentTimeMillis();
-//            final List<Model> classicModels = solver.execute(
-//                    AdvancedModelEnumerationFunction.builder()
-//                            .variables(f.variable("v01"), f.variable("v02"), f.variable("v03"), f.variable("v04"), f.variable("v05"), f.variable("v06"),
-//                                    f.variable("v07"), f.variable("v08"), f.variable("v09"),
-//                                    f.variable("v10"), f.variable("v11"), f.variable("v12")).build());
-//            final long t3 = System.currentTimeMillis();
-//
-//            assertThat(modelsWithComponents.size()).isEqualTo(classicModels.size());
-//            assertThat(modelsWithComponents).containsExactlyInAnyOrderElementsOf(classicModels);
-//            System.out.println("time with components: " + (t2 - t1));
-//            System.out.println("time without components: " + (t3 - t2));
-//        }
-//    }
-//
-//    //
-//    // @Test
-//    // public void testAdditionalVariables() throws IOException {
-//    //     final BufferedWriter fw = new BufferedWriter(new FileWriter("AmeAdditionalVars.csv"));
-//    //     fw.write("seed;depth;#vars formula;# vars pme;#combinations;time no components (ms);time with components (ms);formula");
-//    //     fw.newLine();
-//    //     final SATSolver solver = MiniSat.miniSat(this.f);
-//    //     final SolverState initialState = solver.saveState();
-//    //     for (int i = 1; i <= 1000; i++) {
-//    //         solver.loadState(initialState);
-//    //         // given
-//    //         final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-//    //         final Formula formula = randomizer.formula(8);
-//    //         solver.add(formula);
-//    //
-//    //         final List<Variable> varsFormula = new ArrayList<>(formula.variables());
-//    //         final int numberOfVars = formula.variables().size();
-//    //         final int minNumberOfVars = (int) Math.ceil(numberOfVars / (double) 3) + 2;
-//    //         final SortedSet<Variable> pmeVars = new TreeSet<>(varsFormula.subList(0, minNumberOfVars));
-//    //
-//    //         final int additionalVarsStart = 2 * minNumberOfVars;
-//    //         final SortedSet<Variable> additionalVars = new TreeSet<>(varsFormula.subList(additionalVarsStart, varsFormula.size()));
-//    //
-//    //         // when
-//    //         final long t1 = System.currentTimeMillis();
-//    //         final List<Model> models1 = solver.execute(AdvancedModelEnumerationFunction.builder()
-//    //                 .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
-//    //                 .variables(pmeVars)
-//    //                 .additionalVariables(additionalVars).build());
-//    //         final long t1a = System.currentTimeMillis();
-//    //
-//    //         final long timeNoComponents = t1a - t1;
-//    //         if (models1.size() < 10) {
-//    //             continue;
-//    //         }
-//    //         System.out.println("\nSeed: " + i);
-//    //         System.out.println("Number of combinations: " + models1.size());
-//    //         System.out.println("Time no components: " + timeNoComponents);
-//    //
-//    //         final long t2 = System.currentTimeMillis();
-//    //         final List<Model> models2 = solver.execute(AdvancedModelEnumerationFunction.builder()
-//    //                 .computeWithComponents(true)
-//    //                 .splitVariableProvider(new LeastCommonVariableProvider(this.f, 3, 50, 70))
-//    //                 .variables(pmeVars)
-//    //                 .additionalVariables(additionalVars).build());
-//    //
-//    //         final long t3 = System.currentTimeMillis();
-//    //         final long timeWithComponents = t3 - t2;
-//    //
-//    //         System.out.println("Time with components: " + timeWithComponents);
-//    //
-//    //         final List<Model> updatedModels1 = restrictAssignmentsToPmeVars(pmeVars, models1);
-//    //         final List<Model> updatedModels2 = restrictAssignmentsToPmeVars(pmeVars, models2);
-//    //
-//    //         // then
-//    //         assertThat(models1.size()).isEqualTo(models2.size());
-//    //         assertThat(updatedModels1).containsExactlyInAnyOrderElementsOf(updatedModels2);
-//    //
-//    //         final int depth = formula.apply(new FormulaDepthFunction());
-//    //         final String resultString = String.format("%d;%d;%d;%d;%d;%d;%d;%s", i, depth, numberOfVars, pmeVars.size(), models2.size(), timeNoComponents,
-//    //                 timeWithComponents, formula);
-//    //         fw.write(resultString);
-//    //         fw.newLine();
-//    //         fw.flush();
-//    //     }
-//    // }
-//    //
-//    // private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
-//    //     final List<Assignment> updatedModels = new ArrayList<>();
-//    //     for (final Assignment assignment : models) {
-//    //         final Assignment updatedAssignment = new Assignment();
-//    //         for (final Literal literal : assignment.literals()) {
-//    //             if (pmeVars.contains(literal.variable())) {
-//    //                 updatedAssignment.addLiteral(literal);
-//    //             }
-//    //         }
-//    //         updatedModels.add(updatedAssignment);
-//    //     }
-//    //     return updatedModels;
-//    // }
-//
-//
-//    @Test
-//    public void testPerformanceSplitProvider() throws IOException {
-//        final BufferedWriter fw = new BufferedWriter(new FileWriter("AmePerformance.csv"));
-//        fw.write("seed;depth;#vars;#combinations;time random;random aborted;time least common vars;lc aborted;time most common vars;mc aborted;formula");
-//        fw.newLine();
-//        for (int i = 1; i <= 50; i++) {
-//            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build());
-//            final Formula formula = randomizer.formula(4);
-//            final int numberOfVars = formula.variables().size();
-//            if (numberOfVars < 10) {
-//                continue;
-//            }
-//            final SATSolver solver = MiniSat.miniSat(this.f);
-//            solver.add(formula);
-//            System.out.println("\nSeed: " + i + ", formula: " + formula);
-//
-//            final ModelEnumerationHandler handler1 = new NumberOfModelsHandler(2500000);
-//            final ModelEnumerationHandler handler2 = new NumberOfModelsHandler(2500000);
-//            final ModelEnumerationHandler handler3 = new NumberOfModelsHandler(2500000);
-//
-//            final long t1 = System.currentTimeMillis();
-//
-//            // random split provider
-//            final List<Model> models = solver.execute(AdvancedModelEnumerationFunction.builder()
-//                    .splitVariableProvider(new RandomSplitVariableProvider(this.f))
-//                    .handler(handler1)
-//                    .computeWithComponents(true).build());
-//            final long t2 = System.currentTimeMillis();
-//            final long timeRandom = t2 - t1;
-//            System.out.println("Number of combis: " + models.size());
-//            if (models.size() < 1000) {
-//                continue;
-//            }
-//            System.out.println("Time random split: " + timeRandom);
-//
-//            // least common split provider
-//            solver.execute(AdvancedModelEnumerationFunction.builder()
-//                    .splitVariableProvider(new LeastCommonVariableProvider(this.f))
-//                    .handler(handler2)
-//                    .computeWithComponents(true).build());
-//            final long t3 = System.currentTimeMillis();
-//            final long timeLeastCommon = t3 - t2;
-//            System.out.println("Time least common vars: " + timeLeastCommon);
-//
-//            // most common split provider
-//            solver.execute(AdvancedModelEnumerationFunction.builder()
-//                    .splitVariableProvider(new MostCommonVariableProvider(this.f))
-//                    .handler(handler3)
-//                    .computeWithComponents(true).build());
-//            final long t4 = System.currentTimeMillis();
-//            final long timeMostCommon = t4 - t3;
-//            System.out.println("Time most common vars: " + timeMostCommon);
-//
-//            final int depth = formula.apply(new FormulaDepthFunction());
-//            final String resultString = String.format("%d;%d;%d;%d;%d;%b;%d;%b;%d;%b;%s", i, depth, numberOfVars, models.size(), timeRandom,
-//                    handler1.aborted(), timeLeastCommon, handler2.aborted(), timeMostCommon, handler3.aborted(), formula);
-//            fw.write(resultString);
-//            fw.newLine();
-//            fw.flush();
-//        }
-//    }
-//}
+    private static List<Assignment> extendByDontCares(final List<Assignment> assignments, final SortedSet<Variable> variables) {
+        final SortedSet<Variable> dontCareVars = getDontCareVariables(assignments, variables);
+        final List<List<Literal>> cartesianProduct = getCartesianProduct(dontCareVars);
+        final List<Assignment> extendedAssignments = new ArrayList<>();
+        for (final Assignment assignment : assignments) {
+            final SortedSet<Literal> assignmentLiterals = assignment.literals();
+            for (final List<Literal> literals : cartesianProduct) {
+                extendedAssignments.add(new Assignment(union(assignmentLiterals, literals, TreeSet::new)));
+            }
+        }
+        return extendedAssignments;
+    }
+
+    private List<Assignment> restrictAssignmentsToPmeVars(final SortedSet<Variable> pmeVars, final List<Assignment> models) {
+        final List<Assignment> updatedModels = new ArrayList<>();
+        for (final Assignment assignment : models) {
+            final Assignment updatedAssignment = new Assignment();
+            for (final Literal literal : assignment.literals()) {
+                if (pmeVars.contains(literal.variable())) {
+                    updatedAssignment.addLiteral(literal);
+                }
+            }
+            updatedModels.add(updatedAssignment);
+        }
+        return updatedModels;
+    }
+
+    private List<Assignment> restrictModelsToPmeVars(final SortedSet<Variable> pmeVars, final List<Model> models) {
+        final List<Assignment> updatedModels = new ArrayList<>();
+        for (final Model assignment : models) {
+            final Assignment updatedAssignment = new Assignment();
+            for (final Literal literal : assignment.getLiterals()) {
+                if (pmeVars.contains(literal.variable())) {
+                    updatedAssignment.addLiteral(literal);
+                }
+            }
+            updatedModels.add(updatedAssignment);
+        }
+        return updatedModels;
+    }
+
+    private static List<Set<Literal>> modelsToSets(final List<Model> models) {
+        return models.stream().map(x -> new HashSet<>(x.getLiterals())).collect(Collectors.toList());
+    }
+
+    private static List<Set<Literal>> assignmentsToSets(final List<Assignment> models) {
+        return models.stream().map(x -> new HashSet<>(x.literals())).collect(Collectors.toList());
+    }
+
+    private static Set<Literal> set(final Literal... literals) {
+        return new HashSet<>(Arrays.asList(literals));
+    }
+
+    private static List<Variable> variables(final Model model) {
+        return model.getLiterals().stream().map(Literal::variable).collect(Collectors.toList());
+    }
+}
