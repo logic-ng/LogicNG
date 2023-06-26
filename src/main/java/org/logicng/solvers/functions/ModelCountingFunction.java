@@ -138,9 +138,13 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         @Override
         public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
                                 final AdvancedModelEnumerationHandler handler) {
-            this.uncommittedModels.add(modelFromSolver);
-            this.uncommittedIndices.add(relevantAllIndices);
-            return handler == null || handler.foundModels(this.dontCareFactor.intValue());
+            if (handler == null || handler.foundModels(this.dontCareFactor.intValue())) {
+                this.uncommittedModels.add(modelFromSolver);
+                this.uncommittedIndices.add(relevantAllIndices);
+                return true;
+            } else {
+                return false;
+            }
         }
 
         @Override

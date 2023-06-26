@@ -164,11 +164,15 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         @Override
         public boolean addModel(final LNGBooleanVector modelFromSolver, final MiniSat solver, final LNGIntVector relevantAllIndices,
                                 final AdvancedModelEnumerationHandler handler) {
-            final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-            final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotKnownBySolver);
-            modelLiterals.addAll(model.getLiterals());
-            this.uncommittedModels.add(modelLiterals);
-            return handler == null || handler.foundModels(this.baseModels.size());
+            if (handler == null || handler.foundModels(this.baseModels.size())) {
+                final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
+                final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotKnownBySolver);
+                modelLiterals.addAll(model.getLiterals());
+                this.uncommittedModels.add(modelLiterals);
+                return true;
+            } else {
+                return false;
+            }
         }
 
         @Override

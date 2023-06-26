@@ -65,9 +65,13 @@ public class AdvancedNumberOfModelsHandler extends ComputationHandler implements
 
     @Override
     public boolean foundModels(final int numberOfModels) {
-        this.countUncommitted += numberOfModels;
-        this.aborted = this.countUncommitted + this.countCommitted >= this.bound;
-        return !this.aborted;
+        this.aborted = this.countUncommitted + this.countCommitted + numberOfModels > this.bound;
+        if (!this.aborted) {
+            this.countUncommitted += numberOfModels;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
