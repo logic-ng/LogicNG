@@ -30,6 +30,14 @@ package org.logicng.solvers.functions.modelenumeration;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
+import org.logicng.formulas.Variable;
+import org.logicng.solvers.MiniSat;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public interface ModelEnumerationCommon {
 
@@ -58,5 +66,68 @@ public interface ModelEnumerationCommon {
             }
         }
         return blockingClause;
+    }
+
+    /**
+     * Extracts the internal indices of a collection of variables from the solver.
+     * <p>
+     * If {@code variables} is {@code null} and the solver does not include auxiliary variables in the models,
+     * then this function returns the indices of all variables on the solver. However, if {@code variables} is {@code null}
+     * and the solver does include auxiliary variables, then it returns {@code null}.
+     * @param variables the variables for which the internal indices should be extracted.
+     * @param solver    the solver from which the indices should be extracted.
+     * @return a list of the internal indices.
+     */
+    static LNGIntVector relevantIndicesFromSolver(final Collection<Variable> variables, final MiniSat solver) {
+        final LNGIntVector relevantIndices;
+        if (variables == null) {
+            if (!solver.getConfig().isAuxiliaryVariablesInModels()) {
+                relevantIndices = new LNGIntVector();
+                for (final Map.Entry<String, Integer> entry : solver.underlyingSolver().getName2idx().entrySet()) {
+                    if (solver.isRelevantVariable(entry.getKey())) {
+                        relevantIndices.push(entry.getValue());
+                    }
+                }
+            } else {
+                relevantIndices = null;
+            }
+        } else {
+            relevantIndices = new LNGIntVector(variables.size());
+            for (final Variable var : variables) {
+                relevantIndices.push(solver.underlyingSolver().idxForName(var.name()));
+            }
+        }
+        return relevantIndices;
+    }
+
+    /**
+     * Extends a list of variables and their internal indices on the solver with the internal indices of additional variables.
+     * @param variables           the list of variables with already an internal index extracted.
+     * @param additionalVariables the list of additional variable for which the internal indices should be extracted.
+     * @param relevantIndices     the list of already obtained internal indices.
+     * @param solver              the solver from which the indices should be extracted.
+     * @return {@code relevantIndices} + the newly obtained additional indices.
+     */
+    static LNGIntVector relevantAllIndicesFromSolver(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final LNGIntVector relevantIndices,
+                                                     final MiniSat solver) {
+        LNGIntVector relevantAllIndices = null;
+        final SortedSet<Variable> uniqueAdditionalVariables = new TreeSet<>(additionalVariables == null ? Collections.emptyList() : additionalVariables);
+        if (variables != null) {
+            uniqueAdditionalVariables.removeAll(variables);
+        }
+        if (relevantIndices != null) {
+            if (uniqueAdditionalVariables.isEmpty()) {
+                relevantAllIndices = relevantIndices;
+            } else {
+                relevantAllIndices = new LNGIntVector(relevantIndices.size() + uniqueAdditionalVariables.size());
+                for (int i = 0; i < relevantIndices.size(); ++i) {
+                    relevantAllIndices.push(relevantIndices.get(i));
+                }
+                for (final Variable var : uniqueAdditionalVariables) {
+                    relevantAllIndices.push(solver.underlyingSolver().idxForName(var.name()));
+                }
+            }
+        }
+        return relevantAllIndices;
     }
 }

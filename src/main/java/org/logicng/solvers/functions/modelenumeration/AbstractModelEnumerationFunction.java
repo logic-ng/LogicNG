@@ -36,6 +36,8 @@ import static org.logicng.formulas.FormulaFactory.PB_PREFIX;
 import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.handlers.Handler.start;
 import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.generateBlockingClause;
+import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.relevantAllIndicesFromSolver;
+import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.relevantIndicesFromSolver;
 import static org.logicng.util.CollectionHelper.difference;
 
 import org.logicng.collections.LNGBooleanVector;
@@ -51,9 +53,7 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SolverState;
 import org.logicng.solvers.functions.SolverFunction;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
@@ -152,45 +152,11 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
                                            final SortedSet<Variable> variables, final SortedSet<Variable> additionalVariables, final int maxModels,
                                            final AdvancedModelEnumerationHandler handler) {
         final SolverState stateBeforeEnumeration = solver.saveState();
-        boolean proceed = true;
-        final LNGIntVector relevantIndices;
-        if (variables == null) {
-            if (!solver.getConfig().isAuxiliaryVariablesInModels()) {
-                relevantIndices = new LNGIntVector();
-                for (final Map.Entry<String, Integer> entry : solver.underlyingSolver().getName2idx().entrySet()) {
-                    if (solver.isRelevantVariable(entry.getKey())) {
-                        relevantIndices.push(entry.getValue());
-                    }
-                }
-            } else {
-                relevantIndices = null;
-            }
-        } else {
-            relevantIndices = new LNGIntVector(variables.size());
-            for (final Variable var : variables) {
-                relevantIndices.push(solver.underlyingSolver().idxForName(var.name()));
-            }
-        }
-        LNGIntVector relevantAllIndices = null;
-        final SortedSet<Variable> uniqueAdditionalVariables =
-                new TreeSet<>(additionalVariables == null ? Collections.emptyList() : additionalVariables);
-        if (variables != null) {
-            uniqueAdditionalVariables.removeAll(variables);
-        }
-        if (relevantIndices != null) {
-            if (uniqueAdditionalVariables.isEmpty()) {
-                relevantAllIndices = relevantIndices;
-            } else {
-                relevantAllIndices = new LNGIntVector(relevantIndices.size() + uniqueAdditionalVariables.size());
-                for (int i = 0; i < relevantIndices.size(); ++i) {
-                    relevantAllIndices.push(relevantIndices.get(i));
-                }
-                for (final Variable var : uniqueAdditionalVariables) {
-                    relevantAllIndices.push(solver.underlyingSolver().idxForName(var.name()));
-                }
-            }
-        }
+        final LNGIntVector relevantIndices = relevantIndicesFromSolver(variables, solver);
+        final LNGIntVector relevantAllIndices = relevantAllIndicesFromSolver(variables, additionalVariables, relevantIndices, solver);
+
         int foundModels = 0;
+        boolean proceed = true;
         while (proceed && modelEnumerationSATCall(solver, handler)) {
             final LNGBooleanVector modelFromSolver = solver.underlyingSolver().model();
             if (++foundModels >= maxModels) {

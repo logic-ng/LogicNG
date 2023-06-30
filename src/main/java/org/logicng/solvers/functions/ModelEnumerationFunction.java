@@ -31,6 +31,8 @@ package org.logicng.solvers.functions;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 import static org.logicng.handlers.Handler.start;
+import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.relevantAllIndicesFromSolver;
+import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.relevantIndicesFromSolver;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
@@ -46,11 +48,7 @@ import org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 
 /**
@@ -91,43 +89,10 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         if (solver.canSaveLoadState()) {
             stateBeforeEnumeration = solver.saveState();
         }
+        final LNGIntVector relevantIndices = relevantIndicesFromSolver(this.variables, solver);
+        final LNGIntVector relevantAllIndices = relevantAllIndicesFromSolver(this.variables, this.additionalVariables, relevantIndices, solver);
+
         boolean proceed = true;
-        final LNGIntVector relevantIndices;
-        if (this.variables == null) {
-            if (!solver.getConfig().isAuxiliaryVariablesInModels()) {
-                relevantIndices = new LNGIntVector();
-                for (final Map.Entry<String, Integer> entry : solver.underlyingSolver().getName2idx().entrySet()) {
-                    if (solver.isRelevantVariable(entry.getKey())) {
-                        relevantIndices.push(entry.getValue());
-                    }
-                }
-            } else {
-                relevantIndices = null;
-            }
-        } else {
-            relevantIndices = new LNGIntVector(this.variables.size());
-            for (final Variable var : this.variables) {
-                relevantIndices.push(solver.underlyingSolver().idxForName(var.name()));
-            }
-        }
-        LNGIntVector relevantAllIndices = null;
-        final SortedSet<Variable> uniqueAdditionalVariables = new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
-        if (this.variables != null) {
-            uniqueAdditionalVariables.removeAll(this.variables);
-        }
-        if (relevantIndices != null) {
-            if (uniqueAdditionalVariables.isEmpty()) {
-                relevantAllIndices = relevantIndices;
-            } else {
-                relevantAllIndices = new LNGIntVector(relevantIndices.size() + uniqueAdditionalVariables.size());
-                for (int i = 0; i < relevantIndices.size(); ++i) {
-                    relevantAllIndices.push(relevantIndices.get(i));
-                }
-                for (final Variable var : uniqueAdditionalVariables) {
-                    relevantAllIndices.push(solver.underlyingSolver().idxForName(var.name()));
-                }
-            }
-        }
         while (proceed && modelEnumerationSATCall(solver, this.handler)) {
             final LNGBooleanVector modelFromSolver = solver.underlyingSolver().model();
             final Assignment model = solver.createAssignment(modelFromSolver, relevantAllIndices, this.fastEvaluable);
