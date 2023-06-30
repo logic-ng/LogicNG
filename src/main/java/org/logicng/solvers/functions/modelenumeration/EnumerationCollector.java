@@ -48,11 +48,36 @@ public interface EnumerationCollector<R> {
      */
     boolean addModel(LNGBooleanVector modelFromSolver, MiniSat solver, LNGIntVector relevantAllIndices, AdvancedModelEnumerationHandler handler);
 
+    /**
+     * All founds models since the last commit call are confirmed and cannot be rolled back.
+     * <p>
+     * Calls the {@code commit()} routine of {@code handler}.
+     * @param handler the advanced model enumeration handler
+     * @return {@code true} if the computation should continue, otherwise {@code false}
+     */
     boolean commit(AdvancedModelEnumerationHandler handler);
 
+    /**
+     * All found models since the last commit should be discarded.
+     * <p>
+     * Calls the {@code rollback} routine of {@code handler}.
+     * @param handler the advanced model enumeration handler
+     * @return {@code true} if the computation should continue, otherwise {@code false}
+     */
     boolean rollback(AdvancedModelEnumerationHandler handler);
 
+    /**
+     * All found models since the last commit will be discarded and returned.
+     * <p>
+     * Calls the {@code rollback} routine of {@code handler}.
+     * @param solver  solver used for the enumeration
+     * @param handler the advanced model enumeration handler
+     * @return list of all discarded models
+     */
     List<Model> rollbackAndReturnModels(final MiniSat solver, AdvancedModelEnumerationHandler handler);
 
+    /**
+     * @return the committed state of the collector
+     */
     R getResult();
 }
