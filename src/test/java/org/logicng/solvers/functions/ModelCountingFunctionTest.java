@@ -1,5 +1,7 @@
 package org.logicng.solvers.functions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,13 +29,14 @@ import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
 import java.math.BigInteger;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Units tests for {@link ModelCountingFunction}.
- *
  * @version 2.4.0
  * @since 2.4.0
  */
@@ -61,7 +64,7 @@ public class ModelCountingFunctionTest extends TestWithExampleFormulas {
                 AdvancedModelEnumerationConfig.builder().strategy(splitProvider == null ? null : DefaultAdvancedModelEnumerationStrategy.builder().splitVariableProvider(splitProvider).maxNumberOfModels(2).build())
                         .build();
         final SATSolver solver = MiniSat.miniSat(this.f);
-        BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().variables().configuration(config).build());
+        final BigInteger numberOfModels = solver.execute(ModelCountingFunction.builder().variables().configuration(config).build());
         assertThat(numberOfModels).isEqualTo(1);
     }
 

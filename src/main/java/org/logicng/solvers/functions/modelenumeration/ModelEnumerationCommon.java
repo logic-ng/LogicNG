@@ -74,9 +74,9 @@ public interface ModelEnumerationCommon {
      * If {@code variables} is {@code null} and the solver does not include auxiliary variables in the models,
      * then this function returns the indices of all variables on the solver. However, if {@code variables} is {@code null}
      * and the solver does include auxiliary variables, then it returns {@code null}.
-     * @param variables the variables for which the internal indices should be extracted.
-     * @param solver    the solver from which the indices should be extracted.
-     * @return a list of the internal indices.
+     * @param variables the variables for which the internal indices should be extracted
+     * @param solver    the solver from which the indices should be extracted
+     * @return a list of the internal indices
      */
     static LNGIntVector relevantIndicesFromSolver(final Collection<Variable> variables, final MiniSat solver) {
         final LNGIntVector relevantIndices;
@@ -102,11 +102,11 @@ public interface ModelEnumerationCommon {
 
     /**
      * Extends a list of variables and their internal indices on the solver with the internal indices of additional variables.
-     * @param variables           the list of variables with already an internal index extracted.
-     * @param additionalVariables the list of additional variable for which the internal indices should be extracted.
-     * @param relevantIndices     the list of already obtained internal indices.
-     * @param solver              the solver from which the indices should be extracted.
-     * @return {@code relevantIndices} + the newly obtained additional indices.
+     * @param variables           the list of variables with already an internal index extracted
+     * @param additionalVariables the list of additional variable for which the internal indices should be extracted
+     * @param relevantIndices     the list of already obtained internal indices
+     * @param solver              the solver from which the indices should be extracted
+     * @return {@code relevantIndices} + the newly obtained additional indices
      */
     static LNGIntVector relevantAllIndicesFromSolver(final Collection<Variable> variables, final Collection<Variable> additionalVariables, final LNGIntVector relevantIndices,
                                                      final MiniSat solver) {
