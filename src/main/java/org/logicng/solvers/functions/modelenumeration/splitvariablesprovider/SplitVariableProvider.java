@@ -40,7 +40,7 @@ import java.util.SortedSet;
  * @version 2.4.0
  * @since 2.4.0
  */
-public abstract class SplitVariableProvider {
+public interface SplitVariableProvider {
 
     /**
      * Generates a set of split variables for a given formula.
@@ -50,5 +50,5 @@ public abstract class SplitVariableProvider {
      * @param variables the variables from which the split variables should be chosen
      * @return the split variables
      */
-    public abstract SortedSet<Variable> getSplitVars(final SATSolver solver, final Collection<Variable> variables);
+    SortedSet<Variable> getSplitVars(final SATSolver solver, final Collection<Variable> variables);
 }

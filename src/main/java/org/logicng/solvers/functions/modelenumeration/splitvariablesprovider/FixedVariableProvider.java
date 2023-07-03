@@ -39,7 +39,7 @@ import java.util.SortedSet;
  * @version 2.4.0
  * @since 2.4.0
  */
-public class FixedVariableProvider extends SplitVariableProvider {
+public class FixedVariableProvider implements SplitVariableProvider {
 
     private final SortedSet<Variable> splitVariables;
 

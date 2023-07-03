@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * @version 2.4.0
  * @since 2.4.0
  */
-public abstract class SplitVariableProviderWithTakeRate extends SplitVariableProvider {
+public abstract class SplitVariableProviderWithTakeRate implements SplitVariableProvider {
     protected final double takeRate;
     protected final int maximumNumberOfVariables;
 
