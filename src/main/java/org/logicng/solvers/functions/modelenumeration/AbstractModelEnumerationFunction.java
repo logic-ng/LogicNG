@@ -28,6 +28,7 @@
 
 package org.logicng.solvers.functions.modelenumeration;
 
+import static java.util.Collections.emptySortedSet;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 import static org.logicng.formulas.FormulaFactory.CC_PREFIX;
@@ -98,7 +99,8 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
             collector.commit(this.handler);
         } else {
             final SortedSet<Variable> relevantVars = getVarsForEnumeration(knownVariables);
-            final SortedSet<Variable> initialSplitVars = this.strategy.splitVarsForRecursionDepth(relevantVars, solver, 0);
+            final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(relevantVars, solver, 0);
+            final SortedSet<Variable> initialSplitVars = initialSplitVarsNullable == null ? emptySortedSet() : initialSplitVarsNullable;
             enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, this.additionalVariables, 0);
         }
         return collector.getResult();
