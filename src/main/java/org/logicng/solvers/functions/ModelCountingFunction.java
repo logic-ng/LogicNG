@@ -76,7 +76,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
     }
 
     /**
-     * The builder for a model enumeration function.
+     * The builder for a model counting function.
      */
     public static class Builder {
         private SortedSet<Variable> variables;
@@ -87,7 +87,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         }
 
         /**
-         * Sets the set of variables over which the model enumeration should iterate.
+         * Sets the set of variables over which the models should be counted (projected model counting).
          * @param variables the set of variables
          * @return the current builder
          */
@@ -97,7 +97,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         }
 
         /**
-         * Sets the set of variables over which the model enumeration should iterate.
+         * Sets the set of variables over which the models should be counted (projected model counting).
          * @param variables the set of variables
          * @return the current builder
          */
@@ -107,7 +107,7 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         }
 
         /**
-         * Sets the configuration for the model enumeration split algorithm.
+         * Sets the configuration for the underlying model enumeration split algorithm.
          * @param configuration the configuration
          * @return the current builder
          */
@@ -117,8 +117,8 @@ public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigI
         }
 
         /**
-         * Builds the model enumeration function with the current builder's configuration.
-         * @return the model enumeration function
+         * Builds the model counting function with the current builder's configuration.
+         * @return the model counting function
          */
         public ModelCountingFunction build() {
             return new ModelCountingFunction(this.variables, this.configuration);

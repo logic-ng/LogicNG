@@ -36,7 +36,17 @@ import org.logicng.solvers.MiniSat;
 
 import java.util.List;
 
-public interface EnumerationCollector<R> {
+/**
+ * An interface for enumeration collectors.
+ * <p>
+ * An enumeration collector gathers the found models given by {@link #addModel(LNGBooleanVector, MiniSat, LNGIntVector, AdvancedModelEnumerationHandler)}.
+ * Added Models added can potentially be discarded later via {@link #rollback(AdvancedModelEnumerationHandler)}. To prevent models from being rolled back
+ * one can call {@link #commit(AdvancedModelEnumerationHandler)}. With {@link #getResult()} the result, the models committed models, can be retrieved.
+ * @param <RESULT> The result type of the model enumeration function.  Can be e.g. a model count, a list of models, or a BDD.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
+public interface EnumerationCollector<RESULT> {
 
     /**
      * Add model to the enumeration collector.
@@ -79,5 +89,5 @@ public interface EnumerationCollector<R> {
     /**
      * @return the committed state of the collector
      */
-    R getResult();
+    RESULT getResult();
 }

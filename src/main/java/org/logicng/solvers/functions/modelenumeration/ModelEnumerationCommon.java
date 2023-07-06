@@ -32,6 +32,7 @@ import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.formulas.Variable;
 import org.logicng.solvers.MiniSat;
+import org.logicng.solvers.functions.ModelEnumerationFunction;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +40,12 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * Common methods used by model enumeration implementations, e.g. {@link ModelEnumerationFunction}
+ * and {@link AbstractModelEnumerationFunction}.
+ * @version 2.4.0
+ * @since 2.4.0
+ */
 public interface ModelEnumerationCommon {
 
     /**

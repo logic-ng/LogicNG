@@ -62,11 +62,11 @@ import java.util.stream.Collectors;
 
 /**
  * A solver function for enumerating models on the solver.
- * @param <R> The result type of the model enumeration function.  Can be e.g. a model count, a list of models, or a BDD.
+ * @param <RESULT> The result type of the model enumeration function.  Can be e.g. a model count, a list of models, or a BDD.
  * @version 2.4.0
  * @since 2.4.0
  */
-public abstract class AbstractModelEnumerationFunction<R> implements SolverFunction<R> {
+public abstract class AbstractModelEnumerationFunction<RESULT> implements SolverFunction<RESULT> {
 
     protected final SortedSet<Variable> variables;
     protected final SortedSet<Variable> additionalVariables;
@@ -81,11 +81,11 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         this.strategy = configuration.strategy;
     }
 
-    protected abstract EnumerationCollector<R> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
-                                                            SortedSet<Variable> additionalVariablesNotOnSolver);
+    protected abstract EnumerationCollector<RESULT> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
+                                                                 SortedSet<Variable> additionalVariablesNotOnSolver);
 
     @Override
-    public R apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
+    public RESULT apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         if (!solver.canSaveLoadState()) {
             throw new IllegalArgumentException("Recursive model enumeration function can only be applied to solvers with load/save state capability.");
         }
@@ -93,7 +93,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         final SortedSet<Variable> knownVariables = solver.knownVariables();
         final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, knownVariables, TreeSet::new);
         final SortedSet<Variable> dontCareVariablesNotOnSolver = difference(this.variables, knownVariables, TreeSet::new);
-        final EnumerationCollector<R> collector = newCollector(solver.factory(), knownVariables, dontCareVariablesNotOnSolver, additionalVarsNotOnSolver);
+        final EnumerationCollector<RESULT> collector = newCollector(solver.factory(), knownVariables, dontCareVariablesNotOnSolver, additionalVarsNotOnSolver);
         if (this.strategy == null) {
             enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
             collector.commit(this.handler);
@@ -106,7 +106,7 @@ public abstract class AbstractModelEnumerationFunction<R> implements SolverFunct
         return collector.getResult();
     }
 
-    private void enumerateRecursive(final EnumerationCollector<R> collector, final MiniSat solver, final Model splitAssignment,
+    private void enumerateRecursive(final EnumerationCollector<RESULT> collector, final MiniSat solver, final Model splitAssignment,
                                     final Consumer<Tristate> resultSetter, final SortedSet<Variable> enumerationVars, final SortedSet<Variable> splitVars,
                                     final SortedSet<Variable> additionalVars, final int recursionDepth) {
         final int maxNumberOfModelsForEnumeration = this.strategy.maxNumberOfModelsForEnumeration(recursionDepth);

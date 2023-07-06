@@ -154,11 +154,11 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
         private final List<Model> committedModels = new ArrayList<>();
         private final List<List<Literal>> uncommittedModels = new ArrayList<>();
         private final List<List<Literal>> baseModels;
-        private final SortedSet<Variable> additionalVariablesNotKnownBySolver;
+        private final SortedSet<Variable> additionalVariablesNotOnSolver;
 
         public ModelEnumerationCollector(final SortedSet<Variable> dontCareVariablesNotOnSolver, final SortedSet<Variable> additionalVariablesNotOnSolver) {
             this.baseModels = getCartesianProduct(dontCareVariablesNotOnSolver);
-            this.additionalVariablesNotKnownBySolver = additionalVariablesNotOnSolver;
+            this.additionalVariablesNotOnSolver = additionalVariablesNotOnSolver;
         }
 
         @Override
@@ -166,7 +166,7 @@ public class AdvancedModelEnumerationFunction extends AbstractModelEnumerationFu
                                 final AdvancedModelEnumerationHandler handler) {
             if (handler == null || handler.foundModels(this.baseModels.size())) {
                 final Model model = solver.createModel(modelFromSolver, relevantAllIndices);
-                final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotKnownBySolver);
+                final List<Literal> modelLiterals = new ArrayList<>(this.additionalVariablesNotOnSolver);
                 modelLiterals.addAll(model.getLiterals());
                 this.uncommittedModels.add(modelLiterals);
                 return true;
