@@ -30,7 +30,7 @@ package org.logicng.configurations;
 
 /**
  * The different types of configurations in LogicNG.
- * @version 2.0.0
+ * @version 2.5.0
  * @since 1.1
  */
 public enum ConfigurationType {

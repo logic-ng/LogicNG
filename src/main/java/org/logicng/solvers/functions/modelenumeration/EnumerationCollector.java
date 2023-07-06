@@ -43,8 +43,8 @@ import java.util.List;
  * Added Models added can potentially be discarded later via {@link #rollback(AdvancedModelEnumerationHandler)}. To prevent models from being rolled back
  * one can call {@link #commit(AdvancedModelEnumerationHandler)}. With {@link #getResult()} the result, the models committed models, can be retrieved.
  * @param <RESULT> The result type of the model enumeration function.  Can be e.g. a model count, a list of models, or a BDD.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public interface EnumerationCollector<RESULT> {
 

@@ -43,8 +43,8 @@ import java.util.TreeSet;
 /**
  * Common methods used by model enumeration implementations, e.g. {@link ModelEnumerationFunction}
  * and {@link AbstractModelEnumerationFunction}.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public interface ModelEnumerationCommon {
 

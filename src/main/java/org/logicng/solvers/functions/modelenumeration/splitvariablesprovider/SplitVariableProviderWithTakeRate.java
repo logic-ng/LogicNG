@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
  * Super class for variable providers which always return a subset of the given variables.
  * The number of selected variables is defined by the {@link #takeRate} which is the ration
  * (between 0 and 1) of selected variables.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public abstract class SplitVariableProviderWithTakeRate implements SplitVariableProvider {
     protected final double takeRate;

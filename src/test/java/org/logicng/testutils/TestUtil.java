@@ -17,7 +17,7 @@ import java.util.TreeSet;
 
 /**
  * Help methods for unit testing.
- * @version 2.4.0
+ * @version 2.5.0
  * @since 2.3.0
  */
 public final class TestUtil {

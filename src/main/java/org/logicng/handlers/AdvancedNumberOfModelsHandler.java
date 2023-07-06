@@ -30,8 +30,8 @@ package org.logicng.handlers;
 
 /**
  * A model enumeration handler that terminates the solving process after a given number of models.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class AdvancedNumberOfModelsHandler extends ComputationHandler implements AdvancedModelEnumerationHandler {
 

@@ -63,8 +63,8 @@ import java.util.stream.Collectors;
 /**
  * A solver function for enumerating models on the solver.
  * @param <RESULT> The result type of the model enumeration function.  Can be e.g. a model count, a list of models, or a BDD.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public abstract class AbstractModelEnumerationFunction<RESULT> implements SolverFunction<RESULT> {
 

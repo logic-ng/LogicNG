@@ -48,8 +48,8 @@ import java.util.Objects;
  * <p>
  * For efficiency reasons, two models are only equal, if their literal list has the same order.  During a model
  * enumeration this is always true.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class Model {
     private final List<Literal> literals;

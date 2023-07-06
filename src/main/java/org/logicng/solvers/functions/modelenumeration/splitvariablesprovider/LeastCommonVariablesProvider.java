@@ -37,8 +37,8 @@ import java.util.SortedSet;
 /**
  * A split variable provider which provides split variables which occur particularly seldom in the formulas on the solver. The variables occurring in the
  * formulas are sorted by their occurrence. This provider returns those variables with the smallest occurrence.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class LeastCommonVariablesProvider extends SplitVariableProviderWithTakeRate {
 

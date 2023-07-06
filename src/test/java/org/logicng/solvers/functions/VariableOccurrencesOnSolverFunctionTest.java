@@ -15,8 +15,8 @@ import java.util.Map;
 
 /**
  * Unit tests for {@link VariableOccurrencesOnSolverFunction}.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class VariableOccurrencesOnSolverFunctionTest extends TestWithExampleFormulas {
 

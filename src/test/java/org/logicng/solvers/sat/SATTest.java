@@ -83,7 +83,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 2.4.1
+ * @version 1.6.0
  * @since 1.0
  */
 public class SATTest extends TestWithExampleFormulas implements LogicNGTest {

@@ -63,7 +63,7 @@ import java.util.stream.IntStream;
 
 /**
  * Unit tests for {@link ModelCounter}.
- * @version 2.4.0
+ * @version 2.5.0
  * @since 2.0.0
  */
 public class ModelCounterTest extends TestWithExampleFormulas {

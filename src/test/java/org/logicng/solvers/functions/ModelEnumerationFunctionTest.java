@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * Units tests for {@link ModelEnumerationFunction}.
- * @version 2.4.2
+ * @version 2.3.0
  * @since 2.3.0
  */
 public class ModelEnumerationFunctionTest {

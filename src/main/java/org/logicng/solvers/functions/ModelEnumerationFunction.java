@@ -55,7 +55,7 @@ import java.util.function.Consumer;
  * A solver function for enumerating models on the solver.
  * <p>
  * Model enumeration functions are instantiated via their builder {@link #builder()}.
- * @version 2.4.0
+ * @version 2.5.0
  * @since 2.0.0
  */
 public final class ModelEnumerationFunction implements SolverFunction<List<Assignment>> {

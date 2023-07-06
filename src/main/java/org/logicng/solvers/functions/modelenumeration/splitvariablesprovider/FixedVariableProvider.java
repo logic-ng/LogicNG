@@ -36,8 +36,8 @@ import java.util.SortedSet;
 
 /**
  * A split variable provider for which the variables are fixed.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class FixedVariableProvider implements SplitVariableProvider {
 

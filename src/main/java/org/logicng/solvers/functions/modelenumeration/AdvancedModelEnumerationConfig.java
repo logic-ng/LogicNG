@@ -36,8 +36,8 @@ import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.Mos
 
 /**
  * The configuration object for the {@link AdvancedModelEnumerationFunction}.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class AdvancedModelEnumerationConfig extends Configuration {
 

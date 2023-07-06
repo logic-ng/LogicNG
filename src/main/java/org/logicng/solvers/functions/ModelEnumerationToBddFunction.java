@@ -58,8 +58,8 @@ import java.util.TreeSet;
  * quantifier elimination (or projection) of the original formula into a BDD.
  * <p>
  * Model enumeration functions are instantiated via their builder {@link Builder}.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class ModelEnumerationToBddFunction extends AbstractModelEnumerationFunction<BDD> {
 

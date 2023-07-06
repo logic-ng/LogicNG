@@ -52,8 +52,8 @@ import java.util.TreeSet;
  * A solver function for counting models on the solver.
  * <p>
  * Model enumeration functions are instantiated via their builder {@link Builder}.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class ModelCountingFunction extends AbstractModelEnumerationFunction<BigInteger> {
 

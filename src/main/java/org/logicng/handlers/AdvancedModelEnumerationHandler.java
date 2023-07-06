@@ -2,8 +2,8 @@ package org.logicng.handlers;
 
 /**
  * Interface for a handler for the advanced enumeration of models.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public interface AdvancedModelEnumerationHandler extends Handler {
 

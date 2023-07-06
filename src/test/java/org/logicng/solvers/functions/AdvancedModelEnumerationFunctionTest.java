@@ -53,8 +53,8 @@ import java.util.stream.Collectors;
 
 /**
  * Units tests for {@link AdvancedModelEnumerationFunction}.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class AdvancedModelEnumerationFunctionTest extends TestWithExampleFormulas {
 

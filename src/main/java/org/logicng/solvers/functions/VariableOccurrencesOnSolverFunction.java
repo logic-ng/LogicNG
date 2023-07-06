@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * <p>
  * Note that these are usually not the same occurrences as in the original formula, since the
  * formula might have been converted to CNF and/or variables in clauses might have been subsumed.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class VariableOccurrencesOnSolverFunction implements SolverFunction<Map<Variable, Integer>> {
 

@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
  * This class can potentially be extended if you want to fine-tune some methods, e.g. to change the
  * maximum number of models depending on the recursion depth or whether the models are required for
  * enumeration or for split assignments.
- * @version 2.4.0
- * @since 2.4.0
+ * @version 2.5.0
+ * @since 2.5.0
  */
 public class DefaultAdvancedModelEnumerationStrategy implements AdvancedModelEnumerationStrategy {
 
