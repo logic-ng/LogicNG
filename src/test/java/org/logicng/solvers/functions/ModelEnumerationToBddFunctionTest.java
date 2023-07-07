@@ -2,6 +2,7 @@ package org.logicng.solvers.functions;
 
 import static java.util.Collections.emptySortedSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.Fix
 import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.LeastCommonVariablesProvider;
 import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.MostCommonVariablesProvider;
 import org.logicng.solvers.functions.modelenumeration.splitvariablesprovider.SplitVariableProvider;
+import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
@@ -56,6 +58,15 @@ public class ModelEnumerationToBddFunctionTest extends TestWithExampleFormulas {
     @BeforeEach
     public void init() {
         this.f = new FormulaFactory();
+    }
+
+    @Test
+    public void testNonIncrementalSolver() throws ParserException {
+        final MiniSat solver = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(false).build());
+        solver.add(this.f.parse("A | B | C"));
+        assertThatThrownBy(() -> solver.execute(ModelEnumerationToBddFunction.builder().build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Recursive model enumeration function can only be applied to solvers with load/save state capability.");
     }
 
     @ParameterizedTest
