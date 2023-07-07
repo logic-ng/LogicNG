@@ -98,10 +98,10 @@ public abstract class AbstractModelEnumerationFunction<RESULT> implements Solver
             enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
             collector.commit(this.handler);
         } else {
-            final SortedSet<Variable> relevantVars = getVarsForEnumeration(knownVariables);
-            final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(relevantVars, solver, 0);
+            final SortedSet<Variable> enumerationVars = getVarsForEnumeration(knownVariables);
+            final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(enumerationVars, solver, 0);
             final SortedSet<Variable> initialSplitVars = initialSplitVarsNullable == null ? emptySortedSet() : initialSplitVarsNullable;
-            enumerateRecursive(collector, solver, new Model(), resultSetter, relevantVars, initialSplitVars, this.additionalVariables, 0);
+            enumerateRecursive(collector, solver, new Model(), resultSetter, enumerationVars, initialSplitVars, this.additionalVariables, 0);
         }
         return collector.getResult();
     }
