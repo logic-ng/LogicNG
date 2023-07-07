@@ -68,6 +68,9 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractModelEnumerationFunction<RESULT> implements SolverFunction<RESULT> {
 
+    private static final AdvancedModelEnumerationStrategy NO_SPLIT_VARS_STRATEGY =
+            new DefaultAdvancedModelEnumerationStrategy((solver, vars) -> new TreeSet<>(), Integer.MAX_VALUE);
+
     protected final SortedSet<Variable> variables;
     protected final SortedSet<Variable> additionalVariables;
     protected final AdvancedModelEnumerationHandler handler;
@@ -78,7 +81,7 @@ public abstract class AbstractModelEnumerationFunction<RESULT> implements Solver
         this.variables = variables;
         this.additionalVariables = additionalVariables;
         this.handler = configuration.handler;
-        this.strategy = configuration.strategy;
+        this.strategy = configuration.strategy == null ? NO_SPLIT_VARS_STRATEGY : configuration.strategy;
     }
 
     protected abstract EnumerationCollector<RESULT> newCollector(final FormulaFactory f, final SortedSet<Variable> knownVariables, final SortedSet<Variable> dontCareVariablesNotOnSolver,
@@ -94,15 +97,10 @@ public abstract class AbstractModelEnumerationFunction<RESULT> implements Solver
         final SortedSet<Variable> additionalVarsNotOnSolver = difference(this.additionalVariables, knownVariables, TreeSet::new);
         final SortedSet<Variable> dontCareVariablesNotOnSolver = difference(this.variables, knownVariables, TreeSet::new);
         final EnumerationCollector<RESULT> collector = newCollector(solver.factory(), knownVariables, dontCareVariablesNotOnSolver, additionalVarsNotOnSolver);
-        if (this.strategy == null) {
-            enumerate(collector, solver, resultSetter, this.variables, this.additionalVariables, Integer.MAX_VALUE, this.handler);
-            collector.commit(this.handler);
-        } else {
-            final SortedSet<Variable> enumerationVars = getVarsForEnumeration(knownVariables);
-            final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(enumerationVars, solver, 0);
-            final SortedSet<Variable> initialSplitVars = initialSplitVarsNullable == null ? emptySortedSet() : initialSplitVarsNullable;
-            enumerateRecursive(collector, solver, new Model(), resultSetter, enumerationVars, initialSplitVars, 0);
-        }
+        final SortedSet<Variable> enumerationVars = getVarsForEnumeration(knownVariables);
+        final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(enumerationVars, solver, 0);
+        final SortedSet<Variable> initialSplitVars = initialSplitVarsNullable == null ? emptySortedSet() : initialSplitVarsNullable;
+        enumerateRecursive(collector, solver, new Model(), resultSetter, enumerationVars, initialSplitVars, 0);
         return collector.getResult();
     }
 
