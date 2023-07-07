@@ -28,7 +28,6 @@
 
 package org.logicng.solvers.functions.modelenumeration;
 
-import static java.util.Collections.emptySortedSet;
 import static org.logicng.datastructures.Tristate.TRUE;
 import static org.logicng.datastructures.Tristate.UNDEF;
 import static org.logicng.formulas.FormulaFactory.CC_PREFIX;
@@ -40,6 +39,7 @@ import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCom
 import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.relevantAllIndicesFromSolver;
 import static org.logicng.solvers.functions.modelenumeration.ModelEnumerationCommon.relevantIndicesFromSolver;
 import static org.logicng.util.CollectionHelper.difference;
+import static org.logicng.util.CollectionHelper.nullSafe;
 
 import org.logicng.collections.LNGBooleanVector;
 import org.logicng.collections.LNGIntVector;
@@ -98,8 +98,7 @@ public abstract class AbstractModelEnumerationFunction<RESULT> implements Solver
         final SortedSet<Variable> dontCareVariablesNotOnSolver = difference(this.variables, knownVariables, TreeSet::new);
         final EnumerationCollector<RESULT> collector = newCollector(solver.factory(), knownVariables, dontCareVariablesNotOnSolver, additionalVarsNotOnSolver);
         final SortedSet<Variable> enumerationVars = getVarsForEnumeration(knownVariables);
-        final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(enumerationVars, solver, 0);
-        final SortedSet<Variable> initialSplitVars = initialSplitVarsNullable == null ? emptySortedSet() : initialSplitVarsNullable;
+        final SortedSet<Variable> initialSplitVars = nullSafe(() -> this.strategy.splitVarsForRecursionDepth(enumerationVars, solver, 0), TreeSet::new);
         enumerateRecursive(collector, solver, new Model(), resultSetter, enumerationVars, initialSplitVars, 0);
         return collector.getResult();
     }
