@@ -101,18 +101,18 @@ public abstract class AbstractModelEnumerationFunction<RESULT> implements Solver
             final SortedSet<Variable> enumerationVars = getVarsForEnumeration(knownVariables);
             final SortedSet<Variable> initialSplitVarsNullable = this.strategy.splitVarsForRecursionDepth(enumerationVars, solver, 0);
             final SortedSet<Variable> initialSplitVars = initialSplitVarsNullable == null ? emptySortedSet() : initialSplitVarsNullable;
-            enumerateRecursive(collector, solver, new Model(), resultSetter, enumerationVars, initialSplitVars, this.additionalVariables, 0);
+            enumerateRecursive(collector, solver, new Model(), resultSetter, enumerationVars, initialSplitVars, 0);
         }
         return collector.getResult();
     }
 
     private void enumerateRecursive(final EnumerationCollector<RESULT> collector, final MiniSat solver, final Model splitAssignment,
-                                    final Consumer<Tristate> resultSetter, final SortedSet<Variable> enumerationVars, final SortedSet<Variable> splitVars,
-                                    final SortedSet<Variable> additionalVars, final int recursionDepth) {
+                                    final Consumer<Tristate> resultSetter, final SortedSet<Variable> enumerationVars,
+                                    final SortedSet<Variable> splitVars, final int recursionDepth) {
         final int maxNumberOfModelsForEnumeration = this.strategy.maxNumberOfModelsForEnumeration(recursionDepth);
         final SolverState state = solver.saveState();
         solver.add(splitAssignment.formula(solver.factory()));
-        final boolean enumerationFinished = enumerate(collector, solver, resultSetter, enumerationVars, additionalVars, maxNumberOfModelsForEnumeration, this.handler);
+        final boolean enumerationFinished = enumerate(collector, solver, resultSetter, enumerationVars, this.additionalVariables, maxNumberOfModelsForEnumeration, this.handler);
         if (!enumerationFinished) {
             if (!collector.rollback(this.handler)) {
                 solver.loadState(state);
@@ -135,7 +135,7 @@ public abstract class AbstractModelEnumerationFunction<RESULT> implements Solver
             final List<Model> newSplitAssignments = collector.rollbackAndReturnModels(solver, this.handler);
             final SortedSet<Variable> recursiveSplitVars = this.strategy.splitVarsForRecursionDepth(difference(enumerationVars, newSplitVars, TreeSet::new), solver, recursionDepth + 1);
             for (final Model newSplitAssignment : newSplitAssignments) {
-                enumerateRecursive(collector, solver, newSplitAssignment, resultSetter, enumerationVars, recursiveSplitVars, additionalVars, recursionDepth + 1);
+                enumerateRecursive(collector, solver, newSplitAssignment, resultSetter, enumerationVars, recursiveSplitVars, recursionDepth + 1);
                 if (!collector.commit(this.handler)) {
                     solver.loadState(state);
                     return;
