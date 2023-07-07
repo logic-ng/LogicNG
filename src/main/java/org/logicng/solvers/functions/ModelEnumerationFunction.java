@@ -135,7 +135,7 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
 
         /**
          * Sets the model enumeration handler for this function
-         * @param handler the handler
+         * @param handler the handler, may be {@code null}
          * @return the current builder
          */
         public Builder handler(final ModelEnumerationHandler handler) {

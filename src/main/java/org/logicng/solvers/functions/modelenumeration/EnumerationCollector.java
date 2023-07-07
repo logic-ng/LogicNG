@@ -53,7 +53,7 @@ public interface EnumerationCollector<RESULT> {
      * @param modelFromSolver    the model from the solver
      * @param solver             the solver
      * @param relevantAllIndices the relevant indices
-     * @param handler            the advanced model enumeration handler
+     * @param handler            the advanced model enumeration handler, may be {@code null}
      * @return true if adding the model was successful, false otherwise
      */
     boolean addModel(LNGBooleanVector modelFromSolver, MiniSat solver, LNGIntVector relevantAllIndices, AdvancedModelEnumerationHandler handler);
@@ -62,7 +62,7 @@ public interface EnumerationCollector<RESULT> {
      * All founds models since the last commit call are confirmed and cannot be rolled back.
      * <p>
      * Calls the {@code commit()} routine of {@code handler}.
-     * @param handler the advanced model enumeration handler
+     * @param handler the advanced model enumeration handler, may be {@code null}
      * @return {@code true} if the computation should continue, otherwise {@code false}
      */
     boolean commit(AdvancedModelEnumerationHandler handler);
@@ -71,7 +71,7 @@ public interface EnumerationCollector<RESULT> {
      * All found models since the last commit should be discarded.
      * <p>
      * Calls the {@code rollback} routine of {@code handler}.
-     * @param handler the advanced model enumeration handler
+     * @param handler the advanced model enumeration handler, may be {@code null}
      * @return {@code true} if the computation should continue, otherwise {@code false}
      */
     boolean rollback(AdvancedModelEnumerationHandler handler);
@@ -81,7 +81,7 @@ public interface EnumerationCollector<RESULT> {
      * <p>
      * Calls the {@code rollback} routine of {@code handler}.
      * @param solver  solver used for the enumeration
-     * @param handler the advanced model enumeration handler
+     * @param handler the advanced model enumeration handler, may be {@code null}
      * @return list of all discarded models
      */
     List<Model> rollbackAndReturnModels(final MiniSat solver, AdvancedModelEnumerationHandler handler);

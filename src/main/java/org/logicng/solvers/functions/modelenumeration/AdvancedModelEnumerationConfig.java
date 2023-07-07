@@ -77,7 +77,7 @@ public class AdvancedModelEnumerationConfig extends Configuration {
 
         /**
          * Sets the model enumeration handler for this function.  The default is no handler.
-         * @param handler the handler
+         * @param handler the handler, may be {@code null}
          * @return the current builder
          */
         public Builder handler(final AdvancedModelEnumerationHandler handler) {
