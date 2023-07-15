@@ -1,30 +1,6 @@
-///////////////////////////////////////////////////////////////////////////
-//                   __                _      _   ________               //
-//                  / /   ____  ____ _(_)____/ | / / ____/               //
-//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
-//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
-//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
-//                           /____/                                      //
-//                                                                       //
-//               The Next Generation Logic Library                       //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-//  Copyright 2015-20xx Christoph Zengler                                //
-//                                                                       //
-//  Licensed under the Apache License, Version 2.0 (the "License");      //
-//  you may not use this file except in compliance with the License.     //
-//  You may obtain a copy of the License at                              //
-//                                                                       //
-//  http://www.apache.org/licenses/LICENSE-2.0                           //
-//                                                                       //
-//  Unless required by applicable law or agreed to in writing, software  //
-//  distributed under the License is distributed on an "AS IS" BASIS,    //
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
-//  implied.  See the License for the specific language governing        //
-//  permissions and limitations under the License.                       //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2015-2023 Christoph Zengler
+// Copyright 2023-20xx BooleWorks GmbH
 
 package org.logicng.explanations.mus;
 
@@ -149,14 +125,14 @@ public class MUSGenerationTest {
     @Test
     public void testDeletionBasedCancellationPoints() throws IOException {
         final MUSGeneration mus = new MUSGeneration();
-        final List<StandardProposition> propositions = DimacsReader.readCNF("src/test/resources/sat/too_large_gr_rcs_w5.shuffled.cnf", f).stream()
+        final List<StandardProposition> propositions = DimacsReader.readCNF("src/test/resources/sat/too_large_gr_rcs_w5.shuffled.cnf", this.f).stream()
                 .map(StandardProposition::new)
                 .collect(Collectors.toList());
         for (int numStarts = 0; numStarts < 20; numStarts++) {
             final SATHandler handler = new BoundedSatHandler(numStarts);
             final MUSConfig config = MUSConfig.builder().handler(handler).algorithm(MUSConfig.Algorithm.PLAIN_INSERTION).build();
 
-            final UNSATCore<StandardProposition> result = mus.computeMUS(propositions, f, config);
+            final UNSATCore<StandardProposition> result = mus.computeMUS(propositions, this.f, config);
 
             assertThat(handler.aborted()).isTrue();
             assertThat(result).isNull();
@@ -166,7 +142,7 @@ public class MUSGenerationTest {
     @Test
     public void testCancellationPoints() throws IOException {
         final MUSGeneration mus = new MUSGeneration();
-        final List<StandardProposition> propositions = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", f).stream()
+        final List<StandardProposition> propositions = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", this.f).stream()
                 .map(StandardProposition::new)
                 .collect(Collectors.toList());
         final List<MUSConfig.Algorithm> algorithms = Arrays.asList(MUSConfig.Algorithm.DELETION, MUSConfig.Algorithm.PLAIN_INSERTION);
@@ -175,7 +151,7 @@ public class MUSGenerationTest {
                 final SATHandler handler = new BoundedSatHandler(numStarts);
                 final MUSConfig config = MUSConfig.builder().handler(handler).algorithm(algorithm).build();
 
-                final UNSATCore<StandardProposition> result = mus.computeMUS(propositions, f, config);
+                final UNSATCore<StandardProposition> result = mus.computeMUS(propositions, this.f, config);
 
                 assertThat(handler.aborted()).isTrue();
                 assertThat(result).isNull();

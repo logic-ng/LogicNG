@@ -1,30 +1,6 @@
-///////////////////////////////////////////////////////////////////////////
-//                   __                _      _   ________               //
-//                  / /   ____  ____ _(_)____/ | / / ____/               //
-//                 / /   / __ \/ __ `/ / ___/  |/ / / __                 //
-//                / /___/ /_/ / /_/ / / /__/ /|  / /_/ /                 //
-//               /_____/\____/\__, /_/\___/_/ |_/\____/                  //
-//                           /____/                                      //
-//                                                                       //
-//               The Next Generation Logic Library                       //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-//  Copyright 2015-20xx Christoph Zengler                                //
-//                                                                       //
-//  Licensed under the Apache License, Version 2.0 (the "License");      //
-//  you may not use this file except in compliance with the License.     //
-//  You may obtain a copy of the License at                              //
-//                                                                       //
-//  http://www.apache.org/licenses/LICENSE-2.0                           //
-//                                                                       //
-//  Unless required by applicable law or agreed to in writing, software  //
-//  distributed under the License is distributed on an "AS IS" BASIS,    //
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      //
-//  implied.  See the License for the specific language governing        //
-//  permissions and limitations under the License.                       //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2015-2023 Christoph Zengler
+// Copyright 2023-20xx BooleWorks GmbH
 
 package org.logicng.collections;
 
@@ -55,7 +31,7 @@ public final class LNGDoubleVector {
      * Creates a vector with a given capacity.
      * @param size the capacity of the vector.
      */
-    public LNGDoubleVector(int size) {
+    public LNGDoubleVector(final int size) {
         this.elements = new double[size];
     }
 
@@ -64,7 +40,7 @@ public final class LNGDoubleVector {
      * @param size the capacity of the vector
      * @param pad  the initial element
      */
-    public LNGDoubleVector(int size, double pad) {
+    public LNGDoubleVector(final int size, final double pad) {
         this.elements = new double[size];
         Arrays.fill(this.elements, pad);
         this.size = size;
@@ -117,7 +93,7 @@ public final class LNGDoubleVector {
      * @param element the element to push
      */
     public void push(final double element) {
-        int newSize = this.size + 1;
+        final int newSize = this.size + 1;
         this.ensure(newSize);
         this.elements[this.size++] = element;
     }
@@ -137,7 +113,7 @@ public final class LNGDoubleVector {
      * @return the element at the position
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public double get(int position) {
+    public double get(final int position) {
         return this.elements[position];
     }
 
@@ -147,7 +123,7 @@ public final class LNGDoubleVector {
      * @param element  the element
      * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
      */
-    public void set(int position, double element) {
+    public void set(final int position, final double element) {
         this.elements[position] = element;
     }
 
@@ -162,7 +138,7 @@ public final class LNGDoubleVector {
      * Shrinks the vector to a given size.
      * @param newSize the new size
      */
-    public void shrinkTo(int newSize) {
+    public void shrinkTo(final int newSize) {
         if (newSize < this.size) {
             this.size = newSize;
         }
@@ -173,7 +149,7 @@ public final class LNGDoubleVector {
      * @param size the new size
      * @param pad  the value for new elements
      */
-    public void growTo(int size, double pad) {
+    public void growTo(final int size, final double pad) {
         if (this.size >= size) {
             return;
         }
@@ -189,7 +165,7 @@ public final class LNGDoubleVector {
      * @param num the number of elements to remove.
      * @throws ArrayIndexOutOfBoundsException if the number of elements to remove is larger than the size of the vector
      */
-    public void removeElements(int num) {
+    public void removeElements(final int num) {
         int count = num;
         while (count-- > 0) {
             this.elements[--this.size] = -1;
@@ -216,7 +192,7 @@ public final class LNGDoubleVector {
     public void sortReverse() {
         Arrays.sort(this.elements, 0, this.size);
         for (int i = 0; i < this.size / 2; i++) {
-            double temp = this.elements[i];
+            final double temp = this.elements[i];
             this.elements[i] = this.elements[this.size - i - 1];
             this.elements[this.size - i - 1] = temp;
         }
