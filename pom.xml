@@ -42,20 +42,11 @@
 
   <developers>
     <developer>
-      <name>Christoph Zengler</name>
-      <email>christoph.zengler@booleworks.com</email>
-    </developer>
-    <developer>
-      <name>Steffen Hildebrandt</name>
-      <email>steffen.hildebrandt@booleworks.com</email>
-    </developer>
-    <developer>
-      <name>Rouven Walter</name>
-      <email>rouven.walter@booleworks.com</email>
-    </developer>
-    <developer>
-      <name>Elena Natterer</name>
-      <email>elena.natterer@booleworks.com</email>
+      <id>BooleWorks</id>
+      <name>BooleWorks Team</name>
+      <organization>BooleWorks GmbH</organization>
+      <organizationUrl>https://www.booleworks.com</organizationUrl>
+      <email>info@booleworks.com</email>
     </developer>
   </developers>
 
@@ -91,7 +82,6 @@
     <version.maven-source>3.2.1</version.maven-source>
     <version.maven-javadoc>3.2.0</version.maven-javadoc>
     <version.maven-jar>3.2.0</version.maven-jar>
-
   </properties>
 
   <build>
@@ -385,4 +375,3 @@
     </profile>
   </profiles>
 </project>
-
