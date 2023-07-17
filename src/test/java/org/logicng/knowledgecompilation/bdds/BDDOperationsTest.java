@@ -90,7 +90,8 @@ public class BDDOperationsTest {
     public void testToFormulaRandom() {
         final FormulaFactory f = new FormulaFactory();
         for (int i = 0; i < 100; i++) {
-            final Formula formula = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build()).formula(6);
+            final Formula formula =
+                    new FormulaRandomizer(f, FormulaRandomizerConfig.builder().seed(i).build()).formula(6);
             final BDD bdd = BDDFactory.build(formula);
             compareFormula(bdd, formula);
         }
@@ -184,9 +185,12 @@ public class BDDOperationsTest {
         assertThat(this.bddPosLit.model()).isEqualTo(new Assignment(this.f.literal("A", true)));
         assertThat(this.bddNegLit.model()).isEqualTo(new Assignment(this.f.literal("A", false)));
         assertThat(this.bddImpl.model()).isEqualTo(new Assignment(this.f.literal("A", false)));
-        assertThat(this.bddEquiv.model()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
-        assertThat(this.bddOr.model()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddAnd.model()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddEquiv.model())
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddOr.model()).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddAnd.model()).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
     }
 
     @Test
@@ -194,49 +198,76 @@ public class BDDOperationsTest {
         final Variable a = this.f.variable("A");
         final List<Variable> ab = Arrays.asList(this.f.variable("A"), this.f.variable("B"));
         assertThat(this.bddVerum.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", true)));
-        assertThat(this.bddVerum.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true)));
+        assertThat(this.bddVerum.model(true, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true)));
         assertThat(this.bddVerum.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", false)));
-        assertThat(this.bddVerum.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false)));
+        assertThat(this.bddVerum.model(false, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false)));
         assertThat(this.bddFalsum.model(true, a)).isEqualTo(null);
         assertThat(this.bddFalsum.model(true, ab)).isEqualTo(null);
         assertThat(this.bddFalsum.model(false, a)).isEqualTo(null);
         assertThat(this.bddFalsum.model(false, ab)).isEqualTo(null);
         assertThat(this.bddPosLit.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", true)));
-        assertThat(this.bddPosLit.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true)));
+        assertThat(this.bddPosLit.model(true, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true)));
         assertThat(this.bddPosLit.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", true)));
-        assertThat(this.bddPosLit.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", false)));
+        assertThat(this.bddPosLit.model(false, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", false)));
         assertThat(this.bddNegLit.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", false)));
-        assertThat(this.bddNegLit.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddNegLit.model(true, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
         assertThat(this.bddNegLit.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", false)));
-        assertThat(this.bddNegLit.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false)));
+        assertThat(this.bddNegLit.model(false, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false)));
         assertThat(this.bddImpl.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", false)));
-        assertThat(this.bddImpl.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddImpl.model(true, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
         assertThat(this.bddImpl.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", false)));
-        assertThat(this.bddImpl.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false)));
-        assertThat(this.bddEquiv.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
-        assertThat(this.bddEquiv.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
-        assertThat(this.bddEquiv.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
-        assertThat(this.bddEquiv.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
-        assertThat(this.bddOr.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddOr.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddOr.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddOr.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddAnd.model(true, a)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
-        assertThat(this.bddAnd.model(true, ab)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
-        assertThat(this.bddAnd.model(false, a)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
-        assertThat(this.bddAnd.model(false, ab)).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddImpl.model(false, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false)));
+        assertThat(this.bddEquiv.model(true, a))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddEquiv.model(true, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddEquiv.model(false, a))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddEquiv.model(false, ab))
+                .isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true)));
+        assertThat(this.bddOr.model(true, a)).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddOr.model(true, ab)).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddOr.model(false, a)).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddOr.model(false, ab)).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddAnd.model(true, a)).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddAnd.model(true, ab)).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddAnd.model(false, a)).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddAnd.model(false, ab)).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
     }
 
     @Test
     public void testFullModel() {
-        assertThat(this.bddVerum.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddVerum.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
         assertThat(this.bddFalsum.fullModel()).isEqualTo(null);
-        assertThat(this.bddPosLit.fullModel()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddNegLit.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddImpl.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddEquiv.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", true), this.f.literal("C", false)));
-        assertThat(this.bddOr.fullModel()).isEqualTo(new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
-        assertThat(this.bddAnd.fullModel()).isEqualTo(new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddPosLit.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddNegLit.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddImpl.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddEquiv.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", true), this.f.literal("C", false)));
+        assertThat(this.bddOr.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", false), this.f.literal("B", false), this.f.literal("C", false)));
+        assertThat(this.bddAnd.fullModel()).isEqualTo(
+                new Assignment(this.f.literal("A", true), this.f.literal("B", true), this.f.literal("C", false)));
     }
 
     @Test
@@ -265,10 +296,14 @@ public class BDDOperationsTest {
         assertThat(this.bddFalsum.support()).isEqualTo(new TreeSet<>());
         assertThat(this.bddPosLit.support()).isEqualTo(new TreeSet<>(Collections.singletonList(this.f.variable("A"))));
         assertThat(this.bddNegLit.support()).isEqualTo(new TreeSet<>(Collections.singletonList(this.f.variable("A"))));
-        assertThat(this.bddImpl.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
-        assertThat(this.bddEquiv.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
-        assertThat(this.bddOr.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
-        assertThat(this.bddAnd.support()).isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
+        assertThat(this.bddImpl.support())
+                .isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
+        assertThat(this.bddEquiv.support())
+                .isEqualTo(new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"))));
+        assertThat(this.bddOr.support()).isEqualTo(
+                new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
+        assertThat(this.bddAnd.support()).isEqualTo(
+                new TreeSet<>(Arrays.asList(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"))));
     }
 
     @Test

@@ -19,17 +19,24 @@ import java.util.TreeMap;
 /**
  * OLL Solver.
  * <p>
- * Based on "Unsatisfiability-based optimization in clasp*"
- * by Andres, Kaufmann, Matheis, and Schaub.
+ * Based on "Unsatisfiability-based optimization in clasp*" by Andres, Kaufmann,
+ * Matheis, and Schaub.
  * @version 2.4.0
  * @since 2.4.0
  */
 public class OLL extends MaxSAT {
     private MiniSatStyleSolver solver;
     private final Encoder encoder;
-    private final SortedMap<Integer, Integer> coreMapping; // Mapping between the assumption literal and the respective soft clause.
-    private final SortedMap<Integer, IntTriple> boundMapping; // lit -> <ID, bound, weight>
-    private final LNGBooleanVector activeSoft; // Soft clauses that are currently in the MaxSAT formula.
+    private final SortedMap<Integer, Integer> coreMapping; // Mapping between
+                                                           // the assumption
+                                                           // literal and the
+                                                           // respective soft
+                                                           // clause.
+    private final SortedMap<Integer, IntTriple> boundMapping; // lit -> <ID,
+                                                              // bound, weight>
+    private final LNGBooleanVector activeSoft; // Soft clauses that are
+                                               // currently in the MaxSAT
+                                               // formula.
     private int minWeight;
 
     /**
@@ -150,7 +157,8 @@ public class OLL extends MaxSAT {
                     if (this.coreMapping.containsKey(p)) {
                         assert !this.activeSoft.get(this.coreMapping.get(p));
                         this.activeSoft.set(this.coreMapping.get(this.solver.conflict().get(i)), true);
-                        assert p == this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).relaxationVars().get(0);
+                        assert p == this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i)))
+                                .relaxationVars().get(0);
                         softRelax.push(p);
                     }
 
@@ -167,10 +175,12 @@ public class OLL extends MaxSAT {
 
                         joinObjFunction.clear();
                         encodingAssumptions.clear();
-                        softCardinality.get(softId.id).incUpdateCardinality(this.solver, joinObjFunction, softCardinality.get(softId.id).lits(),
+                        softCardinality.get(softId.id).incUpdateCardinality(this.solver, joinObjFunction,
+                                softCardinality.get(softId.id).lits(),
                                 softId.bound + 1, encodingAssumptions);
 
-                        // if the bound is the same as the number of literals then no restriction is applied
+                        // if the bound is the same as the number of literals
+                        // then no restriction is applied
                         if (softId.bound + 1 < softCardinality.get(softId.id).outputs().size()) {
                             assert softCardinality.get(softId.id).outputs().size() > softId.bound + 1;
                             final int out = softCardinality.get(softId.id).outputs().get(softId.bound + 1);
@@ -297,8 +307,10 @@ public class OLL extends MaxSAT {
                     final int p = this.solver.conflict().get(i);
                     if (this.coreMapping.containsKey(p)) {
                         assert !this.activeSoft.get(this.coreMapping.get(p));
-                        if (this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight() < minCore) {
-                            minCore = this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight();
+                        if (this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight() <
+                                minCore) {
+                            minCore =
+                                    this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight();
                         }
                     }
                     if (this.boundMapping.containsKey(p)) {
@@ -331,18 +343,21 @@ public class OLL extends MaxSAT {
                             assert this.softClauses.get(indexSoft).weight() - minCore > 0;
 
                             // Update the weight of the soft clause.
-                            this.softClauses.get(indexSoft).setWeight(this.softClauses.get(indexSoft).weight() - minCore);
+                            this.softClauses.get(indexSoft)
+                                    .setWeight(this.softClauses.get(indexSoft).weight() - minCore);
                             final LNGIntVector clause = new LNGIntVector(this.softClauses.get(indexSoft).clause());
                             final LNGIntVector vars = new LNGIntVector();
 
-                            // Since cardinality constraints are added the variables are not in sync...
+                            // Since cardinality constraints are added the
+                            // variables are not in sync...
                             while (nVars() < this.solver.nVars()) {
                                 newLiteral(false);
                             }
                             final int l = newLiteral(false);
                             vars.push(l);
 
-                            // Add a new soft clause with the weight of the core.
+                            // Add a new soft clause with the weight of the
+                            // core.
                             addSoftClause(minCore, clause, vars);
                             this.activeSoft.push(true);
 
@@ -355,13 +370,19 @@ public class OLL extends MaxSAT {
 
                             // Create a new assumption literal.
                             this.softClauses.get(nSoft() - 1).setAssumptionVar(l);
-                            assert this.softClauses.get(nSoft() - 1).assumptionVar() == this.softClauses.get(nSoft() - 1).relaxationVars().get(0);
-                            this.coreMapping.put(l, nSoft() - 1); // Map the new soft clause to its assumption literal.
+                            assert this.softClauses.get(nSoft() - 1).assumptionVar() ==
+                                    this.softClauses.get(nSoft() - 1).relaxationVars().get(0);
+                            this.coreMapping.put(l, nSoft() - 1); // Map the new
+                                                                  // soft clause
+                                                                  // to its
+                                                                  // assumption
+                                                                  // literal.
                             softRelax.push(l);
                             assert this.softClauses.get(this.coreMapping.get(l)).weight() == minCore;
                             assert this.activeSoft.size() == nSoft();
                         } else {
-                            assert this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight() == minCore;
+                            assert this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight() ==
+                                    minCore;
                             softRelax.push(p);
                             assert !this.activeSoft.get(this.coreMapping.get(p));
                             this.activeSoft.set(this.coreMapping.get(p), true);
@@ -383,7 +404,8 @@ public class OLL extends MaxSAT {
                             softCardinality.get(softId.id).incUpdateCardinality(this.solver, joinObjFunction,
                                     softCardinality.get(softId.id).lits(), softId.bound + 1, encodingAssumptions);
 
-                            // if the bound is the same as the number of literals then no restriction is applied
+                            // if the bound is the same as the number of
+                            // literals then no restriction is applied
                             if (softId.bound + 1 < softCardinality.get(softId.id).outputs().size()) {
                                 assert softCardinality.get(softId.id).outputs().size() > softId.bound + 1;
                                 final int out = softCardinality.get(softId.id).outputs().get(softId.bound + 1);
@@ -398,10 +420,12 @@ public class OLL extends MaxSAT {
                             assert e.outputs().size() > softId.bound;
                             final int out = e.outputs().get(softId.bound);
                             softCardinality.push(e);
-                            this.boundMapping.put(out, new IntTriple(softCardinality.size() - 1, softId.bound, minCore));
+                            this.boundMapping.put(out,
+                                    new IntTriple(softCardinality.size() - 1, softId.bound, minCore));
                             cardinalityRelax.push(out);
 
-                            // Update value of the previous cardinality constraint
+                            // Update value of the previous cardinality
+                            // constraint
                             assert softId.weight - minCore > 0;
                             this.boundMapping.put(p, new IntTriple(softId.id, softId.bound, softId.weight - minCore));
 
@@ -410,13 +434,16 @@ public class OLL extends MaxSAT {
                             joinObjFunction.clear();
                             encodingAssumptions.clear();
                             softCardinality.get(softCoreId.id).incUpdateCardinality(this.solver, joinObjFunction,
-                                    softCardinality.get(softCoreId.id).lits(), softCoreId.bound + 1, encodingAssumptions);
+                                    softCardinality.get(softCoreId.id).lits(), softCoreId.bound + 1,
+                                    encodingAssumptions);
 
-                            // if the bound is the same as the number of literals then no restriction is applied
+                            // if the bound is the same as the number of
+                            // literals then no restriction is applied
                             if (softCoreId.bound + 1 < softCardinality.get(softCoreId.id).outputs().size()) {
                                 assert softCardinality.get(softCoreId.id).outputs().size() > softCoreId.bound + 1;
                                 final int out2 = softCardinality.get(softCoreId.id).outputs().get(softCoreId.bound + 1);
-                                this.boundMapping.put(out2, new IntTriple(softCoreId.id, softCoreId.bound + 1, minCore));
+                                this.boundMapping.put(out2,
+                                        new IntTriple(softCoreId.id, softCoreId.bound + 1, minCore));
                                 cardinalityAssumptions.add(out2);
                             }
                         }

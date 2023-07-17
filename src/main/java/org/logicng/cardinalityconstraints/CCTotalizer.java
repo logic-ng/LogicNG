@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.cardinalityconstraints;
@@ -36,7 +33,11 @@ import org.logicng.formulas.Variable;
  */
 public final class CCTotalizer {
 
-    private enum Bound {LOWER, UPPER, BOTH}
+    private enum Bound {
+        LOWER,
+        UPPER,
+        BOTH
+    }
 
     private LNGVector<Variable> cardinalityInvars;
     private EncodingResult result;
@@ -54,7 +55,8 @@ public final class CCTotalizer {
      * @param result the result
      * @param vars   the variables
      * @param rhs    the right-hand side
-     * @throws IllegalArgumentException if the right-hand side of the constraint was negative
+     * @throws IllegalArgumentException if the right-hand side of the constraint
+     *                                  was negative
      */
     void buildAMK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
@@ -71,11 +73,13 @@ public final class CCTotalizer {
      * @param result the result
      * @param vars   the variables
      * @param rhs    the right-hand side
-     * @throws IllegalArgumentException if the right-hand side of the constraint was negative
+     * @throws IllegalArgumentException if the right-hand side of the constraint
+     *                                  was negative
      */
     void buildALK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);
-        this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
+        this.incData =
+                new CCIncrementalData(result, CCConfig.ALK_ENCODER.TOTALIZER, rhs, vars.length, cardinalityOutvars);
         this.toCNF(cardinalityOutvars, rhs, Bound.LOWER);
         assert this.cardinalityInvars.size() == 0;
         for (int i = 0; i < rhs; i++) {
@@ -87,7 +91,8 @@ public final class CCTotalizer {
      * Builds an exactly-k constraint.
      * @param vars the variables
      * @param rhs  the right-hand side
-     * @throws IllegalArgumentException if the right-hand side of the constraint was negative
+     * @throws IllegalArgumentException if the right-hand side of the constraint
+     *                                  was negative
      */
     void buildEXK(final EncodingResult result, final Variable[] vars, final int rhs) {
         final LNGVector<Variable> cardinalityOutvars = this.initializeConstraint(result, vars);

@@ -20,14 +20,18 @@ import java.util.List;
 /**
  * An encoder for cardinality constraints.
  * <p>
- * An encoder is configured with a {@link CCConfig} configuration.  There are two possible ways:
+ * An encoder is configured with a {@link CCConfig} configuration. There are two
+ * possible ways:
  * <ol>
- * <li>Initialize the encoder with a given configuration in the constructor.  Then this configuration will be bound
- * to the encoder for its whole lifetime.</li>
- * <li>Initialize the encoder only with a {@link FormulaFactory}.  Then each encoding will be performed with the
- * current cardinality constraint encoder configuration of the factory or the default configuration if the factory
- * has no associated cardinality constraint encoder configuration.  If you change the configuration in the factory,
- * all encoders constructed for this factory will be affected.</li>
+ * <li>Initialize the encoder with a given configuration in the constructor.
+ * Then this configuration will be bound to the encoder for its whole
+ * lifetime.</li>
+ * <li>Initialize the encoder only with a {@link FormulaFactory}. Then each
+ * encoding will be performed with the current cardinality constraint encoder
+ * configuration of the factory or the default configuration if the factory has
+ * no associated cardinality constraint encoder configuration. If you change the
+ * configuration in the factory, all encoders constructed for this factory will
+ * be affected.</li>
  * </ol>
  * @version 2.3.0
  * @since 1.1
@@ -57,7 +61,8 @@ public class CCEncoder {
     protected CCEXKCardinalityNetwork exkCardinalityNetwork;
 
     /**
-     * Constructs a new cardinality constraint encoder with a given configuration.
+     * Constructs a new cardinality constraint encoder with a given
+     * configuration.
      * @param f      the formula factory
      * @param config the configuration
      */
@@ -67,7 +72,8 @@ public class CCEncoder {
     }
 
     /**
-     * Constructs a new cardinality constraint encoder which uses the configuration of the formula factory.
+     * Constructs a new cardinality constraint encoder which uses the
+     * configuration of the formula factory.
      * @param f the formula factory
      */
     public CCEncoder(final FormulaFactory f) {
@@ -115,7 +121,8 @@ public class CCEncoder {
         return this.encodeIncrementalConstraint(cc, result);
     }
 
-    protected CCIncrementalData encodeIncrementalConstraint(final CardinalityConstraint cc, final EncodingResult result) {
+    protected CCIncrementalData encodeIncrementalConstraint(final CardinalityConstraint cc,
+                                                            final EncodingResult result) {
         final Variable[] ops = literalsAsVariables(cc.operands());
         if (cc.isAmo()) {
             throw new IllegalArgumentException("Incremental encodings are not supported for at-most-one constraints");
@@ -130,13 +137,16 @@ public class CCEncoder {
             case GT:
                 return this.alkIncremental(result, ops, cc.rhs() + 1);
             default:
-                throw new IllegalArgumentException("Incremental encodings are only supported for at-most-k and at-least k constraints.");
+                throw new IllegalArgumentException(
+                        "Incremental encodings are only supported for at-most-k and at-least k constraints.");
         }
     }
 
     /**
-     * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
+     * Returns the current configuration of this encoder. If the encoder was
+     * constructed with a given configuration, this configuration will always be
+     * used. Otherwise, the current configuration from the formula factory is
+     * used.
      * @return the current configuration of
      */
     public CCConfig config() {
@@ -243,7 +253,8 @@ public class CCEncoder {
                             groupSize = (int) Math.sqrt(vars.length);
                             break;
                         default:
-                            throw new IllegalStateException("Unknown bimander group size: " + this.config().bimanderGroupSize);
+                            throw new IllegalStateException(
+                                    "Unknown bimander group size: " + this.config().bimanderGroupSize);
                     }
                     this.amoBimander = new CCAMOBimander(groupSize);
                 }
@@ -527,9 +538,10 @@ public class CCEncoder {
     }
 
     /**
-     * Returns the best at-most-one encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  For &lt;= 10 the pure encoding without introduction of new variables is used, otherwise
-     * the product encoding is chosen.
+     * Returns the best at-most-one encoder for a given number of variables. The
+     * valuation is based on theoretical and practical observations. For &lt;=
+     * 10 the pure encoding without introduction of new variables is used,
+     * otherwise the product encoding is chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
@@ -548,9 +560,10 @@ public class CCEncoder {
     }
 
     /**
-     * Returns the best at-most-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently, the modular totalizer is the best encoder for all sizes and therefore is always
-     * chosen.
+     * Returns the best at-most-k encoder for a given number of variables. The
+     * valuation is based on theoretical and practical observations. Currently,
+     * the modular totalizer is the best encoder for all sizes and therefore is
+     * always chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
@@ -562,9 +575,10 @@ public class CCEncoder {
     }
 
     /**
-     * Returns the best at-least-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently, the modular totalizer is the best encoder for all sizes and therefore is always
-     * chosen.
+     * Returns the best at-least-k encoder for a given number of variables. The
+     * valuation is based on theoretical and practical observations. Currently,
+     * the modular totalizer is the best encoder for all sizes and therefore is
+     * always chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder
      */
@@ -576,8 +590,9 @@ public class CCEncoder {
     }
 
     /**
-     * Returns the best exactly-k encoder for a given number of variables.  The valuation is based on theoretical and
-     * practical observations.  Currently, the totalizer is the best encoder for all sizes and therefore is always
+     * Returns the best exactly-k encoder for a given number of variables. The
+     * valuation is based on theoretical and practical observations. Currently,
+     * the totalizer is the best encoder for all sizes and therefore is always
      * chosen.
      * @param n the number of variables
      * @return the best at-most-one encoder

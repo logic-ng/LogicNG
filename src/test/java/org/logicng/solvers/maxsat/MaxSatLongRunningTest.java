@@ -32,7 +32,8 @@ public class MaxSatLongRunningTest {
         final Map<String, Integer> result = readResult(new File("src/test/resources/longrunning/wms/result.txt"));
         final MaxSATSolver[] solvers = new MaxSATSolver[3];
         solvers[0] = MaxSATSolver.oll(f);
-        solvers[1] = MaxSATSolver.incWBO(f, MaxSATConfig.builder().weight(MaxSATConfig.WeightStrategy.DIVERSIFY).build());
+        solvers[1] =
+                MaxSATSolver.incWBO(f, MaxSATConfig.builder().weight(MaxSATConfig.WeightStrategy.DIVERSIFY).build());
         solvers[2] = MaxSATSolver.incWBO(f);
         for (final MaxSATSolver solver : solvers) {
             final long start = System.currentTimeMillis();

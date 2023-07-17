@@ -7,8 +7,8 @@ package org.logicng.io.graphical;
 import java.util.Objects;
 
 /**
- * A single edge in a graphical representation of a formula, BDD, or graph.  An edge connects two nodes and holds
- * an optional label and an edge style.
+ * A single edge in a graphical representation of a formula, BDD, or graph. An
+ * edge connects two nodes and holds an optional label and an edge style.
  * @version 2.4.0
  * @since 2.4.0
  */
@@ -35,7 +35,8 @@ public class GraphicalEdge {
      * @param label       the optional label (can be null)
      * @param style       the style of the edge
      */
-    public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final String label, final GraphicalEdgeStyle style) {
+    public GraphicalEdge(final GraphicalNode source, final GraphicalNode destination, final String label,
+                         final GraphicalEdgeStyle style) {
         this.source = source;
         this.destination = destination;
         this.label = label;

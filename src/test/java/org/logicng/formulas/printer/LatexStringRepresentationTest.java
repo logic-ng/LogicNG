@@ -33,10 +33,14 @@ public class LatexStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.f.variable("abc8"), this.sr)).isEqualTo("abc_{8}");
         assertThat(this.f.string(this.IMP2, this.sr)).isEqualTo("\\lnot a \\rightarrow \\lnot b");
         assertThat(this.f.string(this.IMP3, this.sr)).isEqualTo("a \\land b \\rightarrow x \\lor y");
-        assertThat(this.f.string(this.EQ4, this.sr)).isEqualTo("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b");
-        assertThat(this.f.string(this.AND3, this.sr)).isEqualTo("\\left(x \\lor y\\right) \\land \\left(\\lnot x \\lor \\lnot y\\right)");
-        assertThat(this.f.string(this.f.and(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("a \\land b \\land c \\land x");
-        assertThat(this.f.string(this.f.or(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("a \\lor b \\lor c \\lor x");
+        assertThat(this.f.string(this.EQ4, this.sr))
+                .isEqualTo("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b");
+        assertThat(this.f.string(this.AND3, this.sr))
+                .isEqualTo("\\left(x \\lor y\\right) \\land \\left(\\lnot x \\lor \\lnot y\\right)");
+        assertThat(this.f.string(this.f.and(this.A, this.B, this.C, this.X), this.sr))
+                .isEqualTo("a \\land b \\land c \\land x");
+        assertThat(this.f.string(this.f.or(this.A, this.B, this.C, this.X), this.sr))
+                .isEqualTo("a \\lor b \\lor c \\lor x");
         assertThat(this.f.string(this.PBC1, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x = 2");
         assertThat(this.f.string(this.PBC2, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x > 2");
         assertThat(this.f.string(this.PBC3, this.sr)).isEqualTo("2\\cdot a + -4\\cdot b + 3\\cdot x \\geq 2");
@@ -50,7 +54,9 @@ public class LatexStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.f.equivalence(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.and(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.or(this.A, this.f.amo()), this.sr)).isEqualTo("\\top");
-        assertThat(this.f.string(this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr)).isEqualTo("\\top");
+        assertThat(this.f.string(
+                this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr))
+                        .isEqualTo("\\top");
 
     }
 
@@ -63,7 +69,9 @@ public class LatexStringRepresentationTest extends TestWithExampleFormulas {
 
     @Test
     public void testViaFormulaFactoryConfig() {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
-        assertThat(f.importFormula(this.EQ4).toString()).isEqualTo("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b");
+        final FormulaFactory f =
+                new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
+        assertThat(f.importFormula(this.EQ4).toString())
+                .isEqualTo("a \\rightarrow b \\leftrightarrow \\lnot a \\rightarrow \\lnot b");
     }
 }

@@ -47,7 +47,8 @@ public class CCAMOTest implements LogicNGTest {
         this.configs[7] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).build();
         this.configs[8] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(HALF).build();
         this.configs[9] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(SQRT).build();
-        this.configs[10] = CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).bimanderFixedGroupSize(2).build();
+        this.configs[10] =
+                CCConfig.builder().amoEncoding(BIMANDER).bimanderGroupSize(FIXED).bimanderFixedGroupSize(2).build();
         this.configs[11] = CCConfig.builder().amoEncoding(NESTED).nestingGroupSize(5).build();
         this.configs[12] = CCConfig.builder().amoEncoding(PRODUCT).productRecursiveBound(10).build();
         this.configs[13] = CCConfig.builder().amoEncoding(BEST).build();

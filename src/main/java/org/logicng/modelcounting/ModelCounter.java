@@ -39,16 +39,17 @@ import java.util.stream.Collectors;
 public final class ModelCounter {
 
     /**
-     * Private empty constructor.  Class only contains static utility methods.
+     * Private empty constructor. Class only contains static utility methods.
      */
     private ModelCounter() {
         // Intentionally left empty
     }
 
     /**
-     * Computes the model count for a given set of formulas (interpreted as conjunction)
-     * and a set of relevant variables.  This set can only be a superset of the original
-     * formulas' variables.  No projected model counting is supported.
+     * Computes the model count for a given set of formulas (interpreted as
+     * conjunction) and a set of relevant variables. This set can only be a
+     * superset of the original formulas' variables. No projected model counting
+     * is supported.
      * @param formulas  the list of formulas
      * @param variables the relevant variables
      * @return the model count of the formulas for the variables
@@ -58,7 +59,8 @@ public final class ModelCounter {
             throw new IllegalArgumentException("Expected variables to contain all of the formulas' variables.");
         }
         if (variables.isEmpty()) {
-            final List<Formula> remainingConstants = formulas.stream().filter(formula -> formula.type() != FType.TRUE).collect(Collectors.toList());
+            final List<Formula> remainingConstants =
+                    formulas.stream().filter(formula -> formula.type() != FType.TRUE).collect(Collectors.toList());
             return remainingConstants.isEmpty() ? BigInteger.ONE : BigInteger.ZERO;
         }
         final FormulaFactory f = variables.first().factory();
@@ -71,7 +73,8 @@ public final class ModelCounter {
 
     private static List<Formula> encodeAsCnf(final Collection<Formula> formulas, final FormulaFactory f) {
         final PureExpansionTransformation expander = PureExpansionTransformation.get();
-        final List<Formula> expandedFormulas = formulas.stream().map(formula -> formula.transform(expander)).collect(Collectors.toList());
+        final List<Formula> expandedFormulas =
+                formulas.stream().map(formula -> formula.transform(expander)).collect(Collectors.toList());
         final CNFEncoder cnfEncoder = new CNFEncoder(f, CNFConfig.builder()
                 .algorithm(CNFConfig.Algorithm.ADVANCED)
                 .fallbackAlgorithmForAdvancedEncoding(CNFConfig.Algorithm.TSEITIN).build());
@@ -115,7 +118,8 @@ public final class ModelCounter {
         private final List<Formula> simplifiedFormulas;
         private final SortedSet<Variable> backboneVariables;
 
-        public SimplificationResult(final List<Formula> simplifiedFormulas, final SortedSet<Variable> backboneVariables) {
+        public SimplificationResult(final List<Formula> simplifiedFormulas,
+                                    final SortedSet<Variable> backboneVariables) {
             this.simplifiedFormulas = simplifiedFormulas;
             this.backboneVariables = backboneVariables;
         }

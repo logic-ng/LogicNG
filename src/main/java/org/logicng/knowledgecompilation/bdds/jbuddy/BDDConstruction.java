@@ -25,10 +25,12 @@ public class BDDConstruction {
     }
 
     /**
-     * Returns a BDD representing the i-th variable (one node with the children true and false).
+     * Returns a BDD representing the i-th variable (one node with the children
+     * true and false).
      * @param i the index i
      * @return the BDD representing the i-th variable
-     * @throws IllegalArgumentException if the index is not within the range of variables
+     * @throws IllegalArgumentException if the index is not within the range of
+     *                                  variables
      */
     public int ithVar(final int i) {
         if (i < 0 || i >= this.k.varnum) {
@@ -38,10 +40,12 @@ public class BDDConstruction {
     }
 
     /**
-     * Returns a BDD representing the negation of the i-th variable (one node with the children true and false).
+     * Returns a BDD representing the negation of the i-th variable (one node
+     * with the children true and false).
      * @param i the index i
      * @return the BDD representing the negated i-th variable
-     * @throws IllegalArgumentException if the index is not within the range of variables
+     * @throws IllegalArgumentException if the index is not within the range of
+     *                                  variables
      */
     public int nithVar(final int i) {
         if (i < 0 || i >= this.k.varnum) {
@@ -157,8 +161,8 @@ public class BDDConstruction {
     }
 
     /**
-     * Restricts the variables in the BDD {@code r} to constants true or false.  The restriction is submitted in the BDD
-     * {@code var}.
+     * Restricts the variables in the BDD {@code r} to constants true or false.
+     * The restriction is submitted in the BDD {@code var}.
      * @param r   the BDD to be restricted
      * @param var the variable mapping as a BDD
      * @return the restricted BDD
@@ -226,7 +230,8 @@ public class BDDConstruction {
         return this.k.doWithPotentialReordering(() -> quantRec(r, BDDKernel.Operand.AND, (var << 3) | CACHEID_FORALL));
     }
 
-    protected int quantRec(final int r, final BDDKernel.Operand op, final int quantid) throws BDDKernel.BddReorderRequest {
+    protected int quantRec(final int r, final BDDKernel.Operand op, final int quantid)
+            throws BDDKernel.BddReorderRequest {
         final int res;
         if (r < 2 || this.k.level(r) > this.k.quantlast) {
             return r;
@@ -258,7 +263,7 @@ public class BDDConstruction {
             this.k.quantvarset = new int[this.k.varnum];
             this.k.quantvarsetID = 1;
         }
-        for (int n = r; !this.k.isConst(n); ) {
+        for (int n = r; !this.k.isConst(n);) {
             if (this.k.isZero(this.k.low(n))) {
                 this.k.quantvarset[this.k.level(n)] = this.k.quantvarsetID;
                 n = this.k.high(n);

@@ -125,8 +125,10 @@ public class TseitinTest extends TestWithExampleFormulas {
         final PseudoBooleanParser p = new PseudoBooleanParser(f);
         assertThat(p.parse("a <=> (1 * b <= 1)").transform(this.ts)).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(1 * b <= 1)").transform(this.ts)).isEqualTo(p.parse("$false"));
-        assertThat(p.parse("(1 * b + 1 * c + 1 * d <= 1)").transform(this.ts)).isEqualTo(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"));
-        assertThat(p.parse("~(1 * b + 1 * c + 1 * d <= 1)").transform(this.ts)).isEqualTo(p.parse("(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"));
+        assertThat(p.parse("(1 * b + 1 * c + 1 * d <= 1)").transform(this.ts))
+                .isEqualTo(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"));
+        assertThat(p.parse("~(1 * b + 1 * c + 1 * d <= 1)").transform(this.ts)).isEqualTo(p.parse(
+                "(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"));
     }
 
     @Test

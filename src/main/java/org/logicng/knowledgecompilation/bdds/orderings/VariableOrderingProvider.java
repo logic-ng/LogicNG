@@ -18,8 +18,9 @@ import java.util.List;
 public interface VariableOrderingProvider {
 
     /**
-     * Generates a variable ordering for a given formula.  Such a variable ordering can then be
-     * used for the initialization of the BDD Kernel in {@link org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel#BDDKernel(FormulaFactory, List, int, int)}.
+     * Generates a variable ordering for a given formula. Such a variable
+     * ordering can then be used for the initialization of the BDD Kernel in
+     * {@link org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel#BDDKernel(FormulaFactory, List, int, int)}.
      * @param formula the formula
      * @return the variable ordering
      */

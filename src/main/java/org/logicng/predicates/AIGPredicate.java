@@ -12,7 +12,8 @@ import org.logicng.formulas.FormulaPredicate;
 import org.logicng.formulas.Not;
 
 /**
- * And-inverter-graph (AIG) predicate.  Returns {@code true} if the given formula is an AIG, {@code false} otherwise.
+ * And-inverter-graph (AIG) predicate. Returns {@code true} if the given formula
+ * is an AIG, {@code false} otherwise.
  * @version 1.0
  * @since 1.0
  */
@@ -21,7 +22,7 @@ public final class AIGPredicate implements FormulaPredicate {
     private final static AIGPredicate INSTANCE = new AIGPredicate();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private AIGPredicate() {
         // Intentionally left empty

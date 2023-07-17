@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Implementation of a DNNF compiler based on ideas by Adnan Darwiche in
- * "New advances in compiling CNF to decomposable negation normal form."
+ * Implementation of a DNNF compiler based on ideas by Adnan Darwiche in "New
+ * advances in compiling CNF to decomposable negation normal form."
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -81,7 +81,8 @@ public class DnnfCompiler {
     }
 
     /**
-     * Performs the compilation using the given DTree generator and the compilation handler.
+     * Performs the compilation using the given DTree generator and the
+     * compilation handler.
      * @param generator the DTree generator
      * @param handler   the compilation handler
      * @return the compiled DNNF
@@ -253,7 +254,8 @@ public class DnnfCompiler {
         return max;
     }
 
-    protected Formula conjoin(final Formula implied, final DTreeNode tree, final int currentShannons) throws TimeoutException {
+    protected Formula conjoin(final Formula implied, final DTreeNode tree, final int currentShannons)
+            throws TimeoutException {
         final Formula left;
         final Formula right;
         if (implied == this.f.falsum() ||

@@ -26,7 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
- * Unit tests for {@link org.logicng.io.writers.FormulaWriter} and {@link org.logicng.io.readers.FormulaReader}.
+ * Unit tests for {@link org.logicng.io.writers.FormulaWriter} and
+ * {@link org.logicng.io.readers.FormulaReader}.
  * @version 2.0.0
  * @since 1.2
  */
@@ -123,7 +124,8 @@ public class FormulaWriterReaderTest {
         final FormulaFactory f = new FormulaFactory();
         final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
         FormulaWriter.write(fileName, p1, false, new UTF8StringRepresentation());
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+        try (final BufferedReader reader =
+                new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
             assertThat(reader.readLine()).isEqualTo("A ∧ B ∧ ¬(C ∨ (D ⇒ ¬E))");
         }
         Files.deleteIfExists(file.toPath());
@@ -136,7 +138,8 @@ public class FormulaWriterReaderTest {
         final FormulaFactory f = new FormulaFactory();
         final Formula p1 = new PropositionalParser(f).parse("A & B & ~(C | (D => ~E))");
         FormulaWriter.write(fileName, p1, true, new UTF8StringRepresentation());
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+        try (final BufferedReader reader =
+                new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
             assertThat(reader.readLine()).isEqualTo("A");
             assertThat(reader.readLine()).isEqualTo("B");
             assertThat(reader.readLine()).isEqualTo("¬(C ∨ (D ⇒ ¬E))");

@@ -56,9 +56,12 @@ public class DNFFactorizationTest extends TestWithExampleFormulas {
         final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(this.AND1.transform(this.dnfFactorization)).isEqualTo(this.AND1);
         assertThat(this.OR1.transform(this.dnfFactorization)).isEqualTo(this.OR1);
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | c | (~x & y)"));
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("(~a & ~b & c & ~x) | (~a & ~b & c & y)"));
-        assertThat(p.parse("a & b & (~x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("(a & b & ~x) | (a & b & ~y)"));
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("~a | ~b | c | (~x & y)"));
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y)").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("(~a & ~b & c & ~x) | (~a & ~b & c & y)"));
+        assertThat(p.parse("a & b & (~x | ~y)").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("(a & b & ~x) | (a & b & ~y)"));
         assertThat(this.AND1.transform(this.dnfFactorization).isDNF()).isTrue();
         assertThat(this.OR1.transform(this.dnfFactorization).isDNF()).isTrue();
         assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.dnfFactorization).isDNF()).isTrue();
@@ -75,18 +78,23 @@ public class DNFFactorizationTest extends TestWithExampleFormulas {
         assertThat(p.parse("~a").transform(this.dnfFactorization)).isEqualTo(p.parse("~a"));
         assertThat(p.parse("~~a").transform(this.dnfFactorization)).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(a => b)").transform(this.dnfFactorization)).isEqualTo(p.parse("a & ~b"));
-        assertThat(p.parse("~(~(a | b) => ~(x | y))").transform(this.dnfFactorization)).isEqualTo(p.parse("(~a & ~b & x) | (~a & ~b & y)"));
+        assertThat(p.parse("~(~(a | b) => ~(x | y))").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("(~a & ~b & x) | (~a & ~b & y)"));
         assertThat(p.parse("~(a <=> b)").transform(this.dnfFactorization)).isEqualTo(p.parse("(~a & b) | (a & ~b)"));
-        assertThat(p.parse("~(a & b & ~x & ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("~a | ~b | x | y"));
-        assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("~a & ~b & x & y"));
-        assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.dnfFactorization)).isEqualTo(p.parse("~a & ~b & x & y"));
+        assertThat(p.parse("~(a & b & ~x & ~y)").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("~a | ~b | x | y"));
+        assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("~a & ~b & x & y"));
+        assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.dnfFactorization))
+                .isEqualTo(p.parse("~a & ~b & x & y"));
     }
 
     @Test
     public void testCDNF() throws ParserException {
         final PropositionalParser p = new PropositionalParser(this.f);
         final Formula formula = p.parse("x0 & x1 & x3 | ~x1 & ~x2 | x2 & ~x3");
-        final Formula cdnf = p.parse("x0 & x1 & x2 & x3 | x0 & x1 & x2 & ~x3 | x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & x3 | x0 & x1 & ~x2 & x3 | ~x0 & x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & x3");
+        final Formula cdnf = p.parse(
+                "x0 & x1 & x2 & x3 | x0 & x1 & x2 & ~x3 | x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & ~x3 | x0 & ~x1 & ~x2 & x3 | x0 & x1 & ~x2 & x3 | ~x0 & x1 & x2 & ~x3 | ~x0 & ~x1 & ~x2 & x3");
         assertThat(formula.transform(CanonicalDNFEnumeration.get())).isEqualTo(cdnf);
         assertThat(this.f.and(this.A, this.NA).transform(CanonicalDNFEnumeration.get())).isEqualTo(this.f.falsum());
     }

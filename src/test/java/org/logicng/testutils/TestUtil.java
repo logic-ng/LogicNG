@@ -17,18 +17,20 @@ import java.util.SortedSet;
 public final class TestUtil {
 
     /**
-     * Private empty constructor.  Class only contains static utility methods.
+     * Private empty constructor. Class only contains static utility methods.
      */
     private TestUtil() {
         // Intentionally left empty
     }
 
     /**
-     * Tests if the two given formulas have the same models when projected to the given set of variables.
+     * Tests if the two given formulas have the same models when projected to
+     * the given set of variables.
      * @param f1   first formula
      * @param f2   second formula
      * @param vars the set of variables to which the models should be projected
-     * @return {@code true} if the two formulas have the same models when projected to the given set of variables, otherwise {@code false}
+     * @return {@code true} if the two formulas have the same models when
+     *         projected to the given set of variables, otherwise {@code false}
      */
     public static boolean equivalentModels(final Formula f1, final Formula f2, final SortedSet<Variable> vars) {
         final SATSolver s = MiniSat.miniSat(f1.factory());

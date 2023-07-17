@@ -18,8 +18,9 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 /**
- * A solver function which returns all unit propagated literals on level 0 of the current
- * formula on the solver.  If the formula is UNSAT, {@code null} will be returned.
+ * A solver function which returns all unit propagated literals on level 0 of
+ * the current formula on the solver. If the formula is UNSAT, {@code null} will
+ * be returned.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -28,7 +29,7 @@ public final class UpZeroLiteralsFunction implements SolverFunction<SortedSet<Li
     private final static UpZeroLiteralsFunction INSTANCE = new UpZeroLiteralsFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private UpZeroLiteralsFunction() {
         // Intentionally left empty
@@ -45,7 +46,8 @@ public final class UpZeroLiteralsFunction implements SolverFunction<SortedSet<Li
     @Override
     public SortedSet<Literal> apply(final MiniSat solver, final Consumer<Tristate> resultSetter) {
         if (solver.getResult() == UNDEF) {
-            throw new IllegalStateException("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
+            throw new IllegalStateException(
+                    "Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
         }
         if (solver.getResult() == FALSE) {
             return null;
@@ -54,7 +56,8 @@ public final class UpZeroLiteralsFunction implements SolverFunction<SortedSet<Li
         final SortedSet<Literal> upZeroLiterals = new TreeSet<>();
         for (int i = 0; i < literals.size(); ++i) {
             final int lit = literals.get(i);
-            upZeroLiterals.add(solver.factory().literal(solver.underlyingSolver().nameForIdx(MiniSatStyleSolver.var(lit)), !MiniSatStyleSolver.sign(lit)));
+            upZeroLiterals.add(solver.factory().literal(
+                    solver.underlyingSolver().nameForIdx(MiniSatStyleSolver.var(lit)), !MiniSatStyleSolver.sign(lit)));
         }
         return upZeroLiterals;
     }

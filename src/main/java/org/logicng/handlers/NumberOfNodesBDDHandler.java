@@ -5,7 +5,8 @@
 package org.logicng.handlers;
 
 /**
- * A BDD handler which cancels the build process after a given number of added nodes.
+ * A BDD handler which cancels the build process after a given number of added
+ * nodes.
  * @version 1.6.2
  * @since 1.6.2
  */
@@ -15,7 +16,8 @@ public class NumberOfNodesBDDHandler extends ComputationHandler implements BDDHa
     private int count;
 
     /**
-     * Constructs a new BDD handler with an upper bound for the number of added nodes (inclusive).
+     * Constructs a new BDD handler with an upper bound for the number of added
+     * nodes (inclusive).
      * @param bound the upper bound
      */
     public NumberOfNodesBDDHandler(final int bound) {

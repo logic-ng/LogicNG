@@ -9,7 +9,8 @@ import org.logicng.formulas.Formula;
 import java.util.Objects;
 
 /**
- * A proposition in LogicNG.  A proposition is a formula with an additional textual description.
+ * A proposition in LogicNG. A proposition is a formula with an additional
+ * textual description.
  * @version 2.0.0
  * @since 1.0
  */

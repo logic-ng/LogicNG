@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.algorithms;
@@ -65,14 +62,18 @@ public abstract class MaxSAT {
      * The MaxSAT problem type: {@code UNWEIGHTED} or {@code WEIGHTED}.
      */
     public enum ProblemType {
-        UNWEIGHTED, WEIGHTED
+        UNWEIGHTED,
+        WEIGHTED
     }
 
     /**
-     * The MaxSAT result type: {@code SATISFIABLE}, {@code UNSATISFIABLE}, {@code OPTIMUM}, or {@code UNDEF}.
+     * The MaxSAT result type: {@code SATISFIABLE}, {@code UNSATISFIABLE},
+     * {@code OPTIMUM}, or {@code UNDEF}.
      */
     public enum MaxSATResult {
-        UNSATISFIABLE, OPTIMUM, UNDEF
+        UNSATISFIABLE,
+        OPTIMUM,
+        UNDEF
     }
 
     protected final LNGBooleanVector model;
@@ -131,13 +132,15 @@ public abstract class MaxSAT {
     }
 
     /**
-     * Solves the formula that is currently loaded in the SAT solver with a set of assumptions.
+     * Solves the formula that is currently loaded in the SAT solver with a set
+     * of assumptions.
      * @param s           the SAT solver
      * @param satHandler  a SAT handler
      * @param assumptions the assumptions
      * @return the result of the solving process
      */
-    public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler satHandler, final LNGIntVector assumptions) {
+    public static Tristate searchSATSolver(final MiniSatStyleSolver s, final SATHandler satHandler,
+                                           final LNGIntVector assumptions) {
         return s.solve(satHandler, assumptions);
     }
 
@@ -227,7 +230,8 @@ public abstract class MaxSAT {
     }
 
     /**
-     * Adds a new soft clause to the soft clause database with predefined relaxation variables.
+     * Adds a new soft clause to the soft clause database with predefined
+     * relaxation variables.
      * @param weight the weight of the soft clause
      * @param lits   the literals of the soft clause
      * @param vars   the relaxation variables of the soft clause
@@ -314,8 +318,9 @@ public abstract class MaxSAT {
     }
 
     /**
-     * Computes the cost of a given model. The cost of a model is the sum of the weights of the unsatisfied soft
-     * clauses.  If a weight is specified, then it only considers the sum of the weights of the unsatisfied soft clauses
+     * Computes the cost of a given model. The cost of a model is the sum of the
+     * weights of the unsatisfied soft clauses. If a weight is specified, then
+     * it only considers the sum of the weights of the unsatisfied soft clauses
      * with the specified weight.
      * @param currentModel the model
      * @param weight       the weight
@@ -332,8 +337,10 @@ public abstract class MaxSAT {
                     continue;
                 }
                 assert var(this.softClauses.get(i).clause().get(j)) < currentModel.size();
-                if ((sign(this.softClauses.get(i).clause().get(j)) && !currentModel.get(var(this.softClauses.get(i).clause().get(j))))
-                        || (!sign(this.softClauses.get(i).clause().get(j)) && currentModel.get(var(this.softClauses.get(i).clause().get(j))))) {
+                if ((sign(this.softClauses.get(i).clause().get(j)) &&
+                        !currentModel.get(var(this.softClauses.get(i).clause().get(j)))) ||
+                        (!sign(this.softClauses.get(i).clause().get(j)) &&
+                                currentModel.get(var(this.softClauses.get(i).clause().get(j))))) {
                     unsatisfied = false;
                     break;
                 }
@@ -348,7 +355,8 @@ public abstract class MaxSAT {
     /**
      * Tests if the MaxSAT formula has lexicographical optimization criterion.
      * @param cache is indicates whether the result should be cached.
-     * @return {@code true} if the formula has lexicographical optimization criterion
+     * @return {@code true} if the formula has lexicographical optimization
+     *         criterion
      */
     public boolean isBMO(final boolean cache) {
         assert this.orderWeights.size() == 0;
@@ -406,7 +414,8 @@ public abstract class MaxSAT {
     }
 
     /**
-     * Returns the current SAT handler or {@code null} if no MaxSAT handler was given.
+     * Returns the current SAT handler or {@code null} if no MaxSAT handler was
+     * given.
      * @return the current SAT handler
      */
     SATHandler satHandler() {

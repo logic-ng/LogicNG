@@ -73,12 +73,15 @@ public class AIGTest extends TestWithExampleFormulas {
         final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(this.AND1.transform(this.aigTrans)).isEqualTo(this.AND1);
         assertThat(this.OR1.transform(this.aigTrans)).isEqualTo(p.parse("~(~x & ~y)"));
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.aigTrans)).isEqualTo(p.parse("(~a & ~b) & c & ~(x & ~y) & ~(w & ~z)"));
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.aigTrans)).isEqualTo(p.parse("~(a & b & ~c & ~(~x & y))"));
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.aigTrans))
+                .isEqualTo(p.parse("(~a & ~b) & c & ~(x & ~y) & ~(w & ~z)"));
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.aigTrans))
+                .isEqualTo(p.parse("~(a & b & ~c & ~(~x & y))"));
         assertThat(p.parse("a | b | (~x & ~y)").transform(this.aigTrans)).isEqualTo(p.parse("~(~a & ~b & ~(~x & ~y))"));
         assertThat(this.AND1.transform(this.aigTrans).holds(this.aigPred)).isTrue();
         assertThat(this.OR1.transform(this.aigTrans).holds(this.aigPred)).isTrue();
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.aigTrans).holds(this.aigPred)).isTrue();
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.aigTrans).holds(this.aigPred))
+                .isTrue();
         assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.aigTrans).holds(this.aigPred)).isTrue();
         assertThat(p.parse("a | b | (~x & ~y)").transform(this.aigTrans).holds(this.aigPred)).isTrue();
         assertThat(this.AND1.holds(this.aigPred)).isTrue();
@@ -103,12 +106,15 @@ public class AIGTest extends TestWithExampleFormulas {
         assertThat(p.parse("~a").transform(this.aigTrans)).isEqualTo(p.parse("~a"));
         assertThat(p.parse("~~a").transform(this.aigTrans)).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(a => b)").transform(this.aigTrans)).isEqualTo(p.parse("a & ~b"));
-        assertThat(p.parse("~(~(a | b) => ~(x | y))").transform(this.aigTrans)).isEqualTo(p.parse("(~a & ~b) & ~(~x & ~y)"));
+        assertThat(p.parse("~(~(a | b) => ~(x | y))").transform(this.aigTrans))
+                .isEqualTo(p.parse("(~a & ~b) & ~(~x & ~y)"));
         assertThat(p.parse("~(a <=> b)").transform(this.aigTrans)).isEqualTo(p.parse("~(~(a & ~b) & ~(~a & b))"));
-        assertThat(p.parse("~(~(a | b) <=> ~(x | y))").transform(this.aigTrans)).isEqualTo(p.parse("~(~(~a & ~b & ~(~x & ~y)) & ~((a | b) & ~(x | y)))"));
+        assertThat(p.parse("~(~(a | b) <=> ~(x | y))").transform(this.aigTrans))
+                .isEqualTo(p.parse("~(~(~a & ~b & ~(~x & ~y)) & ~((a | b) & ~(x | y)))"));
         assertThat(p.parse("~(a & b & ~x & ~y)").transform(this.aigTrans)).isEqualTo(p.parse("~(a & b & ~x & ~y)"));
         assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.aigTrans)).isEqualTo(p.parse("~a & ~b & x & y"));
-        assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.aigTrans)).isEqualTo(p.parse("~a & ~b & x & y")); // test caching
+        assertThat(p.parse("~(a | b | ~x | ~y)").transform(this.aigTrans)).isEqualTo(p.parse("~a & ~b & x & y")); // test
+                                                                                                                  // caching
         final Formula not = p.parse("~(m | n)");
         not.transform(this.aigTrans, false);
         final Formula aig = not.transformationCacheEntry(TransformationCacheEntry.AIG);

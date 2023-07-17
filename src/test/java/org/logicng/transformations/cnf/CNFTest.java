@@ -59,8 +59,10 @@ public class CNFTest extends TestWithExampleFormulas {
         final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(this.AND1.transform(this.cnf)).isEqualTo(this.AND1);
         assertThat(this.OR1.transform(this.cnf)).isEqualTo(this.OR1);
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf)).isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf)).isEqualTo(p.parse("(~a | ~b | c | ~x) & (~a  | ~b | c | y)"));
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(this.cnf))
+                .isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y)").transform(this.cnf))
+                .isEqualTo(p.parse("(~a | ~b | c | ~x) & (~a  | ~b | c | y)"));
         assertThat(p.parse("a | b | (~x & ~y)").transform(this.cnf)).isEqualTo(p.parse("(a | b | ~x) & (a | b | ~y)"));
         assertThat(this.AND1.transform(this.cnf).isCNF()).isTrue();
         assertThat(this.OR1.transform(this.cnf).isCNF()).isTrue();
@@ -80,9 +82,11 @@ public class CNFTest extends TestWithExampleFormulas {
         assertThat(p.parse("~a2").transform(this.cnf)).isEqualTo(p.parse("~a2"));
         assertThat(p.parse("~~a2").transform(this.cnf)).isEqualTo(p.parse("a2"));
         assertThat(p.parse("~(a2 => b2)").transform(this.cnf)).isEqualTo(p.parse("a2 & ~b2"));
-        assertThat(p.parse("~(~(a2 | b2) => ~(x2 | y2))").transform(this.cnf)).isEqualTo(p.parse("~a2 & ~b2 & (x2 | y2)"));
+        assertThat(p.parse("~(~(a2 | b2) => ~(x2 | y2))").transform(this.cnf))
+                .isEqualTo(p.parse("~a2 & ~b2 & (x2 | y2)"));
         assertThat(p.parse("~(a2 <=> b2)").transform(this.cnf)).isEqualTo(p.parse("(~a2 | ~b2) & (a2 | b2)"));
-        assertThat(p.parse("~(~(a2 | b2) <=> ~(x2 | y2))").transform(cnf2)).isEqualTo(p.parse("(a2 | b2 | x2 | y2) & (~a2 | ~x2) & (~a2 | ~y2) & (~b2 | ~x2) & (~b2 | ~y2)"));
+        assertThat(p.parse("~(~(a2 | b2) <=> ~(x2 | y2))").transform(cnf2))
+                .isEqualTo(p.parse("(a2 | b2 | x2 | y2) & (~a2 | ~x2) & (~a2 | ~y2) & (~b2 | ~x2) & (~b2 | ~y2)"));
         assertThat(p.parse("~(a2 & b2 & ~x2 & ~y2)").transform(this.cnf)).isEqualTo(p.parse("~a2 | ~b2 | x2 | y2"));
         assertThat(p.parse("~(a2 | b2 | ~x2 | ~y2)").transform(this.cnf)).isEqualTo(p.parse("~a2 & ~b2 & x2 & y2"));
         assertThat(p.parse("~(a2 | b2 | ~x2 | ~y2)").transform(this.cnf)).isEqualTo(p.parse("~a2 & ~b2 & x2 & y2"));
@@ -97,8 +101,10 @@ public class CNFTest extends TestWithExampleFormulas {
         final PseudoBooleanParser p = new PseudoBooleanParser(f);
         assertThat(p.parse("a <=> (1 * b <= 1)").cnf()).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(1 * b <= 1)").cnf()).isEqualTo(p.parse("$false"));
-        assertThat(p.parse("(1 * b + 1 * c + 1 * d <= 1)").cnf()).isEqualTo(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"));
-        assertThat(p.parse("~(1 * b + 1 * c + 1 * d <= 1)").cnf()).isEqualTo(p.parse("(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"));
+        assertThat(p.parse("(1 * b + 1 * c + 1 * d <= 1)").cnf())
+                .isEqualTo(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"));
+        assertThat(p.parse("~(1 * b + 1 * c + 1 * d <= 1)").cnf()).isEqualTo(p.parse(
+                "(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"));
     }
 
     @Test

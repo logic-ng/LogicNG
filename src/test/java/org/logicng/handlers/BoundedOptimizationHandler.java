@@ -7,7 +7,8 @@ import java.util.function.Supplier;
 /**
  * Bounded optimization handler for testing purposes.
  * <p>
- * The handler aborts the optimization if a certain number of starts or a certain number of SAT handler starts is reached.
+ * The handler aborts the optimization if a certain number of starts or a
+ * certain number of SAT handler starts is reached.
  * @version 2.1.0
  * @since 2.1.0
  */
@@ -19,8 +20,10 @@ public class BoundedOptimizationHandler implements OptimizationHandler {
 
     /**
      * Constructs a new instance with the given starts limits.
-     * @param satHandlerStartsLimit the number of starts limit for the SAT handler, if -1 then no limit is set
-     * @param startsLimit           the number of starts limit, if -1 then no limit is set
+     * @param satHandlerStartsLimit the number of starts limit for the SAT
+     *                              handler, if -1 then no limit is set
+     * @param startsLimit           the number of starts limit, if -1 then no
+     *                              limit is set
      */
     public BoundedOptimizationHandler(final int satHandlerStartsLimit, final int startsLimit) {
         this.satHandler = new BoundedSatHandler(satHandlerStartsLimit);

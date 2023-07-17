@@ -53,7 +53,8 @@ public final class UBTree<T extends Comparable<T>> {
     /**
      * Returns the first subset of a given set in this UBTree.
      * @param set the set to search for
-     * @return the first subset which is found for the given set or {@code null} if there is none
+     * @return the first subset which is found for the given set or {@code null}
+     *         if there is none
      */
     public SortedSet<T> firstSubset(final SortedSet<T> set) {
         if (this.rootNodes.isEmpty() || set == null || set.isEmpty()) {
@@ -122,7 +123,8 @@ public final class UBTree<T extends Comparable<T>> {
         return foundSubset;
     }
 
-    private void allSubsets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final Set<SortedSet<T>> subsets) {
+    private void allSubsets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest,
+                            final Set<SortedSet<T>> subsets) {
         final Set<UBNode<T>> nodes = getAllNodesContainingElements(set, forest);
         for (final UBNode<T> node : nodes) {
             if (node.isEndOfPath()) {
@@ -134,7 +136,8 @@ public final class UBTree<T extends Comparable<T>> {
         }
     }
 
-    private void allSupersets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final Set<SortedSet<T>> supersets) {
+    private void allSupersets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest,
+                              final Set<SortedSet<T>> supersets) {
         final Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(set, forest, set.first());
         for (final UBNode<T> node : nodes) {
             allSupersets(set, node.children(), supersets);
@@ -169,7 +172,9 @@ public final class UBTree<T extends Comparable<T>> {
         return nodes;
     }
 
-    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final T element) {
+    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedSet<T> set,
+                                                                 final SortedMap<T, UBNode<T>> forest,
+                                                                 final T element) {
         final Set<UBNode<T>> nodes = new LinkedHashSet<>();
         for (final UBNode<T> node : forest.values()) {
             if (node != null && node.element().compareTo(element) < 0) {

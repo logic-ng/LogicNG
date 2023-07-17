@@ -55,7 +55,8 @@ public class PigeonHoleGenerator {
         for (int j = 1; j <= n; j++) {
             for (int i = 1; i <= n; i++) {
                 for (int k = i + 1; k <= n + 1; k++) {
-                    ors.add(this.f.or(this.f.literal(prefix + (n * (i - 1) + j), false), this.f.literal(prefix + (n * (k - 1) + j), false)));
+                    ors.add(this.f.or(this.f.literal(prefix + (n * (i - 1) + j), false),
+                            this.f.literal(prefix + (n * (k - 1) + j), false)));
                 }
             }
         }

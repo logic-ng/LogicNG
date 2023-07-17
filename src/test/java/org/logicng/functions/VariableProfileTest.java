@@ -28,8 +28,10 @@ import java.util.Map;
  */
 public class VariableProfileTest {
 
-    private final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-    private final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+    private final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder()
+            .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+    private final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder()
+            .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
 
     private final VariableProfileFunction varProfile = VariableProfileFunction.get();
 
@@ -44,7 +46,8 @@ public class VariableProfileTest {
 
     public VariableProfileTest() {
         final Variable[] lits1 = new Variable[]{this.f.variable("a")};
-        final List<Literal> lits2 = Arrays.asList(this.f2.variable("a"), this.f.literal("b", false), this.f.variable("c"));
+        final List<Literal> lits2 =
+                Arrays.asList(this.f2.variable("a"), this.f.literal("b", false), this.f.variable("c"));
         final List<Variable> litsCC2 = Arrays.asList(this.f.variable("a"), this.f2.variable("b"), this.f.variable("c"));
         final int[] coeffs1 = new int[]{3};
         final List<Integer> coeffs2 = Arrays.asList(3, -2, 7);

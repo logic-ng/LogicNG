@@ -87,13 +87,15 @@ public class DnnfCompilerTest {
     @Test
     public void testDnnfProperties() throws ParserException {
         final Dnnf dnnf = new DnnfFactory().compile(this.parser.parse("a | ((b & ~c) | (c & (~d | ~a & b)) & e)"));
-        assertThat(dnnf.getOriginalVariables()).extracting(Variable::name).containsExactlyInAnyOrder("a", "b", "c", "d", "e");
+        assertThat(dnnf.getOriginalVariables()).extracting(Variable::name).containsExactlyInAnyOrder("a", "b", "c", "d",
+                "e");
     }
 
     @Test
     @LongRunningTag
     public void testAllSmallFormulas() throws IOException, ParserException {
-        final Formula formulas = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
+        final Formula formulas =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
         formulas.stream().forEach(f -> testFormula(f, false));
     }
 
@@ -118,7 +120,8 @@ public class DnnfCompilerTest {
         }
         final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulas);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
-        final List<List<Formula>> split = ConnectedComponentsComputation.splitFormulasByComponent(originalFormulas, ccs);
+        final List<List<Formula>> split =
+                ConnectedComponentsComputation.splitFormulasByComponent(originalFormulas, ccs);
         BigInteger multipliedCount = BigInteger.ONE;
         for (final List<Formula> component : split) {
             dnnf = dnnfFactory.compile(f.and(component));
@@ -145,7 +148,8 @@ public class DnnfCompilerTest {
         } else if (formula.type() == FType.FALSE) {
             return BigInteger.ZERO;
         }
-        final BDDKernel kernel = new BDDKernel(formula.factory(), new ForceOrdering().getOrder(formula), 100000, 1000000);
+        final BDDKernel kernel =
+                new BDDKernel(formula.factory(), new ForceOrdering().getOrder(formula), 100000, 1000000);
         final BDD bdd = BDDFactory.build(formula, kernel);
         return bdd.modelCount();
     }

@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.algorithms;
@@ -48,9 +45,13 @@ import java.io.PrintStream;
 public class LinearSU extends MaxSAT {
 
     protected final Encoder encoder;
-    protected final boolean bmoMode;  // Enables BMO mode.
-    protected final LNGIntVector objFunction; // Literals to be used in the constraint that excludes models.
-    protected final LNGIntVector coeffs; // Coefficients of the literals that are used in the constraint that excludes models.
+    protected final boolean bmoMode; // Enables BMO mode.
+    protected final LNGIntVector objFunction; // Literals to be used in the
+                                              // constraint that excludes
+                                              // models.
+    protected final LNGIntVector coeffs; // Coefficients of the literals that
+                                         // are used in the constraint that
+                                         // excludes models.
     protected final PrintStream output;
     protected MiniSatStyleSolver solver;
     protected boolean isBmo; // Stores if the formula is BMO or not.
@@ -129,7 +130,8 @@ public class LinearSU extends MaxSAT {
                         return MaxSATResult.UNDEF;
                     }
                 } else if (this.verbosity != Verbosity.NONE) {
-                    this.output.printf("c BMO-UB : %d (Function %d/%d)%n", newCost, posWeight + 1, this.orderWeights.size());
+                    this.output.printf("c BMO-UB : %d (Function %d/%d)%n", newCost, posWeight + 1,
+                            this.orderWeights.size());
                 }
                 if (newCost == 0 && currentWeight == minWeight) {
                     return MaxSATResult.OPTIMUM;
@@ -266,7 +268,8 @@ public class LinearSU extends MaxSAT {
      * @param currentWeight the current weight
      * @return the rebuilt solver
      */
-    protected MiniSatStyleSolver rebuildBMO(final LNGVector<LNGIntVector> functions, final LNGIntVector rhs, final int currentWeight) {
+    protected MiniSatStyleSolver rebuildBMO(final LNGVector<LNGIntVector> functions, final LNGIntVector rhs,
+                                            final int currentWeight) {
         assert functions.size() == rhs.size();
         final MiniSatStyleSolver s = this.rebuildSolver(currentWeight);
         this.objFunction.clear();
@@ -284,7 +287,8 @@ public class LinearSU extends MaxSAT {
     }
 
     /**
-     * Initializes the relaxation variables by adding a fresh variable to the 'relaxationVars' of each soft clause.
+     * Initializes the relaxation variables by adding a fresh variable to the
+     * 'relaxationVars' of each soft clause.
      */
     protected void initRelaxation() {
         for (final MSSoftClause softClause : this.softClauses) {

@@ -46,10 +46,13 @@ public class FactorOutSimplificationTest extends TestWithExampleFormulas {
         assertThat(this.f.parse("~(A|A&B)").transform(this.factorOut)).isEqualTo(this.f.parse("~A"));
         assertThat(this.f.parse("A&(A|B)&C").transform(this.factorOut)).isEqualTo(this.f.parse("A&C"));
 
-        assertThat(this.f.parse("A&X&Y|A&B&C|B&C&D|A&Z").transform(this.factorOut)).isEqualTo(this.f.parse("A&(X&Y|B&C|Z)|B&C&D"));
-        assertThat(this.f.parse("G&(A&X&Y|A&B&C|B&C&D|A&Z)").transform(this.factorOut)).isEqualTo(this.f.parse("G&(A&(X&Y|B&C|Z)|B&C&D)"));
+        assertThat(this.f.parse("A&X&Y|A&B&C|B&C&D|A&Z").transform(this.factorOut))
+                .isEqualTo(this.f.parse("A&(X&Y|B&C|Z)|B&C&D"));
+        assertThat(this.f.parse("G&(A&X&Y|A&B&C|B&C&D|A&Z)").transform(this.factorOut))
+                .isEqualTo(this.f.parse("G&(A&(X&Y|B&C|Z)|B&C&D)"));
 
-        assertThat(this.f.parse("G&(~(A&X&Y)|~(A&B&C))").transform(this.factorOut)).isEqualTo(this.f.parse("G&(~(A&X&Y)|~(A&B&C))"));
+        assertThat(this.f.parse("G&(~(A&X&Y)|~(A&B&C))").transform(this.factorOut))
+                .isEqualTo(this.f.parse("G&(~(A&X&Y)|~(A&B&C))"));
     }
 
     @Test
@@ -63,7 +66,8 @@ public class FactorOutSimplificationTest extends TestWithExampleFormulas {
     public void testRandomized() {
         for (int i = 0; i < 200; i++) {
             final FormulaFactory f = new FormulaFactory();
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(5).weightPbc(2).seed(i * 42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f,
+                    FormulaRandomizerConfig.builder().numVars(5).weightPbc(2).seed(i * 42).build());
             final Formula formula = randomizer.formula(6);
             computeAndVerify(formula);
             computeAndVerify(formula.nnf());

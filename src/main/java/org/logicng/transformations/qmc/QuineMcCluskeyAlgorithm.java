@@ -27,33 +27,38 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * An implementation of the Quine-McCluskey algorithm for minimizing canonical DNFs.  This implementation is fairly
- * efficient but keep in mind that Quine-McCluskey can be a very expensive procedure for large canonical DNFs.  So we
- * would not recommend using this implementation for super large DNFs.
+ * An implementation of the Quine-McCluskey algorithm for minimizing canonical
+ * DNFs. This implementation is fairly efficient but keep in mind that
+ * Quine-McCluskey can be a very expensive procedure for large canonical DNFs.
+ * So we would not recommend using this implementation for super large DNFs.
  * @version 2.0.0
  * @since 1.4.0
  */
 public class QuineMcCluskeyAlgorithm {
 
     /**
-     * Computes a minimized DNF for a given formula projected to a given set of variables.  First a projected canonical
-     * DNF of the formula is computed for the given variables.  Then for this canonical DNF the Quine-McCluskey algorithm
-     * is computed.
+     * Computes a minimized DNF for a given formula projected to a given set of
+     * variables. First a projected canonical DNF of the formula is computed for
+     * the given variables. Then for this canonical DNF the Quine-McCluskey
+     * algorithm is computed.
      * @param formula           the formula
-     * @param relevantVariables the relevant formulas for the projected canonical DNF
+     * @param relevantVariables the relevant formulas for the projected
+     *                          canonical DNF
      * @return the minimized DNF due to Qune-McCluskey
      */
     public static Formula compute(final Formula formula, final Collection<Variable> relevantVariables) {
         final FormulaFactory f = formula.factory();
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
-        final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels(formula.variables()) : solver.enumerateAllModels(relevantVariables);
+        final List<Assignment> models = relevantVariables == null ? solver.enumerateAllModels(formula.variables()) :
+                solver.enumerateAllModels(relevantVariables);
         return compute(models, f);
     }
 
     /**
-     * Computes a minimized DNF for a given formula.  First the canonical DNF of the formula is computed.  Then for
-     * this canonical DNF the Quine-McCluskey algorithm is computed.
+     * Computes a minimized DNF for a given formula. First the canonical DNF of
+     * the formula is computed. Then for this canonical DNF the Quine-McCluskey
+     * algorithm is computed.
      * @param formula the formula
      * @return the minimized DNF due to Quine-McCluskey
      */
@@ -62,9 +67,11 @@ public class QuineMcCluskeyAlgorithm {
     }
 
     /**
-     * Computes a minimized DNF for a given set of models.  These models have to represent a canonical DNF of a formula
-     * as computed e.g. by the projected model enumeration of a SAT solver {@link SATSolver#enumerateAllModels(Variable[])}
-     * or by the transformation {@link org.logicng.transformations.dnf.CanonicalDNFEnumeration}.
+     * Computes a minimized DNF for a given set of models. These models have to
+     * represent a canonical DNF of a formula as computed e.g. by the projected
+     * model enumeration of a SAT solver
+     * {@link SATSolver#enumerateAllModels(Variable[])} or by the transformation
+     * {@link org.logicng.transformations.dnf.CanonicalDNFEnumeration}.
      * @param models the models of the formula
      * @param f      the formula factory
      * @return the minimized DNF due to Quine-McCluskey
@@ -88,7 +95,8 @@ public class QuineMcCluskeyAlgorithm {
     }
 
     /**
-     * Transforms a given list of models to a term list as used in the QMC implementation.
+     * Transforms a given list of models to a term list as used in the QMC
+     * implementation.
      * @param models   the models
      * @param varOrder the variable ordering
      * @param f        the formula factory
@@ -129,7 +137,8 @@ public class QuineMcCluskeyAlgorithm {
      * @param termsInClasses the terms sorted in term classes
      * @return the combined terms
      */
-    static SortedMap<Integer, LinkedHashSet<Term>> combineInTermClasses(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
+    static SortedMap<Integer, LinkedHashSet<Term>>
+            combineInTermClasses(final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses) {
         final SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = new TreeMap<>();
         for (int i = 0; i < termsInClasses.lastKey(); i++) {
             final LinkedHashSet<Term> thisClass = termsInClasses.get(i);
@@ -141,7 +150,8 @@ public class QuineMcCluskeyAlgorithm {
                         if (combined != null) {
                             thisTerm.setUsed(true);
                             otherTerm.setUsed(true);
-                            newTermsInClasses.computeIfAbsent(combined.termClass(), k -> new LinkedHashSet<>()).add(combined);
+                            newTermsInClasses.computeIfAbsent(combined.termClass(), k -> new LinkedHashSet<>())
+                                    .add(combined);
                         }
                     }
                 }
@@ -151,7 +161,8 @@ public class QuineMcCluskeyAlgorithm {
     }
 
     /**
-     * Computes the unused terms in set of terms.  These terms are the prime implicants in the QMC.
+     * Computes the unused terms in set of terms. These terms are the prime
+     * implicants in the QMC.
      * @param termsInClasses the terms sorted in term classes
      * @return the unused terms in the given set of terms
      */
@@ -181,7 +192,8 @@ public class QuineMcCluskeyAlgorithm {
     }
 
     /**
-     * Computes the formula for a given list of chosen terms and a variable order.
+     * Computes the formula for a given list of chosen terms and a variable
+     * order.
      * @param chosenTerms the chosen terms
      * @param varOrder    the variable order
      * @return the formula for this term list and variable ordering
@@ -210,12 +222,15 @@ public class QuineMcCluskeyAlgorithm {
     }
 
     /**
-     * Choose a minimal set of prime implicants from the final prime implicant table of QMC.  This implementation uses
-     * a MaxSAT formulation for this variant of the SET COVER problem which should be more efficient than e.g. Petrick's
-     * method for all cases in which this Quine-McCluskey implementation yields a result in reasonable time.
+     * Choose a minimal set of prime implicants from the final prime implicant
+     * table of QMC. This implementation uses a MaxSAT formulation for this
+     * variant of the SET COVER problem which should be more efficient than e.g.
+     * Petrick's method for all cases in which this Quine-McCluskey
+     * implementation yields a result in reasonable time.
      * @param table the final prime term table
      * @param f     the formula factory
-     * @return the list of chosen prime implicants which are minimal wrt. to their number
+     * @return the list of chosen prime implicants which are minimal wrt. to
+     *         their number
      */
     static List<Term> chooseSatBased(final TermTable table, final FormulaFactory f) {
         final LinkedHashMap<Variable, Term> var2Term = new LinkedHashMap<>();
@@ -231,11 +246,14 @@ public class QuineMcCluskeyAlgorithm {
      * Initializes the SAT solver for the SET COVER problem formulation.
      * @param table              the prime implicant table
      * @param f                  the formula factory
-     * @param var2Term           a mapping from selector variable to prime implicant
+     * @param var2Term           a mapping from selector variable to prime
+     *                           implicant
      * @param formula2VarMapping a mapping form minterm to variable
      * @return the initialized SAT solver
      */
-    static SATSolver initializeSolver(final TermTable table, final FormulaFactory f, final LinkedHashMap<Variable, Term> var2Term, final LinkedHashMap<Formula, Variable> formula2VarMapping) {
+    static SATSolver initializeSolver(final TermTable table, final FormulaFactory f,
+                                      final LinkedHashMap<Variable, Term> var2Term,
+                                      final LinkedHashMap<Formula, Variable> formula2VarMapping) {
         final LinkedHashMap<Variable, List<Variable>> minterm2Variants = new LinkedHashMap<>();
         int count = 0;
         String prefix = "@MINTERM_SEL_";
@@ -288,7 +306,8 @@ public class QuineMcCluskeyAlgorithm {
      * @param f         the formula factory
      * @return a minimal set of prime implicants to cover all minterms
      */
-    static List<Term> minimize(final SATSolver satSolver, final LinkedHashMap<Variable, Term> var2Term, final FormulaFactory f) {
+    static List<Term> minimize(final SATSolver satSolver, final LinkedHashMap<Variable, Term> var2Term,
+                               final FormulaFactory f) {
         final Assignment initialModel = satSolver.model();
         List<Variable> currentTermVars = computeCurrentTermVars(initialModel, var2Term.keySet());
         if (currentTermVars.size() == 2) {
@@ -311,7 +330,8 @@ public class QuineMcCluskeyAlgorithm {
     /**
      * Computes the terms from a given list of selector variables
      * @param currentTermVars the list of selector variables
-     * @param var2Term        a mapping from selector variable to prime implicant
+     * @param var2Term        a mapping from selector variable to prime
+     *                        implicant
      * @return the terms for the given list
      */
     static List<Term> computeTerms(final List<Variable> currentTermVars, final LinkedHashMap<Variable, Term> var2Term) {

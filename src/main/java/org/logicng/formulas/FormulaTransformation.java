@@ -15,7 +15,8 @@ public interface FormulaTransformation {
     /**
      * Returns the transformed formula.
      * @param formula the input formula
-     * @param cache   indicated whether the result (and associated predicates) should be cached in the formula's cache.
+     * @param cache   indicated whether the result (and associated predicates)
+     *                should be cached in the formula's cache.
      * @return the transformed formula
      */
     Formula apply(Formula formula, boolean cache);

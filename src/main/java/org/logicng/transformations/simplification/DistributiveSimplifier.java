@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A formula transformation which performs simplifications by applying the distributive laws.
+ * A formula transformation which performs simplifications by applying the
+ * distributive laws.
  * @version 2.3.0
  * @since 1.3
  */
@@ -30,8 +31,9 @@ public final class DistributiveSimplifier implements FormulaTransformation {
     private static final DistributiveSimplifier INSTANCE = new DistributiveSimplifier();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public DistributiveSimplifier() {

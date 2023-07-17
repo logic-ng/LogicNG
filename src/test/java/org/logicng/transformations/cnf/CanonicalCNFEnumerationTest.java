@@ -27,14 +27,18 @@ public class CanonicalCNFEnumerationTest {
         assertThat(f.verum().transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("$true"));
         assertThat(f.parse("a").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("a"));
         assertThat(f.parse("~a").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("~a"));
-        assertThat(f.parse("~a & b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(~a | b) & (~a | ~b) & (a | b)"));
+        assertThat(f.parse("~a & b").transform(CanonicalCNFEnumeration.get()))
+                .isEqualTo(f.parse("(~a | b) & (~a | ~b) & (a | b)"));
         assertThat(f.parse("~a | b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("~a | b"));
         assertThat(f.parse("a => b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("~a | b"));
-        assertThat(f.parse("a <=> b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(~a | b) & (a | ~b)"));
-        assertThat(f.parse("a + b = 1").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(a | b) & (~a | ~b)"));
+        assertThat(f.parse("a <=> b").transform(CanonicalCNFEnumeration.get()))
+                .isEqualTo(f.parse("(~a | b) & (a | ~b)"));
+        assertThat(f.parse("a + b = 1").transform(CanonicalCNFEnumeration.get()))
+                .isEqualTo(f.parse("(a | b) & (~a | ~b)"));
         assertThat(f.parse("a & (b | ~c)").transform(CanonicalCNFEnumeration.get()))
                 .isEqualTo(f.parse("(a | b | c) & (a | b | ~c) & (a | ~b | c) & (a | ~b | ~c) & (~a | b | ~c)"));
-        assertThat(f.parse("a & b & (~a | ~b)").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(a | b) & (~a | b) & (~a | ~b) & (a | ~b)"));
+        assertThat(f.parse("a & b & (~a | ~b)").transform(CanonicalCNFEnumeration.get()))
+                .isEqualTo(f.parse("(a | b) & (~a | b) & (~a | ~b) & (a | ~b)"));
         assertThat(f.parse("a | b | ~a & ~b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("$true"));
     }
 
@@ -51,7 +55,8 @@ public class CanonicalCNFEnumerationTest {
     @RandomTag
     public void random() {
         final FormulaFactory f = new FormulaFactory();
-        final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(5).weightPbc(0.5).seed(42).build());
+        final FormulaRandomizer randomizer =
+                new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(5).weightPbc(0.5).seed(42).build());
         for (int i = 0; i < 1000; i++) {
             final Formula formula = randomizer.formula(3);
             test(formula);

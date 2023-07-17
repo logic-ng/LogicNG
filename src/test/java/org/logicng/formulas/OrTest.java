@@ -45,9 +45,12 @@ public class OrTest extends TestWithExampleFormulas {
         final List<Literal> lits = Arrays.asList(this.X, this.Y);
         assertThat(this.f.or(lits)).isEqualTo(this.OR1);
         assertThat(this.f.or(this.A, this.B, this.X, this.TRUE)).isEqualTo(this.TRUE);
-        assertThat(this.f.or(this.f.or(this.A, this.B), this.f.or(this.X, this.Y))).isEqualTo(this.f.or(this.A, this.B, this.X, this.Y));
-        assertThat(this.f.or(this.f.and(this.A, this.B), this.f.or(this.f.and(this.f.and(this.NA, this.NB)), this.f.and(this.f.or(this.NA, this.FALSE), this.NB)))).isEqualTo(this.OR3);
-        assertThat(this.f.naryOperator(FType.OR, Arrays.asList(this.X, this.Y, this.X, this.Y, this.X))).isEqualTo(this.OR1);
+        assertThat(this.f.or(this.f.or(this.A, this.B), this.f.or(this.X, this.Y)))
+                .isEqualTo(this.f.or(this.A, this.B, this.X, this.Y));
+        assertThat(this.f.or(this.f.and(this.A, this.B), this.f.or(this.f.and(this.f.and(this.NA, this.NB)),
+                this.f.and(this.f.or(this.NA, this.FALSE), this.NB)))).isEqualTo(this.OR3);
+        assertThat(this.f.naryOperator(FType.OR, Arrays.asList(this.X, this.Y, this.X, this.Y, this.X)))
+                .isEqualTo(this.OR1);
     }
 
     @Test
@@ -84,7 +87,8 @@ public class OrTest extends TestWithExampleFormulas {
 
     @Test
     public void testToString() {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
         assertThat(this.OR1.toString()).isEqualTo("x | y");
         assertThat(this.OR2.toString()).isEqualTo("~x | ~y");
         assertThat(this.OR3.toString()).isEqualTo("a & b | ~a & ~b");
@@ -98,19 +102,25 @@ public class OrTest extends TestWithExampleFormulas {
         assertThat(this.f.or(this.X, this.Y)).isEqualTo(this.OR1);
         assertThat(this.f.or(this.AND1, this.AND2)).isEqualTo(this.OR3);
         assertThat(this.OR2).isEqualTo(this.OR2);
-        assertThat(this.f.or(this.NX, this.A, this.NB, this.AND1)).isEqualTo(this.f.or(this.A, this.NB, this.AND1, this.NX));
+        assertThat(this.f.or(this.NX, this.A, this.NB, this.AND1))
+                .isEqualTo(this.f.or(this.A, this.NB, this.AND1, this.NX));
         assertThat(this.OR2).isNotEqualTo(this.OR1);
         assertThat(this.f.or(this.A, this.B, this.C)).isNotEqualTo(this.OR1);
     }
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
         assertThat(g.or(g.variable("x"), g.variable("y"))).isEqualTo(this.OR1);
         assertThat(g.or(this.AND1, this.AND2)).isEqualTo(this.OR3);
-        assertThat(g.or(g.and(g.literal("y", false), g.variable("x")), f.and(g.variable("b"), g.variable("a")))).isEqualTo(f.or(f.and(f.variable("a"), f.variable("b")), f.and(f.variable("x"), f.literal("y", false))));
-        assertThat(g.or(g.literal("x", false), g.variable("a"), g.literal("b", false), g.and(g.variable("a"), g.variable("b")))).isEqualTo(f.or(this.A, this.NB, this.AND1, this.NX));
+        assertThat(g.or(g.and(g.literal("y", false), g.variable("x")), f.and(g.variable("b"), g.variable("a"))))
+                .isEqualTo(
+                        f.or(f.and(f.variable("a"), f.variable("b")), f.and(f.variable("x"), f.literal("y", false))));
+        assertThat(g.or(g.literal("x", false), g.variable("a"), g.literal("b", false),
+                g.and(g.variable("a"), g.variable("b")))).isEqualTo(f.or(this.A, this.NB, this.AND1, this.NX));
         assertThat(g.or(g.literal("a", false), g.variable("b"))).isNotEqualTo(this.OR1);
         assertThat(g.or(g.variable("a"), g.literal("b", false))).isNotEqualTo(this.OR1);
         assertThat(f.or(this.A, this.B, g.variable("c"))).isNotEqualTo(this.OR1);

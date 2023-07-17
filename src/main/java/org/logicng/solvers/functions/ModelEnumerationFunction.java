@@ -31,7 +31,8 @@ import java.util.function.Consumer;
 /**
  * A solver function for enumerating models on the solver.
  * <p>
- * Model enumeration functions are instantiated via their builder {@link #builder()}.
+ * Model enumeration functions are instantiated via their builder
+ * {@link #builder()}.
  * @version 2.3.0
  * @since 2.0.0
  */
@@ -86,7 +87,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
             }
         }
         LNGIntVector relevantAllIndices = null;
-        final SortedSet<Variable> uniqueAdditionalVariables = new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
+        final SortedSet<Variable> uniqueAdditionalVariables =
+                new TreeSet<>(this.additionalVariables == null ? Collections.emptyList() : this.additionalVariables);
         if (this.variables != null) {
             uniqueAdditionalVariables.removeAll(this.variables);
         }
@@ -131,12 +133,16 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
     }
 
     /**
-     * Generates a blocking clause from a given model and a set of relevant variables.
-     * @param modelFromSolver the current model for which the blocking clause should be generated
-     * @param relevantVars    the indices of the relevant variables.  If {@code null} all variables are relevant.
+     * Generates a blocking clause from a given model and a set of relevant
+     * variables.
+     * @param modelFromSolver the current model for which the blocking clause
+     *                        should be generated
+     * @param relevantVars    the indices of the relevant variables. If
+     *                        {@code null} all variables are relevant.
      * @return the blocking clause for the given model and relevant variables
      */
-    private LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver, final LNGIntVector relevantVars) {
+    private LNGIntVector generateBlockingClause(final LNGBooleanVector modelFromSolver,
+                                                final LNGIntVector relevantVars) {
         final LNGIntVector blockingClause;
         if (relevantVars != null) {
             blockingClause = new LNGIntVector(relevantVars.size());
@@ -181,7 +187,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets the set of variables over which the model enumeration should iterate.
+         * Sets the set of variables over which the model enumeration should
+         * iterate.
          * @param variables the set of variables
          * @return the current builder
          */
@@ -191,7 +198,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets the set of variables over which the model enumeration should iterate.
+         * Sets the set of variables over which the model enumeration should
+         * iterate.
          * @param variables the set of variables
          * @return the current builder
          */
@@ -201,7 +209,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model.
+         * Sets an additional set of variables which should occur in every
+         * model.
          * @param variables the additional variables for each model
          * @return the current builder
          */
@@ -211,7 +220,8 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets an additional set of variables which should occur in every model.
+         * Sets an additional set of variables which should occur in every
+         * model.
          * @param variables the additional variables for each model
          * @return the current builder
          */
@@ -221,8 +231,10 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Sets the flag whether the created assignment should be {@link Assignment#fastEvaluable() fast evaluable} assignments.
-         * @param fastEvaluable {@code true} if the created assignment should be fast evaluable, otherwise {@code false}
+         * Sets the flag whether the created assignment should be
+         * {@link Assignment#fastEvaluable() fast evaluable} assignments.
+         * @param fastEvaluable {@code true} if the created assignment should be
+         *                      fast evaluable, otherwise {@code false}
          * @return the builder
          */
         public Builder fastEvaluable(final boolean fastEvaluable) {
@@ -231,11 +243,13 @@ public final class ModelEnumerationFunction implements SolverFunction<List<Assig
         }
 
         /**
-         * Builds the model enumeration function with the current builder's configuration.
+         * Builds the model enumeration function with the current builder's
+         * configuration.
          * @return the model enumeration function
          */
         public ModelEnumerationFunction build() {
-            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables, this.fastEvaluable);
+            return new ModelEnumerationFunction(this.handler, this.variables, this.additionalVariables,
+                    this.fastEvaluable);
         }
     }
 }

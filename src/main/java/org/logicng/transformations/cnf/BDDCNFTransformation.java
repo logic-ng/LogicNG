@@ -17,11 +17,12 @@ import org.logicng.transformations.BDDNormalFormTransformation;
 public final class BDDCNFTransformation extends BDDNormalFormTransformation {
 
     /**
-     * Constructs a new BDD-based CNF transformation with an optional BDD kernel.
+     * Constructs a new BDD-based CNF transformation with an optional BDD
+     * kernel.
      * <p>
-     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
-     * the number of different variables in all applied formulas <b>must not exceed</b>
-     * the number of variables in the kernel.
+     * Warning: You can use this object for arbitrarily many transformations,
+     * <b>but</b> the number of different variables in all applied formulas
+     * <b>must not exceed</b> the number of variables in the kernel.
      * @param kernel the optional BDD kernel
      */
     public BDDCNFTransformation(final BDDKernel kernel) {
@@ -29,14 +30,16 @@ public final class BDDCNFTransformation extends BDDNormalFormTransformation {
     }
 
     /**
-     * Constructs a new BDD-based CNF transformation for a given number of variables.
+     * Constructs a new BDD-based CNF transformation for a given number of
+     * variables.
      * <p>
-     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
-     * the number of different variables in all applied formulas <b>must not exceed</b>
-     * {@code numVars}.
+     * Warning: You can use this object for arbitrarily many transformations,
+     * <b>but</b> the number of different variables in all applied formulas
+     * <b>must not exceed</b> {@code numVars}.
      * <p>
-     * To improve performance you might want to use {@link #BDDCNFTransformation(BDDKernel)},
-     * where you have full control over the node and cache size in the used BDD kernel.
+     * To improve performance you might want to use
+     * {@link #BDDCNFTransformation(BDDKernel)}, where you have full control
+     * over the node and cache size in the used BDD kernel.
      * @param f       the formula factory to use
      * @param numVars the number of variables
      */
@@ -45,8 +48,8 @@ public final class BDDCNFTransformation extends BDDNormalFormTransformation {
     }
 
     /**
-     * Constructs a new BDD-based CNF transformation and constructs a new BDD kernel
-     * for every formula application.
+     * Constructs a new BDD-based CNF transformation and constructs a new BDD
+     * kernel for every formula application.
      */
     public BDDCNFTransformation() {
         this(null);

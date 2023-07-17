@@ -8,15 +8,16 @@ import org.logicng.io.graphical.GraphicalNodeStyle;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
- * An abstract super class for a style mapper for a graphical representation of a BDD.
+ * An abstract super class for a style mapper for a graphical representation of
+ * a BDD.
  * @version 2.4.0
  * @since 2.4.0
  */
 public abstract class BddNodeStyleMapper extends BddMapper implements NodeStyleMapper<Integer> {
 
     /**
-     * Constructs a new BDD style mapper for a given BDD kernel.  The BDDs which are styled
-     * must be constructed with this kernel.
+     * Constructs a new BDD style mapper for a given BDD kernel. The BDDs which
+     * are styled must be constructed with this kernel.
      * @param kernel a BDD kernel
      */
     public BddNodeStyleMapper(final BDDKernel kernel) {

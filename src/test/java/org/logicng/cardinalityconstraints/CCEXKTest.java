@@ -72,12 +72,14 @@ public class CCEXKTest implements LogicNGTest {
     public void testCCEXKTotalizer() {
         final FormulaFactory f = new FormulaFactory();
         final CCEXKTotalizer totalizer = new CCEXKTotalizer();
-        totalizer.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
+        totalizer.build(EncodingResult.resultForFormula(f),
+                new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
         assertThat(totalizer.incrementalData()).isNull();
         assertThat(totalizer.toString()).isEqualTo("CCEXKTotalizer");
 
         final CCEXKCardinalityNetwork cNetwork = new CCEXKCardinalityNetwork();
-        cNetwork.build(EncodingResult.resultForFormula(f), new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
+        cNetwork.build(EncodingResult.resultForFormula(f),
+                new Variable[]{f.variable("A"), f.variable("B"), f.variable("C")}, 2);
         assertThat(cNetwork.incrementalData()).isNull();
         assertThat(cNetwork.toString()).isEqualTo("CCEXKCardinalityNetwork");
     }

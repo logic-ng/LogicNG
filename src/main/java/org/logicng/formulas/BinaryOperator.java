@@ -73,12 +73,14 @@ public abstract class BinaryOperator extends Formula {
 
     @Override
     public boolean containsNode(final Formula formula) {
-        return this == formula || this.equals(formula) || this.left.containsNode(formula) || this.right.containsNode(formula);
+        return this == formula || this.equals(formula) || this.left.containsNode(formula) ||
+                this.right.containsNode(formula);
     }
 
     @Override
     public Formula substitute(final Substitution substitution) {
-        return this.f.binaryOperator(this.type, this.left.substitute(substitution), this.right.substitute(substitution));
+        return this.f.binaryOperator(this.type, this.left.substitute(substitution),
+                this.right.substitute(substitution));
     }
 
     @Override

@@ -55,7 +55,8 @@ public class FormulaTest {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = f.not(f.and(f.variable("a"), f.variable("b")));
         formula.setTransformationCacheEntry(FACTORIZED_CNF, f.or(f.literal("a", false), f.literal("b", false)));
-        assertThat(formula.transformationCacheEntry(FACTORIZED_CNF)).isEqualTo(f.or(f.literal("a", false), f.literal("b", false)));
+        assertThat(formula.transformationCacheEntry(FACTORIZED_CNF))
+                .isEqualTo(f.or(f.literal("a", false), f.literal("b", false)));
     }
 
     @Test

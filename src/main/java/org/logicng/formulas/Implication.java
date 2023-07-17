@@ -47,7 +47,8 @@ public final class Implication extends BinaryOperator {
             return true;
         }
         if (other instanceof Formula && this.f == ((Formula) other).f) {
-            return false; // the same formula factory would have produced a == object
+            return false; // the same formula factory would have produced a ==
+                          // object
         }
         if (other instanceof Implication) {
             final Implication otherImp = (Implication) other;

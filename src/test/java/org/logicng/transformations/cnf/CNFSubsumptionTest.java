@@ -31,7 +31,8 @@ public class CNFSubsumptionTest {
 
     @Test
     public void testNotInCNF() {
-        assertThatThrownBy(() -> this.s.apply(this.p.parse("a => b"), false)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> this.s.apply(this.p.parse("a => b"), false))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -47,23 +48,31 @@ public class CNFSubsumptionTest {
         assertThat(this.s.apply(this.p.parse("a & (a | b) & (a | b | c)"), false)).isEqualTo(this.p.parse("a"));
         assertThat(this.s.apply(this.p.parse("a & (a | b) & b"), false)).isEqualTo(this.p.parse("a & b"));
         assertThat(this.s.apply(this.p.parse("a & (a | b) & c & (c | b)"), false)).isEqualTo(this.p.parse("a & c"));
-        assertThat(this.s.apply(this.p.parse("(a | b) & (a | c) & (a | b | c)"), false)).isEqualTo(this.p.parse("(a | b) & (a | c)"));
+        assertThat(this.s.apply(this.p.parse("(a | b) & (a | c) & (a | b | c)"), false))
+                .isEqualTo(this.p.parse("(a | b) & (a | c)"));
     }
 
     @Test
     public void testLargeCNFSubsumption() throws ParserException {
-        assertThat(this.s.apply(this.p.parse("(a | b | c | d) & (a | b | c | e) & (a | b | c)"), false)).isEqualTo(this.p.parse("(a | b | c)"));
-        assertThat(this.s.apply(this.p.parse("(a | b) & (a | c) & (a | b | c) & (a | ~b | c) & (a | b | ~c) & (b | c)"), false)).isEqualTo(this.p.parse("(a | b) & (a | c) & (b | c)"));
-        assertThat(this.s.apply(this.p.parse("(a | b) & (a | c) & (a | b | c) & (a | ~b | c) & (a | b | ~c) & (b | c)"), false)).isEqualTo(this.p.parse("(a | b) & (a | c) & (b | c)"));
-        assertThat(this.s.apply(this.p.parse("a & ~b & (c | d) & (~a | ~b | ~c) & (b | c | d) & (a | b | c | d)"), false)).isEqualTo(this.p.parse("a & ~b & (c | d)"));
-        assertThat(this.s.apply(this.p.parse("(a | b | c | d | e | f | g) & (b | d | f) & (a | c | e | g)"), false)).isEqualTo(this.p.parse("(b | d | f) & (a | c | e | g)"));
+        assertThat(this.s.apply(this.p.parse("(a | b | c | d) & (a | b | c | e) & (a | b | c)"), false))
+                .isEqualTo(this.p.parse("(a | b | c)"));
+        assertThat(this.s.apply(this.p.parse("(a | b) & (a | c) & (a | b | c) & (a | ~b | c) & (a | b | ~c) & (b | c)"),
+                false)).isEqualTo(this.p.parse("(a | b) & (a | c) & (b | c)"));
+        assertThat(this.s.apply(this.p.parse("(a | b) & (a | c) & (a | b | c) & (a | ~b | c) & (a | b | ~c) & (b | c)"),
+                false)).isEqualTo(this.p.parse("(a | b) & (a | c) & (b | c)"));
+        assertThat(
+                this.s.apply(this.p.parse("a & ~b & (c | d) & (~a | ~b | ~c) & (b | c | d) & (a | b | c | d)"), false))
+                        .isEqualTo(this.p.parse("a & ~b & (c | d)"));
+        assertThat(this.s.apply(this.p.parse("(a | b | c | d | e | f | g) & (b | d | f) & (a | c | e | g)"), false))
+                .isEqualTo(this.p.parse("(b | d | f) & (a | c | e | g)"));
     }
 
     @Test
     @LongRunningTag
     public void testEvenLargerFormula() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final Formula cnf = formula.transform(new CNFFactorization());
         final Formula subsumed = cnf.transform(CNFSubsumption.get());
         assertThat(f.equivalence(cnf, subsumed).holds(new TautologyPredicate(f))).isTrue();

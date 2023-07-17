@@ -18,7 +18,7 @@ public class NumberOfAtomsFunction implements FormulaFunction<Long> {
     private final static NumberOfAtomsFunction INSTANCE = new NumberOfAtomsFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private NumberOfAtomsFunction() {
         // Intentionally left empty

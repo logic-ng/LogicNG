@@ -79,8 +79,8 @@ public class DnnfMiniSatStyleSolver extends MiniSat2Solver implements DnnfSatSol
     /**
      * Returns the phase of the given solver literal.
      * @param lit the solver literal
-     * @return {@code true} if the literal has a positive phase,
-     * {@code false} if the literal has a negative phase (literal is negated)
+     * @return {@code true} if the literal has a positive phase, {@code false}
+     *         if the literal has a negative phase (literal is negated)
      */
     public static boolean phase(final int lit) {
         return !sign(lit);

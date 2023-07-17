@@ -8,8 +8,9 @@ import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that exactly 'rhs' variables are assigned value true.  Uses the cardinality network
- * encoding due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell .
+ * Encodes that exactly 'rhs' variables are assigned value true. Uses the
+ * cardinality network encoding due to Asín, Nieuwenhuis, Oliveras, and
+ * Rodríguez-Carbonell .
  * @version 1.1
  * @since 1.1
  */

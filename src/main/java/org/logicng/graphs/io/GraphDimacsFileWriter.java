@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A dimacs file writer for graphs.  Writes the internal data structure of a graph to a dimacs file.
+ * A dimacs file writer for graphs. Writes the internal data structure of a
+ * graph to a dimacs file.
  * @version 2.4.0
  * @since 1.2
  */
@@ -38,13 +39,17 @@ public final class GraphDimacsFileWriter {
 
     /**
      * Writes a given graph's internal data structure as a dimacs file.
-     * @param fileName     the file name of the dimacs file to write, will be extended by suffix {@code .col} if not already present
+     * @param fileName     the file name of the dimacs file to write, will be
+     *                     extended by suffix {@code .col} if not already
+     *                     present
      * @param graph        the graph
-     * @param writeMapping indicates whether an additional file for translating the ids to variable names shall be written
+     * @param writeMapping indicates whether an additional file for translating
+     *                     the ids to variable names shall be written
      * @param <T>          the type of the graph content
      * @throws IOException if there was a problem writing the file
      */
-    public static <T> void write(final String fileName, final Graph<T> graph, final boolean writeMapping) throws IOException {
+    public static <T> void write(final String fileName, final Graph<T> graph, final boolean writeMapping)
+            throws IOException {
         final File file = new File(fileName.endsWith(COL_EXTENSION) ? fileName : fileName + COL_EXTENSION);
         final Map<Node<T>, Long> node2id = new LinkedHashMap<>();
         long i = 1;
@@ -66,15 +71,19 @@ public final class GraphDimacsFileWriter {
         sb.append(node2id.size()).append(" ").append(edges.size()).append(System.lineSeparator());
 
         for (final Pair<Node<T>, Node<T>> edge : edges) {
-            sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second())).append(System.lineSeparator());
+            sb.append("e ").append(node2id.get(edge.first())).append(" ").append(node2id.get(edge.second()))
+                    .append(System.lineSeparator());
         }
 
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }
         if (writeMapping) {
-            final String mappingFileName = (fileName.endsWith(COL_EXTENSION) ? fileName.substring(0, fileName.length() - 4) : fileName) + MAP_EXTENSION;
+            final String mappingFileName =
+                    (fileName.endsWith(COL_EXTENSION) ? fileName.substring(0, fileName.length() - 4) : fileName) +
+                            MAP_EXTENSION;
             writeMapping(new File(mappingFileName), node2id);
         }
     }
@@ -84,7 +93,8 @@ public final class GraphDimacsFileWriter {
         for (final Map.Entry<Node<T>, Long> entry : node2id.entrySet()) {
             sb.append(entry.getKey().content()).append(";").append(entry.getValue()).append(System.lineSeparator());
         }
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(mappingFile.toPath()), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(Files.newOutputStream(mappingFile.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

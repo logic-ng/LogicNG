@@ -49,7 +49,8 @@ public abstract class TestWithExampleFormulas {
     protected final Formula IMP1 = this.f.implication(this.A, this.B);
     protected final Formula IMP2 = this.f.implication(this.NA, this.NB);
     protected final Formula IMP3 = this.f.implication(this.AND1, this.OR1);
-    protected final Formula IMP4 = this.f.implication(this.f.equivalence(this.A, this.B), this.f.equivalence(this.NX, this.NY));
+    protected final Formula IMP4 =
+            this.f.implication(this.f.equivalence(this.A, this.B), this.f.equivalence(this.NX, this.NY));
 
     // Equivalences
     protected final Formula EQ1 = this.f.equivalence(this.A, this.B);

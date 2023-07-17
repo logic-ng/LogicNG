@@ -45,7 +45,8 @@ public class BddGraphicalGeneratorTest {
     public void testFormulas() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final List<Variable> ordering = Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
+        final List<Variable> ordering =
+                Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
         final BDDKernel kernel = new BDDKernel(f, ordering, 1000, 1000);
         testFiles("false", BDDFactory.build(p.parse("$false"), kernel), BddGraphicalGenerator.builder().build());
         testFiles("true", BDDFactory.build(p.parse("$true"), kernel), BddGraphicalGenerator.builder().build());
@@ -56,14 +57,16 @@ public class BddGraphicalGeneratorTest {
         testFiles("or", BDDFactory.build(p.parse("A | B | ~C"), kernel), BddGraphicalGenerator.builder().build());
         testFiles("and", BDDFactory.build(p.parse("A & B & ~C"), kernel), BddGraphicalGenerator.builder().build());
         testFiles("not", BDDFactory.build(p.parse("~(A & B & ~C)"), kernel), BddGraphicalGenerator.builder().build());
-        testFiles("formula", BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel), BddGraphicalGenerator.builder().build());
+        testFiles("formula", BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel),
+                BddGraphicalGenerator.builder().build());
     }
 
     @Test
     public void testFixedStyle() throws ParserException, IOException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final List<Variable> ordering = Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
+        final List<Variable> ordering =
+                Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
         final BDDKernel kernel = new BDDKernel(f, ordering, 1000, 1000);
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
@@ -83,7 +86,8 @@ public class BddGraphicalGeneratorTest {
     public void testDynamic() throws ParserException, IOException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final List<Variable> ordering = Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
+        final List<Variable> ordering =
+                Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
         final BDDKernel kernel = new BDDKernel(f, ordering, 1000, 1000);
         final BDD bdd = BDDFactory.build(p.parse("(A => (B|~C)) & (B => C & D) & (D <=> A)"), kernel);
 
@@ -96,7 +100,8 @@ public class BddGraphicalGeneratorTest {
         testFiles("formula-dynamic", bdd, generator);
     }
 
-    private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator generator) throws IOException {
+    private void testFiles(final String fileName, final BDD bdd, final BddGraphicalGenerator generator)
+            throws IOException {
         final GraphicalRepresentation representation = generator.translate(bdd);
         representation.write("src/test/resources/writers/temp/" + fileName + "_bdd.dot", GraphicalDotWriter.get());
         representation.write("src/test/resources/writers/temp/" + fileName + "_bdd.txt", GraphicalMermaidWriter.get());

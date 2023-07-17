@@ -31,7 +31,7 @@ public class GraphicalColor {
     private final String hexValue;
 
     /**
-     * Private constructor.  Use factory methods to construct an instance.
+     * Private constructor. Use factory methods to construct an instance.
      * @param hexValue the hex value
      */
     private GraphicalColor(final String hexValue) {
@@ -39,8 +39,8 @@ public class GraphicalColor {
     }
 
     /**
-     * Constructs a new color from a hex value.  The string must be of the form "#aabbcc".  E.g. the default
-     * red has the representation "#ea2027".
+     * Constructs a new color from a hex value. The string must be of the form
+     * "#aabbcc". E.g. the default red has the representation "#ea2027".
      * @param hexValue the hex value
      * @return the color object
      */
@@ -49,7 +49,8 @@ public class GraphicalColor {
     }
 
     /**
-     * Constructs a new color from an RGB value.  Each value must be within range 0 (inclusive) and 255 (inclusive).
+     * Constructs a new color from an RGB value. Each value must be within range
+     * 0 (inclusive) and 255 (inclusive).
      * @param red   the red value
      * @param green the green value
      * @param blue  the blue value
@@ -57,9 +58,12 @@ public class GraphicalColor {
      */
     public static GraphicalColor rgb(final int red, final int green, final int blue) {
         if (!isValidRgbValue(red) || !isValidRgbValue(green) || !isValidRgbValue(blue)) {
-            throw new IllegalArgumentException("Invalid RGB value (must be within range 0 (inclusive) and 255 (inclusive)).");
+            throw new IllegalArgumentException(
+                    "Invalid RGB value (must be within range 0 (inclusive) and 255 (inclusive)).");
         }
-        final String hex = String.format("#%2s%2s%2s", Integer.toHexString(red), Integer.toHexString(green), Integer.toHexString(blue)).replace(" ", "0");
+        final String hex = String
+                .format("#%2s%2s%2s", Integer.toHexString(red), Integer.toHexString(green), Integer.toHexString(blue))
+                .replace(" ", "0");
         return new GraphicalColor(hex);
     }
 

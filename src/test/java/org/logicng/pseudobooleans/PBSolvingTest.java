@@ -50,15 +50,25 @@ public class PBSolvingTest implements LogicNGTest {
         this.solvers[3] = MiniSat.glucose(this.f);
         this.encoders = new PBEncoder[10];
         this.encoders[0] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.SWC).build());
-        this.encoders[1] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
-        this.encoders[2] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(false).build());
-        this.encoders[3] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
-        this.encoders[4] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
-        this.encoders[5] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
-        this.encoders[6] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(false).build());
-        this.encoders[7] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
-        this.encoders[8] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
-        this.encoders[9] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.ADDER_NETWORKS).build());
+        this.encoders[1] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
+        this.encoders[2] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(false).build());
+        this.encoders[3] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
+        this.encoders[4] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(true).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
+        this.encoders[5] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(true).build());
+        this.encoders[6] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(true).binaryMergeUseWatchDog(false).build());
+        this.encoders[7] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE)
+                .binaryMergeUseGAC(false).binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(true).build());
+        this.encoders[8] = new PBEncoder(this.f,
+                PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false)
+                        .binaryMergeNoSupportForSingleBit(false).binaryMergeUseWatchDog(false).build());
+        this.encoders[9] =
+                new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.ADDER_NETWORKS).build());
     }
 
     @Test

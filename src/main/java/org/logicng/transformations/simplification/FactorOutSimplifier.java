@@ -32,7 +32,8 @@ public final class FactorOutSimplifier implements FormulaTransformation {
     private final RatingFunction<? extends Number> ratingFunction;
 
     /**
-     * Constructs a new factor out simplification with the given rating function.
+     * Constructs a new factor out simplification with the given rating
+     * function.
      * @param ratingFunction the rating function
      */
     public FactorOutSimplifier(final RatingFunction<? extends Number> ratingFunction) {
@@ -40,7 +41,8 @@ public final class FactorOutSimplifier implements FormulaTransformation {
     }
 
     /**
-     * Constructs a new factor out simplification with the default rating function {@link DefaultRatingFunction}.
+     * Constructs a new factor out simplification with the default rating
+     * function {@link DefaultRatingFunction}.
      */
     public FactorOutSimplifier() {
         this(DefaultRatingFunction.get());
@@ -83,8 +85,8 @@ public final class FactorOutSimplifier implements FormulaTransformation {
 
     private Formula simplify(final NAryOperator formula) {
         final Formula simplified = factorOut(formula);
-        return simplified == null || this.ratingFunction.apply(formula, true).doubleValue() <= this.ratingFunction.apply(simplified, true).doubleValue()
-                ? formula : simplified;
+        return simplified == null || this.ratingFunction.apply(formula, true).doubleValue() <=
+                this.ratingFunction.apply(simplified, true).doubleValue() ? formula : simplified;
     }
 
     private static Formula factorOut(final NAryOperator formula) {

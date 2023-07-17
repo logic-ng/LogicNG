@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper class for reading MaxSAT input files in the <a href="http://www.maxhs.org/docs/wdimacs.html">WDIMACS format</a>.
+ * Helper class for reading MaxSAT input files in the
+ * <a href="http://www.maxhs.org/docs/wdimacs.html">WDIMACS format</a>.
  * @version 2.4.0
  * @since 2.4.0
  */

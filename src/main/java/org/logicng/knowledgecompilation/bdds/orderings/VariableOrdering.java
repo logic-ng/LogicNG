@@ -7,8 +7,9 @@ package org.logicng.knowledgecompilation.bdds.orderings;
 import java.util.function.Supplier;
 
 /**
- * An enumeration for the different BDD variable orderings.  A variable ordering is associated
- * with its own provider which can generate orderings for this ordering.
+ * An enumeration for the different BDD variable orderings. A variable ordering
+ * is associated with its own provider which can generate orderings for this
+ * ordering.
  * @version 1.4.0
  * @since 1.4.0
  */

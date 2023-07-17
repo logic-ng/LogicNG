@@ -57,7 +57,8 @@ public class ConstraintGraphGeneratorTest {
         expected.connect(a, b);
         expected.connect(a, c);
         expected.connect(b, c);
-        assertThat(ConstraintGraphGenerator.generateFromCnf(p.parse("a | ~b | c")).toString()).isEqualTo(expected.toString());
+        assertThat(ConstraintGraphGenerator.generateFromCnf(p.parse("a | ~b | c")).toString())
+                .isEqualTo(expected.toString());
     }
 
     @Test
@@ -71,7 +72,8 @@ public class ConstraintGraphGeneratorTest {
         expected.connect(a, b);
         expected.connect(a, c);
         expected.connect(b, c);
-        assertThat(ConstraintGraphGenerator.generateFromCnf(p.parse("a + b + c <= 1")).toString()).isEqualTo(expected.toString());
+        assertThat(ConstraintGraphGenerator.generateFromCnf(p.parse("a + b + c <= 1")).toString())
+                .isEqualTo(expected.toString());
     }
 
     @Test
@@ -90,7 +92,8 @@ public class ConstraintGraphGeneratorTest {
         expected.connect(b, c);
         expected.connect(d, a);
         expected.connect(d, e);
-        assertThat(ConstraintGraphGenerator.generateFromCnf(p.parse("(a | ~b | c) & (d | ~a) & (d + e = 1) & g")).toString()).isEqualTo(expected.toString());
+        assertThat(ConstraintGraphGenerator.generateFromCnf(p.parse("(a | ~b | c) & (d | ~a) & (d + e = 1) & g"))
+                .toString()).isEqualTo(expected.toString());
     }
 
     @Test

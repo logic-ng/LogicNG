@@ -203,27 +203,11 @@ public class FormulaFactoryTest {
         assertThat(statisticsF1.hashCode()).isEqualTo(statisticsG.hashCode());
 
         assertThat(statisticsF1.toString()).isEqualTo(
-                "FormulaFactoryStatistics{"
-                        + "name='Factory F'"
-                        + ", positiveLiterals=0"
-                        + ", negativeLiterals=0"
-                        + ", negations=0"
-                        + ", implications=0"
-                        + ", equivalences=0"
-                        + ", conjunctions2=0"
-                        + ", conjunctions3=0"
-                        + ", conjunctions4=0"
-                        + ", conjunctionsN=0"
-                        + ", disjunctions2=0"
-                        + ", disjunctions3=0"
-                        + ", disjunctions4=0"
-                        + ", disjunctionsN=0"
-                        + ", pbcs=0"
-                        + ", ccs=0"
-                        + ", ccCounter=0"
-                        + ", pbCounter=0"
-                        + ", cnfCounter=0"
-                        + '}');
+                "FormulaFactoryStatistics{" + "name='Factory F'" + ", positiveLiterals=0" + ", negativeLiterals=0" +
+                        ", negations=0" + ", implications=0" + ", equivalences=0" + ", conjunctions2=0" +
+                        ", conjunctions3=0" + ", conjunctions4=0" + ", conjunctionsN=0" + ", disjunctions2=0" +
+                        ", disjunctions3=0" + ", disjunctions4=0" + ", disjunctionsN=0" + ", pbcs=0" + ", ccs=0" +
+                        ", ccCounter=0" + ", pbCounter=0" + ", cnfCounter=0" + '}');
 
         final Variable a = f.variable("A");
         final Variable b = f.variable("B");
@@ -275,26 +259,10 @@ public class FormulaFactoryTest {
         assertThat(statisticsF1).isNotEqualTo(statisticsF2);
 
         assertThat(statisticsF2.toString()).isEqualTo(
-                "FormulaFactoryStatistics{"
-                        + "name='Factory F'"
-                        + ", positiveLiterals=5"
-                        + ", negativeLiterals=0"
-                        + ", negations=0"
-                        + ", implications=0"
-                        + ", equivalences=0"
-                        + ", conjunctions2=1"
-                        + ", conjunctions3=1"
-                        + ", conjunctions4=1"
-                        + ", conjunctionsN=1"
-                        + ", disjunctions2=1"
-                        + ", disjunctions3=1"
-                        + ", disjunctions4=1"
-                        + ", disjunctionsN=1"
-                        + ", pbcs=0"
-                        + ", ccs=0"
-                        + ", ccCounter=0"
-                        + ", pbCounter=0"
-                        + ", cnfCounter=0"
-                        + '}');
+                "FormulaFactoryStatistics{" + "name='Factory F'" + ", positiveLiterals=5" + ", negativeLiterals=0" +
+                        ", negations=0" + ", implications=0" + ", equivalences=0" + ", conjunctions2=1" +
+                        ", conjunctions3=1" + ", conjunctions4=1" + ", conjunctionsN=1" + ", disjunctions2=1" +
+                        ", disjunctions3=1" + ", disjunctions4=1" + ", disjunctionsN=1" + ", pbcs=0" + ", ccs=0" +
+                        ", ccCounter=0" + ", pbCounter=0" + ", cnfCounter=0" + '}');
     }
 }

@@ -14,10 +14,10 @@ import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.BackboneFunction;
 
 /**
- * This class simplifies a formula by computing its backbone and propagating
- * it through the formula. E.g. in the formula {@code A & B & (A | B | C) & (~B | D)}
- * the backbone {@code A, B} is computed and propagated, yielding the simplified formula
- * {@code A & B & D}.
+ * This class simplifies a formula by computing its backbone and propagating it
+ * through the formula. E.g. in the formula
+ * {@code A & B & (A | B | C) & (~B | D)} the backbone {@code A, B} is computed
+ * and propagated, yielding the simplified formula {@code A & B & D}.
  * @version 2.3.0
  * @since 1.5.0
  */
@@ -26,8 +26,9 @@ public final class BackboneSimplifier implements FormulaTransformation {
     private static final BackboneSimplifier INSTANCE = new BackboneSimplifier();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public BackboneSimplifier() {
@@ -46,7 +47,8 @@ public final class BackboneSimplifier implements FormulaTransformation {
     public Formula apply(final Formula formula, final boolean cache) {
         final SATSolver solver = MiniSat.miniSat(formula.factory());
         solver.add(formula);
-        final Backbone backbone = solver.execute(BackboneFunction.builder().variables(formula.variables()).type(BackboneType.POSITIVE_AND_NEGATIVE).build());
+        final Backbone backbone = solver.execute(BackboneFunction.builder().variables(formula.variables())
+                .type(BackboneType.POSITIVE_AND_NEGATIVE).build());
         if (!backbone.isSat()) {
             return formula.factory().falsum();
         }

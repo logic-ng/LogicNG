@@ -15,7 +15,8 @@ import org.logicng.formulas.Variable;
 public interface CCAtMostOne {
 
     /**
-     * Builds a cardinality constraint of the form {@code var_1 + var_2 + ... + var_n <= 1}.
+     * Builds a cardinality constraint of the form
+     * {@code var_1 + var_2 + ... + var_n <= 1}.
      * @param result the result for the encoding
      * @param vars   the variables {@code var_1 ... var_n}
      */

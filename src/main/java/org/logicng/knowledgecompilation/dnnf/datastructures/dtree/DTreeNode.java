@@ -38,7 +38,10 @@ public class DTreeNode extends DTree {
     protected final DTreeLeaf[] leftLeafs;
     protected final DTreeLeaf[] rightLeafs;
 
-    protected int[] clauseContents; // content of all clauses under this node, e.g. clause {1,3} with id 0, {2,6,8} with id 1, {4,6} with id 6 --> [1,3,-1,2,6,-2,4,6,-7]
+    protected int[] clauseContents; // content of all clauses under this node,
+                                    // e.g. clause {1,3} with id 0, {2,6,8} with
+                                    // id 1, {4,6} with id 6 -->
+                                    // [1,3,-1,2,6,-2,4,6,-7]
     protected int[] leftClauseContents;
     protected int[] rightClauseContents;
 
@@ -104,7 +107,8 @@ public class DTreeNode extends DTree {
         for (final int i : this.staticSeparator) {
             this.staticSeparatorBitSet.set(i);
         }
-        this.widestSeparator = Math.max(this.staticSeparator.length, Math.max(this.left.widestSeparator(), this.right.widestSeparator()));
+        this.widestSeparator = Math.max(this.staticSeparator.length,
+                Math.max(this.left.widestSeparator(), this.right.widestSeparator()));
         this.localLeftVarSet = new BitSet(this.staticVariables[this.staticVariables.length - 1]);
         this.localRightVarSet = new BitSet(this.staticVariables[this.staticVariables.length - 1]);
 
@@ -126,7 +130,8 @@ public class DTreeNode extends DTree {
         this.rightClauseContents = rClauseContents.toArray();
         this.clauseContents = new int[this.leftClauseContents.length + this.rightClauseContents.length];
         System.arraycopy(this.leftClauseContents, 0, this.clauseContents, 0, this.leftClauseContents.length);
-        System.arraycopy(this.rightClauseContents, 0, this.clauseContents, this.leftClauseContents.length, this.rightClauseContents.length);
+        System.arraycopy(this.rightClauseContents, 0, this.clauseContents, this.leftClauseContents.length,
+                this.rightClauseContents.length);
     }
 
     @Override

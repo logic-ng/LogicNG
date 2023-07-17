@@ -10,7 +10,8 @@ import org.logicng.formulas.FormulaPredicate;
 import org.logicng.formulas.Not;
 
 /**
- * Predicate to test if a formula contains any subformula that is a pseudo-Boolean constraint.
+ * Predicate to test if a formula contains any subformula that is a
+ * pseudo-Boolean constraint.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -19,7 +20,7 @@ public final class ContainsPBCPredicate implements FormulaPredicate {
     private final static ContainsPBCPredicate INSTANCE = new ContainsPBCPredicate();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private ContainsPBCPredicate() {
         // Intentionally left empty

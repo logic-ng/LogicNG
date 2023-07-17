@@ -118,15 +118,18 @@ public class LNGDoublePriorityQueueTest {
         q1.push(0);
         assertThat(q1.toString()).isEqualTo("LNGDoublePriorityQueue{<elem=0, pos=0, prio=0.000000>}");
         q1.push(1);
-        assertThat(q1.toString()).isEqualTo("LNGDoublePriorityQueue{<elem=0, pos=0, prio=0.000000>, <elem=1, pos=1, prio=0.000000>}");
+        assertThat(q1.toString())
+                .isEqualTo("LNGDoublePriorityQueue{<elem=0, pos=0, prio=0.000000>, <elem=1, pos=1, prio=0.000000>}");
         q1.push(2);
-        assertThat(q1.toString()).isEqualTo("LNGDoublePriorityQueue{<elem=0, pos=0, prio=0.000000>, <elem=1, pos=1, prio=0.000000>, <elem=2, pos=2, prio=0.000000>}");
+        assertThat(q1.toString()).isEqualTo(
+                "LNGDoublePriorityQueue{<elem=0, pos=0, prio=0.000000>, <elem=1, pos=1, prio=0.000000>, <elem=2, pos=2, prio=0.000000>}");
         q1.push(3);
         q1.push(4);
         q1.update(0, 6.0);
         q1.update(1, 7.0);
         q1.update(1, 2.0);
         q1.update(4, 8.0);
-        assertThat(q1.toString()).isEqualTo("LNGDoublePriorityQueue{<elem=4, pos=1, prio=6.000000>, <elem=0, pos=4, prio=2.000000>, <elem=2, pos=2, prio=0.000000>, <elem=3, pos=3, prio=0.000000>, <elem=1, pos=0, prio=8.000000>}");
+        assertThat(q1.toString()).isEqualTo(
+                "LNGDoublePriorityQueue{<elem=4, pos=1, prio=6.000000>, <elem=0, pos=4, prio=2.000000>, <elem=2, pos=2, prio=0.000000>, <elem=3, pos=3, prio=0.000000>, <elem=1, pos=0, prio=8.000000>}");
     }
 }

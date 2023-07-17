@@ -14,7 +14,8 @@ import org.logicng.datastructures.Assignment;
 public interface ModelEnumerationHandler extends Handler {
 
     /**
-     * Returns a SAT handler which can be used to cancel internal SAT calls of the model enumeration process.
+     * Returns a SAT handler which can be used to cancel internal SAT calls of
+     * the model enumeration process.
      * @return a SAT handler
      */
     SATHandler satHandler();
@@ -27,7 +28,8 @@ public interface ModelEnumerationHandler extends Handler {
     /**
      * This method is called every time a model is found.
      * @param assignment the respective model
-     * @return {@code true} if more models should be searched, otherwise {@code false}
+     * @return {@code true} if more models should be searched, otherwise
+     *         {@code false}
      */
     boolean foundModel(Assignment assignment);
 }

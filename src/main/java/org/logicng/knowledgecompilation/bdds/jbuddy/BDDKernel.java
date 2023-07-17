@@ -2,34 +2,33 @@
 // Copyright 2015-2023 Christoph Zengler
 // Copyright 2023-20xx BooleWorks GmbH
 
-/*========================================================================
-           Copyright (C) 1996-2002 by Jorn Lind-Nielsen
-                        All rights reserved
-
-Permission is hereby granted, without written agreement and without
-license or royalty fees, to use, reproduce, prepare derivative
-works, distribute, and display this software and its documentation
-for any purpose, provided that (1) the above copyright notice and
-the following two paragraphs appear in all copies of the source code
-and (2) redistributions, including without limitation binaries,
-reproduce these notices in the supporting documentation. Substantial
-modifications to this software may be copyrighted by their authors
-and need not follow the licensing terms described here, provided
-that the new terms are clearly indicated in all files where they apply.
-
-IN NO EVENT SHALL JORN LIND-NIELSEN, OR DISTRIBUTORS OF THIS
-SOFTWARE BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL,
-INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF THIS
-SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE AUTHORS OR ANY OF THE
-ABOVE PARTIES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-JORN LIND-NIELSEN SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS
-ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO
-OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
-MODIFICATIONS.
-========================================================================*/
+/*
+ * ========================================================================
+ * Copyright (C) 1996-2002 by Jorn Lind-Nielsen All rights reserved
+ *
+ * Permission is hereby granted, without written agreement and without license
+ * or royalty fees, to use, reproduce, prepare derivative works, distribute, and
+ * display this software and its documentation for any purpose, provided that
+ * (1) the above copyright notice and the following two paragraphs appear in all
+ * copies of the source code and (2) redistributions, including without
+ * limitation binaries, reproduce these notices in the supporting documentation.
+ * Substantial modifications to this software may be copyrighted by their
+ * authors and need not follow the licensing terms described here, provided that
+ * the new terms are clearly indicated in all files where they apply.
+ *
+ * IN NO EVENT SHALL JORN LIND-NIELSEN, OR DISTRIBUTORS OF THIS SOFTWARE BE
+ * LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
+ * CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS
+ * DOCUMENTATION, EVEN IF THE AUTHORS OR ANY OF THE ABOVE PARTIES HAVE BEEN
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * JORN LIND-NIELSEN SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS,
+ * AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE MAINTENANCE,
+ * SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ * ========================================================================
+ */
 
 package org.logicng.knowledgecompilation.bdds.jbuddy;
 
@@ -90,7 +89,8 @@ public class BDDKernel {
 
     protected int[] nodes; // All the bdd nodes
     protected int[] vars; // Set of defined BDD variables
-    protected final int minfreenodes; // Minimal % of nodes that has to be left after a garbage collection
+    protected final int minfreenodes; // Minimal % of nodes that has to be left
+                                      // after a garbage collection
     protected int gbcollectnum; // Number of garbage collections
     protected final int cachesize; // Size of the operator caches
     protected int nodesize; // Number of allocated nodes
@@ -171,8 +171,8 @@ public class BDDKernel {
     }
 
     /**
-     * Sets the number of variables to use. It may be called more than one time, but only
-     * to increase the number of variables.
+     * Sets the number of variables to use. It may be called more than one time,
+     * but only to increase the number of variables.
      * @param num the number of variables to use
      */
     protected void setNumberOfVars(final int num) {
@@ -206,17 +206,21 @@ public class BDDKernel {
     /**
      * Returns the index for the given variable.
      * <p>
-     * If the variable hasn't been seen before, the next free variable index is assigned to it.
-     * If no free variables are left, an illegal argument exception is thrown.
+     * If the variable hasn't been seen before, the next free variable index is
+     * assigned to it. If no free variables are left, an illegal argument
+     * exception is thrown.
      * @param variable the variable
      * @return the index for the variable
-     * @throws IllegalArgumentException if the variable does not yet exist in the kernel and there are no free variable indices left
+     * @throws IllegalArgumentException if the variable does not yet exist in
+     *                                  the kernel and there are no free
+     *                                  variable indices left
      */
     public int getOrAddVarIndex(final Variable variable) {
         Integer index = this.var2idx.get(variable);
         if (index == null) {
             if (this.var2idx.size() >= this.varnum) {
-                throw new IllegalArgumentException("No free variables left! You did not set the number of variables high enough.");
+                throw new IllegalArgumentException(
+                        "No free variables left! You did not set the number of variables high enough.");
             } else {
                 index = this.var2idx.size();
                 this.var2idx.put(variable, index);
@@ -259,7 +263,8 @@ public class BDDKernel {
     }
 
     /**
-     * Returns the index for the given variable or -1 if the variable is unknown.
+     * Returns the index for the given variable or -1 if the variable is
+     * unknown.
      * @param var the variable
      * @return the index for the given variable
      */
@@ -269,7 +274,8 @@ public class BDDKernel {
     }
 
     /**
-     * Returns the variable for the given index or {@code null} if no such index exists.
+     * Returns the variable for the given index or {@code null} if no such index
+     * exists.
      * @param idx the index
      * @return the variable for the given index
      */
@@ -292,7 +298,11 @@ public class BDDKernel {
      * @return the current variable ordering
      */
     public int[] getCurrentVarOrder() {
-        return Arrays.copyOf(this.level2var, this.level2var.length - 1); // last var is always 0
+        return Arrays.copyOf(this.level2var, this.level2var.length - 1); // last
+                                                                         // var
+                                                                         // is
+                                                                         // always
+                                                                         // 0
     }
 
     protected int doWithPotentialReordering(final BddOperation operation) {
@@ -390,11 +400,14 @@ public class BDDKernel {
     }
 
     /**
-     * Adds a reference for a given node.  Reference counting is done on externally referenced nodes only and the count for
-     * a specific node {@code r} can and must be increased using this function to avoid losing the node in the next
-     * garbage collection.  If a BDD handler is given, the handler's {@link BDDHandler#newRefAdded()} method is called.
-     * If the generation gets aborted due to the handler, the method will return {@link BDDKernel#BDD_ABORT} as result. If
-     * {@code null} is passed as handler, the generation will continue without interruption.
+     * Adds a reference for a given node. Reference counting is done on
+     * externally referenced nodes only and the count for a specific node
+     * {@code r} can and must be increased using this function to avoid losing
+     * the node in the next garbage collection. If a BDD handler is given, the
+     * handler's {@link BDDHandler#newRefAdded()} method is called. If the
+     * generation gets aborted due to the handler, the method will return
+     * {@link BDDKernel#BDD_ABORT} as result. If {@code null} is passed as
+     * handler, the generation will continue without interruption.
      * @param root    the node
      * @param handler the BDD handler
      * @return return the node
@@ -464,7 +477,8 @@ public class BDDKernel {
         }
         if (this.freepos == 0) {
             gbc();
-            if ((this.nodesize - this.freenum) >= this.reordering.usedNodesNextReorder && this.reordering.reorderReady()) {
+            if ((this.nodesize - this.freenum) >= this.reordering.usedNodesNextReorder &&
+                    this.reordering.reorderReady()) {
                 throw new BddReorderRequest();
             }
             if ((this.freenum * 100) / this.nodesize <= this.minfreenodes) {

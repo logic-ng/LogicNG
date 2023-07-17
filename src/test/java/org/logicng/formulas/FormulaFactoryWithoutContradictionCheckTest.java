@@ -23,7 +23,8 @@ import java.util.List;
 
 public class FormulaFactoryWithoutContradictionCheckTest {
 
-    private final FormulaFactoryConfig config = FormulaFactoryConfig.builder().simplifyComplementaryOperands(false).build();
+    private final FormulaFactoryConfig config =
+            FormulaFactoryConfig.builder().simplifyComplementaryOperands(false).build();
     private final FormulaFactory f = new FormulaFactory(this.config);
     private final Variable a = this.f.variable("A");
     private final Literal notA = this.f.literal("A", false);
@@ -142,12 +143,14 @@ public class FormulaFactoryWithoutContradictionCheckTest {
         solver.add(this.f.parse("C | ~C"));
         List<Assignment> models = solver.enumerateAllModels();
         assertThat(models).hasSize(2);
-        models.forEach(m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false)));
+        models.forEach(
+                m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false)));
         solver.add(this.f.parse("D | ~D"));
         models = solver.enumerateAllModels();
         assertThat(models).hasSize(4);
-        models.forEach(m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false),
-                this.f.literal("D", true), this.f.literal("D", false)));
+        models.forEach(
+                m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false),
+                        this.f.literal("D", true), this.f.literal("D", false)));
     }
 
     @Test
@@ -158,7 +161,8 @@ public class FormulaFactoryWithoutContradictionCheckTest {
         solver.add(this.f.parse("C | ~C"));
         final List<Assignment> models = solver.enumerateAllModels();
         assertThat(models).hasSize(2);
-        models.forEach(m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false)));
+        models.forEach(
+                m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false)));
         solver.add(this.f.parse("D & ~D"));
         assertThat(solver.sat()).isEqualTo(Tristate.FALSE);
     }

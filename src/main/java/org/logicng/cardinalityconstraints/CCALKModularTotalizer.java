@@ -9,8 +9,9 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at least 'rhs' variables can be assigned value true.  Uses the modular totalizer encoding for
- * translating the cardinality constraint into CNF.
+ * Encodes that at least 'rhs' variables can be assigned value true. Uses the
+ * modular totalizer encoding for translating the cardinality constraint into
+ * CNF.
  * @version 2.0.0
  * @since 1.0
  */

@@ -12,7 +12,8 @@ import org.logicng.propositions.Proposition;
 import java.util.List;
 
 /**
- * Computes a minimal unsatisfiable subset (MUS) of a given formula with different algorithms.
+ * Computes a minimal unsatisfiable subset (MUS) of a given formula with
+ * different algorithms.
  * @version 2.0.0
  * @since 1.1
  */
@@ -30,7 +31,8 @@ public final class MUSGeneration {
     }
 
     /**
-     * Computes a MUS for the given propositions with the default algorithm and the MUS configuration from the formula factory.
+     * Computes a MUS for the given propositions with the default algorithm and
+     * the MUS configuration from the formula factory.
      * @param propositions the propositions
      * @param f            the formula factory
      * @param <T>          the type of the MUSes propositions
@@ -41,14 +43,16 @@ public final class MUSGeneration {
     }
 
     /**
-     * Computes a MUS for the given propositions and the given configuration of the MUS generation.
+     * Computes a MUS for the given propositions and the given configuration of
+     * the MUS generation.
      * @param propositions the propositions
      * @param f            the formula factory
      * @param config       the MUS configuration
      * @param <T>          the type of the MUSes propositions
      * @return the MUS
      */
-    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f,
+                                                           final MUSConfig config) {
         if (propositions.isEmpty()) {
             throw new IllegalArgumentException("Cannot generate a MUS for an empty list of propositions");
         }

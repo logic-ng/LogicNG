@@ -41,7 +41,8 @@ public class HypergraphEdgeTest {
     public void testCenterOfGravity() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final Hypergraph<Variable> hypergraph = HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
+        final Hypergraph<Variable> hypergraph =
+                HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
         final HypergraphEdge<Variable> edge = hypergraph.edges().iterator().next();
         final Map<HypergraphNode<Variable>, Integer> ordering = new HashMap<>();
         ordering.put(new HypergraphNode<>(hypergraph, f.variable("A")), 1);
@@ -60,7 +61,8 @@ public class HypergraphEdgeTest {
     public void testIllegalCenterOfGravity() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final Hypergraph<Variable> hypergraph = HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
+        final Hypergraph<Variable> hypergraph =
+                HypergraphGenerator.fromCNF(Collections.singletonList(p.parse("A | B | ~C | D")));
         final HypergraphEdge<Variable> edge = hypergraph.edges().iterator().next();
         assertThatThrownBy(() -> edge.centerOfGravity(new HashMap<>())).isInstanceOf(IllegalStateException.class);
     }

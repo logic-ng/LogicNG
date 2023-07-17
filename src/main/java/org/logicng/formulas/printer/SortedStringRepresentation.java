@@ -24,54 +24,60 @@ import java.util.TreeSet;
 /**
  * A sorted string representation for formulas.
  * <p>
- * A variable ordering is given as a list of variables. The variables in the formula will be sorted in the same order
- * as they appear in the list.
+ * A variable ordering is given as a list of variables. The variables in the
+ * formula will be sorted in the same order as they appear in the list.
  * <p>
- * Let f1 and f2 be two sub-formulas of a formula to be sorted. It is iteratively checked whether the variables of the
- * given ordering appear in either of the two sub-formulas. We distinguish the following cases for a currently
- * considered variable v:
- * - If v is in f1 and f2, then continue with the next variable.
- * - If v is in f1 but not f2, then f1 is ordered before f2.
- * - If v is in f2 but not f1, then f2 is ordered before f1.
- * - If all variables of the ordering have been in both f1 and f2, the two formulas can be ordered arbitrarily.
+ * Let f1 and f2 be two sub-formulas of a formula to be sorted. It is
+ * iteratively checked whether the variables of the given ordering appear in
+ * either of the two sub-formulas. We distinguish the following cases for a
+ * currently considered variable v: - If v is in f1 and f2, then continue with
+ * the next variable. - If v is in f1 but not f2, then f1 is ordered before f2.
+ * - If v is in f2 but not f1, then f2 is ordered before f1. - If all variables
+ * of the ordering have been in both f1 and f2, the two formulas can be ordered
+ * arbitrarily.
  * <p>
- * Example 1:
- * Given the variable ordering [a, b, c, d], the sorted string representation for a simple conjunction b &amp; d &amp; ~a &amp; ~c
- * would be ~a &amp; b &amp; ~c &amp; d.
+ * Example 1: Given the variable ordering [a, b, c, d], the sorted string
+ * representation for a simple conjunction b &amp; d &amp; ~a &amp; ~c would be
+ * ~a &amp; b &amp; ~c &amp; d.
  * <p>
- * It is important to note that the first variable that appear in only one of the compared sub-formulas decides their
- * ordering. Hence, apart from the deciding variable, the other variables of the sub-formulas might suggest a different
- * order. The user is urged to keep this in mind and an exemplary situation is therefore illustrated in the following
- * example.
+ * It is important to note that the first variable that appear in only one of
+ * the compared sub-formulas decides their ordering. Hence, apart from the
+ * deciding variable, the other variables of the sub-formulas might suggest a
+ * different order. The user is urged to keep this in mind and an exemplary
+ * situation is therefore illustrated in the following example.
  * <p>
- * Example 2:
- * Given the variable ordering [a, b, c, d, e, f], the sorted string representation for the formula
- * b | c | d &lt;=&gt; a | e | f would be a | e | f &lt;=&gt; b | c | d.
+ * Example 2: Given the variable ordering [a, b, c, d, e, f], the sorted string
+ * representation for the formula b | c | d &lt;=&gt; a | e | f would be a | e |
+ * f &lt;=&gt; b | c | d.
  * <p>
- * Furthermore, the fact that implications cannot be ordered should also be kept in mind.
+ * Furthermore, the fact that implications cannot be ordered should also be kept
+ * in mind.
  * <p>
- * Example 3:
- * Given the variable ordering [a, b], the sorted string representation for the formula b =&gt; a stays b =&gt; a.
+ * Example 3: Given the variable ordering [a, b], the sorted string
+ * representation for the formula b =&gt; a stays b =&gt; a.
  * <p>
- * Finally, the user should be aware that any variables of a formula that do not appear in the given ordering will be
- * sorted after the variables that do appear in the ordering.
+ * Finally, the user should be aware that any variables of a formula that do not
+ * appear in the given ordering will be sorted after the variables that do
+ * appear in the ordering.
  * <p>
- * Example 4:
- * Given the variable ordering [b, c, d], the sorted string representation for the formula a &amp; (c | (d =&gt; b)) would be
- * ((d =&gt; b) | c) &amp; a.
+ * Example 4: Given the variable ordering [b, c, d], the sorted string
+ * representation for the formula a &amp; (c | (d =&gt; b)) would be ((d =&gt;
+ * b) | c) &amp; a.
  * @version 2.0.0
  * @since 1.5.0
  */
 public final class SortedStringRepresentation extends DefaultStringRepresentation {
 
     /**
-     * A list of variables in the order they are supposed to appear in a given formula.
+     * A list of variables in the order they are supposed to appear in a given
+     * formula.
      */
     private final List<Variable> varOrder;
     private final FormulaComparator comparator;
 
     /**
-     * Constructs a new sorted string representation with a given ordering of variables.
+     * Constructs a new sorted string representation with a given ordering of
+     * variables.
      * @param varOrder the given variable ordering
      */
     public SortedStringRepresentation(final List<Variable> varOrder) {
@@ -82,7 +88,8 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
     /**
      * Returns the sorted string representation of the given formula.
      * @param formula the formula
-     * @return the sorted string representation of the formula with regard to the variable ordering
+     * @return the sorted string representation of the formula with regard to
+     *         the variable ordering
      */
     @Override
     public String toInnerString(final Formula formula) {
@@ -108,7 +115,9 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
                 return naryOperator(nary, String.format("%s", op));
             case PBC:
                 final PBConstraint pbc = (PBConstraint) formula;
-                return String.format("%s%s%d", pbLhs(pbc.operands(), pbc.coefficients()), pbComparator(pbc.comparator()), pbc.rhs());
+                return String.format("%s%s%d", pbLhs(pbc.operands(), pbc.coefficients()),
+                        pbComparator(pbc.comparator()),
+                        pbc.rhs());
             default:
                 throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
         }
@@ -146,7 +155,8 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
     }
 
     /**
-     * Returns the sorted string representation of the left-hand side of a pseudo-Boolean constraint.
+     * Returns the sorted string representation of the left-hand side of a
+     * pseudo-Boolean constraint.
      * @param operands     the literals of the constraint
      * @param coefficients the coefficients of the constraint
      * @return the sorted string representation
@@ -182,7 +192,8 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
         }
         if (sortedOperands.size() > 0) {
             if (sortedCoefficients.get(sortedOperands.size() - 1) != 1) {
-                sb.append(sortedCoefficients.get(sortedOperands.size() - 1)).append(mul).append(sortedOperands.get(sortedOperands.size() - 1));
+                sb.append(sortedCoefficients.get(sortedOperands.size() - 1)).append(mul)
+                        .append(sortedOperands.get(sortedOperands.size() - 1));
             } else {
                 sb.append(sortedOperands.get(sortedOperands.size() - 1));
             }
@@ -205,8 +216,10 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
             right = equivalence.left();
             left = equivalence.right();
         }
-        final String leftString = FType.EQUIV.precedence() < left.type().precedence() ? toInnerString(left) : bracket(left);
-        final String rightString = FType.EQUIV.precedence() < right.type().precedence() ? toInnerString(right) : bracket(right);
+        final String leftString =
+                FType.EQUIV.precedence() < left.type().precedence() ? toInnerString(left) : bracket(left);
+        final String rightString =
+                FType.EQUIV.precedence() < right.type().precedence() ? toInnerString(right) : bracket(right);
         return String.format("%s%s%s", leftString, equivalence(), rightString);
     }
 
@@ -219,12 +232,17 @@ public final class SortedStringRepresentation extends DefaultStringRepresentatio
         }
 
         /**
-         * Compares two given formulas considering the variable ordering of this class.
+         * Compares two given formulas considering the variable ordering of this
+         * class.
          * @param formula1 the first formula
          * @param formula2 the second formula
-         * @return -1 iff formula1 &lt; formula2 (when for the first time a variable of the ordering appears in formula1 but not formula2)
-         * 0 iff formula1 = formula2 (when all variables of the ordering appear (or not appear) in both formula1 and formula2)
-         * 1 iff formula1 &gt; formula2 (when for the first time a variable of the ordering appears in formula2 but not formula1)
+         * @return -1 iff formula1 &lt; formula2 (when for the first time a
+         *         variable of the ordering appears in formula1 but not
+         *         formula2) 0 iff formula1 = formula2 (when all variables of
+         *         the ordering appear (or not appear) in both formula1 and
+         *         formula2) 1 iff formula1 &gt; formula2 (when for the first
+         *         time a variable of the ordering appears in formula2 but not
+         *         formula1)
          */
         @Override
         public int compare(final Formula formula1, final Formula formula2) {

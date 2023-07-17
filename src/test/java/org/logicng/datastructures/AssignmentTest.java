@@ -110,7 +110,8 @@ public class AssignmentTest extends TestWithExampleFormulas {
         assertThat(new Assignment(Collections.singletonList(this.A)).formula(this.f)).isEqualTo(p.parse("a"));
         assertThat(new Assignment(Collections.singletonList(this.NA)).formula(this.f)).isEqualTo(p.parse("~a"));
         assertThat(new Assignment(Arrays.asList(this.A, this.B)).formula(this.f)).isEqualTo(p.parse("a & b"));
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).formula(this.f)).isEqualTo(p.parse("a & b & ~x & ~y"));
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).formula(this.f))
+                .isEqualTo(p.parse("a & b & ~x & ~y"));
     }
 
     @Test
@@ -146,13 +147,20 @@ public class AssignmentTest extends TestWithExampleFormulas {
         ass.addLiteral(this.B);
         ass.addLiteral(this.NX);
         ass.addLiteral(this.NY);
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode()).isEqualTo(ass.hashCode());
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode());
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(ass.hashCode());
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode()).isEqualTo(ass.hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode())
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode())
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode())
+                .isEqualTo(ass.hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode())
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode())
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true).hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode())
+                .isEqualTo(ass.hashCode());
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY)).hashCode())
+                .isEqualTo(ass.hashCode());
     }
 
     @Test
@@ -169,10 +177,14 @@ public class AssignmentTest extends TestWithExampleFormulas {
         fastAss.addLiteral(this.NY);
         assertThat(ass).isNotEqualTo(null);
         assertThat(ass.equals(null)).isFalse();
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true));
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true)).isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true));
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false))
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true))
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false));
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), false))
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true));
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true))
+                .isEqualTo(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY), true));
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY))).isEqualTo(ass);
         assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY))).isEqualTo(ass);
         assertThat(ass).isEqualTo(ass);
@@ -204,8 +216,11 @@ public class AssignmentTest extends TestWithExampleFormulas {
     @Test
     public void testToString() {
         assertThat(new Assignment().toString()).isEqualTo("Assignment{pos=[], neg=[]}");
-        assertThat(new Assignment(Collections.singletonList(this.A)).toString()).isEqualTo("Assignment{pos=[a], neg=[]}");
-        assertThat(new Assignment(Collections.singletonList(this.NA)).toString()).isEqualTo("Assignment{pos=[], neg=[~a]}");
-        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY, this.C)).toString()).isEqualTo("Assignment{pos=[a, b, c], neg=[~x, ~y]}");
+        assertThat(new Assignment(Collections.singletonList(this.A)).toString())
+                .isEqualTo("Assignment{pos=[a], neg=[]}");
+        assertThat(new Assignment(Collections.singletonList(this.NA)).toString())
+                .isEqualTo("Assignment{pos=[], neg=[~a]}");
+        assertThat(new Assignment(Arrays.asList(this.A, this.B, this.NX, this.NY, this.C)).toString())
+                .isEqualTo("Assignment{pos=[a, b, c], neg=[~x, ~y]}");
     }
 }

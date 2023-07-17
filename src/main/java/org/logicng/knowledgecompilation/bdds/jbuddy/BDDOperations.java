@@ -33,7 +33,8 @@ public class BDDOperations {
     protected int[] supportSet; // The found support set
 
     /**
-     * Constructs a new object which will perform operations on the given kernel.
+     * Constructs a new object which will perform operations on the given
+     * kernel.
      * @param k the kernel
      */
     public BDDOperations(final BDDKernel k) {
@@ -70,10 +71,12 @@ public class BDDOperations {
     }
 
     /**
-     * Returns an arbitrary model for a given BDD or {@code null} which contains at least the given variables.  If a variable
-     * is a don't care variable, it will be assigned with the given default value.
+     * Returns an arbitrary model for a given BDD or {@code null} which contains
+     * at least the given variables. If a variable is a don't care variable, it
+     * will be assigned with the given default value.
      * @param r   the BDD root node
-     * @param var the set of variable which has to be contained in the model as a BDD
+     * @param var the set of variable which has to be contained in the model as
+     *            a BDD
      * @param pol the default value for don't care variables as a BDD
      * @return an arbitrary model of this BDD
      */
@@ -416,8 +419,9 @@ public class BDDOperations {
     }
 
     /**
-     * Returns all nodes for a given root node in their internal representation.  The internal representation is stored
-     * in an array: {@code [node number, variable, low, high]}
+     * Returns all nodes for a given root node in their internal representation.
+     * The internal representation is stored in an array:
+     * {@code [node number, variable, low, high]}
      * @param r the BDD root node
      * @return all Nodes in their internal representation
      */
@@ -437,11 +441,14 @@ public class BDDOperations {
     }
 
     /**
-     * Returns a formula representation of this BDD.  This is done by using the Shannon expansion.
-     * If {@code followPathsToTrue} is activated, the paths leading to the {@code true} terminal are followed to generate the formula.
-     * If {@code followPathsToTrue} is deactivated, the paths leading to the {@code false} terminal are followed to generate the formula and the resulting formula is negated.
-     * Depending on the formula and the number of satisfying assignments, the generated formula can be more compact using the {@code true} paths
-     * or {@code false} paths, respectively.
+     * Returns a formula representation of this BDD. This is done by using the
+     * Shannon expansion. If {@code followPathsToTrue} is activated, the paths
+     * leading to the {@code true} terminal are followed to generate the
+     * formula. If {@code followPathsToTrue} is deactivated, the paths leading
+     * to the {@code false} terminal are followed to generate the formula and
+     * the resulting formula is negated. Depending on the formula and the number
+     * of satisfying assignments, the generated formula can be more compact
+     * using the {@code true} paths or {@code false} paths, respectively.
      * @param r                 the BDD root node
      * @param followPathsToTrue the extraction style
      * @return the formula
@@ -462,13 +469,11 @@ public class BDDOperations {
         }
         final Variable var = this.k.idx2var.get(this.k.level(r));
         final int low = this.k.low(r);
-        final Formula lowFormula = isRelevant(low, followPathsToTrue)
-                ? f.and(var.negate(), toFormulaRec(low, followPathsToTrue))
-                : f.falsum();
+        final Formula lowFormula = isRelevant(low, followPathsToTrue) ?
+                f.and(var.negate(), toFormulaRec(low, followPathsToTrue)) : f.falsum();
         final int high = this.k.high(r);
-        final Formula rightFormula = isRelevant(high, followPathsToTrue)
-                ? f.and(var, toFormulaRec(high, followPathsToTrue))
-                : f.falsum();
+        final Formula rightFormula =
+                isRelevant(high, followPathsToTrue) ? f.and(var, toFormulaRec(high, followPathsToTrue)) : f.falsum();
         return f.or(lowFormula, rightFormula);
     }
 

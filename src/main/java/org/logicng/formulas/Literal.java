@@ -14,14 +14,16 @@ import java.util.stream.Stream;
 /**
  * Boolean literals.
  * <p>
- * Literals are besides the constants true and false and pseudo Boolean constraints the
- * atomic formulas in LogicNG.  Each variable is a positive literal.
+ * Literals are besides the constants true and false and pseudo Boolean
+ * constraints the atomic formulas in LogicNG. Each variable is a positive
+ * literal.
  * <p>
- * A literal consists of its name and its phase (also sign or polarity in the literature).
- * A new positive literal can be constructed with {@code f.literal("a", true)} or
- * - as a shortcut - {@code f.variable("a")}.  A new negative literal can be constructed
- * with {@code f.literal("a", false)} or if preferred with {@code f.not(f.variable("a"))}
- * or {@code f.variable("a").negate()}.
+ * A literal consists of its name and its phase (also sign or polarity in the
+ * literature). A new positive literal can be constructed with
+ * {@code f.literal("a", true)} or - as a shortcut - {@code f.variable("a")}. A
+ * new negative literal can be constructed with {@code f.literal("a", false)} or
+ * if preferred with {@code f.not(f.variable("a"))} or
+ * {@code f.variable("a").negate()}.
  * <p>
  * @version 2.2.0
  * @since 1.0
@@ -52,10 +54,11 @@ public class Literal extends Formula implements Comparable<Literal> {
     private volatile int hashCode;
 
     /**
-     * Constructor.  A literal always has a name and a phase.  A positive literal can also
-     * be constructed directly as a {@link Variable}.
+     * Constructor. A literal always has a name and a phase. A positive literal
+     * can also be constructed directly as a {@link Variable}.
      * @param name  the literal name
-     * @param phase the phase of the literal (also found as sign or polarity in the literature)
+     * @param phase the phase of the literal (also found as sign or polarity in
+     *              the literature)
      * @param f     the factory which created this literal
      */
     Literal(final String name, final boolean phase, final FormulaFactory f) {
@@ -159,7 +162,8 @@ public class Literal extends Formula implements Comparable<Literal> {
             return true;
         }
         if (other instanceof Formula && this.f == ((Formula) other).f) {
-            return false; // the same formula factory would have produced a == object
+            return false; // the same formula factory would have produced a ==
+                          // object
         }
         if (other instanceof Literal) {
             final Literal otherLit = (Literal) other;

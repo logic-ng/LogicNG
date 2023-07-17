@@ -18,20 +18,21 @@ import java.util.BitSet;
 public interface DnnfSatSolver {
 
     /**
-     * Adds a formula to the solver.  The formula is first converted to CNF.
+     * Adds a formula to the solver. The formula is first converted to CNF.
      * @param formula the formula
      */
     void add(final Formula formula);
 
     /**
-     * Initializes the solver by performing unit propagation
-     * and returns {@code false} if UP finds a contradiction, otherwise {@code true}.
+     * Initializes the solver by performing unit propagation and returns
+     * {@code false} if UP finds a contradiction, otherwise {@code true}.
      * @return {@code false} if UP finds a contradiction, otherwise {@code true}
      */
     boolean start();
 
     /**
-     * Performs a decision of the given variable to the given phase and performs UP.
+     * Performs a decision of the given variable to the given phase and performs
+     * UP.
      * @param var   the variable
      * @param phase the phase
      * @return {@code false} if UP finds a contradiction, otherwise {@code true}
@@ -48,13 +49,14 @@ public interface DnnfSatSolver {
      * Returns {@code true} if the current decision level was previously
      * selected as backtrack level.
      * @return {@code true} if the current decision level was previously
-     * selected as backtrack level, otherwise {@code false}
+     *         selected as backtrack level, otherwise {@code false}
      */
     boolean atAssertionLevel();
 
     /**
-     * Enqueues the literal which was computed by the latest backtracking, performs UP
-     * and return {@code false} if UP finds a contradiction, otherwise {@code true}.
+     * Enqueues the literal which was computed by the latest backtracking,
+     * performs UP and return {@code false} if UP finds a contradiction,
+     * otherwise {@code true}.
      * @return {@code false} if UP finds a contradiction, otherwise {@code true}
      */
     boolean assertCdLiteral();

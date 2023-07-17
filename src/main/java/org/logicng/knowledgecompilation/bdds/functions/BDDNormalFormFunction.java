@@ -24,15 +24,15 @@ public abstract class BDDNormalFormFunction {
     /**
      * Computes a CNF/DNF from the given BDD.
      * @param bdd the BDD
-     * @param cnf {@code true} if a CNF should be computed, {@code false} if a DNF should be computed
+     * @param cnf {@code true} if a CNF should be computed, {@code false} if a
+     *            DNF should be computed
      * @return the normal form (CNF or DNF) computed from the BDD
      */
     protected static Formula compute(final BDD bdd, final boolean cnf) {
         final BDDKernel kernel = bdd.underlyingKernel();
         final FormulaFactory f = kernel.factory();
-        final List<byte[]> pathsToConstant = cnf
-                ? new BDDOperations(kernel).allUnsat(bdd.index())
-                : new BDDOperations(kernel).allSat(bdd.index());
+        final List<byte[]> pathsToConstant =
+                cnf ? new BDDOperations(kernel).allUnsat(bdd.index()) : new BDDOperations(kernel).allSat(bdd.index());
         final List<Formula> terms = new ArrayList<>();
         for (final byte[] path : pathsToConstant) {
             final List<Formula> literals = new ArrayList<>();

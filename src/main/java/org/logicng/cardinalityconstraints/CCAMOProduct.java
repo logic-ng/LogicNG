@@ -8,7 +8,8 @@ import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most one variable is assigned value true.  Uses the 2-product method due to Chen.
+ * Encodes that at most one variable is assigned value true. Uses the 2-product
+ * method due to Chen.
  * @version 2.0.0
  * @since 1.0
  */

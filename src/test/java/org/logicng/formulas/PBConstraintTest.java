@@ -27,8 +27,10 @@ import java.util.TreeSet;
  */
 public class PBConstraintTest extends TestWithExampleFormulas {
 
-    private static final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-    private static final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+    private static final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder()
+            .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+    private static final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder()
+            .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
 
     private final PBConstraint pb1;
     private final PBConstraint pb2;
@@ -314,7 +316,8 @@ public class PBConstraintTest extends TestWithExampleFormulas {
     @Test
     public void testVariables() {
         final SortedSet<Variable> lits1 = new TreeSet<>(Collections.singletonList(f.variable("a")));
-        final SortedSet<Variable> lits2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
+        final SortedSet<Variable> lits2 =
+                new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
         assertThat(this.pb1.variables()).isEqualTo(lits1);
         assertThat(this.pb1.variables()).isEqualTo(lits1);
         assertThat(this.pb2.variables()).isEqualTo(lits2);
@@ -329,8 +332,10 @@ public class PBConstraintTest extends TestWithExampleFormulas {
     @Test
     public void testLiterals() {
         final SortedSet<Variable> lits1 = new TreeSet<>(Collections.singletonList(f.variable("a")));
-        final SortedSet<Literal> lits2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c")));
-        final SortedSet<Variable> litsCC2 = new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
+        final SortedSet<Literal> lits2 =
+                new TreeSet<>(Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c")));
+        final SortedSet<Variable> litsCC2 =
+                new TreeSet<>(Arrays.asList(f.variable("a"), f.variable("b"), f.variable("c")));
         assertThat(this.pb1.literals()).isEqualTo(lits1);
         assertThat(this.pb2.literals()).isEqualTo(lits2);
         assertThat(this.cc1.literals()).isEqualTo(lits1);
@@ -430,7 +435,8 @@ public class PBConstraintTest extends TestWithExampleFormulas {
 
     @Test
     public void testRestrictInequality() {
-        final List<Literal> lits = Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"), f.variable("e"), f.literal("f", false));
+        final List<Literal> lits = Arrays.asList(f.variable("a"), f.literal("b", false), f.variable("c"),
+                f.variable("d"), f.variable("e"), f.literal("f", false));
         final List<Integer> coeffs = Arrays.asList(75, 50, 201, -3, -24, 1);
         final PBConstraint pb1 = (PBConstraint) f.pbc(CType.GE, -24, lits, coeffs);
         final PBConstraint pb2 = (PBConstraint) f.pbc(CType.LE, 150, lits, coeffs);
@@ -535,8 +541,9 @@ public class PBConstraintTest extends TestWithExampleFormulas {
 
     @Test
     public void testNormalization() {
-        final List<Literal> lits = Arrays.asList(f2.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"),
-                f.literal("b", false));
+        final List<Literal> lits =
+                Arrays.asList(f2.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"),
+                        f.literal("b", false));
         final List<Integer> coeffs = Arrays.asList(2, -3, 3, 0, 1);
         final PBConstraint pb1 = (PBConstraint) f.pbc(CType.EQ, 2, lits, coeffs);
         final PBConstraint pb2 = (PBConstraint) f.pbc(CType.GE, 1, lits, coeffs);
@@ -552,7 +559,8 @@ public class PBConstraintTest extends TestWithExampleFormulas {
 
     @Test
     public void testNormalizationTrivial() {
-        final List<Literal> lits = Arrays.asList(f2.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"));
+        final List<Literal> lits =
+                Arrays.asList(f2.variable("a"), f.literal("b", false), f.variable("c"), f.variable("d"));
         final List<Integer> coeffs = Arrays.asList(2, -2, 3, 0);
         final PBConstraint pb1 = (PBConstraint) f.pbc(CType.LE, 4, lits, coeffs);
         final PBConstraint pb2 = (PBConstraint) f.pbc(CType.LE, 5, lits, coeffs);
@@ -568,7 +576,8 @@ public class PBConstraintTest extends TestWithExampleFormulas {
 
     @Test
     public void testNormalizationSimplifications() {
-        List<? extends Literal> lits = Arrays.asList(f2.variable("a"), f.variable("a"), f.variable("c"), f.variable("d"));
+        List<? extends Literal> lits =
+                Arrays.asList(f2.variable("a"), f.variable("a"), f.variable("c"), f.variable("d"));
         List<Integer> coeffs = Arrays.asList(2, -2, 4, 4);
         final PBConstraint pb1 = (PBConstraint) f.pbc(CType.LE, 4, lits, coeffs);
         assertThat(pb1.normalize().toString()).isEqualTo("c + d <= 1");

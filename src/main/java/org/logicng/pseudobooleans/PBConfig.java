@@ -18,7 +18,10 @@ public final class PBConfig extends Configuration {
      * The pseudo-Boolean encoder.
      */
     public enum PB_ENCODER {
-        SWC, BINARY_MERGE, ADDER_NETWORKS, BEST
+        SWC,
+        BINARY_MERGE,
+        ADDER_NETWORKS,
+        BEST
     }
 
     final PB_ENCODER pbEncoder;
@@ -27,7 +30,8 @@ public final class PBConfig extends Configuration {
     final boolean binaryMergeUseWatchDog;
 
     /**
-     * Constructs a new pseudo-Boolean encoder configuration from a given builder.
+     * Constructs a new pseudo-Boolean encoder configuration from a given
+     * builder.
      * @param builder the builder
      */
     private PBConfig(final Builder builder) {
@@ -51,7 +55,8 @@ public final class PBConfig extends Configuration {
         final StringBuilder sb = new StringBuilder("PBConfig{").append(System.lineSeparator());
         sb.append("pbEncoder=").append(this.pbEncoder).append(System.lineSeparator());
         sb.append("binaryMergeUseGAC=").append(this.binaryMergeUseGAC).append(System.lineSeparator());
-        sb.append("binaryMergeNoSupportForSingleBit=").append(this.binaryMergeNoSupportForSingleBit).append(System.lineSeparator());
+        sb.append("binaryMergeNoSupportForSingleBit=").append(this.binaryMergeNoSupportForSingleBit)
+                .append(System.lineSeparator());
         sb.append("binaryMergeUseWatchDog=").append(this.binaryMergeUseWatchDog).append(System.lineSeparator());
         sb.append("}").append(System.lineSeparator());
         return sb.toString();
@@ -71,7 +76,8 @@ public final class PBConfig extends Configuration {
         }
 
         /**
-         * Sets the encoder for pseudo-Boolean constraints. The default value is {@code BEST}.
+         * Sets the encoder for pseudo-Boolean constraints. The default value is
+         * {@code BEST}.
          * @param pbEncoder the pseudo-Boolean encoder
          * @return the builder
          */
@@ -81,9 +87,11 @@ public final class PBConfig extends Configuration {
         }
 
         /**
-         * Sets whether general arc consistency should be used in the binary merge encoding. The default value is {@code
+         * Sets whether general arc consistency should be used in the binary
+         * merge encoding. The default value is {@code
          * true}.
-         * @param binaryMergeUseGAC {@code true} if general arc consistency should be used, {@code false} otherwise
+         * @param binaryMergeUseGAC {@code true} if general arc consistency
+         *                          should be used, {@code false} otherwise
          * @return the builder
          */
         public Builder binaryMergeUseGAC(final boolean binaryMergeUseGAC) {
@@ -92,9 +100,12 @@ public final class PBConfig extends Configuration {
         }
 
         /**
-         * Sets the support for single bits in the binary merge encoding. The default value is {@code false}.
-         * @param binaryMergeNoSupportForSingleBit {@code true} if the support for single bits should be disabled,
-         *                                         {@code false} otherwise
+         * Sets the support for single bits in the binary merge encoding. The
+         * default value is {@code false}.
+         * @param binaryMergeNoSupportForSingleBit {@code true} if the support
+         *                                         for single bits should be
+         *                                         disabled, {@code false}
+         *                                         otherwise
          * @return the builder
          */
         public Builder binaryMergeNoSupportForSingleBit(final boolean binaryMergeNoSupportForSingleBit) {
@@ -103,8 +114,10 @@ public final class PBConfig extends Configuration {
         }
 
         /**
-         * Sets whether the watchdog encoding should be used in the binary merge encoding. The default value is {@code true}.
-         * @param binaryMergeUseWatchDog {@code true} if the watchdog encoding should be used, {@code false} otherwise
+         * Sets whether the watchdog encoding should be used in the binary merge
+         * encoding. The default value is {@code true}.
+         * @param binaryMergeUseWatchDog {@code true} if the watchdog encoding
+         *                               should be used, {@code false} otherwise
          * @return the builder
          */
         public Builder binaryMergeUseWatchDog(final boolean binaryMergeUseWatchDog) {

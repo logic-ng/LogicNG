@@ -50,7 +50,8 @@ public final class HypergraphEdge<T> {
     }
 
     /**
-     * Computes the center of gravity for this edge (see Aloul, Markov, and Sakallah).
+     * Computes the center of gravity for this edge (see Aloul, Markov, and
+     * Sakallah).
      * @param nodeOrdering the node ordering for which the COG is computed
      * @return the center of gravity for this edge
      */

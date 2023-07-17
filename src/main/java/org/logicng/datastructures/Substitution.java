@@ -63,7 +63,8 @@ public final class Substitution {
     }
 
     /**
-     * Returns a formula for a given variable.  If there is no mapping for this variable, {@code null} is returned.
+     * Returns a formula for a given variable. If there is no mapping for this
+     * variable, {@code null} is returned.
      * @param variable the variable
      * @return a formula or {@code null}
      */
@@ -72,7 +73,8 @@ public final class Substitution {
     }
 
     /**
-     * Returns an unmodifiable reference to the internal mapping of variables to formulas.
+     * Returns an unmodifiable reference to the internal mapping of variables to
+     * formulas.
      * @return the internal mapping of variables to formulas
      */
     public Map<Variable, Formula> getMapping() {
@@ -86,7 +88,8 @@ public final class Substitution {
 
     @Override
     public boolean equals(final Object other) {
-        return other != null && (this == other || (this.getClass() == other.getClass() && this.subst.equals(((Substitution) other).subst)));
+        return other != null && (this == other ||
+                (this.getClass() == other.getClass() && this.subst.equals(((Substitution) other).subst)));
     }
 
     @Override

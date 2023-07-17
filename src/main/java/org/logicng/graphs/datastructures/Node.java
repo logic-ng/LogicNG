@@ -32,7 +32,8 @@ public final class Node<T> {
     }
 
     /**
-     * Adds the given node to the neighbours of this node. Both nodes must be in the same graph.
+     * Adds the given node to the neighbours of this node. Both nodes must be in
+     * the same graph.
      * @param o the given node
      */
     void connectTo(final Node<T> o) {

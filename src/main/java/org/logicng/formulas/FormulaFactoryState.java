@@ -18,7 +18,8 @@ public final class FormulaFactoryState {
     private final int[] state;
 
     /**
-     * Creates a new formula factory state with a given id and internal formula factory data.
+     * Creates a new formula factory state with a given id and internal formula
+     * factory data.
      * @param id    the id
      * @param state the formula factory data
      */

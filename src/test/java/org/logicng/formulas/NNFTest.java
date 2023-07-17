@@ -47,8 +47,10 @@ public class NNFTest extends TestWithExampleFormulas {
         final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(this.AND1.nnf()).isEqualTo(this.AND1);
         assertThat(this.OR1.nnf()).isEqualTo(this.OR1);
-        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").nnf()).isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
-        assertThat(p.parse("~(a & b) | c | ~(x | ~y) | (w => z)").nnf()).isEqualTo(p.parse("~a  | ~b | c | (~x & y) | (~w | z)"));
+        assertThat(p.parse("~(a | b) & c & ~(x & ~y) & (w => z)").nnf())
+                .isEqualTo(p.parse("~a & ~b & c & (~x | y) & (~w | z)"));
+        assertThat(p.parse("~(a & b) | c | ~(x | ~y) | (w => z)").nnf())
+                .isEqualTo(p.parse("~a  | ~b | c | (~x & y) | (~w | z)"));
     }
 
     @Test
@@ -60,7 +62,8 @@ public class NNFTest extends TestWithExampleFormulas {
         assertThat(p.parse("~(~(a | b) => ~(x | y))").nnf()).isEqualTo(p.parse("~a & ~b & (x | y)"));
         assertThat(p.parse("a <=> b").nnf()).isEqualTo(p.parse("(~a | b) & (~b | a)"));
         assertThat(p.parse("~(a <=> b)").nnf()).isEqualTo(p.parse("(~a | ~b) & (a | b)"));
-        assertThat(p.parse("~(~(a | b) <=> ~(x | y))").nnf()).isEqualTo(p.parse("((a | b) | (x | y)) & ((~a & ~b) | (~x & ~y))"));
+        assertThat(p.parse("~(~(a | b) <=> ~(x | y))").nnf())
+                .isEqualTo(p.parse("((a | b) | (x | y)) & ((~a & ~b) | (~x & ~y))"));
         assertThat(p.parse("~(a & b & ~x & ~y)").nnf()).isEqualTo(p.parse("~a | ~b | x | y"));
         assertThat(p.parse("~(a | b | ~x | ~y)").nnf()).isEqualTo(p.parse("~a & ~b & x & y"));
         assertThat(p.parse("~(a | b | ~x | ~y)").nnf()).isEqualTo(p.parse("~a & ~b & x & y"));

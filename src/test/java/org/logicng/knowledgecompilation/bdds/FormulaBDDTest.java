@@ -16,7 +16,8 @@ import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 
 /**
- * Unit tests for the BDD generation in the {@link org.logicng.formulas.Formula} class.
+ * Unit tests for the BDD generation in the {@link org.logicng.formulas.Formula}
+ * class.
  * @version 2.3.0
  * @since 1.4.0
  */
@@ -37,7 +38,8 @@ public class FormulaBDDTest {
     public void testBDDGeneration() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PseudoBooleanParser p = new PseudoBooleanParser(f);
-        final Formula formula = p.parse("(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X) & (Y <=> (X | (W + A + F < 1)))");
+        final Formula formula =
+                p.parse("(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X) & (Y <=> (X | (W + A + F < 1)))");
         final BDD bddNoOrder = formula.bdd();
         final BDD bddBfs = formula.bdd(VariableOrdering.BFS);
         final BDD bddDfs = formula.bdd(VariableOrdering.DFS);

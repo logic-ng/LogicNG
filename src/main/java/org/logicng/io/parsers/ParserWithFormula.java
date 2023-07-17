@@ -10,7 +10,8 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 
 /**
- * Abstract super class for parsers which have a formula factory and return a formula.
+ * Abstract super class for parsers which have a formula factory and return a
+ * formula.
  * @version 1.4.0
  * @since 1.4.0
  */

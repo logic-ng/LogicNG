@@ -3,52 +3,43 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon
- * CRIL - Univ. Artois, France
- * LRI  - Univ. Paris Sud, France (2009-2013)
- * Labri - Univ. Bordeaux, France
- * <p>
- * Syrup (Glucose Parallel) -- Copyright (c) 2013-2014, Gilles Audemard, Laurent Simon
- * CRIL - Univ. Artois, France
- * Labri - Univ. Bordeaux, France
- * <p>
- * Glucose sources are based on MiniSat (see below MiniSat copyrights). Permissions and copyrights of
- * Glucose (sources until 2013, Glucose 3.0, single core) are exactly the same as Minisat on which it
- * is based on. (see below).
- * <p>
- * Glucose-Syrup sources are based on another copyright. Permissions and copyrights for the parallel
- * version of Glucose-Syrup (the "Software") are granted, free of charge, to deal with the Software
- * without restriction, including the rights to use, copy, modify, merge, publish, distribute,
- * sublicence, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * - The above and below copyrights notices and this permission notice shall be included in all
- * copies or substantial portions of the Software;
- * - The parallel version of Glucose (all files modified since Glucose 3.0 releases, 2013) cannot
- * be used in any competitive event (sat competitions/evaluations) without the express permission of
- * the authors (Gilles Audemard / Laurent Simon). This is also the case for any competitive event
- * using Glucose Parallel as an embedded SAT engine (single core or not).
- * <p>
- * <p>
- * --------------- Original Minisat Copyrights
- * <p>
- * Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
- * Copyright (c) 2007-2010, Niklas Sorensson
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
- * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon CRIL -
+ * Univ. Artois, France LRI - Univ. Paris Sud, France (2009-2013) Labri - Univ.
+ * Bordeaux, France <p> Syrup (Glucose Parallel) -- Copyright (c) 2013-2014,
+ * Gilles Audemard, Laurent Simon CRIL - Univ. Artois, France Labri - Univ.
+ * Bordeaux, France <p> Glucose sources are based on MiniSat (see below MiniSat
+ * copyrights). Permissions and copyrights of Glucose (sources until 2013,
+ * Glucose 3.0, single core) are exactly the same as Minisat on which it is
+ * based on. (see below). <p> Glucose-Syrup sources are based on another
+ * copyright. Permissions and copyrights for the parallel version of
+ * Glucose-Syrup (the "Software") are granted, free of charge, to deal with the
+ * Software without restriction, including the rights to use, copy, modify,
+ * merge, publish, distribute, sublicence, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions: <p> - The above and below copyrights notices and
+ * this permission notice shall be included in all copies or substantial
+ * portions of the Software; - The parallel version of Glucose (all files
+ * modified since Glucose 3.0 releases, 2013) cannot be used in any competitive
+ * event (sat competitions/evaluations) without the express permission of the
+ * authors (Gilles Audemard / Laurent Simon). This is also the case for any
+ * competitive event using Glucose Parallel as an embedded SAT engine (single
+ * core or not). <p> <p> --------------- Original Minisat Copyrights <p>
+ * Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson Copyright (c)
+ * 2007-2010, Niklas Sorensson <p> Permission is hereby granted, free of charge,
+ * to any person obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the following
+ * conditions: <p> The above copyright notice and this permission notice shall
+ * be included in all copies or substantial portions of the Software. <p> THE
+ * SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package org.logicng.solvers.sat;
@@ -120,8 +111,8 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
     protected double maxVarDecay;
 
     /**
-     * Constructs a new Glucose 2 solver with the default values for solver configuration.  By default, incremental mode
-     * is activated.
+     * Constructs a new Glucose 2 solver with the default values for solver
+     * configuration. By default, incremental mode is activated.
      */
     GlucoseSyrup() {
         this(MiniSatConfig.builder().build(), GlucoseConfig.builder().build());
@@ -726,7 +717,8 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
     }
 
     /**
-     * Returns {@code true} if a given variable is a selector variable, {@code false} otherwise.
+     * Returns {@code true} if a given variable is a selector variable,
+     * {@code false} otherwise.
      * @param v the variable
      * @return {@code true} if the given variable is a selector variable
      */
@@ -772,8 +764,9 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
 
     /**
      * The main search procedure of the CDCL algorithm.
-     * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
-     * formula is SAT, and {@code UNKNOWN} if the state is not known yet (restart)
+     * @return a {@link Tristate} representing the result. {@code FALSE} if the
+     *         formula is UNSAT, {@code TRUE} if the formula is SAT, and
+     *         {@code UNKNOWN} if the state is not known yet (restart)
      */
     protected Tristate search() {
         assert this.ok;
@@ -797,7 +790,8 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
                     return Tristate.FALSE;
                 }
                 this.trailQueue.push(this.trail.size());
-                if (this.conflictsRestarts > LB_BLOCKING_RESTART && this.lbdQueue.valid() && this.trail.size() > this.factorR * this.trailQueue.avg()) {
+                if (this.conflictsRestarts > LB_BLOCKING_RESTART && this.lbdQueue.valid() &&
+                        this.trail.size() > this.factorR * this.trailQueue.avg()) {
                     this.lbdQueue.fastClear();
                     if (!blocked) {
                         blocked = true;
@@ -837,7 +831,8 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
                 varDecayActivity();
                 claDecayActivity();
             } else {
-                if (this.lbdQueue.valid() && (this.lbdQueue.avg() * this.factorK) > (this.sumLBD / this.conflictsRestarts)) {
+                if (this.lbdQueue.valid() &&
+                        (this.lbdQueue.avg() * this.factorK) > (this.sumLBD / this.conflictsRestarts)) {
                     this.lbdQueue.fastClear();
                     int bt = 0;
                     if (this.incremental) {
@@ -880,10 +875,13 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
     }
 
     /**
-     * Analyzes a given conflict clause wrt. the current solver state.  A 1-UIP clause is created during this procedure
-     * and the new backtracking level is stored in the solver state.
-     * @param conflictClause the conflict clause to start the resolution analysis with
-     * @param outLearnt      the vector where the new learnt 1-UIP clause is stored
+     * Analyzes a given conflict clause wrt. the current solver state. A 1-UIP
+     * clause is created during this procedure and the new backtracking level is
+     * stored in the solver state.
+     * @param conflictClause the conflict clause to start the resolution
+     *                       analysis with
+     * @param outLearnt      the vector where the new learnt 1-UIP clause is
+     *                       stored
      * @param selectors      a vector of selector variables
      */
     protected void analyze(final MSClause conflictClause, final LNGIntVector outLearnt,
@@ -951,7 +949,8 @@ public class GlucoseSyrup extends MiniSatStyleSolver {
     }
 
     /**
-     * Minimizes a given learnt clause depending on the minimization method of the solver configuration.
+     * Minimizes a given learnt clause depending on the minimization method of
+     * the solver configuration.
      * @param outLearnt the learnt clause which should be minimized
      * @param selectors a vector of selector variables
      */

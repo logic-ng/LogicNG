@@ -22,14 +22,16 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Simple implementation of the FORCE BDD variable ordering due to Aloul, Markov, and Sakallah.  This ordering only
- * works for CNF formulas.  A formula has to be converted to CNF before this ordering is called.
+ * Simple implementation of the FORCE BDD variable ordering due to Aloul,
+ * Markov, and Sakallah. This ordering only works for CNF formulas. A formula
+ * has to be converted to CNF before this ordering is called.
  * @version 2.0.0
  * @since 1.4.0
  */
 public final class ForceOrdering implements VariableOrderingProvider {
 
-    private static final Comparator<? super Map.Entry<HypergraphNode<Variable>, Double>> COMPARATOR = Map.Entry.comparingByValue();
+    private static final Comparator<? super Map.Entry<HypergraphNode<Variable>, Double>> COMPARATOR =
+            Map.Entry.comparingByValue();
 
     private final DFSOrdering dfsOrdering = new DFSOrdering();
 
@@ -44,7 +46,8 @@ public final class ForceOrdering implements VariableOrderingProvider {
         for (final HypergraphNode<Variable> node : hypergraph.nodes()) {
             nodes.put(node.content(), node);
         }
-        final List<Variable> ordering = force(cnf, hypergraph, nodes).stream().filter(originalVariables::contains).collect(Collectors.toList());
+        final List<Variable> ordering =
+                force(cnf, hypergraph, nodes).stream().filter(originalVariables::contains).collect(Collectors.toList());
         originalVariables.stream().filter(v -> !ordering.contains(v)).forEach(ordering::add);
         return ordering;
     }
@@ -82,7 +85,8 @@ public final class ForceOrdering implements VariableOrderingProvider {
      * @param nodes   the variable to hypergraph node mapping
      * @return the initial variable ordering
      */
-    private LinkedHashMap<HypergraphNode<Variable>, Integer> createInitialOrdering(final Formula formula, final Map<Variable, HypergraphNode<Variable>> nodes) {
+    private LinkedHashMap<HypergraphNode<Variable>, Integer>
+            createInitialOrdering(final Formula formula, final Map<Variable, HypergraphNode<Variable>> nodes) {
         final LinkedHashMap<HypergraphNode<Variable>, Integer> initialOrdering = new LinkedHashMap<>();
         final List<Variable> dfsOrder = this.dfsOrdering.getOrder(formula);
         for (int i = 0; i < dfsOrder.size(); i++) {
@@ -92,11 +96,13 @@ public final class ForceOrdering implements VariableOrderingProvider {
     }
 
     /**
-     * Generates a new integer ordering from tentative new locations of nodes with the double weighting.
+     * Generates a new integer ordering from tentative new locations of nodes
+     * with the double weighting.
      * @param newLocations the tentative new locations
      * @return the new integer ordering
      */
-    private LinkedHashMap<HypergraphNode<Variable>, Integer> orderingFromTentativeNewLocations(final LinkedHashMap<HypergraphNode<Variable>, Double> newLocations) {
+    private LinkedHashMap<HypergraphNode<Variable>, Integer>
+            orderingFromTentativeNewLocations(final LinkedHashMap<HypergraphNode<Variable>, Double> newLocations) {
         final LinkedHashMap<HypergraphNode<Variable>, Integer> ordering = new LinkedHashMap<>();
         final List<Map.Entry<HypergraphNode<Variable>, Double>> list = new ArrayList<>(newLocations.entrySet());
         list.sort(COMPARATOR);
@@ -111,9 +117,11 @@ public final class ForceOrdering implements VariableOrderingProvider {
      * The abortion criteria for the FORCE algorithm.
      * @param lastOrdering    the ordering of the last step
      * @param currentOrdering the ordering of the current step
-     * @return {@code true} if the algorithm should proceed, {@code false} if it should stop
+     * @return {@code true} if the algorithm should proceed, {@code false} if it
+     *         should stop
      */
-    private boolean shouldProceed(final Map<HypergraphNode<Variable>, Integer> lastOrdering, final Map<HypergraphNode<Variable>, Integer> currentOrdering) {
+    private boolean shouldProceed(final Map<HypergraphNode<Variable>, Integer> lastOrdering,
+                                  final Map<HypergraphNode<Variable>, Integer> currentOrdering) {
         return !lastOrdering.equals(currentOrdering);
     }
 }

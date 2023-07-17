@@ -53,10 +53,13 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
 
         assertThat(this.f.parse("~a").transform(transformation)).isEqualTo(this.f.parse("~a"));
         assertThat(this.f.parse("~(a => b)").transform(transformation)).isEqualTo(this.f.parse("~(a => b)"));
-        assertThat(this.f.parse("~(~(a | b) => ~(x | y))").transform(transformation)).isEqualTo(this.f.parse("~(~(a | b) => ~(x | y))"));
+        assertThat(this.f.parse("~(~(a | b) => ~(x | y))").transform(transformation))
+                .isEqualTo(this.f.parse("~(~(a | b) => ~(x | y))"));
         assertThat(this.f.parse("~(a <=> b)").transform(transformation)).isEqualTo(this.f.parse("~(a <=> b)"));
-        assertThat(this.f.parse("~(a & b & ~x & ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b & ~x & ~y)"));
-        assertThat(this.f.parse("~(a | b | (a + b <= 1) | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a | b | (~a | ~b) | ~y)"));
+        assertThat(this.f.parse("~(a & b & ~x & ~y)").transform(transformation))
+                .isEqualTo(this.f.parse("~(a & b & ~x & ~y)"));
+        assertThat(this.f.parse("~(a | b | (a + b <= 1) | ~y)").transform(transformation))
+                .isEqualTo(this.f.parse("~(a | b | (~a | ~b) | ~y)"));
     }
 
     @Test
@@ -70,7 +73,8 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
         assertThat(this.EQ3.transform(transformation)).isEqualTo(this.EQ3);
         assertThat(this.EQ4.transform(transformation)).isEqualTo(this.EQ4);
 
-        assertThat(this.f.parse("~(a => (a + b = 1))").transform(transformation)).isEqualTo(this.f.parse("~(a => (a | b) & (~a | ~b))"));
+        assertThat(this.f.parse("~(a => (a + b = 1))").transform(transformation))
+                .isEqualTo(this.f.parse("~(a => (a | b) & (~a | ~b))"));
     }
 
     @Test
@@ -82,13 +86,18 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
         assertThat(this.OR2.transform(transformation)).isEqualTo(this.OR2);
         assertThat(this.OR3.transform(transformation)).isEqualTo(this.OR3);
 
-        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
+        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation))
+                .isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
         assertThat(this.f.parse("~(a | b) & (a + b = 1) & ~(x & ~(z + x = 1))").transform(transformation))
                 .isEqualTo(this.f.parse("~(a | b) & ((a | b) & (~a | ~b)) & ~(x & ~((z | x) & (~z | ~x)))"));
-        assertThat(this.f.parse("a & b & (~x | ~y)").transform(transformation)).isEqualTo(this.f.parse("a & b & (~x | ~y)"));
-        assertThat(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(transformation)).isEqualTo(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)"));
-        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
-        assertThat(this.f.parse("a | b | (~x & ~y)").transform(transformation)).isEqualTo(this.f.parse("a | b | (~x & ~y)"));
+        assertThat(this.f.parse("a & b & (~x | ~y)").transform(transformation))
+                .isEqualTo(this.f.parse("a & b & (~x | ~y)"));
+        assertThat(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(transformation))
+                .isEqualTo(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)"));
+        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation))
+                .isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
+        assertThat(this.f.parse("a | b | (~x & ~y)").transform(transformation))
+                .isEqualTo(this.f.parse("a | b | (~x & ~y)"));
     }
 
     @Test
@@ -120,8 +129,9 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
             if (formula.type() == FType.PBC) {
                 final PBConstraint pbc = (PBConstraint) formula;
                 if (!pbc.isAmo() && !pbc.isExo()) {
-                    assertThatThrownBy(() -> ModelCounter.count(Collections.singletonList(formula), formula.variables()))
-                            .isInstanceOf(UnsupportedOperationException.class);
+                    assertThatThrownBy(
+                            () -> ModelCounter.count(Collections.singletonList(formula), formula.variables()))
+                                    .isInstanceOf(UnsupportedOperationException.class);
                     continue;
                 }
             }

@@ -81,7 +81,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     public void testRandomized() {
         for (int i = 0; i < 200; i++) {
             final FormulaFactory f = new FormulaFactory();
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(2).seed(i * 42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f,
+                    FormulaRandomizerConfig.builder().numVars(10).weightPbc(2).seed(i * 42).build());
             final Formula formula = randomizer.formula(4);
             computeAndVerify(formula);
         }
@@ -94,9 +95,11 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                 .forEach(s -> {
                     try {
                         final Formula formula = this.f.parse(s);
-                        final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+                        final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula,
+                                PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
                         verify(resultImplicantsMin, formula);
-                        final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+                        final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula,
+                                PrimeResult.CoverageType.IMPLICATES_COMPLETE);
                         verify(resultImplicatesMin, formula);
                     } catch (final ParserException e) {
                         fail(e.toString());
@@ -115,7 +118,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
             final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                     new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                     new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
-                    new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
+                    new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L,
+                            TimeoutHandler.TimerType.FIXED_END)
             );
             final Formula formula = this.f.parse("a & b | ~c & a");
             for (final TimeoutOptimizationHandler handler : handlers) {
@@ -137,7 +141,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                     new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                     new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
             );
-            final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+            final Formula formula =
+                    FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
             for (final TimeoutOptimizationHandler handler : handlers) {
                 testHandler(handler, formula, compiler.first(), compiler.second(), true);
             }
@@ -146,7 +151,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
 
     @Test
     public void testCancellationPoints() throws IOException, ParserException {
-        final Formula formula = this.f.parse(Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
+        final Formula formula =
+                this.f.parse(Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
@@ -155,7 +161,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
         for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
             for (int numOptimizationStarts = 1; numOptimizationStarts < 5; numOptimizationStarts++) {
                 for (int numSatHandlerStarts = 1; numSatHandlerStarts < 10; numSatHandlerStarts++) {
-                    final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
+                    final OptimizationHandler handler =
+                            new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
                     testHandler(handler, formula, compiler.first(), compiler.second(), true);
                 }
             }
@@ -163,21 +170,27 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     }
 
     private void computeAndVerify(final Formula formula) {
-        final PrimeResult resultImplicantsMax = PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        final PrimeResult resultImplicantsMax =
+                PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
         verify(resultImplicantsMax, formula);
-        final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        final PrimeResult resultImplicantsMin =
+                PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
         verify(resultImplicantsMin, formula);
         assertThat(resultImplicantsMax.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
         assertThat(resultImplicantsMin.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
-        assertThat(resultImplicantsMax.getPrimeImplicants()).containsExactlyInAnyOrderElementsOf(resultImplicantsMin.getPrimeImplicants());
+        assertThat(resultImplicantsMax.getPrimeImplicants())
+                .containsExactlyInAnyOrderElementsOf(resultImplicantsMin.getPrimeImplicants());
 
-        final PrimeResult resultImplicatesMax = PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+        final PrimeResult resultImplicatesMax =
+                PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
         verify(resultImplicatesMax, formula);
-        final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+        final PrimeResult resultImplicatesMin =
+                PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
         verify(resultImplicatesMin, formula);
         assertThat(resultImplicatesMax.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICATES_COMPLETE);
         assertThat(resultImplicatesMin.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICATES_COMPLETE);
-        assertThat(resultImplicatesMax.getPrimeImplicates()).containsExactlyInAnyOrderElementsOf(resultImplicatesMin.getPrimeImplicates());
+        assertThat(resultImplicatesMax.getPrimeImplicates())
+                .containsExactlyInAnyOrderElementsOf(resultImplicatesMin.getPrimeImplicates());
     }
 
     private void verify(final PrimeResult result, final Formula formula) {
@@ -209,7 +222,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                 .isTrue();
     }
 
-    private void testHandler(final OptimizationHandler handler, final Formula formula, final PrimeCompiler compiler, final PrimeResult.CoverageType coverageType,
+    private void testHandler(final OptimizationHandler handler, final Formula formula, final PrimeCompiler compiler,
+                             final PrimeResult.CoverageType coverageType,
                              final boolean expAborted) {
         final PrimeResult result = compiler.compute(formula, coverageType, handler);
         assertThat(handler.aborted()).isEqualTo(expAborted);

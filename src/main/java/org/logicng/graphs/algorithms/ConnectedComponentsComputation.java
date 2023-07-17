@@ -21,7 +21,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 
 /**
- * This class implements an algorithm to compute the connected components of a graph.
+ * This class implements an algorithm to compute the connected components of a
+ * graph.
  * @version 2.0.0
  * @since 1.2
  */
@@ -35,7 +36,8 @@ public final class ConnectedComponentsComputation {
     }
 
     /**
-     * Computes the set of connected components of a graph, where each component is represented by a set of nodes.
+     * Computes the set of connected components of a graph, where each component
+     * is represented by a set of nodes.
      * @param graph the graph
      * @param <T>   the type of the graph content
      * @return the set of sets of nodes representing the connected components
@@ -52,12 +54,14 @@ public final class ConnectedComponentsComputation {
     }
 
     /**
-     * Split a list of formulas in their respective connected components.  The
+     * Split a list of formulas in their respective connected components. The
      * @param formulas   the list of formulas
-     * @param components the connected components which should be used for the split
+     * @param components the connected components which should be used for the
+     *                   split
      * @return the list of split formulas
      */
-    public static List<List<Formula>> splitFormulasByComponent(final Collection<Formula> formulas, final Set<Set<Node<Variable>>> components) {
+    public static List<List<Formula>> splitFormulasByComponent(final Collection<Formula> formulas,
+                                                               final Set<Set<Node<Variable>>> components) {
         final Map<Set<Node<Variable>>, List<Formula>> map = new LinkedHashMap<>();
         final Map<Variable, Set<Node<Variable>>> varMap = new TreeMap<>();
         for (final Set<Node<Variable>> component : components) {
@@ -72,7 +76,8 @@ public final class ConnectedComponentsComputation {
             } else {
                 final Set<Node<Variable>> component = varMap.get(variables.first());
                 if (component == null) {
-                    throw new IllegalArgumentException("Could not find a component for the variable " + variables.first());
+                    throw new IllegalArgumentException(
+                            "Could not find a component for the variable " + variables.first());
                 }
                 map.computeIfAbsent(component, l -> new ArrayList<>()).add(formula);
             }
@@ -80,7 +85,8 @@ public final class ConnectedComponentsComputation {
         return Collections.unmodifiableList(new ArrayList<>(map.values()));
     }
 
-    private static <T> void deepFirstSearch(final Node<T> v, final Set<Node<T>> component, final Set<Node<T>> unmarkedNodes) {
+    private static <T> void deepFirstSearch(final Node<T> v, final Set<Node<T>> component,
+                                            final Set<Node<T>> unmarkedNodes) {
         component.add(v);
         unmarkedNodes.remove(v);
         for (final Node<T> neigh : v.neighbours()) {

@@ -7,11 +7,11 @@ package org.logicng.backbones;
 /**
  * An enumeration which type of backbone should be computed:
  * <ul>
- * <li> {@code ONLY_POSITIVE}: only variables which occur positive in every model
- * <li> {@code ONLY_NEGATIVE}: only variables which occur negative in every model
- * <li> {@code POSITIVE_AND_NEGATIVE}: variables which occur positive in every model,
- * variables which occur negative in every model and optional variables (neither in the
- * positive nor negative backbone)
+ * <li>{@code ONLY_POSITIVE}: only variables which occur positive in every model
+ * <li>{@code ONLY_NEGATIVE}: only variables which occur negative in every model
+ * <li>{@code POSITIVE_AND_NEGATIVE}: variables which occur positive in every
+ * model, variables which occur negative in every model and optional variables
+ * (neither in the positive nor negative backbone)
  * </ul>
  * @version 1.5.0
  * @since 1.5.0

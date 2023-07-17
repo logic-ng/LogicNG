@@ -27,8 +27,9 @@ public final class UnitPropagation implements FormulaTransformation {
     private static final UnitPropagation INSTANCE = new UnitPropagation();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public UnitPropagation() {
@@ -95,7 +96,8 @@ public final class UnitPropagation implements FormulaTransformation {
         }
 
         /**
-         * Performs unit propagation on level 0 and returns the propagated formula.
+         * Performs unit propagation on level 0 and returns the propagated
+         * formula.
          * @param f the formula factory
          * @return the propagated formula
          */
@@ -125,9 +127,10 @@ public final class UnitPropagation implements FormulaTransformation {
         }
 
         /**
-         * Transforms a solver clause into a formula, respecting the current solver state.
-         * I.e. all falsified literals are removed from the resulting clause and
-         * if any literal of the clause is satisfied, the result is {@link org.logicng.formulas.CTrue}.
+         * Transforms a solver clause into a formula, respecting the current
+         * solver state. I.e. all falsified literals are removed from the
+         * resulting clause and if any literal of the clause is satisfied, the
+         * result is {@link org.logicng.formulas.CTrue}.
          * @param clause the solver clause to transform
          * @param f      the formula factory
          * @return the transformed clause

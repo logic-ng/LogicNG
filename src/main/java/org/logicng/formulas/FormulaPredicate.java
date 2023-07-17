@@ -15,7 +15,8 @@ public interface FormulaPredicate {
     /**
      * Tests the predicate on a given formula.
      * @param formula the input formula
-     * @param cache   indicates whether the result should be cached in the formula's cache
+     * @param cache   indicates whether the result should be cached in the
+     *                formula's cache
      * @return {@code true} if the formula holds, {@code false} otherwise
      */
     boolean test(Formula formula, boolean cache);

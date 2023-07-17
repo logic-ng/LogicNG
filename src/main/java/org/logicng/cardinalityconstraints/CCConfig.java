@@ -18,35 +18,52 @@ public final class CCConfig extends Configuration {
      * The encoder for at-most-one and exactly-one constraints.
      */
     public enum AMO_ENCODER {
-        PURE, LADDER, PRODUCT, NESTED, COMMANDER, BINARY, BIMANDER, BEST
+        PURE,
+        LADDER,
+        PRODUCT,
+        NESTED,
+        COMMANDER,
+        BINARY,
+        BIMANDER,
+        BEST
     }
 
     /**
      * The encoder for at-most-k constraints.
      */
     public enum AMK_ENCODER {
-        TOTALIZER, MODULAR_TOTALIZER, CARDINALITY_NETWORK, BEST
+        TOTALIZER,
+        MODULAR_TOTALIZER,
+        CARDINALITY_NETWORK,
+        BEST
     }
 
     /**
      * The encoder for at-least-k constraints.
      */
     public enum ALK_ENCODER {
-        TOTALIZER, MODULAR_TOTALIZER, CARDINALITY_NETWORK, BEST
+        TOTALIZER,
+        MODULAR_TOTALIZER,
+        CARDINALITY_NETWORK,
+        BEST
     }
 
     /**
      * The encoder for exactly-k constraints.
      */
     public enum EXK_ENCODER {
-        TOTALIZER, CARDINALITY_NETWORK, BEST
+        TOTALIZER,
+        CARDINALITY_NETWORK,
+        BEST
     }
 
     /**
      * The group size for the Bimander encoding.
      */
     public enum BIMANDER_GROUP_SIZE {
-        HALF, SQRT, FIXED
+        HALF,
+        SQRT,
+        FIXED
     }
 
     final AMO_ENCODER amoEncoder;
@@ -68,7 +85,8 @@ public final class CCConfig extends Configuration {
     }
 
     /**
-     * Constructs a new cardinality constraint encoder configuration from a given builder.
+     * Constructs a new cardinality constraint encoder configuration from a
+     * given builder.
      * @param builder the builder
      */
     private CCConfig(final Builder builder) {
@@ -119,7 +137,8 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the encoder for at-most-one constraints. The default value is {@code BEST}.
+         * Sets the encoder for at-most-one constraints. The default value is
+         * {@code BEST}.
          * @param amoEncoder the at-most-one encoder
          * @return the builder
          */
@@ -129,7 +148,8 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the encoder for at-most-k constraints. The default value is {@code BEST}.
+         * Sets the encoder for at-most-k constraints. The default value is
+         * {@code BEST}.
          * @param amkEncoder the at-most-k encoder
          * @return the builder
          */
@@ -139,7 +159,8 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the encoder for at-least-k constraints. The default value is {@code BEST}.
+         * Sets the encoder for at-least-k constraints. The default value is
+         * {@code BEST}.
          * @param alkEncoder the at-least-k encoder
          * @return the builder
          */
@@ -149,7 +170,8 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the encoder for exactly-k constraints. The default value is {@code BEST}.
+         * Sets the encoder for exactly-k constraints. The default value is
+         * {@code BEST}.
          * @param exkEncoder the exactly-k encoder
          * @return the builder
          */
@@ -159,7 +181,8 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the group size for the bimander encoding. The default value is {@code SQRT}.
+         * Sets the group size for the bimander encoding. The default value is
+         * {@code SQRT}.
          * @param bimanderGroupSize the bimander encoding group size
          * @return the builder
          */
@@ -169,8 +192,9 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the fixed group size for the bimander encoding. The default value is 3.  This setting is only used if
-         * the bimander group size is set to {@code FIXED}.
+         * Sets the fixed group size for the bimander encoding. The default
+         * value is 3. This setting is only used if the bimander group size is
+         * set to {@code FIXED}.
          * @param bimanderFixedGroupSize the bimander encoding fixed group size
          * @return the builder
          */
@@ -190,8 +214,10 @@ public final class CCConfig extends Configuration {
         }
 
         /**
-         * Sets the recursive bound for the product encoding. The default value is 20.
-         * @param productRecursiveBound the recursive bound for the product encoding
+         * Sets the recursive bound for the product encoding. The default value
+         * is 20.
+         * @param productRecursiveBound the recursive bound for the product
+         *                              encoding
          * @return the builder
          */
         public Builder productRecursiveBound(final int productRecursiveBound) {

@@ -5,8 +5,9 @@
 package org.logicng.io.graphical.generators;
 
 /**
- * A label mapper for generating graphical representations of formulas, BDDs and graphs.
- * This mapper can be used to compute a label for the given node content.
+ * A label mapper for generating graphical representations of formulas, BDDs and
+ * graphs. This mapper can be used to compute a label for the given node
+ * content.
  * @param <T> the type of the node content
  * @version 2.4.0
  * @since 2.4.0

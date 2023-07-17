@@ -6,7 +6,8 @@ import org.logicng.formulas.FormulaPredicate;
 import org.logicng.formulas.NAryOperator;
 
 /**
- * Term predicate. Indicates whether a formula is a minterm (conjunction of literals) or maxterm (disjunction of literals).
+ * Term predicate. Indicates whether a formula is a minterm (conjunction of
+ * literals) or maxterm (disjunction of literals).
  * @version 2.3.0
  * @since 2.2.0
  */
@@ -18,7 +19,7 @@ public final class TermPredicate implements FormulaPredicate {
     private final boolean mintermPredicate;
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private TermPredicate(final boolean mintermPredicate) {
         this.mintermPredicate = mintermPredicate;

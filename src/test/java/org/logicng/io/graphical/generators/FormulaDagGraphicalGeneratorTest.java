@@ -146,7 +146,8 @@ public class FormulaDagGraphicalGeneratorTest {
         testFiles("f10", f10, generator);
     }
 
-    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator generator) throws IOException {
+    private void testFiles(final String fileName, final Formula formula, final FormulaDagGraphicalGenerator generator)
+            throws IOException {
         final GraphicalRepresentation representation = generator.translate(formula);
         representation.write("src/test/resources/writers/temp/" + fileName + ".dot", GraphicalDotWriter.get());
         representation.write("src/test/resources/writers/temp/" + fileName + ".txt", GraphicalMermaidWriter.get());

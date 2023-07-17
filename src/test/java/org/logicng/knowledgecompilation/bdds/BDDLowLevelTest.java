@@ -48,7 +48,8 @@ public class BDDLowLevelTest {
         assertThat(statistics.nodesize()).isEqualTo(1009);
         assertThat(statistics.produced()).isEqualTo(14);
         assertThat(statistics.varnum()).isEqualTo(3);
-        assertThat(statistics.toString()).isEqualTo("BDDStatistics{produced nodes=14, allocated nodes=1009, free nodes=993, variables=3, cache size=1000, garbage collections=0}");
+        assertThat(statistics.toString()).isEqualTo(
+                "BDDStatistics{produced nodes=14, allocated nodes=1009, free nodes=993, variables=3, cache size=1000, garbage collections=0}");
     }
 
     @Test
@@ -94,6 +95,7 @@ public class BDDLowLevelTest {
 
     @Test
     public void testSetNegativeVarNum() {
-        assertThatThrownBy(() -> new BDDKernel(new FormulaFactory(), -4, 100, 100)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new BDDKernel(new FormulaFactory(), -4, 100, 100))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

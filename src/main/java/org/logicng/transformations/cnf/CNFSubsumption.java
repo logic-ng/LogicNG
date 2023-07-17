@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.SortedSet;
 
 /**
- * This transformation performs subsumption on a given CNF and returns a new CNF.
- * I.e. performs as many subsumptions as possible.  A subsumption in a CNF means,
- * that e.g. a clause {@code A | B | C} is subsumed by another clause {@code A | B}
- * and can therefore be deleted for an equivalent CNF.
+ * This transformation performs subsumption on a given CNF and returns a new
+ * CNF. I.e. performs as many subsumptions as possible. A subsumption in a CNF
+ * means, that e.g. a clause {@code A | B | C} is subsumed by another clause
+ * {@code A | B} and can therefore be deleted for an equivalent CNF.
  * @version 2.3.0
  * @since 1.5.0
  */
@@ -28,8 +28,9 @@ public final class CNFSubsumption extends Subsumption implements FormulaTransfor
     private static final CNFSubsumption INSTANCE = new CNFSubsumption();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public CNFSubsumption() {

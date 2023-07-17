@@ -12,7 +12,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
- * DNF predicate.  Indicates whether a formula is in DNF or not.
+ * DNF predicate. Indicates whether a formula is in DNF or not.
  * @version 2.3.0
  * @since 1.0
  */
@@ -21,7 +21,7 @@ public final class DNFPredicate implements FormulaPredicate {
     private final static DNFPredicate INSTANCE = new DNFPredicate();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private DNFPredicate() {
         // Intentionally left empty

@@ -3,26 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * PBLib       -- Copyright (c) 2012-2013  Peter Steinke
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * PBLib -- Copyright (c) 2012-2013 Peter Steinke <p> Permission is hereby
+ * granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: <p> The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. <p> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.pseudobooleans;
@@ -40,7 +35,8 @@ import org.logicng.formulas.Literal;
 import java.util.List;
 
 /**
- * The binary merge encoding for pseudo-Boolean constraints to CNF due to Manthey, Philipp, and Steinke.
+ * The binary merge encoding for pseudo-Boolean constraints to CNF due to
+ * Manthey, Philipp, and Steinke.
  * @version 2.0.0
  * @since 1.1
  */
@@ -62,7 +58,8 @@ public final class PBBinaryMerge implements PBEncoding {
     }
 
     @Override
-    public List<Formula> encode(final LNGVector<Literal> lts, final LNGIntVector cffs, final int rhs, final List<Formula> formula) {
+    public List<Formula> encode(final LNGVector<Literal> lts, final LNGIntVector cffs, final int rhs,
+                                final List<Formula> formula) {
         final LNGVector<Literal> lits = new LNGVector<>(lts.size());
         for (final Literal lit : lts) {
             lits.push(lit);
@@ -75,7 +72,9 @@ public final class PBBinaryMerge implements PBEncoding {
             Literal x;
             boolean encode_complete_constraint = false;
             for (int i = 0; i < lits.size(); i++) {
-                if (this.config.binaryMergeNoSupportForSingleBit && Double.compare(Math.floor(Math.log(coeffs.get(i)) / Math.log(2)), Math.log(coeffs.get(i)) / Math.log(2)) == 0) {
+                if (this.config.binaryMergeNoSupportForSingleBit &&
+                        Double.compare(Math.floor(Math.log(coeffs.get(i)) / Math.log(2)),
+                                Math.log(coeffs.get(i)) / Math.log(2)) == 0) {
                     encode_complete_constraint = true;
                     continue;
                 }
@@ -130,7 +129,8 @@ public final class PBBinaryMerge implements PBEncoding {
         return maxweight;
     }
 
-    private void binary_merge(final LNGVector<Literal> literals, final LNGIntVector coefficients, final int leq, final int maxWeight, final int n,
+    private void binary_merge(final LNGVector<Literal> literals, final LNGIntVector coefficients, final int leq,
+                              final int maxWeight, final int n,
                               final List<Formula> formula, final Literal gac_lit) {
         final int less_then = leq + 1;
         final int p = (int) Math.floor(Math.log(maxWeight) / Math.log(2));
@@ -191,10 +191,12 @@ public final class PBBinaryMerge implements PBEncoding {
                         if (this.config.binaryMergeUseWatchDog) {
                             unary_adder(bucket_card.get(i), carries, bucket_merge.get(i), formula);
                         } else {
-                            this.sorting.merge(k, bucket_card.get(i), carries, tempResul, bucket_merge.get(i), INPUT_TO_OUTPUT);
+                            this.sorting.merge(k, bucket_card.get(i), carries, tempResul, bucket_merge.get(i),
+                                    INPUT_TO_OUTPUT);
                             formula.addAll(tempResul.result());
                         }
-                        if (k == bucket_merge.get(i).size() || (this.config.binaryMergeUseWatchDog && k <= bucket_merge.get(i).size())) {
+                        if (k == bucket_merge.get(i).size() ||
+                                (this.config.binaryMergeUseWatchDog && k <= bucket_merge.get(i).size())) {
                             if (gac_lit != null) {
                                 formula.add(this.f.clause(gac_lit, bucket_merge.get(i).get(k - 1).negate()));
                             } else {

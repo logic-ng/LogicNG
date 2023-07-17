@@ -3,25 +3,24 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * MiniCARD Copyright (c) 2012, Mark Liffiton, Jordyn Maglalang
- * <p>
- * MiniCARD is based on MiniSAT, whose original copyright notice is maintained below,
- * and it is released under the same license.
- * ---
- * <p>
- * MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
- * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * MiniCARD Copyright (c) 2012, Mark Liffiton, Jordyn Maglalang <p> MiniCARD is
+ * based on MiniSAT, whose original copyright notice is maintained below, and it
+ * is released under the same license. --- <p> MiniSat -- Copyright (c)
+ * 2003-2006, Niklas Een, Niklas Sorensson Permission is hereby granted, free of
+ * charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions: The above copyright notice and this permission
+ * notice shall be included in all copies or substantial portions of the
+ * Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.sat;
@@ -50,8 +49,8 @@ public class MiniCard extends MiniSatStyleSolver {
     protected LNGIntVector unitClauses;
 
     /**
-     * Constructs a new MiniSAT 2 solver with the default values for solver configuration.  By default, incremental mode
-     * is activated.
+     * Constructs a new MiniSAT 2 solver with the default values for solver
+     * configuration. By default, incremental mode is activated.
      */
     public MiniCard() {
         this(MiniSatConfig.builder().build());
@@ -169,8 +168,9 @@ public class MiniCard extends MiniSatStyleSolver {
     }
 
     /**
-     * Saves and returns the solver state expressed as an integer array which stores the length of the internal data
-     * structures.  The array has length 5 and has the following layout:
+     * Saves and returns the solver state expressed as an integer array which
+     * stores the length of the internal data structures. The array has length 5
+     * and has the following layout:
      * <p>
      * {@code | current solver state | #vars | #clauses | #learnt clauses | #unit clauses |}
      * @return the current solver state
@@ -599,8 +599,9 @@ public class MiniCard extends MiniSatStyleSolver {
     /**
      * The main search procedure of the CDCL algorithm.
      * @param nofConflicts the number of conflicts till the next restart
-     * @return a {@link Tristate} representing the result.  {@code FALSE} if the formula is UNSAT, {@code TRUE} if the
-     * formula is SAT, and {@code UNKNOWN} if the state is not known yet (restart)
+     * @return a {@link Tristate} representing the result. {@code FALSE} if the
+     *         formula is UNSAT, {@code TRUE} if the formula is SAT, and
+     *         {@code UNKNOWN} if the state is not known yet (restart)
      */
     protected Tristate search(final int nofConflicts) {
         if (!this.ok) {
@@ -720,10 +721,13 @@ public class MiniCard extends MiniSatStyleSolver {
     }
 
     /**
-     * Analyzes a given conflict clause wrt. the current solver state.  A 1-UIP clause is created during this procedure
-     * and the new backtracking level is stored in the solver state.
-     * @param conflictClause the conflict clause to start the resolution analysis with
-     * @param outLearnt      the vector where the new learnt 1-UIP clause is stored
+     * Analyzes a given conflict clause wrt. the current solver state. A 1-UIP
+     * clause is created during this procedure and the new backtracking level is
+     * stored in the solver state.
+     * @param conflictClause the conflict clause to start the resolution
+     *                       analysis with
+     * @param outLearnt      the vector where the new learnt 1-UIP clause is
+     *                       stored
      */
     protected void analyze(final MSClause conflictClause, final LNGIntVector outLearnt) {
         MSClause c = conflictClause;
@@ -778,7 +782,8 @@ public class MiniCard extends MiniSatStyleSolver {
     }
 
     /**
-     * Minimizes a given learnt clause depending on the minimization method of the solver configuration.
+     * Minimizes a given learnt clause depending on the minimization method of
+     * the solver configuration.
      * @param outLearnt the learnt clause which should be minimized
      */
     protected void simplifyClause(final LNGIntVector outLearnt) {
@@ -849,7 +854,8 @@ public class MiniCard extends MiniSatStyleSolver {
     }
 
     /**
-     * Performs a simple removal of clauses used during the loading of an older state.
+     * Performs a simple removal of clauses used during the loading of an older
+     * state.
      * @param c the clause to remove
      */
     protected void simpleRemoveClause(final MSClause c) {

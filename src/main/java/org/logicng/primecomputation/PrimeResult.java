@@ -13,8 +13,8 @@ import java.util.SortedSet;
 /**
  * Result of a prime computation.
  * <p>
- * Contains a list of prime implicants, a list of prime implicates
- * and the coverage type specifying which list is complete.
+ * Contains a list of prime implicants, a list of prime implicates and the
+ * coverage type specifying which list is complete.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -93,14 +93,14 @@ public final class PrimeResult {
      */
     public enum CoverageType {
         /**
-         * Indicates that the set of prime implicants is complete,
-         * i.e. there are no other prime implicants for the formula.
+         * Indicates that the set of prime implicants is complete, i.e. there
+         * are no other prime implicants for the formula.
          */
         IMPLICANTS_COMPLETE,
 
         /**
-         * Indicates that the set of prime implicates is complete,
-         * i.e. there are no other prime implicates for the formula.
+         * Indicates that the set of prime implicates is complete, i.e. there
+         * are no other prime implicates for the formula.
          */
         IMPLICATES_COMPLETE
     }

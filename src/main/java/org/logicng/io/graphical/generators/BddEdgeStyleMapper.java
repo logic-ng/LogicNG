@@ -8,14 +8,16 @@ import org.logicng.io.graphical.GraphicalEdgeStyle;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
- * An abstract super class for an edge mapper for a graphical representation of a BDD.
+ * An abstract super class for an edge mapper for a graphical representation of
+ * a BDD.
  * @version 2.4.0
  * @since 2.4.0
  */
 public abstract class BddEdgeStyleMapper extends BddMapper implements EdgeStyleMapper<Integer> {
 
     /**
-     * Constructs a new BDD edge mapper for a given BDD kernel.  The BDDs must be constructed with this kernel.
+     * Constructs a new BDD edge mapper for a given BDD kernel. The BDDs must be
+     * constructed with this kernel.
      * @param kernel a BDD kernel
      */
     public BddEdgeStyleMapper(final BDDKernel kernel) {

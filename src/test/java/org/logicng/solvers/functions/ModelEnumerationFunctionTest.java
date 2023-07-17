@@ -55,13 +55,18 @@ public class ModelEnumerationFunctionTest {
 
     @Test
     public void testVariableRemovedBySimplificationOccursInModels() throws ParserException {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().simplifyComplementaryOperands(true).build());
-        final SATSolver solver = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final FormulaFactory f =
+                new FormulaFactory(FormulaFactoryConfig.builder().simplifyComplementaryOperands(true).build());
+        final SATSolver solver = MiniSat.miniSat(this.f,
+                MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         final Variable a = f.variable("A");
         final Variable b = f.variable("B");
         final Formula formula = this.f.parse("A & B => A");
-        solver.add(formula); // during NNF conversion, used by the PG transformation, the formula simplifies to verum when added to the solver
-        final List<Assignment> models = solver.execute(ModelEnumerationFunction.builder().variables(formula.variables()).build());
+        solver.add(formula); // during NNF conversion, used by the PG
+                             // transformation, the formula simplifies to verum
+                             // when added to the solver
+        final List<Assignment> models =
+                solver.execute(ModelEnumerationFunction.builder().variables(formula.variables()).build());
         assertThat(models).hasSize(4);
         for (final Assignment model : models) {
             assertThat(variables(model.literals())).containsExactlyInAnyOrder(a, b);
@@ -73,7 +78,8 @@ public class ModelEnumerationFunctionTest {
         final SATSolver solver = MiniSat.miniSat(this.f);
         final Variable a = this.f.variable("A");
         solver.add(a);
-        final List<Assignment> models = solver.execute(ModelEnumerationFunction.builder().variables(this.f.variables("A", "X")).build());
+        final List<Assignment> models =
+                solver.execute(ModelEnumerationFunction.builder().variables(this.f.variables("A", "X")).build());
         assertThat(models).hasSize(1);
         assertThat(models.get(0).literals()).containsExactly(a);
     }

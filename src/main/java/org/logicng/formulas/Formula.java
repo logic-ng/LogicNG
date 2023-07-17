@@ -65,8 +65,8 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns the number of atomic formulas of this formula.  An atomic formula is a predicate (constants and literals)
-     * or a pseudo-Boolean constraint.
+     * Returns the number of atomic formulas of this formula. An atomic formula
+     * is a predicate (constants and literals) or a pseudo-Boolean constraint.
      * @return the number of atomic formulas of this formula.
      */
     public long numberOfAtoms() {
@@ -97,19 +97,22 @@ public abstract class Formula implements Iterable<Formula> {
 
     /**
      * Returns whether this formula is a constant formula ("True" or "False").
-     * @return {@code true} if this formula is a constant formula, {@code false} otherwise
+     * @return {@code true} if this formula is a constant formula, {@code false}
+     *         otherwise
      */
     public abstract boolean isConstantFormula();
 
     /**
-     * Returns whether this formula is an atomic formula (constant, literal, pseudo Boolean constraint), or not.
-     * @return {@code true} if this formula is an atomic formula, {@code false} otherwise
+     * Returns whether this formula is an atomic formula (constant, literal,
+     * pseudo Boolean constraint), or not.
+     * @return {@code true} if this formula is an atomic formula, {@code false}
+     *         otherwise
      */
     public abstract boolean isAtomicFormula();
 
     /**
-     * Returns all variables occurring in this formula.  Returns an unmodifiable set, so do not try to change the variable
-     * set manually.
+     * Returns all variables occurring in this formula. Returns an unmodifiable
+     * set, so do not try to change the variable set manually.
      * @return all variables occurring in this formula
      */
     public SortedSet<Variable> variables() {
@@ -117,8 +120,8 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns all literals occurring in this formula.  Returns an unmodifiable set, so do not try to change the literal
-     * set manually.
+     * Returns all literals occurring in this formula. Returns an unmodifiable
+     * set, so do not try to change the literal set manually.
      * @return all literals occurring in this formula
      */
     public SortedSet<Literal> literals() {
@@ -126,7 +129,8 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns {@code true} if a given variable name is found in this formula, {@code false} otherwise.
+     * Returns {@code true} if a given variable name is found in this formula,
+     * {@code false} otherwise.
      * @param variable the variable to search for
      * @return {@code true} if a given variable is found in this formula
      */
@@ -135,15 +139,17 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns {@code true} if a given variable name is found in this formula, {@code false} otherwise.
+     * Returns {@code true} if a given variable name is found in this formula,
+     * {@code false} otherwise.
      * @param variable the variable to search for
      * @return {@code true} if a given variable is found in this formula
      */
     public abstract boolean containsVariable(final Variable variable);
 
     /**
-     * Evaluates this formula with a given assignment.  A literal not covered by the assignment evaluates
-     * to {@code false} if it is positive, otherwise it evaluates to {@code true}.
+     * Evaluates this formula with a given assignment. A literal not covered by
+     * the assignment evaluates to {@code false} if it is positive, otherwise it
+     * evaluates to {@code true}.
      * @param assignment the given assignment
      * @return the result of the evaluation, {@code true} or {@code false}
      */
@@ -157,9 +163,11 @@ public abstract class Formula implements Iterable<Formula> {
     public abstract Formula restrict(final Assignment assignment);
 
     /**
-     * Returns {@code true} if this formula contains a given node, {@code false} otherwise.
+     * Returns {@code true} if this formula contains a given node, {@code false}
+     * otherwise.
      * <p>
-     * In particular, a {@code Literal} node {@code ~a} does NOT contain the node {@code a}.
+     * In particular, a {@code Literal} node {@code ~a} does NOT contain the
+     * node {@code a}.
      * @param formula the node
      * @return {@code true} if this formula contains a given node
      */
@@ -193,7 +201,8 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Performs a simultaneous substitution on this formula given a single mapping from variable to formula.
+     * Performs a simultaneous substitution on this formula given a single
+     * mapping from variable to formula.
      * @param variable the variable
      * @param formula  the formula
      * @return a new substituted formula
@@ -226,20 +235,25 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns a copy of this formula which is in CNF.  The algorithm which is used for the default CNF transformation
-     * can be configured in the {@link FormulaFactory}.
+     * Returns a copy of this formula which is in CNF. The algorithm which is
+     * used for the default CNF transformation can be configured in the
+     * {@link FormulaFactory}.
      * <p>
-     * Be aware that the default algorithm for the CNF transformation may result in a CNF containing additional auxiliary
-     * variables with prefix {@value FormulaFactory#CNF_PREFIX}.  Also, the result may not be a semantically equivalent CNF
-     * but an equisatisfiable CNF.
+     * Be aware that the default algorithm for the CNF transformation may result
+     * in a CNF containing additional auxiliary variables with prefix
+     * {@value FormulaFactory#CNF_PREFIX}. Also, the result may not be a
+     * semantically equivalent CNF but an equisatisfiable CNF.
      * <p>
-     * If the introduction of auxiliary variables is unwanted, you can choose one of the algorithms
-     * {@link org.logicng.transformations.cnf.CNFConfig.Algorithm#FACTORIZATION} and
-     * {@link org.logicng.transformations.cnf.CNFConfig.Algorithm#BDD}.  Both algorithms provide CNF conversions without
-     * the introduction of auxiliary variables and the result is a semantically equivalent CNF.
+     * If the introduction of auxiliary variables is unwanted, you can choose
+     * one of the algorithms
+     * {@link org.logicng.transformations.cnf.CNFConfig.Algorithm#FACTORIZATION}
+     * and {@link org.logicng.transformations.cnf.CNFConfig.Algorithm#BDD}. Both
+     * algorithms provide CNF conversions without the introduction of auxiliary
+     * variables and the result is a semantically equivalent CNF.
      * <p>
-     * Since CNF is the input for the SAT or MaxSAT solvers, it has a special treatment here.  For other conversions, use
-     * the according formula functions.
+     * Since CNF is the input for the SAT or MaxSAT solvers, it has a special
+     * treatment here. For other conversions, use the according formula
+     * functions.
      * @return a copy of this formula which is in CNF
      */
     public Formula cnf() {
@@ -247,82 +261,102 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Returns whether this formula is satisfiable.
-     * A new SAT solver is used to check the satisfiability. This is a convenience method for the
-     * predicate {@link org.logicng.predicates.satisfiability.SATPredicate}. If you want to
-     * have more influence on the solver (e.g. which solver type or configuration) you must create and
-     * use a {@link org.logicng.solvers.SATSolver} on your own.
-     * @return {@code true} when this formula is satisfiable, {@code false} otherwise
+     * Returns whether this formula is satisfiable. A new SAT solver is used to
+     * check the satisfiability. This is a convenience method for the predicate
+     * {@link org.logicng.predicates.satisfiability.SATPredicate}. If you want
+     * to have more influence on the solver (e.g. which solver type or
+     * configuration) you must create and use a
+     * {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is satisfiable, {@code false}
+     *         otherwise
      */
     public boolean isSatisfiable() {
         return this.holds(new SATPredicate(this.f));
     }
 
     /**
-     * Returns whether this formula is a tautology, hence always true.
-     * A new SAT solver is used to check the tautology. This is a convenience method for the
-     * predicate {@link org.logicng.predicates.satisfiability.TautologyPredicate}. If you want to
-     * have more influence on the solver (e.g. which solver type or configuration) you must create and
-     * use a {@link org.logicng.solvers.SATSolver} on your own.
-     * @return {@code true} when this formula is a tautology, {@code false} otherwise
+     * Returns whether this formula is a tautology, hence always true. A new SAT
+     * solver is used to check the tautology. This is a convenience method for
+     * the predicate
+     * {@link org.logicng.predicates.satisfiability.TautologyPredicate}. If you
+     * want to have more influence on the solver (e.g. which solver type or
+     * configuration) you must create and use a
+     * {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is a tautology, {@code false}
+     *         otherwise
      */
     public boolean isTautology() {
         return this.holds(new TautologyPredicate(this.f));
     }
 
     /**
-     * Returns whether this formula is a contradiction, hence always false.
-     * A new SAT solver is used to check the contradiction. This is a convenience method for the
-     * predicate {@link org.logicng.predicates.satisfiability.ContradictionPredicate}. If you want to
-     * have more influence on the solver (e.g. which solver type or configuration) you must create and
-     * use a {@link org.logicng.solvers.SATSolver} on your own.
-     * @return {@code true} when this formula is a contradiction, {@code false} otherwise
+     * Returns whether this formula is a contradiction, hence always false. A
+     * new SAT solver is used to check the contradiction. This is a convenience
+     * method for the predicate
+     * {@link org.logicng.predicates.satisfiability.ContradictionPredicate}. If
+     * you want to have more influence on the solver (e.g. which solver type or
+     * configuration) you must create and use a
+     * {@link org.logicng.solvers.SATSolver} on your own.
+     * @return {@code true} when this formula is a contradiction, {@code false}
+     *         otherwise
      */
     public boolean isContradiction() {
         return this.holds(new ContradictionPredicate(this.f));
     }
 
     /**
-     * Returns whether this formula implies the given other formula, i.e. `this =&gt; other` is a tautology.
-     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
-     * have more influence on the solver (e.g. which solver type or configuration) you must create and
-     * use a {@link org.logicng.solvers.SATSolver} on your own.
-     * @param other the formula which should be checked if it is implied by this formula
-     * @return {@code true} when this formula implies the given other formula, {@code false} otherwise
+     * Returns whether this formula implies the given other formula, i.e. `this
+     * =&gt; other` is a tautology. A new SAT solver is used to check this
+     * tautology. This is a convenience method. If you want to have more
+     * influence on the solver (e.g. which solver type or configuration) you
+     * must create and use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @param other the formula which should be checked if it is implied by this
+     *              formula
+     * @return {@code true} when this formula implies the given other formula,
+     *         {@code false} otherwise
      */
     public boolean implies(final Formula other) {
         return this.f.implication(this, other).holds(new TautologyPredicate(this.f));
     }
 
     /**
-     * Returns whether this formula is implied by the given other formula, i.e. `other =&gt; this` is a tautology.
-     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
-     * have more influence on the solver (e.g. which solver type or configuration) you must create and
-     * use a {@link org.logicng.solvers.SATSolver} on your own.
-     * @param other the formula which should be checked if it implies this formula
-     * @return {@code true} when this formula is implied by the given other formula, {@code false} otherwise
+     * Returns whether this formula is implied by the given other formula, i.e.
+     * `other =&gt; this` is a tautology. A new SAT solver is used to check this
+     * tautology. This is a convenience method. If you want to have more
+     * influence on the solver (e.g. which solver type or configuration) you
+     * must create and use a {@link org.logicng.solvers.SATSolver} on your own.
+     * @param other the formula which should be checked if it implies this
+     *              formula
+     * @return {@code true} when this formula is implied by the given other
+     *         formula, {@code false} otherwise
      */
     public boolean isImpliedBy(final Formula other) {
         return this.f.implication(other, this).holds(new TautologyPredicate(this.f));
     }
 
     /**
-     * Returns whether this formula is equivalent to the given other formula, i.e. `other &lt;=&gt; this` is a tautology.
-     * A new SAT solver is used to check this tautology. This is a convenience method. If you want to
-     * have more influence on the solver (e.g. which solver type or configuration) you must create and
-     * use a {@link org.logicng.solvers.SATSolver} on your own.
-     * @param other the formula which should be checked if it is equivalent with this formula
-     * @return {@code true} when this formula is equivalent to the given other formula, {@code false} otherwise
+     * Returns whether this formula is equivalent to the given other formula,
+     * i.e. `other &lt;=&gt; this` is a tautology. A new SAT solver is used to
+     * check this tautology. This is a convenience method. If you want to have
+     * more influence on the solver (e.g. which solver type or configuration)
+     * you must create and use a {@link org.logicng.solvers.SATSolver} on your
+     * own.
+     * @param other the formula which should be checked if it is equivalent with
+     *              this formula
+     * @return {@code true} when this formula is equivalent to the given other
+     *         formula, {@code false} otherwise
      */
     public boolean isEquivalentTo(final Formula other) {
         return this.f.equivalence(this, other).holds(new TautologyPredicate(this.f));
     }
 
     /**
-     * Generates a BDD from this formula with a given variable ordering.  This is done by generating a new BDD factory,
-     * generating the variable order for this formula, and building a new BDD.  If more sophisticated operations should
-     * be performed on the BDD or more than one formula should be constructed on the BDD, an own instance of
-     * {@link BDDFactory} should be created and used.
+     * Generates a BDD from this formula with a given variable ordering. This is
+     * done by generating a new BDD factory, generating the variable order for
+     * this formula, and building a new BDD. If more sophisticated operations
+     * should be performed on the BDD or more than one formula should be
+     * constructed on the BDD, an own instance of {@link BDDFactory} should be
+     * created and used.
      * @param variableOrdering the variable ordering
      * @return the BDD for this formula with the given ordering
      */
@@ -340,9 +374,11 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Generates a BDD from this formula with no given variable ordering.  This is done by generating a new BDD factory
-     * and building a new BDD.  If more sophisticated operations should be performed on the BDD or more than one
-     * formula should be constructed on the BDD, an own instance of * {@link BDDFactory} should be created and used.
+     * Generates a BDD from this formula with no given variable ordering. This
+     * is done by generating a new BDD factory and building a new BDD. If more
+     * sophisticated operations should be performed on the BDD or more than one
+     * formula should be constructed on the BDD, an own instance of *
+     * {@link BDDFactory} should be created and used.
      * @return the BDD for this formula
      */
     public BDD bdd() {
@@ -350,7 +386,8 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Transforms this formula with a given formula transformator and caches the result.
+     * Transforms this formula with a given formula transformator and caches the
+     * result.
      * @param transformation the formula transformator
      * @return the transformed formula
      */
@@ -361,7 +398,9 @@ public abstract class Formula implements Iterable<Formula> {
     /**
      * Transforms this formula with a given formula transformator.
      * @param transformation the formula transformator
-     * @param cache          indicates whether the result (and associated predicates) should be cached in this formula's cache.
+     * @param cache          indicates whether the result (and associated
+     *                       predicates) should be cached in this formula's
+     *                       cache.
      * @return the transformed formula
      */
     public Formula transform(final FormulaTransformation transformation, final boolean cache) {
@@ -369,8 +408,8 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Evaluates a given predicate on this formula, caches the result, and returns {@code true} if the predicate holds,
-     * {@code false} otherwise.
+     * Evaluates a given predicate on this formula, caches the result, and
+     * returns {@code true} if the predicate holds, {@code false} otherwise.
      * @param predicate the predicate
      * @return {@code true} if the predicate holds, {@code false} otherwise
      */
@@ -379,9 +418,11 @@ public abstract class Formula implements Iterable<Formula> {
     }
 
     /**
-     * Evaluates a given predicate on this formula and returns {@code true} if the predicate holds, {@code false} otherwise.
+     * Evaluates a given predicate on this formula and returns {@code true} if
+     * the predicate holds, {@code false} otherwise.
      * @param predicate the predicate
-     * @param cache     indicates whether the result should be cached in this formula's cache
+     * @param cache     indicates whether the result should be cached in this
+     *                  formula's cache
      * @return {@code true} if the predicate holds, {@code false} otherwise
      */
     public boolean holds(final FormulaPredicate predicate, final boolean cache) {
@@ -391,7 +432,8 @@ public abstract class Formula implements Iterable<Formula> {
     /**
      * Applies a given function on this formula and returns the result.
      * @param function the function
-     * @param cache    indicates whether the result should be cached in this formula's cache
+     * @param cache    indicates whether the result should be cached in this
+     *                 formula's cache
      * @param <T>      the result type of the function
      * @return the result of the function application
      */
@@ -482,9 +524,10 @@ public abstract class Formula implements Iterable<Formula> {
     /**
      * Returns a stream of this formula's operands.
      * <p>
-     * Most times streams have worse performance then iterating over the formula per iterator.
-     * Since internally formulas store their operands, a costly call to {@code Arrays.stream()}
-     * is necessary.  So if performance matters - avoid using streams.
+     * Most times streams have worse performance then iterating over the formula
+     * per iterator. Since internally formulas store their operands, a costly
+     * call to {@code Arrays.stream()} is necessary. So if performance matters -
+     * avoid using streams.
      * @return the stream
      */
     public abstract Stream<Formula> stream();

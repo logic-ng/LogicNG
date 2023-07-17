@@ -5,12 +5,15 @@
 package org.logicng.datastructures;
 
 /**
- * A tristate constant.  This constant can have three different values: {@code TRUE}, {@code FALSE}, and {@code UNDEF}.
+ * A tristate constant. This constant can have three different values:
+ * {@code TRUE}, {@code FALSE}, and {@code UNDEF}.
  * @version 1.0
  * @since 1.0
  */
 public enum Tristate {
-    TRUE, FALSE, UNDEF;
+    TRUE,
+    FALSE,
+    UNDEF;
 
     /**
      * Returns the negation of a tristate constant.

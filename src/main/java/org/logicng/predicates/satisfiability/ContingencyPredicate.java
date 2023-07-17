@@ -9,8 +9,8 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
- * Contingency predicate.  Indicates whether a formula is contingent
- * (neither a tautology nor a contradiction) or not.
+ * Contingency predicate. Indicates whether a formula is contingent (neither a
+ * tautology nor a contradiction) or not.
  * @version 1.0
  * @since 1.0
  */

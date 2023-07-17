@@ -30,13 +30,15 @@ import java.io.IOException;
 public class FormulaDimacsFileWriterTest extends TestWithExampleFormulas {
 
     private final FormulaFactory f = new FormulaFactory();
-    private final CNFEncoder encoder = new CNFEncoder(this.f, CNFConfig.builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build());
+    private final CNFEncoder encoder =
+            new CNFEncoder(this.f, CNFConfig.builder().algorithm(CNFConfig.Algorithm.FACTORIZATION).build());
     private final PropositionalParser p = new PropositionalParser(this.f);
     private final PseudoBooleanParser pp = new PseudoBooleanParser(this.f);
 
     @Test
     public void testNonCNF() {
-        assertThatThrownBy(() -> FormulaDimacsFileWriter.write("non-cnf", this.IMP1, false)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> FormulaDimacsFileWriter.write("non-cnf", this.IMP1, false))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -92,7 +94,8 @@ public class FormulaDimacsFileWriterTest extends TestWithExampleFormulas {
         final BufferedReader expReader = new BufferedReader(new FileReader(expected));
         final BufferedReader actReader = new BufferedReader(new FileReader(actual));
         for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++) {
-            softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal").isEqualTo(expReader.readLine());
+            softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal")
+                    .isEqualTo(expReader.readLine());
         }
         if (expReader.ready()) {
             softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");

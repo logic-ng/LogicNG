@@ -46,12 +46,19 @@ public class DistributiveSimplifierTest extends TestWithExampleFormulas {
         final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(this.f.and(this.AND1, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.AND1);
         assertThat(this.f.and(this.AND2, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.FALSE);
-        assertThat(this.f.and(this.OR1, this.X).transform(this.distributiveSimplifier)).isEqualTo(this.f.and(this.OR1, this.X));
-        assertThat(this.f.and(this.OR2, this.X).transform(this.distributiveSimplifier)).isEqualTo(this.f.and(this.OR2, this.X));
-        assertThat(this.f.or(this.AND1, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.f.or(this.AND1, this.A));
-        assertThat(this.f.or(this.AND2, this.A).transform(this.distributiveSimplifier)).isEqualTo(this.f.or(this.AND2, this.A));
+        assertThat(this.f.and(this.OR1, this.X).transform(this.distributiveSimplifier))
+                .isEqualTo(this.f.and(this.OR1, this.X));
+        assertThat(this.f.and(this.OR2, this.X).transform(this.distributiveSimplifier))
+                .isEqualTo(this.f.and(this.OR2, this.X));
+        assertThat(this.f.or(this.AND1, this.A).transform(this.distributiveSimplifier))
+                .isEqualTo(this.f.or(this.AND1, this.A));
+        assertThat(this.f.or(this.AND2, this.A).transform(this.distributiveSimplifier))
+                .isEqualTo(this.f.or(this.AND2, this.A));
         assertThat(this.f.or(this.OR1, this.X).transform(this.distributiveSimplifier)).isEqualTo(this.OR1);
-        assertThat(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c").transform(this.distributiveSimplifier)).isEqualTo(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & f & c & (e | (~b | ~f | g) & (f | g | h) & (~f | ~g | h))"));
+        assertThat(p.parse(
+                "(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c")
+                .transform(this.distributiveSimplifier)).isEqualTo(p.parse(
+                        "(a | b | ~c) & (~a | ~d) & (~c | d) & f & c & (e | (~b | ~f | g) & (f | g | h) & (~f | ~g | h))"));
     }
 
     @Test
@@ -67,7 +74,8 @@ public class DistributiveSimplifierTest extends TestWithExampleFormulas {
         final Formula cAnd = p.parse("(a | b | ~c) & (~a | ~d) & (~c | d | b) & (~c | ~b)");
         final Formula cAndD1 = cAnd.transform(this.distributiveSimplifier);
         assertThat(cAndD1).isEqualTo(p.parse("(~a | ~d) & (~c | (a | b) & (d | b) & ~b)"));
-        assertThat(cAndD1.transform(this.distributiveSimplifier)).isEqualTo(p.parse("(~a | ~d) & (~c | ~b & (b | a & d))"));
+        assertThat(cAndD1.transform(this.distributiveSimplifier))
+                .isEqualTo(p.parse("(~a | ~d) & (~c | ~b & (b | a & d))"));
 
         assertThat(this.f.not(cAnd).transform(this.distributiveSimplifier)).isEqualTo(this.f.not(cAndD1));
 
@@ -76,7 +84,9 @@ public class DistributiveSimplifierTest extends TestWithExampleFormulas {
         assertThat(cOrD1).isEqualTo(p.parse("x & (y & z | y & ~z | ~y & z)"));
         assertThat(cOrD1.transform(this.distributiveSimplifier)).isEqualTo(p.parse("x & (~y & z | y)"));
 
-        assertThat(this.f.equivalence(cOr, cAnd).transform(this.distributiveSimplifier)).isEqualTo(this.f.equivalence(cOrD1, cAndD1));
-        assertThat(this.f.implication(cOr, cAnd).transform(this.distributiveSimplifier)).isEqualTo(this.f.implication(cOrD1, cAndD1));
+        assertThat(this.f.equivalence(cOr, cAnd).transform(this.distributiveSimplifier))
+                .isEqualTo(this.f.equivalence(cOrD1, cAndD1));
+        assertThat(this.f.implication(cOr, cAnd).transform(this.distributiveSimplifier))
+                .isEqualTo(this.f.implication(cOrD1, cAndD1));
     }
 }

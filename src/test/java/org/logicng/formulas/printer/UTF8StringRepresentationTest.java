@@ -50,7 +50,9 @@ public class UTF8StringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.f.equivalence(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.and(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.or(this.A, this.f.amo()), this.sr)).isEqualTo("⊤");
-        assertThat(this.f.string(this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr)).isEqualTo("⊤");
+        assertThat(this.f.string(
+                this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr))
+                        .isEqualTo("⊤");
     }
 
     @Test
@@ -62,7 +64,8 @@ public class UTF8StringRepresentationTest extends TestWithExampleFormulas {
 
     @Test
     public void testViaFormulaFactoryConfig() {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
+        final FormulaFactory f =
+                new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
         assertThat(f.importFormula(this.EQ4).toString()).isEqualTo("a ⇒ b ⇔ ¬a ⇒ ¬b");
     }
 }

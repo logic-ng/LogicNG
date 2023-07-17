@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A writer which writes a graphical representation as a DOT file.  This writer is thread-safe.
+ * A writer which writes a graphical representation as a DOT file. This writer
+ * is thread-safe.
  * <p>
- * The DOT file specification can be found <a href="https://graphviz.org/doc/info/lang.html">here</a>.
+ * The DOT file specification can be found
+ * <a href="https://graphviz.org/doc/info/lang.html">here</a>.
  * @version 2.4.0
  * @since 2.4.0
  */
@@ -43,7 +45,8 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         bufferedWriter.close();
     }
 
-    private static void writePreamble(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
+    private static void writePreamble(final BufferedWriter writer, final GraphicalRepresentation representation)
+            throws IOException {
         writer.write(String.format("%s {", representation.isDirected() ? "digraph G" : "strict graph"));
         writer.newLine();
         if (representation.getBackground() != null) {
@@ -53,7 +56,8 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         writer.newLine();
     }
 
-    private static void writeNodes(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
+    private static void writeNodes(final BufferedWriter writer, final GraphicalRepresentation representation)
+            throws IOException {
         if (representation.isAlignTerminals()) {
             writer.write("{ rank = same;");
             writer.newLine();
@@ -76,7 +80,8 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         writer.newLine();
     }
 
-    private static void writeEdges(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
+    private static void writeEdges(final BufferedWriter writer, final GraphicalRepresentation representation)
+            throws IOException {
         for (final GraphicalEdge edge : representation.getEdges()) {
             writer.write(edgeString(edge, representation.isDirected()));
             writer.newLine();
@@ -103,7 +108,8 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         if (style.getBackgroundColor() != null) {
             attributes.add(String.format("style=filled, fillcolor=\"%s\"", style.getBackgroundColor().getHexValue()));
         }
-        return String.format("  %s [label=\"%s\"%s]", node.getId(), node.getLabel(), attributes.isEmpty() ? "" : ", " + String.join(", ", attributes));
+        return String.format("  %s [label=\"%s\"%s]", node.getId(), node.getLabel(),
+                attributes.isEmpty() ? "" : ", " + String.join(", ", attributes));
     }
 
     private static String edgeString(final GraphicalEdge edge, final boolean isDirected) {
@@ -120,7 +126,8 @@ public class GraphicalDotWriter implements GraphicalRepresentationWriter {
         }
         final String attributeString = attributes.isEmpty() ? "" : " [" + String.join(", ", attributes) + "]";
         final String edgeSymbol = isDirected ? "->" : "--";
-        return String.format("  %s %s %s%s", edge.getSource().getId(), edgeSymbol, edge.getDestination().getId(), attributeString);
+        return String.format("  %s %s %s%s", edge.getSource().getId(), edgeSymbol, edge.getDestination().getId(),
+                attributeString);
     }
 
     private static String shapeString(final GraphicalNodeStyle.Shape shape) {

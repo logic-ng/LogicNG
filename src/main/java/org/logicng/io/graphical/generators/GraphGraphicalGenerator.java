@@ -28,7 +28,8 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
      * @param builder the builder
      */
     GraphGraphicalGenerator(final GraphicalGeneratorBuilder<GraphGraphicalGenerator<T>, T> builder) {
-        super(builder.backgroundColor, builder.alignTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle, builder.nodeStyleMapper,
+        super(builder.backgroundColor, builder.alignTerminals, builder.defaultEdgeStyle, builder.defaultNodeStyle,
+                builder.nodeStyleMapper,
                 builder.labelMapper, builder.edgeMapper);
     }
 
@@ -49,13 +50,15 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
     public GraphicalRepresentation translate(final Graph<T> graph) {
         final Map<Node<T>, GraphicalNode> nodes = new HashMap<>();
         final Set<Node<T>> visited = new HashSet<>();
-        final GraphicalRepresentation graphicalRepresentation = new GraphicalRepresentation(false, false, this.backgroundColor);
+        final GraphicalRepresentation graphicalRepresentation =
+                new GraphicalRepresentation(false, false, this.backgroundColor);
         for (final Node<T> node : graph.nodes()) {
             final GraphicalNode graphicalNode = addNode(node, graphicalRepresentation, nodes);
             for (final Node<T> neighbour : node.neighbours()) {
                 final GraphicalNode graphicalNeighbourNode = addNode(neighbour, graphicalRepresentation, nodes);
                 if (!visited.contains(neighbour)) {
-                    graphicalRepresentation.addEdge(new GraphicalEdge(graphicalNode, graphicalNeighbourNode, edgeStyle(node.content(), neighbour.content())));
+                    graphicalRepresentation.addEdge(new GraphicalEdge(graphicalNode, graphicalNeighbourNode,
+                            edgeStyle(node.content(), neighbour.content())));
                 }
             }
             visited.add(node);
@@ -63,10 +66,12 @@ public class GraphGraphicalGenerator<T> extends GraphicalGenerator<T> {
         return graphicalRepresentation;
     }
 
-    private GraphicalNode addNode(final Node<T> node, final GraphicalRepresentation graphicalRepresentation, final Map<Node<T>, GraphicalNode> nodes) {
+    private GraphicalNode addNode(final Node<T> node, final GraphicalRepresentation graphicalRepresentation,
+                                  final Map<Node<T>, GraphicalNode> nodes) {
         GraphicalNode graphicalNode = nodes.get(node);
         if (graphicalNode == null) {
-            graphicalNode = new GraphicalNode(ID + nodes.size(), labelOrDefault(node.content(), node.content().toString()), nodeStyle(node.content()));
+            graphicalNode = new GraphicalNode(ID + nodes.size(),
+                    labelOrDefault(node.content(), node.content().toString()), nodeStyle(node.content()));
             graphicalRepresentation.addNode(graphicalNode);
             nodes.put(node, graphicalNode);
         }

@@ -9,7 +9,8 @@ import org.logicng.formulas.FormulaTransformation;
 import org.logicng.transformations.CanonicalEnumeration;
 
 /**
- * Canonical CNF generation via enumeration of falsifying assignments by a SAT solver.
+ * Canonical CNF generation via enumeration of falsifying assignments by a SAT
+ * solver.
  * @version 2.3.0
  * @since 2.3.0
  */
@@ -18,7 +19,7 @@ public final class CanonicalCNFEnumeration extends CanonicalEnumeration implemen
     private final static CanonicalCNFEnumeration INSTANCE = new CanonicalCNFEnumeration();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private CanonicalCNFEnumeration() {
         // Intentionally left empty

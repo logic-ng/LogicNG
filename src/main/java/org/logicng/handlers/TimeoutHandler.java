@@ -16,18 +16,26 @@ public abstract class TimeoutHandler extends ComputationHandler {
     protected long designatedEnd;
 
     /**
-     * Constructs a new abstract timeout handler with a given timeout and a timeout type.
-     * The interpretation of the timeout depends on the timeout type:
+     * Constructs a new abstract timeout handler with a given timeout and a
+     * timeout type. The interpretation of the timeout depends on the timeout
+     * type:
      * <ul>
-     *     <li>{@link TimerType#SINGLE_TIMEOUT}: The timeout is started when {@link Handler#started()} is called.
-     *     Further calls to {@link Handler#started()} have no effect on the timeout. Thus, the timeout can only be started once.</li>
-     *     <li>{@link TimerType#RESTARTING_TIMEOUT}: The timeout is restarted when {@link Handler#started()} is called.</li>
-     *     <li>{@link TimerType#FIXED_END}: Timeout which is interpreted as fixed point in time (in milliseconds)
-     *     at which the computation should be aborted. The method {@link Handler#started()} must still be called,
-     *     but does not have an effect on the timeout.</li>
+     * <li>{@link TimerType#SINGLE_TIMEOUT}: The timeout is started when
+     * {@link Handler#started()} is called. Further calls to
+     * {@link Handler#started()} have no effect on the timeout. Thus, the
+     * timeout can only be started once.</li>
+     * <li>{@link TimerType#RESTARTING_TIMEOUT}: The timeout is restarted when
+     * {@link Handler#started()} is called.</li>
+     * <li>{@link TimerType#FIXED_END}: Timeout which is interpreted as fixed
+     * point in time (in milliseconds) at which the computation should be
+     * aborted. The method {@link Handler#started()} must still be called, but
+     * does not have an effect on the timeout.</li>
      * </ul>
-     * Note that it might take a few milliseconds more until the computation is actually canceled, since the cancellation depends on the next call to the handler.
-     * @param timeout the timeout in milliseconds, its meaning is defined by the timeout type
+     * Note that it might take a few milliseconds more until the computation is
+     * actually canceled, since the cancellation depends on the next call to the
+     * handler.
+     * @param timeout the timeout in milliseconds, its meaning is defined by the
+     *                timeout type
      * @param type    the type of the timer, must not be {@code null}
      */
     public TimeoutHandler(final long timeout, final TimerType type) {
@@ -37,9 +45,10 @@ public abstract class TimeoutHandler extends ComputationHandler {
     }
 
     /**
-     * Constructs a new abstract timeout handler with a given timeout and uses the
-     * timeout type {@link TimerType#SINGLE_TIMEOUT}.  Thus, the timeout is started when {@link Handler#started()}
-     * is called and further calls to {@link Handler#started()} have no effect on the timeout.
+     * Constructs a new abstract timeout handler with a given timeout and uses
+     * the timeout type {@link TimerType#SINGLE_TIMEOUT}. Thus, the timeout is
+     * started when {@link Handler#started()} is called and further calls to
+     * {@link Handler#started()} have no effect on the timeout.
      * @param timeout the timeout in milliseconds
      */
     public TimeoutHandler(final long timeout) {
@@ -56,7 +65,8 @@ public abstract class TimeoutHandler extends ComputationHandler {
 
     /**
      * Tests if the current time exceeds the timeout limit.
-     * @return {@code true} if the current time exceeds the timeout limit, otherwise {@code false}
+     * @return {@code true} if the current time exceeds the timeout limit,
+     *         otherwise {@code false}
      */
     protected boolean timeLimitExceeded() {
         this.aborted = System.currentTimeMillis() >= this.designatedEnd;
@@ -68,23 +78,26 @@ public abstract class TimeoutHandler extends ComputationHandler {
      */
     public enum TimerType {
         /**
-         * Simple timeout which is started when {@link Handler#started()} is called.
+         * Simple timeout which is started when {@link Handler#started()} is
+         * called.
          * <p>
-         * Multiple calls to {@link Handler#started()} do not restart the timeout.
+         * Multiple calls to {@link Handler#started()} do not restart the
+         * timeout.
          */
         SINGLE_TIMEOUT,
 
         /**
-         * Timeout which is restarted on every call to {@link Handler#started()}.
+         * Timeout which is restarted on every call to
+         * {@link Handler#started()}.
          */
         RESTARTING_TIMEOUT,
 
         /**
-         * Timeout which is interpreted as fixed point in time (in milliseconds) at
-         * which the computation should be aborted.
+         * Timeout which is interpreted as fixed point in time (in milliseconds)
+         * at which the computation should be aborted.
          * <p>
-         * The method {@link Handler#started()} must still be called, but does not have
-         * an effect on the timeout.
+         * The method {@link Handler#started()} must still be called, but does
+         * not have an effect on the timeout.
          */
         FIXED_END
     }

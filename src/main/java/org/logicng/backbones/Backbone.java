@@ -21,16 +21,20 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * This class represents a backbone.  A backbone of a formula is a set of literals (positive and/or negative) which
- * are present in their respective polarity in every model of the given formula.  Therefore, the literals must be set
- * accordingly in order for the formula to evaluate to true.
+ * This class represents a backbone. A backbone of a formula is a set of
+ * literals (positive and/or negative) which are present in their respective
+ * polarity in every model of the given formula. Therefore, the literals must be
+ * set accordingly in order for the formula to evaluate to true.
  * <p>
  * A backbone of a formula has up to three sets of variables
  * <ol>
- * <li>Positive backbone variables: Variables that occur positive in each model of the formula
- * <li>Negative backbone variables: Variables that occur negative in each model of the formula
- * <li>Optional variables: Variables that are neither in the positive nor in the negative backbone.
- * Therefore these variables can be assigned to true or false.
+ * <li>Positive backbone variables: Variables that occur positive in each model
+ * of the formula
+ * <li>Negative backbone variables: Variables that occur negative in each model
+ * of the formula
+ * <li>Optional variables: Variables that are neither in the positive nor in the
+ * negative backbone. Therefore these variables can be assigned to true or
+ * false.
  * </ol>
  * All variable sets which were not computed are empty.
  * @version 2.3.1
@@ -46,13 +50,15 @@ public final class Backbone {
     private final SortedSet<Variable> optionalVariables;
 
     /**
-     * Constructs a new backbone that contains the given backbone variables and the given optional variables.
+     * Constructs a new backbone that contains the given backbone variables and
+     * the given optional variables.
      * @param sat               is the original formula satisfiable or not
      * @param positiveBackbone  positive backbone variables
      * @param negativeBackbone  negative backbone variables
      * @param optionalVariables optional variables
      */
-    private Backbone(final boolean sat, final SortedSet<Variable> positiveBackbone, final SortedSet<Variable> negativeBackbone,
+    private Backbone(final boolean sat, final SortedSet<Variable> positiveBackbone,
+                     final SortedSet<Variable> negativeBackbone,
                      final SortedSet<Variable> optionalVariables) {
         this.sat = sat;
         this.positiveBackbone = positiveBackbone == null ? emptySortedSet() : positiveBackbone;
@@ -67,7 +73,8 @@ public final class Backbone {
      * @param optionalVariables optional variables
      * @return the backbone
      */
-    public static Backbone satBackbone(final SortedSet<Variable> positiveBackbone, final SortedSet<Variable> negativeBackbone,
+    public static Backbone satBackbone(final SortedSet<Variable> positiveBackbone,
+                                       final SortedSet<Variable> negativeBackbone,
                                        final SortedSet<Variable> optionalVariables) {
         return new Backbone(true, positiveBackbone, negativeBackbone, optionalVariables);
     }
@@ -81,8 +88,10 @@ public final class Backbone {
     }
 
     /**
-     * Returns whether the original formula of this backbone was satisfiable or not.
-     * @return whether the original formula of this backbone was satisfiable or not
+     * Returns whether the original formula of this backbone was satisfiable or
+     * not.
+     * @return whether the original formula of this backbone was satisfiable or
+     *         not
      */
     public boolean isSat() {
         return this.sat;
@@ -105,7 +114,8 @@ public final class Backbone {
     }
 
     /**
-     * Returns the variables of the formula that are optional, i.e. not in the positive or negative backbone.
+     * Returns the variables of the formula that are optional, i.e. not in the
+     * positive or negative backbone.
      * @return the set of non-backbone variables
      */
     public SortedSet<Variable> getOptionalVariables() {
@@ -113,9 +123,10 @@ public final class Backbone {
     }
 
     /**
-     * Returns all literals of the backbone.  Positive backbone variables have positive polarity, negative
-     * backbone variables have negative polarity.
-     * @return the set of both positive and negative backbone variables as literals
+     * Returns all literals of the backbone. Positive backbone variables have
+     * positive polarity, negative backbone variables have negative polarity.
+     * @return the set of both positive and negative backbone variables as
+     *         literals
      */
     public SortedSet<Literal> getCompleteBackbone() {
         final SortedSet<Literal> completeBackbone = new TreeSet<Literal>(this.positiveBackbone);
@@ -127,7 +138,8 @@ public final class Backbone {
 
     /**
      * Returns the positive and negative backbone as a conjunction of literals.
-     * @param f the formula factory needed for construction the backbone formula.
+     * @param f the formula factory needed for construction the backbone
+     *          formula.
      * @return the backbone formula
      */
     public Formula toFormula(final FormulaFactory f) {
@@ -135,8 +147,10 @@ public final class Backbone {
     }
 
     /**
-     * Returns the backbone as map from variables to tri-states. A positive variable is mapped to {@code Tristate.TRUE},
-     * a negative variable to {@code Tristate.FALSE} and the optional variables to {@code Tristate.UNDEF}.
+     * Returns the backbone as map from variables to tri-states. A positive
+     * variable is mapped to {@code Tristate.TRUE}, a negative variable to
+     * {@code Tristate.FALSE} and the optional variables to
+     * {@code Tristate.UNDEF}.
      * @return the mapping of the backbone
      */
     public SortedMap<Variable, Tristate> toMap() {

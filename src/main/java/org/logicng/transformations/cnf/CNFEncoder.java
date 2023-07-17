@@ -43,7 +43,8 @@ public class CNFEncoder {
     }
 
     /**
-     * Constructs a new CNF encoder which uses the configuration of the formula factory.
+     * Constructs a new CNF encoder which uses the configuration of the formula
+     * factory.
      * @param f the formula factory
      */
     public CNFEncoder(final FormulaFactory f) {
@@ -84,7 +85,8 @@ public class CNFEncoder {
                     this.factorizationHandler = new AdvancedFactorizationHandler();
                     this.advancedFactorization = new CNFFactorization(this.factorizationHandler);
                 }
-                this.factorizationHandler.setBounds(this.config().distributionBoundary, this.config().createdClauseBoundary);
+                this.factorizationHandler.setBounds(this.config().distributionBoundary,
+                        this.config().createdClauseBoundary);
                 return this.advancedEncoding(formula);
             default:
                 throw new IllegalStateException("Unknown CNF encoding algorithm: " + this.config().algorithm);
@@ -92,8 +94,9 @@ public class CNFEncoder {
     }
 
     /**
-     * Encodes the given formula to CNF by first trying to use Factorization for the single sub-formulas.  When certain
-     * user-provided boundaries are met, the method is switched to Tseitin or Plaisted &amp; Greenbaum.
+     * Encodes the given formula to CNF by first trying to use Factorization for
+     * the single sub-formulas. When certain user-provided boundaries are met,
+     * the method is switched to Tseitin or Plaisted &amp; Greenbaum.
      * @param formula the formula
      * @return the CNF encoding of the formula
      */
@@ -127,15 +130,18 @@ public class CNFEncoder {
                     result = formula.transform(this.plaistedGreenbaum);
                     break;
                 default:
-                    throw new IllegalStateException("Invalid fallback CNF encoding algorithm: " + this.config().fallbackAlgorithmForAdvancedEncoding);
+                    throw new IllegalStateException("Invalid fallback CNF encoding algorithm: " +
+                            this.config().fallbackAlgorithmForAdvancedEncoding);
             }
         }
         return result;
     }
 
     /**
-     * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
+     * Returns the current configuration of this encoder. If the encoder was
+     * constructed with a given configuration, this configuration will always be
+     * used. Otherwise, the current configuration from the formula factory is
+     * used.
      * @return the current configuration of
      */
     public CNFConfig config() {

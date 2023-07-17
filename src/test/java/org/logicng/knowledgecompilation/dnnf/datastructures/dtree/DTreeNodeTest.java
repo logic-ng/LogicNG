@@ -19,7 +19,8 @@ public class DTreeNodeTest extends TestWithExampleFormulas {
 
     @Test
     public void testToString() throws ParserException {
-        final DTreeNode node = new DTreeNode(new DTreeLeaf(1, this.f.parse("a | b")), new DTreeLeaf(2, this.f.parse("c | d")));
+        final DTreeNode node =
+                new DTreeNode(new DTreeLeaf(1, this.f.parse("a | b")), new DTreeLeaf(2, this.f.parse("c | d")));
         assertThat(node.toString()).isEqualTo("DTreeNode: [DTreeLeaf: 1, a | b, DTreeLeaf: 2, c | d]");
     }
 }

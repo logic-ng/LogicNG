@@ -55,19 +55,22 @@ public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
 
     @Test
     public void testFormula1() throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/formula1.txt", this.f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/formula1.txt", this.f);
         testFormula(formula);
     }
 
     @Test
     public void testSimplifyFormulas() throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/simplify_formulas.txt", this.f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/simplify_formulas.txt", this.f);
         testFormula(formula);
     }
 
     @Test
     public void testLargeFormula() throws IOException, ParserException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         testFormula(formula);
     }
 
@@ -91,7 +94,8 @@ public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
     public void testRandom() {
         for (int i = 0; i < 500; i++) {
             final FormulaFactory f = new FormulaFactory();
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(20).weightPbc(2).seed(i * 42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f,
+                    FormulaRandomizerConfig.builder().numVars(20).weightPbc(2).seed(i * 42).build());
             final Formula formula = randomizer.formula(4);
             testFormula(formula);
         }
@@ -99,7 +103,8 @@ public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
 
     @Test
     public void testCancellationPoints() throws ParserException, IOException {
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         for (int numStarts = 0; numStarts < 20; numStarts++) {
             final SATHandler handler = new BoundedSatHandler(numStarts);
             testFormula(formula, handler, true);
@@ -118,7 +123,8 @@ public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
         if (!isSAT) {
             return;
         }
-        final SortedSet<Literal> falsifyingAssignment = FormulaHelper.negateLiterals(solver.model().literals(), TreeSet::new);
+        final SortedSet<Literal> falsifyingAssignment =
+                FormulaHelper.negateLiterals(solver.model().literals(), TreeSet::new);
         final NaivePrimeReduction naive = new NaivePrimeReduction(formula);
         final SortedSet<Literal> primeImplicate = naive.reduceImplicate(falsifyingAssignment, handler);
         if (expAborted) {

@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A generic graph.  Two graphs are only equal if they really are the same object.
+ * A generic graph. Two graphs are only equal if they really are the same
+ * object.
  * @param <T> the element type of the graph's nodes
  * @version 2.0.0
  * @since 1.2
@@ -37,7 +38,8 @@ public final class Graph<T> {
     }
 
     /**
-     * Returns the node with a given content. If such a node does not exist, it is created and added to the graph.
+     * Returns the node with a given content. If such a node does not exist, it
+     * is created and added to the graph.
      * @param content the given node content
      * @return the node with the given content
      */
@@ -60,7 +62,8 @@ public final class Graph<T> {
     }
 
     /**
-     * Adds an edge between two given nodes, which must both belong to this graph. (Does nothing if the nodes are already connected)
+     * Adds an edge between two given nodes, which must both belong to this
+     * graph. (Does nothing if the nodes are already connected)
      * @param o the first given node
      * @param t the second given node
      */
@@ -72,7 +75,8 @@ public final class Graph<T> {
     }
 
     /**
-     * Removes the edge between two given nodes. (Does nothing if the nodes are not connected)
+     * Removes the edge between two given nodes. (Does nothing if the nodes are
+     * not connected)
      * @param o the first given node
      * @param t the second given node
      */

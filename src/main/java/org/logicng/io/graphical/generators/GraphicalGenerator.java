@@ -25,8 +25,10 @@ public abstract class GraphicalGenerator<C> {
     private final LabelMapper<C> labelMapper;
     private final EdgeStyleMapper<C> edgeStyleMapper;
 
-    protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals, final GraphicalEdgeStyle defaultEdgeStyle,
-                                 final GraphicalNodeStyle defaultNodeStyle, final NodeStyleMapper<C> nodeStyleMapper, final LabelMapper<C> labelMapper,
+    protected GraphicalGenerator(final GraphicalColor backgroundColor, final boolean alignTerminals,
+                                 final GraphicalEdgeStyle defaultEdgeStyle,
+                                 final GraphicalNodeStyle defaultNodeStyle, final NodeStyleMapper<C> nodeStyleMapper,
+                                 final LabelMapper<C> labelMapper,
                                  final EdgeStyleMapper<C> edgeStyleMapper) {
         this.backgroundColor = backgroundColor;
         this.alignTerminals = alignTerminals;
@@ -38,8 +40,9 @@ public abstract class GraphicalGenerator<C> {
     }
 
     /**
-     * Computes the style for a node.  If no style mapper is configured the default style is applied, otherwise, the
-     * style mapper is used to dynamically compute the style for the given content.
+     * Computes the style for a node. If no style mapper is configured the
+     * default style is applied, otherwise, the style mapper is used to
+     * dynamically compute the style for the given content.
      * @param content the content to style
      * @return the node style
      */
@@ -48,7 +51,8 @@ public abstract class GraphicalGenerator<C> {
     }
 
     /**
-     * Computes the label with the label mapper or returns the default value if no label mapper is configured.
+     * Computes the label with the label mapper or returns the default value if
+     * no label mapper is configured.
      * @param content      the content for which to compute the label
      * @param defaultLabel the default label
      * @return the label
@@ -58,13 +62,15 @@ public abstract class GraphicalGenerator<C> {
     }
 
     /**
-     * Computes the style for an edge.  If no style mapper is configured the default style is applied, otherwise, the
-     * style mapper is used to dynamically compute the style for the given edge.
+     * Computes the style for an edge. If no style mapper is configured the
+     * default style is applied, otherwise, the style mapper is used to
+     * dynamically compute the style for the given edge.
      * @param source      the content of the source node
      * @param destination the content of the destination node
      * @return the edge style
      */
     protected GraphicalEdgeStyle edgeStyle(final C source, final C destination) {
-        return this.edgeStyleMapper != null ? this.edgeStyleMapper.computeStyle(source, destination) : this.defaultEdgeStyle;
+        return this.edgeStyleMapper != null ? this.edgeStyleMapper.computeStyle(source, destination) :
+                this.defaultEdgeStyle;
     }
 }

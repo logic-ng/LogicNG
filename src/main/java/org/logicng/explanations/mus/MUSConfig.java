@@ -19,7 +19,8 @@ public final class MUSConfig extends Configuration {
      * The algorithm for the MUS generation.
      */
     public enum Algorithm {
-        DELETION, PLAIN_INSERTION
+        DELETION,
+        PLAIN_INSERTION
     }
 
     final Algorithm algorithm;
@@ -64,7 +65,8 @@ public final class MUSConfig extends Configuration {
         }
 
         /**
-         * Sets the algorithm for the MUS generation. The default value is {@code DELETION}.
+         * Sets the algorithm for the MUS generation. The default value is
+         * {@code DELETION}.
          * @param algorithm the algorithm for the MUS generation
          * @return the builder
          */

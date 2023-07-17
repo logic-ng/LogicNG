@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A BDD variable ordering sorting the variables from minimal to maximal occurrence
- * in the input formula.  If two variables have the same number of occurrences, their
- * ordering according to their DFS ordering will be considered.
+ * A BDD variable ordering sorting the variables from minimal to maximal
+ * occurrence in the input formula. If two variables have the same number of
+ * occurrences, their ordering according to their DFS ordering will be
+ * considered.
  * @version 2.0.0
  * @since 1.4.0
  */
@@ -48,7 +49,8 @@ public final class MinToMaxOrdering implements VariableOrderingProvider {
         return order;
     }
 
-    static Map<Variable, Integer> sortProfileByOccurrence(final Map<Variable, Integer> map, final Comparator<Map.Entry<Variable, Integer>> comparator) {
+    static Map<Variable, Integer> sortProfileByOccurrence(final Map<Variable, Integer> map,
+                                                          final Comparator<Map.Entry<Variable, Integer>> comparator) {
         final List<Map.Entry<Variable, Integer>> list = new ArrayList<>(map.entrySet());
         list.sort(comparator);
         final Map<Variable, Integer> result = new LinkedHashMap<>();

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A writer which writes a graphical representation as a Mermaid.js file.  This writer is thread-safe.
+ * A writer which writes a graphical representation as a Mermaid.js file. This
+ * writer is thread-safe.
  * <p>
  * More information on Mermaid.js including a live code editor can be found
  * <a href="https://mermaid-js.github.io/mermaid/#/">here</a>.
@@ -52,7 +53,8 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         writer.newLine();
     }
 
-    private static void writeNodes(final BufferedWriter bufferedWriter, final GraphicalRepresentation representation) throws IOException {
+    private static void writeNodes(final BufferedWriter bufferedWriter, final GraphicalRepresentation representation)
+            throws IOException {
         for (final GraphicalNode node : representation.getNodes()) {
             bufferedWriter.write(String.format("  %s", nodeString(node)));
             bufferedWriter.newLine();
@@ -65,11 +67,13 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
         bufferedWriter.newLine();
     }
 
-    private static void writeEdges(final BufferedWriter writer, final GraphicalRepresentation representation) throws IOException {
+    private static void writeEdges(final BufferedWriter writer, final GraphicalRepresentation representation)
+            throws IOException {
         int counter = 0;
         for (final GraphicalEdge edge : representation.getEdges()) {
             final String edgeSymbol = edgeSymbolString(edge, representation.isDirected());
-            writer.write(String.format("  %s %s %s", edge.getSource().getId(), edgeSymbol, edge.getDestination().getId()));
+            writer.write(
+                    String.format("  %s %s %s", edge.getSource().getId(), edgeSymbol, edge.getDestination().getId()));
             writer.newLine();
             final String edgeStyleString = edgeStyleString(counter++, edge.getStyle());
             if (edgeStyleString != null) {
@@ -106,7 +110,8 @@ public class GraphicalMermaidWriter implements GraphicalRepresentationWriter {
     }
 
     private static String nodeStyleString(final String id, final GraphicalNodeStyle style) {
-        if (!style.hasStyle() || (style.getStrokeColor() == null && style.getTextColor() == null && style.getBackgroundColor() == null)) {
+        if (!style.hasStyle() || (style.getStrokeColor() == null && style.getTextColor() == null &&
+                style.getBackgroundColor() == null)) {
             return null;
         }
         final List<String> attributes = new ArrayList<>();

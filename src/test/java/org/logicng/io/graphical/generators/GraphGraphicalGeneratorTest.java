@@ -112,7 +112,8 @@ public class GraphGraphicalGeneratorTest {
         testFiles("50p1", g, GraphGraphicalGenerator.<Long>builder().build());
     }
 
-    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator<T> generator) throws IOException {
+    private <T> void testFiles(final String fileName, final Graph<T> g, final GraphGraphicalGenerator<T> generator)
+            throws IOException {
         final GraphicalRepresentation representation = generator.translate(g);
         representation.write("src/test/resources/writers/temp/" + fileName + ".dot", GraphicalDotWriter.get());
         representation.write("src/test/resources/writers/temp/" + fileName + ".txt", GraphicalMermaidWriter.get());

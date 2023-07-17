@@ -9,7 +9,9 @@ import org.assertj.core.api.Condition;
 import java.util.List;
 
 /**
- * A condition needed for AssertJ-Assertions for {@link org.logicng.graphs.io.GraphDotFileWriterTest} and {@link org.logicng.graphs.io.GraphDimacsFileWriterTest}.
+ * A condition needed for AssertJ-Assertions for
+ * {@link org.logicng.graphs.io.GraphDotFileWriterTest} and
+ * {@link org.logicng.graphs.io.GraphDimacsFileWriterTest}.
  * @version 1.2
  * @since 1.2
  */

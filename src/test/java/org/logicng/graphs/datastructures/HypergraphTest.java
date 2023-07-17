@@ -50,6 +50,7 @@ public class HypergraphTest {
         final HypergraphNode<String> node2 = new HypergraphNode<>(hypergraph, "B");
         final HypergraphEdge<String> edge1 = new HypergraphEdge<>(Arrays.asList(node1, node2));
         hypergraph.addEdge(edge1);
-        assertThat(hypergraph.toString()).isEqualTo("Hypergraph{nodes=[HypergraphNode{content=A}, HypergraphNode{content=B}], edges=[HypergraphEdge{nodes=[HypergraphNode{content=A}, HypergraphNode{content=B}]}]}");
+        assertThat(hypergraph.toString()).isEqualTo(
+                "Hypergraph{nodes=[HypergraphNode{content=A}, HypergraphNode{content=B}], edges=[HypergraphEdge{nodes=[HypergraphNode{content=A}, HypergraphNode{content=B}]}]}");
     }
 }

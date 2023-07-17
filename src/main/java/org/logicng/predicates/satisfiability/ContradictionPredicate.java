@@ -9,7 +9,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
- * Contradiction predicate.  Indicates whether a formula is contradictory or not.
+ * Contradiction predicate. Indicates whether a formula is contradictory or not.
  * @version 1.0
  * @since 1.0
  */

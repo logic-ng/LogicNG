@@ -26,7 +26,8 @@ import java.util.List;
 public class PlainInsertionBasedMUS extends MUSAlgorithm {
 
     @Override
-    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f, final MUSConfig config) {
+    public <T extends Proposition> UNSATCore<T> computeMUS(final List<T> propositions, final FormulaFactory f,
+                                                           final MUSConfig config) {
         start(config.handler);
         final List<T> currentFormula = new ArrayList<>(propositions.size());
         currentFormula.addAll(propositions);

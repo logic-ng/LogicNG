@@ -160,7 +160,8 @@ public class FormulaAstGraphicalGeneratorTest {
         testFiles("f8-ownLabels", f8, generator);
     }
 
-    private void testFiles(final String fileName, final Formula formula, final FormulaAstGraphicalGenerator generator) throws IOException {
+    private void testFiles(final String fileName, final Formula formula, final FormulaAstGraphicalGenerator generator)
+            throws IOException {
         final GraphicalRepresentation representation = generator.translate(formula);
         representation.write("src/test/resources/writers/temp/" + fileName + "-ast.dot", GraphicalDotWriter.get());
         representation.write("src/test/resources/writers/temp/" + fileName + "-ast.txt", GraphicalMermaidWriter.get());

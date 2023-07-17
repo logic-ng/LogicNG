@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.algorithms;
@@ -307,7 +304,9 @@ public class WBO extends MaxSAT {
                 addSoftClause(weightCore, clause, vars);
                 final int l = newLiteral(false);
                 this.softClauses.get(nSoft() - 1).setAssumptionVar(l);
-                this.coreMapping.put(l, nSoft() - 1);  // Map the new soft clause to its assumption literal.
+                this.coreMapping.put(l, nSoft() - 1); // Map the new soft clause
+                                                      // to its assumption
+                                                      // literal.
                 assumps.push(not(l)); // Update the assumption vector.
                 if (this.symmetryStrategy) {
                     this.symmetryLog(nSoft() - 1);
@@ -389,9 +388,12 @@ public class WBO extends MaxSAT {
                             final LNGIntVector clause = new LNGIntVector();
                             clause.push(not(coreIntersection[coreList.get(k)].get(m)));
                             clause.push(not(coreIntersectionCurrent[coreList.get(k)].get(j)));
-                            Pair<Integer, Integer> symClause = new Pair<>(var(coreIntersection[coreList.get(k)].get(m)), var(coreIntersectionCurrent[coreList.get(k)].get(j)));
-                            if (var(coreIntersection[coreList.get(k)].get(m)) > var(coreIntersectionCurrent[coreList.get(k)].get(j))) {
-                                symClause = new Pair<>(var(coreIntersectionCurrent[coreList.get(k)].get(j)), var(coreIntersection[coreList.get(k)].get(m)));
+                            Pair<Integer, Integer> symClause = new Pair<>(var(coreIntersection[coreList.get(k)].get(m)),
+                                    var(coreIntersectionCurrent[coreList.get(k)].get(j)));
+                            if (var(coreIntersection[coreList.get(k)].get(m)) >
+                                    var(coreIntersectionCurrent[coreList.get(k)].get(j))) {
+                                symClause = new Pair<>(var(coreIntersectionCurrent[coreList.get(k)].get(j)),
+                                        var(coreIntersection[coreList.get(k)].get(m)));
                             }
                             if (!this.duplicatedSymmetryClauses.contains(symClause)) {
                                 this.duplicatedSymmetryClauses.add(symClause);
@@ -463,7 +465,8 @@ public class WBO extends MaxSAT {
                 final int coreCost = this.computeCostCore(this.solver.conflict());
                 this.lbCost += coreCost;
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.printf("c LB : %d CS : %d W : %d%n", this.lbCost, this.solver.conflict().size(), coreCost);
+                    this.output.printf("c LB : %d CS : %d W : %d%n", this.lbCost, this.solver.conflict().size(),
+                            coreCost);
                 }
                 if (!foundLowerBound(this.lbCost, null)) {
                     return MaxSATResult.UNDEF;
@@ -529,7 +532,8 @@ public class WBO extends MaxSAT {
                 final int coreCost = this.computeCostCore(this.solver.conflict());
                 this.lbCost += coreCost;
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.printf("c LB : %d CS : %d W : %d%n", this.lbCost, this.solver.conflict().size(), coreCost);
+                    this.output.printf("c LB : %d CS : %d W : %d%n", this.lbCost, this.solver.conflict().size(),
+                            coreCost);
                 }
                 if (this.lbCost == this.ubCost) {
                     if (this.verbosity != Verbosity.NONE) {

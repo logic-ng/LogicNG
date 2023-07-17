@@ -20,7 +20,8 @@ import java.util.TreeSet;
 /**
  * Creation of formula corner cases.
  * <p>
- * Formula corner cases help to cover all cases when writing unit tests with formulas involved.
+ * Formula corner cases help to cover all cases when writing unit tests with
+ * formulas involved.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -175,7 +176,8 @@ public final class FormulaCornerCases {
         return formulas;
     }
 
-    private List<Formula> pbcCornerCases(final CType comparator, final Literal[] literals, final int[] coefficients, final FormulaFactory f) {
+    private List<Formula> pbcCornerCases(final CType comparator, final Literal[] literals, final int[] coefficients,
+                                         final FormulaFactory f) {
         final List<Formula> formulas = new ArrayList<>();
         for (final Integer rhs : Arrays.asList(-1, 0, 1, -3, -4, 3, 4)) {
             formulas.add(f.pbc(comparator, rhs, literals, coefficients));

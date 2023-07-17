@@ -18,7 +18,11 @@ public final class CNFConfig extends Configuration {
      * The algorithm for the CNF encoding.
      */
     public enum Algorithm {
-        FACTORIZATION, TSEITIN, PLAISTED_GREENBAUM, ADVANCED, BDD
+        FACTORIZATION,
+        TSEITIN,
+        PLAISTED_GREENBAUM,
+        ADVANCED,
+        BDD
     }
 
     final Algorithm algorithm;
@@ -52,7 +56,8 @@ public final class CNFConfig extends Configuration {
     public String toString() {
         final StringBuilder sb = new StringBuilder(String.format("CNFConfig{%n"));
         sb.append("algorithm=").append(this.algorithm).append(System.lineSeparator());
-        sb.append("fallbackAlgorithmForAdvancedEncoding=").append(this.fallbackAlgorithmForAdvancedEncoding).append(System.lineSeparator());
+        sb.append("fallbackAlgorithmForAdvancedEncoding=").append(this.fallbackAlgorithmForAdvancedEncoding)
+                .append(System.lineSeparator());
         sb.append("distributedBoundary=").append(this.distributionBoundary).append(System.lineSeparator());
         sb.append("createdClauseBoundary=").append(this.createdClauseBoundary).append(System.lineSeparator());
         sb.append("atomBoundary=").append(this.atomBoundary).append(System.lineSeparator());
@@ -76,7 +81,8 @@ public final class CNFConfig extends Configuration {
         }
 
         /**
-         * Sets the algorithm for the CNF encoding. The default value is {@code ADVANCED}.
+         * Sets the algorithm for the CNF encoding. The default value is
+         * {@code ADVANCED}.
          * @param algorithm the algorithm for the CNF encoding
          * @return the builder
          */
@@ -86,24 +92,30 @@ public final class CNFConfig extends Configuration {
         }
 
         /**
-         * Sets the fallback algorithm for the advanced CNF encoding.  When the boundaries for the factorization are met, the
-         * encoding switches to this algorithm.  The default value is {@code TSEITIN}.
-         * @param fallbackAlgorithmForAdvancedEncoding the fallback algorithm for the advanced CNF encoding
+         * Sets the fallback algorithm for the advanced CNF encoding. When the
+         * boundaries for the factorization are met, the encoding switches to
+         * this algorithm. The default value is {@code TSEITIN}.
+         * @param fallbackAlgorithmForAdvancedEncoding the fallback algorithm
+         *                                             for the advanced CNF
+         *                                             encoding
          * @return the builder
          */
         public Builder fallbackAlgorithmForAdvancedEncoding(final Algorithm fallbackAlgorithmForAdvancedEncoding) {
-            if (fallbackAlgorithmForAdvancedEncoding != Algorithm.TSEITIN
-                    && fallbackAlgorithmForAdvancedEncoding != Algorithm.PLAISTED_GREENBAUM) {
-                throw new IllegalArgumentException("Fallback algorithm for advanced CNF encoding must be one of Tseitin or " +
-                        "Plaisted & Greenbaum");
+            if (fallbackAlgorithmForAdvancedEncoding != Algorithm.TSEITIN &&
+                    fallbackAlgorithmForAdvancedEncoding != Algorithm.PLAISTED_GREENBAUM) {
+                throw new IllegalArgumentException(
+                        "Fallback algorithm for advanced CNF encoding must be one of Tseitin or " +
+                                "Plaisted & Greenbaum");
             }
             this.fallbackAlgorithmForAdvancedEncoding = fallbackAlgorithmForAdvancedEncoding;
             return this;
         }
 
         /**
-         * Sets the boundary how many distributions should be performed in the factorization before the method is switched
-         * (in the {@code ADVANCED} encoding).  Disable this boundary by setting it to -1. The default value is -1.
+         * Sets the boundary how many distributions should be performed in the
+         * factorization before the method is switched (in the {@code ADVANCED}
+         * encoding). Disable this boundary by setting it to -1. The default
+         * value is -1.
          * @param distributionBoundary the distribution boundary
          * @return the builder
          */
@@ -113,8 +125,10 @@ public final class CNFConfig extends Configuration {
         }
 
         /**
-         * Sets the boundary how many clauses should be created in the factorization before the method is switched
-         * (in the {@code ADVANCED} encoding).  Disable this boundary by setting it to -1. The default value is 1000.
+         * Sets the boundary how many clauses should be created in the
+         * factorization before the method is switched (in the {@code ADVANCED}
+         * encoding). Disable this boundary by setting it to -1. The default
+         * value is 1000.
          * @param createdClauseBoundary the clause creation boundary
          * @return the builder
          */
@@ -124,8 +138,9 @@ public final class CNFConfig extends Configuration {
         }
 
         /**
-         * Sets the boundary for how many atoms in a formula factorization is performed in Tseitin and Plaisted &amp; Greenbaum.
-         * The default value is 12.
+         * Sets the boundary for how many atoms in a formula factorization is
+         * performed in Tseitin and Plaisted &amp; Greenbaum. The default value
+         * is 12.
          * @param atomBoundary the atom boundary
          * @return the builder
          */

@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 /**
  * An interface for a function which works on a given SAT solver and its state.
  * <p>
- * With the help of solver functions, additional methods can be plugged to
- * SAT solver without extending the solver classes themselves.
+ * With the help of solver functions, additional methods can be plugged to SAT
+ * solver without extending the solver classes themselves.
  * @param <RESULT> the result type of the function
  * @version 2.0.0
  * @since 2.0.0

@@ -29,13 +29,17 @@ public class CanonicalDNFEnumerationTest {
         assertThat(f.parse("a").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("a"));
         assertThat(f.parse("~a").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a"));
         assertThat(f.parse("~a & b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & b"));
-        assertThat(f.parse("~a | b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & ~b | ~a & b | a & b"));
-        assertThat(f.parse("a => b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & ~b | ~a & b | a & b"));
+        assertThat(f.parse("~a | b").transform(CanonicalDNFEnumeration.get()))
+                .isEqualTo(f.parse("~a & ~b | ~a & b | a & b"));
+        assertThat(f.parse("a => b").transform(CanonicalDNFEnumeration.get()))
+                .isEqualTo(f.parse("~a & ~b | ~a & b | a & b"));
         assertThat(f.parse("a <=> b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("a & b | ~a & ~b"));
         assertThat(f.parse("a + b = 1").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & b | a & ~b"));
-        assertThat(f.parse("a & (b | ~c)").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("a & b & c | a & b & ~c | a & ~b & ~c"));
+        assertThat(f.parse("a & (b | ~c)").transform(CanonicalDNFEnumeration.get()))
+                .isEqualTo(f.parse("a & b & c | a & b & ~c | a & ~b & ~c"));
         assertThat(f.parse("a & b & (~a | ~b)").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("$false"));
-        assertThat(f.parse("a | b | ~a & ~b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & b | a & b | a & ~b | ~a & ~b"));
+        assertThat(f.parse("a | b | ~a & ~b").transform(CanonicalDNFEnumeration.get()))
+                .isEqualTo(f.parse("~a & b | a & b | a & ~b | ~a & ~b"));
     }
 
     @Test
@@ -51,7 +55,8 @@ public class CanonicalDNFEnumerationTest {
     @RandomTag
     public void random() {
         final FormulaFactory f = new FormulaFactory();
-        final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(5).weightPbc(0.5).seed(42).build());
+        final FormulaRandomizer randomizer =
+                new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(5).weightPbc(0.5).seed(42).build());
         for (int i = 0; i < 1000; i++) {
             final Formula formula = randomizer.formula(3);
             test(formula);

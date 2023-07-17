@@ -14,7 +14,8 @@ public class BDDVerification {
     /////////////////// Verification /////////////////////////////////
 
     /**
-     * Debug method for verifying the consistency of the BDD at index {@code root}.
+     * Debug method for verifying the consistency of the BDD at index
+     * {@code root}.
      * @param root the root of the BDD
      * @return whether the BDD is valid or not
      */
@@ -51,7 +52,8 @@ public class BDDVerification {
                     return false;
                 }
             }
-            if (i > 1 && this.k.level(i) >= varnum) { //this.level2var[node.level] != i / 2 - 1) {
+            if (i > 1 && this.k.level(i) >= varnum) { // this.level2var[node.level]
+                                                      // != i / 2 - 1) {
                 System.out.println("VAR Level wrong");
                 return false;
             }
@@ -74,7 +76,8 @@ public class BDDVerification {
     }
 
     /**
-     * Debug method for verifying the consistency of the BDD at index {@code root}.
+     * Debug method for verifying the consistency of the BDD at index
+     * {@code root}.
      * @param root the root of the BDD
      * @return whether the BDD is valid or not
      */

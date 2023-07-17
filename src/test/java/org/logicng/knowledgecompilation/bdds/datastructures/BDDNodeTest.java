@@ -10,7 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.logicng.formulas.FormulaFactory;
 
 /**
- * Unit tests for {@link BDDNode}, {@link BDDConstant}, and {@link BDDInnerNode}.
+ * Unit tests for {@link BDDNode}, {@link BDDConstant}, and
+ * {@link BDDInnerNode}.
  * @version 2.0.0
  * @since 1.4.0
  */

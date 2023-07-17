@@ -38,8 +38,11 @@ public class BackboneSimplifierTest {
         final PropositionalParser p = new PropositionalParser(f);
         assertThat(p.parse("A & B & (B | C)").transform(this.backboneSimplifier)).isEqualTo(p.parse("A & B"));
         assertThat(p.parse("A & B & (~B | C)").transform(this.backboneSimplifier)).isEqualTo(p.parse("A & B & C"));
-        assertThat(p.parse("A & B & (~B | C) & (B | D) & (A => F)").transform(this.backboneSimplifier)).isEqualTo(p.parse("A & B & C & F"));
-        assertThat(p.parse("X & Y & (~B | C) & (B | D) & (A => F)").transform(this.backboneSimplifier)).isEqualTo(p.parse("X & Y & (~B | C) & (B | D) & (A => F)"));
-        assertThat(p.parse("~A & ~B & (~B | C) & (B | D) & (A => F)").transform(this.backboneSimplifier)).isEqualTo(p.parse("~A & ~B & D"));
+        assertThat(p.parse("A & B & (~B | C) & (B | D) & (A => F)").transform(this.backboneSimplifier))
+                .isEqualTo(p.parse("A & B & C & F"));
+        assertThat(p.parse("X & Y & (~B | C) & (B | D) & (A => F)").transform(this.backboneSimplifier))
+                .isEqualTo(p.parse("X & Y & (~B | C) & (B | D) & (A => F)"));
+        assertThat(p.parse("~A & ~B & (~B | C) & (B | D) & (A => F)").transform(this.backboneSimplifier))
+                .isEqualTo(p.parse("~A & ~B & D"));
     }
 }

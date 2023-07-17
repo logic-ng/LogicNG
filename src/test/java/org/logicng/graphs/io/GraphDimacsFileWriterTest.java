@@ -97,7 +97,8 @@ public class GraphDimacsFileWriterTest {
             final String[] actEdgeNodes = actEdge.trim().split(" ");
 
             final Condition<? super List<? extends String>> left = new ContainsCondition(actEdge);
-            final Condition<? super List<? extends String>> right = new ContainsCondition("e " + actEdgeNodes[2] + " " + actEdgeNodes[1]);
+            final Condition<? super List<? extends String>> right =
+                    new ContainsCondition("e " + actEdgeNodes[2] + " " + actEdgeNodes[1]);
             softly.assertThat(expEdgeLines).has(Assertions.anyOf(left, right));
         }
         if (expReader.ready()) {
@@ -114,7 +115,8 @@ public class GraphDimacsFileWriterTest {
         final BufferedReader expReader = new BufferedReader(new FileReader(expected));
         final BufferedReader actReader = new BufferedReader(new FileReader(actual));
         for (int lineNumber = 1; expReader.ready() && actReader.ready(); lineNumber++) {
-            softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal").isEqualTo(expReader.readLine());
+            softly.assertThat(actReader.readLine()).as("Line " + lineNumber + " not equal")
+                    .isEqualTo(expReader.readLine());
         }
         if (expReader.ready()) {
             softly.fail("Missing line(s) found, starting with \"" + expReader.readLine() + "\"");

@@ -11,8 +11,8 @@ import org.logicng.graphs.datastructures.Graph;
 import java.util.Collection;
 
 /**
- * A graph generator which generates a constraint graph for a
- * given list of formulas.
+ * A graph generator which generates a constraint graph for a given list of
+ * formulas.
  * @version 2.4.0
  * @since 2.0.0
  */
@@ -29,7 +29,9 @@ public final class ConstraintGraphGenerator {
      * Constructs the constraint graph.
      * @param formula the formula in extended CNF
      * @return the constraint graph for the given formula
-     * @deprecated the constraint graph generation is not CNF specific. Use general method {@link #generateFromFormulas(Collection)} instead.
+     * @deprecated the constraint graph generation is not CNF specific. Use
+     *             general method {@link #generateFromFormulas(Collection)}
+     *             instead.
      */
     @Deprecated
     public static Graph<Variable> generateFromCnf(final Formula formula) {
@@ -42,7 +44,9 @@ public final class ConstraintGraphGenerator {
      * Constructs the constraint graph.
      * @param formulas the formulas in extended CNF as set of CNFs
      * @return the constraint graph for the given formula
-     * @deprecated the constraint graph generation is not CNF specific. Use general method {@link #generateFromFormulas(Collection)} instead.
+     * @deprecated the constraint graph generation is not CNF specific. Use
+     *             general method {@link #generateFromFormulas(Collection)}
+     *             instead.
      */
     @Deprecated
     public static Graph<Variable> generateFromCnf(final Collection<Formula> formulas) {

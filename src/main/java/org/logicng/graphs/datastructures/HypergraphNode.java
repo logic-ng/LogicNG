@@ -66,7 +66,8 @@ public final class HypergraphNode<T> {
     }
 
     /**
-     * Computes the tentative new location for this node (see Aloul, Markov, and Sakallah).
+     * Computes the tentative new location for this node (see Aloul, Markov, and
+     * Sakallah).
      * @param nodeOrdering the node ordering for which the COG is computed
      * @return the tentative new location for this node
      */

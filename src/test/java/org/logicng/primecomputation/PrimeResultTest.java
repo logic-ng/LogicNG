@@ -34,19 +34,22 @@ public class PrimeResultTest extends TestWithExampleFormulas {
         primeImplicants1.add(new TreeSet<>(Arrays.asList(this.A, this.C)));
         final List<SortedSet<Literal>> primeImplicates1 = new ArrayList<>();
         primeImplicates1.add(new TreeSet<>(Arrays.asList(this.A, this.NB)));
-        this.result1 = new PrimeResult(primeImplicants1, primeImplicates1, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        this.result1 =
+                new PrimeResult(primeImplicants1, primeImplicates1, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
 
         final List<SortedSet<Literal>> primeImplicants2 = new ArrayList<>();
         primeImplicants2.add(new TreeSet<>(Arrays.asList(this.A, this.NB)));
         primeImplicants2.add(new TreeSet<>(Collections.singletonList(this.C)));
         final List<SortedSet<Literal>> primeImplicates2 = new ArrayList<>();
-        this.result2 = new PrimeResult(primeImplicants2, primeImplicates2, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        this.result2 =
+                new PrimeResult(primeImplicants2, primeImplicates2, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
 
         final List<SortedSet<Literal>> primeImplicants3 = new ArrayList<>();
         primeImplicants3.add(new TreeSet<>());
         final List<SortedSet<Literal>> primeImplicates3 = new ArrayList<>();
         primeImplicates3.add(new TreeSet<>(Collections.singletonList(this.NB)));
-        this.result3 = new PrimeResult(primeImplicants3, primeImplicates3, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+        this.result3 =
+                new PrimeResult(primeImplicants3, primeImplicates3, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
     }
 
     @Test
@@ -79,7 +82,8 @@ public class PrimeResultTest extends TestWithExampleFormulas {
         primeImplicants.add(new TreeSet<>(Arrays.asList(this.A, this.C)));
         final List<SortedSet<Literal>> primeImplicates = new ArrayList<>();
         primeImplicates.add(new TreeSet<>(Arrays.asList(this.A, this.NB)));
-        final PrimeResult otherResult = new PrimeResult(primeImplicants, primeImplicates, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        final PrimeResult otherResult =
+                new PrimeResult(primeImplicants, primeImplicates, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
         assertThat(otherResult.hashCode()).isEqualTo(this.result1.hashCode());
     }
 
@@ -91,7 +95,8 @@ public class PrimeResultTest extends TestWithExampleFormulas {
         primeImplicants.add(new TreeSet<>(Arrays.asList(this.A, this.C)));
         final List<SortedSet<Literal>> primeImplicates = new ArrayList<>();
         primeImplicates.add(new TreeSet<>(Arrays.asList(this.A, this.NB)));
-        final PrimeResult otherResult = new PrimeResult(primeImplicants, primeImplicates, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        final PrimeResult otherResult =
+                new PrimeResult(primeImplicants, primeImplicates, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
         assertThat(this.result1.equals(this.result1)).isTrue();
         assertThat(this.result1.equals(otherResult)).isTrue();
         assertThat(this.result1.equals(this.result2)).isFalse();

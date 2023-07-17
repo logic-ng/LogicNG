@@ -17,7 +17,7 @@ public final class BDDDNFFunction extends BDDNormalFormFunction implements BDDFu
     private final static BDDDNFFunction INSTANCE = new BDDDNFFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private BDDDNFFunction() {
         // Intentionally left empty

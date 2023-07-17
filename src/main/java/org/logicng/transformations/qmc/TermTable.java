@@ -14,8 +14,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 /**
- * A term table in the Quine–McCluskey algorithm.  The term table is used
- * for the line and column dominance checks.
+ * A term table in the Quine–McCluskey algorithm. The term table is used for the
+ * line and column dominance checks.
  * @version 2.0.0
  * @since 1.4.0
  */
@@ -87,7 +87,8 @@ public class TermTable {
 
     /**
      * Performs elimination of columns by dominance.
-     * @return {@code true} if an elimination was performed, {@code false} otherwise
+     * @return {@code true} if an elimination was performed, {@code false}
+     *         otherwise
      */
     protected boolean eliminateColumnDominance() {
         final SortedSet<Integer> toEliminate = new TreeSet<>();
@@ -109,7 +110,8 @@ public class TermTable {
 
     /**
      * Performs elimination of lines by dominance.
-     * @return {@code true} if an elimination was performed, {@code false} otherwise
+     * @return {@code true} if an elimination was performed, {@code false}
+     *         otherwise
      */
     protected boolean eliminateLineDominance() {
         final SortedSet<Integer> toEliminate = new TreeSet<>();
@@ -227,7 +229,8 @@ public class TermTable {
         sb.append(String.format("%n"));
 
         for (int i = 0; i < this.matrixLines.size(); i++) {
-            sb.append(String.format("%s | %s%n", lineHeaderStrings.get(i), formatMatrixLine(this.matrixLines.get(i), columnSize)));
+            sb.append(String.format("%s | %s%n", lineHeaderStrings.get(i),
+                    formatMatrixLine(this.matrixLines.get(i), columnSize)));
         }
         return sb.toString();
     }

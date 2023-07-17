@@ -11,7 +11,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
- * CNF predicate.  Indicates whether a formula is in CNF or not.
+ * CNF predicate. Indicates whether a formula is in CNF or not.
  * @version 1.0
  * @since 1.0
  */
@@ -20,7 +20,7 @@ public final class CNFPredicate implements FormulaPredicate {
     private final static CNFPredicate INSTANCE = new CNFPredicate();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private CNFPredicate() {
         // Intentionally left empty

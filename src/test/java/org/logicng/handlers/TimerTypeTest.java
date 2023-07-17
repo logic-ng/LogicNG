@@ -96,16 +96,20 @@ public class TimerTypeTest {
     }
 
     /**
-     * Constructs fixed timeout handlers by using suppliers, since the creation of the fixed timeout handler affects the duration of the timeout.
-     * @param delta the delta in milliseconds added to the current point in time when the handler is created
+     * Constructs fixed timeout handlers by using suppliers, since the creation
+     * of the fixed timeout handler affects the duration of the timeout.
+     * @param delta the delta in milliseconds added to the current point in time
+     *              when the handler is created
      * @return the fixed timeout handlers as suppliers
      */
     private static List<Supplier<TimeoutHandler>> mkFixedEndHandlers(final long delta) {
         return Arrays.asList(
                 () -> new TimeoutBDDHandler(System.currentTimeMillis() + delta, TimeoutHandler.TimerType.FIXED_END),
                 () -> new TimeoutMaxSATHandler(System.currentTimeMillis() + delta, TimeoutHandler.TimerType.FIXED_END),
-                () -> new TimeoutModelEnumerationHandler(System.currentTimeMillis() + delta, TimeoutHandler.TimerType.FIXED_END),
-                () -> new TimeoutOptimizationHandler(System.currentTimeMillis() + delta, TimeoutHandler.TimerType.FIXED_END),
+                () -> new TimeoutModelEnumerationHandler(System.currentTimeMillis() + delta,
+                        TimeoutHandler.TimerType.FIXED_END),
+                () -> new TimeoutOptimizationHandler(System.currentTimeMillis() + delta,
+                        TimeoutHandler.TimerType.FIXED_END),
                 () -> new TimeoutSATHandler(System.currentTimeMillis() + delta, TimeoutHandler.TimerType.FIXED_END));
     }
 }

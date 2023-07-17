@@ -115,8 +115,10 @@ public class BackboneTest {
 
     @Test
     public void testToString() {
-        final Backbone backbone = Backbone.satBackbone(set(this.a1, this.a2, this.a3), set(this.b1, this.b2, this.b3), set(this.x1, this.x2, this.x3));
-        assertThat(backbone.toString()).isEqualTo("Backbone{sat=true, positiveBackbone=[a1, a2, a3], negativeBackbone=[b1, b2, b3], optionalVariables=[x1, x2, x3]}");
+        final Backbone backbone = Backbone.satBackbone(set(this.a1, this.a2, this.a3), set(this.b1, this.b2, this.b3),
+                set(this.x1, this.x2, this.x3));
+        assertThat(backbone.toString()).isEqualTo(
+                "Backbone{sat=true, positiveBackbone=[a1, a2, a3], negativeBackbone=[b1, b2, b3], optionalVariables=[x1, x2, x3]}");
     }
 
     @Test
@@ -124,8 +126,10 @@ public class BackboneTest {
         final Backbone backbone1a = Backbone.satBackbone(set(this.a1, this.a2, this.a3), null, null);
         final Backbone backbone1b = Backbone.satBackbone(set(this.a1, this.a2, this.a3), null, null);
         final Backbone backbone3 = Backbone.satBackbone(set(this.a1, this.a2, this.a3), set(this.b1), null);
-        final Backbone backbone5 = Backbone.satBackbone(null, set(this.b1, this.b2, this.b3), set(this.x1, this.x2, this.x3));
-        final Backbone satBB = Backbone.satBackbone(Collections.emptySortedSet(), Collections.emptySortedSet(), Collections.emptySortedSet());
+        final Backbone backbone5 =
+                Backbone.satBackbone(null, set(this.b1, this.b2, this.b3), set(this.x1, this.x2, this.x3));
+        final Backbone satBB = Backbone.satBackbone(Collections.emptySortedSet(), Collections.emptySortedSet(),
+                Collections.emptySortedSet());
         final Backbone unsatBB = Backbone.unsatBackbone();
 
         assertThat(backbone1a.hashCode()).isEqualTo(backbone1b.hashCode());

@@ -25,7 +25,7 @@ public class LiteralsFunction implements FormulaFunction<SortedSet<Literal>> {
     private final static LiteralsFunction INSTANCE = new LiteralsFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private LiteralsFunction() {
         // Intentionally left empty

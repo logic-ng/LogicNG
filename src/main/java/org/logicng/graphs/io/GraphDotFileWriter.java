@@ -12,11 +12,14 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * A dot file writer for a graph.  Writes the internal data structure of the graph to a dot file.
+ * A dot file writer for a graph. Writes the internal data structure of the
+ * graph to a dot file.
  * @version 2.4.0
  * @since 1.2
- * @deprecated This legacy writer will be removed in LogicNG 3.0.0.  For a more configurable and flexible
- * to use graph writer use {@link GraphGraphicalGenerator} within the new graphical writer framework.
+ * @deprecated This legacy writer will be removed in LogicNG 3.0.0. For a more
+ *             configurable and flexible to use graph writer use
+ *             {@link GraphGraphicalGenerator} within the new graphical writer
+ *             framework.
  */
 @Deprecated
 public final class GraphDotFileWriter {
@@ -32,7 +35,8 @@ public final class GraphDotFileWriter {
 
     /**
      * Writes a given graph's internal data structure as a dot file.
-     * @param fileName the file name of the dot file to write, will be extended by suffix {@code .dot} if not already present
+     * @param fileName the file name of the dot file to write, will be extended
+     *                 by suffix {@code .dot} if not already present
      * @param graph    the graph
      * @param <T>      the type of the graph content
      * @throws IOException if there was a problem writing the file

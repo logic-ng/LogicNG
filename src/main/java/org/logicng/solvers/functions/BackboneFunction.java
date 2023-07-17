@@ -103,7 +103,8 @@ public final class BackboneFunction implements SolverFunction<Backbone> {
         }
 
         /**
-         * Sets the type of backbone which should be computed (default: POSITIVE_AND_NEGATIVE).
+         * Sets the type of backbone which should be computed (default:
+         * POSITIVE_AND_NEGATIVE).
          * @param type the backbone type
          * @return the current builder
          */
@@ -113,7 +114,8 @@ public final class BackboneFunction implements SolverFunction<Backbone> {
         }
 
         /**
-         * Builds the backbone function with the current builder's configuration.
+         * Builds the backbone function with the current builder's
+         * configuration.
          * @return the backbone function
          */
         public BackboneFunction build() {

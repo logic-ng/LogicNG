@@ -63,44 +63,74 @@ public class PropositionalParserTest extends TestWithExampleFormulas {
         assertThat(parser.parse("~a")).isEqualTo(this.f.not(this.f.variable("a")));
         assertThat(parser.parse("~Var")).isEqualTo(this.f.not(this.f.variable("Var")));
         assertThat(parser.parse("a & b")).isEqualTo(this.f.and(this.f.variable("a"), this.f.variable("b")));
-        assertThat(parser.parse("~a & ~b")).isEqualTo(this.f.and(this.f.literal("a", false), this.f.literal("b", false)));
-        assertThat(parser.parse("~a & b & ~c & d")).isEqualTo(this.f.and(this.f.literal("a", false), this.f.variable("b"), this.f.literal("c", false), this.f.variable("d")));
+        assertThat(parser.parse("~a & ~b"))
+                .isEqualTo(this.f.and(this.f.literal("a", false), this.f.literal("b", false)));
+        assertThat(parser.parse("~a & b & ~c & d")).isEqualTo(this.f.and(this.f.literal("a", false),
+                this.f.variable("b"), this.f.literal("c", false), this.f.variable("d")));
         assertThat(parser.parse("a | b")).isEqualTo(this.f.or(this.f.variable("a"), this.f.variable("b")));
-        assertThat(parser.parse("~a | ~b")).isEqualTo(this.f.or(this.f.literal("a", false), this.f.literal("b", false)));
-        assertThat(parser.parse("~a | b | ~c | d")).isEqualTo(this.f.or(this.f.literal("a", false), this.f.variable("b"), this.f.literal("c", false), this.f.variable("d")));
+        assertThat(parser.parse("~a | ~b"))
+                .isEqualTo(this.f.or(this.f.literal("a", false), this.f.literal("b", false)));
+        assertThat(parser.parse("~a | b | ~c | d")).isEqualTo(this.f.or(this.f.literal("a", false),
+                this.f.variable("b"), this.f.literal("c", false), this.f.variable("d")));
         assertThat(parser.parse("a => b")).isEqualTo(this.f.implication(this.f.variable("a"), this.f.variable("b")));
-        assertThat(parser.parse("~a => ~b")).isEqualTo(this.f.implication(this.f.literal("a", false), this.f.literal("b", false)));
+        assertThat(parser.parse("~a => ~b"))
+                .isEqualTo(this.f.implication(this.f.literal("a", false), this.f.literal("b", false)));
         assertThat(parser.parse("a <=> b")).isEqualTo(this.f.equivalence(this.f.variable("a"), this.f.variable("b")));
-        assertThat(parser.parse("~a <=> ~b")).isEqualTo(this.f.equivalence(this.f.literal("a", false), this.f.literal("b", false)));
+        assertThat(parser.parse("~a <=> ~b"))
+                .isEqualTo(this.f.equivalence(this.f.literal("a", false), this.f.literal("b", false)));
     }
 
     @Test
     public void testParsePrecedences() throws ParserException {
         final PropositionalParser parser = new PropositionalParser(this.f);
-        assertThat(parser.parse("x | y & z")).isEqualTo(this.f.or(this.f.variable("x"), this.f.and(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x & y | z")).isEqualTo(this.f.or(this.f.and(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x => y & z")).isEqualTo(this.f.implication(this.f.variable("x"), this.f.and(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x & y => z")).isEqualTo(this.f.implication(this.f.and(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x <=> y & z")).isEqualTo(this.f.equivalence(this.f.variable("x"), this.f.and(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x & y <=> z")).isEqualTo(this.f.equivalence(this.f.and(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x => y | z")).isEqualTo(this.f.implication(this.f.variable("x"), this.f.or(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x | y => z")).isEqualTo(this.f.implication(this.f.or(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x <=> y | z")).isEqualTo(this.f.equivalence(this.f.variable("x"), this.f.or(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x | y <=> z")).isEqualTo(this.f.equivalence(this.f.or(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x => y => z")).isEqualTo(this.f.implication(this.f.variable("x"), this.f.implication(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x <=> y <=> z")).isEqualTo(this.f.equivalence(this.f.variable("x"), this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("(x | y) & z")).isEqualTo(this.f.and(this.f.or(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x & (y | z)")).isEqualTo(this.f.and(this.f.variable("x"), this.f.or(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("(x => y) & z")).isEqualTo(this.f.and(this.f.implication(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x & (y => z)")).isEqualTo(this.f.and(this.f.variable("x"), this.f.implication(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("(x => y) | z")).isEqualTo(this.f.or(this.f.implication(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x | (y => z)")).isEqualTo(this.f.or(this.f.variable("x"), this.f.implication(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("(x <=> y) & z")).isEqualTo(this.f.and(this.f.equivalence(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x & (y <=> z)")).isEqualTo(this.f.and(this.f.variable("x"), this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("(x <=> y) | z")).isEqualTo(this.f.or(this.f.equivalence(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x | (y <=> z)")).isEqualTo(this.f.or(this.f.variable("x"), this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
-        assertThat(parser.parse("x => y <=> z")).isEqualTo(this.f.equivalence(this.f.implication(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
-        assertThat(parser.parse("x => (y <=> z)")).isEqualTo(this.f.implication(this.f.variable("x"), this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x | y & z"))
+                .isEqualTo(this.f.or(this.f.variable("x"), this.f.and(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x & y | z"))
+                .isEqualTo(this.f.or(this.f.and(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x => y & z")).isEqualTo(
+                this.f.implication(this.f.variable("x"), this.f.and(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x & y => z")).isEqualTo(
+                this.f.implication(this.f.and(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x <=> y & z")).isEqualTo(
+                this.f.equivalence(this.f.variable("x"), this.f.and(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x & y <=> z")).isEqualTo(
+                this.f.equivalence(this.f.and(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x => y | z")).isEqualTo(
+                this.f.implication(this.f.variable("x"), this.f.or(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x | y => z")).isEqualTo(
+                this.f.implication(this.f.or(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x <=> y | z")).isEqualTo(
+                this.f.equivalence(this.f.variable("x"), this.f.or(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x | y <=> z")).isEqualTo(
+                this.f.equivalence(this.f.or(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x => y => z")).isEqualTo(this.f.implication(this.f.variable("x"),
+                this.f.implication(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x <=> y <=> z")).isEqualTo(this.f.equivalence(this.f.variable("x"),
+                this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("(x | y) & z"))
+                .isEqualTo(this.f.and(this.f.or(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x & (y | z)"))
+                .isEqualTo(this.f.and(this.f.variable("x"), this.f.or(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("(x => y) & z")).isEqualTo(
+                this.f.and(this.f.implication(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x & (y => z)")).isEqualTo(
+                this.f.and(this.f.variable("x"), this.f.implication(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("(x => y) | z")).isEqualTo(
+                this.f.or(this.f.implication(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x | (y => z)")).isEqualTo(
+                this.f.or(this.f.variable("x"), this.f.implication(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("(x <=> y) & z")).isEqualTo(
+                this.f.and(this.f.equivalence(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x & (y <=> z)")).isEqualTo(
+                this.f.and(this.f.variable("x"), this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("(x <=> y) | z")).isEqualTo(
+                this.f.or(this.f.equivalence(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x | (y <=> z)")).isEqualTo(
+                this.f.or(this.f.variable("x"), this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
+        assertThat(parser.parse("x => y <=> z")).isEqualTo(this.f
+                .equivalence(this.f.implication(this.f.variable("x"), this.f.variable("y")), this.f.variable("z")));
+        assertThat(parser.parse("x => (y <=> z)")).isEqualTo(this.f.implication(this.f.variable("x"),
+                this.f.equivalence(this.f.variable("y"), this.f.variable("z"))));
     }
 
     @Test
@@ -195,17 +225,20 @@ public class PropositionalParserTest extends TestWithExampleFormulas {
 
     @Test
     public void testIllegalFormula2() {
-        assertThatThrownBy(() -> new PropositionalParser(this.f).parse("(A & (C & D) B)")).isInstanceOf(ParserException.class);
+        assertThatThrownBy(() -> new PropositionalParser(this.f).parse("(A & (C & D) B)"))
+                .isInstanceOf(ParserException.class);
     }
 
     @Test
     public void testIllegalFormula3() {
-        assertThatThrownBy(() -> new PropositionalParser(this.f).parse("A | A + (C | B + C)")).isInstanceOf(ParserException.class);
+        assertThatThrownBy(() -> new PropositionalParser(this.f).parse("A | A + (C | B + C)"))
+                .isInstanceOf(ParserException.class);
     }
 
     @Test
     public void testIllegalFormula4() {
-        assertThatThrownBy(() -> new PropositionalParser(this.f).parse("A | A & (C | B & C")).isInstanceOf(ParserException.class);
+        assertThatThrownBy(() -> new PropositionalParser(this.f).parse("A | A & (C | B & C"))
+                .isInstanceOf(ParserException.class);
     }
 
     @Test

@@ -16,7 +16,8 @@ import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 /**
- * Transformation of a formula in a normal form (DNF or CNF) by converting it to a BDD.
+ * Transformation of a formula in a normal form (DNF or CNF) by converting it to
+ * a BDD.
  * @version 2.3.0
  * @since 2.3.0
  */
@@ -26,11 +27,12 @@ public abstract class BDDNormalFormTransformation implements FormulaTransformati
     private final BDDKernel kernel;
 
     /**
-     * Constructs a new BDD-based normal form transformation with an optional BDD kernel.
+     * Constructs a new BDD-based normal form transformation with an optional
+     * BDD kernel.
      * <p>
-     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
-     * the number of different variables in all applied formulas <b>must not exceed</b>
-     * the number of variables in the kernel.
+     * Warning: You can use this object for arbitrarily many transformations,
+     * <b>but</b> the number of different variables in all applied formulas
+     * <b>must not exceed</b> the number of variables in the kernel.
      * @param kernel the optional BDD kernel
      */
     public BDDNormalFormTransformation(final BDDKernel kernel) {
@@ -38,14 +40,16 @@ public abstract class BDDNormalFormTransformation implements FormulaTransformati
     }
 
     /**
-     * Constructs a new BDD-based normal form transformation for a given number of variables.
+     * Constructs a new BDD-based normal form transformation for a given number
+     * of variables.
      * <p>
-     * Warning: You can use this object for arbitrarily many transformations, <b>but</b>
-     * the number of different variables in all applied formulas <b>must not exceed</b>
-     * {@code numVars}.
+     * Warning: You can use this object for arbitrarily many transformations,
+     * <b>but</b> the number of different variables in all applied formulas
+     * <b>must not exceed</b> {@code numVars}.
      * <p>
-     * To improve performance you might want to use {@link #BDDNormalFormTransformation(BDDKernel)},
-     * where you have full control over the node and cache size in the used BDD kernel.
+     * To improve performance you might want to use
+     * {@link #BDDNormalFormTransformation(BDDKernel)}, where you have full
+     * control over the node and cache size in the used BDD kernel.
      * @param f       the formula factory to use
      * @param numVars the number of variables
      */
@@ -56,8 +60,10 @@ public abstract class BDDNormalFormTransformation implements FormulaTransformati
     /**
      * Computes the CNF or DNF from the given formula by using a BDD.
      * @param formula the formula to transform
-     * @param cnf     {@code true} if a CNF should be computed, {@code false} if a canonical DNF should be computed
-     * @param cache   indicates whether the result should be cached in this formula's cache
+     * @param cnf     {@code true} if a CNF should be computed, {@code false} if
+     *                a canonical DNF should be computed
+     * @param cache   indicates whether the result should be cached in this
+     *                formula's cache
      * @return the normal form (CNF or DNF) of the formula
      */
     protected Formula compute(final Formula formula, final boolean cnf, final boolean cache) {
@@ -77,7 +83,8 @@ public abstract class BDDNormalFormTransformation implements FormulaTransformati
         if (cnf) {
             simplifiedNormalForm = normalForm.transform(this.up);
         } else {
-            // unit propagation simplification creates a CNF, so we use the negated DNF to negate the result back to DNF again
+            // unit propagation simplification creates a CNF, so we use the
+            // negated DNF to negate the result back to DNF again
             simplifiedNormalForm = normalForm.negate().nnf().transform(this.up).negate().nnf();
         }
         if (cache) {

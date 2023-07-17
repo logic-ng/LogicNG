@@ -26,7 +26,8 @@ public class GraphTest {
     public static Graph<Long> getLongGraph(final String id) throws IOException {
         final Graph<Long> g = new Graph<>(id + "-Long");
 
-        final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/graphs/graph" + id + ".txt"));
+        final BufferedReader reader =
+                new BufferedReader(new FileReader("src/test/resources/graphs/graph" + id + ".txt"));
 
         while (reader.ready()) {
             final String line = reader.readLine().trim();

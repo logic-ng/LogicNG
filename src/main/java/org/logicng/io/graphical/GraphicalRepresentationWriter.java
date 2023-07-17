@@ -13,7 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
- * An interface for writers of graphical representations of formulas, BDDs, and graphs.
+ * An interface for writers of graphical representations of formulas, BDDs, and
+ * graphs.
  * @version 2.4.0
  * @since 2.4.0
  */
@@ -28,7 +29,8 @@ public interface GraphicalRepresentationWriter {
     void write(final Writer writer, GraphicalRepresentation representation) throws IOException;
 
     /**
-     * Writes a given graphical representation to a file with the given file name.
+     * Writes a given graphical representation to a file with the given file
+     * name.
      * @param fileName       the file name for the output file
      * @param representation the representation to write
      * @throws IOException if there is a problem during writing the file
@@ -44,7 +46,8 @@ public interface GraphicalRepresentationWriter {
      * @throws IOException if there is a problem during writing the file
      */
     default void write(final File file, final GraphicalRepresentation representation) throws IOException {
-        try (final Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
+        try (final Writer writer =
+                new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
             write(writer, representation);
         }
     }

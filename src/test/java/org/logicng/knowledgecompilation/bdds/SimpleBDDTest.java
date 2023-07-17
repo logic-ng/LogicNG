@@ -125,7 +125,8 @@ public class SimpleBDDTest {
                 new Assignment(f.literal("A", false), f.literal("B", true))
         );
         assertThat(bdd.numberOfClausesCNF()).isEqualTo(BigInteger.valueOf(2));
-        assertThat(bdd.toLngBdd().toString()).isEqualTo("<A | low=<B | low=<$false> high=<$true>> high=<B | low=<$true> high=<$false>>>");
+        assertThat(bdd.toLngBdd().toString())
+                .isEqualTo("<A | low=<B | low=<$false> high=<$true>> high=<B | low=<$true> high=<$false>>>");
     }
 
     @Test
@@ -149,7 +150,8 @@ public class SimpleBDDTest {
                 new Assignment(f.literal("A", true), f.literal("B", true), f.literal("C", true))
         );
         assertThat(bdd.numberOfClausesCNF()).isEqualTo(BigInteger.ONE);
-        assertThat(bdd.toLngBdd().toString()).isEqualTo("<A | low=<B | low=<C | low=<$true> high=<$false>> high=<$true>> high=<$true>>");
+        assertThat(bdd.toLngBdd().toString())
+                .isEqualTo("<A | low=<B | low=<C | low=<$true> high=<$false>> high=<$true>> high=<$true>>");
     }
 
     @Test
@@ -169,7 +171,8 @@ public class SimpleBDDTest {
                 new Assignment(f.literal("A", true), f.literal("B", true), f.literal("C", false))
         );
         assertThat(bdd.numberOfClausesCNF()).isEqualTo(BigInteger.valueOf(3));
-        assertThat(bdd.toLngBdd().toString()).isEqualTo("<A | low=<$false> high=<B | low=<$false> high=<C | low=<$true> high=<$false>>>>");
+        assertThat(bdd.toLngBdd().toString())
+                .isEqualTo("<A | low=<$false> high=<B | low=<$false> high=<C | low=<$true> high=<$false>>>>");
     }
 
     @Test
@@ -185,7 +188,8 @@ public class SimpleBDDTest {
         assertThat(bdd.underlyingKernel().factory()).isSameAs(f);
         assertThat(bdd.enumerateAllModels()).hasSize(6);
         assertThat(bdd.enumerateAllModels(f.variable("A"))).hasSize(2);
-        assertThat(bdd.hashCode()).isEqualTo(BDDFactory.build(parser.parse("(A => ~C) | (B & ~C)"), kernel, null).hashCode());
+        assertThat(bdd.hashCode())
+                .isEqualTo(BDDFactory.build(parser.parse("(A => ~C) | (B & ~C)"), kernel, null).hashCode());
         assertThat(bdd.toString()).isEqualTo("BDD{8}");
     }
 

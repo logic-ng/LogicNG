@@ -40,9 +40,12 @@ class TimeoutSATHandlerTest {
                 GlucoseConfig.builder().build());
         this.solvers[3] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(true).build());
         this.solvers[4] = MiniSat.miniCard(this.f, MiniSatConfig.builder().incremental(false).build());
-        this.solvers[5] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
-        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[5] = MiniSat.miniSat(this.f,
+                MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        this.solvers[6] = MiniSat.miniSat(this.f, MiniSatConfig.builder()
+                .cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
+        this.solvers[7] = MiniSat.miniSat(this.f, MiniSatConfig.builder()
+                .cnfMethod(MiniSatConfig.CNFMethod.FULL_PG_ON_SOLVER).auxiliaryVariablesInModels(false).build());
     }
 
     @Test
@@ -103,7 +106,8 @@ class TimeoutSATHandlerTest {
     public void testTimeoutHandlerFixedEnd() {
         for (final SATSolver solver : this.solvers) {
             solver.add(pg.generate(10));
-            final TimeoutSATHandler handler = new TimeoutSATHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);
+            final TimeoutSATHandler handler =
+                    new TimeoutSATHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);
 
             final Tristate result = solver.sat(handler);
 

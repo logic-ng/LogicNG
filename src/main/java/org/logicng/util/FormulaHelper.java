@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 public final class FormulaHelper {
 
     /**
-     * Private empty constructor.  Class only contains static utility methods.
+     * Private empty constructor. Class only contains static utility methods.
      */
     private FormulaHelper() {
         // Intentionally left empty
@@ -94,7 +94,8 @@ public final class FormulaHelper {
      * @param <C>               the type parameters of the collection
      * @return the negated literals
      */
-    public static <C extends Collection<Literal>> C negateLiterals(final Collection<? extends Literal> literals, final Supplier<C> collectionFactory) {
+    public static <C extends Collection<Literal>> C negateLiterals(final Collection<? extends Literal> literals,
+                                                                   final Supplier<C> collectionFactory) {
         final C result = collectionFactory.get();
         for (final Literal lit : literals) {
             result.add(lit.negate());
@@ -109,7 +110,8 @@ public final class FormulaHelper {
      * @param <C>               the type parameters of the collection
      * @return the negated literals
      */
-    public static <C extends Collection<Formula>> C negate(final Collection<? extends Formula> formulas, final Supplier<C> collectionFactory) {
+    public static <C extends Collection<Formula>> C negate(final Collection<? extends Formula> formulas,
+                                                           final Supplier<C> collectionFactory) {
         final C result = collectionFactory.get();
         for (final Formula formula : formulas) {
             result.add(formula.negate());
@@ -133,7 +135,8 @@ public final class FormulaHelper {
     /**
      * Splits the top level {@link And} if possible.
      * @param formula the formula
-     * @return list of the operands if the formula is a {@link And}, otherwise the formula itself
+     * @return list of the operands if the formula is a {@link And}, otherwise
+     *         the formula itself
      */
     public static List<Formula> splitTopLevelAnd(final Formula formula) {
         if (formula.type() == FType.AND) {
@@ -148,11 +151,13 @@ public final class FormulaHelper {
     }
 
     /**
-     * Returns a sorted variable set from a given collection of strings which will be used as variable names
-     * and a formula factory. The given collection is treated in a null-safe manner,
-     * i.e. if the collection is {@code null} the collection is considered to be an empty collection.
+     * Returns a sorted variable set from a given collection of strings which
+     * will be used as variable names and a formula factory. The given
+     * collection is treated in a null-safe manner, i.e. if the collection is
+     * {@code null} the collection is considered to be an empty collection.
      * @param strings the collection of strings (can be empty or {@code null}
-     * @param f       the formula factory which is used to generate the variables
+     * @param f       the formula factory which is used to generate the
+     *                variables
      * @return the sorted set of variables from the collection of variable names
      */
     public static SortedSet<Variable> strings2vars(final Collection<String> strings, final FormulaFactory f) {
@@ -167,16 +172,21 @@ public final class FormulaHelper {
     }
 
     /**
-     * Returns a sorted literal set from a given collection of strings and a formula factory.
-     * If a string begins with the given {@code negationPrefix} a literal with a negative phase is created,
-     * otherwise a literal with a positive phase is created. The given collection is treated in a null-safe manner,
-     * i.e. if the collection is {@code null} the collection is considered to be an empty collection.
-     * @param strings        the collection of strings (can be empty or {@code null}
+     * Returns a sorted literal set from a given collection of strings and a
+     * formula factory. If a string begins with the given {@code negationPrefix}
+     * a literal with a negative phase is created, otherwise a literal with a
+     * positive phase is created. The given collection is treated in a null-safe
+     * manner, i.e. if the collection is {@code null} the collection is
+     * considered to be an empty collection.
+     * @param strings        the collection of strings (can be empty or
+     *                       {@code null}
      * @param negationPrefix the negation prefix
-     * @param f              the formula factory which is used to generate the variables
+     * @param f              the formula factory which is used to generate the
+     *                       variables
      * @return the sorted set of literals
      */
-    public static SortedSet<Literal> strings2literals(final Collection<String> strings, final String negationPrefix, final FormulaFactory f) {
+    public static SortedSet<Literal> strings2literals(final Collection<String> strings, final String negationPrefix,
+                                                      final FormulaFactory f) {
         if (nullOrEmpty(strings)) {
             return Collections.emptySortedSet();
         }
@@ -189,10 +199,12 @@ public final class FormulaHelper {
     }
 
     /**
-     * Returns a list of strings from a given collection of variables. The strings contain the variable names.
-     * The given collection is treated in a null-safe manner, i.e. if the collection is {@code null}
-     * the collection is considered to be an empty collection.
-     * @param variables the collection of variables (can be empty or {@code null}
+     * Returns a list of strings from a given collection of variables. The
+     * strings contain the variable names. The given collection is treated in a
+     * null-safe manner, i.e. if the collection is {@code null} the collection
+     * is considered to be an empty collection.
+     * @param variables the collection of variables (can be empty or
+     *                  {@code null}
      * @return the list of variable names
      */
     public static SortedSet<String> vars2strings(final Collection<Variable> variables) {
@@ -207,13 +219,16 @@ public final class FormulaHelper {
     }
 
     /**
-     * Returns a list of strings from a given collection of literals. The strings contain the variable names
-     * with a leading {@code negationPrefix} if the literal has a negative phase.
-     * The given collection is treated in a null-safe manner, i.e. if the collection is {@code null}
-     * the collection is considered to be an empty collection.
-     * @param literals       the collection of variables (can be empty or {@code null}
+     * Returns a list of strings from a given collection of literals. The
+     * strings contain the variable names with a leading {@code negationPrefix}
+     * if the literal has a negative phase. The given collection is treated in a
+     * null-safe manner, i.e. if the collection is {@code null} the collection
+     * is considered to be an empty collection.
+     * @param literals       the collection of variables (can be empty or
+     *                       {@code null}
      * @param negationPrefix the negation prefix
-     * @return the list of literal names with a leading {@code negationPrefix} if the phase is negative
+     * @return the list of literal names with a leading {@code negationPrefix}
+     *         if the phase is negative
      */
     public static SortedSet<String> literals2strings(final Collection<Literal> literals, final String negationPrefix) {
         if (nullOrEmpty(literals)) {

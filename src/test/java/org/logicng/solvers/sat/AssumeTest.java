@@ -47,8 +47,10 @@ public class AssumeTest {
     @Test
     public void testAssume() throws ParserException {
         final List<Literal> assumptions1 = Arrays.asList(this.f.literal("c", true), this.f.literal("d", true));
-        final List<Literal> assumptions2 = Arrays.asList(this.f.literal("x", false), this.f.literal("y", true), this.f.literal("d", true));
-        final List<Literal> assumptions3 = Arrays.asList(this.f.literal("a", false), this.f.literal("c", true), this.f.literal("a", false));
+        final List<Literal> assumptions2 =
+                Arrays.asList(this.f.literal("x", false), this.f.literal("y", true), this.f.literal("d", true));
+        final List<Literal> assumptions3 =
+                Arrays.asList(this.f.literal("a", false), this.f.literal("c", true), this.f.literal("a", false));
         final List<Literal> assumptions4 = Arrays.asList(this.f.literal("c", false), this.f.literal("d", true));
         final List<Literal> assumptions5 = Arrays.asList(this.f.literal("x", true), this.f.literal("x", false));
         final List<Literal> assumptions6 = Arrays.asList(this.f.literal("a", true), this.f.literal("a", false));

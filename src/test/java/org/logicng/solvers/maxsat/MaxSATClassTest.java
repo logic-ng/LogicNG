@@ -28,19 +28,29 @@ public class MaxSATClassTest {
 
     @Test
     public void testMaxSATConfig() {
-        assertThat(Arrays.asList(MaxSATConfig.SolverType.values()).contains(MaxSATConfig.SolverType.valueOf("GLUCOSE"))).isTrue();
-        assertThat(Arrays.asList(MaxSATConfig.IncrementalStrategy.values()).contains(MaxSATConfig.IncrementalStrategy.valueOf("ITERATIVE"))).isTrue();
-        assertThat(Arrays.asList(MaxSATConfig.AMOEncoding.values()).contains(MaxSATConfig.AMOEncoding.valueOf("LADDER"))).isTrue();
-        assertThat(Arrays.asList(MaxSATConfig.PBEncoding.values()).contains(MaxSATConfig.PBEncoding.valueOf("SWC"))).isTrue();
-        assertThat(Arrays.asList(MaxSATConfig.CardinalityEncoding.values()).contains(MaxSATConfig.CardinalityEncoding.valueOf("TOTALIZER"))).isTrue();
-        assertThat(Arrays.asList(MaxSATConfig.WeightStrategy.values()).contains(MaxSATConfig.WeightStrategy.valueOf("DIVERSIFY"))).isTrue();
-        assertThat(Arrays.asList(MaxSATConfig.Verbosity.values()).contains(MaxSATConfig.Verbosity.valueOf("SOME"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.SolverType.values()).contains(MaxSATConfig.SolverType.valueOf("GLUCOSE")))
+                .isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.IncrementalStrategy.values())
+                .contains(MaxSATConfig.IncrementalStrategy.valueOf("ITERATIVE"))).isTrue();
+        assertThat(
+                Arrays.asList(MaxSATConfig.AMOEncoding.values()).contains(MaxSATConfig.AMOEncoding.valueOf("LADDER")))
+                        .isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.PBEncoding.values()).contains(MaxSATConfig.PBEncoding.valueOf("SWC")))
+                .isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.CardinalityEncoding.values())
+                .contains(MaxSATConfig.CardinalityEncoding.valueOf("TOTALIZER"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.WeightStrategy.values())
+                .contains(MaxSATConfig.WeightStrategy.valueOf("DIVERSIFY"))).isTrue();
+        assertThat(Arrays.asList(MaxSATConfig.Verbosity.values()).contains(MaxSATConfig.Verbosity.valueOf("SOME")))
+                .isTrue();
     }
 
     @Test
     public void testMaxSATEnum() {
-        assertThat(Arrays.asList(MaxSAT.ProblemType.values()).contains(MaxSAT.ProblemType.valueOf("UNWEIGHTED"))).isTrue();
-        assertThat(Arrays.asList(MaxSAT.MaxSATResult.values()).contains(MaxSAT.MaxSATResult.valueOf("OPTIMUM"))).isTrue();
+        assertThat(Arrays.asList(MaxSAT.ProblemType.values()).contains(MaxSAT.ProblemType.valueOf("UNWEIGHTED")))
+                .isTrue();
+        assertThat(Arrays.asList(MaxSAT.MaxSATResult.values()).contains(MaxSAT.MaxSATResult.valueOf("OPTIMUM")))
+                .isTrue();
     }
 
     @Test

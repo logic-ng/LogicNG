@@ -31,7 +31,8 @@ public class SortedStringRepresentationTest extends TestWithExampleFormulas {
 
     @Test
     public void testFormulaComparator() {
-        final SortedStringRepresentation.FormulaComparator comparator = new SortedStringRepresentation.FormulaComparator(this.varOrder);
+        final SortedStringRepresentation.FormulaComparator comparator =
+                new SortedStringRepresentation.FormulaComparator(this.varOrder);
         assertThat(comparator.compare(this.FALSE, this.TRUE)).isZero();
         assertThat(comparator.compare(this.A, this.A)).isZero();
         assertThat(comparator.compare(this.A, this.B)).isPositive();
@@ -62,9 +63,12 @@ public class SortedStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.f.or(this.A, this.B, this.C, this.X), this.sr)).isEqualTo("x | b | a | c");
         assertThat(this.f.string(this.PBC2, this.sr)).isEqualTo("3*x + -4*b + 2*a > 2");
         assertThat(this.f.string(this.f.and(this.NB, this.PBC1), this.sr)).isEqualTo("(3*x + -4*b + 2*a = 2) & ~b");
-        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<Literal>(Arrays.asList(this.A, this.B)), new ArrayList<>(Arrays.asList(1, 1))), this.sr)).isEqualTo("b + a = 42");
-        assertThat(this.f.string(this.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$true");
-        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$false");
+        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<Literal>(Arrays.asList(this.A, this.B)),
+                new ArrayList<>(Arrays.asList(1, 1))), this.sr)).isEqualTo("b + a = 42");
+        assertThat(this.f.string(this.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr))
+                .isEqualTo("$true");
+        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr))
+                .isEqualTo("$false");
         assertThat(this.f.string(this.f.implication(this.A, this.f.exo()), this.sr)).isEqualTo("~a");
         assertThat(this.f.string(this.f.equivalence(this.A, this.f.exo()), this.sr)).isEqualTo("~a");
         assertThat(this.f.string(this.f.and(this.A, this.f.exo()), this.sr)).isEqualTo("$false");
@@ -73,7 +77,9 @@ public class SortedStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.f.equivalence(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.and(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.or(this.A, this.f.amo()), this.sr)).isEqualTo("$true");
-        assertThat(this.f.string(this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(
+                this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr))
+                        .isEqualTo("$true");
 
         // some variables not in varOrder
         this.varOrder.remove(this.X);
@@ -81,7 +87,8 @@ public class SortedStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.PBC2, this.sr)).isEqualTo("-4*b + 2*a + 3*x > 2");
 
         // empty varOrder
-        assertThat(this.f.string(this.EQ3, new SortedStringRepresentation(new ArrayList<>()))).isEqualTo("a & b <=> x | y");
+        assertThat(this.f.string(this.EQ3, new SortedStringRepresentation(new ArrayList<>())))
+                .isEqualTo("a & b <=> x | y");
     }
 
     @Test
@@ -91,7 +98,8 @@ public class SortedStringRepresentationTest extends TestWithExampleFormulas {
 
     @Test
     public void testViaFormulaFactoryConfig() {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
+        final FormulaFactory f =
+                new FormulaFactory(FormulaFactoryConfig.builder().stringRepresentation(() -> this.sr).build());
         assertThat(f.importFormula(this.EQ4).toString()).isEqualTo("a => b <=> ~a => ~b");
     }
 }

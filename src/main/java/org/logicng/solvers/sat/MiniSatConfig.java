@@ -19,37 +19,43 @@ public final class MiniSatConfig extends Configuration {
     /**
      * The different methods for clause minimization.
      * <ul>
-     * <li> {@code NONE} - no minimization is performed
-     * <li> {@code BASIC} - local minimization is performed
-     * <li> {@code DEEP} - recursive minimization is performed
+     * <li>{@code NONE} - no minimization is performed
+     * <li>{@code BASIC} - local minimization is performed
+     * <li>{@code DEEP} - recursive minimization is performed
      * </ul>
      */
     public enum ClauseMinimization {
-        NONE, BASIC, DEEP
+        NONE,
+        BASIC,
+        DEEP
     }
 
     /**
-     * The different methods for generating a CNF for a formula to put on the solver.
+     * The different methods for generating a CNF for a formula to put on the
+     * solver.
      * <ul>
-     * <li> {@code FACTORY_CNF} calls the {@link Formula#cnf()} method on the formula
-     * to convert it to CNF.  Therefore the CNF including all its auxiliary variables will
-     * be added to the formula factory.
-     * <li> {@code PG_ON_SOLVER} uses a solver-internal implementation of Plaisted-Greenbaum.
-     * Auxiliary variables are only added on the solver, not on the factory.  This usually
-     * leads to a reduced heap usage and often faster performance.
-     * Before applying Plaisted-Greenbaum, this method performs an NNF transformation on the
-     * input formula first.
-     * <li> {@code FULL_PG_ON_SOLVER} uses a solver-internal implementation of Plaisted-Greenbaum.
-     * Auxiliary variables are only added on the solver, not on the factory.  This usually
-     * leads to a reduced heap usage and often faster performance.
-     * In contrast to {@code PG_ON_SOLVER}, this method does not transform the input formula to
-     * NNF first. The Plaisted-Greenbaum transformation is applied directly to all operators of
-     * the formula, hence prefix {@code FULL}. Without the NNF transformation the formula factory
+     * <li>{@code FACTORY_CNF} calls the {@link Formula#cnf()} method on the
+     * formula to convert it to CNF. Therefore the CNF including all its
+     * auxiliary variables will be added to the formula factory.
+     * <li>{@code PG_ON_SOLVER} uses a solver-internal implementation of
+     * Plaisted-Greenbaum. Auxiliary variables are only added on the solver, not
+     * on the factory. This usually leads to a reduced heap usage and often
+     * faster performance. Before applying Plaisted-Greenbaum, this method
+     * performs an NNF transformation on the input formula first.
+     * <li>{@code FULL_PG_ON_SOLVER} uses a solver-internal implementation of
+     * Plaisted-Greenbaum. Auxiliary variables are only added on the solver, not
+     * on the factory. This usually leads to a reduced heap usage and often
+     * faster performance. In contrast to {@code PG_ON_SOLVER}, this method does
+     * not transform the input formula to NNF first. The Plaisted-Greenbaum
+     * transformation is applied directly to all operators of the formula, hence
+     * prefix {@code FULL}. Without the NNF transformation the formula factory
      * and the heap will not be polluted with intermediate formulas.
      * </ul>
      */
     public enum CNFMethod {
-        FACTORY_CNF, PG_ON_SOLVER, FULL_PG_ON_SOLVER
+        FACTORY_CNF,
+        PG_ON_SOLVER,
+        FULL_PG_ON_SOLVER
     }
 
     final double varDecay;
@@ -105,7 +111,8 @@ public final class MiniSatConfig extends Configuration {
 
     /**
      * Returns whether the solver is incremental or not.
-     * @return {@code true} if the solver is incremental, {@code false} otherwise
+     * @return {@code true} if the solver is incremental, {@code false}
+     *         otherwise
      */
     public boolean incremental() {
         return this.incremental;
@@ -136,8 +143,10 @@ public final class MiniSatConfig extends Configuration {
     }
 
     /**
-     * Returns whether auxiliary Variables should be included in the model or not.
-     * @return whether auxiliary Variables should be included in the model or not
+     * Returns whether auxiliary Variables should be included in the model or
+     * not.
+     * @return whether auxiliary Variables should be included in the model or
+     *         not
      */
     public boolean isAuxiliaryVariablesInModels() {
         return this.auxiliaryVariablesInModels;
@@ -160,9 +169,12 @@ public final class MiniSatConfig extends Configuration {
         sb.append("proofGeneration=").append(this.proofGeneration).append(System.lineSeparator());
         sb.append("cnfMethod=").append(this.cnfMethod).append(System.lineSeparator());
         sb.append("auxiliaryVariablesInModels=").append(this.auxiliaryVariablesInModels).append(System.lineSeparator());
-        sb.append("bbInitialUBCheckForRotatableLiterals=").append(this.bbInitialUBCheckForRotatableLiterals).append(System.lineSeparator());
-        sb.append("bbCheckForComplementModelLiterals=").append(this.bbCheckForComplementModelLiterals).append(System.lineSeparator());
-        sb.append("bbCheckForRotatableLiterals=").append(this.bbCheckForRotatableLiterals).append(System.lineSeparator());
+        sb.append("bbInitialUBCheckForRotatableLiterals=").append(this.bbInitialUBCheckForRotatableLiterals)
+                .append(System.lineSeparator());
+        sb.append("bbCheckForComplementModelLiterals=").append(this.bbCheckForComplementModelLiterals)
+                .append(System.lineSeparator());
+        sb.append("bbCheckForRotatableLiterals=").append(this.bbCheckForRotatableLiterals)
+                .append(System.lineSeparator());
         sb.append("}");
         return sb.toString();
     }
@@ -196,7 +208,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the variable activity decay factor to a given value. The default value is 0.95.
+         * Sets the variable activity decay factor to a given value. The default
+         * value is 0.95.
          * @param varDecay the value (should be in the range 0..1)
          * @return the builder
          */
@@ -206,8 +219,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the initial value to bump a variable with each time it is used in conflict resolution to a given value.
-         * The default value is 1.0.
+         * Sets the initial value to bump a variable with each time it is used
+         * in conflict resolution to a given value. The default value is 1.0.
          * @param varInc the value
          * @return the builder
          */
@@ -217,7 +230,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the clause minimization method. The default value is {@code DEEP}.
+         * Sets the clause minimization method. The default value is
+         * {@code DEEP}.
          * @param ccmin the value
          * @return the builder
          */
@@ -227,7 +241,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the base restart interval to the given value. The default value is 100.
+         * Sets the base restart interval to the given value. The default value
+         * is 100.
          * @param restartFirst the value (should be at least 1)
          * @return the builder
          */
@@ -237,7 +252,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the restart interval increase factor to the given value. The default value is 2.0.
+         * Sets the restart interval increase factor to the given value. The
+         * default value is 2.0.
          * @param restartInc the value (should be at least 1)
          * @return the builder
          */
@@ -247,7 +263,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the clause activity decay factor to a given value. The default value is 0.999.
+         * Sets the clause activity decay factor to a given value. The default
+         * value is 0.999.
          * @param clauseDecay the value (should be in the range 0..1)
          * @return the builder
          */
@@ -257,9 +274,11 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * If turned on, the satisfied original clauses will be removed when simplifying on level 0, when turned off,
-         * only the satisfied learnt clauses will be removed.  The default value is {@code true}.
-         * @param removeSatisfied {@code true} if the original clauses should be simplified, {@code false} otherwise
+         * If turned on, the satisfied original clauses will be removed when
+         * simplifying on level 0, when turned off, only the satisfied learnt
+         * clauses will be removed. The default value is {@code true}.
+         * @param removeSatisfied {@code true} if the original clauses should be
+         *                        simplified, {@code false} otherwise
          * @return the builder
          */
         public Builder removeSatisfied(final boolean removeSatisfied) {
@@ -268,8 +287,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the initial limit for learnt clauses as a factor of the original clauses to the given value.  The default
-         * value is 1/3.
+         * Sets the initial limit for learnt clauses as a factor of the original
+         * clauses to the given value. The default value is 1/3.
          * @param learntsizeFactor the value
          * @return the builder
          */
@@ -279,8 +298,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the factor by which the limit for learnt clauses is multiplied every restart to a given value. The default
-         * value is 1.1.
+         * Sets the factor by which the limit for learnt clauses is multiplied
+         * every restart to a given value. The default value is 1.1.
          * @param learntsizeInc the value
          * @return the builder
          */
@@ -290,8 +309,10 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Turns the incremental mode of the solver off and on.  The default value is {@code true}.
-         * @param incremental {@code true} if incremental mode is turned on, {@code false} otherwise
+         * Turns the incremental mode of the solver off and on. The default
+         * value is {@code true}.
+         * @param incremental {@code true} if incremental mode is turned on,
+         *                    {@code false} otherwise
          * @return the builder
          */
         public Builder incremental(final boolean incremental) {
@@ -300,7 +321,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the initial phase of the solver.  The default value is {@code true}.
+         * Sets the initial phase of the solver. The default value is
+         * {@code true}.
          * @param initialPhase the initial phase
          * @return the builder
          */
@@ -310,9 +332,10 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets whether the information for generating a proof with DRUP should be recorded or not.  The default
-         * value is {@code false}.
-         * @param proofGeneration {@code true} if proof generating information should be recorded, {@code false} otherwise
+         * Sets whether the information for generating a proof with DRUP should
+         * be recorded or not. The default value is {@code false}.
+         * @param proofGeneration {@code true} if proof generating information
+         *                        should be recorded, {@code false} otherwise
          * @return the builder
          */
         public Builder proofGeneration(final boolean proofGeneration) {
@@ -321,8 +344,8 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets the CNF method for converting formula which are not in CNF for the solver.  The default value
-         * is {@code FACTORY_CNF}.
+         * Sets the CNF method for converting formula which are not in CNF for
+         * the solver. The default value is {@code FACTORY_CNF}.
          * @param cnfMethod the CNF method
          * @return the builder
          */
@@ -332,12 +355,15 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets whether auxiliary variables (CNF, cardinality constraints, pseudo-Boolean constraints) should
-         * be included in methods like {@link SATSolver#model()} or {@link SATSolver#enumerateAllModels()}.  If
-         * set to {@code true}, all variables will be included in these methods,  if set to {@code false}, variables
-         * starting with "@RESERVED_CC_", "@RESERVED_PB_", and "@RESERVED_CNF_" will be excluded from the models.
-         * The default value is {@code false}.
-         * @param auxiliaryVariablesInModels {@code true} if auxiliary variables should be included in the models,
+         * Sets whether auxiliary variables (CNF, cardinality constraints,
+         * pseudo-Boolean constraints) should be included in methods like
+         * {@link SATSolver#model()} or {@link SATSolver#enumerateAllModels()}.
+         * If set to {@code true}, all variables will be included in these
+         * methods, if set to {@code false}, variables starting with
+         * "@RESERVED_CC_", "@RESERVED_PB_", and "@RESERVED_CNF_" will be
+         * excluded from the models. The default value is {@code false}.
+         * @param auxiliaryVariablesInModels {@code true} if auxiliary variables
+         *                                   should be included in the models,
          *                                   {@code false} otherwise
          * @return the builder
          */
@@ -347,10 +373,12 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets whether the backbone algorithm should check for rotatable literals.
-         * The default value is {@code true}.
-         * @param checkForRotatableLiterals the boolean value that is {@code true} if the algorithm should check for
-         *                                  rotatables or {@code false} otherwise.
+         * Sets whether the backbone algorithm should check for rotatable
+         * literals. The default value is {@code true}.
+         * @param checkForRotatableLiterals the boolean value that is
+         *                                  {@code true} if the algorithm should
+         *                                  check for rotatables or
+         *                                  {@code false} otherwise.
          * @return the builder
          */
         public Builder bbCheckForRotatableLiterals(final boolean checkForRotatableLiterals) {
@@ -359,10 +387,14 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets whether the backbone algorithm should check for rotatable literals during initial unit propagation.
-         * The default value is {@code true}.
-         * @param initialUBCheckForRotatableLiterals the boolean value that is {@code true} if the algorithm should
-         *                                           check for rotatables or {@code false} otherwise.
+         * Sets whether the backbone algorithm should check for rotatable
+         * literals during initial unit propagation. The default value is
+         * {@code true}.
+         * @param initialUBCheckForRotatableLiterals the boolean value that is
+         *                                           {@code true} if the
+         *                                           algorithm should check for
+         *                                           rotatables or {@code false}
+         *                                           otherwise.
          * @return the builder
          */
         public Builder bbInitialUBCheckForRotatableLiterals(final boolean initialUBCheckForRotatableLiterals) {
@@ -371,10 +403,13 @@ public final class MiniSatConfig extends Configuration {
         }
 
         /**
-         * Sets whether the backbone algorithm should check for complement model literals.
-         * The default value is {@code true}.
-         * @param checkForComplementModelLiterals the boolean value that is {@code true} if the algorithm should check for
-         *                                        complement literals or {@code false} otherwise.
+         * Sets whether the backbone algorithm should check for complement model
+         * literals. The default value is {@code true}.
+         * @param checkForComplementModelLiterals the boolean value that is
+         *                                        {@code true} if the algorithm
+         *                                        should check for complement
+         *                                        literals or {@code false}
+         *                                        otherwise.
          * @return the builder
          */
         public Builder bbCheckForComplementModelLiterals(final boolean checkForComplementModelLiterals) {

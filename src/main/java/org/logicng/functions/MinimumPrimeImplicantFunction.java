@@ -22,8 +22,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Computes a minimum-size prime implicant for the given formula.
- * Returns {@code null} if the formula was not satisfiable.
+ * Computes a minimum-size prime implicant for the given formula. Returns
+ * {@code null} if the formula was not satisfiable.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -56,11 +56,13 @@ public final class MinimumPrimeImplicantFunction implements FormulaFunction<Sort
             substitution.addSubstitution(literal, newVar);
         }
         final Formula substituted = nnf.transform(substitution);
-        final SATSolver solver = MiniSat.miniSat(formula.factory(), MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final SATSolver solver = MiniSat.miniSat(formula.factory(),
+                MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         solver.add(substituted);
         for (final Literal literal : newVar2oldLit.values()) {
             if (literal.phase() && newVar2oldLit.containsValue(literal.negate())) {
-                solver.add(formula.factory().amo(formula.factory().variable(literal.name() + POS), formula.factory().variable(literal.name() + NEG)));
+                solver.add(formula.factory().amo(formula.factory().variable(literal.name() + POS),
+                        formula.factory().variable(literal.name() + NEG)));
             }
         }
 

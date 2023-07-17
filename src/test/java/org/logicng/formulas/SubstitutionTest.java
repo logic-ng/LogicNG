@@ -143,9 +143,11 @@ public class SubstitutionTest extends TestWithExampleFormulas {
     public void testNArySubstitution() throws ParserException {
         final PropositionalParser p = new PropositionalParser(this.f);
         assertThat(this.AND3.substitute(this.subst)).isEqualTo(p.parse("(a & b | y) & (~(a & b) | ~y)"));
-        assertThat(this.f.and(this.NB, this.C, this.X, this.NY).substitute(this.subst)).isEqualTo(p.parse("~(x | y) & c & a & b & ~y"));
+        assertThat(this.f.and(this.NB, this.C, this.X, this.NY).substitute(this.subst))
+                .isEqualTo(p.parse("~(x | y) & c & a & b & ~y"));
         assertThat(this.OR3.substitute(this.subst)).isEqualTo(p.parse("(~a & (x | y)) | (a & ~(x | y))"));
-        assertThat(this.f.or(this.A, this.NB, this.C, this.X, this.NY).substitute(this.subst)).isEqualTo(p.parse("~a | ~(x | y) | c | a & b | ~y"));
+        assertThat(this.f.or(this.A, this.NB, this.C, this.X, this.NY).substitute(this.subst))
+                .isEqualTo(p.parse("~a | ~(x | y) | c | a & b | ~y"));
     }
 
     @Test
@@ -155,8 +157,10 @@ public class SubstitutionTest extends TestWithExampleFormulas {
         assertThat(this.NA.substitute(this.A, this.OR1)).isEqualTo(p.parse("~(x | y)"));
         assertThat(this.IMP1.substitute(this.B, this.OR1)).isEqualTo(p.parse("a => (x | y)"));
         assertThat(this.EQ2.substitute(this.B, this.OR1)).isEqualTo(p.parse("~a <=> ~(x | y)"));
-        assertThat(this.f.and(this.A, this.NB, this.C, this.NX, this.NY).substitute(this.Y, this.X)).isEqualTo(p.parse("a & ~b & c & ~x"));
-        assertThat(this.f.or(this.A, this.NB, this.C, this.NX, this.NY).substitute(this.Y, this.X)).isEqualTo(p.parse("a | ~b | c | ~x"));
+        assertThat(this.f.and(this.A, this.NB, this.C, this.NX, this.NY).substitute(this.Y, this.X))
+                .isEqualTo(p.parse("a & ~b & c & ~x"));
+        assertThat(this.f.or(this.A, this.NB, this.C, this.NX, this.NY).substitute(this.Y, this.X))
+                .isEqualTo(p.parse("a | ~b | c | ~x"));
     }
 
     @Test

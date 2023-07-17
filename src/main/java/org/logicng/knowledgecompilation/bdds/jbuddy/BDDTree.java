@@ -11,11 +11,14 @@ package org.logicng.knowledgecompilation.bdds.jbuddy;
  */
 public class BDDTree {
     protected int first;
-    protected int last;  /* First and last variable in this block */
-    protected int pos;          /* Sifting position */
-    protected int[] seq;        /* Sequence of first...last in the current order */
-    protected boolean fixed;       /* Are the sub-blocks fixed or may they be reordered */
-    protected final int id;           /* A sequential id number given by addblock */
+    protected int last; /* First and last variable in this block */
+    protected int pos; /* Sifting position */
+    protected int[] seq; /* Sequence of first...last in the current order */
+    protected boolean fixed; /*
+                              * Are the sub-blocks fixed or may they be
+                              * reordered
+                              */
+    protected final int id; /* A sequential id number given by addblock */
     protected BDDTree next;
     protected BDDTree prev;
     protected BDDTree nextlevel;
@@ -45,7 +48,8 @@ public class BDDTree {
      * @param level2var the level to variable mapping
      * @return the (possibly changed) BDD tree
      */
-    public static BDDTree addRange(final BDDTree tree, final int first, final int last, final boolean fixed, final int id, final int[] level2var) {
+    public static BDDTree addRange(final BDDTree tree, final int first, final int last, final boolean fixed,
+                                   final int id, final int[] level2var) {
         return addRangeRec(tree, null, first, last, fixed, id, level2var);
     }
 
@@ -98,7 +102,8 @@ public class BDDTree {
     }
 
     /**
-     * Returns the sequence of variables between {@code first} and {@code last} in the current order.
+     * Returns the sequence of variables between {@code first} and {@code last}
+     * in the current order.
      * @return the sequence of variables
      */
     public int[] getSeq() {
@@ -106,7 +111,8 @@ public class BDDTree {
     }
 
     /**
-     * Sets the sequence of variables between {@code first} and {@code last} in the current order.
+     * Sets the sequence of variables between {@code first} and {@code last} in
+     * the current order.
      * @param seq the sequence of variables
      */
     public void setSeq(final int[] seq) {
@@ -170,7 +176,8 @@ public class BDDTree {
     }
 
     /**
-     * Returns the tree of the next level or {@code null} if no such tree exists.
+     * Returns the tree of the next level or {@code null} if no such tree
+     * exists.
      * @return the tree of the next level
      */
     public BDDTree getNextlevel() {
@@ -196,7 +203,8 @@ public class BDDTree {
      * @param level2var the level to variable mapping
      * @return the (possibly changed) BDD tree
      */
-    public static BDDTree addRangeRec(BDDTree t, final BDDTree prev, final int first, final int last, final boolean fixed, final int id, final int[] level2var) {
+    public static BDDTree addRangeRec(BDDTree t, final BDDTree prev, final int first, final int last,
+                                      final boolean fixed, final int id, final int[] level2var) {
         if (first < 0 || last < 0 || last < first) {
             return null;
         }

@@ -39,10 +39,11 @@ public final class UBNode<T extends Comparable<T>> {
     }
 
     /**
-     * Returns the set of this node.  If this node is a terminal node, it holds a set
-     * of the UB Tree.  In this case these methods returns this set, otherwise it returns
-     * {@code null}.
-     * @return the set of this node if it is a terminal node, {@code null} otherwise
+     * Returns the set of this node. If this node is a terminal node, it holds a
+     * set of the UB Tree. In this case these methods returns this set,
+     * otherwise it returns {@code null}.
+     * @return the set of this node if it is a terminal node, {@code null}
+     *         otherwise
      */
     SortedSet<T> set() {
         return this.set;
@@ -50,7 +51,8 @@ public final class UBNode<T extends Comparable<T>> {
 
     /**
      * Returns all children of this node.
-     * @return a mapping from element to its node - all of which are children of the current node
+     * @return a mapping from element to its node - all of which are children of
+     *         the current node
      */
     SortedMap<T, UBNode<T>> children() {
         return this.children;

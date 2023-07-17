@@ -113,10 +113,14 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testLinearSU() throws IOException {
         final MaxSATConfig[] configs = new MaxSATConfig[4];
-        configs[0] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(false).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(false).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(true).verbosity(SOME).output(this.logStream).build();
-        configs[3] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(true).verbosity(SOME).output(this.logStream).build();
+        configs[0] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(false)
+                .verbosity(SOME).output(this.logStream).build();
+        configs[1] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(false)
+                .verbosity(SOME).output(this.logStream).build();
+        configs[2] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(true)
+                .verbosity(SOME).output(this.logStream).build();
+        configs[3] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(true)
+                .verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.linearSU(this.f, config);
@@ -130,9 +134,13 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testLinearUS() throws IOException {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
-        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream)
+                .build();
+        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.linearUS(this.f, config);
@@ -146,9 +154,13 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testMSU3() throws IOException {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
-        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream)
+                .build();
+        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             for (int i = 0; i < files.length; i++) {
                 final MaxSATSolver solver = MaxSATSolver.msu3(this.f, config);
@@ -182,10 +194,14 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testTimeoutHandlerLinearSU() {
         final MaxSATConfig[] configs = new MaxSATConfig[4];
-        configs[0] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(false).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(false).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(true).verbosity(SOME).output(this.logStream).build();
-        configs[3] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(true).verbosity(SOME).output(this.logStream).build();
+        configs[0] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(false)
+                .verbosity(SOME).output(this.logStream).build();
+        configs[1] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(false)
+                .verbosity(SOME).output(this.logStream).build();
+        configs[2] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).bmo(true)
+                .verbosity(SOME).output(this.logStream).build();
+        configs[3] = MaxSATConfig.builder().cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).bmo(true)
+                .verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
             testTimeoutHandler(solver);
@@ -195,9 +211,13 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testTimeoutHandlerLinearUS() {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
-        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream)
+                .build();
+        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
             testTimeoutHandler(solver);
@@ -207,9 +227,13 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     @Test
     public void testTimeoutHandlerMSU3() {
         final MaxSATConfig[] configs = new MaxSATConfig[3];
-        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE).cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream).build();
-        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE).cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[0] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
+        configs[1] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.NONE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER).verbosity(SOME).output(this.logStream)
+                .build();
+        configs[2] = MaxSATConfig.builder().incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
+                .cardinality(MaxSATConfig.CardinalityEncoding.TOTALIZER).verbosity(SOME).output(this.logStream).build();
         for (final MaxSATConfig config : configs) {
             final MaxSATSolver solver = MaxSATSolver.wbo(this.f, config);
             testTimeoutHandler(solver);
@@ -237,7 +261,8 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
 
     @Test
     public void testTimeoutHandlerSimple() throws IOException {
-        MaxSATSolver solver = MaxSATSolver.wbo(this.f, MaxSATConfig.builder().verbosity(SOME).output(this.logStream).build());
+        MaxSATSolver solver =
+                MaxSATSolver.wbo(this.f, MaxSATConfig.builder().verbosity(SOME).output(this.logStream).build());
         readCnfToSolver(solver, "src/test/resources/partialmaxsat/c1355_F176gat-1278gat@1.wcnf");
         TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(1000L);
         MaxSAT.MaxSATResult result = solver.solve(handler);
@@ -255,7 +280,8 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
 
     @Test
     public void testTimeoutHandlerUB() throws IOException {
-        final MaxSATSolver solver = MaxSATSolver.linearSU(this.f, MaxSATConfig.builder().verbosity(SOME).output(this.logStream).build());
+        final MaxSATSolver solver =
+                MaxSATSolver.linearSU(this.f, MaxSATConfig.builder().verbosity(SOME).output(this.logStream).build());
         readCnfToSolver(solver, "src/test/resources/partialmaxsat/c1355_F1229gat@1.wcnf");
         final TimeoutMaxSATHandler handler = new TimeoutMaxSATHandler(5000L);
         final MaxSAT.MaxSATResult result = solver.solve(handler);

@@ -58,14 +58,18 @@ public class LiteralSubstitutionTest {
         assertThat(this.f.parse("~(a & b & ~c & x)").transform(this.s1)).isEqualTo(this.f.parse("~(a_t & b & ~y & x)"));
         assertThat(this.f.parse("a & b & ~c & x").transform(this.s1)).isEqualTo(this.f.parse("a_t & b & ~y & x"));
         assertThat(this.f.parse("a | b | ~c | x").transform(this.s1)).isEqualTo(this.f.parse("a_t | b | ~y | x"));
-        assertThat(this.f.parse("(a | b) => (~c | x)").transform(this.s1)).isEqualTo(this.f.parse("(a_t | b) => (~y | x)"));
-        assertThat(this.f.parse("(a | b) <=> (~c | x)").transform(this.s1)).isEqualTo(this.f.parse("(a_t | b) <=> (~y | x)"));
-        assertThat(this.f.parse("2*a + 3*~b + -4*~c + x <= 5").transform(this.s1)).isEqualTo(this.f.parse("2*a_t + 3*x + -4*~y + x <= 5"));
+        assertThat(this.f.parse("(a | b) => (~c | x)").transform(this.s1))
+                .isEqualTo(this.f.parse("(a_t | b) => (~y | x)"));
+        assertThat(this.f.parse("(a | b) <=> (~c | x)").transform(this.s1))
+                .isEqualTo(this.f.parse("(a_t | b) <=> (~y | x)"));
+        assertThat(this.f.parse("2*a + 3*~b + -4*~c + x <= 5").transform(this.s1))
+                .isEqualTo(this.f.parse("2*a_t + 3*x + -4*~y + x <= 5"));
     }
 
     @Test
     public void testEmptySubstitution() throws ParserException {
-        assertThat(this.f.parse("2*a + 3*~b + -4*~c + x <= 5").transform(new LiteralSubstitution())).isEqualTo(this.f.parse("2*a + 3*~b + -4*~c + x <= 5"));
+        assertThat(this.f.parse("2*a + 3*~b + -4*~c + x <= 5").transform(new LiteralSubstitution()))
+                .isEqualTo(this.f.parse("2*a + 3*~b + -4*~c + x <= 5"));
     }
 
 }

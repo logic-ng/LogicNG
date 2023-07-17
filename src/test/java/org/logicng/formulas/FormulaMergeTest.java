@@ -13,8 +13,10 @@ public class FormulaMergeTest {
 
     @Test
     public void testPanic() {
-        final FormulaFactory f1 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.PANIC).build());
-        final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory f1 = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.PANIC).build());
+        final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
 
         final Variable a1 = f1.variable("A");
         final Variable b1 = f1.variable("B");
@@ -32,10 +34,14 @@ public class FormulaMergeTest {
         assertThatThrownBy(() -> f1.clause(a2, b1)).isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> f1.clause(a2, b2)).isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> f1.clause(a1, b1, c2)).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> f1.cnf(f1.clause(a1, b1), f1.clause(a1, c1), c2)).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> f1.cnf(f1.clause(a1, b1), f2.clause(a2, c2), c1)).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> f1.pbc(CType.GE, 1, new Literal[]{a1, b2.negate(), c1}, new int[]{1, 2, 3})).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> f1.pbc(CType.GE, 1, new Literal[]{a2, b2, c2.negate()}, new int[]{1, 2, 3})).isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> f1.cnf(f1.clause(a1, b1), f1.clause(a1, c1), c2))
+                .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> f1.cnf(f1.clause(a1, b1), f2.clause(a2, c2), c1))
+                .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> f1.pbc(CType.GE, 1, new Literal[]{a1, b2.negate(), c1}, new int[]{1, 2, 3}))
+                .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> f1.pbc(CType.GE, 1, new Literal[]{a2, b2, c2.negate()}, new int[]{1, 2, 3}))
+                .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> f1.cc(CType.GE, 1, a1, b2, c1)).isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> f1.cc(CType.GE, 1, a2, b2, c2)).isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> f1.amo(a1, b2, c1)).isInstanceOf(UnsupportedOperationException.class);
@@ -46,8 +52,10 @@ public class FormulaMergeTest {
 
     @Test
     public void testMerge() {
-        final FormulaFactory f1 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
-        final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.PANIC).build());
+        final FormulaFactory f1 = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory f2 = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.PANIC).build());
 
         final Variable a1 = f1.variable("A");
         final Variable b1 = f1.variable("B");

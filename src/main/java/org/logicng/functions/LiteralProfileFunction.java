@@ -17,12 +17,13 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * A function that computes the literal profile for a given formula, i.e. it counts the number of occurrences for
- * each literal.
+ * A function that computes the literal profile for a given formula, i.e. it
+ * counts the number of occurrences for each literal.
  * <p>
- * For this function, the non-caching version is preferred since it usually performs better.  The non-caching version
- * of this function generates the result mapping only once and fills it recursively whereas the caching version has to
- * construct a new mapping for each sub-formula.
+ * For this function, the non-caching version is preferred since it usually
+ * performs better. The non-caching version of this function generates the
+ * result mapping only once and fills it recursively whereas the caching version
+ * has to construct a new mapping for each sub-formula.
  * @version 2.3.0
  * @since 1.0
  */
@@ -30,8 +31,9 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
     private static final LiteralProfileFunction INSTANCE = new LiteralProfileFunction();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public LiteralProfileFunction() {
@@ -47,8 +49,9 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
     }
 
     /**
-     * The non-caching implementation of the literal profile computation.  In this case the result map is only
-     * constructed once and results are just added to it.
+     * The non-caching implementation of the literal profile computation. In
+     * this case the result map is only constructed once and results are just
+     * added to it.
      * @param formula the formula
      * @return the literal profile
      */
@@ -79,8 +82,8 @@ public final class LiteralProfileFunction implements FormulaFunction<Map<Literal
     }
 
     /**
-     * The caching implementation of the literal profile computation.  In this case a result map is constructed for
-     * each sub-formula.
+     * The caching implementation of the literal profile computation. In this
+     * case a result map is constructed for each sub-formula.
      * @param formula the formula
      * @return the literal profile
      */

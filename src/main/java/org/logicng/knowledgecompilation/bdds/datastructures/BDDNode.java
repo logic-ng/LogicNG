@@ -16,14 +16,17 @@ import java.util.Set;
 public interface BDDNode {
 
     /**
-     * Returns the label of the node.  This can either be a variable or a constant.
+     * Returns the label of the node. This can either be a variable or a
+     * constant.
      * @return the label of the node
      */
     Formula label();
 
     /**
-     * Returns {@code true} if this node is an inner node, {@code false} if it is a terminal node.
-     * @return {@code true} if this node is an inner node, {@code false} if it is a terminal node
+     * Returns {@code true} if this node is an inner node, {@code false} if it
+     * is a terminal node.
+     * @return {@code true} if this node is an inner node, {@code false} if it
+     *         is a terminal node
      */
     boolean isInnerNode();
 

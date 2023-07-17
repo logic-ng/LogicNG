@@ -3,19 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
- * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson Permission
+ * is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions: The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.sat;
@@ -146,7 +148,8 @@ public abstract class MiniSatStyleSolver {
     /**
      * Creates a literal for a given variable number and literal.
      * @param var  the variable number
-     * @param sign {@code true} if the literal is negative, {@code false} otherwise
+     * @param sign {@code true} if the literal is negative, {@code false}
+     *             otherwise
      * @return the literal (as integer value)
      */
     public static int mkLit(final int var, final boolean sign) {
@@ -163,7 +166,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Returns {@code true} if a given literal is negated, {@code false} otherwise.
+     * Returns {@code true} if a given literal is negated, {@code false}
+     * otherwise.
      * @param lit the literal
      * @return {@code true} if the literal is negated
      */
@@ -278,7 +282,8 @@ public abstract class MiniSatStyleSolver {
      * Compares two variables by their activity.
      * @param x the first variable
      * @param y the second variable
-     * @return {@code true} if the first variable's activity is larger than the second one's
+     * @return {@code true} if the first variable's activity is larger than the
+     *         second one's
      */
     public boolean lt(final int x, final int y) {
         return this.vars.get(x).activity() > this.vars.get(y).activity();
@@ -315,9 +320,11 @@ public abstract class MiniSatStyleSolver {
 
     /**
      * Adds a new variable to the solver.
-     * @param sign the initial polarity of the new variable, {@code true} if negative, {@code false} if positive
-     * @param dvar {@code true} if this variable can be used as a decision variable, {@code false} if it should not be
-     *             used as a decision variable
+     * @param sign the initial polarity of the new variable, {@code true} if
+     *             negative, {@code false} if positive
+     * @param dvar {@code true} if this variable can be used as a decision
+     *             variable, {@code false} if it should not be used as a
+     *             decision variable
      * @return the index of the new variable
      */
     public abstract int newVar(boolean sign, boolean dvar);
@@ -326,7 +333,8 @@ public abstract class MiniSatStyleSolver {
      * Adds a unit clause to the solver.
      * @param lit         the unit clause's literal
      * @param proposition a proposition (if required for proof tracing)
-     * @return {@code true} if the clause was added successfully, {@code false} otherwise
+     * @return {@code true} if the clause was added successfully, {@code false}
+     *         otherwise
      */
     public boolean addClause(final int lit, final Proposition proposition) {
         final LNGIntVector unit = new LNGIntVector(1);
@@ -338,29 +346,38 @@ public abstract class MiniSatStyleSolver {
      * Adds a clause to the solver.
      * @param ps          the literals of the clause
      * @param proposition a proposition (if required for proof tracing)
-     * @return {@code true} if the clause was added successfully, {@code false} otherwise
+     * @return {@code true} if the clause was added successfully, {@code false}
+     *         otherwise
      */
     public abstract boolean addClause(final LNGIntVector ps, final Proposition proposition);
 
     /**
-     * Solves the formula currently stored in the solver.  Returns {@link Tristate#TRUE} if the formula is satisfiable (SAT),
-     * {@link Tristate#FALSE} if the formula is unsatisfiable (UNSAT), or {@link Tristate#UNDEF} if the computation was canceled
-     * by a {@link SATHandler}.  If {@code null} is passed as handler, the solver will run until the satisfiability is decided.
+     * Solves the formula currently stored in the solver. Returns
+     * {@link Tristate#TRUE} if the formula is satisfiable (SAT),
+     * {@link Tristate#FALSE} if the formula is unsatisfiable (UNSAT), or
+     * {@link Tristate#UNDEF} if the computation was canceled by a
+     * {@link SATHandler}. If {@code null} is passed as handler, the solver will
+     * run until the satisfiability is decided.
      * @param handler a sat handler
-     * @return {@link Tristate#TRUE} if the formula is satisfiable, {@link Tristate#FALSE} if the formula is not satisfiable, or
-     * {@link Tristate#UNDEF} if the computation was canceled.
+     * @return {@link Tristate#TRUE} if the formula is satisfiable,
+     *         {@link Tristate#FALSE} if the formula is not satisfiable, or
+     *         {@link Tristate#UNDEF} if the computation was canceled.
      */
     public abstract Tristate solve(final SATHandler handler);
 
     /**
-     * Solves the formula currently stored in the solver together with the given assumption literals.  Returns
-     * {@link Tristate#TRUE} if the formula and the assumptions are satisfiable (SAT), {@link Tristate#FALSE} if the formula and the
-     * assumptions are not satisfiable together (UNSAT), or {@link Tristate#UNDEF} if the computation was canceled by a
-     * {@link SATHandler}. If {@code null} is passed as handler, the solver will run until the satisfiability is decided.
+     * Solves the formula currently stored in the solver together with the given
+     * assumption literals. Returns {@link Tristate#TRUE} if the formula and the
+     * assumptions are satisfiable (SAT), {@link Tristate#FALSE} if the formula
+     * and the assumptions are not satisfiable together (UNSAT), or
+     * {@link Tristate#UNDEF} if the computation was canceled by a
+     * {@link SATHandler}. If {@code null} is passed as handler, the solver will
+     * run until the satisfiability is decided.
      * @param handler     a sat handler
      * @param assumptions the assumptions as a given vector of literals
-     * @return {@link Tristate#TRUE} if the formula and the assumptions are satisfiable, {@link Tristate#FALSE} if they are
-     * not satisfiable, or {@link Tristate#UNDEF} if the computation was canceled.
+     * @return {@link Tristate#TRUE} if the formula and the assumptions are
+     *         satisfiable, {@link Tristate#FALSE} if they are not satisfiable,
+     *         or {@link Tristate#UNDEF} if the computation was canceled.
      */
     public Tristate solve(final SATHandler handler, final LNGIntVector assumptions) {
         this.assumptions = new LNGIntVector(assumptions);
@@ -375,7 +392,8 @@ public abstract class MiniSatStyleSolver {
     public abstract void reset();
 
     /**
-     * Returns the current model of the solver or an empty vector if there is none.
+     * Returns the current model of the solver or an empty vector if there is
+     * none.
      * @return the current model of the solver
      */
     public LNGBooleanVector model() {
@@ -383,15 +401,18 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Returns {@code false} if this solver is known to be in a conflicting state, otherwise {@code true}.
-     * @return {@code false} if this solver is known to be in a conflicting state, otherwise {@code true}
+     * Returns {@code false} if this solver is known to be in a conflicting
+     * state, otherwise {@code true}.
+     * @return {@code false} if this solver is known to be in a conflicting
+     *         state, otherwise {@code true}
      */
     public boolean ok() {
         return this.ok;
     }
 
     /**
-     * Returns the current conflict of the solver or an empty vector if there is none.
+     * Returns the current conflict of the solver or an empty vector if there is
+     * none.
      * @return the current conflict of the solver
      */
     public LNGIntVector conflict() {
@@ -399,24 +420,30 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Saves and returns the solver state expressed as an integer array which stores the length of the internal data
-     * structures.
+     * Saves and returns the solver state expressed as an integer array which
+     * stores the length of the internal data structures.
      * @return the current solver state
-     * @throws UnsupportedOperationException if the solver does not support state saving/loading
-     * @throws IllegalStateException         if the solver is not in incremental mode
+     * @throws UnsupportedOperationException if the solver does not support
+     *                                       state saving/loading
+     * @throws IllegalStateException         if the solver is not in incremental
+     *                                       mode
      */
     public abstract int[] saveState();
 
     /**
      * Loads a given state in the solver.
      * <p>
-     * ATTENTION: You can only load a state which was created by this instance of the solver before the current state.
-     * Only the sizes of the internal data structures are stored, meaning you can track back in time and restore a solver
-     * state with fewer variables and/or fewer clauses.  It is not possible to import a solver state from another solver
-     * or another solving execution.
+     * ATTENTION: You can only load a state which was created by this instance
+     * of the solver before the current state. Only the sizes of the internal
+     * data structures are stored, meaning you can track back in time and
+     * restore a solver state with fewer variables and/or fewer clauses. It is
+     * not possible to import a solver state from another solver or another
+     * solving execution.
      * @param state the solver state to load
-     * @throws UnsupportedOperationException if the solver does not support state saving/loading
-     * @throws IllegalStateException         if the solver is not in incremental mode
+     * @throws UnsupportedOperationException if the solver does not support
+     *                                       state saving/loading
+     * @throws IllegalStateException         if the solver is not in incremental
+     *                                       mode
      */
     public abstract void loadState(int[] state);
 
@@ -453,7 +480,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Helper function used to maintain an abstraction of levels involved during conflict analysis.
+     * Helper function used to maintain an abstraction of levels involved during
+     * conflict analysis.
      * @param x a variable index
      * @return the abstraction of levels
      */
@@ -462,7 +490,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Inserts a variable (given by its index) into the heap of decision variables.
+     * Inserts a variable (given by its index) into the heap of decision
+     * variables.
      * @param x the variable index
      */
     protected void insertVarOrder(final int x) {
@@ -545,7 +574,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Returns {@code true} if the given clause is locked and therefore cannot be removed, {@code false} otherwise.
+     * Returns {@code true} if the given clause is locked and therefore cannot
+     * be removed, {@code false} otherwise.
      * @param c the clause
      * @return {@code true} if the given clause is locked
      */
@@ -577,18 +607,21 @@ public abstract class MiniSatStyleSolver {
     /**
      * Assigns a literal (= a variable to the respective value).
      * @param lit    the literal
-     * @param reason the reason clause of the assignment (conflict resolution) or {@code null} if it was a decision
+     * @param reason the reason clause of the assignment (conflict resolution)
+     *               or {@code null} if it was a decision
      */
     protected abstract void uncheckedEnqueue(int lit, MSClause reason);
 
     /**
-     * Attaches a given clause to the solver (i.e. the watchers for this clause are initialized).
+     * Attaches a given clause to the solver (i.e. the watchers for this clause
+     * are initialized).
      * @param c the clause
      */
     protected abstract void attachClause(final MSClause c);
 
     /**
-     * Detaches a given clause (e.g. removes all watchers pointing to this clause).
+     * Detaches a given clause (e.g. removes all watchers pointing to this
+     * clause).
      * @param c the clause
      */
     protected abstract void detachClause(final MSClause c);
@@ -601,15 +634,18 @@ public abstract class MiniSatStyleSolver {
 
     /**
      * Performs unit propagation.
-     * @return the conflicting clause if a conflict arose during unit propagation or {@code null} if there was none
+     * @return the conflicting clause if a conflict arose during unit
+     *         propagation or {@code null} if there was none
      */
     protected abstract MSClause propagate();
 
     /**
-     * Returns {@code true} if a given literal is redundant in the current conflict analysis, {@code false} otherwise.
+     * Returns {@code true} if a given literal is redundant in the current
+     * conflict analysis, {@code false} otherwise.
      * @param p              the literal
      * @param abstractLevels an abstraction of levels
-     * @return {@code true} if a given literal is redundant in the current conflict analysis
+     * @return {@code true} if a given literal is redundant in the current
+     *         conflict analysis
      */
     protected abstract boolean litRedundant(int p, int abstractLevels);
 
@@ -646,31 +682,37 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Reduces the database of learnt clauses.  Only clauses of the first half of the clauses with the most activity
-     * are possibly removed.  A clause is only removed if it is not locked, i.e. is the reason of an assignment for a
+     * Reduces the database of learnt clauses. Only clauses of the first half of
+     * the clauses with the most activity are possibly removed. A clause is only
+     * removed if it is not locked, i.e. is the reason of an assignment for a
      * variable.
      */
     protected abstract void reduceDB();
 
     /**
-     * Removes all clauses which are satisfied under the current assignment of a set of clauses.
+     * Removes all clauses which are satisfied under the current assignment of a
+     * set of clauses.
      * @param cs the set of clauses
      */
     protected abstract void removeSatisfied(final LNGVector<MSClause> cs);
 
     /**
-     * Returns {@code true} if a given clause is satisfied under the current assignment, {@code false} otherwise.
+     * Returns {@code true} if a given clause is satisfied under the current
+     * assignment, {@code false} otherwise.
      * @param c the clause
-     * @return {@code true} if a given clause is satisfied under the current assignment
+     * @return {@code true} if a given clause is satisfied under the current
+     *         assignment
      */
     protected abstract boolean satisfied(final MSClause c);
 
     /**
-     * Simplifies the database of clauses.  This method is only executed on level 0.  All learnt clauses which are
-     * satisfied on level 0 are removed.  Depending on the configuration of the solver, also original clauses which are
-     * satisfied at level 0 are removed.
-     * @return {@code true} if simplification was successful and no conflict was found, {@code false} if a conflict was
-     * found during the simplification
+     * Simplifies the database of clauses. This method is only executed on level
+     * 0. All learnt clauses which are satisfied on level 0 are removed.
+     * Depending on the configuration of the solver, also original clauses which
+     * are satisfied at level 0 are removed.
+     * @return {@code true} if simplification was successful and no conflict was
+     *         found, {@code false} if a conflict was found during the
+     *         simplification
      */
     protected abstract boolean simplify();
 
@@ -792,7 +834,8 @@ public abstract class MiniSatStyleSolver {
     ///// Backbone Stuff /////
 
     /**
-     * Computes the backbone of the given variables with respect to the formulas added to the solver.
+     * Computes the backbone of the given variables with respect to the formulas
+     * added to the solver.
      * @param variables variables to test
      * @param type      backbone type
      * @return the backbone projected to the relevant variables
@@ -802,13 +845,16 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Computes the backbone of the given variables with respect to the formulas added to the solver.
+     * Computes the backbone of the given variables with respect to the formulas
+     * added to the solver.
      * @param variables variables to test
      * @param type      backbone type
      * @param handler   the handler
-     * @return the backbone projected to the relevant variables or {@code null} if the computation was aborted by the handler
+     * @return the backbone projected to the relevant variables or {@code null}
+     *         if the computation was aborted by the handler
      */
-    public Backbone computeBackbone(final Collection<Variable> variables, final BackboneType type, final SATHandler handler) {
+    public Backbone computeBackbone(final Collection<Variable> variables, final BackboneType type,
+                                    final SATHandler handler) {
         final boolean sat = solve(handler) == Tristate.TRUE;
         if (aborted(handler)) {
             return null;
@@ -830,7 +876,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Returns a list of relevant variable indices. A relevant variable is known by the solver.
+     * Returns a list of relevant variable indices. A relevant variable is known
+     * by the solver.
      * @param variables variables to convert and filter
      * @return list of relevant variable indices
      */
@@ -838,7 +885,8 @@ public abstract class MiniSatStyleSolver {
         final List<Integer> relevantVarIndices = new ArrayList<>(variables.size());
         for (final Variable var : variables) {
             final Integer idx = this.name2idx.get(var.name());
-            // Note: Unknown variables are variables added to the solver yet. Thus, these are optional variables and can
+            // Note: Unknown variables are variables added to the solver yet.
+            // Thus, these are optional variables and can
             // be left out for the backbone computation.
             if (idx != null) {
                 relevantVarIndices.add(idx);
@@ -907,7 +955,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Refines the upper bound by optional checks (UP zero literal, complement model literal, rotatable literal).
+     * Refines the upper bound by optional checks (UP zero literal, complement
+     * model literal, rotatable literal).
      */
     protected void refineUpperBound() {
         for (final Integer lit : new ArrayList<>(this.backboneCandidates)) {
@@ -924,7 +973,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Tests the given literal with the formula on the solver for satisfiability.
+     * Tests the given literal with the formula on the solver for
+     * satisfiability.
      * @param lit     literal to test
      * @param handler the handler
      * @return {@code true} if satisfiable, otherwise {@code false}
@@ -978,11 +1028,14 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Tests the given variable whether it is a unit propagated literal on level 0.
+     * Tests the given variable whether it is a unit propagated literal on level
+     * 0.
      * <p>
-     * Assumption: The formula on the solver has successfully been tested to be satisfiable before.
+     * Assumption: The formula on the solver has successfully been tested to be
+     * satisfiable before.
      * @param var variable index to test
-     * @return {@code true} if the variable is a unit propagated literal on level 0, otherwise {@code false}
+     * @return {@code true} if the variable is a unit propagated literal on
+     *         level 0, otherwise {@code false}
      */
     protected boolean isUPZeroLit(final int var) {
         return this.vars.get(var).level() == 0;
@@ -1038,7 +1091,8 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Adds the given literal to the backbone result and optionally adds the literal to the solver.
+     * Adds the given literal to the backbone result and optionally adds the
+     * literal to the solver.
      * @param lit literal to add
      */
     protected void addBackboneLiteral(final int lit) {
@@ -1075,11 +1129,14 @@ public abstract class MiniSatStyleSolver {
     }
 
     /**
-     * Sets the variable's selection order that is used to solve the formula on the solver.
+     * Sets the variable's selection order that is used to solve the formula on
+     * the solver.
      * <p>
-     * If a custom selection order is set, the solver will pick a variable from the custom order in order to branch on it during the search.
-     * The given polarity in the selection order is used as assignment for the variable.
-     * If all variables in the custom order are already assigned, the solver falls back to the activity based variable selection.
+     * If a custom selection order is set, the solver will pick a variable from
+     * the custom order in order to branch on it during the search. The given
+     * polarity in the selection order is used as assignment for the variable.
+     * If all variables in the custom order are already assigned, the solver
+     * falls back to the activity based variable selection.
      * @param selectionOrder the custom selection order
      */
     public void setSelectionOrder(final List<? extends Literal> selectionOrder) {

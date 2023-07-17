@@ -16,8 +16,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * A depth-first-search BDD variable ordering.  Traverses the formula in a DFS manner
- * and gathers all variables in the occurrence.
+ * A depth-first-search BDD variable ordering. Traverses the formula in a DFS
+ * manner and gathers all variables in the occurrence.
  * @version 2.0.0
  * @since 1.4.0
  */

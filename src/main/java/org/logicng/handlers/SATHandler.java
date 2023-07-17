@@ -13,7 +13,8 @@ public interface SATHandler extends Handler {
 
     /**
      * This method is called every time a conflict is found.
-     * @return {@code true} if the SAT solving should be continued, otherwise {@code false}
+     * @return {@code true} if the SAT solving should be continued, otherwise
+     *         {@code false}
      */
     default boolean detectedConflict() {
         return true;
@@ -27,7 +28,8 @@ public interface SATHandler extends Handler {
     }
 
     /**
-     * Null-safe helper method to call {@link SATHandler#finishedSolving} on a handler.
+     * Null-safe helper method to call {@link SATHandler#finishedSolving} on a
+     * handler.
      * @param handler the handler to finished, may be {@code null}
      */
     static void finishSolving(final SATHandler handler) {

@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.encodings;
@@ -176,11 +173,13 @@ public class Encoder {
     }
 
     /**
-     * Manages the building of cardinality encodings.  Currently, is only used for incremental solving.
+     * Manages the building of cardinality encodings. Currently, is only used
+     * for incremental solving.
      * @param s    the solver
      * @param lits the literals for the constraint
      * @param rhs  the right-hand side of the constraint
-     * @throws IllegalStateException if the cardinality encoding does not support incrementality
+     * @throws IllegalStateException if the cardinality encoding does not
+     *                               support incrementality
      */
     public void buildCardinality(final MiniSatStyleSolver s, final LNGIntVector lits, final int rhs) {
         assert this.incrementalStrategy != IncrementalStrategy.NONE;
@@ -189,7 +188,8 @@ public class Encoder {
                 this.totalizer.build(s, lits, rhs);
                 break;
             default:
-                throw new IllegalStateException("Cardinality encoding does not support incrementality: " + this.incrementalStrategy);
+                throw new IllegalStateException(
+                        "Cardinality encoding does not support incrementality: " + this.incrementalStrategy);
         }
     }
 
@@ -200,7 +200,8 @@ public class Encoder {
      * @param lits        the literals of the constraint
      * @param rhs         the right-hand side of the constraint
      * @param assumptions the assumptions
-     * @throws IllegalStateException if the cardinality encoding does not support incrementality
+     * @throws IllegalStateException if the cardinality encoding does not
+     *                               support incrementality
      */
     public void incUpdateCardinality(final MiniSatStyleSolver s, final LNGIntVector join, final LNGIntVector lits,
                                      final int rhs, final LNGIntVector assumptions) {
@@ -214,7 +215,8 @@ public class Encoder {
                 this.totalizer.update(s, rhs, assumptions);
                 break;
             default:
-                throw new IllegalArgumentException("Cardinality encoding does not support incrementality: " + this.incrementalStrategy);
+                throw new IllegalArgumentException(
+                        "Cardinality encoding does not support incrementality: " + this.incrementalStrategy);
         }
     }
 
@@ -226,7 +228,8 @@ public class Encoder {
      * @param rhs    the right-hand side of the constraint
      * @throws IllegalStateException if the pseudo-Boolean encoding is unknown
      */
-    public void encodePB(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs, final int rhs) {
+    public void encodePB(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs,
+                         final int rhs) {
         switch (this.pbEncoding) {
             case SWC:
                 this.swc.encode(s, lits, coeffs, rhs);
@@ -282,7 +285,8 @@ public class Encoder {
      * @param rhs    the new right-hand side of the constraint
      * @throws IllegalStateException if the pseudo-Boolean encoding is unknown
      */
-    public void incUpdatePB(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs, final int rhs) {
+    public void incUpdatePB(final MiniSatStyleSolver s, final LNGIntVector lits, final LNGIntVector coeffs,
+                            final int rhs) {
         assert this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
         switch (this.pbEncoding) {
             case SWC:
@@ -311,7 +315,8 @@ public class Encoder {
     }
 
     /**
-     * Returns {@code true} if the cardinality encoding was built, {@code false} otherwise.
+     * Returns {@code true} if the cardinality encoding was built, {@code false}
+     * otherwise.
      * @return {@code true} if the cardinality encoding was built
      */
     public boolean hasCardEncoding() {
@@ -326,7 +331,8 @@ public class Encoder {
     }
 
     /**
-     * Returns {@code true} if the pseudo-Boolean encoding was built, {@code false} otherwise.
+     * Returns {@code true} if the pseudo-Boolean encoding was built,
+     * {@code false} otherwise.
      * @return {@code true} if the pseudo-Boolean encoding was built
      */
     public boolean hasPBEncoding() {
@@ -338,7 +344,8 @@ public class Encoder {
      * @return the literals
      */
     public LNGIntVector lits() {
-        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER && this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
+        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER &&
+                this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
         return this.totalizer.lits();
     }
 
@@ -347,7 +354,8 @@ public class Encoder {
      * @return the literals
      */
     public LNGIntVector outputs() {
-        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER && this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
+        assert this.cardinalityEncoding == CardinalityEncoding.TOTALIZER &&
+                this.incrementalStrategy == IncrementalStrategy.ITERATIVE;
         return this.totalizer.outputs();
     }
 

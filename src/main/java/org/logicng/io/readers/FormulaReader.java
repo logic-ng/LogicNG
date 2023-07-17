@@ -20,7 +20,8 @@ import java.util.LinkedHashSet;
 /**
  * A reader for formulas.
  * <p>
- * Reads a formula from an input file.  If the file has more than one line, the lines will be co-joined.
+ * Reads a formula from an input file. If the file has more than one line, the
+ * lines will be co-joined.
  * @version 1.2
  * @since 1.2
  */
@@ -41,7 +42,8 @@ public final class FormulaReader {
      * @throws IOException     if there was a problem reading the file
      * @throws ParserException if there was a problem parsing the formula
      */
-    public static Formula readPropositionalFormula(final String fileName, final FormulaFactory f) throws IOException, ParserException {
+    public static Formula readPropositionalFormula(final String fileName, final FormulaFactory f)
+            throws IOException, ParserException {
         return read(new File(fileName), new PropositionalParser(f));
     }
 
@@ -53,7 +55,8 @@ public final class FormulaReader {
      * @throws IOException     if there was a problem reading the file
      * @throws ParserException if there was a problem parsing the formula
      */
-    public static Formula readPropositionalFormula(final File file, final FormulaFactory f) throws IOException, ParserException {
+    public static Formula readPropositionalFormula(final File file, final FormulaFactory f)
+            throws IOException, ParserException {
         return read(file, new PropositionalParser(f));
     }
 
@@ -65,7 +68,8 @@ public final class FormulaReader {
      * @throws IOException     if there was a problem reading the file
      * @throws ParserException if there was a problem parsing the formula
      */
-    public static Formula readPseudoBooleanFormula(final String fileName, final FormulaFactory f) throws IOException, ParserException {
+    public static Formula readPseudoBooleanFormula(final String fileName, final FormulaFactory f)
+            throws IOException, ParserException {
         return read(new File(fileName), new PseudoBooleanParser(f));
     }
 
@@ -77,7 +81,8 @@ public final class FormulaReader {
      * @throws IOException     if there was a problem reading the file
      * @throws ParserException if there was a problem parsing the formula
      */
-    public static Formula readPseudoBooleanFormula(final File file, final FormulaFactory f) throws IOException, ParserException {
+    public static Formula readPseudoBooleanFormula(final File file, final FormulaFactory f)
+            throws IOException, ParserException {
         return read(file, new PseudoBooleanParser(f));
     }
 

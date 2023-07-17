@@ -57,7 +57,8 @@ public class PBEncoder {
     }
 
     /**
-     * Constructs a new pseudo-Boolean encoder which uses the configuration of the formula factory.
+     * Constructs a new pseudo-Boolean encoder which uses the configuration of
+     * the formula factory.
      * @param f the formula factory
      */
     public PBEncoder(final FormulaFactory f) {
@@ -107,8 +108,10 @@ public class PBEncoder {
     }
 
     /**
-     * Returns the current configuration of this encoder.  If the encoder was constructed with a given configuration, this
-     * configuration will always be used.  Otherwise, the current configuration from the formula factory is used.
+     * Returns the current configuration of this encoder. If the encoder was
+     * constructed with a given configuration, this configuration will always be
+     * used. Otherwise, the current configuration from the formula factory is
+     * used.
      * @return the current configuration of
      */
     public PBConfig config() {
@@ -116,12 +119,14 @@ public class PBEncoder {
     }
 
     /**
-     * Builds a pseudo Boolean constraint of the form {@code c_1 * lit_1 + c_2 * lit_2 + ... + c_n * lit_n >= k}.
+     * Builds a pseudo Boolean constraint of the form
+     * {@code c_1 * lit_1 + c_2 * lit_2 + ... + c_n * lit_n >= k}.
      * @param lits   the literals {@code lit_1 ... lit_n}
      * @param coeffs the coefficients {@code c_1 ... c_n}
      * @param rhs    the right-hand side {@code k} of the constraint
      * @return the CNF encoding of the pseudo Boolean constraint
-     * @throws IllegalArgumentException if the right-hand side of the cardinality constraint is negative or
+     * @throws IllegalArgumentException if the right-hand side of the
+     *                                  cardinality constraint is negative or
      *                                  larger than the number of literals
      */
     protected List<Formula> encode(final Literal[] lits, final int[] coeffs, final int rhs) {

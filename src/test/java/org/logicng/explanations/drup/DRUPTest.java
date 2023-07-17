@@ -46,10 +46,13 @@ public class DRUPTest implements LogicNGTest {
 
     public DRUPTest() {
         this.solvers = new SATSolver[3];
-        this.solvers[0] = MiniSat.miniSat(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(true).build());
-        this.solvers[1] = MiniSat.miniSat(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build());
-        this.solvers[2] = MiniSat.glucose(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build(),
-                GlucoseConfig.builder().build());
+        this.solvers[0] =
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(true).build());
+        this.solvers[1] =
+                MiniSat.miniSat(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build());
+        this.solvers[2] =
+                MiniSat.glucose(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build(),
+                        GlucoseConfig.builder().build());
     }
 
     @Test
@@ -220,8 +223,13 @@ public class DRUPTest implements LogicNGTest {
     public void testCoreAndAssumptions() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final SATSolver[] solvers = new SATSolver[]{
-                MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
-                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+                MiniSat.miniSat(f,
+                        MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER)
+                                .build()),
+                MiniSat.glucose(f,
+                        MiniSatConfig.builder().proofGeneration(true).incremental(false)
+                                .cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(),
+                        GlucoseConfig.builder().build())
         };
         for (final SATSolver solver : solvers) {
             final StandardProposition p1 = new StandardProposition(f.parse("A => B"));
@@ -250,8 +258,13 @@ public class DRUPTest implements LogicNGTest {
     public void testCoreAndAssumptions2() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final SATSolver[] solvers = new SATSolver[]{
-                MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
-                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+                MiniSat.miniSat(f,
+                        MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER)
+                                .build()),
+                MiniSat.glucose(f,
+                        MiniSatConfig.builder().proofGeneration(true).incremental(false)
+                                .cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(),
+                        GlucoseConfig.builder().build())
         };
         for (final SATSolver solver : solvers) {
             solver.add(f.parse("~C => D"));
@@ -269,11 +282,17 @@ public class DRUPTest implements LogicNGTest {
 
     @Test
     public void testCoreAndAssumptions3() throws ParserException {
-        // Unit test for DRUP issue which led to java.lang.ArrayIndexOutOfBoundsException: -1
+        // Unit test for DRUP issue which led to
+        // java.lang.ArrayIndexOutOfBoundsException: -1
         final FormulaFactory f = new FormulaFactory();
         final SATSolver[] solvers = new SATSolver[]{
-                MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
-                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+                MiniSat.miniSat(f,
+                        MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER)
+                                .build()),
+                MiniSat.glucose(f,
+                        MiniSatConfig.builder().proofGeneration(true).incremental(false)
+                                .cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(),
+                        GlucoseConfig.builder().build())
         };
         for (final SATSolver solver : solvers) {
             solver.add(f.parse("X => Y"));
@@ -300,8 +319,13 @@ public class DRUPTest implements LogicNGTest {
     @Test
     public void testCoreAndAssumptions4() throws ParserException {
         final SATSolver[] solvers = new SATSolver[]{
-                MiniSat.miniSat(this.f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build()),
-                MiniSat.glucose(this.f, MiniSatConfig.builder().proofGeneration(true).incremental(false).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(), GlucoseConfig.builder().build())
+                MiniSat.miniSat(this.f,
+                        MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER)
+                                .build()),
+                MiniSat.glucose(this.f,
+                        MiniSatConfig.builder().proofGeneration(true).incremental(false)
+                                .cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build(),
+                        GlucoseConfig.builder().build())
         };
         for (final SATSolver solver : solvers) {
             solver.add(this.f.parse("~X1"));
@@ -322,8 +346,10 @@ public class DRUPTest implements LogicNGTest {
     @Test
     public void testWithCcPropositions() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
-        final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        final ExtendedProposition<StringBackpack> p1 = new ExtendedProposition<>(new StringBackpack("CC"), f.parse("A + B + C <= 1"));
+        final SATSolver solver = MiniSat.miniSat(f,
+                MiniSatConfig.builder().proofGeneration(true).cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final ExtendedProposition<StringBackpack> p1 =
+                new ExtendedProposition<>(new StringBackpack("CC"), f.parse("A + B + C <= 1"));
         final StandardProposition p2 = new StandardProposition(f.parse("A"));
         final StandardProposition p3 = new StandardProposition(f.parse("B"));
         final StandardProposition p4 = new StandardProposition(f.parse("X & Y"));
@@ -360,7 +386,9 @@ public class DRUPTest implements LogicNGTest {
     @Test
     public void testWithSpecialUnitCaseGlucose() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
-        final SATSolver solver = MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build(), GlucoseConfig.builder().build());
+        final SATSolver solver =
+                MiniSat.glucose(f, MiniSatConfig.builder().proofGeneration(true).incremental(false).build(),
+                        GlucoseConfig.builder().build());
         final StandardProposition p1 = new StandardProposition(f.parse("a => b"));
         final StandardProposition p2 = new StandardProposition(f.parse("a => c | d"));
         final StandardProposition p3 = new StandardProposition(f.parse("b => c | d"));
@@ -380,7 +408,8 @@ public class DRUPTest implements LogicNGTest {
     }
 
     /**
-     * Checks that each formula of the core is part of the original problem and that the core is really unsat.
+     * Checks that each formula of the core is part of the original problem and
+     * that the core is really unsat.
      * @param originalCore the original core
      * @param cnf          the original problem
      */

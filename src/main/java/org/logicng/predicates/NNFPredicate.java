@@ -11,7 +11,7 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
- * NNF predicate.  Indicates whether a formula is in NNF or not.
+ * NNF predicate. Indicates whether a formula is in NNF or not.
  * @version 1.5.1
  * @since 1.5.1
  */
@@ -20,7 +20,7 @@ public final class NNFPredicate implements FormulaPredicate {
     private final static NNFPredicate INSTANCE = new NNFPredicate();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private NNFPredicate() {
         // Intentionally left empty

@@ -42,15 +42,18 @@ public class ExtendedPropositionTest {
 
     @Test
     public void testHashCode() throws ParserException {
-        final ExtendedProposition<Backpack> prop11 = new ExtendedProposition<>(new Backpack("prop1"), this.p.parse("a & b"));
+        final ExtendedProposition<Backpack> prop11 =
+                new ExtendedProposition<>(new Backpack("prop1"), this.p.parse("a & b"));
         assertThat(this.prop1.hashCode()).isEqualTo(this.prop1.hashCode());
         assertThat(prop11.hashCode()).isEqualTo(this.prop1.hashCode());
     }
 
     @Test
     public void testEquals() throws ParserException {
-        final ExtendedProposition<Backpack> prop11 = new ExtendedProposition<>(new Backpack("prop1"), this.p.parse("a & b"));
-        final ExtendedProposition<Backpack> prop21 = new ExtendedProposition<>(new Backpack("prop2"), this.p.parse("a & b & ~c"));
+        final ExtendedProposition<Backpack> prop11 =
+                new ExtendedProposition<>(new Backpack("prop1"), this.p.parse("a & b"));
+        final ExtendedProposition<Backpack> prop21 =
+                new ExtendedProposition<>(new Backpack("prop2"), this.p.parse("a & b & ~c"));
         assertThat(this.prop1.equals(this.prop1)).isTrue();
         assertThat(this.prop1.equals(prop11)).isTrue();
         assertThat(this.prop2.equals(prop21)).isTrue();

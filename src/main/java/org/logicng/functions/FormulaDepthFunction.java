@@ -10,8 +10,8 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFunction;
 
 /**
- * A function that computes the depth of a formula. The depth of an atomic formula
- * is defined as 0, all other operators increase the depth by 1.
+ * A function that computes the depth of a formula. The depth of an atomic
+ * formula is defined as 0, all other operators increase the depth by 1.
  * @version 2.3.0
  * @since 2.0
  */
@@ -20,8 +20,9 @@ public final class FormulaDepthFunction implements FormulaFunction<Integer> {
     private static final FormulaDepthFunction INSTANCE = new FormulaDepthFunction();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public FormulaDepthFunction() {

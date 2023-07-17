@@ -7,29 +7,33 @@ package org.logicng.io.graphical;
 import java.util.Objects;
 
 /**
- * The style of an edge in a graphical representation of a formula, BDD, or graph.  The style consists of the
- * line type and the color of the edge.
+ * The style of an edge in a graphical representation of a formula, BDD, or
+ * graph. The style consists of the line type and the color of the edge.
  * @version 2.4.0
  * @since 2.4.0
  */
 public class GraphicalEdgeStyle {
 
     /**
-     * A special edge style which does not set any style, so the framework's (dot/Mermaid.js)
-     * default theming is applied.
+     * A special edge style which does not set any style, so the framework's
+     * (dot/Mermaid.js) default theming is applied.
      */
     private static final GraphicalEdgeStyle NO_EDGE_STYLE = new GraphicalEdgeStyle(null, null);
 
     /**
      * The different edge types.
      */
-    public enum EdgeType {SOLID, DOTTED, BOLD}
+    public enum EdgeType {
+        SOLID,
+        DOTTED,
+        BOLD
+    }
 
     private final EdgeType type;
     private final GraphicalColor color;
 
     /**
-     * Private constructor.  Use factory methods to construct an instance.
+     * Private constructor. Use factory methods to construct an instance.
      * @param type  the edge type
      * @param color the color
      */
@@ -39,8 +43,8 @@ public class GraphicalEdgeStyle {
     }
 
     /**
-     * Returns a special edge style which does not set any style, so the framework's (dot/Mermaid.js)
-     * default theming is applied.
+     * Returns a special edge style which does not set any style, so the
+     * framework's (dot/Mermaid.js) default theming is applied.
      * @return special edge style which does not set any style
      */
     public static GraphicalEdgeStyle noStyle() {
@@ -89,7 +93,8 @@ public class GraphicalEdgeStyle {
     }
 
     /**
-     * Returns whether this style has any value set.  If not it is equivalent to {@link GraphicalEdgeStyle#NO_EDGE_STYLE}.
+     * Returns whether this style has any value set. If not it is equivalent to
+     * {@link GraphicalEdgeStyle#NO_EDGE_STYLE}.
      * @return whether this style has any value set
      */
     public boolean hasStyle() {

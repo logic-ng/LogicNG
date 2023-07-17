@@ -16,8 +16,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * This class implements the Bron-Kerbosch-Algorithm, used to compute all maximal Cliques of a Graph. Requires that the
- * ids of the nodes are comparable.
+ * This class implements the Bron-Kerbosch-Algorithm, used to compute all
+ * maximal Cliques of a Graph. Requires that the ids of the nodes are
+ * comparable.
  * @param <T> the node type of the graph
  * @version 2.0.0
  * @since 1.2
@@ -39,7 +40,8 @@ public final class BronKerbosch<T extends Comparable<T>> {
     }
 
     /**
-     * Computes the maximal cliques and returns them as a Set of SortedSets of Nodes.
+     * Computes the maximal cliques and returns them as a Set of SortedSets of
+     * Nodes.
      * @return the maximal cliques.
      */
     public Set<SortedSet<Node<T>>> compute() {
@@ -83,7 +85,8 @@ public final class BronKerbosch<T extends Comparable<T>> {
     }
 
     /**
-     * Returns the maximal cliques computed with the last call to compute() as a List of Lists of T.
+     * Returns the maximal cliques computed with the last call to compute() as a
+     * List of Lists of T.
      * @return the maximal cliques
      */
     public List<List<T>> getCliquesAsTLists() {

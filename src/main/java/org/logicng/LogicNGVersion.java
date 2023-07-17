@@ -28,7 +28,8 @@ public final class LogicNGVersion {
      */
     public static String version() {
         try {
-            return new BufferedReader(new InputStreamReader(LogicNGVersion.class.getResourceAsStream("version.txt"))).readLine();
+            return new BufferedReader(new InputStreamReader(LogicNGVersion.class.getResourceAsStream("version.txt")))
+                    .readLine();
         } catch (final Exception e) {
             return "unknown";
         }

@@ -48,6 +48,8 @@ public class UnitPropagationTest extends TestWithExampleFormulas {
         assertThat(this.f.and(this.OR1, this.X).transform(this.unitPropagation)).isEqualTo(this.X);
         assertThat(this.f.or(this.AND1, this.A).transform(this.unitPropagation)).isEqualTo(this.A);
         assertThat(this.f.or(this.OR1, this.X).transform(this.unitPropagation)).isEqualTo(this.OR1);
-        assertThat(p.parse("(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c").transform(this.unitPropagation)).isEqualTo(p.parse("(e | g) & (e | ~g | h) & f & c & d & ~a & b"));
+        assertThat(p.parse(
+                "(a | b | ~c) & (~a | ~d) & (~c | d) & (~b | e | ~f | g) & (e | f | g | h) & (e | ~f | ~g | h) & f & c")
+                .transform(this.unitPropagation)).isEqualTo(p.parse("(e | g) & (e | ~g | h) & f & c & d & ~a & b"));
     }
 }

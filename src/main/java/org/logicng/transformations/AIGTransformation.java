@@ -19,7 +19,8 @@ import org.logicng.formulas.cache.PredicateCacheEntry;
 import java.util.LinkedHashSet;
 
 /**
- * And-inverter-graph (AIG) transformation.  Returns the AIG of the given formula.
+ * And-inverter-graph (AIG) transformation. Returns the AIG of the given
+ * formula.
  * @version 2.3.0
  * @since 1.0
  */
@@ -30,8 +31,9 @@ public final class AIGTransformation implements FormulaTransformation {
     private static final AIGTransformation INSTANCE = new AIGTransformation();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public AIGTransformation() {
@@ -99,7 +101,9 @@ public final class AIGTransformation implements FormulaTransformation {
     private Formula transformEquivalence(final Equivalence equiv) {
         Formula aig = equiv.transformationCacheEntry(AIG);
         if (aig == null) {
-            aig = this.f.and(this.f.not(this.f.and(apply(equiv.left(), this.cache), this.f.not(apply(equiv.right(), this.cache)))),
+            aig = this.f.and(
+                    this.f.not(
+                            this.f.and(apply(equiv.left(), this.cache), this.f.not(apply(equiv.right(), this.cache)))),
                     this.f.not(this.f.and(this.f.not(equiv.left()), equiv.right())));
             if (this.cache) {
                 equiv.setTransformationCacheEntry(AIG, aig);

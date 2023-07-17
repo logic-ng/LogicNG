@@ -114,9 +114,12 @@ public class SubformulaTest extends TestWithExampleFormulas {
         assertThat(this.OR3.containsNode(this.NB)).isTrue();
         assertThat(this.OR3.containsNode(this.A)).isTrue();
         assertThat(this.OR3.containsNode(this.B)).isTrue();
-        assertThat(this.f.or(this.A, this.B, this.NX, this.NY, this.C).containsNode(this.f.or(this.A, this.NX, this.C))).isTrue();
-        assertThat(this.f.or(this.A, this.B, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.X, this.Y, this.AND1))).isTrue();
-        assertThat(this.f.or(this.A, this.B, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.AND1, this.X))).isTrue();
+        assertThat(this.f.or(this.A, this.B, this.NX, this.NY, this.C).containsNode(this.f.or(this.A, this.NX, this.C)))
+                .isTrue();
+        assertThat(this.f.or(this.A, this.B, this.OR1, this.C, this.AND1)
+                .containsNode(this.f.or(this.X, this.Y, this.AND1))).isTrue();
+        assertThat(this.f.or(this.A, this.B, this.OR1, this.C, this.AND1)
+                .containsNode(this.f.or(this.A, this.AND1, this.X))).isTrue();
 
         assertThat(this.f.or(this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.B))).isFalse();
         assertThat(this.f.or(this.NX, this.OR1, this.C, this.AND1).containsNode(this.NY)).isFalse();
@@ -134,9 +137,13 @@ public class SubformulaTest extends TestWithExampleFormulas {
         assertThat(this.AND3.containsNode(this.NY)).isTrue();
         assertThat(this.AND3.containsNode(this.X)).isTrue();
         assertThat(this.AND3.containsNode(this.Y)).isTrue();
-        assertThat(this.f.and(this.A, this.B, this.NX, this.NY, this.C).containsNode(this.f.and(this.A, this.NX, this.C))).isTrue();
-        assertThat(this.f.and(this.X, this.Y, this.OR1, this.C, this.AND1).containsNode(this.f.and(this.A, this.B, this.C))).isTrue();
-        assertThat(this.f.and(this.A, this.B, this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.and(this.A, this.OR1, this.NX))).isTrue();
+        assertThat(
+                this.f.and(this.A, this.B, this.NX, this.NY, this.C).containsNode(this.f.and(this.A, this.NX, this.C)))
+                        .isTrue();
+        assertThat(this.f.and(this.X, this.Y, this.OR1, this.C, this.AND1)
+                .containsNode(this.f.and(this.A, this.B, this.C))).isTrue();
+        assertThat(this.f.and(this.A, this.B, this.NX, this.OR1, this.C, this.AND1)
+                .containsNode(this.f.and(this.A, this.OR1, this.NX))).isTrue();
         assertThat(this.f.and(this.A, this.B, this.NX, this.IMP1, this.C).containsNode(this.IMP1)).isTrue();
 
         assertThat(this.f.and(this.NX, this.OR1, this.C, this.AND1).containsNode(this.f.or(this.A, this.B))).isFalse();

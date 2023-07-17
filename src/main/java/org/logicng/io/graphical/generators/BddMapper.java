@@ -11,9 +11,9 @@ import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 /**
  * An abstract super class for mappers for a graphical representation of a BDD.
  * <p>
- * Since the {@link BddGraphicalGenerator} uses only the indices of BDD nodes, this class provides
- * some helper methods which simplify accessing the BDD by extracting the content of the BDD nodes
- * as constants and variables.
+ * Since the {@link BddGraphicalGenerator} uses only the indices of BDD nodes,
+ * this class provides some helper methods which simplify accessing the BDD by
+ * extracting the content of the BDD nodes as constants and variables.
  * @version 2.4.0
  * @since 2.4.0
  */

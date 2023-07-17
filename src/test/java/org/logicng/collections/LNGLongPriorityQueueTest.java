@@ -97,13 +97,15 @@ public class LNGLongPriorityQueueTest {
         q1.push(1);
         assertThat(q1.toString()).isEqualTo("LNGLongPriorityQueue{<elem=0, pos=0, prio=0>, <elem=1, pos=1, prio=0>}");
         q1.push(2);
-        assertThat(q1.toString()).isEqualTo("LNGLongPriorityQueue{<elem=0, pos=0, prio=0>, <elem=1, pos=1, prio=0>, <elem=2, pos=2, prio=0>}");
+        assertThat(q1.toString()).isEqualTo(
+                "LNGLongPriorityQueue{<elem=0, pos=0, prio=0>, <elem=1, pos=1, prio=0>, <elem=2, pos=2, prio=0>}");
         q1.push(3);
         q1.push(4);
         q1.update(0, 6);
         q1.update(1, 7);
         q1.update(1, 2);
         q1.update(4, 8);
-        assertThat(q1.toString()).isEqualTo("LNGLongPriorityQueue{<elem=4, pos=1, prio=6>, <elem=0, pos=4, prio=2>, <elem=2, pos=2, prio=0>, <elem=3, pos=3, prio=0>, <elem=1, pos=0, prio=8>}");
+        assertThat(q1.toString()).isEqualTo(
+                "LNGLongPriorityQueue{<elem=4, pos=1, prio=6>, <elem=0, pos=4, prio=2>, <elem=2, pos=2, prio=0>, <elem=3, pos=3, prio=0>, <elem=1, pos=0, prio=8>}");
     }
 }

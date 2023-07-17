@@ -8,8 +8,8 @@ import org.logicng.datastructures.EncodingResult;
 import org.logicng.formulas.Variable;
 
 /**
- * Encodes that at most one variable is assigned value true.  Uses the 'naive' encoding with no introduction
- * of new variables but quadratic size.
+ * Encodes that at most one variable is assigned value true. Uses the 'naive'
+ * encoding with no introduction of new variables but quadratic size.
  * @version 2.0.0
  * @since 1.0
  */

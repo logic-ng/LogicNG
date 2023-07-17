@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.algorithms;
@@ -83,14 +80,16 @@ public class MSU3 extends MaxSAT {
     @Override
     public MaxSATResult search() {
         if (this.problemType == ProblemType.WEIGHTED) {
-            throw new IllegalStateException("Error: Currently algorithm MSU3 does not support weighted MaxSAT instances.");
+            throw new IllegalStateException(
+                    "Error: Currently algorithm MSU3 does not support weighted MaxSAT instances.");
         }
         switch (this.incrementalStrategy) {
             case NONE:
                 return this.none();
             case ITERATIVE:
                 if (this.encoder.cardEncoding() != CardinalityEncoding.TOTALIZER) {
-                    throw new IllegalStateException("Error: Currently iterative encoding in MSU3 only supports the Totalizer encoding.");
+                    throw new IllegalStateException(
+                            "Error: Currently iterative encoding in MSU3 only supports the Totalizer encoding.");
                 }
                 return this.iterative();
             default:
@@ -165,7 +164,8 @@ public class MSU3 extends MaxSAT {
                     }
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.printf("c Relaxed soft clauses %d / %d%n", currentObjFunction.size(), this.objFunction.size());
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", currentObjFunction.size(),
+                            this.objFunction.size());
                 }
                 this.solver = this.rebuildSolver();
                 this.encoder.encodeCardinality(this.solver, currentObjFunction, this.lbCost);
@@ -175,7 +175,8 @@ public class MSU3 extends MaxSAT {
 
     protected MaxSATResult iterative() {
         if (this.encoder.cardEncoding() != CardinalityEncoding.TOTALIZER) {
-            throw new IllegalStateException("Error: Currently algorithm MSU3 with iterative encoding only  supports the totalizer encoding.");
+            throw new IllegalStateException(
+                    "Error: Currently algorithm MSU3 with iterative encoding only  supports the totalizer encoding.");
         }
         this.nbInitialVariables = nVars();
         Tristate res;
@@ -242,7 +243,8 @@ public class MSU3 extends MaxSAT {
                     if (this.coreMapping.containsKey(this.solver.conflict().get(i))) {
                         assert !this.activeSoft.get(this.coreMapping.get(this.solver.conflict().get(i)));
                         this.activeSoft.set(this.coreMapping.get(this.solver.conflict().get(i)), true);
-                        joinObjFunction.push(this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).relaxationVars().get(0));
+                        joinObjFunction.push(this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i)))
+                                .relaxationVars().get(0));
                     }
                 }
                 currentObjFunction.clear();
@@ -255,16 +257,19 @@ public class MSU3 extends MaxSAT {
                     }
                 }
                 if (this.verbosity != Verbosity.NONE) {
-                    this.output.printf("c Relaxed soft clauses %d / %d%n", currentObjFunction.size(), this.objFunction.size());
+                    this.output.printf("c Relaxed soft clauses %d / %d%n", currentObjFunction.size(),
+                            this.objFunction.size());
                 }
                 if (!this.encoder.hasCardEncoding()) {
                     if (this.lbCost != currentObjFunction.size()) {
                         this.encoder.buildCardinality(this.solver, currentObjFunction, this.lbCost);
                         joinObjFunction.clear();
-                        this.encoder.incUpdateCardinality(this.solver, joinObjFunction, currentObjFunction, this.lbCost, encodingAssumptions);
+                        this.encoder.incUpdateCardinality(this.solver, joinObjFunction, currentObjFunction, this.lbCost,
+                                encodingAssumptions);
                     }
                 } else {
-                    this.encoder.incUpdateCardinality(this.solver, joinObjFunction, currentObjFunction, this.lbCost, encodingAssumptions);
+                    this.encoder.incUpdateCardinality(this.solver, joinObjFunction, currentObjFunction, this.lbCost,
+                            encodingAssumptions);
                 }
                 for (int i = 0; i < encodingAssumptions.size(); i++) {
                     assumptions.push(encodingAssumptions.get(i));

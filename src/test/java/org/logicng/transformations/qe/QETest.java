@@ -15,7 +15,8 @@ import org.logicng.io.parsers.PropositionalParser;
 import java.util.Arrays;
 
 /**
- * Unit tests for {@link UniversalQuantifierElimination} and {@link ExistentialQuantifierElimination}.
+ * Unit tests for {@link UniversalQuantifierElimination} and
+ * {@link ExistentialQuantifierElimination}.
  * @version 2.0.0
  * @since 1.0
  */
@@ -25,10 +26,12 @@ public class QETest {
     private final PropositionalParser p = new PropositionalParser(this.f);
     private final ExistentialQuantifierElimination ex1 = new ExistentialQuantifierElimination();
     private final ExistentialQuantifierElimination ex2 = new ExistentialQuantifierElimination(this.f.variable("x"));
-    private final ExistentialQuantifierElimination ex3 = new ExistentialQuantifierElimination(Arrays.asList(this.f.variable("x"), this.f.variable("y")));
+    private final ExistentialQuantifierElimination ex3 =
+            new ExistentialQuantifierElimination(Arrays.asList(this.f.variable("x"), this.f.variable("y")));
     private final UniversalQuantifierElimination uni1 = new UniversalQuantifierElimination();
     private final UniversalQuantifierElimination uni2 = new UniversalQuantifierElimination(this.f.variable("x"));
-    private final UniversalQuantifierElimination uni3 = new UniversalQuantifierElimination(Arrays.asList(this.f.variable("x"), this.f.variable("y")));
+    private final UniversalQuantifierElimination uni3 =
+            new UniversalQuantifierElimination(Arrays.asList(this.f.variable("x"), this.f.variable("y")));
 
     @Test
     public void testConstants() {

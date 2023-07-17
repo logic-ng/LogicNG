@@ -21,7 +21,8 @@ import java.util.List;
 /**
  * Negation simplifier.
  * <p>
- * Reduces the number of negations for a formula in a greedy manner. The criterion for the simplification is the length of the resulting formula.
+ * Reduces the number of negations for a formula in a greedy manner. The
+ * criterion for the simplification is the length of the resulting formula.
  * @version 2.3.0
  * @since 2.0.0
  */
@@ -30,8 +31,9 @@ public final class NegationSimplifier implements FormulaTransformation {
     private static final NegationSimplifier INSTANCE = new NegationSimplifier();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public NegationSimplifier() {
@@ -75,8 +77,10 @@ public final class NegationSimplifier implements FormulaTransformation {
                     positiveOpResults.add(result.getPositiveResult());
                     negativeOpResults.add(result.getNegativeResult());
                 }
-                final Formula smallestPositive = findSmallestPositive(formula.type(), positiveOpResults, negativeOpResults, topLevel, f);
-                final Formula smallestNegative = findSmallestNegative(formula.type(), negativeOpResults, smallestPositive, topLevel, f);
+                final Formula smallestPositive =
+                        findSmallestPositive(formula.type(), positiveOpResults, negativeOpResults, topLevel, f);
+                final Formula smallestNegative =
+                        findSmallestNegative(formula.type(), negativeOpResults, smallestPositive, topLevel, f);
                 return new MinimizationResult(smallestPositive, smallestNegative);
             case FALSE:
             case TRUE:
@@ -90,7 +94,8 @@ public final class NegationSimplifier implements FormulaTransformation {
         }
     }
 
-    private Formula findSmallestPositive(final FType type, final List<Formula> positiveOpResults, final List<Formula> negativeOpResults, final boolean topLevel,
+    private Formula findSmallestPositive(final FType type, final List<Formula> positiveOpResults,
+                                         final List<Formula> negativeOpResults, final boolean topLevel,
                                          final FormulaFactory f) {
         final Formula allPositive = f.naryOperator(type, positiveOpResults);
         final List<Formula> smallerPositiveOps = new ArrayList<>();
@@ -109,7 +114,8 @@ public final class NegationSimplifier implements FormulaTransformation {
         return getSmallestFormula(topLevel, allPositive, partialNegative);
     }
 
-    private Formula findSmallestNegative(final FType type, final List<Formula> negativeOpResults, final Formula smallestPositive, final boolean topLevel,
+    private Formula findSmallestNegative(final FType type, final List<Formula> negativeOpResults,
+                                         final Formula smallestPositive, final boolean topLevel,
                                          final FormulaFactory f) {
         final Formula negation = f.not(smallestPositive);
         final Formula flipped = f.naryOperator(dual(type), negativeOpResults);
@@ -118,7 +124,8 @@ public final class NegationSimplifier implements FormulaTransformation {
 
     private Formula getSmallestFormula(final boolean topLevel, final Formula... formulas) {
         assert formulas.length != 0;
-        return Arrays.stream(formulas).min(Comparator.comparingInt(formula -> formattedLength(formula, topLevel))).get();
+        return Arrays.stream(formulas).min(Comparator.comparingInt(formula -> formattedLength(formula, topLevel)))
+                .get();
     }
 
     private int formattedLength(final Formula formula, final boolean topLevel) {

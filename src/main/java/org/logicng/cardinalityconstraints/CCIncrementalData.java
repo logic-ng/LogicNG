@@ -3,26 +3,25 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * PBLib       -- Copyright (c) 2012-2013  Peter Steinke
+ * PBLib -- Copyright (c) 2012-2013 Peter Steinke
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package org.logicng.cardinalityconstraints;
@@ -35,8 +34,9 @@ import org.logicng.formulas.Literal;
 import java.util.List;
 
 /**
- * Incremental data for an at-most-k cardinality constraint.  When an at-most-k cardinality constraint is constructed,
- * it is possible to save incremental data with it.  Then one can modify the constraint after it was created by
+ * Incremental data for an at-most-k cardinality constraint. When an at-most-k
+ * cardinality constraint is constructed, it is possible to save incremental
+ * data with it. Then one can modify the constraint after it was created by
  * tightening the original bound.
  * @version 1.1
  * @since 1.1
@@ -52,7 +52,8 @@ public final class CCIncrementalData {
     private int currentRHS;
 
     /**
-     * Constructs new incremental data for an at-most-k encoder and the given internal data.
+     * Constructs new incremental data for an at-most-k encoder and the given
+     * internal data.
      * @param result     the result
      * @param amkEncoder the at-most-one amkEncoder
      * @param rhs        the current right-hand-side
@@ -61,7 +62,8 @@ public final class CCIncrementalData {
      * @param mod        the modulo value
      */
     CCIncrementalData(final EncodingResult result, final CCConfig.AMK_ENCODER amkEncoder, final int rhs,
-                      final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2, final int mod) {
+                      final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2,
+                      final int mod) {
         this.result = result;
         this.amkEncoder = amkEncoder;
         this.alkEncoder = null;
@@ -72,18 +74,21 @@ public final class CCIncrementalData {
     }
 
     /**
-     * Constructs new incremental data for an at-most-k encoder and the given internal data.
+     * Constructs new incremental data for an at-most-k encoder and the given
+     * internal data.
      * @param result  the result
      * @param encoder the at-most-one amkEncoder
      * @param rhs     the current right-hand-side
      * @param vector1 the first internal vector
      */
-    CCIncrementalData(final EncodingResult result, final CCConfig.AMK_ENCODER encoder, final int rhs, final LNGVector<? extends Literal> vector1) {
+    CCIncrementalData(final EncodingResult result, final CCConfig.AMK_ENCODER encoder, final int rhs,
+                      final LNGVector<? extends Literal> vector1) {
         this(result, encoder, rhs, vector1, null, -1);
     }
 
     /**
-     * Constructs new incremental data for an at-least-k encoder and the given internal data.
+     * Constructs new incremental data for an at-least-k encoder and the given
+     * internal data.
      * @param result     the result
      * @param alkEncoder the at-least-one amkEncoder
      * @param rhs        the current right-hand-side
@@ -92,8 +97,10 @@ public final class CCIncrementalData {
      * @param vector2    the second internal vector
      * @param mod        the modulo value
      */
-    CCIncrementalData(final EncodingResult result, final CCConfig.ALK_ENCODER alkEncoder, final int rhs, final int nVars,
-                      final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2, final int mod) {
+    CCIncrementalData(final EncodingResult result, final CCConfig.ALK_ENCODER alkEncoder, final int rhs,
+                      final int nVars,
+                      final LNGVector<? extends Literal> vector1, final LNGVector<? extends Literal> vector2,
+                      final int mod) {
         this.result = result;
         this.alkEncoder = alkEncoder;
         this.amkEncoder = null;
@@ -106,19 +113,22 @@ public final class CCIncrementalData {
     }
 
     /**
-     * Constructs new incremental data for an at-least-k encoder and the given internal data.
+     * Constructs new incremental data for an at-least-k encoder and the given
+     * internal data.
      * @param result     the result
      * @param alkEncoder the at-most-one amkEncoder
      * @param rhs        the current right-hand-side
      * @param nVars      the number of variables
      * @param vector1    the first internal vector
      */
-    CCIncrementalData(final EncodingResult result, final CCConfig.ALK_ENCODER alkEncoder, final int rhs, final int nVars, final LNGVector<? extends Literal> vector1) {
+    CCIncrementalData(final EncodingResult result, final CCConfig.ALK_ENCODER alkEncoder, final int rhs,
+                      final int nVars, final LNGVector<? extends Literal> vector1) {
         this(result, alkEncoder, rhs, nVars, vector1, null, -1);
     }
 
     /**
-     * Tightens the upper bound of an at-most-k constraint and returns the resulting formula.
+     * Tightens the upper bound of an at-most-k constraint and returns the
+     * resulting formula.
      * @param rhs the new upperBound
      * @return the incremental encoding of the new upper bound
      */
@@ -129,11 +139,11 @@ public final class CCIncrementalData {
     }
 
     /**
-     * Tightens the upper bound of an at-most-k constraint and encodes it on the solver of the result.
+     * Tightens the upper bound of an at-most-k constraint and encodes it on the
+     * solver of the result.
      * <p>
-     * Usage constraints:
-     * -New right-hand side must be smaller than current right-hand side.
-     * -Cannot be used for at-least-k constraints.
+     * Usage constraints: -New right-hand side must be smaller than current
+     * right-hand side. -Cannot be used for at-least-k constraints.
      * @param rhs the new upperBound
      */
     public void newUpperBoundForSolver(final int rhs) {
@@ -142,7 +152,8 @@ public final class CCIncrementalData {
 
     private void computeUBConstraint(final EncodingResult result, final int rhs) {
         if (rhs >= this.currentRHS) {
-            throw new IllegalArgumentException("New upper bound " + rhs + " + does not tighten the current bound of " + this.currentRHS);
+            throw new IllegalArgumentException(
+                    "New upper bound " + rhs + " + does not tighten the current bound of " + this.currentRHS);
         }
         this.currentRHS = rhs;
         if (this.amkEncoder == null) {
@@ -189,7 +200,8 @@ public final class CCIncrementalData {
     }
 
     /**
-     * Tightens the lower bound of an at-least-k constraint and returns the resulting formula.
+     * Tightens the lower bound of an at-least-k constraint and returns the
+     * resulting formula.
      * @param rhs the new upperBound
      * @return the incremental encoding of the new lower bound
      */
@@ -200,11 +212,11 @@ public final class CCIncrementalData {
     }
 
     /**
-     * Tightens the lower bound of an at-least-k constraint and encodes it on the solver of the result.
+     * Tightens the lower bound of an at-least-k constraint and encodes it on
+     * the solver of the result.
      * <p>
-     * Usage constraints:
-     * -New right-hand side must be greater than current right-hand side.
-     * -Cannot be used for at-most-k constraints.
+     * Usage constraints: -New right-hand side must be greater than current
+     * right-hand side. -Cannot be used for at-most-k constraints.
      * @param rhs the new upperBound
      */
     public void newLowerBoundForSolver(final int rhs) {
@@ -213,7 +225,8 @@ public final class CCIncrementalData {
 
     private void computeLBConstraint(final EncodingResult result, final int rhs) {
         if (rhs <= this.currentRHS) {
-            throw new IllegalArgumentException("New lower bound " + rhs + " + does not tighten the current bound of " + this.currentRHS);
+            throw new IllegalArgumentException(
+                    "New lower bound " + rhs + " + does not tighten the current bound of " + this.currentRHS);
         }
         this.currentRHS = rhs;
         if (this.alkEncoder == null) {

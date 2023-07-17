@@ -99,7 +99,8 @@ public class MiniSatTest {
     @Test
     public void testConfig() {
         assertThat(MiniSatConfig.builder().build().type().toString()).isEqualTo("MINISAT");
-        assertThat(Arrays.asList(MiniSatConfig.ClauseMinimization.values()).contains(MiniSatConfig.ClauseMinimization.valueOf("DEEP"))).isTrue();
+        assertThat(Arrays.asList(MiniSatConfig.ClauseMinimization.values())
+                .contains(MiniSatConfig.ClauseMinimization.valueOf("DEEP"))).isTrue();
     }
 
     @Test

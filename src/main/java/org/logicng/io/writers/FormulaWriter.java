@@ -30,14 +30,18 @@ public final class FormulaWriter {
     }
 
     /**
-     * Writes a given formula to a file using the formula formatter of the formula's formula factory.
+     * Writes a given formula to a file using the formula formatter of the
+     * formula's formula factory.
      * @param fileName          the file name of the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
-     *                          written to different lines without a conjoining operator
+     * @param splitAndMultiline indicates whether - if the formula is a
+     *                          conjunction - the single operands should be
+     *                          written to different lines without a conjoining
+     *                          operator
      * @throws IOException if there was a problem writing the file
      */
-    public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline) throws IOException {
+    public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline)
+            throws IOException {
         write(new File(fileName), formula, splitAndMultiline, formula.factory().stringRepresentation());
     }
 
@@ -45,25 +49,32 @@ public final class FormulaWriter {
      * Writes a given formula to a file with a given formula formatter.
      * @param fileName          the file name of the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
-     *                          written to different lines without a conjoining operator
+     * @param splitAndMultiline indicates whether - if the formula is a
+     *                          conjunction - the single operands should be
+     *                          written to different lines without a conjoining
+     *                          operator
      * @param formatter         the formatter for the formula
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final String fileName, final Formula formula, final boolean splitAndMultiline,
-                             final FormulaStringRepresentation formatter) throws IOException {
+                             final FormulaStringRepresentation formatter)
+            throws IOException {
         write(new File(fileName), formula, splitAndMultiline, formatter);
     }
 
     /**
-     * Writes a given formula to a file using the formula formatter of the formula's formula factory.
+     * Writes a given formula to a file using the formula formatter of the
+     * formula's formula factory.
      * @param file              the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
-     *                          written to different lines without a conjoining operator
+     * @param splitAndMultiline indicates whether - if the formula is a
+     *                          conjunction - the single operands should be
+     *                          written to different lines without a conjoining
+     *                          operator
      * @throws IOException if there was a problem writing the file
      */
-    public static void write(final File file, final Formula formula, final boolean splitAndMultiline) throws IOException {
+    public static void write(final File file, final Formula formula, final boolean splitAndMultiline)
+            throws IOException {
         write(file, formula, splitAndMultiline, formula.factory().stringRepresentation());
     }
 
@@ -71,13 +82,16 @@ public final class FormulaWriter {
      * Writes a given formula to a file with a given formula formatter.
      * @param file              the file
      * @param formula           the formula to write
-     * @param splitAndMultiline indicates whether - if the formula is a conjunction - the single operands should be
-     *                          written to different lines without a conjoining operator
+     * @param splitAndMultiline indicates whether - if the formula is a
+     *                          conjunction - the single operands should be
+     *                          written to different lines without a conjoining
+     *                          operator
      * @param formatter         the formatter for the formula
      * @throws IOException if there was a problem writing the file
      */
     public static void write(final File file, final Formula formula, final boolean splitAndMultiline,
-                             final FormulaStringRepresentation formatter) throws IOException {
+                             final FormulaStringRepresentation formatter)
+            throws IOException {
         final StringBuilder sb = new StringBuilder();
         if (splitAndMultiline && formula.type() == FType.AND) {
             for (final Formula f : formula) {
@@ -86,7 +100,8 @@ public final class FormulaWriter {
         } else {
             sb.append(formatter.toString(formula));
         }
-        try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
+        try (final BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             writer.append(sb);
             writer.flush();
         }

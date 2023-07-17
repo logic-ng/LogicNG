@@ -91,7 +91,8 @@ public class MinimumPrimeImplicantTest {
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("v173 + v174 + v451 + v258 + v317 + v259 + v452 + v453 + v175 + v176 + v177 + v178 + v179 + v180 + v181 + v182 + v183 + v102 + v103 + v104 + v105 = 1");
+        formula = this.f.parse(
+                "v173 + v174 + v451 + v258 + v317 + v259 + v452 + v453 + v175 + v176 + v177 + v178 + v179 + v180 + v181 + v182 + v183 + v102 + v103 + v104 + v105 = 1");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(21);
         isPrimeImplicant(formula, pi);
@@ -99,7 +100,8 @@ public class MinimumPrimeImplicantTest {
 
     @Test
     public void testMiddleExamples() throws IOException, ParserException {
-        final Formula parsed = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/formula1.txt", this.f);
+        final Formula parsed =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/formula1.txt", this.f);
         for (final Formula formula : parsed) {
             isPrimeImplicant(formula, formula.apply(MinimumPrimeImplicantFunction.get()));
         }
@@ -107,7 +109,8 @@ public class MinimumPrimeImplicantTest {
 
     @Test
     public void testLargeExamples() throws IOException, ParserException {
-        final Formula parsed = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
+        final Formula parsed =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
         for (final Formula formula : parsed) {
             isPrimeImplicant(formula, formula.apply(MinimumPrimeImplicantFunction.get()));
         }
@@ -119,7 +122,8 @@ public class MinimumPrimeImplicantTest {
             final TreeSet<Literal> newSet = new TreeSet<>(pi);
             newSet.remove(literal);
             if (!newSet.isEmpty()) {
-                assertThat(this.f.implication(this.f.and(newSet), formula).holds(new TautologyPredicate(this.f))).isFalse();
+                assertThat(this.f.implication(this.f.and(newSet), formula).holds(new TautologyPredicate(this.f)))
+                        .isFalse();
             }
         }
     }

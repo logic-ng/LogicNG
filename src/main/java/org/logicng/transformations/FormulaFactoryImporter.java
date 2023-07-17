@@ -19,8 +19,9 @@ import org.logicng.formulas.PBConstraint;
 import java.util.LinkedHashSet;
 
 /**
- * A formula transformation which imports a given formula into a new formula factory.  If the current factory of the
- * formula and the new formula factory are equal, no action is performed.
+ * A formula transformation which imports a given formula into a new formula
+ * factory. If the current factory of the formula and the new formula factory
+ * are equal, no action is performed.
  * @version 2.0.0
  * @since 1.3.1
  */
@@ -29,9 +30,10 @@ public final class FormulaFactoryImporter implements FormulaTransformation {
     private final FormulaFactory newFormulaFactory;
 
     /**
-     * Constructs a new formula factory importer with a given formula factory.  This is the formula factory where the
-     * formulas should be imported to.
-     * @param newFormulaFactory the formula factory where the formulas should be imported to
+     * Constructs a new formula factory importer with a given formula factory.
+     * This is the formula factory where the formulas should be imported to.
+     * @param newFormulaFactory the formula factory where the formulas should be
+     *                          imported to
      */
     public FormulaFactoryImporter(final FormulaFactory newFormulaFactory) {
         this.newFormulaFactory = newFormulaFactory;
@@ -55,10 +57,12 @@ public final class FormulaFactoryImporter implements FormulaTransformation {
                 return this.newFormulaFactory.not(apply(not.operand(), cache));
             case IMPL:
                 final Implication implication = (Implication) formula;
-                return this.newFormulaFactory.implication(apply(implication.left(), cache), apply(implication.right(), cache));
+                return this.newFormulaFactory.implication(apply(implication.left(), cache),
+                        apply(implication.right(), cache));
             case EQUIV:
                 final Equivalence equivalence = (Equivalence) formula;
-                return this.newFormulaFactory.equivalence(apply(equivalence.left(), cache), apply(equivalence.right(), cache));
+                return this.newFormulaFactory.equivalence(apply(equivalence.left(), cache),
+                        apply(equivalence.right(), cache));
             case OR:
                 final Or or = (Or) formula;
                 return this.newFormulaFactory.or(gatherAppliedOperands(or));
@@ -78,7 +82,8 @@ public final class FormulaFactoryImporter implements FormulaTransformation {
     }
 
     /**
-     * Gather the operands of an n-ary operator and returns its applied operands.
+     * Gather the operands of an n-ary operator and returns its applied
+     * operands.
      * @param operator the n-ary operator
      * @return the applied operands of the given operator
      */

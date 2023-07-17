@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.cardinalityconstraints;
@@ -75,8 +72,9 @@ public final class CCModularTotalizer {
         assert this.inlits.size() == 0;
         this.encodeOutput(rhs, mod);
         this.currentCardinalityRhs = rhs + 1;
-        this.incData = new CCIncrementalData(result, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, rhs, this.cardinalityUpOutvars,
-                this.cardinalityLwOutvars, mod);
+        this.incData =
+                new CCIncrementalData(result, CCConfig.AMK_ENCODER.MODULAR_TOTALIZER, rhs, this.cardinalityUpOutvars,
+                        this.cardinalityLwOutvars, mod);
     }
 
     /**
@@ -139,7 +137,8 @@ public final class CCModularTotalizer {
         }
         if (ulimit != 0 && llimit != 0) {
             for (int i = llimit - 1; i < this.cardinalityLwOutvars.size(); i++) {
-                this.result.addClause(this.cardinalityUpOutvars.get(ulimit - 1).negate(), this.cardinalityLwOutvars.get(i).negate());
+                this.result.addClause(this.cardinalityUpOutvars.get(ulimit - 1).negate(),
+                        this.cardinalityLwOutvars.get(i).negate());
             }
         } else {
             if (ulimit == 0) {
@@ -216,12 +215,14 @@ public final class CCModularTotalizer {
     }
 
     private void adder(final int mod, final LNGVector<Literal> upper, final LNGVector<Literal> lower,
-                       final LNGVector<Literal> lupper, final LNGVector<Literal> llower, final LNGVector<Literal> rupper,
+                       final LNGVector<Literal> lupper, final LNGVector<Literal> llower,
+                       final LNGVector<Literal> rupper,
                        final LNGVector<Literal> rlower) {
         assert upper.size() != 0;
         assert lower.size() >= llower.size() && lower.size() >= rlower.size();
         Variable carry = this.varUndef;
-        if (upper.get(0) != this.h0) // != is ok here - we are within the same formula factory
+        if (upper.get(0) != this.h0) // != is ok here - we are within the same
+                                     // formula factory
         {
             carry = this.result.newVariable();
         }
@@ -245,15 +246,18 @@ public final class CCModularTotalizer {
                         }
                     } else if (i != 0) {
                         if (upper.get(0) != this.h0) {
-                            this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get(i + j - 1), carry);
+                            this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(),
+                                    lower.get(i + j - 1), carry);
                         } else {
                             assert i + j - 1 < lower.size();
-                            this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get(i + j - 1));
+                            this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(),
+                                    lower.get(i + j - 1));
                         }
                     }
                 } else if (i + j > mod) {
                     assert i + j > 0;
-                    this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(), lower.get((i + j) % mod - 1));
+                    this.result.addClause(llower.get(i - 1).negate(), rlower.get(j - 1).negate(),
+                            lower.get((i + j) % mod - 1));
                 } else {
                     assert i + j == mod;
                     assert carry != this.varUndef;

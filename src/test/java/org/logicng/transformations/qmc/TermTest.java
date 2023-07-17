@@ -55,13 +55,17 @@ public class TermTest {
         final Term term6 = new Term(bits6, formulas6);
         final Term term7 = new Term(bits7, formulas7);
 
-        assertThat(term1.combine(term2)).isEqualTo(new Term(new Tristate[]{TRUE, UNDEF, TRUE, TRUE}, Arrays.asList(f.variable("f1"), f.variable("f2"))));
-        assertThat(term1.combine(term3)).isEqualTo(new Term(new Tristate[]{TRUE, TRUE, UNDEF, TRUE}, Arrays.asList(f.variable("f1"), f.variable("f3"))));
+        assertThat(term1.combine(term2)).isEqualTo(
+                new Term(new Tristate[]{TRUE, UNDEF, TRUE, TRUE}, Arrays.asList(f.variable("f1"), f.variable("f2"))));
+        assertThat(term1.combine(term3)).isEqualTo(
+                new Term(new Tristate[]{TRUE, TRUE, UNDEF, TRUE}, Arrays.asList(f.variable("f1"), f.variable("f3"))));
         assertThat(term2.combine(term3)).isNull();
         assertThat(term1.combine(term4)).isNull();
-        assertThat(term2.combine(term4)).isEqualTo(new Term(new Tristate[]{UNDEF, FALSE, TRUE, TRUE}, Arrays.asList(f.variable("f2"), f.variable("f4"))));
+        assertThat(term2.combine(term4)).isEqualTo(
+                new Term(new Tristate[]{UNDEF, FALSE, TRUE, TRUE}, Arrays.asList(f.variable("f2"), f.variable("f4"))));
         assertThat(term3.combine(term4)).isNull();
-        assertThat(term5.combine(term6)).isEqualTo(new Term(new Tristate[]{TRUE, FALSE, UNDEF, UNDEF}, Arrays.asList(f.variable("f5"), f.variable("f6"))));
+        assertThat(term5.combine(term6)).isEqualTo(
+                new Term(new Tristate[]{TRUE, FALSE, UNDEF, UNDEF}, Arrays.asList(f.variable("f5"), f.variable("f6"))));
         assertThat(term1.combine(term7)).isNull();
     }
 
@@ -88,7 +92,8 @@ public class TermTest {
         final Term term4 = new Term(bits4, formulas4);
         final Term term5 = new Term(bits5, formulas5);
         final Term term6 = new Term(bits6, formulas6);
-        final List<Variable> varOrder = Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
+        final List<Variable> varOrder =
+                Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
 
         assertThat(term1.translateToFormula(varOrder)).isEqualTo(p.parse("A & B & C & D"));
         assertThat(term2.translateToFormula(varOrder)).isEqualTo(p.parse("A & ~B & C & D"));

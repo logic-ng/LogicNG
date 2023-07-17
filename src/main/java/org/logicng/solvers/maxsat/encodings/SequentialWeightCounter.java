@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.encodings;
@@ -35,7 +32,8 @@ import org.logicng.collections.LNGVector;
 import org.logicng.solvers.sat.MiniSatStyleSolver;
 
 /**
- * A sequential weight counter for the encoding of pseudo-Boolean constraints in CNF.
+ * A sequential weight counter for the encoding of pseudo-Boolean constraints in
+ * CNF.
  * @version 2.0.0
  * @since 1.0
  */
@@ -140,7 +138,8 @@ public class SequentialWeightCounter extends Encoding {
                     addBinaryClause(s, not(lits.get(i - 1)), seqAuxiliary[i].get(j));
                 }
                 if (i >= 2 && i <= n && j <= rhs - wi) {
-                    addTernaryClause(s, not(seqAuxiliary[i - 1].get(j)), not(lits.get(i - 1)), seqAuxiliary[i].get(j + wi));
+                    addTernaryClause(s, not(seqAuxiliary[i - 1].get(j)), not(lits.get(i - 1)),
+                            seqAuxiliary[i].get(j + wi));
                 }
             }
             if (i >= 2) {
@@ -233,11 +232,13 @@ public class SequentialWeightCounter extends Encoding {
                     addBinaryClause(s, not(lits.get(i - 1)), this.seqAuxiliaryInc.get(i).get(j));
                 }
                 if (i >= 2 && i <= n && j <= rhs - wi) {
-                    addTernaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), not(lits.get(i - 1)), this.seqAuxiliaryInc.get(i).get(j + wi));
+                    addTernaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), not(lits.get(i - 1)),
+                            this.seqAuxiliaryInc.get(i).get(j + wi));
                 }
             }
             if (i >= 2) {
-                addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(rhs + 1 - wi)), not(lits.get(i - 1)), blocking);
+                addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(rhs + 1 - wi)), not(lits.get(i - 1)),
+                        blocking);
             }
         }
         for (int i = 0; i < this.unitLits.size(); i++) {
@@ -250,8 +251,9 @@ public class SequentialWeightCounter extends Encoding {
     }
 
     /**
-     * Updates the 'rhs' of an already existent pseudo-Boolean encoding.  This method allows for all learned clauses
-     * from previous iterations to be kept in the next iteration.
+     * Updates the 'rhs' of an already existent pseudo-Boolean encoding. This
+     * method allows for all learned clauses from previous iterations to be kept
+     * in the next iteration.
      * @param s   the solver
      * @param rhs the new right-hand side
      */
@@ -302,21 +304,24 @@ public class SequentialWeightCounter extends Encoding {
                     addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), this.seqAuxiliaryInc.get(i).get(j));
                 }
                 if (i >= 2 && i <= n && j <= rhs - wi && j >= offset - wi) {
-                    addTernaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), not(this.litsInc.get(i - 1)), this.seqAuxiliaryInc.get(i).get(j + wi));
+                    addTernaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), not(this.litsInc.get(i - 1)),
+                            this.seqAuxiliaryInc.get(i).get(j + wi));
                 }
             }
             if (i >= 2) {
                 assert this.seqAuxiliaryInc.get(i - 1).size() > rhs + 1 - wi;
                 assert rhs + 1 - wi > 0;
                 assert i - 1 < this.litsInc.size();
-                addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(rhs + 1 - wi)), not(this.litsInc.get(i - 1)), this.currentLitBlocking);
+                addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(rhs + 1 - wi)), not(this.litsInc.get(i - 1)),
+                        this.currentLitBlocking);
             }
         }
         this.currentPbRhs = rhs;
     }
 
     /**
-     * Joins two pseudo boolean constraints.  The given constraint is added to the current one.
+     * Joins two pseudo boolean constraints. The given constraint is added to
+     * the current one.
      * @param s      the solver
      * @param lits   the literals of the constraint
      * @param coeffs the coefficients of the constraint
@@ -382,14 +387,16 @@ public class SequentialWeightCounter extends Encoding {
                     addBinaryClause(s, not(this.litsInc.get(i - 1)), this.seqAuxiliaryInc.get(i).get(j));
                 }
                 if (j <= rhs - wi) {
-                    addTernaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), not(this.litsInc.get(i - 1)), this.seqAuxiliaryInc.get(i).get(j + wi));
+                    addTernaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(j)), not(this.litsInc.get(i - 1)),
+                            this.seqAuxiliaryInc.get(i).get(j + wi));
                 }
             }
             if (i > lhsJoin) {
                 assert rhs + 1 - wi >= 0;
                 assert this.seqAuxiliaryInc.get(i - 1).size() > rhs + 1 - wi;
                 assert i - 1 < this.litsInc.size();
-                addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(rhs + 1 - wi)), not(this.litsInc.get(i - 1)), this.currentLitBlocking);
+                addBinaryClause(s, not(this.seqAuxiliaryInc.get(i - 1).get(rhs + 1 - wi)), not(this.litsInc.get(i - 1)),
+                        this.currentLitBlocking);
             }
         }
     }

@@ -38,10 +38,14 @@ public class ModelTest {
     private static final FormulaFactory f = new FormulaFactory();
 
     public static Collection<Object[]> solvers() {
-        final MiniSatConfig configNoPGAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FACTORY_CNF).auxiliaryVariablesInModels(true).build();
-        final MiniSatConfig configNoPGNoAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FACTORY_CNF).auxiliaryVariablesInModels(false).build();
-        final MiniSatConfig configPGAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(true).build();
-        final MiniSatConfig configPGNoAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).auxiliaryVariablesInModels(false).build();
+        final MiniSatConfig configNoPGAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FACTORY_CNF)
+                .auxiliaryVariablesInModels(true).build();
+        final MiniSatConfig configNoPGNoAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.FACTORY_CNF)
+                .auxiliaryVariablesInModels(false).build();
+        final MiniSatConfig configPGAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER)
+                .auxiliaryVariablesInModels(true).build();
+        final MiniSatConfig configPGNoAux = MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER)
+                .auxiliaryVariablesInModels(false).build();
         final List<Pair<MiniSatConfig, String>> configs = Arrays.asList(
                 new Pair<>(configNoPGAux, "FF CNF, +AUX"),
                 new Pair<>(configNoPGNoAux, "FF CNF, -AUX"),
@@ -52,7 +56,8 @@ public class ModelTest {
         for (final Pair<MiniSatConfig, String> config : configs) {
             solvers.add(new Object[]{MiniSat.miniSat(f, config.first()), "MiniSat (" + config.second() + ")"});
             solvers.add(new Object[]{MiniSat.miniCard(f, config.first()), "MiniCard (" + config.second() + ")"});
-            solvers.add(new Object[]{MiniSat.glucose(f, config.first(), GlucoseConfig.builder().build()), "Glucose (" + config.second() + ")"});
+            solvers.add(new Object[]{MiniSat.glucose(f, config.first(), GlucoseConfig.builder().build()),
+                    "Glucose (" + config.second() + ")"});
         }
         return solvers;
     }
@@ -174,7 +179,8 @@ public class ModelTest {
         final Assignment model = solver.model();
         assertThat(formula.evaluate(model)).isTrue();
         final List<Assignment> allModels = solver.enumerateAllModels();
-        if (!solver.getConfig().isAuxiliaryVariablesInModels() || solver.getConfig().getCnfMethod() == MiniSatConfig.CNFMethod.FACTORY_CNF) {
+        if (!solver.getConfig().isAuxiliaryVariablesInModels() ||
+                solver.getConfig().getCnfMethod() == MiniSatConfig.CNFMethod.FACTORY_CNF) {
             assertThat(allModels).hasSize(4);
             for (final Assignment assignment : allModels) {
                 assertThat(formula.evaluate(assignment)).isTrue();
@@ -216,7 +222,8 @@ public class ModelTest {
         miniSat.add(formula);
         solver.add(formula);
         solver.sat();
-        final SortedSet<Variable> relevantVariables = new TreeSet<>(Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C")));
+        final SortedSet<Variable> relevantVariables =
+                new TreeSet<>(Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C")));
         final Assignment model = solver.model(relevantVariables);
         assertThat(miniSat.sat(model.literals())).isEqualTo(Tristate.TRUE);
         assertThat(model.formula(f).variables()).isEqualTo(relevantVariables);
@@ -237,14 +244,17 @@ public class ModelTest {
         miniSat.add(formula);
         solver.add(formula);
         solver.sat();
-        final SortedSet<Variable> relevantVariables = new TreeSet<>(Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C")));
-        final SortedSet<Variable> additionalVariables = new TreeSet<>(Arrays.asList(f.variable("D"), f.variable("X"), f.variable("Y")));
+        final SortedSet<Variable> relevantVariables =
+                new TreeSet<>(Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C")));
+        final SortedSet<Variable> additionalVariables =
+                new TreeSet<>(Arrays.asList(f.variable("D"), f.variable("X"), f.variable("Y")));
         final SortedSet<Variable> allVariables = new TreeSet<>(relevantVariables);
         allVariables.add(f.variable("D"));
         final Assignment model = solver.model(additionalVariables);
         assertThat(miniSat.sat(model.literals())).isEqualTo(Tristate.TRUE);
         assertThat(model.formula(f).variables()).containsExactly(f.variable("D"));
-        final List<Assignment> allModels = solver.execute(ModelEnumerationFunction.builder().variables(relevantVariables).additionalVariables(additionalVariables).build());
+        final List<Assignment> allModels = solver.execute(ModelEnumerationFunction.builder()
+                .variables(relevantVariables).additionalVariables(additionalVariables).build());
         assertThat(allModels).hasSize(2);
         for (final Assignment assignment : allModels) {
             assertThat(miniSat.sat(assignment.literals())).isEqualTo(Tristate.TRUE);

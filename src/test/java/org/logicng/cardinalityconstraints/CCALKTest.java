@@ -70,9 +70,10 @@ public class CCALKTest implements LogicNGTest {
         } else {
             assertSolverUnsat(solver);
         }
-        assertThat(solver.execute(ModelEnumerationFunction.builder().variables(problemLits).handler(new NumberOfModelsHandler(12000)).build()))
-                .hasSize(expected)
-                .allMatch(m -> m.positiveVariables().size() >= rhs);
+        assertThat(solver.execute(ModelEnumerationFunction.builder().variables(problemLits)
+                .handler(new NumberOfModelsHandler(12000)).build()))
+                        .hasSize(expected)
+                        .allMatch(m -> m.positiveVariables().size() >= rhs);
     }
 
     @Test
@@ -84,7 +85,8 @@ public class CCALKTest implements LogicNGTest {
         for (int i = 0; i < numLits; i++) {
             problemLits[i] = f.variable("v" + i);
         }
-        assertThatThrownBy(() -> encoder.encode((CardinalityConstraint) f.cc(CType.GE, -1, problemLits))).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> encoder.encode((CardinalityConstraint) f.cc(CType.GE, -1, problemLits)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -102,6 +104,7 @@ public class CCALKTest implements LogicNGTest {
         assertThat(new CCALKModularTotalizer(f).toString()).isEqualTo("CCALKModularTotalizer");
         assertThat(new CCALKCardinalityNetwork().toString()).isEqualTo("CCALKCardinalityNetwork");
 
-        assertThat(Arrays.asList(CCConfig.ALK_ENCODER.values())).contains(CCConfig.ALK_ENCODER.valueOf("MODULAR_TOTALIZER"));
+        assertThat(Arrays.asList(CCConfig.ALK_ENCODER.values()))
+                .contains(CCConfig.ALK_ENCODER.valueOf("MODULAR_TOTALIZER"));
     }
 }

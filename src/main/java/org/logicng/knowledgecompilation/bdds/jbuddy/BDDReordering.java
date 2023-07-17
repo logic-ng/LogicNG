@@ -15,19 +15,22 @@ import java.util.Random;
 /**
  * This class encapsulates the reordering mechanism on BDDs.
  * <p>
- * The class is initialized with the BDD kernel on which it performs all operations.
- * This means that all reordering operations initiated on this object will affect
- * <b>all BDDs created by its kernel</b>.
+ * The class is initialized with the BDD kernel on which it performs all
+ * operations. This means that all reordering operations initiated on this
+ * object will affect <b>all BDDs created by its kernel</b>.
  * <p>
  * There are three types operations which can be performed here:
  * <ul>
- *     <li>Swapping two variables in the kernel can be performed via {@link #swapVariables}</li>
- *     <li>Reordering all variables can be performed via {@link #reorder}</li>
- *     <li>Reordering during construction of the BDD can be configured via {@link #setReorderDuringConstruction}</li>
+ * <li>Swapping two variables in the kernel can be performed via
+ * {@link #swapVariables}</li>
+ * <li>Reordering all variables can be performed via {@link #reorder}</li>
+ * <li>Reordering during construction of the BDD can be configured via
+ * {@link #setReorderDuringConstruction}</li>
  * </ul>
- * The last two operations only have an effect, if variable blocks were added. {@link #addVariableBlock(int, int, boolean) The docuentation}
- * gives more information on variable blocks.
- * To make all variables freely movable, {@link #addVariableBlockAll()} can be used.
+ * The last two operations only have an effect, if variable blocks were added.
+ * {@link #addVariableBlock(int, int, boolean) The docuentation} gives more
+ * information on variable blocks. To make all variables freely movable,
+ * {@link #addVariableBlockAll()} can be used.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -135,8 +138,8 @@ public class BDDReordering {
     }
 
     /**
-     * Reorders the levels in the kernel using the given reordering method.
-     * Only blocks of variables will be reordered. See the documentation of
+     * Reorders the levels in the kernel using the given reordering method. Only
+     * blocks of variables will be reordered. See the documentation of
      * {@link #addVariableBlock} to learn more about such variable blocks.
      * Without the definition of any block, nothing will be reordered.
      * <p>
@@ -170,11 +173,13 @@ public class BDDReordering {
     }
 
     /**
-     * Activates or deactivates the automatic reordering during the construction of a BDD.
+     * Activates or deactivates the automatic reordering during the construction
+     * of a BDD.
      * <p>
-     * Automatic reordering can be deactivated by passing {@link BDDReorderingMethod#BDD_REORDER_NONE}
-     * for the {@code method} parameter, otherwise the reordering is activated with the
-     * given method. The reordering is executed at most {@code num} times.
+     * Automatic reordering can be deactivated by passing
+     * {@link BDDReorderingMethod#BDD_REORDER_NONE} for the {@code method}
+     * parameter, otherwise the reordering is activated with the given method.
+     * The reordering is executed at most {@code num} times.
      * @param method the method to be used for reordering
      * @param num    the maximum number of reorders to be performed
      */
@@ -184,71 +189,81 @@ public class BDDReordering {
     }
 
     /**
-     * Adds a variable block starting at variable {@code first} and ending in variable
-     * {@code last} (both inclusive).
+     * Adds a variable block starting at variable {@code first} and ending in
+     * variable {@code last} (both inclusive).
      * <p>
-     * <b>Variable blocks</b> are used in the {@link #reorder BDD reordering}
-     * or in the automatic reordering during the construction of the BDD (configured by
-     * {@link #setReorderDuringConstruction}). Variable blocks can be nested, i.e. one block can
-     * contain an arbitrary number of ("child") blocks. Furthermore, a variable block can also
-     * be a single variable.
+     * <b>Variable blocks</b> are used in the {@link #reorder BDD reordering} or
+     * in the automatic reordering during the construction of the BDD
+     * (configured by {@link #setReorderDuringConstruction}). Variable blocks
+     * can be nested, i.e. one block can contain an arbitrary number of
+     * ("child") blocks. Furthermore, a variable block can also be a single
+     * variable.
      * <p>
-     * During reordering, the child blocks of a parent block can be reordered, but they are kept
-     * together. So no other block can be moved in between the child blocks. Furthermore,
-     * variables in a block which are not in a child block will be left untouched.
+     * During reordering, the child blocks of a parent block can be reordered,
+     * but they are kept together. So no other block can be moved in between the
+     * child blocks. Furthermore, variables in a block which are not in a child
+     * block will be left untouched.
      * <p>
-     * Example: Lets assume we have a BDD with the variable ordering {@code v1, v2, v3, v4, v5, v6, v7}.
-     * We create the following blocks:
+     * Example: Lets assume we have a BDD with the variable ordering
+     * {@code v1, v2, v3, v4, v5, v6, v7}. We create the following blocks:
      * <ul>
-     *     <li>{@code A}  reaching from {@code v1} to {@code v5}</li>
-     *     <li>{@code B}  reaching from {@code v6} to {@code v7}</li>
-     *     <li>{@code A1} reaching from {@code v1} to {@code v2}</li>
-     *     <li>{@code A2} reaching from {@code v3} to {@code v3}</li>
-     *     <li>{@code A3} reaching from {@code v4} to {@code v5}</li>
+     * <li>{@code A} reaching from {@code v1} to {@code v5}</li>
+     * <li>{@code B} reaching from {@code v6} to {@code v7}</li>
+     * <li>{@code A1} reaching from {@code v1} to {@code v2}</li>
+     * <li>{@code A2} reaching from {@code v3} to {@code v3}</li>
+     * <li>{@code A3} reaching from {@code v4} to {@code v5}</li>
      * </ul>
-     * This means that the variables of {@code A} and {@code B} can never be mixed up in the order.
-     * So during reordering the variables {@code v6} and {@code v7} can either be moved to the
-     * front (before {@code A}) or remain at their position.
-     * Furthermore, for example {@code v1} and {@code v2} will always stay together and neither
-     * {@code v3} nor any other variable can be moved in between them. On the other hand, the blocks
-     * {@code A1}, {@code A2}, and {@code A3} can be swapped arbitrarily.
+     * This means that the variables of {@code A} and {@code B} can never be
+     * mixed up in the order. So during reordering the variables {@code v6} and
+     * {@code v7} can either be moved to the front (before {@code A}) or remain
+     * at their position. Furthermore, for example {@code v1} and {@code v2}
+     * will always stay together and neither {@code v3} nor any other variable
+     * can be moved in between them. On the other hand, the blocks {@code A1},
+     * {@code A2}, and {@code A3} can be swapped arbitrarily.
      * <p>
      * These are valid result of a reordering based on the above blocks:
      * <ul>
-     *     <li>{@code v3, v1, v2, v4, v5, v6, v7}</li>
-     *     <li>{@code v6, v7, v4, v5, v3, v1, v2}</li>
-     *     <li>{@code v6, v7, v1, v2, v3, v4, v5}</li>
+     * <li>{@code v3, v1, v2, v4, v5, v6, v7}</li>
+     * <li>{@code v6, v7, v4, v5, v3, v1, v2}</li>
+     * <li>{@code v6, v7, v1, v2, v3, v4, v5}</li>
      * </ul>
      * These however would be <b>illegal</b>:
      * <ul>
-     *     <li>{@code v2, v1, v3, v4, v5, v6, v7} (variables in a block which are not in a child block will not be reordered)</li>
-     *     <li>{@code v1, v3, v2, v4, v5, v6, v7} (variables of different block will not be mixed up)</li>
+     * <li>{@code v2, v1, v3, v4, v5, v6, v7} (variables in a block which are
+     * not in a child block will not be reordered)</li>
+     * <li>{@code v1, v3, v2, v4, v5, v6, v7} (variables of different block will
+     * not be mixed up)</li>
      * </ul>
      * <p>
-     * If a block is <b>fixed</b> (the example above assumed always blocks which are not fixed), its
-     * immediate child blocks will remain in their order. E.g. if block {@code A} was fixed, the blocks
-     * {@code A1}, {@code A2}, and {@code A3} would not be allowed to be swapped.
-     * Let's assume block {@code A} to be fixed and that we have two other unfixed blocks:
+     * If a block is <b>fixed</b> (the example above assumed always blocks which
+     * are not fixed), its immediate child blocks will remain in their order.
+     * E.g. if block {@code A} was fixed, the blocks {@code A1}, {@code A2}, and
+     * {@code A3} would not be allowed to be swapped. Let's assume block
+     * {@code A} to be fixed and that we have two other unfixed blocks:
      * <ul>
-     *     <li>{@code A11} reaching from {@code v1} to {@code v1}</li>
-     *     <li>{@code A12} reaching from {@code v2} to {@code v2}</li>
+     * <li>{@code A11} reaching from {@code v1} to {@code v1}</li>
+     * <li>{@code A12} reaching from {@code v2} to {@code v2}</li>
      * </ul>
      * These are examples for <b>legal</b> reorderings:
      * <ul>
-     *     <li>{@code v2, v1, v3, v4, v5, v6, v7} (block {@code A} is fixed, but "grandchildren" are still allowed to be reordered</li>
-     *     <li>{@code v6, v7, v2, v1, v3, v4, v5}</li>
+     * <li>{@code v2, v1, v3, v4, v5, v6, v7} (block {@code A} is fixed, but
+     * "grandchildren" are still allowed to be reordered</li>
+     * <li>{@code v6, v7, v2, v1, v3, v4, v5}</li>
      * </ul>
      * These are examples for <b>illegal</b> reorderings:
      * <ul>
-     *     <li>{@code v3, v2, v1, v4, v5, v6, v7} (block {@code A} is fixed, so it's child blocks must be be reordered</li>
-     *     <li>{@code v1, v2, v4, v5, v3, v6, v7}</li>
+     * <li>{@code v3, v2, v1, v4, v5, v6, v7} (block {@code A} is fixed, so it's
+     * child blocks must be be reordered</li>
+     * <li>{@code v1, v2, v4, v5, v3, v6, v7}</li>
      * </ul>
      * <p>
-     * Each block (including all nested blocks) must be defined by a separate call to this method. The blocks
-     * may be added in an arbitrary order, so it is not required to add them top-down or bottom-up.
-     * However, the blocks <b>must not intersect</b>, except of one block containing the other. Furthermore,
-     * both the {@code first} and the {@code last} variable must be known by the kernel and the level {@code first}
-     * must be lower than the level of {@code last}.
+     * Each block (including all nested blocks) must be defined by a separate
+     * call to this method. The blocks may be added in an arbitrary order, so it
+     * is not required to add them top-down or bottom-up. However, the blocks
+     * <b>must not intersect</b>, except of one block containing the other.
+     * Furthermore, both the {@code first} and the {@code last} variable must be
+     * known by the kernel and the level {@code first} must be lower than the
+     * level of {@code last}.
      * @param first the variable at which the block starts (inclusive)
      * @param last  the variable at which the block ends (inclusive)
      * @param fixed whether the block should be fixed or not
@@ -275,11 +290,10 @@ public class BDDReordering {
     }
 
     /**
-     * IMPORTANT:
-     * The semantics of the "level" field in the BddNode struct changes during
-     * variable reordering in order to make a fast variable swap possible when
-     * two variables are independent. Instead of referring to the level of the node
-     * it refers to the *variable* !!!
+     * IMPORTANT: The semantics of the "level" field in the BddNode struct
+     * changes during variable reordering in order to make a fast variable swap
+     * possible when two variables are independent. Instead of referring to the
+     * level of the node it refers to the *variable* !!!
      * @param n the variable number
      * @return the level of this variable
      */
@@ -353,7 +367,10 @@ public class BDDReordering {
             } else {
                 this.k.setRefcou(n, 0);
             }
-            /* This is where we go from .var to .level again! - Do NOT use the LEVEL macro here. */
+            /*
+             * This is where we go from .var to .level again! - Do NOT use the
+             * LEVEL macro here.
+             */
             this.k.setLevel(n, this.k.var2level[this.k.level(n)]);
         }
         this.k.gbc();
@@ -401,8 +418,7 @@ public class BDDReordering {
                     first = thisTree.getPrev();
                 }
             }
-        }
-        while (reorderNodenum() != lastsize);
+        } while (reorderNodenum() != lastsize);
 
         return first;
     }
@@ -442,8 +458,7 @@ public class BDDReordering {
                 thisTree = swapResult.first();
                 first = swapResult.second() != null ? swapResult.second() : first;
             }
-        }
-        while (reorderNodenum() != lastsize);
+        } while (reorderNodenum() != lastsize);
         return first;
     }
 
@@ -453,7 +468,10 @@ public class BDDReordering {
         BDDTree next = thisTree;
         int best = reorderNodenum();
 
-        if (thisTree.getNext().getNext() == null) /* Only two blocks left -> win2 swap */ {
+        if (thisTree.getNext().getNext() == null) /*
+                                                   * Only two blocks left ->
+                                                   * win2 swap
+                                                   */ {
             blockdown(thisTree);
 
             if (best < reorderNodenum()) {
@@ -466,29 +484,14 @@ public class BDDReordering {
             }
         } else /* Real win3 swap */ {
             int pos = 0;
-            blockdown(thisTree);  /* B A* C (4) */
+            blockdown(thisTree); /* B A* C (4) */
             pos++;
             if (best > reorderNodenum()) {
                 pos = 0;
                 best = reorderNodenum();
             }
 
-            blockdown(thisTree);  /* B C A* (3) */
-            pos++;
-            if (best > reorderNodenum()) {
-                pos = 0;
-                best = reorderNodenum();
-            }
-
-            thisTree = thisTree.getPrev().getPrev();
-            blockdown(thisTree);  /* C B* A (2) */
-            pos++;
-            if (best > reorderNodenum()) {
-                pos = 0;
-                best = reorderNodenum();
-            }
-
-            blockdown(thisTree);  /* C A B* (1) */
+            blockdown(thisTree); /* B C A* (3) */
             pos++;
             if (best > reorderNodenum()) {
                 pos = 0;
@@ -496,13 +499,28 @@ public class BDDReordering {
             }
 
             thisTree = thisTree.getPrev().getPrev();
-            blockdown(thisTree);  /* A C* B (0)*/
+            blockdown(thisTree); /* C B* A (2) */
+            pos++;
+            if (best > reorderNodenum()) {
+                pos = 0;
+                best = reorderNodenum();
+            }
+
+            blockdown(thisTree); /* C A B* (1) */
+            pos++;
+            if (best > reorderNodenum()) {
+                pos = 0;
+                best = reorderNodenum();
+            }
+
+            thisTree = thisTree.getPrev().getPrev();
+            blockdown(thisTree); /* A C* B (0) */
             pos++;
             if (best > reorderNodenum()) {
                 pos = 0;
             }
 
-            if (pos >= 1)  /* A C B -> C A* B */ {
+            if (pos >= 1) /* A C B -> C A* B */ {
                 thisTree = thisTree.getPrev();
                 blockdown(thisTree);
                 next = thisTree;
@@ -511,7 +529,7 @@ public class BDDReordering {
                 }
             }
 
-            if (pos >= 2)  /* C A B -> C B A* */ {
+            if (pos >= 2) /* C A B -> C B A* */ {
                 blockdown(thisTree);
                 next = thisTree.getPrev();
                 if (setfirst) {
@@ -519,7 +537,7 @@ public class BDDReordering {
                 }
             }
 
-            if (pos >= 3)  /* C B A -> B C* A */ {
+            if (pos >= 3) /* C B A -> B C* A */ {
                 thisTree = thisTree.getPrev().getPrev();
                 blockdown(thisTree);
                 next = thisTree;
@@ -528,7 +546,7 @@ public class BDDReordering {
                 }
             }
 
-            if (pos >= 4)  /* B C A -> B A C* */ {
+            if (pos >= 4) /* B C A -> B A C* */ {
                 blockdown(thisTree);
                 next = thisTree.getPrev();
                 if (setfirst) {
@@ -536,7 +554,7 @@ public class BDDReordering {
                 }
             }
 
-            if (pos >= 5)  /* B A C -> A B* C */ {
+            if (pos >= 5) /* B A C -> A B* C */ {
                 thisTree = thisTree.getPrev().getPrev();
                 blockdown(thisTree);
                 next = thisTree;
@@ -564,8 +582,7 @@ public class BDDReordering {
         do {
             lastsize = reorderNodenum();
             first = reorderSift(first);
-        }
-        while (reorderNodenum() != lastsize);
+        } while (reorderNodenum() != lastsize);
 
         return first;
     }
@@ -618,8 +635,8 @@ public class BDDReordering {
     }
 
     /**
-     * Go through all blocks in a specific sequence and find best
-     * position for each of them
+     * Go through all blocks in a specific sequence and find best position for
+     * each of them
      * @param t   the input BDD tree
      * @param seq the sequence
      * @param num the current position in the sequence
@@ -646,8 +663,8 @@ public class BDDReordering {
     }
 
     /**
-     * Move a specific block up and down in the order and place at last in
-     * the best position
+     * Move a specific block up and down in the order and place at last in the
+     * best position
      * @param blk       the block
      * @param middlePos the middle position in the block
      */
@@ -764,7 +781,8 @@ public class BDDReordering {
         /* Move left past right */
         while (this.k.var2level[lseq[0]] < this.k.var2level[rseq[rightsize]]) {
             for (n = 0; n < leftsize; n++) {
-                if (this.k.var2level[lseq[n]] + 1 != this.k.var2level[lseq[n + 1]] && this.k.var2level[lseq[n]] < this.k.var2level[rseq[rightsize]]) {
+                if (this.k.var2level[lseq[n]] + 1 != this.k.var2level[lseq[n + 1]] &&
+                        this.k.var2level[lseq[n]] < this.k.var2level[rseq[rightsize]]) {
                     reorderVardown(lseq[n]);
                 }
             }
@@ -777,7 +795,8 @@ public class BDDReordering {
         /* Move right to where left started */
         while (this.k.var2level[rseq[0]] > leftstart) {
             for (n = rightsize; n > 0; n--) {
-                if (this.k.var2level[rseq[n]] - 1 != this.k.var2level[rseq[n - 1]] && this.k.var2level[rseq[n]] > leftstart) {
+                if (this.k.var2level[rseq[n]] - 1 != this.k.var2level[rseq[n - 1]] &&
+                        this.k.var2level[rseq[n]] > leftstart) {
                     reorderVarup(rseq[n]);
                 }
             }
@@ -839,7 +858,7 @@ public class BDDReordering {
         this.k.var2level[var] = this.k.var2level[this.k.level2var[level]];
         this.k.var2level[this.k.level2var[level]] = n;
         /* Update all rename pairs */
-        //        this.pairs.vardown(level);
+        // this.pairs.vardown(level);
 
         if (this.resizedInMakenode) {
             reorderRehashAll();
@@ -862,7 +881,10 @@ public class BDDReordering {
             while (r != 0) {
                 final int next = this.k.next(r);
                 if (var(this.k.low(r)) != var1 && var(this.k.high(r)) != var1) {
-                    /* Node does not depend on next var, let it stay in the chain */
+                    /*
+                     * Node does not depend on next var, let it stay in the
+                     * chain
+                     */
                     this.k.setNext(r, this.k.hash(n + vl0));
                     this.k.setHash(n + vl0, r);
                     this.levels[var0].nodenum++;
@@ -906,14 +928,17 @@ public class BDDReordering {
             /* Note: makenode does refcou. */
             f0 = reorderMakenode(var0, f00, f10);
             f1 = reorderMakenode(var0, f01, f11);
-            //            assert node == this.nodes[toBeProcessed];
-            //            node = this.nodes[toBeProcessed];  /* Might change in makenode [SHi: why? I don't think so] */
+            // assert node == this.nodes[toBeProcessed];
+            // node = this.nodes[toBeProcessed]; /* Might change in makenode
+            // [SHi: why? I don't think so] */
 
-            /* We know that the refcou of the grandchilds of this node
-             * is greater than one (these are f00...f11), so there is
-             * no need to do a recursive refcou decrease. It is also
-             * possible for the LOWp(node)/high nodes to come alive again,
-             * so deref. of the childs is delayed until the local GBC. */
+            /*
+             * We know that the refcou of the grandchilds of this node is
+             * greater than one (these are f00...f11), so there is no need to do
+             * a recursive refcou decrease. It is also possible for the
+             * LOWp(node)/high nodes to come alive again, so deref. of the
+             * childs is delayed until the local GBC.
+             */
 
             this.k.decRef(this.k.low(toBeProcessed));
             this.k.decRef(this.k.high(toBeProcessed));
@@ -935,7 +960,10 @@ public class BDDReordering {
         final int hash;
         int res;
 
-        /* Note: We know that low,high has a refcou greater than zero, so there is no need to add reference *recursively* */
+        /*
+         * Note: We know that low,high has a refcou greater than zero, so there
+         * is no need to add reference *recursively*
+         */
         /* check whether childs are equal */
         if (low == high) {
             this.k.incRef(low);
@@ -956,10 +984,11 @@ public class BDDReordering {
         /* No existing node -> build one */
         /* Any free nodes to use ? */
         if (this.k.freepos == 0) {
-            /* Try to allocate more nodes - call noderesize without
-             * enabling rehashing.
-             * Note: if ever rehashing is allowed here, then remember to
-             * update local variable "hash" */
+            /*
+             * Try to allocate more nodes - call noderesize without enabling
+             * rehashing. Note: if ever rehashing is allowed here, then remember
+             * to update local variable "hash"
+             */
             this.k.nodeResize(false);
             this.resizedInMakenode = true;
             assert this.k.freepos > 0;
@@ -1062,7 +1091,8 @@ public class BDDReordering {
     }
 
     protected boolean reorderReady() {
-        return this.reorderMethod != BDDReorderingMethod.BDD_REORDER_NONE && this.varTree != null && this.bddreorderTimes != 0 && !this.reorderDisabled;
+        return this.reorderMethod != BDDReorderingMethod.BDD_REORDER_NONE && this.varTree != null &&
+                this.bddreorderTimes != 0 && !this.reorderDisabled;
     }
 
     protected void reorderAuto() {
@@ -1081,8 +1111,10 @@ public class BDDReordering {
             this.levels[n].size = 0;
             this.levels[n].nodenum = 0;
         }
-        /* First mark and recursive refcou. all roots and childs. Also do some
-         * setup here for both setLevellookup and reorder_gbc */
+        /*
+         * First mark and recursive refcou. all roots and childs. Also do some
+         * setup here for both setLevellookup and reorder_gbc
+         */
         if (markRoots() < 0) {
             return -1;
         }
@@ -1097,7 +1129,10 @@ public class BDDReordering {
         final int[] dep = new int[this.k.varnum];
         this.extRootSize = 0;
         for (int n = 2; n < this.k.nodesize; n++) {
-            /* This is where we go from .level to .var! - Do NOT use the LEVEL macro here. */
+            /*
+             * This is where we go from .level to .var! - Do NOT use the LEVEL
+             * macro here.
+             */
             this.k.setLevel(n, this.k.level2var[this.k.level(n)]);
             if (this.k.refcou(n) > 0) {
                 this.extRootSize++;
@@ -1117,7 +1152,10 @@ public class BDDReordering {
                 addrefRec(this.k.high(n), dep);
                 addDependencies(dep);
             }
-            /* Make sure the hash field is empty. This saves a loop in the initial GBC */
+            /*
+             * Make sure the hash field is empty. This saves a loop in the
+             * initial GBC
+             */
             this.k.setHash(n, 0);
         }
         this.k.setHash(0, 0);
@@ -1147,8 +1185,10 @@ public class BDDReordering {
         reorderAuto();
         /* Do not reorder before twice as many nodes have been used */
         this.usedNodesNextReorder = 2 * (this.k.nodesize - this.k.freenum);
-        /* And if very little was gained this time (< 20%) then wait until
-         * even more nodes (upto twice as many again) have been used */
+        /*
+         * And if very little was gained this time (< 20%) then wait until even
+         * more nodes (upto twice as many again) have been used
+         */
         if (reorderGain() < 20) {
             this.usedNodesNextReorder += (this.usedNodesNextReorder * (20 - reorderGain())) / 20;
         }
@@ -1164,7 +1204,9 @@ public class BDDReordering {
             /* Detect variable dependencies for the interaction matrix */
             dep[var(r) & MARKHIDE] = 1;
 
-            /* Make sure the nodenum field is updated. Used in the initial GBC */
+            /*
+             * Make sure the nodenum field is updated. Used in the initial GBC
+             */
             this.levels[var(r) & MARKHIDE].nodenum++;
 
             addrefRec(this.k.low(r), dep);
@@ -1172,8 +1214,10 @@ public class BDDReordering {
         } else {
             int n;
 
-            /* Update (from previously found) variable dependencies
-             * for the interaction matrix */
+            /*
+             * Update (from previously found) variable dependencies for the
+             * interaction matrix
+             */
             for (n = 0; n < this.k.varnum; n++) {
                 dep[n] |= this.interactionMatrix.depends(var(r) & MARKHIDE, n);
             }
@@ -1201,10 +1245,10 @@ public class BDDReordering {
 
     /* Level data */
     protected static class LevelData {
-        protected int start;    /* Start of this sub-table (entry in "bddnodes") */
-        protected int size;     /* Size of this sub-table */
-        protected int maxsize;  /* Max. allowed size of sub-table */
-        protected int nodenum;  /* Number of nodes in this level */
+        protected int start; /* Start of this sub-table (entry in "bddnodes") */
+        protected int size; /* Size of this sub-table */
+        protected int maxsize; /* Max. allowed size of sub-table */
+        protected int nodenum; /* Number of nodes in this level */
     }
 
     protected static class BDDSizePair {

@@ -110,7 +110,8 @@ public final class LNGVector<T> implements Iterable<T> {
     /**
      * Pushes an element and assumes that there is enough space on the vector.
      * @param element the element to push
-     * @throws ArrayIndexOutOfBoundsException if there was not enough space on the vector
+     * @throws ArrayIndexOutOfBoundsException if there was not enough space on
+     *                                        the vector
      */
     public void unsafePush(final T element) {
         this.elements[this.size++] = element;
@@ -120,7 +121,8 @@ public final class LNGVector<T> implements Iterable<T> {
      * Returns the element at a given position in the vector.
      * @param position the position
      * @return the element at the position
-     * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
+     * @throws ArrayIndexOutOfBoundsException if the position is not found in
+     *                                        the vector
      */
     public T get(final int position) {
         return this.elements[position];
@@ -130,7 +132,8 @@ public final class LNGVector<T> implements Iterable<T> {
      * Sets an element at a given position in the vector.
      * @param position the position
      * @param element  the element
-     * @throws ArrayIndexOutOfBoundsException if the position is not found in the vector
+     * @throws ArrayIndexOutOfBoundsException if the position is not found in
+     *                                        the vector
      */
     public void set(final int position, final T element) {
         this.elements[position] = element;
@@ -144,8 +147,8 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Shrinks the vector to a given size if the new size is less than the current size.  Otherwise, the size remains
-     * the same.
+     * Shrinks the vector to a given size if the new size is less than the
+     * current size. Otherwise, the size remains the same.
      * @param newSize the new size
      */
     public void shrinkTo(final int newSize) {
@@ -158,7 +161,8 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Grows the vector to a new size and initializes the new elements with a given value.
+     * Grows the vector to a new size and initializes the new elements with a
+     * given value.
      * @param size the new size
      * @param pad  the value for new elements
      */
@@ -174,7 +178,8 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Grows the vector to a new size and initializes the new elements with {@code null}.
+     * Grows the vector to a new size and initializes the new elements with
+     * {@code null}.
      * @param size the new size
      */
     public void growTo(final int size) {
@@ -188,7 +193,9 @@ public final class LNGVector<T> implements Iterable<T> {
     /**
      * Removes a given number of elements from the vector.
      * @param num the number of elements to remove.
-     * @throws ArrayIndexOutOfBoundsException if the number of elements to remove is larger than the size of the vector
+     * @throws ArrayIndexOutOfBoundsException if the number of elements to
+     *                                        remove is larger than the size of
+     *                                        the vector
      */
     public void removeElements(final int num) {
         int n = num;
@@ -198,9 +205,11 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Removes the first occurrence of a given element from the vector (the element is compared by {@code equals}).
+     * Removes the first occurrence of a given element from the vector (the
+     * element is compared by {@code equals}).
      * @param element the element to remove
-     * @return {@code true} if the element was removed, {@code false} if the element was not in the vector
+     * @return {@code true} if the element was removed, {@code false} if the
+     *         element was not in the vector
      */
     public boolean remove(final T element) {
         for (int i = 0; i < this.size; i++) {
@@ -214,9 +223,11 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Replaces the contents of this vector with the contents of another vector in-place.
+     * Replaces the contents of this vector with the contents of another vector
+     * in-place.
      * @param other the other vector
-     * @throws IllegalArgumentException if you try to replace a vector with itself
+     * @throws IllegalArgumentException if you try to replace a vector with
+     *                                  itself
      */
     @SuppressWarnings("unchecked")
     public void replaceInplace(final LNGVector<? extends T> other) {
@@ -231,8 +242,8 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Clears the vector.  This method only sets the size to 0.  The elements are not nulled out.
-     * Use {@link #release()} for this purpose.
+     * Clears the vector. This method only sets the size to 0. The elements are
+     * not nulled out. Use {@link #release()} for this purpose.
      */
     public void clear() {
         this.size = 0;
@@ -255,8 +266,9 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Sorts this vector with a given comparator (with manual implemented merge sort).  This method is required for
-     * sorting clauses based on activity, since not all requirements of the JDK sorting are met.
+     * Sorts this vector with a given comparator (with manual implemented merge
+     * sort). This method is required for sorting clauses based on activity,
+     * since not all requirements of the JDK sorting are met.
      * @param comparator the comparator
      */
     public void manualSort(final Comparator<T> comparator) {
@@ -309,12 +321,10 @@ public final class LNGVector<T> implements Iterable<T> {
             while (true) {
                 do {
                     i++;
-                }
-                while (lt.compare(array[i], pivot) < 0);
+                } while (lt.compare(array[i], pivot) < 0);
                 do {
                     j--;
-                }
-                while (lt.compare(pivot, array[j]) < 0);
+                } while (lt.compare(pivot, array[j]) < 0);
                 if (i >= j) {
                     break;
                 }
@@ -341,7 +351,8 @@ public final class LNGVector<T> implements Iterable<T> {
     }
 
     /**
-     * Ensures that this vector has the given size.  If not - the size is doubled and the old elements are copied.
+     * Ensures that this vector has the given size. If not - the size is doubled
+     * and the old elements are copied.
      * @param newSize the size to ensure
      */
     @SuppressWarnings("unchecked")

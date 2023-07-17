@@ -23,8 +23,8 @@ import java.util.TreeMap;
 public abstract class Subsumption {
 
     /**
-     * Generates a UBTree from the formulas operands (clauses in CNF, minterms in DNF)
-     * where all subsumed operands are already deleted.
+     * Generates a UBTree from the formulas operands (clauses in CNF, minterms
+     * in DNF) where all subsumed operands are already deleted.
      * @param formula the formula (must be an n-ary operator and CNF or DNF)
      * @return the UBTree with the operands and deleted subsumed operands
      */

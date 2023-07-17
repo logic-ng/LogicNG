@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Transformation of a formula into CNF due to Tseitin.  Results in this implementation will always be cached.
+ * Transformation of a formula into CNF due to Tseitin. Results in this
+ * implementation will always be cached.
  * <p>
- * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
- * introduced variables.
+ * ATTENTION: if you mix formulas from different formula factories this can lead
+ * to clashes in the naming of newly introduced variables.
  * @version 2.0.0
  * @since 1.0
  */
@@ -33,14 +34,16 @@ public final class TseitinTransformation implements FormulaTransformation {
 
     /**
      * Constructor for a Tseitin transformation.
-     * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
+     * @param boundaryForFactorization the boundary of number of atoms up to
+     *                                 which classical factorization is used
      */
     public TseitinTransformation(final int boundaryForFactorization) {
         this.boundaryForFactorization = boundaryForFactorization;
     }
 
     /**
-     * Constructor for a Tseitin transformation with a factorization bound of 12.
+     * Constructor for a Tseitin transformation with a factorization bound of
+     * 12.
      */
     public TseitinTransformation() {
         this.boundaryForFactorization = 12;
@@ -73,7 +76,8 @@ public final class TseitinTransformation implements FormulaTransformation {
     }
 
     /**
-     * Computes the Tseitin transformation for a given formula and stores it in the formula cache.
+     * Computes the Tseitin transformation for a given formula and stores it in
+     * the formula cache.
      * @param formula the formula
      */
     private void computeTseitin(final Formula formula) {
@@ -116,7 +120,8 @@ public final class TseitinTransformation implements FormulaTransformation {
         }
     }
 
-    private void handleNary(final Formula formula, final List<Formula> nops, final List<Formula> operands, final List<Formula> negOperands) {
+    private void handleNary(final Formula formula, final List<Formula> nops, final List<Formula> operands,
+                            final List<Formula> negOperands) {
         for (final Formula op : formula) {
             if (op.type() != FType.LITERAL) {
                 computeTseitin(op);

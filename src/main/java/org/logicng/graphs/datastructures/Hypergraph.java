@@ -61,7 +61,8 @@ public final class Hypergraph<T> {
     }
 
     /**
-     * Adds an edges to the hypergraph.  The edge is represented by its connected nodes.
+     * Adds an edges to the hypergraph. The edge is represented by its connected
+     * nodes.
      * @param nodes the nodes of the edge
      */
     public void addEdge(final Collection<HypergraphNode<T>> nodes) {
@@ -71,7 +72,8 @@ public final class Hypergraph<T> {
     }
 
     /**
-     * Adds an edges to the hypergraph.  The edge is represented by its connected nodes.
+     * Adds an edges to the hypergraph. The edge is represented by its connected
+     * nodes.
      * @param nodes the nodes of the edge
      */
     @SafeVarargs

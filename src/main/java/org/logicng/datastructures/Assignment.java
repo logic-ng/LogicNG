@@ -21,9 +21,10 @@ import java.util.TreeSet;
 /**
  * A Boolean assignment.
  * <p>
- * Note: the internal data structure is a plain list - no checking of the model is performed e.g. if
- * contradictory literals are added. Since assignments are used e.g. in the model enumeration of the SAT solvers these
- * checks would be too costly.
+ * Note: the internal data structure is a plain list - no checking of the model
+ * is performed e.g. if contradictory literals are added. Since assignments are
+ * used e.g. in the model enumeration of the SAT solvers these checks would be
+ * too costly.
  * @version 2.3.1
  * @since 1.0
  */
@@ -42,9 +43,11 @@ public final class Assignment {
 
     /**
      * Constructs a new empty assignment.
-     * @param fastEvaluable indicates whether this assignment should be evaluable fast.  If this parameter is set to
-     *                      {@code true} the internal data structures will be optimized for fast evaluation but
-     *                      creation of the object or adding literals can take longer.
+     * @param fastEvaluable indicates whether this assignment should be
+     *                      evaluable fast. If this parameter is set to
+     *                      {@code true} the internal data structures will be
+     *                      optimized for fast evaluation but creation of the
+     *                      object or adding literals can take longer.
      */
     public Assignment(final boolean fastEvaluable) {
         this.fastEvaluable = fastEvaluable;
@@ -58,7 +61,8 @@ public final class Assignment {
     }
 
     /**
-     * Constructs a new assignment for a given collection of literals (without fast evaluation).
+     * Constructs a new assignment for a given collection of literals (without
+     * fast evaluation).
      * @param lits a new assignment for a given collection of literals
      */
     public Assignment(final Collection<? extends Literal> lits) {
@@ -66,7 +70,8 @@ public final class Assignment {
     }
 
     /**
-     * Constructs a new assignment for a given array of literals (without fast evaluation).
+     * Constructs a new assignment for a given array of literals (without fast
+     * evaluation).
      * @param lits a new assignment for a given array of literals
      */
     public Assignment(final Literal... lits) {
@@ -79,9 +84,11 @@ public final class Assignment {
     /**
      * Constructs a new assignment for a given collection of literals.
      * @param lits          a new assignment for a given collection of literals
-     * @param fastEvaluable indicates whether this assignment should be evaluable fast.  If this parameter is set to
-     *                      {@code true} the internal data structures will be optimized for fast evaluation but
-     *                      creation of the object or adding literals can take longer.
+     * @param fastEvaluable indicates whether this assignment should be
+     *                      evaluable fast. If this parameter is set to
+     *                      {@code true} the internal data structures will be
+     *                      optimized for fast evaluation but creation of the
+     *                      object or adding literals can take longer.
      */
     public Assignment(final Collection<? extends Literal> lits, final boolean fastEvaluable) {
         this(fastEvaluable);
@@ -91,7 +98,8 @@ public final class Assignment {
     }
 
     /**
-     * Constructs a new assignment with a single literal assignment (without fast evaluation).
+     * Constructs a new assignment with a single literal assignment (without
+     * fast evaluation).
      * @param lit the literal
      */
     public Assignment(final Literal lit) {
@@ -101,9 +109,11 @@ public final class Assignment {
     /**
      * Constructs a new assignment with a single literal assignment.
      * @param lit           the literal
-     * @param fastEvaluable indicates whether this assignment should be evaluable fast.  If this parameter is set to
-     *                      {@code true} the internal data structures will be optimized for fast evaluation but
-     *                      creation of the object or adding literals can take longer.
+     * @param fastEvaluable indicates whether this assignment should be
+     *                      evaluable fast. If this parameter is set to
+     *                      {@code true} the internal data structures will be
+     *                      optimized for fast evaluation but creation of the
+     *                      object or adding literals can take longer.
      */
     public Assignment(final Literal lit, final boolean fastEvaluable) {
         this(fastEvaluable);
@@ -123,7 +133,8 @@ public final class Assignment {
 
     /**
      * Returns whether this assignment is fast evaluable or not.
-     * @return {@code true} if this assignment is fast evaluable, {@code false} otherwise
+     * @return {@code true} if this assignment is fast evaluable, {@code false}
+     *         otherwise
      */
     public boolean fastEvaluable() {
         return this.fastEvaluable;
@@ -142,7 +153,8 @@ public final class Assignment {
      * @return the positive literals of this assignment
      */
     public List<Variable> positiveVariables() {
-        return this.fastEvaluable ? Collections.unmodifiableList(new ArrayList<>(this.pos)) : Collections.unmodifiableList((List<Variable>) this.pos);
+        return this.fastEvaluable ? Collections.unmodifiableList(new ArrayList<>(this.pos)) :
+                Collections.unmodifiableList((List<Variable>) this.pos);
     }
 
     /**
@@ -150,7 +162,8 @@ public final class Assignment {
      * @return the negative literals of this assignment
      */
     public List<Literal> negativeLiterals() {
-        return this.fastEvaluable ? Collections.unmodifiableList(new ArrayList<>(this.neg)) : Collections.unmodifiableList((List<Literal>) this.neg);
+        return this.fastEvaluable ? Collections.unmodifiableList(new ArrayList<>(this.neg)) :
+                Collections.unmodifiableList((List<Literal>) this.neg);
     }
 
     /**
@@ -189,19 +202,23 @@ public final class Assignment {
     }
 
     /**
-     * Evaluates a given literal.  A literal not covered by the assignment evaluates
-     * to {@code false} if it is positive, otherwise it evaluates to {@code true}.
+     * Evaluates a given literal. A literal not covered by the assignment
+     * evaluates to {@code false} if it is positive, otherwise it evaluates to
+     * {@code true}.
      * @param lit the literal
      * @return the evaluation of the literal
      */
     public boolean evaluateLit(final Literal lit) {
-        return lit.phase() ? this.pos.contains(lit.variable()) : this.neg.contains(lit) || !this.pos.contains(lit.variable());
+        return lit.phase() ? this.pos.contains(lit.variable()) :
+                this.neg.contains(lit) || !this.pos.contains(lit.variable());
     }
 
     /**
-     * Restricts a given literal to a constant.  Returns the literal itself, if the literal's variable is not known.
+     * Restricts a given literal to a constant. Returns the literal itself, if
+     * the literal's variable is not known.
      * @param lit the literal
-     * @return the restriction of the literal or the literal itself, if the literal's variable is not known
+     * @return the restriction of the literal or the literal itself, if the
+     *         literal's variable is not known
      */
     public Formula restrictLit(final Literal lit) {
         final FormulaFactory f = lit.factory();
@@ -241,8 +258,9 @@ public final class Assignment {
     }
 
     /**
-     * Creates the blocking clause for this assignment wrt. a given set of literals.  If the set is {@code null},
-     * all literals are considered relevant.
+     * Creates the blocking clause for this assignment wrt. a given set of
+     * literals. If the set is {@code null}, all literals are considered
+     * relevant.
      * @param f        the formula factory
      * @param literals the set of literals
      * @return the blocking clause for this assignment
@@ -279,19 +297,22 @@ public final class Assignment {
         }
         if (this.getClass() == other.getClass()) {
             final Assignment o = (Assignment) other;
-            return Objects.equals(toHashSet(this.pos), o.toHashSet(o.pos))
-                    && Objects.equals(toHashSet(this.neg), o.toHashSet(o.neg));
+            return Objects.equals(toHashSet(this.pos), o.toHashSet(o.pos)) &&
+                    Objects.equals(toHashSet(this.neg), o.toHashSet(o.neg));
         }
         return false;
     }
 
     /**
-     * Returns a hash set containing the given literals. The given literals must be {@link this#pos} or {@link this#neg}.
-     * @param literals the literal collection, either {@link this#pos} or {@link this#neg}
+     * Returns a hash set containing the given literals. The given literals must
+     * be {@link this#pos} or {@link this#neg}.
+     * @param literals the literal collection, either {@link this#pos} or
+     *                 {@link this#neg}
      * @return a hash set with the elements of the given literals
      */
     private Collection<? extends Literal> toHashSet(final Collection<? extends Literal> literals) {
-        // invariant: if fastEvaluable is active, the pos and neg collections are already hash sets
+        // invariant: if fastEvaluable is active, the pos and neg collections
+        // are already hash sets
         return this.fastEvaluable ? literals : new HashSet<>(literals);
     }
 

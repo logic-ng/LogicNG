@@ -70,7 +70,8 @@ public class PredicatesTest extends TestWithExampleFormulas {
 
     @Test
     public void testTaut() {
-        final Formula taut = this.f.or(this.AND1, this.f.and(this.NA, this.B), this.f.and(this.A, this.NB), this.f.and(this.NA, this.NB));
+        final Formula taut = this.f.or(this.AND1, this.f.and(this.NA, this.B), this.f.and(this.A, this.NB),
+                this.f.and(this.NA, this.NB));
         assertThat(taut.holds(this.sat)).isTrue();
         assertThat(taut.holds(this.ctr)).isFalse();
         assertThat(taut.holds(this.tau)).isTrue();
@@ -79,7 +80,8 @@ public class PredicatesTest extends TestWithExampleFormulas {
 
     @Test
     public void testCont() {
-        final Formula cont = this.f.and(this.OR1, this.f.or(this.NX, this.Y), this.f.or(this.X, this.NY), this.f.or(this.NX, this.NY));
+        final Formula cont = this.f.and(this.OR1, this.f.or(this.NX, this.Y), this.f.or(this.X, this.NY),
+                this.f.or(this.NX, this.NY));
         assertThat(cont.holds(this.sat)).isFalse();
         assertThat(cont.holds(this.ctr)).isTrue();
         assertThat(cont.holds(this.tau)).isFalse();
@@ -103,7 +105,8 @@ public class PredicatesTest extends TestWithExampleFormulas {
 
     @Test
     public void testNotCache() {
-        final Formula taut = this.f.or(this.AND1, this.f.and(this.NA, this.B), this.f.and(this.A, this.NB), this.f.and(this.NA, this.NB));
+        final Formula taut = this.f.or(this.AND1, this.f.and(this.NA, this.B), this.f.and(this.A, this.NB),
+                this.f.and(this.NA, this.NB));
         taut.holds(this.tau, false);
         assertThat(taut.predicateCacheEntry(IS_TAUTOLOGY)).isEqualTo(Tristate.UNDEF);
 

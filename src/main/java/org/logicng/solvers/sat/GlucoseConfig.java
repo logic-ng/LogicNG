@@ -100,7 +100,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the minimal LBD required to minimize a clause to a given value.  The default value is 6.
+         * Sets the minimal LBD required to minimize a clause to a given value.
+         * The default value is 6.
          * @param lbLBDMinimizingClause the value (should be at least 3)
          * @return the builder
          */
@@ -110,8 +111,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the value to protect clauses if their LBD decrease and is lower than it (for one turn).  The default value
-         * is 30.
+         * Sets the value to protect clauses if their LBD decrease and is lower
+         * than it (for one turn). The default value is 30.
          * @param lbLBDFrozenClause the value
          * @return the builder
          */
@@ -121,7 +122,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the minimal size required to minimize a clause to a given value.  The default value is 30.
+         * Sets the minimal size required to minimize a clause to a given value.
+         * The default value is 30.
          * @param lbSizeMinimizingClause the value (should be at least 3)
          * @return the builder
          */
@@ -131,7 +133,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the number of conflicts before the first DB reduction to a given value.  The default value is 2000.
+         * Sets the number of conflicts before the first DB reduction to a given
+         * value. The default value is 2000.
          * @param firstReduceDB the value
          * @return the builder
          */
@@ -141,7 +144,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the special increment for the DB reduction to a given value.  The default value is 1000.
+         * Sets the special increment for the DB reduction to a given value. The
+         * default value is 1000.
          * @param specialIncReduceDB the value
          * @return the builder
          */
@@ -151,7 +155,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the increment for the DB reduction to a given value. The default value is 300.
+         * Sets the increment for the DB reduction to a given value. The default
+         * value is 300.
          * @param incReduceDB the value
          * @return the builder
          */
@@ -161,7 +166,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the constant used to force restart to a given value.  The default value is 0.8.
+         * Sets the constant used to force restart to a given value. The default
+         * value is 0.8.
          * @param factorK the value (should be in the range 0..1)
          * @return the builder
          */
@@ -171,7 +177,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the constant used to block restart to a given value.  The default value is 1.4.
+         * Sets the constant used to block restart to a given value. The default
+         * value is 1.4.
          * @param factorR the value (should be in the range 1..5)
          * @return the builder
          */
@@ -181,7 +188,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the size of moving average for LBD (restarts) to a given value.  The default value is 50.
+         * Sets the size of moving average for LBD (restarts) to a given value.
+         * The default value is 50.
          * @param sizeLBDQueue the value (should be at least 10)
          * @return the builder
          */
@@ -191,7 +199,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the size of moving average for trail (block restarts) to a given value.  The default value is 5000.
+         * Sets the size of moving average for trail (block restarts) to a given
+         * value. The default value is 5000.
          * @param sizeTrailQueue the value (should be at least 10)
          * @return the builder
          */
@@ -201,9 +210,10 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Turns on the size reduction during LBD computation like described in the XMinisat paper.  The default value is
-         * {@code false}.
-         * @param reduceOnSize {@code true} if the size reduction is turned on, {@code false} otherwise
+         * Turns on the size reduction during LBD computation like described in
+         * the XMinisat paper. The default value is {@code false}.
+         * @param reduceOnSize {@code true} if the size reduction is turned on,
+         *                     {@code false} otherwise
          * @return the builder
          */
         public Builder reduceOnSize(final boolean reduceOnSize) {
@@ -212,8 +222,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the constant used during size reduction like described in the XMinisat paper to a given value.  The default
-         * value is 12.
+         * Sets the constant used during size reduction like described in the
+         * XMinisat paper to a given value. The default value is 12.
          * @param reduceOnSizeSize the value
          * @return the builder
          */
@@ -223,7 +233,8 @@ public final class GlucoseConfig extends Configuration {
         }
 
         /**
-         * Sets the maximal variable activity decay factor to a given value.  The default value is 0.95.
+         * Sets the maximal variable activity decay factor to a given value. The
+         * default value is 0.95.
          * @param maxVarDecay the value (should be in the range 0..1)
          * @return the builder
          */

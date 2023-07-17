@@ -3,23 +3,26 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Copyright (c) 2014-2015, Marijn Heule and Nathan Wetzler
- * Last edit, March 4, 2015
+ * Copyright (c) 2014-2015, Marijn Heule and Nathan Wetzler Last edit, March 4,
+ * 2015
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
- * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package org.logicng.explanations.drup;
@@ -33,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of the DRUP-trim tool to check satisfiability proofs and perform trimming.
+ * Implementation of the DRUP-trim tool to check satisfiability proofs and
+ * perform trimming.
  * @version 1.3
  * @since 1.3
  */
@@ -63,10 +67,12 @@ public final class DRUPTrim {
     }
 
     /**
-     * Computes the DRUP result for a given problem in terms of original clauses and the generated proof.
+     * Computes the DRUP result for a given problem in terms of original clauses
+     * and the generated proof.
      * @param originalProblem the clauses of the original problem
      * @param proof           the clauses of the proof
-     * @return the result of the DRUP execution from which the UNSAT core can be generated
+     * @return the result of the DRUP execution from which the UNSAT core can be
+     *         generated
      */
     public DRUPResult compute(final LNGVector<LNGIntVector> originalProblem, final LNGVector<LNGIntVector> proof) {
         final DRUPResult result = new DRUPResult();
@@ -193,31 +199,74 @@ public final class DRUPTrim {
             while (gotoFlipCheck) {
                 gotoFlipCheck = false;
                 check ^= 1;
-                while (!gotoFlipCheck && start[check] < this.assignedPtr) { // While unprocessed false literals
-                    lit = this.falseStack[start[check]++]; // Get first unprocessed literal
-                    watch = this.wlist[index(lit)]; // Obtain the first watch pointer
+                while (!gotoFlipCheck && start[check] < this.assignedPtr) { // While
+                                                                            // unprocessed
+                                                                            // false
+                                                                            // literals
+                    lit = this.falseStack[start[check]++]; // Get first
+                                                           // unprocessed
+                                                           // literal
+                    watch = this.wlist[index(lit)]; // Obtain the first watch
+                                                    // pointer
                     int watchPtr = lit == _lit ? _watchPtr : 0;
 
-                    while (watchPtr < watch.size()) { // While there are watched clauses (watched by lit)
+                    while (watchPtr < watch.size()) { // While there are watched
+                                                      // clauses (watched by
+                                                      // lit)
                         if ((watch.get(watchPtr) & 1) != check) {
                             watchPtr++;
                             continue;
                         }
-                        final int clausePtr = watch.get(watchPtr) / 2; // Get the clause from DB
-                        if (this.internalFalse[index(-this.DB.get(clausePtr))] != 0 || this.internalFalse[index(-this.DB.get(clausePtr + 1))] != 0) {
+                        final int clausePtr = watch.get(watchPtr) / 2; // Get
+                                                                       // the
+                                                                       // clause
+                                                                       // from
+                                                                       // DB
+                        if (this.internalFalse[index(-this.DB.get(clausePtr))] != 0 ||
+                                this.internalFalse[index(-this.DB.get(clausePtr + 1))] != 0) {
                             watchPtr++;
                             continue;
                         }
                         if (this.DB.get(clausePtr) == lit) {
-                            this.DB.set(clausePtr, this.DB.get(clausePtr + 1)); // Ensure that the other watched literal is in front
+                            this.DB.set(clausePtr, this.DB.get(clausePtr + 1)); // Ensure
+                                                                                // that
+                                                                                // the
+                                                                                // other
+                                                                                // watched
+                                                                                // literal
+                                                                                // is
+                                                                                // in
+                                                                                // front
                         }
                         boolean gotoNextClause = false;
-                        for (i = 2; this.DB.get(clausePtr + i) != 0; i++) { // Scan the non-watched literals
-                            if (this.internalFalse[index(this.DB.get(clausePtr + i))] == 0) { // When clause[j] is not false, it is either true or unset
+                        for (i = 2; this.DB.get(clausePtr + i) != 0; i++) { // Scan
+                                                                            // the
+                                                                            // non-watched
+                                                                            // literals
+                            if (this.internalFalse[index(this.DB.get(clausePtr + i))] == 0) { // When
+                                                                                              // clause[j]
+                                                                                              // is
+                                                                                              // not
+                                                                                              // false,
+                                                                                              // it
+                                                                                              // is
+                                                                                              // either
+                                                                                              // true
+                                                                                              // or
+                                                                                              // unset
                                 this.DB.set(clausePtr + 1, this.DB.get(clausePtr + i));
-                                this.DB.set(clausePtr + i, lit); // Swap literals
-                                this.addWatchLit(this.DB.get(clausePtr + 1), watch.get(watchPtr)); // Add the watch to the list of clause[1]
-                                watch.set(watchPtr, this.wlist[index(lit)].back()); // Remove pointer
+                                this.DB.set(clausePtr + i, lit); // Swap
+                                                                 // literals
+                                this.addWatchLit(this.DB.get(clausePtr + 1), watch.get(watchPtr)); // Add
+                                                                                                   // the
+                                                                                                   // watch
+                                                                                                   // to
+                                                                                                   // the
+                                                                                                   // list
+                                                                                                   // of
+                                                                                                   // clause[1]
+                                watch.set(watchPtr, this.wlist[index(lit)].back()); // Remove
+                                                                                    // pointer
                                 this.wlist[index(lit)].pop();
                                 gotoNextClause = true;
                                 break;
@@ -225,9 +274,22 @@ public final class DRUPTrim {
                         }
                         if (!gotoNextClause) {
                             this.DB.set(clausePtr + 1, lit);
-                            watchPtr++; // Set lit at clause[1] and set next watch
-                            if (this.internalFalse[index(this.DB.get(clausePtr))] == 0) { // If the other watched literal is falsified,
-                                this.assign(this.DB.get(clausePtr)); // A unit clause is found, and the reason is set
+                            watchPtr++; // Set lit at clause[1] and set next
+                                        // watch
+                            if (this.internalFalse[index(this.DB.get(clausePtr))] == 0) { // If
+                                                                                          // the
+                                                                                          // other
+                                                                                          // watched
+                                                                                          // literal
+                                                                                          // is
+                                                                                          // falsified,
+                                this.assign(this.DB.get(clausePtr)); // A unit
+                                                                     // clause
+                                                                     // is
+                                                                     // found,
+                                                                     // and the
+                                                                     // reason
+                                                                     // is set
                                 this.reason[Math.abs(this.DB.get(clausePtr))] = clausePtr + 1;
                                 if (check == 0) {
                                     start[0]--;
@@ -274,9 +336,10 @@ public final class DRUPTrim {
         }
 
         /**
-         * Parses the input and returns {@code true} if further processing is required and {@code false} if the formula is
-         * trivially UNSAT.
-         * @return {@code true} if further processing is required and {@code false} if the formula is trivially UNSAT
+         * Parses the input and returns {@code true} if further processing is
+         * required and {@code false} if the formula is trivially UNSAT.
+         * @return {@code true} if further processing is required and
+         *         {@code false} if the formula is trivially UNSAT
          */
         private boolean parse() {
             this.nVars = 0;
@@ -372,7 +435,8 @@ public final class DRUPTrim {
                     this.adlemmas = this.adlist.size() - 1;
                 }
                 if (nZeros > 0) {
-                    if (buffer.empty() || ((buffer.size() == 1) && this.internalFalse[index(this.DB.get(clausePtr))] != 0)) {
+                    if (buffer.empty() ||
+                            ((buffer.size() == 1) && this.internalFalse[index(this.DB.get(clausePtr))] != 0)) {
                         return false;
                     } else if (buffer.size() == 1) {
                         if (this.internalFalse[index(-this.DB.get(clausePtr))] == 0) {
@@ -457,7 +521,7 @@ public final class DRUPTrim {
                         this.adlist.set(checked - 1, 0);
                     }
                     if (flag) {
-                        continue;   // Clause is already satisfied
+                        continue; // Clause is already satisfied
                     }
                     if (buffer.empty()) {
                         throw new IllegalStateException("Conflict claimed, but not detected");

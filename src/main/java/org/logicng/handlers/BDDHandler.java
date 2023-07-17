@@ -12,9 +12,12 @@ package org.logicng.handlers;
 public interface BDDHandler extends Handler {
 
     /**
-     * This method is called every time a new reference is added, i.e. the method
-     * {@link org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)} is called.
-     * @return {@code true} if the BDD generation should be continued, otherwise {@code false}
+     * This method is called every time a new reference is added, i.e. the
+     * method
+     * {@link org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel#addRef(int, BDDHandler)}
+     * is called.
+     * @return {@code true} if the BDD generation should be continued, otherwise
+     *         {@code false}
      */
     default boolean newRefAdded() {
         return true;

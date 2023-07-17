@@ -12,7 +12,7 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaPredicate;
 
 /**
- * Tautology predicate.  Indicates whether a formula is a tautology or not.
+ * Tautology predicate. Indicates whether a formula is a tautology or not.
  * @version 2.0
  * @since 1.0
  */

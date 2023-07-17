@@ -3,26 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * PBLib       -- Copyright (c) 2012-2013  Peter Steinke
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * PBLib -- Copyright (c) 2012-2013 Peter Steinke <p> Permission is hereby
+ * granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: <p> The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. <p> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.cardinalityconstraints;
@@ -37,7 +32,8 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 
 /**
- * Implementation of cardinality networks due to Asín, Nieuwenhuis, Oliveras, and Rodríguez-Carbonell.
+ * Implementation of cardinality networks due to Asín, Nieuwenhuis, Oliveras,
+ * and Rodríguez-Carbonell.
  * @version 2.0.0
  * @since 1.1
  */
@@ -122,7 +118,8 @@ public final class CCCardinalityNetworks {
         this.sorting.sort(newRHS + 1, input, result, output, INPUT_TO_OUTPUT);
         assert output.size() > newRHS;
         result.addClause(output.get(newRHS).negate());
-        this.incData = new CCIncrementalData(result, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
+        this.incData =
+                new CCIncrementalData(result, CCConfig.ALK_ENCODER.CARDINALITY_NETWORK, rhs, vars.length, output);
     }
 
     void buildEXK(final EncodingResult result, final Variable[] vars, final int rhs) {

@@ -74,9 +74,8 @@ public final class BDDInnerNode implements BDDNode {
         }
         if (other instanceof BDDInnerNode) {
             final BDDInnerNode o = (BDDInnerNode) other;
-            return Objects.equals(this.var, o.var)
-                    && Objects.equals(this.low, o.low)
-                    && Objects.equals(this.high, o.high);
+            return Objects.equals(this.var, o.var) && Objects.equals(this.low, o.low) &&
+                    Objects.equals(this.high, o.high);
         }
         return false;
     }

@@ -40,7 +40,8 @@ public class ImplicationTest extends TestWithExampleFormulas {
 
     @Test
     public void testIllegalCreation() {
-        assertThatThrownBy(() -> this.f.binaryOperator(FType.NOT, this.AND1, this.OR1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> this.f.binaryOperator(FType.NOT, this.AND1, this.OR1))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -105,7 +106,8 @@ public class ImplicationTest extends TestWithExampleFormulas {
 
     @Test
     public void testEqualsDifferentFormulaFactory() {
-        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
+        final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder()
+                .formulaMergeStrategy(FormulaFactoryConfig.FormulaMergeStrategy.IMPORT).build());
         assertThat(g.implication(g.variable("a"), g.variable("b"))).isEqualTo(this.IMP1);
         assertThat(g.implication(this.AND1, this.OR1)).isEqualTo(this.IMP3);
         assertThat(g.implication(g.variable("b"), g.variable("a"))).isNotEqualTo(this.IMP1);

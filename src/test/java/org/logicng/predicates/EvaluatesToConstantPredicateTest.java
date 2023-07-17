@@ -263,12 +263,14 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
 
     @Test
     public void testPBCToFalse() {
-        final PBConstraint pbc01 = (PBConstraint) this.f.pbc(CType.EQ, 2, new Literal[]{this.A, this.B}, new int[]{2, -4});
+        final PBConstraint pbc01 =
+                (PBConstraint) this.f.pbc(CType.EQ, 2, new Literal[]{this.A, this.B}, new int[]{2, -4});
         assertThat(pbc01.holds(this.emptyToFalse)).isFalse();
         assertThat(pbc01.holds(this.aToFalse)).isFalse();
         assertThat(pbc01.holds(this.aNotBToFalse)).isFalse();
 
-        final PBConstraint pbc02 = (PBConstraint) this.f.pbc(CType.GT, 2, new Literal[]{this.B, this.C}, new int[]{2, 1});
+        final PBConstraint pbc02 =
+                (PBConstraint) this.f.pbc(CType.GT, 2, new Literal[]{this.B, this.C}, new int[]{2, 1});
         assertThat(pbc02.holds(this.emptyToFalse)).isFalse();
         assertThat(pbc02.holds(this.aToFalse)).isFalse();
         assertThat(pbc02.holds(this.aNotBToFalse)).isTrue();
@@ -524,12 +526,14 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
 
     @Test
     public void testPBCToTrue() {
-        final PBConstraint pbc01 = (PBConstraint) this.f.pbc(CType.EQ, 2, new Literal[]{this.A, this.B}, new int[]{2, -4});
+        final PBConstraint pbc01 =
+                (PBConstraint) this.f.pbc(CType.EQ, 2, new Literal[]{this.A, this.B}, new int[]{2, -4});
         assertThat(pbc01.holds(this.emptyToTrue)).isFalse();
         assertThat(pbc01.holds(this.aToTrue)).isFalse();
         assertThat(pbc01.holds(this.aNotBToTrue)).isTrue();
 
-        final PBConstraint pbc02 = (PBConstraint) this.f.pbc(CType.GT, 2, new Literal[]{this.B, this.C}, new int[]{2, 1});
+        final PBConstraint pbc02 =
+                (PBConstraint) this.f.pbc(CType.GT, 2, new Literal[]{this.B, this.C}, new int[]{2, 1});
         assertThat(pbc02.holds(this.emptyToTrue)).isFalse();
         assertThat(pbc02.holds(this.aToTrue)).isFalse();
         assertThat(pbc02.holds(this.aNotBToTrue)).isFalse();
@@ -632,7 +636,8 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
                     assignment.literals().stream().collect(Collectors.toMap(Literal::variable, Literal::phase)));
             final EvaluatesToConstantPredicate trueEvaluation = new EvaluatesToConstantPredicate(true,
                     assignment.literals().stream().collect(Collectors.toMap(Literal::variable, Literal::phase)));
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(i * 42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f,
+                    FormulaRandomizerConfig.builder().numVars(10).weightPbc(1).seed(i * 42).build());
             final Formula formula = randomizer.formula(6);
             final Formula restricted = formula.restrict(assignment);
             assertThat(restricted.type() == FType.FALSE).isEqualTo(formula.holds(falseEvaluation));

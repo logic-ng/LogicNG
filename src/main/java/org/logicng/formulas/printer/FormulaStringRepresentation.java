@@ -23,8 +23,8 @@ public abstract class FormulaStringRepresentation {
     /**
      * Returns the string representation of the given formula.
      * <p>
-     * In order to add a prefix/suffix or do one-time calculations on the formula it is recommended to overwrite this
-     * method in subclasses.
+     * In order to add a prefix/suffix or do one-time calculations on the
+     * formula it is recommended to overwrite this method in subclasses.
      * @param formula the formula
      * @return the string representation of the formula
      */
@@ -35,7 +35,8 @@ public abstract class FormulaStringRepresentation {
     /**
      * Returns the string representation of the given formula.
      * <p>
-     * This method is used for recursive calls in order to format the sub-formulas.
+     * This method is used for recursive calls in order to format the
+     * sub-formulas.
      * @param formula the formula
      * @return the string representation of the formula
      */
@@ -63,7 +64,8 @@ public abstract class FormulaStringRepresentation {
                 return this.naryOperator(nary, String.format("%s", op));
             case PBC:
                 final PBConstraint pbc = (PBConstraint) formula;
-                return String.format("%s%s%d", this.pbLhs(pbc.operands(), pbc.coefficients()), this.pbComparator(pbc.comparator()), pbc.rhs());
+                return String.format("%s%s%d", this.pbLhs(pbc.operands(), pbc.coefficients()),
+                        this.pbComparator(pbc.comparator()), pbc.rhs());
             default:
                 throw new IllegalArgumentException("Cannot print the unknown formula type " + formula.type());
         }
@@ -85,10 +87,10 @@ public abstract class FormulaStringRepresentation {
      * @return the string representation
      */
     protected String binaryOperator(final BinaryOperator operator, final String opString) {
-        final String leftString = operator.type().precedence() < operator.left().type().precedence()
-                ? this.toInnerString(operator.left()) : this.bracket(operator.left());
-        final String rightString = operator.type().precedence() < operator.right().type().precedence()
-                ? this.toInnerString(operator.right()) : this.bracket(operator.right());
+        final String leftString = operator.type().precedence() < operator.left().type().precedence() ?
+                this.toInnerString(operator.left()) : this.bracket(operator.left());
+        final String rightString = operator.type().precedence() < operator.right().type().precedence() ?
+                this.toInnerString(operator.right()) : this.bracket(operator.right());
         return String.format("%s%s%s", leftString, opString, rightString);
     }
 
@@ -107,18 +109,21 @@ public abstract class FormulaStringRepresentation {
             if (++count == size) {
                 last = op;
             } else {
-                sb.append(operator.type().precedence() < op.type().precedence() ? this.toInnerString(op) : this.bracket(op));
+                sb.append(operator.type().precedence() < op.type().precedence() ? this.toInnerString(op) :
+                        this.bracket(op));
                 sb.append(opString);
             }
         }
         if (last != null) {
-            sb.append(operator.type().precedence() < last.type().precedence() ? this.toInnerString(last) : this.bracket(last));
+            sb.append(operator.type().precedence() < last.type().precedence() ? this.toInnerString(last) :
+                    this.bracket(last));
         }
         return sb.toString();
     }
 
     /**
-     * Returns the string representation of the left-hand side of a pseudo-Boolean constraint.
+     * Returns the string representation of the left-hand side of a
+     * pseudo-Boolean constraint.
      * @param operands     the literals of the constraint
      * @param coefficients the coefficients of the constraint
      * @return the string representation

@@ -39,13 +39,18 @@ public class NegationMinimizerTest extends TestWithExampleFormulas {
         assertThat(this.f.parse("A|~B|~C|~D").transform(this.minimizer)).isEqualTo(this.f.parse("A|~B|~C|~D"));
         assertThat(this.f.parse("~A|~B|~C|~D").transform(this.minimizer)).isEqualTo(this.f.parse("~(A&B&C&D)"));
 
-        assertThat(this.f.parse("~A|~B|~C|D|~E|~G").transform(this.minimizer)).isEqualTo(this.f.parse("D|~(A&B&C&E&G)"));
-        assertThat(this.f.parse("~A&~B&~C&D&~E&~G").transform(this.minimizer)).isEqualTo(this.f.parse("D&~(A|B|C|E|G)"));
+        assertThat(this.f.parse("~A|~B|~C|D|~E|~G").transform(this.minimizer))
+                .isEqualTo(this.f.parse("D|~(A&B&C&E&G)"));
+        assertThat(this.f.parse("~A&~B&~C&D&~E&~G").transform(this.minimizer))
+                .isEqualTo(this.f.parse("D&~(A|B|C|E|G)"));
 
-        assertThat(this.f.parse("~A|~B|~E&G|~H&~B&~C|~X").transform(this.minimizer)).isEqualTo(this.f.parse("~E&G|~(A&B&(H|B|C)&X)"));
-        assertThat(this.f.parse("~(A&B&~(~E&G)&(H|B|C)&X)").transform(this.minimizer)).isEqualTo(this.f.parse("~E&G|~(A&B&(H|B|C)&X)"));
+        assertThat(this.f.parse("~A|~B|~E&G|~H&~B&~C|~X").transform(this.minimizer))
+                .isEqualTo(this.f.parse("~E&G|~(A&B&(H|B|C)&X)"));
+        assertThat(this.f.parse("~(A&B&~(~E&G)&(H|B|C)&X)").transform(this.minimizer))
+                .isEqualTo(this.f.parse("~E&G|~(A&B&(H|B|C)&X)"));
 
-        assertThat(this.f.parse("~A|B|(~E&~G&~H&~K)").transform(this.minimizer)).isEqualTo(this.f.parse("~A|B|~(E|G|H|K)"));
+        assertThat(this.f.parse("~A|B|(~E&~G&~H&~K)").transform(this.minimizer))
+                .isEqualTo(this.f.parse("~A|B|~(E|G|H|K)"));
 
         assertThat(this.f.parse("~A|~B").transform(this.minimizer)).isEqualTo(this.f.parse("~A|~B"));
         assertThat(this.f.parse("~A|~B|~C").transform(this.minimizer)).isEqualTo(this.f.parse("~A|~B|~C"));
@@ -63,7 +68,8 @@ public class NegationMinimizerTest extends TestWithExampleFormulas {
         assertThat(this.f.parse("X|~A&~B&~C").transform(this.minimizer)).isEqualTo(this.f.parse("X|~A&~B&~C"));
         assertThat(this.f.parse("X|~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("X|~(A|B|C|D)"));
 
-        assertThat(this.f.parse("A&(~B|~C|~D|~E|~G|X|Y|H)").transform(this.minimizer)).isEqualTo(this.f.parse("A&(~(B&C&D&E&G)|X|Y|H)"));
+        assertThat(this.f.parse("A&(~B|~C|~D|~E|~G|X|Y|H)").transform(this.minimizer))
+                .isEqualTo(this.f.parse("A&(~(B&C&D&E&G)|X|Y|H)"));
     }
 
     @Test
@@ -78,7 +84,8 @@ public class NegationMinimizerTest extends TestWithExampleFormulas {
     public void testRandomized() {
         for (int i = 0; i < 1000; i++) {
             final FormulaFactory f = new FormulaFactory();
-            final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(5).weightPbc(2).seed(i * 42).build());
+            final FormulaRandomizer randomizer = new FormulaRandomizer(f,
+                    FormulaRandomizerConfig.builder().numVars(5).weightPbc(2).seed(i * 42).build());
             computeAndVerify(randomizer.formula(6));
         }
     }

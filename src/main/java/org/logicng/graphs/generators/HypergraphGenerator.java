@@ -26,8 +26,9 @@ import java.util.SortedSet;
 public final class HypergraphGenerator {
 
     /**
-     * Generates a hypergraph from a CNF given as a list of clauses.  Each variable is represented by a node in the
-     * hypergraph, each clause is represented by a hyperedge between all variables of the clause.
+     * Generates a hypergraph from a CNF given as a list of clauses. Each
+     * variable is represented by a node in the hypergraph, each clause is
+     * represented by a hyperedge between all variables of the clause.
      * @param cnf the list of clauses of the CNF for the hypergraph
      * @return the hypergraph for the CNF formula
      */
@@ -36,8 +37,9 @@ public final class HypergraphGenerator {
     }
 
     /**
-     * Generates a hypergraph from a CNF given as a list of clauses.  Each variable is represented by a node in the
-     * hypergraph, each clause is represented by a hyperedge between all variables of the clause.
+     * Generates a hypergraph from a CNF given as a list of clauses. Each
+     * variable is represented by a node in the hypergraph, each clause is
+     * represented by a hyperedge between all variables of the clause.
      * @param cnf the list of clauses of the CNF for the hypergraph
      * @return the hypergraph for the CNF formula
      */
@@ -62,8 +64,9 @@ public final class HypergraphGenerator {
     }
 
     /**
-     * Generates a hypergraph from a CNF.  Each variable is represented by a node in the hypergraph, each clause
-     * is represented by a hyperedge between all variables of the clause.
+     * Generates a hypergraph from a CNF. Each variable is represented by a node
+     * in the hypergraph, each clause is represented by a hyperedge between all
+     * variables of the clause.
      * @param cnf the CNF formula for the hypergraph
      * @return the hypergraph for the CNF formula
      */
@@ -93,12 +96,15 @@ public final class HypergraphGenerator {
     }
 
     /**
-     * Adds a single clause to the given hypergraph and updates the variable to node mapping.
+     * Adds a single clause to the given hypergraph and updates the variable to
+     * node mapping.
      * @param formula    the clause
      * @param hypergraph the current hypergraph
-     * @param nodes      the mapping from variables in the CNF to nodes in the hypergraph
+     * @param nodes      the mapping from variables in the CNF to nodes in the
+     *                   hypergraph
      */
-    private static void addClause(final Formula formula, final Hypergraph<Variable> hypergraph, final Map<Variable, HypergraphNode<Variable>> nodes) {
+    private static void addClause(final Formula formula, final Hypergraph<Variable> hypergraph,
+                                  final Map<Variable, HypergraphNode<Variable>> nodes) {
         assert formula.type() == FType.LITERAL || formula.type() == FType.OR;
         final SortedSet<Variable> variables = formula.variables();
         final Set<HypergraphNode<Variable>> clause = new LinkedHashSet<>();

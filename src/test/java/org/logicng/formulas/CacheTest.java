@@ -23,20 +23,31 @@ public class CacheTest {
 
     @Test
     public void testDescription() {
-        assertThat(TransformationCacheEntry.AIG.description()).isEqualTo("TransformationCacheEntry{description=and-inverter graph}");
-        assertThat(TransformationCacheEntry.NNF.description()).isEqualTo("TransformationCacheEntry{description=negation normal form}");
-        assertThat(TransformationCacheEntry.PLAISTED_GREENBAUM_POS.description()).isEqualTo("TransformationCacheEntry{description=Plaisted & Greenbaum conjunctive normal form " +
-                "(positive polarity)}");
-        assertThat(TransformationCacheEntry.TSEITIN.description()).isEqualTo("TransformationCacheEntry{description=Tseitin conjunctive normal form}");
-        assertThat(TransformationCacheEntry.FACTORIZED_CNF.description()).isEqualTo("TransformationCacheEntry{description=factorized conjunctive normal form}");
+        assertThat(TransformationCacheEntry.AIG.description())
+                .isEqualTo("TransformationCacheEntry{description=and-inverter graph}");
+        assertThat(TransformationCacheEntry.NNF.description())
+                .isEqualTo("TransformationCacheEntry{description=negation normal form}");
+        assertThat(TransformationCacheEntry.PLAISTED_GREENBAUM_POS.description())
+                .isEqualTo("TransformationCacheEntry{description=Plaisted & Greenbaum conjunctive normal form " +
+                        "(positive polarity)}");
+        assertThat(TransformationCacheEntry.TSEITIN.description())
+                .isEqualTo("TransformationCacheEntry{description=Tseitin conjunctive normal form}");
+        assertThat(TransformationCacheEntry.FACTORIZED_CNF.description())
+                .isEqualTo("TransformationCacheEntry{description=factorized conjunctive normal form}");
 
-        assertThat(PredicateCacheEntry.IS_AIG.description()).isEqualTo("PredicateCacheEntry{description=and-inverter graph}");
-        assertThat(PredicateCacheEntry.IS_TAUTOLOGY.description()).isEqualTo("PredicateCacheEntry{description=tautology}");
-        assertThat(PredicateCacheEntry.IS_CNF.description()).isEqualTo("PredicateCacheEntry{description=conjunctive normal form}");
+        assertThat(PredicateCacheEntry.IS_AIG.description())
+                .isEqualTo("PredicateCacheEntry{description=and-inverter graph}");
+        assertThat(PredicateCacheEntry.IS_TAUTOLOGY.description())
+                .isEqualTo("PredicateCacheEntry{description=tautology}");
+        assertThat(PredicateCacheEntry.IS_CNF.description())
+                .isEqualTo("PredicateCacheEntry{description=conjunctive normal form}");
 
-        assertThat(FunctionCacheEntry.LITPROFILE.description()).isEqualTo("FunctionCacheEntry{description=literal profile}");
-        assertThat(FunctionCacheEntry.VARPROFILE.description()).isEqualTo("FunctionCacheEntry{description=variable profile}");
-        assertThat(FunctionCacheEntry.SUBFORMULAS.description()).isEqualTo("FunctionCacheEntry{description=sub-formulas}");
+        assertThat(FunctionCacheEntry.LITPROFILE.description())
+                .isEqualTo("FunctionCacheEntry{description=literal profile}");
+        assertThat(FunctionCacheEntry.VARPROFILE.description())
+                .isEqualTo("FunctionCacheEntry{description=variable profile}");
+        assertThat(FunctionCacheEntry.SUBFORMULAS.description())
+                .isEqualTo("FunctionCacheEntry{description=sub-formulas}");
     }
 
     @Test

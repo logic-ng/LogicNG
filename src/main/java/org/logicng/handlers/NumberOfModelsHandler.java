@@ -7,7 +7,8 @@ package org.logicng.handlers;
 import org.logicng.datastructures.Assignment;
 
 /**
- * A model enumeration handler that terminates the solving process after a given number of models.
+ * A model enumeration handler that terminates the solving process after a given
+ * number of models.
  * @version 2.1.0
  * @since 1.0
  */
@@ -17,9 +18,11 @@ public class NumberOfModelsHandler extends ComputationHandler implements ModelEn
     private int count;
 
     /**
-     * Constructs a new model handler with an upper bound for the number of models (inclusive).
+     * Constructs a new model handler with an upper bound for the number of
+     * models (inclusive).
      * @param bound the upper bound
-     * @throws IllegalArgumentException if the number of models to generate is &lt;= 0
+     * @throws IllegalArgumentException if the number of models to generate is
+     *                                  &lt;= 0
      */
     public NumberOfModelsHandler(final int bound) {
         if (bound <= 0) {

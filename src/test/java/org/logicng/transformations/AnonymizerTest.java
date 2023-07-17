@@ -65,8 +65,10 @@ public class AnonymizerTest {
         assertThat(p.parse("~A").transform(anonymizer)).isEqualTo(p.parse("~var10"));
         assertThat(p.parse("A => ~B").transform(anonymizer)).isEqualTo(p.parse("var10 => ~var11"));
         assertThat(p.parse("A <=> ~B").transform(anonymizer)).isEqualTo(p.parse("var10 <=> ~var11"));
-        assertThat(p.parse("A | B | ~D | C").transform(anonymizer)).isEqualTo(p.parse("var10 | var11 | ~var13 | var12"));
-        assertThat(p.parse("A & B & C & ~D").transform(anonymizer)).isEqualTo(p.parse("var10 & var11 & var12 & ~var13"));
+        assertThat(p.parse("A | B | ~D | C").transform(anonymizer))
+                .isEqualTo(p.parse("var10 | var11 | ~var13 | var12"));
+        assertThat(p.parse("A & B & C & ~D").transform(anonymizer))
+                .isEqualTo(p.parse("var10 & var11 & var12 & ~var13"));
     }
 
     @Test
@@ -80,8 +82,10 @@ public class AnonymizerTest {
         assertThat(p.parse("~A").transform(anonymizer, false)).isEqualTo(p.parse("~var10"));
         assertThat(p.parse("A => ~B").transform(anonymizer, false)).isEqualTo(p.parse("var10 => ~var11"));
         assertThat(p.parse("A <=> ~B").transform(anonymizer, false)).isEqualTo(p.parse("var10 <=> ~var11"));
-        assertThat(p.parse("A | B | ~D | C").transform(anonymizer, false)).isEqualTo(p.parse("var10 | var11 | ~var13 | var12"));
-        assertThat(p.parse("A & B & C & ~D").transform(anonymizer, false)).isEqualTo(p.parse("var10 & var11 & var12 & ~var13"));
+        assertThat(p.parse("A | B | ~D | C").transform(anonymizer, false))
+                .isEqualTo(p.parse("var10 | var11 | ~var13 | var12"));
+        assertThat(p.parse("A & B & C & ~D").transform(anonymizer, false))
+                .isEqualTo(p.parse("var10 & var11 & var12 & ~var13"));
     }
 
     @Test

@@ -19,8 +19,9 @@ public class DefaultRatingFunction implements RatingFunction<Integer> {
     private static final DefaultRatingFunction INSTANCE = new DefaultRatingFunction();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public DefaultRatingFunction() {

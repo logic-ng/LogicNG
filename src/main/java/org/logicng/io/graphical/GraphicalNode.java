@@ -7,8 +7,9 @@ package org.logicng.io.graphical;
 import java.util.Objects;
 
 /**
- * A single node in a graphical representation of a formula, BDD, or graph.  A node holds a unique ID, a label,
- * a flag whether this is a terminal node or not, and a node style.
+ * A single node in a graphical representation of a formula, BDD, or graph. A
+ * node holds a unique ID, a label, a flag whether this is a terminal node or
+ * not, and a node style.
  * @version 2.4.0
  * @since 2.4.0
  */

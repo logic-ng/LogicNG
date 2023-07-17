@@ -11,11 +11,8 @@ import java.util.LinkedHashSet;
 /**
  * Boolean conjunction.
  * <p>
- * Invariants:
- * - has at least two elements
- * - does not contain duplicates
- * - does not contain complementary literals
- * - does not contain constants
+ * Invariants: - has at least two elements - does not contain duplicates - does
+ * not contain complementary literals - does not contain constants
  * @version 2.2.0
  * @since 1.0
  */
@@ -51,9 +48,11 @@ public final class And extends NAryOperator {
             return true;
         }
         if (other instanceof Formula && this.f == ((Formula) other).f) {
-            return false; // the same formula factory would have produced a == object
+            return false; // the same formula factory would have produced a ==
+                          // object
         }
-        if (other instanceof And) { // this is not really efficient... but should not be done anyway!
+        if (other instanceof And) { // this is not really efficient... but
+                                    // should not be done anyway!
             return compareOperands(((And) other).operands);
         }
         return false;

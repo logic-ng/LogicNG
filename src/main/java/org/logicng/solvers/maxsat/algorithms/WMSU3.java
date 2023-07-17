@@ -3,24 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines Lynce
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Open-WBO -- Copyright (c) 2013-2015, Ruben Martins, Vasco Manquinho, Ines
+ * Lynce <p> Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: <p>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. <p> THE SOFTWARE IS
+ * PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.maxsat.algorithms;
@@ -117,7 +114,8 @@ public class WMSU3 extends MaxSAT {
     @Override
     public MaxSATResult search() {
         if (this.problemType == ProblemType.UNWEIGHTED) {
-            throw new IllegalStateException("Error: Currently algorithm WMSU3 does not support unweighted MaxSAT instances.");
+            throw new IllegalStateException(
+                    "Error: Currently algorithm WMSU3 does not support unweighted MaxSAT instances.");
         }
         if (this.bmoStrategy) {
             this.isBmo = isBMO(true);
@@ -131,7 +129,8 @@ public class WMSU3 extends MaxSAT {
             case ITERATIVE:
                 if (this.isBmo) {
                     if (this.encoder.cardEncoding() != CardinalityEncoding.TOTALIZER) {
-                        throw new IllegalStateException("Error: Currently iterative encoding in WMSU3 only supports the Totalizer encoding.");
+                        throw new IllegalStateException(
+                                "Error: Currently iterative encoding in WMSU3 only supports the Totalizer encoding.");
                     }
                     return this.iterativeBmo();
                 } else {
@@ -170,7 +169,8 @@ public class WMSU3 extends MaxSAT {
                     }
                     this.ubCost = newCost;
                 }
-                if (this.ubCost == 0 || this.lbCost == this.ubCost || (this.currentWeight == 1 && this.nbSatisfiable > 1)) {
+                if (this.ubCost == 0 || this.lbCost == this.ubCost ||
+                        (this.currentWeight == 1 && this.nbSatisfiable > 1)) {
                     assert this.lbCost == this.ubCost;
                     assert this.nbSatisfiable > 0;
                     return MaxSATResult.OPTIMUM;
@@ -230,7 +230,8 @@ public class WMSU3 extends MaxSAT {
                     this.output.println("c LB : " + this.lbCost);
                 }
                 if (!this.encoder.hasPBEncoding()) {
-                    this.encoder.incEncodePB(this.solver, this.objFunction, this.coeffs, this.lbCost, this.assumptions, nSoft());
+                    this.encoder.incEncodePB(this.solver, this.objFunction, this.coeffs, this.lbCost, this.assumptions,
+                            nSoft());
                 } else {
                     this.encoder.incUpdatePB(this.solver, this.objFunction, this.coeffs, this.lbCost);
                     this.encoder.incUpdatePBAssumptions(this.assumptions);
@@ -265,7 +266,8 @@ public class WMSU3 extends MaxSAT {
                     }
                     this.ubCost = newCost;
                 }
-                if (this.ubCost == 0 || this.lbCost == this.ubCost || (this.currentWeight == 1 && this.nbSatisfiable > 1)) {
+                if (this.ubCost == 0 || this.lbCost == this.ubCost ||
+                        (this.currentWeight == 1 && this.nbSatisfiable > 1)) {
                     assert this.nbSatisfiable > 0;
                     return MaxSATResult.OPTIMUM;
                 } else if (!foundUpperBound(this.ubCost, null)) {
@@ -446,10 +448,13 @@ public class WMSU3 extends MaxSAT {
                         if (this.activeSoft.get(this.coreMapping.get(this.solver.conflict().get(i)))) {
                             continue;
                         }
-                        assert this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight() == this.currentWeight;
+                        assert this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight() ==
+                                this.currentWeight;
                         this.activeSoft.set(this.coreMapping.get(this.solver.conflict().get(i)), true);
-                        joinObjFunction.push(this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).relaxationVars().get(0));
-                        joinCoeffs.push(this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight());
+                        joinObjFunction.push(this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i)))
+                                .relaxationVars().get(0));
+                        joinCoeffs.push(
+                                this.softClauses.get(this.coreMapping.get(this.solver.conflict().get(i))).weight());
                     }
                 }
                 this.objFunction.clear();
@@ -472,13 +477,16 @@ public class WMSU3 extends MaxSAT {
                 weights.set(posWeight, localCost);
                 if (firstEncoding.get(posWeight)) {
                     if (weights.get(posWeight) != this.objFunction.size()) {
-                        bmoEncodings.get(posWeight).buildCardinality(this.solver, this.objFunction, weights.get(posWeight));
+                        bmoEncodings.get(posWeight).buildCardinality(this.solver, this.objFunction,
+                                weights.get(posWeight));
                         joinObjFunction.clear();
-                        bmoEncodings.get(posWeight).incUpdateCardinality(this.solver, joinObjFunction, this.objFunction, weights.get(posWeight), encodingAssumptions);
+                        bmoEncodings.get(posWeight).incUpdateCardinality(this.solver, joinObjFunction, this.objFunction,
+                                weights.get(posWeight), encodingAssumptions);
                         firstEncoding.set(posWeight, false);
                     }
                 } else {
-                    bmoEncodings.get(posWeight).incUpdateCardinality(this.solver, joinObjFunction, this.objFunction, weights.get(posWeight), encodingAssumptions);
+                    bmoEncodings.get(posWeight).incUpdateCardinality(this.solver, joinObjFunction, this.objFunction,
+                            weights.get(posWeight), encodingAssumptions);
                 }
                 for (int i = 0; i < encodingAssumptions.size(); i++) {
                     this.assumptions.push(encodingAssumptions.get(i));

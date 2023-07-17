@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 /**
  * A randomizer for formulas.
  * <p>
- * The formula types included in the generated formulas can be configured
- * with a {@link FormulaRandomizerConfig}.
+ * The formula types included in the generated formulas can be configured with a
+ * {@link FormulaRandomizerConfig}.
  * @version 2.3.0
  * @since 2.0.0
  */
@@ -39,7 +39,8 @@ public final class FormulaRandomizer {
     private final double coefficientNegativeProbability;
 
     /**
-     * Generates a new formula randomizer. With the given formula factory and the randomizer configuration from the formula factory.
+     * Generates a new formula randomizer. With the given formula factory and
+     * the randomizer configuration from the formula factory.
      * @param f the formula factory
      */
     public FormulaRandomizer(final FormulaFactory f) {
@@ -47,19 +48,22 @@ public final class FormulaRandomizer {
     }
 
     /**
-     * Generates a new formula randomizer. With the given formula factory and configuration.
+     * Generates a new formula randomizer. With the given formula factory and
+     * configuration.
      * @param f      the formula factory
      * @param config the formula randomizer configuration
      */
     public FormulaRandomizer(final FormulaFactory f, final FormulaRandomizerConfig config) {
         this.f = f;
-        this.config = config != null ? config : (FormulaRandomizerConfig) f.configurationFor(ConfigurationType.FORMULA_RANDOMIZER);
+        this.config = config != null ? config :
+                (FormulaRandomizerConfig) f.configurationFor(ConfigurationType.FORMULA_RANDOMIZER);
         this.random = this.config.seed != 0 ? new Random(this.config.seed) : new Random();
         this.variables = generateVars(f, this.config);
         this.formulaTypeProbabilities = new FormulaTypeProbabilities(this.config);
         this.cTypeProbabilities = new CTypeProbabilities(this.config);
         this.phaseProbability = generatePhaseProbability(this.config);
-        this.coefficientNegativeProbability = this.config.weightPbcCoeffNegative / (this.config.weightPbcCoeffPositive + this.config.weightPbcCoeffNegative);
+        this.coefficientNegativeProbability = this.config.weightPbcCoeffNegative /
+                (this.config.weightPbcCoeffPositive + this.config.weightPbcCoeffNegative);
     }
 
     /**
@@ -79,16 +83,18 @@ public final class FormulaRandomizer {
     }
 
     /**
-     * Returns a random literal. The probability of whether it is positive or negative
-     * depends on the configuration.
+     * Returns a random literal. The probability of whether it is positive or
+     * negative depends on the configuration.
      * @return the random literal
      */
     public Literal literal() {
-        return this.f.literal(this.variables[this.random.nextInt(this.variables.length)].name(), this.random.nextDouble() < this.phaseProbability);
+        return this.f.literal(this.variables[this.random.nextInt(this.variables.length)].name(),
+                this.random.nextDouble() < this.phaseProbability);
     }
 
     /**
-     * Returns a random atom. This includes constants, literals, pseudo boolean constraints, and cardinality constraints (including amo and exo).
+     * Returns a random atom. This includes constants, literals, pseudo boolean
+     * constraints, and cardinality constraints (including amo and exo).
      * @return the random atom
      */
     public Formula atom() {
@@ -305,7 +311,8 @@ public final class FormulaRandomizer {
     }
 
     /**
-     * Returns a list of {@code numConstraints} random formula with a given maximal depth.
+     * Returns a list of {@code numConstraints} random formula with a given
+     * maximal depth.
      * @param numConstraints the number of constraints to be generated
      * @param maxDepth       the maximal depth
      * @return the random formula
@@ -370,7 +377,8 @@ public final class FormulaRandomizer {
         private final double equiv;
 
         private FormulaTypeProbabilities(final FormulaRandomizerConfig config) {
-            final double total = config.weightConstant + config.weightPositiveLiteral + config.weightNegativeLiteral + config.weightOr +
+            final double total = config.weightConstant + config.weightPositiveLiteral + config.weightNegativeLiteral +
+                    config.weightOr +
                     config.weightAnd + config.weightNot + config.weightImpl + config.weightEquiv +
                     config.weightPbc + config.weightCc + config.weightAmo + config.weightExo;
             this.constant = config.weightConstant / total;
@@ -396,7 +404,8 @@ public final class FormulaRandomizer {
         private final double eq;
 
         private CTypeProbabilities(final FormulaRandomizerConfig config) {
-            final double total = config.weightPbcTypeLe + config.weightPbcTypeLt + config.weightPbcTypeGe + config.weightPbcTypeGt + config.weightPbcTypeEq;
+            final double total = config.weightPbcTypeLe + config.weightPbcTypeLt + config.weightPbcTypeGe +
+                    config.weightPbcTypeGt + config.weightPbcTypeEq;
             this.le = config.weightPbcTypeLe / total;
             this.lt = this.le + config.weightPbcTypeLt / total;
             this.ge = this.lt + config.weightPbcTypeGe / total;

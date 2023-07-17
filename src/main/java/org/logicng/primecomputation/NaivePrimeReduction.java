@@ -25,8 +25,8 @@ import java.util.TreeSet;
 /**
  * Naive implementation for reducing implicants and implicates to prime ones.
  * <p>
- * The computation is initialized with the formula for which
- * the prime implicants/implicates should be computed.
+ * The computation is initialized with the formula for which the prime
+ * implicants/implicates should be computed.
  * @version 2.1.0
  * @since 2.0.0
  */
@@ -41,15 +41,18 @@ public final class NaivePrimeReduction {
      */
     public NaivePrimeReduction(final Formula formula) {
         final FormulaFactory f = formula.factory();
-        this.implicantSolver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        this.implicantSolver =
+                MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         this.implicantSolver.add(formula.negate());
-        this.implicateSolver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        this.implicateSolver =
+                MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
         this.implicateSolver.add(formula);
     }
 
     /**
-     * Computes a prime implicant from the given implicant for the given formula.
-     * Assumption: Given implicant is a satisfying assignment for the formula
+     * Computes a prime implicant from the given implicant for the given
+     * formula. Assumption: Given implicant is a satisfying assignment for the
+     * formula
      * @param implicant the implicant
      * @return a prime implicant
      */
@@ -58,11 +61,13 @@ public final class NaivePrimeReduction {
     }
 
     /**
-     * Computes a prime implicant from the given implicant for the given formula.
-     * Assumption: Given implicant is a satisfying assignment for the formula
+     * Computes a prime implicant from the given implicant for the given
+     * formula. Assumption: Given implicant is a satisfying assignment for the
+     * formula
      * @param implicant the implicant
      * @param handler   a SAT handler for the underlying SAT Solver
-     * @return a prime implicant or null if the computation was aborted by the handler
+     * @return a prime implicant or null if the computation was aborted by the
+     *         handler
      */
     public SortedSet<Literal> reduceImplicant(final SortedSet<Literal> implicant, final SATHandler handler) {
         start(handler);
@@ -81,9 +86,9 @@ public final class NaivePrimeReduction {
     }
 
     /**
-     * Computes a prime implicate from the given implicate for the given formula.
-     * Assumption: Given implicate is a falsifying assignment for the formula, i.e. a satisfying assignment for the
-     * negated formula
+     * Computes a prime implicate from the given implicate for the given
+     * formula. Assumption: Given implicate is a falsifying assignment for the
+     * formula, i.e. a satisfying assignment for the negated formula
      * @param implicate the implicate
      * @return a prime implicate
      */
@@ -92,12 +97,13 @@ public final class NaivePrimeReduction {
     }
 
     /**
-     * Computes a prime implicate from the given implicate for the given formula.
-     * Assumption: Given implicate is a falsifying assignment for the formula, i.e. a satisfying assignment for the
-     * negated formula
+     * Computes a prime implicate from the given implicate for the given
+     * formula. Assumption: Given implicate is a falsifying assignment for the
+     * formula, i.e. a satisfying assignment for the negated formula
      * @param implicate the implicate
      * @param handler   a SAT handler for the underlying SAT Solver
-     * @return a prime implicate of null if the computation was aborted by the handler
+     * @return a prime implicate of null if the computation was aborted by the
+     *         handler
      */
     public SortedSet<Literal> reduceImplicate(final SortedSet<Literal> implicate, final SATHandler handler) {
         start(handler);

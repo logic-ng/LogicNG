@@ -34,20 +34,25 @@ import java.util.stream.Collectors;
 /**
  * An advanced simplifier for formulas.
  * <p>
- * The aim of the simplification is to minimize the formula with respect to a given rating function,
- * e.g. finding a formula with a minimal number of symbols when represented as string.
+ * The aim of the simplification is to minimize the formula with respect to a
+ * given rating function, e.g. finding a formula with a minimal number of
+ * symbols when represented as string.
  * <p>
  * The simplification performs the following steps:
  * <ul>
- *     <li>Restricting the formula to its backbone</li>
- *     <li>Computation of all prime implicants</li>
- *     <li>Finding a minimal coverage (by finding a smallest MUS)</li>
- *     <li>Building a DNF from the minimal prime implicant coverage</li>
- *     <li>Factoring out: Applying the Distributive Law heuristically for a smaller formula</li>
- *     <li>Minimizing negations: Applying De Morgan's Law heuristically for a smaller formula</li>
+ * <li>Restricting the formula to its backbone</li>
+ * <li>Computation of all prime implicants</li>
+ * <li>Finding a minimal coverage (by finding a smallest MUS)</li>
+ * <li>Building a DNF from the minimal prime implicant coverage</li>
+ * <li>Factoring out: Applying the Distributive Law heuristically for a smaller
+ * formula</li>
+ * <li>Minimizing negations: Applying De Morgan's Law heuristically for a
+ * smaller formula</li>
  * </ul>
- * The first and the last two steps can be configured using the {@link AdvancedSimplifierConfig}. Also, the handler and the rating
- * function can be configured. If no rating function is specified, the {@link DefaultRatingFunction} is chosen.
+ * The first and the last two steps can be configured using the
+ * {@link AdvancedSimplifierConfig}. Also, the handler and the rating function
+ * can be configured. If no rating function is specified, the
+ * {@link DefaultRatingFunction} is chosen.
  * @version 2.3.0
  * @since 2.0.0
  */
@@ -58,8 +63,10 @@ public final class AdvancedSimplifier implements FormulaTransformation {
     /**
      * Constructs a new simplifier with the given rating functions.
      * @param ratingFunction the rating function
-     * @deprecated this constructor is no longer acceptable, use the constructor with an {@link AdvancedSimplifierConfig} or with no parameters (for the
-     * default advanced simplifier configuration) instead.
+     * @deprecated this constructor is no longer acceptable, use the constructor
+     *             with an {@link AdvancedSimplifierConfig} or with no
+     *             parameters (for the default advanced simplifier
+     *             configuration) instead.
      */
     @Deprecated
     public AdvancedSimplifier(final RatingFunction<?> ratingFunction) {
@@ -69,12 +76,16 @@ public final class AdvancedSimplifier implements FormulaTransformation {
     /**
      * Constructs a new simplifier with the given handler and rating functions.
      * <p>
-     * The simplifier can be called with an {@link OptimizationHandler}. The given handler instance will be used for every subsequent
-     * {@link org.logicng.solvers.functions.OptimizationFunction} call and the handler's SAT handler is used for every subsequent SAT call.
+     * The simplifier can be called with an {@link OptimizationHandler}. The
+     * given handler instance will be used for every subsequent
+     * {@link org.logicng.solvers.functions.OptimizationFunction} call and the
+     * handler's SAT handler is used for every subsequent SAT call.
      * @param ratingFunction the rating function
      * @param handler        the handler, can be {@code null}
-     * @deprecated this constructor is no longer acceptable, use the constructor with an {@link AdvancedSimplifierConfig} or with no parameters (for the
-     * default advanced simplifier configuration) instead.
+     * @deprecated this constructor is no longer acceptable, use the constructor
+     *             with an {@link AdvancedSimplifierConfig} or with no
+     *             parameters (for the default advanced simplifier
+     *             configuration) instead.
      */
     @Deprecated
     public AdvancedSimplifier(final RatingFunction<?> ratingFunction, final OptimizationHandler handler) {
@@ -82,7 +93,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
     }
 
     /**
-     * Constructs a new simplifier with the advanced simplifier configuration from the formula factory.
+     * Constructs a new simplifier with the advanced simplifier configuration
+     * from the formula factory.
      */
     public AdvancedSimplifier() {
         this.initConfig = null;
@@ -90,8 +102,9 @@ public final class AdvancedSimplifier implements FormulaTransformation {
 
     /**
      * Constructs a new simplifier with the given configuration.
-     * @param config The configuration for the advanced simplifier, including a handler, a rating function and flags for which steps should pe performed
-     *               during the computation.
+     * @param config The configuration for the advanced simplifier, including a
+     *               handler, a rating function and flags for which steps should
+     *               pe performed during the computation.
      */
     public AdvancedSimplifier(final AdvancedSimplifierConfig config) {
         this.initConfig = config;
@@ -99,16 +112,16 @@ public final class AdvancedSimplifier implements FormulaTransformation {
 
     @Override
     public Formula apply(final Formula formula, final boolean cache) {
-        final AdvancedSimplifierConfig config = this.initConfig != null
-                ? this.initConfig
-                : (AdvancedSimplifierConfig) formula.factory().configurationFor(ConfigurationType.ADVANCED_SIMPLIFIER);
+        final AdvancedSimplifierConfig config = this.initConfig != null ? this.initConfig :
+                (AdvancedSimplifierConfig) formula.factory().configurationFor(ConfigurationType.ADVANCED_SIMPLIFIER);
         start(config.handler);
         final FormulaFactory f = formula.factory();
         Formula simplified = formula;
         final SortedSet<Literal> backboneLiterals = new TreeSet<>();
         if (config.restrictBackbone) {
             final Backbone backbone = BackboneGeneration
-                    .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(config.handler));
+                    .compute(Collections.singletonList(formula), formula.variables(),
+                            BackboneType.POSITIVE_AND_NEGATIVE, satHandler(config.handler));
             if (backbone == null || aborted(config.handler)) {
                 return null;
             }
@@ -139,7 +152,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
 
     private Formula computeMinDnf(final FormulaFactory f, Formula simplified, final AdvancedSimplifierConfig config) {
         final PrimeResult primeResult =
-                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.handler);
+                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE,
+                        config.handler);
         if (primeResult == null || aborted(config.handler)) {
             return null;
         }
@@ -149,7 +163,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         if (minimizedPIs == null || aborted(config.handler)) {
             return null;
         }
-        simplified = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
+        simplified =
+                f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
         return simplified;
     }
 
@@ -169,7 +184,8 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         return result;
     }
 
-    private Formula simplifyWithRating(final Formula formula, final Formula simplifiedOneStep, final AdvancedSimplifierConfig config) {
+    private Formula simplifyWithRating(final Formula formula, final Formula simplifiedOneStep,
+                                       final AdvancedSimplifierConfig config) {
         final Number ratingSimplified = config.ratingFunction.apply(simplifiedOneStep, true);
         final Number ratingFormula = config.ratingFunction.apply(formula, true);
         return ratingSimplified.intValue() < ratingFormula.intValue() ? simplifiedOneStep : formula;

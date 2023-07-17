@@ -28,20 +28,19 @@ import java.util.function.Consumer;
 /**
  * A solver function for getting the current formula on the solver.
  * <p>
- * Note that this formula is usually syntactically different to the
- * formulas which were actually added to the solver, since the formulas
- * are added as CNF and may be simplified or even removed depending on
- * the state of the solver. Furthermore, the solver might add learnt
- * clauses or propagate literals.
+ * Note that this formula is usually syntactically different to the formulas
+ * which were actually added to the solver, since the formulas are added as CNF
+ * and may be simplified or even removed depending on the state of the solver.
+ * Furthermore, the solver might add learnt clauses or propagate literals.
  * <p>
- * If the formula on the solver is known to be unsatisfiable, this
- * function will add {@link CFalse falsum} to the returned set of
- * formulas. However, as long as {@link SATSolver#sat()} was not called
- * on the current solver state, the absence of {@link CFalse falsum}
- * does not imply that the formula is satisfiable.
+ * If the formula on the solver is known to be unsatisfiable, this function will
+ * add {@link CFalse falsum} to the returned set of formulas. However, as long
+ * as {@link SATSolver#sat()} was not called on the current solver state, the
+ * absence of {@link CFalse falsum} does not imply that the formula is
+ * satisfiable.
  * <p>
- * Also note that formulas are not added to the solver as soon as the
- * solver is known be unsatisfiable.
+ * Also note that formulas are not added to the solver as soon as the solver is
+ * known be unsatisfiable.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -50,7 +49,7 @@ public final class FormulaOnSolverFunction implements SolverFunction<Set<Formula
     private final static FormulaOnSolverFunction INSTANCE = new FormulaOnSolverFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private FormulaOnSolverFunction() {
         // Intentionally left empty

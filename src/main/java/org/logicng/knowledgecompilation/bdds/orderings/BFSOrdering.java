@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * A breadth-first-search BDD variable ordering.  Traverses the formula in a BFS manner
- * and gathers all variables in the occurrence.
+ * A breadth-first-search BDD variable ordering. Traverses the formula in a BFS
+ * manner and gathers all variables in the occurrence.
  * @version 2.0.0
  * @since 1.4.0
  */

@@ -15,7 +15,8 @@ import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
 /**
- * A SAT solver based SAT predicate.  Indicates whether a formula is satisfiable or not.
+ * A SAT solver based SAT predicate. Indicates whether a formula is satisfiable
+ * or not.
  * @version 1.5.1
  * @since 1.0
  */

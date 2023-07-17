@@ -19,7 +19,7 @@ public class NumberOfNodesFunction implements FormulaFunction<Long> {
     private final static NumberOfNodesFunction INSTANCE = new NumberOfNodesFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private NumberOfNodesFunction() {
         // Intentionally left empty

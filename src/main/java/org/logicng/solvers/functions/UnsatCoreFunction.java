@@ -38,7 +38,7 @@ public final class UnsatCoreFunction implements SolverFunction<UNSATCore<Proposi
     private final static UnsatCoreFunction INSTANCE = new UnsatCoreFunction();
 
     /**
-     * Private empty constructor.  Singleton class.
+     * Private empty constructor. Singleton class.
      */
     private UnsatCoreFunction() {
         // Intentionally left empty
@@ -58,7 +58,8 @@ public final class UnsatCoreFunction implements SolverFunction<UNSATCore<Proposi
             throw new IllegalStateException("Cannot generate an unsat core if proof generation is not turned on");
         }
         if (solver.getResult() == TRUE) {
-            throw new IllegalStateException("An unsat core can only be generated if the formula is solved and is UNSAT");
+            throw new IllegalStateException(
+                    "An unsat core can only be generated if the formula is solved and is UNSAT");
         }
         if (solver.getResult() == Tristate.UNDEF) {
             throw new IllegalStateException("Cannot generate an unsat core before the formula was solved.");
@@ -107,13 +108,15 @@ public final class UnsatCoreFunction implements SolverFunction<UNSATCore<Proposi
         final LNGVector<MiniSatStyleSolver.ProofInformation> clauses = solver.underlyingSolver().pgOriginalClauses();
         for (int i = 0; i < clauses.size(); i++) {
             for (int j = i + 1; j < clauses.size(); j++) {
-                if (clauses.get(i).clause().size() == 1 && clauses.get(j).clause().size() == 1
-                        && clauses.get(i).clause().get(0) + clauses.get(j).clause().get(0) == 0) {
+                if (clauses.get(i).clause().size() == 1 && clauses.get(j).clause().size() == 1 &&
+                        clauses.get(i).clause().get(0) + clauses.get(j).clause().get(0) == 0) {
                     final LinkedHashSet<Proposition> propositions = new LinkedHashSet<>();
                     final Proposition pi = clauses.get(i).proposition();
                     final Proposition pj = clauses.get(j).proposition();
-                    propositions.add(pi != null ? pi : new StandardProposition(getFormulaForVector(solver, clauses.get(i).clause())));
-                    propositions.add(pj != null ? pj : new StandardProposition(getFormulaForVector(solver, clauses.get(j).clause())));
+                    propositions.add(pi != null ? pi :
+                            new StandardProposition(getFormulaForVector(solver, clauses.get(i).clause())));
+                    propositions.add(pj != null ? pj :
+                            new StandardProposition(getFormulaForVector(solver, clauses.get(j).clause())));
                     return new UNSATCore<>(new ArrayList<>(propositions), false);
                 }
             }

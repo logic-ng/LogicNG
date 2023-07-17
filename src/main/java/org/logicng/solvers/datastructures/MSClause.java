@@ -3,19 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
- * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * MiniSat -- Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson Permission
+ * is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions: The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.solvers.datastructures;
@@ -32,7 +34,8 @@ import java.util.Comparator;
 public final class MSClause {
 
     /**
-     * A comparator for clauses based on LBD and activity (used for the Glucose solver).
+     * A comparator for clauses based on LBD and activity (used for the Glucose
+     * solver).
      */
     public static final Comparator<MSClause> glucoseComparator = (x, y) -> {
         if (x.size() > 2 && y.size() == 2) {
@@ -56,7 +59,8 @@ public final class MSClause {
     /**
      * A comparator for clauses based on activity (used for the MiniSAT solver).
      */
-    public static final Comparator<MSClause> minisatComparator = (x, y) -> x.size() > 2 && (y.size() == 2 || x.activity() < y.activity()) ? -1 : 1;
+    public static final Comparator<MSClause> minisatComparator =
+            (x, y) -> x.size() > 2 && (y.size() == 2 || x.activity() < y.activity()) ? -1 : 1;
 
     private final LNGIntVector data;
     private final boolean learnt;
@@ -72,7 +76,8 @@ public final class MSClause {
     /**
      * Constructs a new clause
      * @param ps     the vector of literals
-     * @param learnt {@code true} if it is a learnt clause, {@code false} otherwise
+     * @param learnt {@code true} if it is a learnt clause, {@code false}
+     *               otherwise
      */
     public MSClause(final LNGIntVector ps, final boolean learnt) {
         this(ps, learnt, false);
@@ -81,8 +86,10 @@ public final class MSClause {
     /**
      * Constructs a new clause
      * @param ps       the vector of literals
-     * @param learnt   {@code true} if it is a learnt clause, {@code false} otherwise
-     * @param isAtMost {@code true} if it is an at-most clause, {@code false} otherwise
+     * @param learnt   {@code true} if it is a learnt clause, {@code false}
+     *                 otherwise
+     * @param isAtMost {@code true} if it is an at-most clause, {@code false}
+     *                 otherwise
      */
     public MSClause(final LNGIntVector ps, final boolean learnt, final boolean isAtMost) {
         this.data = new LNGIntVector(ps.size());
@@ -166,14 +173,16 @@ public final class MSClause {
 
     /**
      * Sets the size of this clause without selector variables.
-     * @param szWithoutSelectors the size of this clause without selector variables
+     * @param szWithoutSelectors the size of this clause without selector
+     *                           variables
      */
     public void setSizeWithoutSelectors(final int szWithoutSelectors) {
         this.szWithoutSelectors = szWithoutSelectors;
     }
 
     /**
-     * Returns {@code true} if this clause is marked 'seen', {@code false} otherwise.
+     * Returns {@code true} if this clause is marked 'seen', {@code false}
+     * otherwise.
      * @return {@code true} if this clause is marked 'seen'
      */
     public boolean seen() {
@@ -205,7 +214,8 @@ public final class MSClause {
     }
 
     /**
-     * Returns {@code true} if this clause can be deleted, {@code false} otherwise.
+     * Returns {@code true} if this clause can be deleted, {@code false}
+     * otherwise.
      * @return {@code true} if this clause can be deleted
      */
     public boolean canBeDel() {
@@ -214,14 +224,16 @@ public final class MSClause {
 
     /**
      * Sets whether this clause can be deleted or not.
-     * @param canBeDel {@code true} if it can be deleted, {@code false} otherwise
+     * @param canBeDel {@code true} if it can be deleted, {@code false}
+     *                 otherwise
      */
     public void setCanBeDel(final boolean canBeDel) {
         this.canBeDel = canBeDel;
     }
 
     /**
-     * Returns {@code true} if this clause is a one literal watched clause, {@code false} otherwise
+     * Returns {@code true} if this clause is a one literal watched clause,
+     * {@code false} otherwise
      * @return {@code true} if this clause is a one literal watched clause
      */
     public boolean oneWatched() {
@@ -230,14 +242,16 @@ public final class MSClause {
 
     /**
      * Sets whether this clause is a one literal watched clause or not.
-     * @param oneWatched {@code true} if it is a one literal watched clause, {@code false} otherwise
+     * @param oneWatched {@code true} if it is a one literal watched clause,
+     *                   {@code false} otherwise
      */
     public void setOneWatched(final boolean oneWatched) {
         this.oneWatched = oneWatched;
     }
 
     /**
-     * Returns {@code true} if this is an at-most clause, {@code false} otherwise.
+     * Returns {@code true} if this is an at-most clause, {@code false}
+     * otherwise.
      * @return {@code true} if this is an at-most clause
      */
     public boolean isAtMost() {

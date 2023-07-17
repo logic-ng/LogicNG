@@ -28,7 +28,8 @@ public class NNFPredicateTest extends TestWithExampleFormulas {
         assertThat(this.AND1.holds(this.nnfPredicate)).isTrue();
         assertThat(this.AND3.holds(this.nnfPredicate)).isTrue();
         assertThat(this.f.and(this.OR1, this.OR2, this.A, this.NY).holds(this.nnfPredicate)).isTrue();
-        assertThat(this.f.and(this.OR1, this.OR2, this.AND1, this.AND2, this.AND3, this.A, this.NY).holds(this.nnfPredicate)).isTrue();
+        assertThat(this.f.and(this.OR1, this.OR2, this.AND1, this.AND2, this.AND3, this.A, this.NY)
+                .holds(this.nnfPredicate)).isTrue();
         assertThat(this.OR3.holds(this.nnfPredicate)).isTrue();
         assertThat(this.PBC1.holds(this.nnfPredicate)).isFalse();
         assertThat(this.IMP1.holds(this.nnfPredicate)).isFalse();

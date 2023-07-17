@@ -3,25 +3,21 @@
 // Copyright 2023-20xx BooleWorks GmbH
 
 /*
- * Copyright (C) 2012 - 2014 Armin Biere JKU Linz
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * Copyright (C) 2012 - 2014 Armin Biere JKU Linz <p> Permission is hereby
+ * granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: <p> The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. <p> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 package org.logicng.collections;
@@ -29,7 +25,8 @@ package org.logicng.collections;
 import java.util.Locale;
 
 /**
- * A simple priority queue implementation for positive integer elements with double priorities taken from CleaneLing.
+ * A simple priority queue implementation for positive integer elements with
+ * double priorities taken from CleaneLing.
  * @version 1.3
  * @since 1.0
  */
@@ -93,9 +90,11 @@ public final class LNGDoublePriorityQueue {
     }
 
     /**
-     * Returns whether a given element is already imported and present in the queue or not.
+     * Returns whether a given element is already imported and present in the
+     * queue or not.
      * @param element the element
-     * @return {@code true} if the element is already imported and present in the queue, {@code false otherwise}.
+     * @return {@code true} if the element is already imported and present in
+     *         the queue, {@code false otherwise}.
      */
     public boolean contains(final int element) {
         return element >= 0 && this.imported(element) && this.pos.get(Math.abs(element)) >= 0;
@@ -112,7 +111,8 @@ public final class LNGDoublePriorityQueue {
     }
 
     /**
-     * Returns the top element of the priority queue (= the element with the largest priority).
+     * Returns the top element of the priority queue (= the element with the
+     * largest priority).
      * @return the top element of the priority queue
      */
     public int top() {
@@ -160,7 +160,8 @@ public final class LNGDoublePriorityQueue {
     }
 
     /**
-     * Removes a given element from the priority queue.  Its priority is kept as is.
+     * Removes a given element from the priority queue. Its priority is kept as
+     * is.
      * @param element the element
      */
     public void pop(final int element) {
@@ -198,11 +199,12 @@ public final class LNGDoublePriorityQueue {
     }
 
     /**
-     * Compares two elements by their priority and returns whether the first element's priority is less than the second
-     * element's priority.
+     * Compares two elements by their priority and returns whether the first
+     * element's priority is less than the second element's priority.
      * @param e1 the first element
      * @param e2 the second element
-     * @return {@code true} if the priority of the first element is less than the priority of the second element
+     * @return {@code true} if the priority of the first element is less than
+     *         the priority of the second element
      */
     private boolean less(final int e1, final int e2) {
         return this.prior.get(e1) < this.prior.get(e2);
@@ -294,7 +296,8 @@ public final class LNGDoublePriorityQueue {
     public String toString() {
         final StringBuilder sb = new StringBuilder("LNGDoublePriorityQueue{");
         for (int i = 0; i < this.heap.size(); i++) {
-            sb.append(String.format(Locale.ENGLISH, "<elem=%d, pos=%d, prio=%f>", this.heap.get(i), this.pos.get(i), this.prior.get(i)));
+            sb.append(String.format(Locale.ENGLISH, "<elem=%d, pos=%d, prio=%f>", this.heap.get(i), this.pos.get(i),
+                    this.prior.get(i)));
             if (i != this.heap.size() - 1) {
                 sb.append(", ");
             }

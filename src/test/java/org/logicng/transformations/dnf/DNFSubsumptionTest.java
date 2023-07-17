@@ -30,7 +30,8 @@ public class DNFSubsumptionTest {
 
     @Test
     public void testNotInDNF() {
-        assertThatThrownBy(() -> this.s.apply(this.p.parse("a => b"), false)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> this.s.apply(this.p.parse("a => b"), false))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -46,22 +47,30 @@ public class DNFSubsumptionTest {
         assertThat(this.s.apply(this.p.parse("a | (a & b) | (a & b & c)"), false)).isEqualTo(this.p.parse("a"));
         assertThat(this.s.apply(this.p.parse("a | (a & b) | b"), false)).isEqualTo(this.p.parse("a | b"));
         assertThat(this.s.apply(this.p.parse("a | (a & b) | c | (c & b)"), false)).isEqualTo(this.p.parse("a | c"));
-        assertThat(this.s.apply(this.p.parse("(a & b) | (a & c) | (a & b & c)"), false)).isEqualTo(this.p.parse("(a & b) | (a & c)"));
+        assertThat(this.s.apply(this.p.parse("(a & b) | (a & c) | (a & b & c)"), false))
+                .isEqualTo(this.p.parse("(a & b) | (a & c)"));
     }
 
     @Test
     public void testLargeDNFSubsumption() throws ParserException {
-        assertThat(this.s.apply(this.p.parse("(a & b & c & d) | (a & b & c & e) | (a & b & c)"), false)).isEqualTo(this.p.parse("(a & b & c)"));
-        assertThat(this.s.apply(this.p.parse("(a & b) | (a & c) | (a & b & c) | (a & ~b & c) | (a & b & ~c) | (b & c)"), false)).isEqualTo(this.p.parse("(a & b) | (a & c) | (b & c)"));
-        assertThat(this.s.apply(this.p.parse("(a & b) | (a & c) | (a & b & c) | (a & ~b & c) | (a & b & ~c) | (b & c)"), false)).isEqualTo(this.p.parse("(a & b) | (a & c) | (b & c)"));
-        assertThat(this.s.apply(this.p.parse("a | ~b | (c & d) | (~a & ~b & ~c) | (b & c & d) | (a & b & c & d)"), false)).isEqualTo(this.p.parse("a | ~b | (c & d)"));
-        assertThat(this.s.apply(this.p.parse("(a & b & c & d & e & f & g) | (b & d & f) | (a & c & e & g)"), false)).isEqualTo(this.p.parse("(b & d & f) | (a & c & e & g)"));
+        assertThat(this.s.apply(this.p.parse("(a & b & c & d) | (a & b & c & e) | (a & b & c)"), false))
+                .isEqualTo(this.p.parse("(a & b & c)"));
+        assertThat(this.s.apply(this.p.parse("(a & b) | (a & c) | (a & b & c) | (a & ~b & c) | (a & b & ~c) | (b & c)"),
+                false)).isEqualTo(this.p.parse("(a & b) | (a & c) | (b & c)"));
+        assertThat(this.s.apply(this.p.parse("(a & b) | (a & c) | (a & b & c) | (a & ~b & c) | (a & b & ~c) | (b & c)"),
+                false)).isEqualTo(this.p.parse("(a & b) | (a & c) | (b & c)"));
+        assertThat(
+                this.s.apply(this.p.parse("a | ~b | (c & d) | (~a & ~b & ~c) | (b & c & d) | (a & b & c & d)"), false))
+                        .isEqualTo(this.p.parse("a | ~b | (c & d)"));
+        assertThat(this.s.apply(this.p.parse("(a & b & c & d & e & f & g) | (b & d & f) | (a & c & e & g)"), false))
+                .isEqualTo(this.p.parse("(b & d & f) | (a & c & e & g)"));
     }
 
     @Test
     public void testEvenLargerFormulas() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", f);
         int count = 10; // test only first 10 formulas
         for (final Formula op : formula) {
             if (count == 0) {

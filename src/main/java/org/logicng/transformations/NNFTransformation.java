@@ -104,7 +104,8 @@ public class NNFTransformation implements FormulaTransformation {
         return nnf;
     }
 
-    private Formula applyRec(final Iterator<Formula> formulas, final FType type, final boolean polarity, final FormulaFactory f) {
+    private Formula applyRec(final Iterator<Formula> formulas, final FType type, final boolean polarity,
+                             final FormulaFactory f) {
         final LinkedHashSet<Formula> nops = new LinkedHashSet<>();
         while (formulas.hasNext()) {
             final Formula formula = formulas.next();

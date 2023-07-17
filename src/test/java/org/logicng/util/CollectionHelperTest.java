@@ -38,8 +38,10 @@ public class CollectionHelperTest {
         final List<String> strings = Arrays.asList("a", "b", "c");
         assertThat(nullSafe(strings)).isEqualTo(strings);
 
-        assertThat(nullSafe(() -> Arrays.asList("a", "b"), ArrayList::new)).isEqualTo(new ArrayList<>(Arrays.asList("a", "b")));
-        assertThat(nullSafe(() -> new TreeSet<>(Arrays.asList("a", "b")), TreeSet::new)).isEqualTo(new TreeSet<>(Arrays.asList("a", "b")));
+        assertThat(nullSafe(() -> Arrays.asList("a", "b"), ArrayList::new))
+                .isEqualTo(new ArrayList<>(Arrays.asList("a", "b")));
+        assertThat(nullSafe(() -> new TreeSet<>(Arrays.asList("a", "b")), TreeSet::new))
+                .isEqualTo(new TreeSet<>(Arrays.asList("a", "b")));
         assertThat(nullSafe(() -> (ArrayList<Integer>) null, ArrayList::new)).isEqualTo(new ArrayList<Integer>());
         assertThat(nullSafe(() -> (TreeSet<String>) null, TreeSet::new)).isEqualTo(new TreeSet<String>());
     }
@@ -50,18 +52,25 @@ public class CollectionHelperTest {
         final List<String> strings2 = Arrays.asList("c", "d", "e");
         assertThat(CollectionHelper.<String, TreeSet<String>>intersection(strings1, null, TreeSet::new)).isEmpty();
         assertThat(CollectionHelper.<String, TreeSet<String>>intersection(null, strings2, TreeSet::new)).isEmpty();
-        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(strings1, strings2, TreeSet::new)).containsExactly("c");
-        final List<String> strings3 = Arrays.asList("c", "d", "e", "a", "a", "a");
-        assertThat(CollectionHelper.<String, List<String>>intersection(strings1, strings3, ArrayList::new)).containsExactly("a", "c", "a");
-
-        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(null, strings1, null, strings2, strings1), TreeSet::new)).isEmpty();
-        assertThat(CollectionHelper.<String, ArrayList<String>>intersection(Arrays.asList(strings1, null, strings3, strings1), ArrayList::new)).isEmpty();
-        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(strings3, strings2, strings3), TreeSet::new))
-                .containsExactly("c", "d", "e");
-        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(strings1, strings2, strings3), TreeSet::new))
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(strings1, strings2, TreeSet::new))
                 .containsExactly("c");
-        assertThat(CollectionHelper.<String, ArrayList<String>>intersection(Arrays.asList(strings1, strings3), ArrayList::new))
+        final List<String> strings3 = Arrays.asList("c", "d", "e", "a", "a", "a");
+        assertThat(CollectionHelper.<String, List<String>>intersection(strings1, strings3, ArrayList::new))
                 .containsExactly("a", "c", "a");
+
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(
+                Arrays.asList(null, strings1, null, strings2, strings1), TreeSet::new)).isEmpty();
+        assertThat(CollectionHelper.<String, ArrayList<String>>intersection(
+                Arrays.asList(strings1, null, strings3, strings1), ArrayList::new)).isEmpty();
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(strings3, strings2, strings3),
+                TreeSet::new))
+                        .containsExactly("c", "d", "e");
+        assertThat(CollectionHelper.<String, TreeSet<String>>intersection(Arrays.asList(strings1, strings2, strings3),
+                TreeSet::new))
+                        .containsExactly("c");
+        assertThat(CollectionHelper.<String, ArrayList<String>>intersection(Arrays.asList(strings1, strings3),
+                ArrayList::new))
+                        .containsExactly("a", "c", "a");
 
         final List<List<String>> lists = Arrays.asList(strings1, strings2);
         assertThat(CollectionHelper.<String, TreeSet<String>>intersection(lists, TreeSet::new)).containsExactly("c");
@@ -71,30 +80,39 @@ public class CollectionHelperTest {
     public void testUnion() {
         final List<String> strings1 = Arrays.asList("a", "b", "c", "a");
         final List<String> strings2 = Arrays.asList("c", "d", "e");
-        assertThat(CollectionHelper.<String, ArrayList<String>>union(strings1, null, ArrayList::new)).containsExactly("a", "b", "c", "a");
-        assertThat(CollectionHelper.<String, ArrayList<String>>union(null, strings2, ArrayList::new)).containsExactly("c", "d", "e");
-        assertThat(CollectionHelper.<String, ArrayList<String>>union(strings1, strings2, ArrayList::new)).containsExactly("a", "b", "c", "a", "c", "d", "e");
+        assertThat(CollectionHelper.<String, ArrayList<String>>union(strings1, null, ArrayList::new))
+                .containsExactly("a", "b", "c", "a");
+        assertThat(CollectionHelper.<String, ArrayList<String>>union(null, strings2, ArrayList::new))
+                .containsExactly("c", "d", "e");
+        assertThat(CollectionHelper.<String, ArrayList<String>>union(strings1, strings2, ArrayList::new))
+                .containsExactly("a", "b", "c", "a", "c", "d", "e");
 
         final List<String> strings3 = Arrays.asList("c", "d", "e", "a", "a", "a", "f");
         assertThat(CollectionHelper.<String, TreeSet<String>>union(Arrays.asList(null, strings1, null), TreeSet::new))
                 .containsExactly("a", "b", "c");
-        assertThat(CollectionHelper.<String, TreeSet<String>>union(Arrays.asList(null, strings1, strings2, null, strings3, strings3), TreeSet::new))
-                .containsExactly("a", "b", "c", "d", "e", "f");
-        assertThat(CollectionHelper.<String, ArrayList<String>>union(Arrays.asList(null, strings3, strings2, null, strings1), ArrayList::new))
-                .containsExactly("c", "d", "e", "a", "a", "a", "f", "c", "d", "e", "a", "b", "c", "a");
+        assertThat(CollectionHelper.<String, TreeSet<String>>union(
+                Arrays.asList(null, strings1, strings2, null, strings3, strings3), TreeSet::new))
+                        .containsExactly("a", "b", "c", "d", "e", "f");
+        assertThat(CollectionHelper.<String, ArrayList<String>>union(
+                Arrays.asList(null, strings3, strings2, null, strings1), ArrayList::new))
+                        .containsExactly("c", "d", "e", "a", "a", "a", "f", "c", "d", "e", "a", "b", "c", "a");
 
         final List<List<String>> lists = Arrays.asList(strings1, strings2);
-        assertThat(CollectionHelper.<String, TreeSet<String>>union(lists, TreeSet::new)).containsExactly("a", "b", "c", "d", "e");
+        assertThat(CollectionHelper.<String, TreeSet<String>>union(lists, TreeSet::new)).containsExactly("a", "b", "c",
+                "d", "e");
     }
 
     @Test
     public void testDifference() {
         final List<String> strings1 = Arrays.asList("a", "b", "c", "a");
         final List<String> strings2 = Arrays.asList("c", "d", "e");
-        assertThat(CollectionHelper.<String, TreeSet<String>>difference(strings1, null, TreeSet::new)).containsExactly("a", "b", "c");
+        assertThat(CollectionHelper.<String, TreeSet<String>>difference(strings1, null, TreeSet::new))
+                .containsExactly("a", "b", "c");
         assertThat(CollectionHelper.<String, TreeSet<String>>difference(null, strings1, TreeSet::new)).isEmpty();
-        assertThat(CollectionHelper.<String, TreeSet<String>>difference(strings1, strings2, TreeSet::new)).containsExactly("a", "b");
-        assertThat(CollectionHelper.<String, ArrayList<String>>difference(strings1, strings2, ArrayList::new)).containsExactly("a", "b", "a");
+        assertThat(CollectionHelper.<String, TreeSet<String>>difference(strings1, strings2, TreeSet::new))
+                .containsExactly("a", "b");
+        assertThat(CollectionHelper.<String, ArrayList<String>>difference(strings1, strings2, ArrayList::new))
+                .containsExactly("a", "b", "a");
     }
 
     @Test

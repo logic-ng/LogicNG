@@ -15,10 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A term in the Quine–McCluskey algorithm.  A term represents a set of
- * minterms of a canonical DNF and has its own representation as a vector
- * of tristates.  Two minterms are considered equals if their bit representation
- * is equals (independent of their associated minterms)
+ * A term in the Quine–McCluskey algorithm. A term represents a set of minterms
+ * of a canonical DNF and has its own representation as a vector of tristates.
+ * Two minterms are considered equals if their bit representation is equals
+ * (independent of their associated minterms)
  * @version 2.0.0
  * @since 1.4.0
  */
@@ -58,7 +58,8 @@ public class Term {
     }
 
     /**
-     * Computes a number representing the number and position of the UNDEF states in the bit array.
+     * Computes a number representing the number and position of the UNDEF
+     * states in the bit array.
      * @param bits the bit array
      * @return the computed number
      */
@@ -89,7 +90,8 @@ public class Term {
     }
 
     /**
-     * Returns the term class of this term.  The term class is the number of non-negative bits in the bit array.
+     * Returns the term class of this term. The term class is the number of
+     * non-negative bits in the bit array.
      * @return the term class of this term
      */
     int termClass() {
@@ -113,9 +115,10 @@ public class Term {
     }
 
     /**
-     * Combines this term with another term if possible.  This is only possible if their bit vectors
-     * differ in exactly one position.  In this case a new term with the new bit vector and the
-     * combined minterms is returned.  If no union is possible, {@code null} is returned.
+     * Combines this term with another term if possible. This is only possible
+     * if their bit vectors differ in exactly one position. In this case a new
+     * term with the new bit vector and the combined minterms is returned. If no
+     * union is possible, {@code null} is returned.
      * @param other the other term
      * @return a new combined term or {@code null} if not possible
      */

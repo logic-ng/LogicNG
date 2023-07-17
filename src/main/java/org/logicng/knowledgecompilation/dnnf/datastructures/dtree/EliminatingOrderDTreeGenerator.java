@@ -13,8 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A generator for a DTree from an arbitrary eliminating order of variables as described in
- * A. Darwiche "Decomposable Negation Normal Form" (algorithm "el2dt").
+ * A generator for a DTree from an arbitrary eliminating order of variables as
+ * described in A. Darwiche "Decomposable Negation Normal Form" (algorithm
+ * "el2dt").
  * @version 2.0.0
  * @since 2.0.0
  */

@@ -43,8 +43,10 @@ public class DefaultStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.PBC3, this.sr)).isEqualTo("2*a + -4*b + 3*x >= 2");
         assertThat(this.f.string(this.PBC4, this.sr)).isEqualTo("2*a + -4*b + 3*x < 2");
         assertThat(this.f.string(this.PBC5, this.sr)).isEqualTo("2*a + -4*b + 3*x <= 2");
-        assertThat(this.f.string(this.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$true");
-        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr)).isEqualTo("$false");
+        assertThat(this.f.string(this.f.pbc(CType.LT, 42, new ArrayList<>(), new ArrayList<>()), this.sr))
+                .isEqualTo("$true");
+        assertThat(this.f.string(this.f.pbc(CType.EQ, 42, new ArrayList<>(), new ArrayList<>()), this.sr))
+                .isEqualTo("$false");
         assertThat(this.f.string(this.f.implication(this.A, this.f.exo()), this.sr)).isEqualTo("~a");
         assertThat(this.f.string(this.f.equivalence(this.A, this.f.exo()), this.sr)).isEqualTo("~a");
         assertThat(this.f.string(this.f.and(this.A, this.f.exo()), this.sr)).isEqualTo("$false");
@@ -53,7 +55,9 @@ public class DefaultStringRepresentationTest extends TestWithExampleFormulas {
         assertThat(this.f.string(this.f.equivalence(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.and(this.A, this.f.amo()), this.sr)).isEqualTo("a");
         assertThat(this.f.string(this.f.or(this.A, this.f.amo()), this.sr)).isEqualTo("$true");
-        assertThat(this.f.string(this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr)).isEqualTo("$true");
+        assertThat(this.f.string(
+                this.f.or(this.A, this.f.amo(), this.f.exo(), this.f.equivalence(this.f.amo(), this.B)), this.sr))
+                        .isEqualTo("$true");
     }
 
     @Test

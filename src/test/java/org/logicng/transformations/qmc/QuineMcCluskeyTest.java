@@ -46,7 +46,8 @@ public class QuineMcCluskeyTest {
     public void testSimple1() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final Formula formula = p.parse("(~a & ~b & ~c) | (~a & ~b & c) | (~a & b & ~c) | (a & ~b & c) | (a & b & ~c) | (a & b & c)");
+        final Formula formula =
+                p.parse("(~a & ~b & ~c) | (~a & ~b & c) | (~a & b & ~c) | (a & ~b & c) | (a & b & ~c) | (a & b & c)");
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
         assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
@@ -63,15 +64,18 @@ public class QuineMcCluskeyTest {
     }
 
     /**
-     * Example from <a href="https://github.com/logic-ng/LogicNG/issues/15">issue 15</a>.
-     * Ensure only original formula variables are returned, i.e., no auxiliary variables are returned.
+     * Example from
+     * <a href="https://github.com/logic-ng/LogicNG/issues/15">issue 15</a>.
+     * Ensure only original formula variables are returned, i.e., no auxiliary
+     * variables are returned.
      * @throws ParserException if any malformed formula is encountered
      */
     @Test
     public void testSimple3() throws ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final Formula formula = p.parse("~5 & ~4 & 3 & 2 & 1 | ~3 & ~7 & ~2 & 1 | ~6 & 1 & ~3 & 2 | ~9 & 6 & 8 & ~1 | 3 & 4 & 2 & 1 | ~2 & 7 & 1 | ~10 & ~8 & ~1");
+        final Formula formula = p.parse(
+                "~5 & ~4 & 3 & 2 & 1 | ~3 & ~7 & ~2 & 1 | ~6 & 1 & ~3 & 2 | ~9 & 6 & 8 & ~1 | 3 & 4 & 2 & 1 | ~2 & 7 & 1 | ~10 & ~8 & ~1");
         final Formula dnf = QuineMcCluskeyAlgorithm.compute(formula);
         assertThat(dnf.isDNF()).isTrue();
         assertThat(f.equivalence(formula, dnf).holds(new TautologyPredicate(f))).isTrue();
@@ -91,7 +95,8 @@ public class QuineMcCluskeyTest {
     @Test
     public void testLarge2() throws ParserException, IOException {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
         final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
@@ -118,7 +123,8 @@ public class QuineMcCluskeyTest {
     @Test
     public void testLarge3() throws ParserException, IOException {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
+        final Formula formula =
+                FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final SATSolver solver = MiniSat.miniSat(f);
         solver.add(formula);
         final List<Assignment> models = solver.enumerateAllModels(Arrays.asList(
@@ -152,11 +158,15 @@ public class QuineMcCluskeyTest {
         final PropositionalParser p = new PropositionalParser(f);
         final List<Literal> minterm1 = Arrays.asList(f.literal("A", true), f.literal("B", true), f.literal("C", true));
         final List<Literal> minterm2 = Arrays.asList(f.literal("A", true), f.literal("B", false), f.literal("C", true));
-        final List<Literal> minterm3 = Arrays.asList(f.literal("A", false), f.literal("B", false), f.literal("C", false));
+        final List<Literal> minterm3 =
+                Arrays.asList(f.literal("A", false), f.literal("B", false), f.literal("C", false));
 
-        assertThat(convertToTerm(minterm1, f).bits()).isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.TRUE, Tristate.TRUE});
-        assertThat(convertToTerm(minterm2, f).bits()).isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.FALSE, Tristate.TRUE});
-        assertThat(convertToTerm(minterm3, f).bits()).isEqualTo(new Tristate[]{Tristate.FALSE, Tristate.FALSE, Tristate.FALSE});
+        assertThat(convertToTerm(minterm1, f).bits())
+                .isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.TRUE, Tristate.TRUE});
+        assertThat(convertToTerm(minterm2, f).bits())
+                .isEqualTo(new Tristate[]{Tristate.TRUE, Tristate.FALSE, Tristate.TRUE});
+        assertThat(convertToTerm(minterm3, f).bits())
+                .isEqualTo(new Tristate[]{Tristate.FALSE, Tristate.FALSE, Tristate.FALSE});
 
         assertThat(convertToTerm(minterm1, f).minterms()).isEqualTo(Collections.singletonList(p.parse("A & B & C")));
         assertThat(convertToTerm(minterm2, f).minterms()).isEqualTo(Collections.singletonList(p.parse("A & ~B & C")));
@@ -177,7 +187,8 @@ public class QuineMcCluskeyTest {
         final Term minterm5 = getTerm("~A B C", f);
         final Term minterm6 = getTerm("~A ~B C", f);
 
-        final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = generateInitialTermClasses(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
+        final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses =
+                generateInitialTermClasses(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
         assertThat(termsInClasses).isNotNull();
         assertThat(termsInClasses).isNotEmpty();
         assertThat(termsInClasses.get(0)).containsExactly(minterm3);
@@ -187,21 +198,12 @@ public class QuineMcCluskeyTest {
     }
 
     /**
-     * original
-     * 0  -A -B -C (mt3)
-     * 1  -A -B  C (mt6)
-     * 2   A -B  C (mt2)
-     * 2   A  B -C (mt4)
-     * 2  -A  B  C (mt5)
-     * 3   A  B  C (mt1)
+     * original 0 -A -B -C (mt3) 1 -A -B C (mt6) 2 A -B C (mt2) 2 A B -C (mt4) 2
+     * -A B C (mt5) 3 A B C (mt1)
      * <p>
-     * first round
-     * 01 -A -B  x -> 1 (mt3, mt6)
-     * 12  x -B  C -> 2 (mt6, mt2)
-     * 12 -A  x  C -> 2 (mt6, mt5)
-     * 23  A  x  C -> 3 (mt2, mt1)
-     * 23  A  B  x -> 3 (mt4, mt1)
-     * 23  x  B  C -> 3 (mt5, mt1)
+     * first round 01 -A -B x -> 1 (mt3, mt6) 12 x -B C -> 2 (mt6, mt2) 12 -A x
+     * C -> 2 (mt6, mt5) 23 A x C -> 3 (mt2, mt1) 23 A B x -> 3 (mt4, mt1) 23 x
+     * B C -> 3 (mt5, mt1)
      */
     @Test
     public void testUniteTermsInClasses() throws ParserException {
@@ -212,7 +214,8 @@ public class QuineMcCluskeyTest {
         final Term minterm4 = getTerm("A B ~C", f);
         final Term minterm5 = getTerm("~A B C", f);
         final Term minterm6 = getTerm("~A ~B C", f);
-        final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses = generateInitialTermClasses(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
+        final SortedMap<Integer, LinkedHashSet<Term>> termsInClasses =
+                generateInitialTermClasses(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
 
         final SortedMap<Integer, LinkedHashSet<Term>> newTermsInClasses = combineInTermClasses(termsInClasses);
         assertThat(newTermsInClasses).isNotNull();
@@ -220,7 +223,8 @@ public class QuineMcCluskeyTest {
         assertThat(newTermsInClasses.get(0)).isNull();
         assertThat(newTermsInClasses.get(1)).containsExactly(minterm3.combine(minterm6));
         assertThat(newTermsInClasses.get(2)).containsExactly(minterm6.combine(minterm2), minterm6.combine(minterm5));
-        assertThat(newTermsInClasses.get(3)).containsExactly(minterm2.combine(minterm1), minterm4.combine(minterm1), minterm5.combine(minterm1));
+        assertThat(newTermsInClasses.get(3)).containsExactly(minterm2.combine(minterm1), minterm4.combine(minterm1),
+                minterm5.combine(minterm1));
 
         assertThat(minterm1.isUsed()).isTrue();
         assertThat(minterm2.isUsed()).isTrue();
@@ -231,31 +235,18 @@ public class QuineMcCluskeyTest {
     }
 
     /**
-     * original
-     * 0 -A -B -C (mt3) *
-     * 1 -A -B  C (mt6) *
-     * 2  A -B  C (mt2) *
-     * 2  A  B -C (mt4) *
-     * 2 -A  B  C (mt5) *
-     * 3  A  B  C (mt1) *
+     * original 0 -A -B -C (mt3) * 1 -A -B C (mt6) * 2 A -B C (mt2) * 2 A B -C
+     * (mt4) * 2 -A B C (mt5) * 3 A B C (mt1) *
      * <p>
-     * first round
-     * 0-1 -A -B  x -> 1 (mt3, mt6)
-     * 1-2  x -B  C -> 2 (mt6, mt2) *
-     * 1-2 -A  x  C -> 2 (mt6, mt5) *
-     * 2-3  A  x  C -> 3 (mt2, mt1) *
-     * 2-3  A  B  x -> 3 (mt4, mt1)
-     * 2-3  x  B  C -> 3 (mt5, mt1) *
+     * first round 0-1 -A -B x -> 1 (mt3, mt6) 1-2 x -B C -> 2 (mt6, mt2) * 1-2
+     * -A x C -> 2 (mt6, mt5) * 2-3 A x C -> 3 (mt2, mt1) * 2-3 A B x -> 3 (mt4,
+     * mt1) 2-3 x B C -> 3 (mt5, mt1) *
      * <p>
-     * second round
-     * 01-12 /
-     * 12-23 x x C (mt6, mt2, mt5, mt1)
-     * 12-23 x x C (mt6, mt2, mt2, mt1)
+     * second round 01-12 / 12-23 x x C (mt6, mt2, mt5, mt1) 12-23 x x C (mt6,
+     * mt2, mt2, mt1)
      * <p>
-     * result
-     * 0-1 -A -B  x -> 1 (mt3, mt6)
-     * 2-3  A  B  x -> 3 (mt4, mt1)
-     * 12-23 x x C (mt6, mt2, mt5, mt1)
+     * result 0-1 -A -B x -> 1 (mt3, mt6) 2-3 A B x -> 3 (mt4, mt1) 12-23 x x C
+     * (mt6, mt2, mt5, mt1)
      */
     @Test
     public void testComputePrimeImplicantsSimple() throws ParserException {
@@ -267,7 +258,8 @@ public class QuineMcCluskeyTest {
         final Term minterm5 = getTerm("~A B C", f);
         final Term minterm6 = getTerm("~A ~B C", f);
 
-        final LinkedHashSet<Term> primeImplicants = computePrimeImplicants(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
+        final LinkedHashSet<Term> primeImplicants =
+                computePrimeImplicants(Arrays.asList(minterm1, minterm2, minterm3, minterm4, minterm5, minterm6));
         assertThat(primeImplicants).isNotNull();
         assertThat(primeImplicants).isNotEmpty();
         assertThat(primeImplicants).containsExactly(
@@ -278,7 +270,8 @@ public class QuineMcCluskeyTest {
     }
 
     /**
-     * The example from <a href="https://de.wikipedia.org/wiki/Verfahren_nach_Quine_und_McCluskey">Quine-McCluskey</a>
+     * The example from <a href=
+     * "https://de.wikipedia.org/wiki/Verfahren_nach_Quine_und_McCluskey">Quine-McCluskey</a>
      */
     @Test
     public void testComputePrimeImplicantsWiki() throws ParserException {
@@ -298,7 +291,8 @@ public class QuineMcCluskeyTest {
 
         final Term m15 = getTerm("x0 x1 x2 x3", f);
 
-        final LinkedHashSet<Term> primeImplicants = computePrimeImplicants(Arrays.asList(m0, m1, m4, m8, m5, m6, m9, m7, m11, m15));
+        final LinkedHashSet<Term> primeImplicants =
+                computePrimeImplicants(Arrays.asList(m0, m1, m4, m8, m5, m6, m9, m7, m11, m15));
         assertThat(primeImplicants).isNotNull();
         assertThat(primeImplicants).isNotEmpty();
         assertThat(primeImplicants).containsExactly(
@@ -331,7 +325,8 @@ public class QuineMcCluskeyTest {
     public void testSmallFormulas() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
-        final BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/formulas/small_formulas.txt"));
+        final BufferedReader reader =
+                new BufferedReader(new FileReader("src/test/resources/formulas/small_formulas.txt"));
         while (reader.ready()) {
             final Formula formula = p.parse(reader.readLine());
             final List<Variable> variables = new ArrayList<>(formula.variables());

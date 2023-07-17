@@ -23,7 +23,8 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 /**
- * A pseudo-Boolean constraint of the form {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
+ * A pseudo-Boolean constraint of the form
+ * {@code c_1 * l_1 + ... + c_n * l_n R k} where {@code R} is one of
  * {@code =, >, >=, <, <=}.
  * @version 2.3.2
  * @since 1.0
@@ -61,12 +62,15 @@ public class PBConstraint extends Formula {
      * @param comparator   the comparator
      * @param rhs          the right-hand side
      * @param f            the formula factory
-     * @throws IllegalArgumentException if the number of literals and coefficients do not correspond
+     * @throws IllegalArgumentException if the number of literals and
+     *                                  coefficients do not correspond
      */
-    PBConstraint(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs, final FormulaFactory f) {
+    PBConstraint(final Literal[] literals, final int[] coefficients, final CType comparator, final int rhs,
+                 final FormulaFactory f) {
         super(FType.PBC, f);
         if (literals.length != coefficients.length) {
-            throw new IllegalArgumentException("Cannot generate a pseudo-Boolean constraint with literals.length != coefficients.length");
+            throw new IllegalArgumentException(
+                    "Cannot generate a pseudo-Boolean constraint with literals.length != coefficients.length");
         }
         this.literals = literals;
         this.coefficients = coefficients;
@@ -92,14 +96,16 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Internal helper for checking if a given coefficient-sum min- and max-value can comply with a given right-hand-side
-     * according to this PBConstraint's comparator.
+     * Internal helper for checking if a given coefficient-sum min- and
+     * max-value can comply with a given right-hand-side according to this
+     * PBConstraint's comparator.
      * @param minValue   the minimum coefficient sum
      * @param maxValue   the maximum coefficient sum
      * @param rhs        the right-hand-side
      * @param comparator the comparator
-     * @return {@link Tristate#TRUE} if the constraint is true, {@link Tristate#FALSE} if it is false and
-     * {@link Tristate#UNDEF} if both are still possible
+     * @return {@link Tristate#TRUE} if the constraint is true,
+     *         {@link Tristate#FALSE} if it is false and {@link Tristate#UNDEF}
+     *         if both are still possible
      */
     static Tristate evaluateCoeffs(final int minValue, final int maxValue, final int rhs, final CType comparator) {
         int status = 0;
@@ -165,7 +171,8 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Returns {@code true} if this constraint is a cardinality constraint, {@code false} otherwise.
+     * Returns {@code true} if this constraint is a cardinality constraint,
+     * {@code false} otherwise.
      * @return {@code true} if this constraint is a cardinality constraint
      */
     public boolean isCC() {
@@ -173,16 +180,20 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Returns {@code true} if this constraint is an at-most-one cardinality constraint, {@code false} otherwise.
-     * @return {@code true} if this constraint is an at-most-one cardinality constraint
+     * Returns {@code true} if this constraint is an at-most-one cardinality
+     * constraint, {@code false} otherwise.
+     * @return {@code true} if this constraint is an at-most-one cardinality
+     *         constraint
      */
     public boolean isAmo() {
         return false;
     }
 
     /**
-     * Returns {@code true} if this constraint is an exactly-one cardinality constraint, {@code false} otherwise.
-     * @return {@code true} if this constraint is an excatly-one cardinality constraint
+     * Returns {@code true} if this constraint is an exactly-one cardinality
+     * constraint, {@code false} otherwise.
+     * @return {@code true} if this constraint is an excatly-one cardinality
+     *         constraint
      */
     public boolean isExo() {
         return false;
@@ -243,8 +254,9 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Internal helper for normalization of a <= constraint. Can also be used for >= constraints by multiplying the right
-     * side and the coefficients with -1.
+     * Internal helper for normalization of a <= constraint. Can also be used
+     * for >= constraints by multiplying the right side and the coefficients
+     * with -1.
      * @param ps  the literals
      * @param cs  the coefficients
      * @param rhs the right-hand side
@@ -448,20 +460,21 @@ public class PBConstraint extends Formula {
                         newCoeffs.add(this.coefficients[i]);
                         break;
                     default:
-                        throw new IllegalArgumentException("Cannot substitute a formula for a literal in a pseudo-Boolean constraint");
+                        throw new IllegalArgumentException(
+                                "Cannot substitute a formula for a literal in a pseudo-Boolean constraint");
                 }
             }
         }
-        return newLits.isEmpty()
-                ? this.evaluateComparator(lhsFixed) ? this.f.verum() : this.f.falsum()
-                : this.f.pbc(this.comparator, this.rhs - lhsFixed, newLits, newCoeffs);
+        return newLits.isEmpty() ? this.evaluateComparator(lhsFixed) ? this.f.verum() : this.f.falsum() :
+                this.f.pbc(this.comparator, this.rhs - lhsFixed, newLits, newCoeffs);
     }
 
     @Override
     public Formula negate() {
         switch (this.comparator) {
             case EQ:
-                return this.f.or(this.f.pbc(CType.LT, this.rhs, this.literals, this.coefficients), this.f.pbc(CType.GT, this.rhs, this.literals, this.coefficients));
+                return this.f.or(this.f.pbc(CType.LT, this.rhs, this.literals, this.coefficients),
+                        this.f.pbc(CType.GT, this.rhs, this.literals, this.coefficients));
             case LE:
                 return this.f.pbc(CType.GT, this.rhs, this.literals, this.coefficients);
             case LT:
@@ -491,9 +504,11 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Computes the result of evaluating the comparator with a given left-hand side.
+     * Computes the result of evaluating the comparator with a given left-hand
+     * side.
      * @param lhs the left-hand side
-     * @return {@code true} if the comparator evaluates to true, {@code false} otherwise
+     * @return {@code true} if the comparator evaluates to true, {@code false}
+     *         otherwise
      */
     private boolean evaluateComparator(final int lhs) {
         switch (this.comparator) {
@@ -513,7 +528,8 @@ public class PBConstraint extends Formula {
     }
 
     /**
-     * Encodes this constraint as CNF and stores the result, if the encoding does not already exist.
+     * Encodes this constraint as CNF and stores the result, if the encoding
+     * does not already exist.
      * @return the encoding
      */
     public List<Formula> getEncoding() {
@@ -548,9 +564,8 @@ public class PBConstraint extends Formula {
         }
         if (other instanceof PBConstraint) {
             final PBConstraint o = (PBConstraint) other;
-            return this.rhs == o.rhs && this.comparator == o.comparator
-                    && Arrays.equals(this.coefficients, o.coefficients)
-                    && Arrays.equals(this.literals, o.literals);
+            return this.rhs == o.rhs && this.comparator == o.comparator &&
+                    Arrays.equals(this.coefficients, o.coefficients) && Arrays.equals(this.literals, o.literals);
         }
         return false;
     }

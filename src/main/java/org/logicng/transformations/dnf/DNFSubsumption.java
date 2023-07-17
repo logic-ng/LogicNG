@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.SortedSet;
 
 /**
- * This transformation performs subsumption on a given DNF and returns a new DNF.
- * I.e. performs as many subsumptions as possible.  A subsumption in a DNF means,
- * that e.g. a minterm {@code A & B & C} is subsumed by another minterm {@code A & B}
- * and can therefore be deleted for an equivalent DNF.
+ * This transformation performs subsumption on a given DNF and returns a new
+ * DNF. I.e. performs as many subsumptions as possible. A subsumption in a DNF
+ * means, that e.g. a minterm {@code A & B & C} is subsumed by another minterm
+ * {@code A & B} and can therefore be deleted for an equivalent DNF.
  * @version 2.3.0
  * @since 1.5.0
  */
@@ -27,8 +27,9 @@ public final class DNFSubsumption extends Subsumption implements FormulaTransfor
     private static final DNFSubsumption INSTANCE = new DNFSubsumption();
 
     /**
-     * @deprecated In the next version, the standard constructor will be replaced by a private constructor.
-     * In order to instantiate an object of this class, use the {@link #get()} method.
+     * @deprecated In the next version, the standard constructor will be
+     *             replaced by a private constructor. In order to instantiate an
+     *             object of this class, use the {@link #get()} method.
      */
     @Deprecated
     public DNFSubsumption() {

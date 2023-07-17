@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum.  Results in this implementation will always be
- * cached.
+ * Transformation of a formula into CNF due to Plaisted &amp; Greenbaum. Results
+ * in this implementation will always be cached.
  * <p>
- * ATTENTION: if you mix formulas from different formula factories this can lead to clashes in the naming of newly
- * introduced variables.
+ * ATTENTION: if you mix formulas from different formula factories this can lead
+ * to clashes in the naming of newly introduced variables.
  * @version 2.0.0
  * @since 1.0
  */
@@ -33,23 +33,25 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
 
     /**
      * Constructor for a Plaisted &amp; Greenbaum transformation.
-     * @param boundaryForFactorization the boundary of number of atoms up to which classical factorization is used
+     * @param boundaryForFactorization the boundary of number of atoms up to
+     *                                 which classical factorization is used
      */
     public PlaistedGreenbaumTransformation(final int boundaryForFactorization) {
         this.boundaryForFactorization = boundaryForFactorization;
     }
 
     /**
-     * Constructor for a Plaisted &amp; Greenbaum transformation with conversion to nnf and a factorization
-     * bound of 12.
+     * Constructor for a Plaisted &amp; Greenbaum transformation with conversion
+     * to nnf and a factorization bound of 12.
      */
     public PlaistedGreenbaumTransformation() {
         this(12);
     }
 
     /**
-     * Returns the auxiliary variable for a given formula.  Either the formula is already a variable, has already an
-     * auxiliary variable or a new one is generated.
+     * Returns the auxiliary variable for a given formula. Either the formula is
+     * already a variable, has already an auxiliary variable or a new one is
+     * generated.
      * @param formula the formula
      * @return the old or new auxiliary variable
      */
@@ -76,7 +78,8 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
             pg = nnf.transform(this.factorization);
         } else {
             pg = this.computeTransformation(nnf);
-            final Assignment topLevel = new Assignment((Literal) nnf.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
+            final Assignment topLevel =
+                    new Assignment((Literal) nnf.transformationCacheEntry(PLAISTED_GREENBAUM_VARIABLE));
             pg = pg.restrict(topLevel);
         }
         if (cache) {
@@ -132,7 +135,8 @@ public final class PlaistedGreenbaumTransformation implements FormulaTransformat
                 return result;
             }
             default:
-                throw new IllegalArgumentException("Unknown or unexpected formula type. Expected AND or OR formula type only.");
+                throw new IllegalArgumentException(
+                        "Unknown or unexpected formula type. Expected AND or OR formula type only.");
         }
     }
 

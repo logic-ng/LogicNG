@@ -92,7 +92,8 @@ public class CCAMKTest implements LogicNGTest {
         assertThat(f.newCCVariable().name()).endsWith("_0");
     }
 
-    private void testCC(final int numLits, final int rhs, final int expected, final FormulaFactory f, final boolean miniCard) {
+    private void testCC(final int numLits, final int rhs, final int expected, final FormulaFactory f,
+                        final boolean miniCard) {
         final Variable[] problemLits = new Variable[numLits];
         for (int i = 0; i < numLits; i++) {
             problemLits[i] = f.variable("v" + i);
@@ -114,7 +115,8 @@ public class CCAMKTest implements LogicNGTest {
         for (int i = 0; i < numLits; i++) {
             problemLits[i] = f.variable("v" + i);
         }
-        assertThatThrownBy(() -> encoder.encode((CardinalityConstraint) f.cc(CType.LE, -1, problemLits))).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> encoder.encode((CardinalityConstraint) f.cc(CType.LE, -1, problemLits)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -131,6 +133,7 @@ public class CCAMKTest implements LogicNGTest {
 
     @Test
     public void testCCSorting() {
-        assertThat(CCSorting.ImplicationDirection.values()).contains(CCSorting.ImplicationDirection.valueOf("INPUT_TO_OUTPUT"));
+        assertThat(CCSorting.ImplicationDirection.values())
+                .contains(CCSorting.ImplicationDirection.valueOf("INPUT_TO_OUTPUT"));
     }
 }

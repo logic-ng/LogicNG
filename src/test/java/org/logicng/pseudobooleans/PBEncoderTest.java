@@ -36,7 +36,9 @@ public class PBEncoderTest implements LogicNGTest {
     public PBEncoderTest() {
         this.encoders = new PBEncoder[3];
         this.encoders[0] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.SWC).build());
-        this.encoders[1] = new PBEncoder(this.f, PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).build(), CCConfig.builder().amoEncoding(CCConfig.AMO_ENCODER.NESTED).build());
+        this.encoders[1] = new PBEncoder(this.f,
+                PBConfig.builder().pbEncoding(PBConfig.PB_ENCODER.BINARY_MERGE).binaryMergeUseGAC(false).build(),
+                CCConfig.builder().amoEncoding(CCConfig.AMO_ENCODER.NESTED).build());
         this.encoders[2] = new PBEncoder(this.f, null);
     }
 
@@ -158,9 +160,11 @@ public class PBEncoderTest implements LogicNGTest {
                 "binaryMergeNoSupportForSingleBit=false%n" +
                 "binaryMergeUseWatchDog=true%n" +
                 "}%n"));
-        assertThat(this.encoders[0].config().toString().contains("pbEncoder=" + PBConfig.PB_ENCODER.valueOf("SWC"))).isTrue();
+        assertThat(this.encoders[0].config().toString().contains("pbEncoder=" + PBConfig.PB_ENCODER.valueOf("SWC")))
+                .isTrue();
         assertThat(this.encoders[0].config().type()).isEqualTo(ConfigurationType.PB_ENCODER);
         assertThat(new PBSWC(this.f).toString()).isEqualTo("PBSWC");
-        assertThat(Arrays.asList(PBConfig.PB_ENCODER.values()).contains(PBConfig.PB_ENCODER.valueOf("ADDER_NETWORKS"))).isTrue();
+        assertThat(Arrays.asList(PBConfig.PB_ENCODER.values()).contains(PBConfig.PB_ENCODER.valueOf("ADDER_NETWORKS")))
+                .isTrue();
     }
 }

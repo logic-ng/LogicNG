@@ -128,8 +128,10 @@ public class PlaistedGreenbaumTest extends TestWithExampleFormulas {
         final PseudoBooleanParser p = new PseudoBooleanParser(f);
         assertThat(p.parse("a <=> (1 * b <= 1)").transform(this.pg)).isEqualTo(p.parse("a"));
         assertThat(p.parse("~(1 * b <= 1)").transform(this.pg)).isEqualTo(p.parse("$false"));
-        assertThat(p.parse("(1 * b + 1 * c + 1 * d <= 1)").transform(this.pg)).isEqualTo(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"));
-        assertThat(p.parse("~(1 * b + 1 * c + 1 * d <= 1)").transform(this.pg)).isEqualTo(p.parse("(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"));
+        assertThat(p.parse("(1 * b + 1 * c + 1 * d <= 1)").transform(this.pg))
+                .isEqualTo(p.parse("(~b | ~c) & (~b | ~d) & (~c | ~d)"));
+        assertThat(p.parse("~(1 * b + 1 * c + 1 * d <= 1)").transform(this.pg)).isEqualTo(p.parse(
+                "(d | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | @RESERVED_CC_1 | @RESERVED_CC_4) & (~@RESERVED_CC_3 | d | @RESERVED_CC_4) & (~@RESERVED_CC_4 | @RESERVED_CC_0) & (~@RESERVED_CC_2 | @RESERVED_CC_0) & (~@RESERVED_CC_4 | ~@RESERVED_CC_2) & (c | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | @RESERVED_CC_3 | @RESERVED_CC_5) & (b | c | @RESERVED_CC_5) & (~@RESERVED_CC_5 | @RESERVED_CC_2) & ~@RESERVED_CC_0"));
     }
 
     @Test
@@ -141,14 +143,17 @@ public class PlaistedGreenbaumTest extends TestWithExampleFormulas {
         final Formula f2 = p.parse("~x & ~y");
         final Formula f3 = p.parse("d & ((a | b) => c)");
         final Formula f4 = p.parse("d & ((a | b) => c) | ~x & ~y");
-        assertThat(f1.transform(pgNNF)).isEqualTo(p.parse("(@RESERVED_CNF_1 | c) & (~@RESERVED_CNF_1 | ~a) & (~@RESERVED_CNF_1 | ~b)"));
+        assertThat(f1.transform(pgNNF))
+                .isEqualTo(p.parse("(@RESERVED_CNF_1 | c) & (~@RESERVED_CNF_1 | ~a) & (~@RESERVED_CNF_1 | ~b)"));
         assertThat(f2.transform(pgNNF)).isEqualTo(p.parse("~x & ~y"));
-        assertThat(f3.transform(pgNNF)).isEqualTo(p.parse("d & @RESERVED_CNF_0 & (~@RESERVED_CNF_0 | @RESERVED_CNF_1 | c) & " +
-                "(~@RESERVED_CNF_1 | ~a) & (~@RESERVED_CNF_1 | ~b)"));
-        assertThat(f4.transform(pgNNF)).isEqualTo(p.parse("(@RESERVED_CNF_2 | @RESERVED_CNF_4) & (~@RESERVED_CNF_2 | d) & " +
-                "(~@RESERVED_CNF_2 | @RESERVED_CNF_0) & (~@RESERVED_CNF_0 | @RESERVED_CNF_1 | c) & " +
-                "(~@RESERVED_CNF_1 | ~a) & (~@RESERVED_CNF_1 | ~b) & (~@RESERVED_CNF_4 | ~x) & " +
-                "(~@RESERVED_CNF_4 | ~y)"));
+        assertThat(f3.transform(pgNNF))
+                .isEqualTo(p.parse("d & @RESERVED_CNF_0 & (~@RESERVED_CNF_0 | @RESERVED_CNF_1 | c) & " +
+                        "(~@RESERVED_CNF_1 | ~a) & (~@RESERVED_CNF_1 | ~b)"));
+        assertThat(f4.transform(pgNNF))
+                .isEqualTo(p.parse("(@RESERVED_CNF_2 | @RESERVED_CNF_4) & (~@RESERVED_CNF_2 | d) & " +
+                        "(~@RESERVED_CNF_2 | @RESERVED_CNF_0) & (~@RESERVED_CNF_0 | @RESERVED_CNF_1 | c) & " +
+                        "(~@RESERVED_CNF_1 | ~a) & (~@RESERVED_CNF_1 | ~b) & (~@RESERVED_CNF_4 | ~x) & " +
+                        "(~@RESERVED_CNF_4 | ~y)"));
         assertThat(f1.transform(this.pg).isCNF()).isTrue();
         assertThat(equivalentModels(f1, f1.transform(this.pg), f1.variables())).isTrue();
         assertThat(f2.transform(this.pg).isCNF()).isTrue();

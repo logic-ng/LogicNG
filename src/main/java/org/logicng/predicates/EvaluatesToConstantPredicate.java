@@ -24,23 +24,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Checks if the given formula is evaluated to false/true for a given (partial) assignment.
+ * Checks if the given formula is evaluated to false/true for a given (partial)
+ * assignment.
  * <p>
- * Note: If a partial assignment is given, the check only recognizes simple unsatisfiable/tautology cases
+ * Note: If a partial assignment is given, the check only recognizes simple
+ * unsatisfiable/tautology cases
  * <ul>
- *     <li>operand of an AND/OR is false/true</li>
- *     <li>all operators of an OR/AND are false/true</li>
- *     <li>AND/OR has two operands with complementary negations</li>
+ * <li>operand of an AND/OR is false/true</li>
+ * <li>all operators of an OR/AND are false/true</li>
+ * <li>AND/OR has two operands with complementary negations</li>
  * </ul>
- * This evaluation differs from the standard formula evaluation {@link Formula#evaluate(Assignment)} in two ways. It
- * accepts partial assignments, and it tries to avoid the generation of intermediate formula by the formula factory
- * objects in order to speed up the performance.
+ * This evaluation differs from the standard formula evaluation
+ * {@link Formula#evaluate(Assignment)} in two ways. It accepts partial
+ * assignments, and it tries to avoid the generation of intermediate formula by
+ * the formula factory objects in order to speed up the performance.
  * <p>
- * Example 01: When evaluation to false the formula (a | b) &amp; (~a | c) with partial assignment
- * [b -&gt; false, c -&gt; false] yields to a &amp; ~a which is recognized as unsatisfiable.
+ * Example 01: When evaluation to false the formula (a | b) &amp; (~a | c) with
+ * partial assignment [b -&gt; false, c -&gt; false] yields to a &amp; ~a which
+ * is recognized as unsatisfiable.
  * <p>
- * Example 02: When evaluation to true the formula (a &amp; b) | (~a &amp; c) with partial assignment
- * [b -&gt; false, c -&gt; false] yields to a | ~a which is recognized as a tautology.
+ * Example 02: When evaluation to true the formula (a &amp; b) | (~a &amp; c)
+ * with partial assignment [b -&gt; false, c -&gt; false] yields to a | ~a which
+ * is recognized as a tautology.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -51,7 +56,8 @@ public final class EvaluatesToConstantPredicate implements FormulaPredicate {
 
     /**
      * Constructs a new evaluation predicate.
-     * @param evaluatesToTrue {@code false} if the check aims for true, {@code false} if the check aims for false
+     * @param evaluatesToTrue {@code false} if the check aims for true,
+     *                        {@code false} if the check aims for false
      * @param mapping         the (partial) assignment
      */
     public EvaluatesToConstantPredicate(final boolean evaluatesToTrue, final Map<Variable, Boolean> mapping) {
@@ -68,10 +74,12 @@ public final class EvaluatesToConstantPredicate implements FormulaPredicate {
     }
 
     /**
-     * Checks if the formula evaluates to false (or true) when the (partial) assignment is applied.
+     * Checks if the formula evaluates to false (or true) when the (partial)
+     * assignment is applied.
      * @param formula the formula
      * @param caching indicator for caching (currently not used)
-     * @return {@code true} if applying the (partial) assignment yields to the specified constant, otherwise {@code false}
+     * @return {@code true} if applying the (partial) assignment yields to the
+     *         specified constant, otherwise {@code false}
      */
     @Override
     public boolean test(final Formula formula, final boolean caching) {
@@ -79,10 +87,14 @@ public final class EvaluatesToConstantPredicate implements FormulaPredicate {
     }
 
     /**
-     * Restricts and possibly simplifies the formula by applying the (partial) assignment in order to decide if the restriction yields to the specified constant.
+     * Restricts and possibly simplifies the formula by applying the (partial)
+     * assignment in order to decide if the restriction yields to the specified
+     * constant.
      * @param formula  the formula
      * @param topLevel indicator if the formula is the top level operator
-     * @return Falsum resp. Verum if the (partial) assignment resulted not to the specified constant, otherwise the restricted and simplified formula
+     * @return Falsum resp. Verum if the (partial) assignment resulted not to
+     *         the specified constant, otherwise the restricted and simplified
+     *         formula
      */
     private Formula innerTest(final Formula formula, final boolean topLevel) {
         final FormulaFactory f = formula.factory();
