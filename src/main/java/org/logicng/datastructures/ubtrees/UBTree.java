@@ -185,7 +185,7 @@ public final class UBTree<T extends Comparable<T>> {
     }
 
     private void allSupersets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final Set<SortedSet<T>> supersets) {
-        final Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(set, forest, set.first());
+        final Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(forest, set.first());
         for (final UBNode<T> node : nodes) {
             allSupersets(set, node.children(), supersets);
         }
@@ -219,7 +219,7 @@ public final class UBTree<T extends Comparable<T>> {
         return nodes;
     }
 
-    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final T element) {
+    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedMap<T, UBNode<T>> forest, final T element) {
         final Set<UBNode<T>> nodes = new LinkedHashSet<>();
         for (final UBNode<T> node : forest.values()) {
             if (node != null && node.element().compareTo(element) < 0) {
