@@ -4,6 +4,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.5.0] - 2023-xx-xx
 
+### Added
+
+- Class `UBTree` offers new method `generateSubsumedUBTree` to directly generate a subsumed UBTree for the given sets. 
+
 ### Changed
 
 - UBTree data structure now supports empty sets.

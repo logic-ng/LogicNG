@@ -30,41 +30,40 @@ package org.logicng.transformations;
 
 import org.logicng.datastructures.ubtrees.UBTree;
 import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.NAryOperator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 
 /**
  * A superclass for subsumptions (CNF or DNF).
- * @version 2.0.0
+ * @version 2.5.0
  * @since 1.5.0
  */
 public abstract class Subsumption {
 
-    /**
-     * Generates a UBTree from the formulas operands (clauses in CNF, minterms in DNF)
-     * where all subsumed operands are already deleted.
-     * @param formula the formula (must be an n-ary operator and CNF or DNF)
-     * @return the UBTree with the operands and deleted subsumed operands
-     */
-    protected static UBTree<Literal> generateSubsumedUBTree(final Formula formula) {
-        final SortedMap<Integer, List<SortedSet<Literal>>> mapping = new TreeMap<>();
-        for (final Formula term : formula) {
-            mapping.computeIfAbsent(term.literals().size(), k -> new ArrayList<>()).add(term.literals());
+    protected static Formula compute(final NAryOperator nary, final boolean cnf) {
+        final List<SortedSet<Literal>> terms = getTerms(nary);
+        final UBTree<Literal> ubTree = UBTree.generateSubsumedUBTree(terms);
+        return toNormalForm(ubTree, cnf, nary.factory());
+    }
+
+    private static List<SortedSet<Literal>> getTerms(final NAryOperator nary) {
+        final List<SortedSet<Literal>> terms = new ArrayList<>();
+        for (final Formula term : nary) {
+            terms.add(term.literals());
         }
-        final UBTree<Literal> ubTree = new UBTree<>();
-        for (final Map.Entry<Integer, List<SortedSet<Literal>>> entry : mapping.entrySet()) {
-            for (final SortedSet<Literal> set : entry.getValue()) {
-                if (ubTree.firstSubset(set) == null) {
-                    ubTree.addSet(set);
-                }
-            }
+        return terms;
+    }
+
+    private static Formula toNormalForm(final UBTree<Literal> ubTree, final boolean cnf, final FormulaFactory f) {
+        final List<Formula> terms = new ArrayList<>();
+        for (final SortedSet<Literal> term : ubTree.allSets()) {
+            terms.add(cnf ? f.or(term) : f.and(term));
         }
-        return ubTree;
+        return cnf ? f.cnf(terms) : f.or(terms);
     }
 }

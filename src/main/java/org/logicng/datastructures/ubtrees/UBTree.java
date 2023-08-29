@@ -29,8 +29,10 @@
 package org.logicng.datastructures.ubtrees;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -54,6 +56,28 @@ public final class UBTree<T extends Comparable<T>> {
     public UBTree() {
         this.rootNodes = new TreeMap<>();
         this.rootSet = null;
+    }
+
+    /**
+     * Generates a subsumed UBTree from the given sets.
+     * @param sets the sets
+     * @param <E>  the type of the elements (must be comparable)
+     * @return the subsumed UBTree
+     */
+    public static <E extends Comparable<E>> UBTree<E> generateSubsumedUBTree(final Collection<? extends Collection<E>> sets) {
+        final SortedMap<Integer, List<SortedSet<E>>> sizes = new TreeMap<>();
+        for (final Collection<E> set : sets) {
+            sizes.computeIfAbsent(set.size(), k -> new ArrayList<>()).add(new TreeSet<>(set));
+        }
+        final UBTree<E> ubTree = new UBTree<>();
+        for (final Map.Entry<Integer, List<SortedSet<E>>> entry : sizes.entrySet()) {
+            for (final SortedSet<E> set : entry.getValue()) {
+                if (ubTree.firstSubset(set) == null) {
+                    ubTree.addSet(set);
+                }
+            }
+        }
+        return ubTree;
     }
 
     /**

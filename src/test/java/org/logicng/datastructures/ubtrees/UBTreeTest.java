@@ -28,11 +28,13 @@
 
 package org.logicng.datastructures.ubtrees;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -42,6 +44,19 @@ import java.util.TreeSet;
  * @since 1.5.0
  */
 public class UBTreeTest {
+
+    @Test
+    public void testGenerateSubsumedUBTree() {
+        final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
+        final SortedSet<String> e013 = set("e0", "e1", "e3");
+        final SortedSet<String> e012 = set("e0", "e1", "e2");
+        final SortedSet<String> e23 = set("e2", "e3");
+        final SortedSet<String> empty = set();
+        assertThat(UBTree.generateSubsumedUBTree(emptyList()).allSets()).isEmpty();
+        assertThat(UBTree.generateSubsumedUBTree(singletonList(e0123)).allSets()).containsExactlyInAnyOrder(e0123);
+        assertThat(UBTree.generateSubsumedUBTree(asList(e0123, e013, e012, e23)).allSets()).containsExactlyInAnyOrder(e013, e012, e23);
+        assertThat(UBTree.generateSubsumedUBTree(asList(e0123, e013, e012, e23, empty)).allSets()).containsExactlyInAnyOrder(empty);
+    }
 
     @Test
     public void testEmtpyUBTree() {
@@ -410,6 +425,6 @@ public class UBTreeTest {
     }
 
     private static SortedSet<String> set(final String... elements) {
-        return new TreeSet<>(Arrays.asList(elements));
+        return new TreeSet<>(asList(elements));
     }
 }
