@@ -104,6 +104,16 @@ public final class LNGBoundedLongQueue {
         this.queueSize = 0;
     }
 
+    LNGBoundedLongQueue(final LNGLongVector elems, final int first, final int last, final long sumOfQueue,
+                        final int maxSize, final int queueSize) {
+        this.elems = elems;
+        this.first = first;
+        this.last = last;
+        this.sumOfQueue = sumOfQueue;
+        this.maxSize = maxSize;
+        this.queueSize = queueSize;
+    }
+
     /**
      * Initializes the size of this queue.
      * @param size the size
@@ -170,6 +180,30 @@ public final class LNGBoundedLongQueue {
         this.last = 0;
         this.queueSize = 0;
         this.sumOfQueue = 0;
+    }
+
+    LNGLongVector getElems() {
+        return this.elems;
+    }
+
+    int getFirst() {
+        return this.first;
+    }
+
+    int getLast() {
+        return this.last;
+    }
+
+    long getSumOfQueue() {
+        return this.sumOfQueue;
+    }
+
+    int getMaxSize() {
+        return this.maxSize;
+    }
+
+    int getQueueSize() {
+        return this.queueSize;
     }
 
     @Override
