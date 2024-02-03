@@ -123,6 +123,21 @@ public final class MSClause {
         this.atMostWatchers = -1;
     }
 
+    MSClause(final LNGIntVector data, final boolean learnt, final boolean isAtMost, final double activity,
+             final int szWithoutSelectors, final boolean seen, final long lbd, final boolean canBeDel,
+             final boolean oneWatched, final int atMostWatchers) {
+        this.data = data;
+        this.learnt = learnt;
+        this.isAtMost = isAtMost;
+        this.activity = activity;
+        this.szWithoutSelectors = szWithoutSelectors;
+        this.seen = seen;
+        this.lbd = lbd;
+        this.canBeDel = canBeDel;
+        this.oneWatched = oneWatched;
+        this.atMostWatchers = atMostWatchers;
+    }
+
     /**
      * Returns the size (number of literals) of this clause.
      * @return the size
@@ -299,6 +314,10 @@ public final class MSClause {
      */
     public int cardinality() {
         return this.data.size() - this.atMostWatchers + 1;
+    }
+
+    LNGIntVector getData() {
+        return this.data;
     }
 
     @Override

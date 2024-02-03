@@ -88,6 +88,11 @@ public final class LNGLongVector {
         this.size = elems.length;
     }
 
+    LNGLongVector(final long[] elements, final int size) {
+        this.elements = elements;
+        this.size = size;
+    }
+
     /**
      * Returns whether the vector is empty or not.
      * @return {@code true} if the vector is empty, {@code false} otherwise
