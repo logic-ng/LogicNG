@@ -40,11 +40,11 @@ import org.logicng.formulas.Variable;
 import org.logicng.handlers.OptimizationHandler;
 import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
+import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
-import org.logicng.solvers.SolverState;
-import org.logicng.solvers.functions.OptimizationFunction;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -101,32 +101,33 @@ public final class SmusComputation {
     public static <P extends Proposition> List<P> computeSmus(final List<P> propositions, final List<Formula> additionalConstraints, final FormulaFactory f,
                                                               final OptimizationHandler handler) {
         start(handler);
-        final SATSolver growSolver = MiniSat.miniSat(f);
-        growSolver.add(additionalConstraints == null ? Collections.singletonList(f.verum()) : additionalConstraints);
+        final List<Formula> growSolverConstraints = new ArrayList<>((additionalConstraints == null ? Collections.singletonList(f.verum()) : additionalConstraints));
         final Map<Variable, P> propositionMapping = new TreeMap<>();
         for (final P proposition : propositions) {
             final Variable selector = f.variable(PROPOSITION_SELECTOR + propositionMapping.size());
             propositionMapping.put(selector, proposition);
-            growSolver.add(f.equivalence(selector, proposition.formula()));
+            growSolverConstraints.add(f.equivalence(selector, proposition.formula()));
         }
-        final boolean sat = growSolver.sat(satHandler(handler), propositionMapping.keySet()) == Tristate.TRUE;
+        final SATSolver satSolver = MiniSat.miniSat(f);
+        satSolver.add(growSolverConstraints);
+        final boolean sat = satSolver.sat(satHandler(handler), propositionMapping.keySet()) == Tristate.TRUE;
         if (sat || aborted(handler)) {
             return null;
         }
-        final SATSolver hSolver = MiniSat.miniSat(f);
+        final List<Formula> hSolverConstraints = new ArrayList<>();
         while (true) {
-            final SortedSet<Variable> h = minimumHs(hSolver, propositionMapping.keySet(), handler);
+            final SortedSet<Variable> h = minimumHs(hSolverConstraints, propositionMapping.keySet(), handler, f);
             if (h == null || aborted(handler)) {
                 return null;
             }
-            final SortedSet<Variable> c = grow(growSolver, h, propositionMapping.keySet(), handler);
+            final SortedSet<Variable> c = grow(growSolverConstraints, h, propositionMapping.keySet(), handler, f);
             if (aborted(handler)) {
                 return null;
             }
             if (c == null) {
                 return h.stream().map(propositionMapping::get).collect(Collectors.toList());
             }
-            hSolver.add(f.or(c));
+            hSolverConstraints.add(f.or(c));
         }
     }
 
@@ -156,26 +157,32 @@ public final class SmusComputation {
         return smus == null ? null : smus.stream().map(Proposition::formula).collect(Collectors.toList());
     }
 
-    private static SortedSet<Variable> minimumHs(final SATSolver hSolver, final Set<Variable> variables, final OptimizationHandler handler) {
-        final Assignment minimumHsModel = hSolver.execute(OptimizationFunction.builder()
-                .handler(handler)
-                .literals(variables)
-                .minimize().build());
-        return aborted(handler) ? null : new TreeSet<>(minimumHsModel.positiveVariables());
+    private static SortedSet<Variable> minimumHs(final List<Formula> constraints, final Set<Variable> variables, final OptimizationHandler handler, final FormulaFactory f) {
+        if(variables.isEmpty()) {
+            return new TreeSet<>(); // TODO workaround: MaxSAT assertion fails for corner case
+        }
+        final MaxSATSolver maxSatSolver = MaxSATSolver.oll(f);
+        constraints.forEach(maxSatSolver::addHardFormula);
+        for (final Variable v : variables) {
+            maxSatSolver.addSoftFormula(v.negate(), 1); // negate to minimize
+        }
+        maxSatSolver.solve(); // TODO handler
+        return new TreeSet<>(maxSatSolver.model().positiveVariables());
     }
 
-    private static SortedSet<Variable> grow(final SATSolver growSolver, final SortedSet<Variable> h, final Set<Variable> variables, final OptimizationHandler handler) {
-        final SolverState solverState = growSolver.saveState();
-        growSolver.add(h);
-        final Assignment maxModel = growSolver.execute(OptimizationFunction.builder()
-                .handler(handler)
-                .literals(variables)
-                .maximize().build());
+    private static SortedSet<Variable> grow(final List<Formula> constraints, final SortedSet<Variable> h, final Set<Variable> variables, final OptimizationHandler handler, final FormulaFactory f) {
+        final MaxSATSolver maxSatSolver = MaxSATSolver.oll(f);
+        constraints.forEach(maxSatSolver::addHardFormula);
+        h.forEach(maxSatSolver::addHardFormula);
+        for (final Variable v : variables) {
+            maxSatSolver.addSoftFormula(v, 1);
+        }
+        maxSatSolver.solve(); // TODO handler
+        final Assignment maxModel = maxSatSolver.model();
         if (maxModel == null || aborted(handler)) {
             return null;
         } else {
             final List<Variable> maximumSatisfiableSet = maxModel.positiveVariables();
-            growSolver.loadState(solverState);
             final SortedSet<Variable> minimumCorrectionSet = new TreeSet<>(variables);
             maximumSatisfiableSet.forEach(minimumCorrectionSet::remove);
             return minimumCorrectionSet;

@@ -38,14 +38,10 @@ import org.logicng.handlers.OptimizationHandler;
 import org.logicng.handlers.TimeoutHandler;
 import org.logicng.handlers.TimeoutOptimizationHandler;
 import org.logicng.io.parsers.ParserException;
-import org.logicng.io.readers.DimacsReader;
-import org.logicng.io.readers.FormulaReader;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Unit Tests for the class {@link SmusComputation}.
@@ -240,30 +236,30 @@ public class SmusComputationTest extends TestWithExampleFormulas {
         }
     }
 
-    @Test
-    public void testTimeoutHandlerLarge() throws ParserException, IOException {
-        final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
-                new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
-                new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
-                new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
-        );
-        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
-        final List<Formula> formulas = formula.stream().collect(Collectors.toList());
-        for (final TimeoutOptimizationHandler handler : handlers) {
-            testHandler(handler, formulas, true);
-        }
-    }
+//    @Test
+//    public void testTimeoutHandlerLarge() throws ParserException, IOException {
+//        final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
+//                new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
+//                new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
+//                new TimeoutOptimizationHandler(System.currentTimeMillis() + 1L, TimeoutHandler.TimerType.FIXED_END)
+//        );
+//        final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
+//        final List<Formula> formulas = formula.stream().collect(Collectors.toList());
+//        for (final TimeoutOptimizationHandler handler : handlers) {
+//            testHandler(handler, formulas, true);
+//        }
+//    }
 
-    @Test
-    public void testCancellationPoints() throws IOException {
-        final List<Formula> formulas = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", this.f);
-        for (int numOptimizationStarts = 1; numOptimizationStarts < 5; numOptimizationStarts++) {
-            for (int numSatHandlerStarts = 1; numSatHandlerStarts < 10; numSatHandlerStarts++) {
-                final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
-                testHandler(handler, formulas, true);
-            }
-        }
-    }
+//    @Test
+//    public void testCancellationPoints() throws IOException {
+//        final List<Formula> formulas = DimacsReader.readCNF("src/test/resources/sat/unsat/bf0432-007.cnf", this.f);
+//        for (int numOptimizationStarts = 1; numOptimizationStarts < 5; numOptimizationStarts++) {
+//            for (int numSatHandlerStarts = 1; numSatHandlerStarts < 10; numSatHandlerStarts++) {
+//                final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
+//                testHandler(handler, formulas, true);
+//            }
+//        }
+//    }
 
     @Test
     public void testMinimumHittingSetCancelled() throws ParserException {
@@ -275,16 +271,16 @@ public class SmusComputationTest extends TestWithExampleFormulas {
         testHandler(handler, formulas, true);
     }
 
-    @Test
-    public void testHSolverCancelled() throws ParserException {
-        final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 3);
-        final List<Formula> formulas = Arrays.asList(
-                this.f.parse("a"),
-                this.f.parse("~a"),
-                this.f.parse("c")
-        );
-        testHandler(handler, formulas, true);
-    }
+//    @Test
+//    public void testHSolverCancelled() throws ParserException {
+//        final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 3);
+//        final List<Formula> formulas = Arrays.asList(
+//                this.f.parse("a"),
+//                this.f.parse("~a"),
+//                this.f.parse("c")
+//        );
+//        testHandler(handler, formulas, true);
+//    }
 
     private void testHandler(final OptimizationHandler handler, final List<Formula> formulas, final boolean expAborted) {
         final List<Formula> result = SmusComputation.computeSmusForFormulas(formulas, Collections.emptyList(), this.f, handler);

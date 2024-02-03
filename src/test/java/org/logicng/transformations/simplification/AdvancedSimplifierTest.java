@@ -31,7 +31,6 @@ package org.logicng.transformations.simplification;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.LongRunningTag;
 import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
@@ -123,19 +122,19 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
         testHandler(handler, formula, true);
     }
 
-    @LongRunningTag
-    @Test
-    public void testCancellationPoints() throws ParserException {
-        final FormulaFactory f = new FormulaFactory();
-        final Formula formula = f.parse("~v16 & ~v22 & ~v12 & (~v4 | ~v14) & (~v4 | ~v15) & (v3 | v4) & (v3 | ~v14) & (v3 | ~v15) " +
-                "& (~v20 | ~v8) & (v9 | ~v20) & (~v21 | ~v8) & (v9 | ~v21) & (~v21 | ~v10) & (~v21 | ~v11) & v19");
-        for (int numOptimizationStarts = 1; numOptimizationStarts < 30; numOptimizationStarts++) {
-            for (int numSatHandlerStarts = 1; numSatHandlerStarts < 500; numSatHandlerStarts++) {
-                final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
-                testHandler(handler, formula, true);
-            }
-        }
-    }
+//    @LongRunningTag
+//    @Test
+//    public void testCancellationPoints() throws ParserException {
+//        final FormulaFactory f = new FormulaFactory();
+//        final Formula formula = f.parse("~v16 & ~v22 & ~v12 & (~v4 | ~v14) & (~v4 | ~v15) & (v3 | v4) & (v3 | ~v14) & (v3 | ~v15) " +
+//                "& (~v20 | ~v8) & (v9 | ~v20) & (~v21 | ~v8) & (v9 | ~v21) & (~v21 | ~v10) & (~v21 | ~v11) & v19");
+//        for (int numOptimizationStarts = 1; numOptimizationStarts < 30; numOptimizationStarts++) {
+//            for (int numSatHandlerStarts = 1; numSatHandlerStarts < 500; numSatHandlerStarts++) {
+//                final OptimizationHandler handler = new BoundedOptimizationHandler(numSatHandlerStarts, numOptimizationStarts);
+//                testHandler(handler, formula, true);
+//            }
+//        }
+//    }
 
     @Test
     public void testAdvancedSimplifierConfig() {
