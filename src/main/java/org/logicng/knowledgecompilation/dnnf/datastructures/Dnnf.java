@@ -32,11 +32,12 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
 import org.logicng.knowledgecompilation.dnnf.functions.DnnfFunction;
 
+import java.util.Objects;
 import java.util.SortedSet;
 
 /**
  * A DNNF - Decomposable Negation Normal Form.
- * @version 2.0.0
+ * @version 2.5.0
  * @since 2.0.0
  */
 public final class Dnnf {
@@ -78,5 +79,22 @@ public final class Dnnf {
      */
     public SortedSet<Variable> getOriginalVariables() {
         return this.originalVariables;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Dnnf dnnf = (Dnnf) o;
+        return Objects.equals(this.originalVariables, dnnf.originalVariables) && Objects.equals(this.formula, dnnf.formula);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.originalVariables, this.formula);
     }
 }
