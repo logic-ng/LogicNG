@@ -2,10 +2,11 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.0] - 2023-xx-xx
+## [2.5.0] - 2024-xx-xx
 
 ### Added
 
+- Added unsafe methods `term` and `dnf` to the `FormulaFactory` to create a term (conjunction of literals) or a DNF (c.f. with method `FormulaFactory#clause` and `FormulaFactory#cnf`). Both methods do not perform reduction operations and therefore are faster. Only use these methods if you are sure the input is free of complementary and redundant operands. 
 - Class `UBTree` offers new method `generateSubsumedUBTree` to directly generate a subsumed UBTree for the given sets. 
 
 ### Changed
