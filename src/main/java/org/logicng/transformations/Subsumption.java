@@ -62,8 +62,8 @@ public abstract class Subsumption {
     private static Formula toNormalForm(final UBTree<Literal> ubTree, final boolean cnf, final FormulaFactory f) {
         final List<Formula> terms = new ArrayList<>();
         for (final SortedSet<Literal> term : ubTree.allSets()) {
-            terms.add(cnf ? f.or(term) : f.and(term));
+            terms.add(cnf ? f.clause(term) : f.term(term));
         }
-        return cnf ? f.cnf(terms) : f.or(terms);
+        return cnf ? f.cnf(terms) : f.dnf(terms);
     }
 }
