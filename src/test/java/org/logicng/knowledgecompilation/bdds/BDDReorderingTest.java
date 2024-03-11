@@ -69,10 +69,15 @@ import java.util.stream.Stream;
 public class BDDReorderingTest extends TestWithExampleFormulas {
 
     private final SwapStats stats = new SwapStats();
-    private static final List<BDDReorderingMethod> REORDER_METHODS =
-            Arrays.asList(BDDReorderingMethod.BDD_REORDER_WIN2, BDDReorderingMethod.BDD_REORDER_WIN2ITE, BDDReorderingMethod.BDD_REORDER_WIN3, BDDReorderingMethod.BDD_REORDER_WIN3ITE,
-                    BDDReorderingMethod.BDD_REORDER_SIFT,
-                    BDDReorderingMethod.BDD_REORDER_SIFTITE, BDDReorderingMethod.BDD_REORDER_RANDOM);
+    private static final List<BDDReorderingMethod> REORDER_METHODS = Arrays.asList(
+            BDDReorderingMethod.BDD_REORDER_WIN2,
+            BDDReorderingMethod.BDD_REORDER_WIN2ITE,
+            BDDReorderingMethod.BDD_REORDER_WIN3,
+            BDDReorderingMethod.BDD_REORDER_WIN3ITE,
+            BDDReorderingMethod.BDD_REORDER_SIFT,
+            BDDReorderingMethod.BDD_REORDER_SIFTITE,
+            BDDReorderingMethod.BDD_REORDER_RANDOM
+    );
 
     @Test
     public void testExceptionalBehavior() {
@@ -141,6 +146,56 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     @Test
+    public void testReorderingAndFormulaGeneration() throws ParserException {
+        final List<Variable> order = this.f.variables("a", "b", "c", "d", "e", "f");
+        final Formula formula1 = this.f.parse("a & b <=> (~c | d) & f");
+        final Formula formula2 = this.f.parse("a => c & ~d | e | f");
+        final Formula formula3 = this.f.parse("a => b <=> (~a | d) & c | f");
+
+        for (final BDDReorderingMethod method : REORDER_METHODS) {
+            final BDDKernel kernel = new BDDKernel(this.f, order, 100, 100);
+            final BDD bdd1 = BDDFactory.build(formula1, kernel);
+            final BDD bdd2 = BDDFactory.build(formula2, kernel);
+            kernel.getReordering().addVariableBlockAll();
+            kernel.getReordering().reorder(method);
+            final BDD bdd3 = BDDFactory.build(formula3, kernel);
+
+            assertThat(bdd1.toFormula().isEquivalentTo(formula1)).isTrue();
+            assertThat(bdd2.toFormula().isEquivalentTo(formula2)).isTrue();
+            assertThat(bdd3.toFormula().isEquivalentTo(formula3)).isTrue();
+        }
+    }
+
+    @Test
+    public void testSwappingAndFormulaGeneration() throws ParserException {
+        final List<Variable> order = this.f.variables("a", "b", "c", "d", "e", "f");
+        final Formula formula1 = this.f.parse("a | b | c");
+        final Formula formula2 = this.f.parse("a => b & ~c | ~d");
+        final Formula formula3 = this.f.parse("a & b <=> (~c | d) & f");
+
+        final BDDKernel kernel = new BDDKernel(this.f, order, 100, 100);
+        final BDD bdd1 = BDDFactory.build(formula1, kernel);
+        final BDD bdd2 = BDDFactory.build(formula2, kernel);
+
+        assertThat(bdd1.toFormula()).isEqualTo(this.f.parse("~a & (~b & c | b) | a"));
+        assertThat(bdd2.toFormula()).isEqualTo(this.f.parse("~a | a & (~b & ~d | b & (~c | c & ~d))"));
+
+        bdd1.swapVariables(this.f.variable("a"), this.f.variable("b")); // also affects bdd2 and upcoming bdd3
+
+        assertThat(bdd1.toFormula()).isEqualTo(this.f.parse("~b & (~a & c | a) | b"));
+        assertThat(bdd2.toFormula()).isEqualTo(this.f.parse("~b & (~a | a & ~d) | b & (~a | a & (~c | c & ~d))"));
+
+        final BDD bdd3 = BDDFactory.build(formula3, kernel);
+        assertThat(bdd3.toFormula()).isEqualTo(this.f.parse("~b & (~c & ~f | c & (~d | d & ~f)) | b & (~a & (~c & ~f | c & (~d | d & ~f)) | a & (~c & f | c & d & f))"));
+
+        bdd3.swapVariables(this.f.variable("a"), this.f.variable("d"));
+
+        assertThat(bdd1.toFormula()).isEqualTo(this.f.parse("~b & (~c & a | c) | b"));
+        assertThat(bdd2.toFormula()).isEqualTo(this.f.parse("~b & (~d | d & ~a) | b & (~d | d & (~c | c & ~a))"));
+        assertThat(bdd3.toFormula()).isEqualTo(this.f.parse("~b & (~d & (~c & ~f | c) | d & ~f) | b & (~d & (~c & (~a & ~f | a & f) | ~a & c) | d & (~a & ~f | a & f))"));
+    }
+
+    @Test
     public void testRandomReorderingQuick() {
         testRandomReordering(25, 30, false);
     }
@@ -182,7 +237,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
 
     private Formula randomFormula(final int vars, final int depth, final FormulaFactory f) {
         final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder()
-                .numVars(vars).seed(vars * depth * 42)
+                .numVars(vars).seed(vars * depth * 42L)
                 .weightEquiv(0).weightImpl(0).weightNot(0).build());
         return Stream.generate(() -> randomizer.and(depth))
                 .filter(fm -> fm.variables().size() == vars && fm.holds(new SATPredicate(f)))
@@ -206,7 +261,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
         }
         final double reduction = (usedBefore - usedAfter) / (double) usedBefore * 100;
         if (verbose) {
-            System.out.println(String.format("%-20s: Reduced %7s blocks in %5dms by %.2f%% from %d to %d", reorderMethod, withBlocks ? "with" : "without", duration, reduction, usedBefore, usedAfter));
+            System.out.printf("%-20s: Reduced %7s blocks in %5dms by %.2f%% from %d to %d%n", reorderMethod, withBlocks ? "with" : "without", duration, reduction, usedBefore, usedAfter);
         }
     }
 
@@ -235,7 +290,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
                 final FormulaFactory f = new FormulaFactory();
                 final Formula formula = randomFormula(vars, depth, f);
                 if (verbose) {
-                    System.out.println(String.format("vars = %2d, depth = %2d, nodes = %5d", vars, depth, formula.numberOfNodes()));
+                    System.out.printf("vars = %2d, depth = %2d, nodes = %5d%n", vars, depth, formula.numberOfNodes());
                 }
                 final BDDKernel kernel = new BDDKernel(f, new ArrayList<>(formula.variables()), 1000, 10000);
                 final BDD bdd = BDDFactory.build(formula, kernel);
@@ -264,7 +319,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
         verifyBddConsistency(f, formula, bdd, originalCount);
         final double reduction = (originalUsedNodes - usedAfter) / (double) originalUsedNodes * 100;
         if (verbose) {
-            System.out.println(String.format("%-20s: Built in %5d ms, reduction by %6.2f%% from %6d to %6d", method, duration, reduction, originalUsedNodes, usedAfter));
+            System.out.printf("%-20s: Built in %5d ms, reduction by %6.2f%% from %6d to %6d%n", method, duration, reduction, originalUsedNodes, usedAfter);
         }
     }
 
