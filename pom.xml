@@ -76,22 +76,22 @@
 
     <!-- Dependency Versions -->
     <version.antlr>4.9.3</version.antlr>
-    <version.junit>5.9.0</version.junit>
-    <version.assertj>3.23.1</version.assertj>
-    <version.mockito>4.7.0</version.mockito>
+    <version.junit>5.10.2</version.junit>
+    <version.assertj>3.25.3</version.assertj>
+    <version.mockito>5.2.0</version.mockito>
 
     <!-- Plugin Versions -->
     <version.antlr-plugin>4.9.3</version.antlr-plugin>
-    <version.jacoco>0.8.8</version.jacoco>
+    <version.jacoco>0.8.11</version.jacoco>
     <version.coveralls>4.3.0</version.coveralls>
-    <version.surefire>3.0.0-M7</version.surefire>
+    <version.surefire>3.2.5</version.surefire>
     <version.nexus-staging>1.6.8</version.nexus-staging>
     <version.maven-gpg>1.6</version.maven-gpg>
-    <version.osgi-plugin>5.1.8</version.osgi-plugin>
-    <version.maven-source>3.2.1</version.maven-source>
-    <version.maven-javadoc>3.2.0</version.maven-javadoc>
-    <version.maven-jar>3.2.0</version.maven-jar>
-
+    <version.osgi-plugin>5.1.9</version.osgi-plugin>
+    <version.maven-compiler>3.12.1</version.maven-compiler>
+    <version.maven-source>3.3.0</version.maven-source>
+    <version.maven-javadoc>3.6.3</version.maven-javadoc>
+    <version.maven-jar>3.3.0</version.maven-jar>
   </properties>
 
   <build>
@@ -122,6 +122,12 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${version.maven-compiler}</version>
       </plugin>
 
       <!-- Store POM version in application manifest and set Jigsaw module name-->
@@ -385,4 +391,3 @@
     </profile>
   </profiles>
 </project>
-
