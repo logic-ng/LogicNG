@@ -7,6 +7,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Class `UBTree` offers new method `generateSubsumedUBTree` to directly generate a subsumed UBTree for the given sets. 
+- The `DnnfFactory` now offers a method to compile a DNNF with a `DnnfCompilationHandler`
 
 ### Changed
 
