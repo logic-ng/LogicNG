@@ -19,6 +19,7 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `BDDKernel.activateReorderDuringBuild` for activating reordering during build
   - `BDDKernel.addVariableBlock` for defining a variable block for reordering
   - `BDDKernel.addAllVariablesAsBlock` for defining one block for each variable (s.t. all variables are allowed to be reordered independently)
+- Significant performance improvements in the DTree generation for DNNFs
 
 ### Fixed
 
