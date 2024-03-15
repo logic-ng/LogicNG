@@ -41,7 +41,9 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.DnnfCompilationHandler;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.io.readers.DimacsReader;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
 import org.logicng.solvers.MiniSat;
 import org.logicng.testutils.NQueensGenerator;
@@ -51,6 +53,7 @@ import org.logicng.util.FormulaHelper;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
@@ -165,6 +168,16 @@ public class ModelCounterTest extends TestWithExampleFormulas {
     }
 
     @Test
+    public void testCompilationHandler() throws IOException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula formula = f.and(DimacsReader.readCNF("src/test/resources/dnnf/both_bdd_dnnf_1.cnf", f));
+        final BigInteger countSuccessful = ModelCounter.count(Collections.singletonList(formula), formula.variables(), () -> new MaxShannonHandler(100));
+        assertThat(countSuccessful).isNotNull();
+        final BigInteger countAborted = ModelCounter.count(Collections.singletonList(formula), formula.variables(), () -> new MaxShannonHandler(50));
+        assertThat(countAborted).isNull();
+    }
+
+    @Test
     @RandomTag
     public void testRandom() {
         for (int i = 0; i < 500; i++) {
@@ -247,6 +260,20 @@ public class ModelCounterTest extends TestWithExampleFormulas {
                     .filter(var -> !modelVars.contains(var))
                     .collect(Collectors.toCollection(TreeSet::new));
             return BigInteger.valueOf(models.size()).multiply(BigInteger.valueOf(2).pow(dontCareVars.size()));
+        }
+    }
+
+    private static class MaxShannonHandler implements DnnfCompilationHandler {
+        private int currentShannons = 0;
+        private final int maxShannons;
+
+        private MaxShannonHandler(final int maxShannons) {
+            this.maxShannons = maxShannons;
+        }
+
+        @Override
+        public boolean shannonExpansion() {
+            return ++this.currentShannons <= this.maxShannons;
         }
     }
 }
