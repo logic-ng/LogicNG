@@ -33,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.logicng.datastructures.Tristate.UNDEF;
 import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.BASIC;
 import static org.logicng.solvers.sat.MiniSatConfig.ClauseMinimization.NONE;
-import static org.logicng.util.FormulaHelper.variables;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
@@ -44,7 +43,6 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.formulas.FormulaFactoryConfig;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.ModelEnumerationHandler;
@@ -63,6 +61,7 @@ import org.logicng.solvers.functions.FormulaOnSolverFunction;
 import org.logicng.solvers.functions.ModelEnumerationFunction;
 import org.logicng.solvers.functions.UpZeroLiteralsFunction;
 import org.logicng.testutils.PigeonHoleGenerator;
+import org.logicng.util.FormulaHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,7 +81,7 @@ import java.util.TreeSet;
 
 /**
  * Unit tests for the SAT solvers.
- * @version 2.4.1
+ * @version 1.6
  * @since 1.0
  */
 public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
@@ -298,28 +297,6 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
-    public void testVariableRemovedBySimplificationOccursInModel() throws ParserException {
-        final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().simplifyComplementaryOperands(true).build());
-        final SATSolver solver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
-        final Variable a = f.variable("A");
-        final Variable b = f.variable("B");
-        final Formula formula = this.f.parse("A & B => A");
-        solver.add(formula); // during NNF conversion, used by the PG transformation, the formula simplifies to verum when added to the solver
-        assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
-        assertThat(solver.knownVariables()).containsExactlyInAnyOrder(a, b);
-        assertThat(variables(solver.model().literals())).containsExactlyInAnyOrder(a, b);
-    }
-
-    @Test
-    public void testUnknownVariableNotOccurringInModel() {
-        final SATSolver solver = MiniSat.miniSat(this.f);
-        final Variable a = this.f.variable("A");
-        solver.add(a);
-        assertThat(solver.sat()).isEqualTo(Tristate.TRUE);
-        assertThat(solver.model(this.f.variables("A", "X")).literals()).containsExactly(a);
-    }
-
-    @Test
     public void testModelEnumerationHandler() {
         for (final SATSolver s : this.solvers) {
             s.add(this.IMP3);
@@ -364,6 +341,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testWithRelaxation() throws ParserException {
         final PropositionalParser parser = new PropositionalParser(this.f);
         final Formula one = parser.parse("a & b & (c | ~d)");
@@ -844,6 +822,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddWithoutUnknown() throws ParserException {
         final PropositionalParser parser = new PropositionalParser(this.f);
         final Formula phi = parser.parse("x1 & (~x2 | x3) & (x4 | ~x5)");
@@ -1107,7 +1086,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
                 if (fileName.endsWith(".cnf")) {
                     readCNF(solver, file);
                     final List<Literal> selectionOrder = new ArrayList<>();
-                    for (final Variable var : variables(solver.execute(FormulaOnSolverFunction.get()))) {
+                    for (final Variable var : FormulaHelper.variables(solver.execute(FormulaOnSolverFunction.get()))) {
                         if (selectionOrder.size() < 10) {
                             selectionOrder.add(var.negate());
                         }

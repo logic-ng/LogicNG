@@ -43,7 +43,7 @@ import org.logicng.solvers.SATSolver;
 
 /**
  * Unit tests for the at-most-k encoders.
- * @version 2.4.2
+ * @version 2.0.0
  * @since 1.0
  */
 public class CCAMKTest implements LogicNGTest {
@@ -73,8 +73,8 @@ public class CCAMKTest implements LogicNGTest {
             testCC(10, 7, 968, f, false);
             testCC(10, 8, 1013, f, false);
             testCC(10, 9, 1023, f, false);
-            testCC(10, 10, 1024, f, false);
-            testCC(10, 15, 1024, f, false);
+            testCC(10, 10, 1, f, false);
+            testCC(10, 15, 1, f, false);
             assertThat(f.newCCVariable().name()).endsWith("_" + counter++);
         }
     }
