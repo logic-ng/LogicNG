@@ -95,6 +95,9 @@
         <executions>
           <execution>
             <id>attach-javadocs</id>
+            <configuration>
+              <sourcepath>${project.build.sourceDirectory}</sourcepath>
+            </configuration>
             <goals>
               <goal>jar</goal>
             </goals>
