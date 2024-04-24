@@ -2,10 +2,11 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.0] - 2023-xx-xx
+## [2.5.0] - 2024-xx-xx
 
 ### Added
 
+- Added unsafe methods `term` and `dnf` to the `FormulaFactory` to create a term (conjunction of literals) or a DNF (c.f. with method `FormulaFactory#clause` and `FormulaFactory#cnf`). Both methods do not perform reduction operations and therefore are faster. Only use these methods if you are sure the input is free of complementary and redundant operands.
 - Class `UBTree` offers new method `generateSubsumedUBTree` to directly generate a subsumed UBTree for the given sets. 
 - The `DnnfFactory` now offers a method to compile a DNNF with a `DnnfCompilationHandler`
 - The `ModelCounter` now offers a method to pass a `DnnfCompilationHandler` in order to control long-running computations
@@ -21,6 +22,8 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `BDDKernel.addVariableBlock` for defining a variable block for reordering
   - `BDDKernel.addAllVariablesAsBlock` for defining one block for each variable (s.t. all variables are allowed to be reordered independently)
 - Significant performance improvements in the DTree generation for DNNFs
+- Added side effect note in `SATSolver` for the four assumption solving methods. 
+- Minor performance improvements in some DNF/CNF generating algorithms by using faster `cnf`/`dnf`.
 
 ### Fixed
 
