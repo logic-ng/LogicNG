@@ -29,13 +29,13 @@
 package org.logicng.knowledgecompilation.bdds;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.NumberOfNodesBDDHandler;
 import org.logicng.handlers.TimeoutBDDHandler;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 import org.logicng.testutils.NQueensGenerator;
 import org.logicng.testutils.PigeonHoleGenerator;
@@ -142,9 +142,9 @@ public class LargeBDDTest {
     }
 
     @Test
-    public void testNumberOfNodesHandler() throws ParserException {
+    public void testNumberOfNodesHandler() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = f.parse("A <=> ~(B => C & F & G & ~H | A & D & ~E)");
+        final Formula formula = parse(f, "A <=> ~(B => C & F & G & ~H | A & D & ~E)");
         final BDDKernel kernel = new BDDKernel(f, formula.variables().size(), 10000, 10000);
         final NumberOfNodesBDDHandler handler = new NumberOfNodesBDDHandler(5);
         final BDD bdd = BDDFactory.build(formula, kernel, handler);

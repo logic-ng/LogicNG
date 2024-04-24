@@ -37,7 +37,6 @@ import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDConstant;
 import org.logicng.knowledgecompilation.bdds.datastructures.BDDInnerNode;
 import org.logicng.knowledgecompilation.bdds.functions.LngBDDFunction;
@@ -84,7 +83,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
         assertThatThrownBy(() -> {
             final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B), 100, 100);
             final BDDReordering reordering = new BDDReordering(kernel);
-            final Formula formula = this.f.parse("a | b");
+            final Formula formula = parse(this.f, "a | b");
             BDDFactory.build(formula, kernel);
             reordering.swapVariables(0, 2);
         }).isInstanceOf(IllegalArgumentException.class)
@@ -92,7 +91,7 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
         assertThatThrownBy(() -> {
             final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B), 100, 100);
             final BDDReordering reordering = new BDDReordering(kernel);
-            final Formula formula = this.f.parse("a | b");
+            final Formula formula = parse(this.f, "a | b");
             BDDFactory.build(formula, kernel);
             reordering.swapVariables(3, 0);
         }).isInstanceOf(IllegalArgumentException.class)
@@ -100,9 +99,9 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSwapping() throws ParserException {
+    public void testSwapping() {
         final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B, this.C), 100, 100);
-        final Formula formula = this.f.parse("a | b | c");
+        final Formula formula = parse(this.f, "a | b | c");
         final BDD bdd = BDDFactory.build(formula, kernel);
         assertThat(bdd.getVariableOrder()).containsExactly(this.A, this.B, this.C);
         kernel.swapVariables(this.A, this.B);
@@ -126,10 +125,10 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSwappingMultipleBdds() throws ParserException {
+    public void testSwappingMultipleBdds() {
         final BDDKernel kernel = new BDDKernel(this.f, Arrays.asList(this.A, this.B, this.C), 100, 100);
-        final Formula formula1 = this.f.parse("a | b | c");
-        final Formula formula2 = this.f.parse("a & b");
+        final Formula formula1 = parse(this.f, "a | b | c");
+        final Formula formula2 = parse(this.f, "a & b");
         final BDD bdd1 = BDDFactory.build(formula1, kernel);
         final BDD bdd2 = BDDFactory.build(formula2, kernel);
         assertThat(bdd1.getVariableOrder()).containsExactly(this.A, this.B, this.C);
@@ -146,11 +145,11 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testReorderingAndFormulaGeneration() throws ParserException {
+    public void testReorderingAndFormulaGeneration() {
         final List<Variable> order = this.f.variables("a", "b", "c", "d", "e", "f");
-        final Formula formula1 = this.f.parse("a & b <=> (~c | d) & f");
-        final Formula formula2 = this.f.parse("a => c & ~d | e | f");
-        final Formula formula3 = this.f.parse("a => b <=> (~a | d) & c | f");
+        final Formula formula1 = parse(this.f, "a & b <=> (~c | d) & f");
+        final Formula formula2 = parse(this.f, "a => c & ~d | e | f");
+        final Formula formula3 = parse(this.f, "a => b <=> (~a | d) & c | f");
 
         for (final BDDReorderingMethod method : REORDER_METHODS) {
             final BDDKernel kernel = new BDDKernel(this.f, order, 100, 100);
@@ -167,32 +166,32 @@ public class BDDReorderingTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSwappingAndFormulaGeneration() throws ParserException {
+    public void testSwappingAndFormulaGeneration() {
         final List<Variable> order = this.f.variables("a", "b", "c", "d", "e", "f");
-        final Formula formula1 = this.f.parse("a | b | c");
-        final Formula formula2 = this.f.parse("a => b & ~c | ~d");
-        final Formula formula3 = this.f.parse("a & b <=> (~c | d) & f");
+        final Formula formula1 = parse(this.f, "a | b | c");
+        final Formula formula2 = parse(this.f, "a => b & ~c | ~d");
+        final Formula formula3 = parse(this.f, "a & b <=> (~c | d) & f");
 
         final BDDKernel kernel = new BDDKernel(this.f, order, 100, 100);
         final BDD bdd1 = BDDFactory.build(formula1, kernel);
         final BDD bdd2 = BDDFactory.build(formula2, kernel);
 
-        assertThat(bdd1.toFormula()).isEqualTo(this.f.parse("~a & (~b & c | b) | a"));
-        assertThat(bdd2.toFormula()).isEqualTo(this.f.parse("~a | a & (~b & ~d | b & (~c | c & ~d))"));
+        assertThat(bdd1.toFormula()).isEqualTo(parse(this.f, "~a & (~b & c | b) | a"));
+        assertThat(bdd2.toFormula()).isEqualTo(parse(this.f, "~a | a & (~b & ~d | b & (~c | c & ~d))"));
 
         kernel.swapVariables(this.f.variable("a"), this.f.variable("b")); // also affects bdd2 and upcoming bdd3
 
-        assertThat(bdd1.toFormula()).isEqualTo(this.f.parse("~b & (~a & c | a) | b"));
-        assertThat(bdd2.toFormula()).isEqualTo(this.f.parse("~b & (~a | a & ~d) | b & (~a | a & (~c | c & ~d))"));
+        assertThat(bdd1.toFormula()).isEqualTo(parse(this.f, "~b & (~a & c | a) | b"));
+        assertThat(bdd2.toFormula()).isEqualTo(parse(this.f, "~b & (~a | a & ~d) | b & (~a | a & (~c | c & ~d))"));
 
         final BDD bdd3 = BDDFactory.build(formula3, kernel);
-        assertThat(bdd3.toFormula()).isEqualTo(this.f.parse("~b & (~c & ~f | c & (~d | d & ~f)) | b & (~a & (~c & ~f | c & (~d | d & ~f)) | a & (~c & f | c & d & f))"));
+        assertThat(bdd3.toFormula()).isEqualTo(parse(this.f, "~b & (~c & ~f | c & (~d | d & ~f)) | b & (~a & (~c & ~f | c & (~d | d & ~f)) | a & (~c & f | c & d & f))"));
 
         kernel.swapVariables(this.f.variable("a"), this.f.variable("d"));
 
-        assertThat(bdd1.toFormula()).isEqualTo(this.f.parse("~b & (~c & a | c) | b"));
-        assertThat(bdd2.toFormula()).isEqualTo(this.f.parse("~b & (~d | d & ~a) | b & (~d | d & (~c | c & ~a))"));
-        assertThat(bdd3.toFormula()).isEqualTo(this.f.parse("~b & (~d & (~c & ~f | c) | d & ~f) | b & (~d & (~c & (~a & ~f | a & f) | ~a & c) | d & (~a & ~f | a & f))"));
+        assertThat(bdd1.toFormula()).isEqualTo(parse(this.f, "~b & (~c & a | c) | b"));
+        assertThat(bdd2.toFormula()).isEqualTo(parse(this.f, "~b & (~d | d & ~a) | b & (~d | d & (~c | c & ~a))"));
+        assertThat(bdd3.toFormula()).isEqualTo(parse(this.f, "~b & (~d & (~c & ~f | c) | d & ~f) | b & (~d & (~c & (~a & ~f | a & f) | ~a & c) | d & (~a & ~f | a & f))"));
     }
 
     @Test

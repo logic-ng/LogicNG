@@ -32,18 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 
-/**
- * Unit Tests for the class {@link PseudoBooleanParser}.
- * @version 4.4.1
- * @since 1.0
- */
-public class PseudoBooleanParserTest extends TestWithExampleFormulas {
+import java.util.Arrays;
+
+public class PseudoBooleanParserTest {
+
+    final FormulaFactory f = new FormulaFactory();
 
     @Test
     public void testExceptions() throws ParserException {
@@ -174,9 +172,9 @@ public class PseudoBooleanParserTest extends TestWithExampleFormulas {
         assertThat(parser.parse("\n")).isEqualTo(this.f.verum());
         assertThat(parser.parse("\r")).isEqualTo(this.f.verum());
         assertThat(parser.parse(" \r\n\n  \t")).isEqualTo(this.f.verum());
-        assertThat(parser.parse("a\n&\tb")).isEqualTo(this.AND1);
-        assertThat(parser.parse(" a\r=>\t\tb")).isEqualTo(this.IMP1);
-        assertThat(parser.parse(" 2\n*a\r+\n\n-4*\tb    +3*x=2")).isEqualTo(this.PBC1);
+        assertThat(parser.parse("a\n&\tb")).isEqualTo(this.f.and(this.f.variable("a"), this.f.variable("b")));
+        assertThat(parser.parse(" a\r=>\t\tb")).isEqualTo(this.f.implication(this.f.variable("a"), this.f.variable("b")));
+        assertThat(parser.parse(" 2\n*a\r+\n\n-4*\tb    +3*x=2")).isEqualTo(this.f.pbc(CType.EQ, 2, Arrays.asList(this.f.variable("a"), this.f.variable("b"), this.f.variable("x")), Arrays.asList(2, -4, 3)));
     }
 
     @Test
@@ -187,12 +185,6 @@ public class PseudoBooleanParserTest extends TestWithExampleFormulas {
         assertThat(parser.parse("~12 & A")).isEqualTo(f.and(f.literal("12", false), f.variable("A")));
         assertThat(parser.parse("12 * 12 + 13 * A + 10 * B <= 25")).isEqualTo(f.pbc(CType.LE, 25, new Literal[]{f.variable("12"), f.variable("A"), f.variable("B")}, new int[]{12, 13, 10}));
         assertThat(parser.parse("-12 * ~12 + 13 * A + 10 * B <= 25")).isEqualTo(f.pbc(CType.LE, 25, new Literal[]{f.literal("12", false), f.variable("A"), f.variable("B")}, new int[]{-12, 13, 10}));
-    }
-
-    @Test
-    public void testFormulaFactoryParser() throws ParserException {
-        assertThat(this.f.parse("a & b")).isEqualTo(this.f.and(this.f.variable("a"), this.f.variable("b")));
-        assertThat(this.f.parse("2*a + -4*b + 3*x = 2")).isEqualTo(this.PBC1);
     }
 
     @Test

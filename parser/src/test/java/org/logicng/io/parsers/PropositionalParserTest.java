@@ -32,18 +32,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import org.logicng.TestWithExampleFormulas;
+import org.logicng.formulas.FormulaFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Unit Tests for the class {@link PropositionalParser}.
- * @version 2.4.1
- * @since 1.0
- */
-public class PropositionalParserTest extends TestWithExampleFormulas {
+public class PropositionalParserTest {
+
+    final FormulaFactory f = new FormulaFactory();
 
     @Test
     public void testExceptions() throws ParserException {
@@ -157,8 +154,8 @@ public class PropositionalParserTest extends TestWithExampleFormulas {
         assertThat(parser.parse("\n")).isEqualTo(this.f.verum());
         assertThat(parser.parse("\r")).isEqualTo(this.f.verum());
         assertThat(parser.parse(" \r\n\n  \t")).isEqualTo(this.f.verum());
-        assertThat(parser.parse("a\n&\tb")).isEqualTo(this.AND1);
-        assertThat(parser.parse(" a\r=>\t\tb")).isEqualTo(this.IMP1);
+        assertThat(parser.parse("a\n&\tb")).isEqualTo(this.f.and(this.f.variable("a"), this.f.variable("b")));
+        assertThat(parser.parse(" a\r=>\t\tb")).isEqualTo(this.f.implication(this.f.variable("a"), this.f.variable("b")));
     }
 
     @Test

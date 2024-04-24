@@ -1,6 +1,7 @@
 package org.logicng.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeast;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.DimacsReader;
 import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
@@ -67,12 +67,12 @@ class TimeoutMaxSATHandlerTest {
     }
 
     @Test
-    public void testThatMethodsAreCalled() throws ParserException {
+    public void testThatMethodsAreCalled() {
         for (final MaxSATSolver solver : this.solvers) {
             final int weight = solver.isWeighted() ? 2 : 1;
-            solver.addHardFormula(this.f.parse("A&B"));
-            solver.addSoftFormula(this.f.parse("~A"), weight);
-            solver.addSoftFormula(this.f.parse("~B"), weight);
+            solver.addHardFormula(parse(this.f, "A&B"));
+            solver.addSoftFormula(parse(this.f, "~A"), weight);
+            solver.addSoftFormula(parse(this.f, "~B"), weight);
             final TimeoutMaxSATHandler handler = Mockito.mock(TimeoutMaxSATHandler.class);
             solver.solve(handler);
 

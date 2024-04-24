@@ -42,7 +42,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.DnnfCompilationHandler;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.DimacsReader;
 import org.logicng.knowledgecompilation.bdds.orderings.VariableOrdering;
 import org.logicng.solvers.MiniSat;
@@ -77,7 +76,7 @@ public class ModelCounterTest extends TestWithExampleFormulas {
     @Test
     public void testWrongArgument() {
         assertThrows(IllegalArgumentException.class, () ->
-                ModelCounter.count(Collections.singletonList(this.f.parse("a & b")), new TreeSet<>(Collections.singletonList(this.A))));
+                ModelCounter.count(Collections.singletonList(parse(this.f, "a & b")), new TreeSet<>(Collections.singletonList(this.A))));
     }
 
     @Test
@@ -94,40 +93,40 @@ public class ModelCounterTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSimple() throws ParserException {
-        final Formula formula01 = this.f.parse("(~v1 => ~v0) | ~v1 | v0");
+    public void testSimple() {
+        final Formula formula01 = parse(this.f, "(~v1 => ~v0) | ~v1 | v0");
         assertThat(ModelCounter.count(Collections.singletonList(formula01), formula01.variables())).isEqualTo(BigInteger.valueOf(4));
 
-        final List<Formula> formulas02 = Arrays.asList(this.f.parse("(a & b) | ~b"), this.f.parse("a"));
+        final List<Formula> formulas02 = Arrays.asList(parse(this.f, "(a & b) | ~b"), parse(this.f, "a"));
         assertThat(ModelCounter.count(formulas02, FormulaHelper.variables(formulas02))).isEqualTo(BigInteger.valueOf(2));
 
-        final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & b & c"), this.f.parse("c & d"));
+        final List<Formula> formulas03 = Arrays.asList(parse(this.f, "a & b & c"), parse(this.f, "c & d"));
         assertThat(ModelCounter.count(formulas03, FormulaHelper.variables(formulas03))).isEqualTo(BigInteger.valueOf(1));
     }
 
     @Test
-    public void testAmoAndExo() throws ParserException {
-        final List<Formula> formulas01 = Arrays.asList(this.f.parse("a & b"), this.f.parse("a + b + c + d <= 1"));
+    public void testAmoAndExo() {
+        final List<Formula> formulas01 = Arrays.asList(parse(this.f, "a & b"), parse(this.f, "a + b + c + d <= 1"));
         assertThat(ModelCounter.count(formulas01, FormulaHelper.variables(formulas01))).isEqualTo(BigInteger.valueOf(0));
 
-        final List<Formula> formulas02 = Arrays.asList(this.f.parse("a & b & (a + b + c + d <= 1)"), this.f.parse("a | b"));
+        final List<Formula> formulas02 = Arrays.asList(parse(this.f, "a & b & (a + b + c + d <= 1)"), parse(this.f, "a | b"));
         assertThat(ModelCounter.count(formulas02, FormulaHelper.variables(formulas02))).isEqualTo(BigInteger.valueOf(0));
 
-        final List<Formula> formulas03 = Arrays.asList(this.f.parse("a & (a + b + c + d <= 1)"), this.f.parse("a | b"));
+        final List<Formula> formulas03 = Arrays.asList(parse(this.f, "a & (a + b + c + d <= 1)"), parse(this.f, "a | b"));
         assertThat(ModelCounter.count(formulas03, FormulaHelper.variables(formulas03))).isEqualTo(BigInteger.valueOf(1));
 
-        final List<Formula> formulas04 = Arrays.asList(this.f.parse("a & (a + b + c + d = 1)"), this.f.parse("a | b"));
+        final List<Formula> formulas04 = Arrays.asList(parse(this.f, "a & (a + b + c + d = 1)"), parse(this.f, "a | b"));
         assertThat(ModelCounter.count(formulas04, FormulaHelper.variables(formulas04))).isEqualTo(BigInteger.valueOf(1));
     }
 
     @Test
-    public void testNonAmoAndExo() throws ParserException {
-        final List<Formula> formulas01 = Arrays.asList(this.f.parse("a & b"), this.f.parse("a + b + c + d = 2"));
+    public void testNonAmoAndExo() {
+        final List<Formula> formulas01 = Arrays.asList(parse(this.f, "a & b"), parse(this.f, "a + b + c + d = 2"));
         assertThatThrownBy(() -> ModelCounter.count(formulas01, FormulaHelper.variables(formulas01)))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessage("Pure encoding for a PBC of type other than AMO or EXO is currently not supported.");
 
-        final List<Formula> formulas02 = Arrays.asList(this.f.parse("a & b"), this.f.parse("c | a & (b + c + d <= 4)"));
+        final List<Formula> formulas02 = Arrays.asList(parse(this.f, "a & b"), parse(this.f, "c | a & (b + c + d <= 4)"));
         assertThatThrownBy(() -> ModelCounter.count(formulas02, FormulaHelper.variables(formulas02)))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessage("Pure encoding for a PBC of type other than AMO or EXO is currently not supported.");

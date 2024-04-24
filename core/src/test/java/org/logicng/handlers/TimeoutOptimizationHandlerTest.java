@@ -1,6 +1,7 @@
 package org.logicng.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.DimacsReader;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
@@ -56,8 +56,8 @@ class TimeoutOptimizationHandlerTest {
     }
 
     @Test
-    public void testThatMethodsAreCalled() throws ParserException {
-        final Formula formula = f.parse("a & b & (~a => b)");
+    public void testThatMethodsAreCalled() {
+        final Formula formula = parse(this.f, "a & b & (~a => b)");
         for (final SATSolver solver : this.solvers) {
             solver.add(formula);
             final TimeoutOptimizationHandler handler = Mockito.mock(TimeoutOptimizationHandler.class);

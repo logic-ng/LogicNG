@@ -57,7 +57,7 @@ import java.nio.file.Files;
 public class FormulaWriterReaderTest {
 
     @Test
-    public void testSimpleFormulaOneLine() throws ParserException, IOException {
+    public void testSimpleFormulaOneLine() throws IOException, ParserException {
         final String fileName = "src/test/resources/writers/temp/simple_formula1.txt";
         final File file = new File(fileName);
         final FormulaFactory f = new FormulaFactory();
@@ -79,7 +79,7 @@ public class FormulaWriterReaderTest {
     }
 
     @Test
-    public void testSimpleFormulaMultiLine() throws ParserException, IOException {
+    public void testSimpleFormulaMultiLine() throws IOException, ParserException {
         final String fileName = "src/test/resources/writers/temp/simple_formula2.txt";
         final File file = new File(fileName);
         final FormulaFactory f = new FormulaFactory();
@@ -99,7 +99,7 @@ public class FormulaWriterReaderTest {
     }
 
     @Test
-    public void testPBFormulaOneLine() throws ParserException, IOException {
+    public void testPBFormulaOneLine() throws IOException, ParserException {
         final String fileName = "src/test/resources/writers/temp/simple_formula3.txt";
         final File file = new File(fileName);
         final FormulaFactory f = new FormulaFactory();
@@ -121,7 +121,7 @@ public class FormulaWriterReaderTest {
     }
 
     @Test
-    public void testPBFormulaMultiLine() throws ParserException, IOException {
+    public void testPBFormulaMultiLine() throws IOException, ParserException {
         final String fileName = "src/test/resources/writers/temp/simple_formula4.txt";
         final File file = new File(fileName);
         final FormulaFactory f = new FormulaFactory();
@@ -141,7 +141,7 @@ public class FormulaWriterReaderTest {
     }
 
     @Test
-    public void testSimpleFormulaOneLineFormatter() throws ParserException, IOException {
+    public void testSimpleFormulaOneLineFormatter() throws IOException, ParserException {
         final String fileName = "src/test/resources/writers/temp/simple_formula5.txt";
         final File file = new File(fileName);
         final FormulaFactory f = new FormulaFactory();
@@ -154,7 +154,7 @@ public class FormulaWriterReaderTest {
     }
 
     @Test
-    public void testSimpleFormulaMultiLineFormatter() throws ParserException, IOException {
+    public void testSimpleFormulaMultiLineFormatter() throws IOException, ParserException {
         final String fileName = "src/test/resources/writers/temp/simple_formula6.txt";
         final File file = new File(fileName);
         final FormulaFactory f = new FormulaFactory();

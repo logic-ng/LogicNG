@@ -29,7 +29,6 @@
 package org.logicng.primecomputation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
@@ -116,20 +115,16 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
         Files.lines(Paths.get("src/test/resources/formulas/simplify_formulas.txt"))
                 .filter(s -> !s.isEmpty())
                 .forEach(s -> {
-                    try {
-                        final Formula formula = this.f.parse(s);
-                        final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
-                        verify(resultImplicantsMin, formula);
-                        final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
-                        verify(resultImplicatesMin, formula);
-                    } catch (final ParserException e) {
-                        fail(e.toString());
-                    }
+                    final Formula formula = parse(this.f, s);
+                    final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+                    verify(resultImplicantsMin, formula);
+                    final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+                    verify(resultImplicatesMin, formula);
                 });
     }
 
     @Test
-    public void testTimeoutHandlerSmall() throws ParserException {
+    public void testTimeoutHandlerSmall() {
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
@@ -141,7 +136,7 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
                     new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                     new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
             );
-            final Formula formula = this.f.parse("a & b | ~c & a");
+            final Formula formula = parse(this.f, "a & b | ~c & a");
             for (final TimeoutOptimizationHandler handler : handlers) {
                 testHandler(handler, formula, compiler.first(), compiler.second(), false);
             }
@@ -149,7 +144,7 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testTimeoutHandlerLarge() throws ParserException, IOException {
+    public void testTimeoutHandlerLarge() throws IOException, ParserException {
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
@@ -169,8 +164,8 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testCancellationPoints() throws IOException, ParserException {
-        final Formula formula = this.f.parse(Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
+    public void testCancellationPoints() throws IOException {
+        final Formula formula = parse(this.f, Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
                 new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
