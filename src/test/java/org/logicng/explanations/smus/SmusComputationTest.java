@@ -55,185 +55,185 @@ import java.util.stream.Collectors;
 public class SmusComputationTest extends TestWithExampleFormulas {
 
     @Test
-    public void testFromPaper() throws ParserException {
+    public void testFromPaper() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n"),
-                this.f.parse("~m|l"),
-                this.f.parse("~l")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n"),
+                parse(this.f, "~m|l"),
+                parse(this.f, "~l")
         );
         final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.emptyList(), this.f);
-        assertThat(result).containsExactlyInAnyOrder(this.f.parse("~s"), this.f.parse("s|~p"), this.f.parse("p"));
+        assertThat(result).containsExactlyInAnyOrder(parse(this.f, "~s"), parse(this.f, "s|~p"), parse(this.f, "p"));
     }
 
     @Test
-    public void testWithAdditionalConstraint() throws ParserException {
+    public void testWithAdditionalConstraint() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n"),
-                this.f.parse("~m|l"),
-                this.f.parse("~l")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n"),
+                parse(this.f, "~m|l"),
+                parse(this.f, "~l")
         );
-        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(this.f.parse("n|l")), this.f);
-        assertThat(result).containsExactlyInAnyOrder(this.f.parse("~n"), this.f.parse("~l"));
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(parse(this.f, "n|l")), this.f);
+        assertThat(result).containsExactlyInAnyOrder(parse(this.f, "~n"), parse(this.f, "~l"));
     }
 
     @Test
-    public void testSatisfiable() throws ParserException {
+    public void testSatisfiable() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n"),
-                this.f.parse("~m|l")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n"),
+                parse(this.f, "~m|l")
         );
-        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(this.f.parse("n|l")), this.f);
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(parse(this.f, "n|l")), this.f);
         assertThat(result).isNull();
     }
 
     @Test
-    public void testUnsatisfiableAdditionalConstraints() throws ParserException {
+    public void testUnsatisfiableAdditionalConstraints() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n|s")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n|s")
         );
-        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Arrays.asList(this.f.parse("~a&b"), this.f.parse("a|~b")), this.f);
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Arrays.asList(parse(this.f, "~a&b"), parse(this.f, "a|~b")), this.f);
         assertThat(result).isEmpty();
     }
 
     @Test
-    public void testTrivialUnsatFormula() throws ParserException {
+    public void testTrivialUnsatFormula() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n"),
-                this.f.parse("~m|l"),
-                this.f.parse("~l"),
-                this.f.parse("a&~a")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n"),
+                parse(this.f, "~m|l"),
+                parse(this.f, "~l"),
+                parse(this.f, "a&~a")
         );
-        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(this.f.parse("n|l")), this.f);
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(parse(this.f, "n|l")), this.f);
         assertThat(result).containsExactly(this.f.falsum());
     }
 
     @Test
-    public void testUnsatFormula() throws ParserException {
+    public void testUnsatFormula() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n"),
-                this.f.parse("~m|l"),
-                this.f.parse("~l"),
-                this.f.parse("(a<=>b)&(~a<=>b)")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n"),
+                parse(this.f, "~m|l"),
+                parse(this.f, "~l"),
+                parse(this.f, "(a<=>b)&(~a<=>b)")
         );
-        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(this.f.parse("n|l")), this.f);
-        assertThat(result).containsExactly(this.f.parse("(a<=>b)&(~a<=>b)"));
+        final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.singletonList(parse(this.f, "n|l")), this.f);
+        assertThat(result).containsExactly(parse(this.f, "(a<=>b)&(~a<=>b)"));
     }
 
     @Test
-    public void testShorterConflict() throws ParserException {
+    public void testShorterConflict() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p"),
-                this.f.parse("p&~s"),
-                this.f.parse("~p|m"),
-                this.f.parse("~m|n"),
-                this.f.parse("~n"),
-                this.f.parse("~m|l"),
-                this.f.parse("~l")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p"),
+                parse(this.f, "p&~s"),
+                parse(this.f, "~p|m"),
+                parse(this.f, "~m|n"),
+                parse(this.f, "~n"),
+                parse(this.f, "~m|l"),
+                parse(this.f, "~l")
         );
         final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.emptyList(), this.f);
-        assertThat(result).containsExactlyInAnyOrder(this.f.parse("s|~p"), this.f.parse("p&~s"));
+        assertThat(result).containsExactlyInAnyOrder(parse(this.f, "s|~p"), parse(this.f, "p&~s"));
     }
 
     @Test
-    public void testCompleteConflict() throws ParserException {
+    public void testCompleteConflict() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p|~m"),
-                this.f.parse("m|~n"),
-                this.f.parse("n|~l"),
-                this.f.parse("l|s")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p|~m"),
+                parse(this.f, "m|~n"),
+                parse(this.f, "n|~l"),
+                parse(this.f, "l|s")
         );
         final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.emptyList(), this.f);
         assertThat(result).containsExactlyInAnyOrderElementsOf(input);
     }
 
     @Test
-    public void testLongConflictWithShortcut() throws ParserException {
+    public void testLongConflictWithShortcut() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p|~m"),
-                this.f.parse("m|~n"),
-                this.f.parse("n|~l"),
-                this.f.parse("l|s"),
-                this.f.parse("n|s")
+                parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p|~m"),
+                parse(this.f, "m|~n"),
+                parse(this.f, "n|~l"),
+                parse(this.f, "l|s"),
+                parse(this.f, "n|s")
         );
         final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.emptyList(), this.f);
-        assertThat(result).containsExactlyInAnyOrder(this.f.parse("~s"),
-                this.f.parse("s|~p"),
-                this.f.parse("p|~m"),
-                this.f.parse("m|~n"),
-                this.f.parse("n|s"));
+        assertThat(result).containsExactlyInAnyOrder(parse(this.f, "~s"),
+                parse(this.f, "s|~p"),
+                parse(this.f, "p|~m"),
+                parse(this.f, "m|~n"),
+                parse(this.f, "n|s"));
     }
 
     @Test
-    public void testManyConflicts() throws ParserException {
+    public void testManyConflicts() {
         final List<Formula> input = Arrays.asList(
-                this.f.parse("a"),
-                this.f.parse("~a|b"),
-                this.f.parse("~b|c"),
-                this.f.parse("~c|~a"),
-                this.f.parse("a1"),
-                this.f.parse("~a1|b1"),
-                this.f.parse("~b1|c1"),
-                this.f.parse("~c1|~a1"),
-                this.f.parse("a2"),
-                this.f.parse("~a2|b2"),
-                this.f.parse("~b2|c2"),
-                this.f.parse("~c2|~a2"),
-                this.f.parse("a3"),
-                this.f.parse("~a3|b3"),
-                this.f.parse("~b3|c3"),
-                this.f.parse("~c3|~a3"),
-                this.f.parse("a1|a2|a3|a4|b1|x|y"),
-                this.f.parse("x&~y"),
-                this.f.parse("x=>y")
+                parse(this.f, "a"),
+                parse(this.f, "~a|b"),
+                parse(this.f, "~b|c"),
+                parse(this.f, "~c|~a"),
+                parse(this.f, "a1"),
+                parse(this.f, "~a1|b1"),
+                parse(this.f, "~b1|c1"),
+                parse(this.f, "~c1|~a1"),
+                parse(this.f, "a2"),
+                parse(this.f, "~a2|b2"),
+                parse(this.f, "~b2|c2"),
+                parse(this.f, "~c2|~a2"),
+                parse(this.f, "a3"),
+                parse(this.f, "~a3|b3"),
+                parse(this.f, "~b3|c3"),
+                parse(this.f, "~c3|~a3"),
+                parse(this.f, "a1|a2|a3|a4|b1|x|y"),
+                parse(this.f, "x&~y"),
+                parse(this.f, "x=>y")
         );
         final List<Formula> result = SmusComputation.computeSmusForFormulas(input, Collections.emptyList(), this.f);
-        assertThat(result).containsExactlyInAnyOrder(this.f.parse("x&~y"), this.f.parse("x=>y"));
+        assertThat(result).containsExactlyInAnyOrder(parse(this.f, "x&~y"), parse(this.f, "x=>y"));
     }
 
     @Test
-    public void testTimeoutHandlerSmall() throws ParserException {
+    public void testTimeoutHandlerSmall() {
         final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                 new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                 new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                 new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
         );
         final List<Formula> formulas = Arrays.asList(
-                this.f.parse("a"),
-                this.f.parse("~a")
+                parse(this.f, "a"),
+                parse(this.f, "~a")
         );
         for (final TimeoutOptimizationHandler handler : handlers) {
             testHandler(handler, formulas, false);
@@ -241,7 +241,7 @@ public class SmusComputationTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testTimeoutHandlerLarge() throws ParserException, IOException {
+    public void testTimeoutHandlerLarge() throws IOException, ParserException {
         final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
@@ -266,22 +266,22 @@ public class SmusComputationTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testMinimumHittingSetCancelled() throws ParserException {
+    public void testMinimumHittingSetCancelled() {
         final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 0);
         final List<Formula> formulas = Arrays.asList(
-                this.f.parse("a"),
-                this.f.parse("~a")
+                parse(this.f, "a"),
+                parse(this.f, "~a")
         );
         testHandler(handler, formulas, true);
     }
 
     @Test
-    public void testHSolverCancelled() throws ParserException {
+    public void testHSolverCancelled() {
         final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 3);
         final List<Formula> formulas = Arrays.asList(
-                this.f.parse("a"),
-                this.f.parse("~a"),
-                this.f.parse("c")
+                parse(this.f, "a"),
+                parse(this.f, "~a"),
+                parse(this.f, "c")
         );
         testHandler(handler, formulas, true);
     }

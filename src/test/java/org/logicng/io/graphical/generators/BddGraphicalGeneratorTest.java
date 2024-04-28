@@ -84,7 +84,7 @@ public class BddGraphicalGeneratorTest {
     }
 
     @Test
-    public void testFixedStyle() throws ParserException, IOException {
+    public void testFixedStyle() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
         final List<Variable> ordering = Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));
@@ -104,7 +104,7 @@ public class BddGraphicalGeneratorTest {
     }
 
     @Test
-    public void testDynamic() throws ParserException, IOException {
+    public void testDynamic() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final PropositionalParser p = new PropositionalParser(f);
         final List<Variable> ordering = Arrays.asList(f.variable("A"), f.variable("B"), f.variable("C"), f.variable("D"));

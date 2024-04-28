@@ -42,20 +42,11 @@
 
   <developers>
     <developer>
-      <name>Christoph Zengler</name>
-      <email>christoph.zengler@booleworks.com</email>
-    </developer>
-    <developer>
-      <name>Steffen Hildebrandt</name>
-      <email>steffen.hildebrandt@booleworks.com</email>
-    </developer>
-    <developer>
-      <name>Rouven Walter</name>
-      <email>rouven.walter@booleworks.com</email>
-    </developer>
-    <developer>
-      <name>Elena Natterer</name>
-      <email>elena.natterer@booleworks.com</email>
+      <id>BooleWorks</id>
+      <name>BooleWorks Team</name>
+      <organization>BooleWorks GmbH</organization>
+      <organizationUrl>https://www.booleworks.com</organizationUrl>
+      <email>info@booleworks.com</email>
     </developer>
   </developers>
 
@@ -72,17 +63,16 @@
     <maven.compiler.target>1.8</maven.compiler.target>
 
     <sonar.language>java</sonar.language>
-    <sonar.exclusions>**/LogicNGPropositional*.java,**/LogicNGPseudoBoolean*.java</sonar.exclusions>
 
     <!-- Dependency Versions -->
-    <version.antlr>4.9.3</version.antlr>
     <version.junit>5.10.2</version.junit>
     <version.assertj>3.25.3</version.assertj>
     <!-- Version 5.x requires Java 11 -->
     <version.mockito>4.11.0</version.mockito>
+    <!-- Parser for tests -->
+    <version.antlr>4.9.3</version.antlr>
 
     <!-- Plugin Versions -->
-    <version.antlr-plugin>4.9.3</version.antlr-plugin>
     <version.jacoco>0.8.11</version.jacoco>
     <version.coveralls>4.3.0</version.coveralls>
     <version.surefire>3.2.5</version.surefire>
@@ -93,6 +83,7 @@
     <version.maven-source>3.3.0</version.maven-source>
     <version.maven-javadoc>3.6.3</version.maven-javadoc>
     <version.maven-jar>3.3.0</version.maven-jar>
+    <version.build-helper-plugin>1.9.1</version.build-helper-plugin>
   </properties>
 
   <build>
@@ -107,24 +98,6 @@
     </resources>
 
     <plugins>
-      <!-- ANTLR4 (Parser Generation)  -->
-      <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4-maven-plugin</artifactId>
-        <version>${version.antlr-plugin}</version>
-        <configuration>
-          <sourceDirectory>src/main/antlr</sourceDirectory>
-          <outputDirectory>target/generated-sources/antlr/org/logicng/io/parsers</outputDirectory>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>antlr4</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -156,6 +129,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <version>${version.maven-source}</version>
+        <configuration>
+          <excludes>
+            <!-- Exclude generated test-classes which are added to the sources for some reason-->
+            <exclude>LogicNGPropositional*</exclude>
+            <exclude>LogicNGPseudo*</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -171,6 +151,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${version.maven-javadoc}</version>
+        <configuration>
+          <sourcepath>${project.build.sourceDirectory}</sourcepath>
+        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -186,12 +169,6 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${version.jacoco}</version>
-        <configuration>
-          <excludes>
-            <exclude>**/LogicNGPropositional*</exclude>
-            <exclude>**/LogicNGPseudoBoolean*</exclude>
-          </excludes>
-        </configuration>
         <executions>
           <execution>
             <id>default-prepare-agent</id>
@@ -240,36 +217,63 @@
         <groupId>org.eluder.coveralls</groupId>
         <artifactId>coveralls-maven-plugin</artifactId>
         <version>${version.coveralls}</version>
-        <configuration>
-          <sourceDirectories>
-            <sourceDirectory>target/generated-sources/antlr</sourceDirectory>
-          </sourceDirectories>
-        </configuration>
       </plugin>
 
-      <!-- Necessary for Wercker toolchain -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${version.surefire}</version>
+      </plugin>
+
+      <!-- ANTLR4 (Parser Generation) for Tests  -->
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <version>${version.antlr}</version>
         <configuration>
-          <useSystemClassLoader>false</useSystemClassLoader>
-          <trimStackTrace>false</trimStackTrace>
-          <argLine>-Xmx2g</argLine>
+          <sourceDirectory>src/test/antlr</sourceDirectory>
+          <outputDirectory>target/generated-test-sources/antlr/org/logicng/io/parsers</outputDirectory>
         </configuration>
+        <executions>
+          <execution>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${version.build-helper-plugin}</version>
+        <executions>
+          <execution>
+            <id>add-parser-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-test-sources/antlr</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
 
   <dependencies>
-    <!-- Parser -->
+    <!-- Testing -->
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
       <version>${version.antlr}</version>
+      <scope>test</scope>
     </dependency>
 
-    <!-- Testing -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

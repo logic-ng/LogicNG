@@ -29,6 +29,7 @@
 package org.logicng.knowledgecompilation.bdds;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
@@ -89,9 +90,9 @@ public class FormulaBDDTest {
     }
 
     @Test
-    public void testNonNnfs() throws ParserException {
+    public void testNonNnfs() {
         final FormulaFactory f = new FormulaFactory();
-        assertThat(f.parse("A + 2*B - C = 1").bdd()).isNotNull();
-        assertThat(f.parse("(A & B & C | D & E & F) & (A - 2*B -D <= 0) | (C + 3*D - F > 0)").bdd()).isNotNull();
+        assertThat(parse(f, "A + 2*B - C = 1").bdd()).isNotNull();
+        assertThat(parse(f, "(A & B & C | D & E & F) & (A - 2*B -D <= 0) | (C + 3*D - F > 0)").bdd()).isNotNull();
     }
 }

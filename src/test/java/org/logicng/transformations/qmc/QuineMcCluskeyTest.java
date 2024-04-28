@@ -113,7 +113,7 @@ public class QuineMcCluskeyTest {
     }
 
     @Test
-    public void testLarge2() throws ParserException, IOException {
+    public void testLarge2() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final SATSolver solver = MiniSat.miniSat(f);
@@ -140,7 +140,7 @@ public class QuineMcCluskeyTest {
     }
 
     @Test
-    public void testLarge3() throws ParserException, IOException {
+    public void testLarge3() throws IOException, ParserException {
         final FormulaFactory f = new FormulaFactory();
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", f);
         final SATSolver solver = MiniSat.miniSat(f);

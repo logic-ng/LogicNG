@@ -45,8 +45,6 @@ import org.logicng.explanations.mus.MUSConfig;
 import org.logicng.formulas.cache.CacheEntry;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
-import org.logicng.io.parsers.ParserException;
-import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.pseudobooleans.PBConfig;
 import org.logicng.pseudobooleans.PBEncoder;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
@@ -103,7 +101,6 @@ public class FormulaFactory {
     private final SubNodeFunction subformulaFunction;
     private final PBEncoder pbEncoder;
     private final CNFEncoder cnfEncoder;
-    private final PseudoBooleanParser parser;
     Map<String, Variable> posLiterals;
     Map<String, Literal> negLiterals;
     Set<Variable> generatedVariables;
@@ -155,7 +152,6 @@ public class FormulaFactory {
             this.cnfPrefix = CNF_PREFIX;
         }
         this.pbEncoder = new PBEncoder(this);
-        this.parser = new PseudoBooleanParser(this);
     }
 
     /**
@@ -1398,16 +1394,6 @@ public class FormulaFactory {
      */
     public long numberOfNodes(final Formula formula) {
         return formula.apply(this.subformulaFunction).size();
-    }
-
-    /**
-     * Parses a given string to a formula using a pseudo boolean parser.
-     * @param string a string representing the formula
-     * @return the formula
-     * @throws ParserException if the parser throws an exception
-     */
-    public Formula parse(final String string) throws ParserException {
-        return this.parser.parse(string);
     }
 
     /**

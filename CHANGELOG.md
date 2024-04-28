@@ -4,6 +4,12 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.5.0] - 2024-xx-xx
 
+### Removed (Potentially Breaking Change!)
+
+- All parser classes from `org.logicng.io.parsers` (including in particular the two main parsers `LogicNGPropositionalParsers` and `LogicNGPseudoBooleanParser`) as well as the class `org.logicng.io.readers.FormulaReader` were moved to the new artifacts `org.logicng.logicng-parser-j8` (or `org.logicng.logicng-parser-j11` for Java 11). So there LogicNG now consists of two artifacts:
+  - All the core functionality of LogicNG except for the parser is located in the "old" `org.logicng:logicng` artifact. This artifact does *not* depend on ANTLR anymore (which was the reason for splitting the library). For the time being this library will be based on Java 8, but nothing should prevent its usage in higher Java versions.
+  - The parser functionality is located in `org.logicng:logicng-parser-j8` (for Java 8 and ANTLR 4.9.3) and `org.logicng:logicng-parser-j11` (for Java 11 and the most recent ANTLR version). The version of this library will stay in sync with the core library.     
+
 ### Added
 
 - Added unsafe methods `term` and `dnf` to the `FormulaFactory` to create a term (conjunction of literals) or a DNF (c.f. with method `FormulaFactory#clause` and `FormulaFactory#cnf`). Both methods do not perform reduction operations and therefore are faster. Only use these methods if you are sure the input is free of complementary and redundant operands.

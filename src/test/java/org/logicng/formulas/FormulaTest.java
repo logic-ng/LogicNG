@@ -29,6 +29,7 @@
 package org.logicng.formulas;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_CNF;
 import static org.logicng.formulas.cache.PredicateCacheEntry.IS_DNF;
 import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF;
@@ -36,7 +37,6 @@ import static org.logicng.formulas.cache.TransformationCacheEntry.FACTORIZED_CNF
 import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.CacheEntry;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.transformations.cnf.BDDCNFTransformation;
 
 import java.util.Arrays;
@@ -119,10 +119,10 @@ public class FormulaTest {
     }
 
     @Test
-    public void testIsSatisfiable() throws ParserException {
+    public void testIsSatisfiable() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula f1 = f.parse("(a | b) & (c | ~d)");
-        final Formula f2 = f.parse("~a & ~b & (a | b)");
+        final Formula f1 = parse(f, "(a | b) & (c | ~d)");
+        final Formula f2 = parse(f, "~a & ~b & (a | b)");
         assertThat(f.falsum().isSatisfiable()).isFalse();
         assertThat(f.verum().isSatisfiable()).isTrue();
         assertThat(f1.isSatisfiable()).isTrue();
@@ -130,10 +130,10 @@ public class FormulaTest {
     }
 
     @Test
-    public void testIsTautology() throws ParserException {
+    public void testIsTautology() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula f1 = f.parse("(a | b) & (c | ~d)");
-        final Formula f2 = f.parse("(a & b) | (~a & b) | (a & ~b) | (~a & ~b)");
+        final Formula f1 = parse(f, "(a | b) & (c | ~d)");
+        final Formula f2 = parse(f, "(a & b) | (~a & b) | (a & ~b) | (~a & ~b)");
         assertThat(f.falsum().isTautology()).isFalse();
         assertThat(f.verum().isTautology()).isTrue();
         assertThat(f1.isTautology()).isFalse();
@@ -141,10 +141,10 @@ public class FormulaTest {
     }
 
     @Test
-    public void testIsContradiction() throws ParserException {
+    public void testIsContradiction() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula f1 = f.parse("(a | b) & (c | ~d)");
-        final Formula f2 = f.parse("~a & ~b & (a | b)");
+        final Formula f1 = parse(f, "(a | b) & (c | ~d)");
+        final Formula f2 = parse(f, "~a & ~b & (a | b)");
         assertThat(f.falsum().isContradiction()).isTrue();
         assertThat(f.verum().isContradiction()).isFalse();
         assertThat(f1.isContradiction()).isFalse();
@@ -152,11 +152,11 @@ public class FormulaTest {
     }
 
     @Test
-    public void testImplies() throws ParserException {
+    public void testImplies() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula f1 = f.parse("(a | b) & (c | ~d)");
-        final Formula f2 = f.parse("(a | b) & (c | ~d) & (e | ~f)");
-        final Formula f3 = f.parse("(a | b) & (c | d)");
+        final Formula f1 = parse(f, "(a | b) & (c | ~d)");
+        final Formula f2 = parse(f, "(a | b) & (c | ~d) & (e | ~f)");
+        final Formula f3 = parse(f, "(a | b) & (c | d)");
         assertThat(f1.implies(f2)).isFalse();
         assertThat(f2.implies(f1)).isTrue();
         assertThat(f1.implies(f3)).isFalse();
@@ -165,11 +165,11 @@ public class FormulaTest {
     }
 
     @Test
-    public void testIsImpliedBy() throws ParserException {
+    public void testIsImpliedBy() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula f1 = f.parse("(a | b) & (c | ~d)");
-        final Formula f2 = f.parse("(a | b) & (c | ~d) & (e | ~f)");
-        final Formula f3 = f.parse("(a | b) & (c | d)");
+        final Formula f1 = parse(f, "(a | b) & (c | ~d)");
+        final Formula f2 = parse(f, "(a | b) & (c | ~d) & (e | ~f)");
+        final Formula f3 = parse(f, "(a | b) & (c | d)");
         assertThat(f1.isImpliedBy(f2)).isTrue();
         assertThat(f2.isImpliedBy(f1)).isFalse();
         assertThat(f1.isImpliedBy(f3)).isFalse();
@@ -178,11 +178,11 @@ public class FormulaTest {
     }
 
     @Test
-    public void testIsEquivalentTo() throws ParserException {
+    public void testIsEquivalentTo() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula f1 = f.parse("(a | b) & (c | ~d)");
-        final Formula f2 = f.parse("(a | b) & (c | ~d) & (e | ~f)");
-        final Formula f3 = f.parse("(a & c) | (a & ~d) | (b & c) | (b & ~d)");
+        final Formula f1 = parse(f, "(a | b) & (c | ~d)");
+        final Formula f2 = parse(f, "(a | b) & (c | ~d) & (e | ~f)");
+        final Formula f3 = parse(f, "(a & c) | (a & ~d) | (b & c) | (b & ~d)");
         assertThat(f1.isEquivalentTo(f2)).isFalse();
         assertThat(f2.isEquivalentTo(f1)).isFalse();
         assertThat(f1.isEquivalentTo(f3)).isTrue();

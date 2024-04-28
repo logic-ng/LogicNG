@@ -35,7 +35,6 @@ import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
@@ -51,29 +50,29 @@ public class FactorOutSimplificationTest extends TestWithExampleFormulas {
     private final FactorOutSimplifier factorOut = new FactorOutSimplifier();
 
     @Test
-    public void testSimple() throws ParserException {
+    public void testSimple() {
         assertThat(this.f.falsum().transform(this.factorOut)).isEqualTo(this.f.falsum());
         assertThat(this.f.verum().transform(this.factorOut)).isEqualTo(this.f.verum());
         assertThat(this.A.transform(this.factorOut)).isEqualTo(this.A);
         assertThat(this.NA.transform(this.factorOut)).isEqualTo(this.NA);
 
-        assertThat(this.f.parse("A&~B&~C&~D").transform(this.factorOut)).isEqualTo(this.f.parse("A&~B&~C&~D"));
-        assertThat(this.f.parse("~A&~B&~C&~D").transform(this.factorOut)).isEqualTo(this.f.parse("~A&~B&~C&~D"));
+        assertThat(parse(this.f, "A&~B&~C&~D").transform(this.factorOut)).isEqualTo(parse(this.f, "A&~B&~C&~D"));
+        assertThat(parse(this.f, "~A&~B&~C&~D").transform(this.factorOut)).isEqualTo(parse(this.f, "~A&~B&~C&~D"));
 
-        assertThat(this.f.parse("A|A&B").transform(this.factorOut)).isEqualTo(this.f.parse("A"));
-        assertThat(this.f.parse("A|A&B|C&D").transform(this.factorOut)).isEqualTo(this.f.parse("A|C&D"));
-        assertThat(this.f.parse("~(A&(A|B))").transform(this.factorOut)).isEqualTo(this.f.parse("~A"));
-        assertThat(this.f.parse("A|A&B|C").transform(this.factorOut)).isEqualTo(this.f.parse("A|C"));
+        assertThat(parse(this.f, "A|A&B").transform(this.factorOut)).isEqualTo(parse(this.f, "A"));
+        assertThat(parse(this.f, "A|A&B|C&D").transform(this.factorOut)).isEqualTo(parse(this.f, "A|C&D"));
+        assertThat(parse(this.f, "~(A&(A|B))").transform(this.factorOut)).isEqualTo(parse(this.f, "~A"));
+        assertThat(parse(this.f, "A|A&B|C").transform(this.factorOut)).isEqualTo(parse(this.f, "A|C"));
 
-        assertThat(this.f.parse("A&(A|B)").transform(this.factorOut)).isEqualTo(this.f.parse("A"));
-        assertThat(this.f.parse("A&(A|B)&(C|D)").transform(this.factorOut)).isEqualTo(this.f.parse("A&(C|D)"));
-        assertThat(this.f.parse("~(A|A&B)").transform(this.factorOut)).isEqualTo(this.f.parse("~A"));
-        assertThat(this.f.parse("A&(A|B)&C").transform(this.factorOut)).isEqualTo(this.f.parse("A&C"));
+        assertThat(parse(this.f, "A&(A|B)").transform(this.factorOut)).isEqualTo(parse(this.f, "A"));
+        assertThat(parse(this.f, "A&(A|B)&(C|D)").transform(this.factorOut)).isEqualTo(parse(this.f, "A&(C|D)"));
+        assertThat(parse(this.f, "~(A|A&B)").transform(this.factorOut)).isEqualTo(parse(this.f, "~A"));
+        assertThat(parse(this.f, "A&(A|B)&C").transform(this.factorOut)).isEqualTo(parse(this.f, "A&C"));
 
-        assertThat(this.f.parse("A&X&Y|A&B&C|B&C&D|A&Z").transform(this.factorOut)).isEqualTo(this.f.parse("A&(X&Y|B&C|Z)|B&C&D"));
-        assertThat(this.f.parse("G&(A&X&Y|A&B&C|B&C&D|A&Z)").transform(this.factorOut)).isEqualTo(this.f.parse("G&(A&(X&Y|B&C|Z)|B&C&D)"));
+        assertThat(parse(this.f, "A&X&Y|A&B&C|B&C&D|A&Z").transform(this.factorOut)).isEqualTo(parse(this.f, "A&(X&Y|B&C|Z)|B&C&D"));
+        assertThat(parse(this.f, "G&(A&X&Y|A&B&C|B&C&D|A&Z)").transform(this.factorOut)).isEqualTo(parse(this.f, "G&(A&(X&Y|B&C|Z)|B&C&D)"));
 
-        assertThat(this.f.parse("G&(~(A&X&Y)|~(A&B&C))").transform(this.factorOut)).isEqualTo(this.f.parse("G&(~(A&X&Y)|~(A&B&C))"));
+        assertThat(parse(this.f, "G&(~(A&X&Y)|~(A&B&C))").transform(this.factorOut)).isEqualTo(parse(this.f, "G&(~(A&X&Y)|~(A&B&C))"));
     }
 
     @Test

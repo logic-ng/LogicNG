@@ -62,23 +62,23 @@ import java.util.TreeSet;
 public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
 
     @Test
-    public void testSimple() throws ParserException {
+    public void testSimple() {
         final NaivePrimeReduction naiveTautology = new NaivePrimeReduction(this.f.verum());
         assertThat(naiveTautology.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B)))).isEmpty();
 
-        final NaivePrimeReduction naive01 = new NaivePrimeReduction(this.f.parse("a&b|c&d"));
+        final NaivePrimeReduction naive01 = new NaivePrimeReduction(parse(this.f, "a&b|c&d"));
         assertThat(naive01.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B, this.C, this.D.negate()))))
                 .containsExactlyInAnyOrder(this.A, this.B);
         assertThat(naive01.reduceImplicant(new TreeSet<>(Arrays.asList(this.A.negate(), this.B, this.C, this.D))))
                 .containsExactlyInAnyOrder(this.C, this.D);
 
-        final NaivePrimeReduction naive02 = new NaivePrimeReduction(this.f.parse("a|b|~a&~b"));
+        final NaivePrimeReduction naive02 = new NaivePrimeReduction(parse(this.f, "a|b|~a&~b"));
         assertThat(naive02.reduceImplicant(new TreeSet<>(Arrays.asList(this.A.negate(), this.B))))
                 .containsExactlyInAnyOrder();
         assertThat(naive02.reduceImplicant(new TreeSet<>(Arrays.asList(this.A.negate(), this.B))))
                 .containsExactlyInAnyOrder();
 
-        final NaivePrimeReduction naive03 = new NaivePrimeReduction(this.f.parse("(a => b) | b | c"));
+        final NaivePrimeReduction naive03 = new NaivePrimeReduction(parse(this.f, "(a => b) | b | c"));
         assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B, this.C.negate()))))
                 .containsExactlyInAnyOrder(this.B);
         assertThat(naive03.reduceImplicant(new TreeSet<>(Arrays.asList(this.A, this.B.negate(), this.C))))
@@ -104,10 +104,10 @@ public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSmallFormulas() throws IOException, ParserException {
+    public void testSmallFormulas() throws IOException {
         final List<String> lines = Files.readAllLines(Paths.get("src/test/resources/formulas/small_formulas.txt"));
         for (final String line : lines) {
-            testFormula(this.f.parse(line));
+            testFormula(parse(this.f, line));
         }
     }
 
@@ -130,7 +130,7 @@ public class PrimeImplicantReductionTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testCancellationPoints() throws ParserException, IOException {
+    public void testCancellationPoints() throws IOException, ParserException {
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         for (int numStarts = 0; numStarts < 20; numStarts++) {
             final SATHandler handler = new BoundedSatHandler(numStarts);

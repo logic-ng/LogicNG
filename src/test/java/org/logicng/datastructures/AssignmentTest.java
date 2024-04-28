@@ -207,7 +207,7 @@ public class AssignmentTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testBlockingClause() throws ParserException {
+    public void testBlockingClause() {
         final Assignment ass = new Assignment();
         ass.addLiteral(this.A);
         ass.addLiteral(this.B);
@@ -215,14 +215,14 @@ public class AssignmentTest extends TestWithExampleFormulas {
         ass.addLiteral(this.NY);
         final Formula bc01 = ass.blockingClause(this.f);
         assertThat(bc01.containsVariable(this.C)).isFalse();
-        assertThat(bc01).isEqualTo(this.f.parse("~a | ~b | x | y"));
+        assertThat(bc01).isEqualTo(parse(this.f, "~a | ~b | x | y"));
         final Formula bc02 = ass.blockingClause(this.f, null);
         assertThat(bc02.containsVariable(this.C)).isFalse();
-        assertThat(bc02).isEqualTo(this.f.parse("~a | ~b | x | y"));
+        assertThat(bc02).isEqualTo(parse(this.f, "~a | ~b | x | y"));
         final List<Literal> lits = Arrays.asList(this.A, this.X, this.C);
         final Formula bcProjected = ass.blockingClause(this.f, lits);
         assertThat(bcProjected.containsVariable(this.C)).isFalse();
-        assertThat(bcProjected).isEqualTo(this.f.parse("~a | x"));
+        assertThat(bcProjected).isEqualTo(parse(this.f, "~a | x"));
     }
 
     @Test

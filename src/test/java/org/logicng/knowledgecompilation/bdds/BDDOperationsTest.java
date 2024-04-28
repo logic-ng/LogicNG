@@ -29,6 +29,7 @@
 package org.logicng.knowledgecompilation.bdds;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ public class BDDOperationsTest {
     }
 
     @Test
-    public void testToFormula() throws ParserException {
+    public void testToFormula() {
         assertThat(this.bddVerum.toFormula()).isEqualTo(this.f.verum());
         assertThat(this.bddFalsum.toFormula()).isEqualTo(this.f.falsum());
         assertThat(this.bddPosLit.toFormula()).isEqualTo(this.f.literal("A", true));
@@ -101,12 +102,12 @@ public class BDDOperationsTest {
     }
 
     @Test
-    public void testToFormulaStyles() throws ParserException {
-        final BDD bdd = BDDFactory.build(this.f.parse("~A | ~B | ~C"), this.kernel);
-        final Formula expFollowPathsToTrue = this.f.parse("~A | A & (~B | B & ~C)");
+    public void testToFormulaStyles() {
+        final BDD bdd = BDDFactory.build(parse(this.f, "~A | ~B | ~C"), this.kernel);
+        final Formula expFollowPathsToTrue = parse(this.f, "~A | A & (~B | B & ~C)");
         assertThat(bdd.toFormula()).isEqualTo(expFollowPathsToTrue);
         assertThat(bdd.toFormula(true)).isEqualTo(expFollowPathsToTrue);
-        assertThat(bdd.toFormula(false)).isEqualTo(this.f.parse("~(A & B & C)"));
+        assertThat(bdd.toFormula(false)).isEqualTo(parse(this.f, "~(A & B & C)"));
     }
 
     @RandomTag
@@ -329,8 +330,8 @@ public class BDDOperationsTest {
         assertThat(this.bddAnd.variableProfile()).containsExactly(a1, b1, c1);
     }
 
-    private void compareFormula(final BDD bdd, final String formula) throws ParserException {
-        compareFormula(bdd, bdd.kernel.factory().parse(formula));
+    private void compareFormula(final BDD bdd, final String formula) {
+        compareFormula(bdd, parse(bdd.kernel.factory(), formula));
     }
 
     private void compareFormula(final BDD bdd, final Formula compareFormula) {
