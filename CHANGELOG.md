@@ -6,9 +6,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Removed (Potentially Breaking Change!)
 
-- All parser classes from `org.logicng.io.parsers` (including in particular the two main parsers `LogicNGPropositionalParsers` and `LogicNGPseudoBooleanParser`) as well as the class `org.logicng.io.readers.FormulaReader` were moved to the new artifacts `org.logicng.logicng-parser-j8` (or `org.logicng.logicng-parser-j11` for Java 11). So there LogicNG now consists of two artifacts:
+- All parser classes from `org.logicng.io.parsers` (including in particular the two main parsers `PropositionalParser` and `PseudoBooleanParser`) as well as the class `org.logicng.io.readers.FormulaReader` were moved to the new artifacts `org.logicng.logicng-parser-j8` (or `org.logicng.logicng-parser-j11` for Java 11). So there LogicNG now consists of two artifacts:
   - All the core functionality of LogicNG except for the parser is located in the "old" `org.logicng:logicng` artifact. This artifact does *not* depend on ANTLR anymore (which was the reason for splitting the library). For the time being this library will be based on Java 8, but nothing should prevent its usage in higher Java versions.
-  - The parser functionality is located in `org.logicng:logicng-parser-j8` (for Java 8 and ANTLR 4.9.3) and `org.logicng:logicng-parser-j11` (for Java 11 and the most recent ANTLR version). The version of this library will stay in sync with the core library.     
+  - The parser functionality is located in `org.logicng:logicng-parser-j8` (for Java 8 and ANTLR 4.9.3) and `org.logicng:logicng-parser-j11` (for Java 11 and the most recent ANTLR version). The version of this library will stay in sync with the core library.
+- The method `FormulaFactory.parse()` was removed. If you're using this method you should include one of the new parser artefacts and then just create your own `PropositionalParser` or `PseudoBooleanParser` and call `parse()` on them.
 
 ### Added
 
