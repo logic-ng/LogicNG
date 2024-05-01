@@ -2,19 +2,19 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.0] - 2024-xx-xx
+## [2.5.0] - 2024-05-02
 
 ### Removed (Potentially Breaking Change!)
 
-- All parser classes from `org.logicng.io.parsers` (including in particular the two main parsers `PropositionalParser` and `PseudoBooleanParser`) as well as the class `org.logicng.io.readers.FormulaReader` were moved to the new artifacts `org.logicng.logicng-parser-j8` (or `org.logicng.logicng-parser-j11` for Java 11). So there LogicNG now consists of two artifacts:
-  - All the core functionality of LogicNG except for the parser is located in the "old" `org.logicng:logicng` artifact. This artifact does *not* depend on ANTLR anymore (which was the reason for splitting the library). For the time being this library will be based on Java 8, but nothing should prevent its usage in higher Java versions.
+- All parser classes from `org.logicng.io.parsers` (including in particular the two main parsers `PropositionalParser` and `PseudoBooleanParser`) as well as the class `org.logicng.io.readers.FormulaReader` were moved to the new artifacts `org.logicng.logicng-parser-j8` (or `org.logicng.logicng-parser-j11` for Java 11). So LogicNG now consists of two artifacts:
+  - All the core functionality of LogicNG except for the parser is located in the "old" `org.logicng:logicng` artifact. This artifact does *not* depend on ANTLR anymore (which was the reason for splitting the library). This library will stay on Java 8, but nothing should prevent its usage in higher Java versions.
   - The parser functionality is located in `org.logicng:logicng-parser-j8` (for Java 8 and ANTLR 4.9.3) and `org.logicng:logicng-parser-j11` (for Java 11 and the most recent ANTLR version). The version of this library will stay in sync with the core library.
 - The method `FormulaFactory.parse()` was removed. If you're using this method you should include one of the new parser artefacts and then just create your own `PropositionalParser` or `PseudoBooleanParser` and call `parse()` on them.
 
 ### Added
 
 - Added unsafe methods `term` and `dnf` to the `FormulaFactory` to create a term (conjunction of literals) or a DNF (c.f. with method `FormulaFactory#clause` and `FormulaFactory#cnf`). Both methods do not perform reduction operations and therefore are faster. Only use these methods if you are sure the input is free of complementary and redundant operands.
-- Class `UBTree` offers new method `generateSubsumedUBTree` to directly generate a subsumed UBTree for the given sets. 
+- Class `UBTree` offers new method `generateSubsumedUBTree` to directly generate a subsumed UBTree for the given sets.
 - The `DnnfFactory` now offers a method to compile a DNNF with a `DnnfCompilationHandler`
 - The `ModelCounter` now offers a method to pass a `DnnfCompilationHandler` in order to control long-running computations
 
@@ -29,12 +29,12 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `BDDKernel.addVariableBlock` for defining a variable block for reordering
   - `BDDKernel.addAllVariablesAsBlock` for defining one block for each variable (s.t. all variables are allowed to be reordered independently)
 - Significant performance improvements in the DTree generation for DNNFs
-- Added side effect note in `SATSolver` for the four assumption solving methods. 
+- Added side effect note in `SATSolver` for the four assumption solving methods.
 - Minor performance improvements in some DNF/CNF generating algorithms by using faster `cnf`/`dnf`.
 
 ### Fixed
 
-- Fixed edge case in method `add(Formula formula, Proposition proposition)` in `MiniSat`. If a formula is added to the SAT solver, it can happen that a variable is not added to the solver because it was removed during the CNF transformation. A `model()` call or model enumeration will not produce models containing this variable since it was not added to the solver. The fix ensures that all variables of the original formula are added to the solver and thus, a found model includes the variable. 
+- Fixed edge case in method `add(Formula formula, Proposition proposition)` in `MiniSat`. If a formula is added to the SAT solver, it can happen that a variable is not added to the solver because it was removed during the CNF transformation. A `model()` call or model enumeration will not produce models containing this variable since it was not added to the solver. The fix ensures that all variables of the original formula are added to the solver and thus, a found model includes the variable.
 - The formula generation on BDDs was broken when the ordering was changed by `BDDKernel.reorder` or `BDDKernel.swapVariables`. This is now fixed.
 
 ## [2.4.1] - 2022-12-01
