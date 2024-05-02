@@ -29,12 +29,10 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `BDDKernel.addVariableBlock` for defining a variable block for reordering
   - `BDDKernel.addAllVariablesAsBlock` for defining one block for each variable (s.t. all variables are allowed to be reordered independently)
 - Significant performance improvements in the DTree generation for DNNFs
-- Added side effect note in `SATSolver` for the four assumption solving methods.
 - Minor performance improvements in some DNF/CNF generating algorithms by using faster `cnf`/`dnf`.
 
 ### Fixed
 
-- Fixed edge case in method `add(Formula formula, Proposition proposition)` in `MiniSat`. If a formula is added to the SAT solver, it can happen that a variable is not added to the solver because it was removed during the CNF transformation. A `model()` call or model enumeration will not produce models containing this variable since it was not added to the solver. The fix ensures that all variables of the original formula are added to the solver and thus, a found model includes the variable.
 - The formula generation on BDDs was broken when the ordering was changed by `BDDKernel.reorder` or `BDDKernel.swapVariables`. This is now fixed.
 
 ## [2.4.1] - 2022-12-01
