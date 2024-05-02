@@ -42,6 +42,7 @@ import org.logicng.graphs.algorithms.ConnectedComponentsComputation;
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
+import org.logicng.handlers.DnnfCompilationHandler;
 import org.logicng.io.parsers.FormulaParser;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PseudoBooleanParser;
@@ -115,6 +116,16 @@ public class DnnfCompilerTest {
     }
 
     @Test
+    public void testCompilationHandler() throws IOException {
+        final FormulaFactory f = new FormulaFactory();
+        final Formula formula = f.and(DimacsReader.readCNF("src/test/resources/dnnf/both_bdd_dnnf_1.cnf", f));
+        final Dnnf dnnfSuccessful = new DnnfFactory().compile(formula, new MaxShannonHandler(100));
+        assertThat(dnnfSuccessful).isNotNull();
+        final Dnnf dnnfAborted = new DnnfFactory().compile(formula, new MaxShannonHandler(50));
+        assertThat(dnnfAborted).isNull();
+    }
+
+    @Test
     @LongRunningTag
     public void testAllSmallFormulas() throws IOException, ParserException {
         final Formula formulas = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/small_formulas.txt", this.f);
@@ -172,5 +183,19 @@ public class DnnfCompilerTest {
         final BDDKernel kernel = new BDDKernel(formula.factory(), new ForceOrdering().getOrder(formula), 100000, 1000000);
         final BDD bdd = BDDFactory.build(formula, kernel);
         return bdd.modelCount();
+    }
+
+    private static class MaxShannonHandler implements DnnfCompilationHandler {
+        private int currentShannons = 0;
+        private final int maxShannons;
+
+        private MaxShannonHandler(final int maxShannons) {
+            this.maxShannons = maxShannons;
+        }
+
+        @Override
+        public boolean shannonExpansion() {
+            return ++this.currentShannons <= this.maxShannons;
+        }
     }
 }

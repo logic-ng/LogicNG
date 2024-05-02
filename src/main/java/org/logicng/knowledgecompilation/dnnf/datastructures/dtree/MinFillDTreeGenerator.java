@@ -36,8 +36,10 @@ import org.logicng.formulas.Variable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -73,7 +75,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
         /**
          * The edges of the graph as a list of edges per node ({{2,3},{1},{1}} means that there are the edges 1-2 and 1-3)
          */
-        protected final List<LNGIntVector> edgeList;
+        protected final List<Set<Integer>> edgeList;
 
         /**
          * Computes the DTree from the given CNF.
@@ -94,7 +96,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
             this.adjMatrix = new boolean[this.numberOfVertices][this.numberOfVertices];
             this.edgeList = new ArrayList<>(this.numberOfVertices);
             for (int i = 0; i < this.numberOfVertices; i++) {
-                this.edgeList.add(new LNGIntVector());
+                this.edgeList.add(new LinkedHashSet<>());
             }
 
             for (final Formula clause : cnf) {
@@ -106,8 +108,8 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
                 }
                 for (int i = 0; i < varNums.length; i++) {
                     for (int j = i + 1; j < varNums.length; j++) {
-                        this.edgeList.get(varNums[i]).push(varNums[j]);
-                        this.edgeList.get(varNums[j]).push(varNums[i]);
+                        this.edgeList.get(varNums[i]).add(varNums[j]);
+                        this.edgeList.get(varNums[j]).add(varNums[i]);
                         this.adjMatrix[varNums[i]][varNums[j]] = true;
                         this.adjMatrix[varNums[j]][varNums[i]] = true;
                     }
@@ -117,8 +119,8 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
 
         protected List<LNGIntVector> getCopyOfEdgeList() {
             final List<LNGIntVector> result = new ArrayList<>();
-            for (final LNGIntVector edge : this.edgeList) {
-                result.add(new LNGIntVector(edge));
+            for (final Set<Integer> edge : this.edgeList) {
+                result.add(new LNGIntVector(edge.stream().mapToInt(i -> i).toArray()));
             }
             return result;
         }
@@ -196,7 +198,7 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
 
                 int currentNumberOfEdges = 0;
                 for (int k = 0; k < this.numberOfVertices; k++) {
-                    if (fillAdjMatrix[bestVertex][k] && !processed[k]) {
+                    if (k != bestVertex && !processed[k] && fillAdjMatrix[bestVertex][k]) {
                         currentNumberOfEdges++;
                     }
                 }

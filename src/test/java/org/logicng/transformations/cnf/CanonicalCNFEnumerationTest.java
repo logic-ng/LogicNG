@@ -1,12 +1,12 @@
 package org.logicng.transformations.cnf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.CNFPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
@@ -21,21 +21,21 @@ import org.logicng.util.FormulaRandomizerConfig;
 public class CanonicalCNFEnumerationTest {
 
     @Test
-    public void testSamples() throws ParserException {
+    public void testSamples() {
         final FormulaFactory f = new FormulaFactory();
-        assertThat(f.falsum().transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("$false"));
-        assertThat(f.verum().transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("$true"));
-        assertThat(f.parse("a").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("a"));
-        assertThat(f.parse("~a").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("~a"));
-        assertThat(f.parse("~a & b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(~a | b) & (~a | ~b) & (a | b)"));
-        assertThat(f.parse("~a | b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("~a | b"));
-        assertThat(f.parse("a => b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("~a | b"));
-        assertThat(f.parse("a <=> b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(~a | b) & (a | ~b)"));
-        assertThat(f.parse("a + b = 1").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(a | b) & (~a | ~b)"));
-        assertThat(f.parse("a & (b | ~c)").transform(CanonicalCNFEnumeration.get()))
-                .isEqualTo(f.parse("(a | b | c) & (a | b | ~c) & (a | ~b | c) & (a | ~b | ~c) & (~a | b | ~c)"));
-        assertThat(f.parse("a & b & (~a | ~b)").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("(a | b) & (~a | b) & (~a | ~b) & (a | ~b)"));
-        assertThat(f.parse("a | b | ~a & ~b").transform(CanonicalCNFEnumeration.get())).isEqualTo(f.parse("$true"));
+        assertThat(f.falsum().transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "$false"));
+        assertThat(f.verum().transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "$true"));
+        assertThat(parse(f, "a").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "a"));
+        assertThat(parse(f, "~a").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "~a"));
+        assertThat(parse(f, "~a & b").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "(~a | b) & (~a | ~b) & (a | b)"));
+        assertThat(parse(f, "~a | b").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "~a | b"));
+        assertThat(parse(f, "a => b").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "~a | b"));
+        assertThat(parse(f, "a <=> b").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "(~a | b) & (a | ~b)"));
+        assertThat(parse(f, "a + b = 1").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "(a | b) & (~a | ~b)"));
+        assertThat(parse(f, "a & (b | ~c)").transform(CanonicalCNFEnumeration.get()))
+                .isEqualTo(parse(f, "(a | b | c) & (a | b | ~c) & (a | ~b | c) & (a | ~b | ~c) & (~a | b | ~c)"));
+        assertThat(parse(f, "a & b & (~a | ~b)").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "(a | b) & (~a | b) & (~a | ~b) & (a | ~b)"));
+        assertThat(parse(f, "a | b | ~a & ~b").transform(CanonicalCNFEnumeration.get())).isEqualTo(parse(f, "$true"));
     }
 
     @Test

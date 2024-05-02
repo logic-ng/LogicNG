@@ -28,6 +28,8 @@
 
 package org.logicng.modelcounting;
 
+import static org.logicng.handlers.Handler.aborted;
+
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
@@ -38,6 +40,7 @@ import org.logicng.graphs.algorithms.ConnectedComponentsComputation;
 import org.logicng.graphs.datastructures.Graph;
 import org.logicng.graphs.datastructures.Node;
 import org.logicng.graphs.generators.ConstraintGraphGenerator;
+import org.logicng.handlers.DnnfCompilationHandler;
 import org.logicng.knowledgecompilation.dnnf.DnnfFactory;
 import org.logicng.knowledgecompilation.dnnf.datastructures.Dnnf;
 import org.logicng.knowledgecompilation.dnnf.functions.DnnfModelCountFunction;
@@ -53,6 +56,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +82,22 @@ public final class ModelCounter {
      * @return the model count of the formulas for the variables
      */
     public static BigInteger count(final Collection<Formula> formulas, final SortedSet<Variable> variables) {
+        return count(formulas, variables, () -> null);
+    }
+
+    /**
+     * Computes the model count for a given set of formulas (interpreted as conjunction)
+     * and a set of relevant variables.  This set can only be a superset of the original
+     * formulas' variables.  No projected model counting is supported.
+     * @param formulas            the list of formulas
+     * @param variables           the relevant variables
+     * @param dnnfHandlerSupplier a supplier for a DNNF handler, it may return a new handler on each call or always the same.
+     *                            Since multiple DNNFs may be computed, the supplier may be called several times. It must not
+     *                            be {@code null}, but it may return {@code null} (i.e. return no handler).
+     * @return the model count of the formulas for the variables or {@code null} if the DNNF handler aborted the DNNF computation
+     */
+    public static BigInteger count(final Collection<Formula> formulas, final SortedSet<Variable> variables,
+                                   final Supplier<DnnfCompilationHandler> dnnfHandlerSupplier) {
         if (!variables.containsAll(FormulaHelper.variables(formulas))) {
             throw new IllegalArgumentException("Expected variables to contain all of the formulas' variables.");
         }
@@ -88,7 +108,10 @@ public final class ModelCounter {
         final FormulaFactory f = variables.first().factory();
         final List<Formula> cnfs = encodeAsCnf(formulas, f);
         final SimplificationResult simplification = simplify(cnfs);
-        final BigInteger count = count(simplification.simplifiedFormulas, f);
+        final BigInteger count = count(simplification.simplifiedFormulas, dnnfHandlerSupplier, f);
+        if (count == null) {
+            return null;
+        }
         final SortedSet<Variable> dontCareVariables = simplification.getDontCareVariables(variables);
         return count.multiply(BigInteger.valueOf(2).pow(dontCareVariables.size()));
     }
@@ -122,14 +145,18 @@ public final class ModelCounter {
         return new SimplificationResult(simplified, backboneVariables);
     }
 
-    private static BigInteger count(final Collection<Formula> formulas, final FormulaFactory f) {
+    private static BigInteger count(final Collection<Formula> formulas, final Supplier<DnnfCompilationHandler> dnnfHandlerSupplier, final FormulaFactory f) {
         final Graph<Variable> constraintGraph = ConstraintGraphGenerator.generateFromFormulas(formulas);
         final Set<Set<Node<Variable>>> ccs = ConnectedComponentsComputation.compute(constraintGraph);
         final List<List<Formula>> components = ConnectedComponentsComputation.splitFormulasByComponent(formulas, ccs);
         final DnnfFactory factory = new DnnfFactory();
         BigInteger count = BigInteger.ONE;
         for (final List<Formula> component : components) {
-            final Dnnf dnnf = factory.compile(f.and(component));
+            final DnnfCompilationHandler handler = dnnfHandlerSupplier.get();
+            final Dnnf dnnf = factory.compile(f.and(component), handler);
+            if (dnnf == null || aborted(handler)) {
+                return null;
+            }
             count = count.multiply(dnnf.execute(DnnfModelCountFunction.get()));
         }
         return count;

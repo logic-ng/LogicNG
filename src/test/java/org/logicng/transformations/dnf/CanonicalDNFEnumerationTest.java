@@ -1,12 +1,12 @@
 package org.logicng.transformations.dnf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.RandomTag;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.DNFPredicate;
 import org.logicng.predicates.satisfiability.ContradictionPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
@@ -22,20 +22,20 @@ import org.logicng.util.FormulaRandomizerConfig;
 public class CanonicalDNFEnumerationTest {
 
     @Test
-    public void testSamples() throws ParserException {
+    public void testSamples() {
         final FormulaFactory f = new FormulaFactory();
-        assertThat(f.falsum().transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("$false"));
-        assertThat(f.verum().transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("$true"));
-        assertThat(f.parse("a").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("a"));
-        assertThat(f.parse("~a").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a"));
-        assertThat(f.parse("~a & b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & b"));
-        assertThat(f.parse("~a | b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & ~b | ~a & b | a & b"));
-        assertThat(f.parse("a => b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & ~b | ~a & b | a & b"));
-        assertThat(f.parse("a <=> b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("a & b | ~a & ~b"));
-        assertThat(f.parse("a + b = 1").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & b | a & ~b"));
-        assertThat(f.parse("a & (b | ~c)").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("a & b & c | a & b & ~c | a & ~b & ~c"));
-        assertThat(f.parse("a & b & (~a | ~b)").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("$false"));
-        assertThat(f.parse("a | b | ~a & ~b").transform(CanonicalDNFEnumeration.get())).isEqualTo(f.parse("~a & b | a & b | a & ~b | ~a & ~b"));
+        assertThat(f.falsum().transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "$false"));
+        assertThat(f.verum().transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "$true"));
+        assertThat(parse(f, "a").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "a"));
+        assertThat(parse(f, "~a").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "~a"));
+        assertThat(parse(f, "~a & b").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "~a & b"));
+        assertThat(parse(f, "~a | b").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "~a & ~b | ~a & b | a & b"));
+        assertThat(parse(f, "a => b").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "~a & ~b | ~a & b | a & b"));
+        assertThat(parse(f, "a <=> b").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "a & b | ~a & ~b"));
+        assertThat(parse(f, "a + b = 1").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "~a & b | a & ~b"));
+        assertThat(parse(f, "a & (b | ~c)").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "a & b & c | a & b & ~c | a & ~b & ~c"));
+        assertThat(parse(f, "a & b & (~a | ~b)").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "$false"));
+        assertThat(parse(f, "a | b | ~a & ~b").transform(CanonicalDNFEnumeration.get())).isEqualTo(parse(f, "~a & b | a & b | a & ~b | ~a & ~b"));
     }
 
     @Test

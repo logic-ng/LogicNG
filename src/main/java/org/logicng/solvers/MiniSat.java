@@ -75,10 +75,10 @@ public class MiniSat extends SATSolver {
     public enum SolverStyle {MINISAT, GLUCOSE, MINICARD}
 
     protected final MiniSatConfig config;
-    protected final MiniSatStyleSolver solver;
-    protected final CCEncoder ccEncoder;
-    protected final SolverStyle style;
-    protected final LNGIntVector validStates;
+    protected MiniSatStyleSolver solver;
+    protected CCEncoder ccEncoder;
+    protected SolverStyle style;
+    protected LNGIntVector validStates;
     protected final boolean initialPhase;
     protected final boolean incremental;
     protected int nextStateId;
@@ -120,6 +120,36 @@ public class MiniSat extends SATSolver {
         this.ccEncoder = new CCEncoder(f);
         this.pgTransformation = new PlaistedGreenbaumTransformationSolver(true, this.underlyingSolver(), this.initialPhase);
         this.fullPgTransformation = new PlaistedGreenbaumTransformationSolver(false, this.underlyingSolver(), this.initialPhase);
+    }
+
+    /**
+     * Constructs a new MiniSat solver with a given underlying solver core. This
+     * method is primarily used for serialization purposes and should not be
+     * required in any other application use case.
+     * @param f                the formula factory
+     * @param underlyingSolver the underlying solver core
+     */
+    public MiniSat(final FormulaFactory f, final MiniSatStyleSolver underlyingSolver) {
+        super(f);
+        this.config = underlyingSolver.getConfig();
+        if (underlyingSolver instanceof MiniSat2Solver) {
+            this.style = SolverStyle.MINISAT;
+        } else if (underlyingSolver instanceof MiniCard) {
+            this.style = SolverStyle.MINICARD;
+        } else if (underlyingSolver instanceof GlucoseSyrup) {
+            this.style = SolverStyle.GLUCOSE;
+        } else {
+            throw new IllegalArgumentException("Unknown solver type: " + underlyingSolver.getClass());
+        }
+        this.initialPhase = underlyingSolver.getConfig().initialPhase();
+        this.solver = underlyingSolver;
+        this.result = UNDEF;
+        this.incremental = underlyingSolver.getConfig().incremental();
+        this.validStates = new LNGIntVector();
+        this.nextStateId = 0;
+        this.ccEncoder = new CCEncoder(f);
+        this.pgTransformation = new PlaistedGreenbaumTransformationSolver(true, underlyingSolver, this.initialPhase);
+        this.fullPgTransformation = new PlaistedGreenbaumTransformationSolver(false, underlyingSolver, this.initialPhase);
     }
 
     /**

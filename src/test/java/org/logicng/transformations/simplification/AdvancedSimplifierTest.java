@@ -84,20 +84,20 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testTimeoutHandlerSmall() throws ParserException {
+    public void testTimeoutHandlerSmall() {
         final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                 new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                 new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
                 new TimeoutOptimizationHandler(System.currentTimeMillis() + 5_000L, TimeoutHandler.TimerType.FIXED_END)
         );
-        final Formula formula = this.f.parse("a & b | ~c & a");
+        final Formula formula = parse(this.f, "a & b | ~c & a");
         for (final TimeoutOptimizationHandler handler : handlers) {
             testHandler(handler, formula, false);
         }
     }
 
     @Test
-    public void testTimeoutHandlerLarge() throws ParserException, IOException {
+    public void testTimeoutHandlerLarge() throws IOException, ParserException {
         final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
                 new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.RESTARTING_TIMEOUT),
@@ -110,24 +110,24 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testPrimeCompilerIsCancelled() throws ParserException {
+    public void testPrimeCompilerIsCancelled() {
         final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 0);
-        final Formula formula = this.f.parse("a&(b|c)");
+        final Formula formula = parse(this.f, "a&(b|c)");
         testHandler(handler, formula, true);
     }
 
     @Test
-    public void testSmusComputationIsCancelled() throws ParserException {
+    public void testSmusComputationIsCancelled() {
         final OptimizationHandler handler = new BoundedOptimizationHandler(-1, 5);
-        final Formula formula = this.f.parse("a&(b|c)");
+        final Formula formula = parse(this.f, "a&(b|c)");
         testHandler(handler, formula, true);
     }
 
     @LongRunningTag
     @Test
-    public void testCancellationPoints() throws ParserException {
+    public void testCancellationPoints() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = f.parse("~v16 & ~v22 & ~v12 & (~v4 | ~v14) & (~v4 | ~v15) & (v3 | v4) & (v3 | ~v14) & (v3 | ~v15) " +
+        final Formula formula = parse(f, "~v16 & ~v22 & ~v12 & (~v4 | ~v14) & (~v4 | ~v15) & (v3 | v4) & (v3 | ~v14) & (v3 | ~v15) " +
                 "& (~v20 | ~v8) & (v9 | ~v20) & (~v21 | ~v8) & (v9 | ~v21) & (~v21 | ~v10) & (~v21 | ~v11) & v19");
         for (int numOptimizationStarts = 1; numOptimizationStarts < 30; numOptimizationStarts++) {
             for (int numSatHandlerStarts = 1; numSatHandlerStarts < 500; numSatHandlerStarts++) {

@@ -63,16 +63,16 @@ import java.util.TreeSet;
 public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
 
     @Test
-    public void testPrimeImplicateNaive() throws ParserException {
-        final NaivePrimeReduction naive01 = new NaivePrimeReduction(this.f.parse("a&b"));
+    public void testPrimeImplicateNaive() {
+        final NaivePrimeReduction naive01 = new NaivePrimeReduction(parse(this.f, "a&b"));
         assertThat(naive01.reduceImplicate(new TreeSet<>(Arrays.asList(this.A, this.B))))
                 .containsAnyOf(this.A, this.B).hasSize(1);
 
-        final NaivePrimeReduction naive02 = new NaivePrimeReduction(this.f.parse("(a => b) | b | c"));
+        final NaivePrimeReduction naive02 = new NaivePrimeReduction(parse(this.f, "(a => b) | b | c"));
         assertThat(naive02.reduceImplicate(new TreeSet<>(Arrays.asList(this.A.negate(), this.B, this.C))))
                 .containsExactly(this.A.negate(), this.B, this.C);
 
-        final NaivePrimeReduction naive03 = new NaivePrimeReduction(this.f.parse("(a => b) & b & c"));
+        final NaivePrimeReduction naive03 = new NaivePrimeReduction(parse(this.f, "(a => b) & b & c"));
         assertThat(naive03.reduceImplicate(new TreeSet<>(Arrays.asList(this.B, this.C))))
                 .containsAnyOf(this.B, this.C).hasSize(1);
     }
@@ -96,10 +96,10 @@ public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSmallFormulas() throws IOException, ParserException {
+    public void testSmallFormulas() throws IOException {
         final List<String> lines = Files.readAllLines(Paths.get("src/test/resources/formulas/small_formulas.txt"));
         for (final String line : lines) {
-            testFormula(this.f.parse(line));
+            testFormula(parse(this.f, line));
         }
     }
 
@@ -122,7 +122,7 @@ public class PrimeImplicateReductionTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testCancellationPoints() throws ParserException, IOException {
+    public void testCancellationPoints() throws IOException, ParserException {
         final Formula formula = FormulaReader.readPseudoBooleanFormula("src/test/resources/formulas/large_formula.txt", this.f);
         for (int numStarts = 0; numStarts < 20; numStarts++) {
             final SATHandler handler = new BoundedSatHandler(numStarts);

@@ -69,6 +69,12 @@ public final class LNGHeap {
         this.indices = new LNGIntVector(1000);
     }
 
+    LNGHeap(final MiniSatStyleSolver s, final LNGIntVector heap, final LNGIntVector indices) {
+        this.s = s;
+        this.heap = heap;
+        this.indices = indices;
+    }
+
     /**
      * Returns the left position on the heap for a given position.
      * @param pos the position
@@ -250,6 +256,14 @@ public final class LNGHeap {
         }
         this.heap.set(p, y);
         this.indices.set(y, p);
+    }
+
+    LNGIntVector getHeap() {
+        return this.heap;
+    }
+
+    LNGIntVector getIndices() {
+        return this.indices;
     }
 
     @Override

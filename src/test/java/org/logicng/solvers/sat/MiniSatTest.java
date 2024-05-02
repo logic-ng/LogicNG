@@ -30,13 +30,13 @@ package org.logicng.solvers.sat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.logicng.datastructures.Tristate.FALSE;
 import static org.logicng.datastructures.Tristate.TRUE;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.collections.LNGIntVector;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -127,10 +127,10 @@ public class MiniSatTest {
     }
 
     @Test
-    public void testAssumptionChecking() throws ParserException {
+    public void testAssumptionChecking() {
         final FormulaFactory f = new FormulaFactory();
         final SATSolver solver = MiniSat.miniSat(f);
-        solver.add(f.parse("A & B"));
+        solver.add(parse(f, "A & B"));
         assertThat(solver.sat()).isEqualTo(TRUE);
         assertThat(solver.sat(f.literal("A", true))).isEqualTo(TRUE);
         assertThat(solver.sat(f.literal("B", true))).isEqualTo(TRUE);

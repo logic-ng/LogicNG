@@ -30,6 +30,7 @@ package org.logicng.solvers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,7 +39,6 @@ import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.functions.ModelEnumerationFunction;
 import org.logicng.solvers.sat.GlucoseConfig;
 import org.logicng.solvers.sat.MiniSatConfig;
@@ -83,17 +83,17 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testNoModel(final SATSolver solver) throws ParserException {
+    public void testNoModel(final SATSolver solver) {
         solver.reset();
         solver.add(f.falsum());
         solver.sat();
         assertThat(solver.model()).isNull();
         solver.reset();
-        solver.add(f.parse("A & ~A"));
+        solver.add(parse(f, "A & ~A"));
         solver.sat();
         assertThat(solver.model()).isNull();
         solver.reset();
-        solver.add(f.parse("(A => (B & C)) & A & C & (C <=> ~B)"));
+        solver.add(parse(f, "(A => (B & C)) & A & C & (C <=> ~B)"));
         solver.sat();
         assertThat(solver.model()).isNull();
     }
@@ -129,9 +129,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testCNFFormula(final SATSolver solver) throws ParserException {
+    public void testCNFFormula(final SATSolver solver) {
         solver.reset();
-        final Formula formula = f.parse("(A|B|C) & (~A|~B|~C) & (A|~B|~C) & (~A|~B|C)");
+        final Formula formula = parse(f, "(A|B|C) & (~A|~B|~C) & (A|~B|~C) & (~A|~B|C)");
         solver.add(formula);
         solver.sat();
         final Assignment model = solver.model();
@@ -144,9 +144,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testCNFWithAuxiliaryVars(final MiniSat solver) throws ParserException {
+    public void testCNFWithAuxiliaryVars(final MiniSat solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         final Formula cnf = formula.transform(new TseitinTransformation(0));
         solver.add(cnf);
         solver.sat();
@@ -171,9 +171,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testCNFWithAuxiliaryVarsRestrictedToOriginal(final SATSolver solver) throws ParserException {
+    public void testCNFWithAuxiliaryVarsRestrictedToOriginal(final SATSolver solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         final Formula cnf = formula.transform(new TseitinTransformation(0));
         solver.add(cnf);
         solver.sat();
@@ -190,9 +190,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testNonCNFAllVars(final MiniSat solver) throws ParserException {
+    public void testNonCNFAllVars(final MiniSat solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         solver.add(formula);
         solver.sat();
         final Assignment model = solver.model();
@@ -215,9 +215,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testNonCNFOnlyFormulaVars(final SATSolver solver) throws ParserException {
+    public void testNonCNFOnlyFormulaVars(final SATSolver solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         solver.add(formula);
         solver.sat();
         final Assignment model = solver.model(formula.variables());
@@ -233,9 +233,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testNonCNFRestrictedVars(final SATSolver solver) throws ParserException {
+    public void testNonCNFRestrictedVars(final SATSolver solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         final MiniSat miniSat = MiniSat.miniSat(f);
         miniSat.add(formula);
         solver.add(formula);
@@ -254,9 +254,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testNonCNFRestrictedAndAdditionalVars(final SATSolver solver) throws ParserException {
+    public void testNonCNFRestrictedAndAdditionalVars(final SATSolver solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         final MiniSat miniSat = MiniSat.miniSat(f);
         miniSat.add(formula);
         solver.add(formula);
@@ -278,9 +278,9 @@ public class ModelTest {
 
     @ParameterizedTest
     @MethodSource("solvers")
-    public void testUnsolvedFormula(final SATSolver solver) throws ParserException {
+    public void testUnsolvedFormula(final SATSolver solver) {
         solver.reset();
-        final Formula formula = f.parse("(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
+        final Formula formula = parse(f, "(A => B & C) & (~A => C & ~D) & (C => (D & E | ~E & B)) & ~F");
         solver.add(formula);
         assertThatThrownBy(solver::model).isInstanceOf(IllegalStateException.class);
     }

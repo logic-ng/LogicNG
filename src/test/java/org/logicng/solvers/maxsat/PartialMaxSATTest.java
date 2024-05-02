@@ -38,7 +38,6 @@ import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.TimeoutMaxSATHandler;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
@@ -79,7 +78,7 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     public void testExceptionalBehaviorForMSU3() {
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.msu3(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 2);
             solver.solve();
         }).isInstanceOf(IllegalStateException.class)
@@ -89,7 +88,7 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
                     .incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
                     .cardinality(MaxSATConfig.CardinalityEncoding.MTOTALIZER)
                     .build());
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
         }).isInstanceOf(IllegalStateException.class)
@@ -289,13 +288,13 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testNonClauselSoftConstraints() throws ParserException {
+    public void testNonClauselSoftConstraints() {
         final MaxSATSolver[] solvers = new MaxSATSolver[2];
         solvers[0] = MaxSATSolver.msu3(this.f);
         solvers[1] = MaxSATSolver.linearUS(this.f);
         for (final MaxSATSolver solver : solvers) {
-            solver.addHardFormula(this.f.parse("a & b & c"));
-            solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 1);
+            solver.addHardFormula(parse(this.f, "a & b & c"));
+            solver.addSoftFormula(parse(this.f, "~a & ~b & ~c"), 1);
             assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
             assertThat(solver.model().literals()).containsExactlyInAnyOrder(
                     this.f.variable("a"), this.f.variable("b"), this.f.variable("c")
@@ -305,14 +304,14 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSoftConstraintsCornerCaseVerum() throws ParserException {
+    public void testSoftConstraintsCornerCaseVerum() {
         final MaxSATSolver[] solvers = new MaxSATSolver[2];
         solvers[0] = MaxSATSolver.msu3(this.f);
         solvers[1] = MaxSATSolver.linearUS(this.f);
         for (final MaxSATSolver solver : solvers) {
-            solver.addHardFormula(this.f.parse("a & b & c"));
-            solver.addSoftFormula(this.f.parse("$true"), 1);
-            solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 1);
+            solver.addHardFormula(parse(this.f, "a & b & c"));
+            solver.addSoftFormula(parse(this.f, "$true"), 1);
+            solver.addSoftFormula(parse(this.f, "~a & ~b & ~c"), 1);
             assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
             assertThat(solver.model().literals()).containsExactlyInAnyOrder(
                     this.f.variable("a"), this.f.variable("b"), this.f.variable("c")
@@ -322,14 +321,14 @@ public class PartialMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testSoftConstraintsCornerCaseFalsum() throws ParserException {
+    public void testSoftConstraintsCornerCaseFalsum() {
         final MaxSATSolver[] solvers = new MaxSATSolver[2];
         solvers[0] = MaxSATSolver.msu3(this.f);
         solvers[1] = MaxSATSolver.linearUS(this.f);
         for (final MaxSATSolver solver : solvers) {
-            solver.addHardFormula(this.f.parse("a & b & c"));
-            solver.addSoftFormula(this.f.parse("$false"), 1);
-            solver.addSoftFormula(this.f.parse("~a & ~b & ~c"), 1);
+            solver.addHardFormula(parse(this.f, "a & b & c"));
+            solver.addSoftFormula(parse(this.f, "$false"), 1);
+            solver.addSoftFormula(parse(this.f, "~a & ~b & ~c"), 1);
             assertThat(solver.solve()).isEqualTo(MaxSAT.MaxSATResult.OPTIMUM);
             assertThat(solver.model().literals()).containsExactlyInAnyOrder(
                     this.f.variable("a"), this.f.variable("b"), this.f.variable("c")

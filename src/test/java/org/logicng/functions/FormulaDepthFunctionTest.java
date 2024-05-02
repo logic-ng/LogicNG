@@ -36,7 +36,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
 import org.logicng.formulas.cache.FunctionCacheEntry;
-import org.logicng.io.parsers.ParserException;
 
 /**
  * Unit Tests for the class {@link FormulaDepthFunction}.
@@ -89,9 +88,9 @@ public class FormulaDepthFunctionTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testCache() throws ParserException {
+    public void testCache() {
         final FormulaFactory f = new FormulaFactory();
-        final Formula formula = f.parse("A & B | C");
+        final Formula formula = parse(f, "A & B | C");
         assertThat(formula.functionCacheEntry(FunctionCacheEntry.DEPTH)).isNull();
         assertThat(formula.apply(FormulaDepthFunction.get())).isEqualTo(2);
         assertThat(formula.functionCacheEntry(FunctionCacheEntry.DEPTH)).isEqualTo(2);

@@ -1,6 +1,7 @@
 package org.logicng.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.logicng.datastructures.Assignment;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.ModelEnumerationFunction;
@@ -36,7 +36,7 @@ class TimeoutModelEnumerationHandlerTest {
     @BeforeEach
     public void init() {
         this.f = new FormulaFactory();
-        this.pg = new PigeonHoleGenerator(f);
+        this.pg = new PigeonHoleGenerator(this.f);
         this.solvers = new SATSolver[8];
         this.solvers[0] = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(true).build());
         this.solvers[1] = MiniSat.miniSat(this.f, MiniSatConfig.builder().incremental(false).build());
@@ -59,8 +59,8 @@ class TimeoutModelEnumerationHandlerTest {
     }
 
     @Test
-    public void testThatMethodsAreCalled() throws ParserException {
-        final Formula formula = f.parse("A & B | C");
+    public void testThatMethodsAreCalled() {
+        final Formula formula = parse(this.f, "A & B | C");
         for (final SATSolver solver : this.solvers) {
             solver.add(formula);
             final TimeoutModelEnumerationHandler handler = Mockito.mock(TimeoutModelEnumerationHandler.class);
@@ -75,7 +75,7 @@ class TimeoutModelEnumerationHandlerTest {
 
     @Test
     public void testThatSatHandlerIsHandledProperly() {
-        final Formula formula = pg.generate(10).negate();
+        final Formula formula = this.pg.generate(10).negate();
         for (final SATSolver solver : this.solvers) {
             solver.add(formula);
             final TimeoutSATHandler satHandler = Mockito.mock(TimeoutSATHandler.class);
@@ -99,7 +99,7 @@ class TimeoutModelEnumerationHandlerTest {
 
     @Test
     public void testTimeoutHandlerSingleTimeout() {
-        final Formula formula = pg.generate(10).negate();
+        final Formula formula = this.pg.generate(10).negate();
         for (final SATSolver solver : this.solvers) {
             solver.add(formula);
             final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(100L);
@@ -114,7 +114,7 @@ class TimeoutModelEnumerationHandlerTest {
 
     @Test
     public void testTimeoutHandlerFixedEnd() {
-        final Formula formula = pg.generate(10).negate();
+        final Formula formula = this.pg.generate(10).negate();
         for (final SATSolver solver : this.solvers) {
             solver.add(formula);
             final TimeoutModelEnumerationHandler handler = new TimeoutModelEnumerationHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);

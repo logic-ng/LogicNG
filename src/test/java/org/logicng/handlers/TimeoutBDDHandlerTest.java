@@ -1,6 +1,7 @@
 package org.logicng.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.BDD;
 import org.logicng.knowledgecompilation.bdds.BDDFactory;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
@@ -45,8 +45,8 @@ class TimeoutBDDHandlerTest {
     }
 
     @Test
-    public void testThatMethodsAreCalled() throws ParserException {
-        final Formula formula = f.parse("(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X)");
+    public void testThatMethodsAreCalled() {
+        final Formula formula = parse(this.f, "(A => ~B) & ((A & C) | (D & ~C)) & (A | Y | X)");
         final VariableOrderingProvider provider = VariableOrdering.BFS.provider();
         final BDDKernel kernel = new BDDKernel(this.f, provider.getOrder(formula), 100, 100);
         final TimeoutBDDHandler handler = Mockito.mock(TimeoutBDDHandler.class);
@@ -58,8 +58,8 @@ class TimeoutBDDHandlerTest {
     }
 
     @Test
-    public void testThatNewRefAddedHandledProperly() throws ParserException {
-        final Formula formula = f.parse("(A => ~B) & ((A & C) | ~(D & ~C)) & (A | Y | X)");
+    public void testThatNewRefAddedHandledProperly() {
+        final Formula formula = parse(this.f, "(A => ~B) & ((A & C) | ~(D & ~C)) & (A | Y | X)");
         final VariableOrderingProvider provider = VariableOrdering.BFS.provider();
         final BDDKernel kernel = new BDDKernel(this.f, provider.getOrder(formula), 100, 100);
         final TimeoutBDDHandler handler = Mockito.mock(TimeoutBDDHandler.class);
@@ -76,7 +76,7 @@ class TimeoutBDDHandlerTest {
 
     @Test
     public void testTimeoutHandlerSingleTimeout() {
-        final Formula formula = pg.generate(10);
+        final Formula formula = this.pg.generate(10);
         final VariableOrderingProvider provider = VariableOrdering.BFS.provider();
         final BDDKernel kernel = new BDDKernel(this.f, provider.getOrder(formula), 100, 100);
         final TimeoutBDDHandler handler = new TimeoutBDDHandler(100L);
@@ -89,7 +89,7 @@ class TimeoutBDDHandlerTest {
 
     @Test
     public void testTimeoutHandlerFixedEnd() {
-        final Formula formula = pg.generate(10);
+        final Formula formula = this.pg.generate(10);
         final VariableOrderingProvider provider = VariableOrdering.BFS.provider();
         final BDDKernel kernel = new BDDKernel(this.f, provider.getOrder(formula), 100, 100);
         final TimeoutBDDHandler handler = new TimeoutBDDHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);
