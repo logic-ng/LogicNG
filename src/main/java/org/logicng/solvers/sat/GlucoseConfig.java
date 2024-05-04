@@ -81,6 +81,58 @@ public final class GlucoseConfig extends Configuration {
         return new Builder();
     }
 
+    public int getLbLBDMinimizingClause() {
+        return this.lbLBDMinimizingClause;
+    }
+
+    public int getLbLBDFrozenClause() {
+        return this.lbLBDFrozenClause;
+    }
+
+    public int getLbSizeMinimizingClause() {
+        return this.lbSizeMinimizingClause;
+    }
+
+    public int getFirstReduceDB() {
+        return this.firstReduceDB;
+    }
+
+    public int getSpecialIncReduceDB() {
+        return this.specialIncReduceDB;
+    }
+
+    public int getIncReduceDB() {
+        return this.incReduceDB;
+    }
+
+    public double getFactorK() {
+        return this.factorK;
+    }
+
+    public double getFactorR() {
+        return this.factorR;
+    }
+
+    public int getSizeLBDQueue() {
+        return this.sizeLBDQueue;
+    }
+
+    public int getSizeTrailQueue() {
+        return this.sizeTrailQueue;
+    }
+
+    public boolean isReduceOnSize() {
+        return this.reduceOnSize;
+    }
+
+    public int getReduceOnSizeSize() {
+        return this.reduceOnSizeSize;
+    }
+
+    public double getMaxVarDecay() {
+        return this.maxVarDecay;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("GlucoseConfig{").append(System.lineSeparator());

@@ -74,8 +74,8 @@ public final class MSVariable {
         this.decision = false;
     }
 
-    MSVariable(final Tristate assignment, final int level, final MSClause reason, final double activity,
-               final boolean polarity, final boolean decision) {
+    public MSVariable(final Tristate assignment, final int level, final MSClause reason, final double activity,
+                      final boolean polarity, final boolean decision) {
         this.assignment = assignment;
         this.level = level;
         this.reason = reason;

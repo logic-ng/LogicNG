@@ -88,7 +88,12 @@ public final class LNGBooleanVector {
         this.size = elems.length;
     }
 
-    LNGBooleanVector(final boolean[] elements, final int size) {
+    /**
+     * Creates a vector with the given elements and capacity.
+     * @param elements the elements
+     * @param size     the capacity of the vector
+     */
+    public LNGBooleanVector(final boolean[] elements, final int size) {
         this.elements = elements;
         this.size = size;
     }
