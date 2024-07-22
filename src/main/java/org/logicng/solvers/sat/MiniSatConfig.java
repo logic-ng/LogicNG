@@ -406,7 +406,7 @@ public final class MiniSatConfig extends Configuration {
 
         /**
          * Sets the CNF method for converting formula which are not in CNF for the solver.  The default value
-         * is {@code FACTORY_CNF}.
+         * is {@code PG_ON_SOLVER}.
          * @param cnfMethod the CNF method
          * @return the builder
          */
