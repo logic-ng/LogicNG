@@ -28,32 +28,19 @@
 
 package org.logicng.transformations.simplification;
 
-import static org.logicng.handlers.Handler.aborted;
-import static org.logicng.handlers.Handler.start;
-import static org.logicng.handlers.OptimizationHandler.satHandler;
-
-import org.logicng.backbones.Backbone;
-import org.logicng.backbones.BackboneGeneration;
-import org.logicng.backbones.BackboneType;
 import org.logicng.configurations.ConfigurationType;
-import org.logicng.datastructures.Assignment;
-import org.logicng.explanations.smus.SmusComputation;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.FormulaTransformation;
 import org.logicng.formulas.Literal;
 import org.logicng.handlers.OptimizationHandler;
-import org.logicng.primecomputation.PrimeCompiler;
-import org.logicng.primecomputation.PrimeResult;
 import org.logicng.util.FormulaHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * An advanced simplifier for formulas.
@@ -126,21 +113,21 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         final AdvancedSimplifierConfig config = this.initConfig != null
                 ? this.initConfig
                 : (AdvancedSimplifierConfig) formula.factory().configurationFor(ConfigurationType.ADVANCED_SIMPLIFIER);
-        start(config.handler);
+        //start(config.handler); // TODO activate
         final FormulaFactory f = formula.factory();
         Formula simplified = formula;
         final SortedSet<Literal> backboneLiterals = new TreeSet<>();
         if (config.restrictBackbone) {
-            final Backbone backbone = BackboneGeneration
-                    .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(config.handler));
-            if (backbone == null || aborted(config.handler)) {
-                return null;
-            }
-            if (!backbone.isSat()) {
-                return f.falsum();
-            }
-            backboneLiterals.addAll(backbone.getCompleteBackbone());
-            simplified = formula.restrict(new Assignment(backboneLiterals));
+            //final Backbone backbone = BackboneGeneration // TODO activate
+            //        .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(config.handler));
+            //if (backbone == null || aborted(config.handler)) {
+            //    return null;
+            //}
+            //if (!backbone.isSat()) {
+            //    return f.falsum();
+            //}
+            //backboneLiterals.addAll(backbone.getCompleteBackbone());
+            //simplified = formula.restrict(new Assignment(backboneLiterals));
         }
         final Formula simplifyMinDnf = computeMinDnf(f, simplified, config);
         if (simplifyMinDnf == null) {
@@ -161,19 +148,19 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         return simplified;
     }
 
-    private Formula computeMinDnf(final FormulaFactory f, Formula simplified, final AdvancedSimplifierConfig config) {
-        final PrimeResult primeResult =
-                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.handler);
-        if (primeResult == null || aborted(config.handler)) {
-            return null;
-        }
-        final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
-        final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
-                Collections.singletonList(simplified), f, config.handler);
-        if (minimizedPIs == null || aborted(config.handler)) {
-            return null;
-        }
-        simplified = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
+    private Formula computeMinDnf(final FormulaFactory f, final Formula simplified, final AdvancedSimplifierConfig config) {
+        //final PrimeResult primeResult = //TODO
+        //        PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.handler);
+        //if (primeResult == null || aborted(config.handler)) {
+        //    return null;
+        //}
+        //final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
+        //final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
+        //        Collections.singletonList(simplified), f, config.handler);
+        //if (minimizedPIs == null || aborted(config.handler)) {
+        //    return null;
+        //}
+        //simplified = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
         return simplified;
     }
 

@@ -31,6 +31,7 @@ package org.logicng.transformations.simplification;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.handlers.OptimizationHandler;
+import org.logicng.solvers.maxsat.OptimizationConfig;
 
 /**
  * The configuration object for the {@link AdvancedSimplifier}.
@@ -44,7 +45,7 @@ public class AdvancedSimplifierConfig extends Configuration {
     boolean factorOut;
     boolean simplifyNegations;
     RatingFunction<?> ratingFunction;
-    OptimizationHandler handler;
+    OptimizationConfig optimizationConfig;
 
     @Override
     public String toString() {
@@ -53,7 +54,7 @@ public class AdvancedSimplifierConfig extends Configuration {
                 ", factorOut=" + this.factorOut +
                 ", simplifyNegations=" + this.simplifyNegations +
                 ", ratingFunction=" + this.ratingFunction +
-                ", handler=" + this.handler +
+                ", optimizationConfig=" + this.optimizationConfig +
                 '}';
     }
 
@@ -67,7 +68,7 @@ public class AdvancedSimplifierConfig extends Configuration {
         this.factorOut = builder.factorOut;
         this.simplifyNegations = builder.simplifyNegations;
         this.ratingFunction = builder.ratingFunction;
-        this.handler = builder.handler;
+        this.optimizationConfig = builder.optimizationConfig;
     }
 
     /**
@@ -87,7 +88,7 @@ public class AdvancedSimplifierConfig extends Configuration {
         boolean factorOut = true;
         boolean simplifyNegations = true;
         private RatingFunction<?> ratingFunction = new DefaultRatingFunction();
-        private OptimizationHandler handler = null;
+        private OptimizationConfig optimizationConfig = null;
 
         private Builder() {
             // Initialize only via factory
@@ -138,9 +139,16 @@ public class AdvancedSimplifierConfig extends Configuration {
          * Sets the handler to control the computation. The default is 'no handler'.
          * @param handler the optimization handler
          * @return the current builder
+         * @deprecated use the {@link #optimizationConfig}
          */
+        @Deprecated
         public Builder handler(final OptimizationHandler handler) {
-            this.handler = handler;
+            this.optimizationConfig = new OptimizationConfig(OptimizationConfig.OptimizationType.SAT_OPTIMIZATION, null, handler, null);
+            return this;
+        }
+
+        public Builder optimizationConfig(final OptimizationConfig config) {
+            this.optimizationConfig = config;
             return this;
         }
 

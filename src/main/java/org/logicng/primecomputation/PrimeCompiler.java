@@ -42,6 +42,8 @@ import org.logicng.handlers.OptimizationHandler;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.OptimizationFunction;
+import org.logicng.solvers.maxsat.OptimizationConfig;
+import org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType;
 import org.logicng.solvers.sat.MiniSatConfig;
 import org.logicng.transformations.LiteralSubstitution;
 import org.logicng.util.FormulaHelper;
@@ -76,13 +78,17 @@ public final class PrimeCompiler {
 
     private static final String POS = "_POS";
     private static final String NEG = "_NEG";
-    private static final PrimeCompiler INSTANCE_MIN = new PrimeCompiler(false);
-    private static final PrimeCompiler INSTANCE_MAX = new PrimeCompiler(true);
+    private static final OptimizationConfig DEFAULT_CFG =
+            new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, null, null);
+    private static final PrimeCompiler INSTANCE_MIN = new PrimeCompiler(false, DEFAULT_CFG);
+    private static final PrimeCompiler INSTANCE_MAX = new PrimeCompiler(true, DEFAULT_CFG);
 
     private final boolean computeWithMaximization;
+    private final OptimizationConfig config;
 
-    private PrimeCompiler(final boolean computeWithMaximization) {
+    private PrimeCompiler(final boolean computeWithMaximization, final OptimizationConfig config) {
         this.computeWithMaximization = computeWithMaximization;
+        this.config = config;
     }
 
     /**
@@ -99,6 +105,22 @@ public final class PrimeCompiler {
      */
     public static PrimeCompiler getWithMaximization() {
         return INSTANCE_MAX;
+    }
+
+    /**
+     * Returns a compiler which uses minimum models to compute the primes.
+     * @return a compiler which uses minimum models to compute the primes
+     */
+    public static PrimeCompiler getWithMinimization(final OptimizationConfig config) {
+        return new PrimeCompiler(false, config);
+    }
+
+    /**
+     * Returns a compiler which uses maximum models to compute the primes.
+     * @return a compiler which uses maximum models to compute the primes
+     */
+    public static PrimeCompiler getWithMaximization(final OptimizationConfig config) {
+        return new PrimeCompiler(false, config);
     }
 
     /**
@@ -167,7 +189,9 @@ public final class PrimeCompiler {
                 return null;
             }
             if (fSat == Tristate.FALSE) {
-                final SortedSet<Literal> primeImplicant = this.computeWithMaximization ? primeReduction.reduceImplicant(fModel.literals(), satHandler(handler)) : fModel.literals();
+                final SortedSet<Literal> primeImplicant = this.computeWithMaximization
+                        ? primeReduction.reduceImplicant(fModel.literals(), satHandler(handler))
+                        : fModel.literals();
                 if (primeImplicant == null || aborted(handler)) {
                     return null;
                 }
