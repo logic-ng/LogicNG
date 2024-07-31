@@ -69,8 +69,14 @@ public final class LNGHeap {
         this.indices = new LNGIntVector(1000);
     }
 
-    LNGHeap(final MiniSatStyleSolver s, final LNGIntVector heap, final LNGIntVector indices) {
-        this.s = s;
+    /**
+     * Constructs a new heap for a given solver and content.
+     * @param solver  the solver
+     * @param heap    the heap content
+     * @param indices the indices content
+     */
+    public LNGHeap(final MiniSatStyleSolver solver, final LNGIntVector heap, final LNGIntVector indices) {
+        this.s = solver;
         this.heap = heap;
         this.indices = indices;
     }
@@ -258,11 +264,11 @@ public final class LNGHeap {
         this.indices.set(y, p);
     }
 
-    LNGIntVector getHeap() {
+    public LNGIntVector getHeap() {
         return this.heap;
     }
 
-    LNGIntVector getIndices() {
+    public LNGIntVector getIndices() {
         return this.indices;
     }
 

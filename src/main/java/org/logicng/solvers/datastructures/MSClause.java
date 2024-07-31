@@ -123,9 +123,9 @@ public final class MSClause {
         this.atMostWatchers = -1;
     }
 
-    MSClause(final LNGIntVector data, final boolean learnt, final boolean isAtMost, final double activity,
-             final int szWithoutSelectors, final boolean seen, final long lbd, final boolean canBeDel,
-             final boolean oneWatched, final int atMostWatchers) {
+    public MSClause(final LNGIntVector data, final boolean learnt, final boolean isAtMost, final double activity,
+                    final int szWithoutSelectors, final boolean seen, final long lbd, final boolean canBeDel,
+                    final boolean oneWatched, final int atMostWatchers) {
         this.data = data;
         this.learnt = learnt;
         this.isAtMost = isAtMost;
@@ -316,7 +316,7 @@ public final class MSClause {
         return this.data.size() - this.atMostWatchers + 1;
     }
 
-    LNGIntVector getData() {
+    public LNGIntVector getData() {
         return this.data;
     }
 

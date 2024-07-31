@@ -88,7 +88,12 @@ public final class LNGLongVector {
         this.size = elems.length;
     }
 
-    LNGLongVector(final long[] elements, final int size) {
+    /**
+     * Creates a vector with the given elements and capacity.
+     * @param elements the elements
+     * @param size     the capacity of the vector
+     */
+    public LNGLongVector(final long[] elements, final int size) {
         this.elements = elements;
         this.size = size;
     }
