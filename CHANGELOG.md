@@ -2,6 +2,14 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2024-07-31
+
+### Changed
+
+- Changed visibility from some methods from package-private to public for formula and solver serializiation via the 
+  new https://github.com/logic-ng/serialization library
+
+
 ## [2.5.0] - 2024-05-02
 
 ### Removed (Potentially Breaking Change!)
