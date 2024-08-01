@@ -3,11 +3,26 @@ package org.logicng.solvers.maxsat;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.handlers.MaxSATHandler;
 import org.logicng.handlers.OptimizationHandler;
+import org.logicng.handlers.SATHandler;
 import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 
 import java.util.Objects;
 
+/**
+ * Configuration for optimization via a SAT or MaxSAT solver.
+ * <p>
+ * Some algorithms use optimization internally.  If they use many incremental
+ * solving steps, they usually use the SAT solver based
+ * {@link org.logicng.solvers.functions.OptimizationFunction}.  For some cases
+ * however it can be more performant to use a MaxSAT solver based optimization
+ * with the drawback of generating the solver again in each step.
+ * <p>
+ * These algorithms can be configured with this config object.
+ *
+ * @version 2.6.0
+ * @since 2.6.0
+ */
 public class OptimizationConfig {
     public enum OptimizationType {
         SAT_OPTIMIZATION,
@@ -24,7 +39,7 @@ public class OptimizationConfig {
     private final OptimizationHandler optimizationHandler;
     private final MaxSATHandler maxSATHandler;
 
-    public OptimizationConfig(
+    private OptimizationConfig(
             final OptimizationType optType,
             final MaxSATConfig maxConfig,
             final OptimizationHandler optHandler,
@@ -36,22 +51,62 @@ public class OptimizationConfig {
         this.maxSATHandler = maxHandler;
     }
 
+    /**
+     * Generate a MaxSAT solver based configuration
+     * @param optType the optimization type (MaxSAT algorithm)
+     * @param maxConfig the optional MaxSAT solver configuration
+     * @param maxHandler the optional MaxSAT solver handler
+     * @return the configuration
+     */
+    public static OptimizationConfig maxsat(
+            final OptimizationType optType,
+            final MaxSATConfig maxConfig,
+            final MaxSATHandler maxHandler
+    ) {
+        if (optType == OptimizationType.SAT_OPTIMIZATION) {
+            throw new IllegalArgumentException("SAT Optimization cannot be parametrized with MaxSat config and handler");
+        }
+        return new OptimizationConfig(optType, maxConfig, null, maxHandler);
+    }
+
+    /**
+     * Generate a SAT solver based configuration
+     * @param optHandler the optional optimization handler
+     * @return the configuration
+     */
+    public static OptimizationConfig sat(final OptimizationHandler optHandler) {
+        return new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, optHandler, null);
+    }
+
+    /**
+     * Returns the optimization type.
+     * @return the optimization type
+     */
     public OptimizationType getOptimizationType() {
         return this.optimizationType;
     }
 
-    public MaxSATConfig getMaxSATConfig() {
-        return this.maxSATConfig;
-    }
-
+    /**
+     * Returns the optional optimization handler.
+     * @return the optional optimization handler
+     */
     public OptimizationHandler getOptimizationHandler() {
         return this.optimizationHandler;
     }
 
+    /**
+     * Returns the optional MaxSAT handler.
+     * @return the optional MaxSAT handler
+     */
     public MaxSATHandler getMaxSATHandler() {
         return this.maxSATHandler;
     }
 
+    /**
+     * Generates a MaxSAT solver with the current configuration.
+     * @param f the formula factory
+     * @return the MAxSAT solver
+     */
     public MaxSATSolver genMaxSATSolver(final FormulaFactory f) {
         switch (this.optimizationType) {
             case MAXSAT_INCWBO:
@@ -69,6 +124,46 @@ public class OptimizationConfig {
             default:
                 throw new IllegalArgumentException("Not a valid MaxSAT algorithm: " + this.optimizationType);
         }
+    }
+
+    /**
+     * Starts the solver of this config's handler (if present)
+     */
+    public void startHandler() {
+        if (this.optimizationHandler != null) {
+            this.optimizationHandler.started();
+        }
+        if (this.maxSATHandler != null) {
+            this.maxSATHandler.started();
+        }
+    }
+
+    /**
+     * Return the SAT handler of this config's handler (if present)
+     * @return the SAT handler
+     */
+    public SATHandler satHandler() {
+        if (this.optimizationHandler != null) {
+            return this.optimizationHandler.satHandler();
+        }
+        if (this.maxSATHandler != null) {
+            return this.maxSATHandler.satHandler();
+        }
+        return null;
+    }
+
+    /**
+     * Returns whether this config's handler (if present) was aborted.
+     * @return whether this config's handler was aborted
+     */
+    public boolean aborted() {
+        if (this.optimizationHandler != null) {
+            return this.optimizationHandler.aborted();
+        }
+        if (this.maxSATHandler != null) {
+            return this.maxSATHandler.aborted();
+        }
+        return false;
     }
 
     @Override

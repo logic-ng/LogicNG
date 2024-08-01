@@ -78,23 +78,23 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
 
     public static Collection<Object[]> configs() {
         final List<Object[]> configs = new ArrayList<>();
-        configs.add(new Object[]{new OptimizationConfig(SAT_OPTIMIZATION, null, null, null), "SAT"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_INCWBO, null, null, null), "INCWBO"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_SU, null, null, null), "LINEAR_SU"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_US, null, null, null), "LINEAR_US"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_MSU3, null, null, null), "MSU3"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_OLL, null, null, null), "OLL"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_WBO, null, null, null), "WBO"});
+        configs.add(new Object[]{OptimizationConfig.sat(null), "SAT"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_INCWBO, null, null), "INCWBO"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_LINEAR_SU, null, null), "LINEAR_SU"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_LINEAR_US, null, null), "LINEAR_US"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_MSU3, null, null), "MSU3"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_OLL, null, null), "OLL"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_WBO, null, null), "WBO"});
         return configs;
     }
 
     public static Collection<Object[]> fastConfigs() {
         final List<Object[]> configs = new ArrayList<>();
-        configs.add(new Object[]{new OptimizationConfig(SAT_OPTIMIZATION, null, null, null), "SAT"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_SU, null, null, null), "LINEAR_SU"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_US, null, null, null), "LINEAR_US"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_MSU3, null, null, null), "MSU3"});
-        configs.add(new Object[]{new OptimizationConfig(MAXSAT_OLL, null, null, null), "OLL"});
+        configs.add(new Object[]{OptimizationConfig.sat(null), "SAT"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_LINEAR_SU, null, null), "LINEAR_SU"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_LINEAR_US, null, null), "LINEAR_US"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_MSU3, null, null), "MSU3"});
+        configs.add(new Object[]{OptimizationConfig.maxsat(MAXSAT_OLL, null, null), "OLL"});
         return configs;
     }
 

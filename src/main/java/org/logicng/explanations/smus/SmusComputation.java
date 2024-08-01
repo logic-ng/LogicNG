@@ -92,7 +92,7 @@ public final class SmusComputation {
      */
     public static <P extends Proposition> List<P> computeSmus(
             final List<P> propositions, final List<Formula> additionalConstraints, final FormulaFactory f) {
-        final OptimizationConfig cfg = new OptimizationConfig(SAT_OPTIMIZATION, null, null, null);
+        final OptimizationConfig cfg = OptimizationConfig.sat(null);
         return computeSmus(propositions, additionalConstraints, f, cfg);
     }
 
@@ -114,7 +114,7 @@ public final class SmusComputation {
             final List<Formula> additionalConstraints,
             final FormulaFactory f,
             final OptimizationHandler handler) {
-        final OptimizationConfig cfg = new OptimizationConfig(SAT_OPTIMIZATION, null, handler, null);
+        final OptimizationConfig cfg = OptimizationConfig.sat(handler);
         return computeSmus(propositions, additionalConstraints, f, cfg);
     }
 
@@ -154,7 +154,7 @@ public final class SmusComputation {
             final List<Formula> formulas,
             final List<Formula> additionalConstraints,
             final FormulaFactory f) {
-        final OptimizationConfig cfg = new OptimizationConfig(SAT_OPTIMIZATION, null, null, null);
+        final OptimizationConfig cfg = OptimizationConfig.sat(null);
         return computeSmusForFormulas(formulas, additionalConstraints, f, cfg);
     }
 
@@ -171,7 +171,7 @@ public final class SmusComputation {
             final List<Formula> additionalConstraints,
             final FormulaFactory f,
             final OptimizationHandler handler) {
-        final OptimizationConfig cfg = new OptimizationConfig(SAT_OPTIMIZATION, null, handler, null);
+        final OptimizationConfig cfg = OptimizationConfig.sat(handler);
         return computeSmusForFormulas(formulas, additionalConstraints, f, cfg);
     }
 

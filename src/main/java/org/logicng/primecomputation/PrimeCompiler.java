@@ -114,7 +114,7 @@ public final class PrimeCompiler {
      * @return the prime result
      */
     public PrimeResult compute(final Formula formula, final PrimeResult.CoverageType type) {
-        return compute(formula, type, new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, null, null));
+        return compute(formula, type, OptimizationConfig.sat(null));
     }
 
     /**
@@ -135,7 +135,7 @@ public final class PrimeCompiler {
             final Formula formula,
             final PrimeResult.CoverageType type,
             final OptimizationHandler handler) {
-        return compute(formula, type, new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, handler, null));
+        return compute(formula, type, OptimizationConfig.sat(handler));
     }
 
     /**

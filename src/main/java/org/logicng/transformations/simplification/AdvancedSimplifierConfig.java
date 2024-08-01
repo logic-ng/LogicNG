@@ -28,6 +28,8 @@
 
 package org.logicng.transformations.simplification;
 
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.SAT_OPTIMIZATION;
+
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.handlers.OptimizationHandler;
@@ -35,7 +37,7 @@ import org.logicng.solvers.maxsat.OptimizationConfig;
 
 /**
  * The configuration object for the {@link AdvancedSimplifier}.
- * @version 2.3.0
+ * @version 2.6.0
  * @since 2.3.0
  */
 
@@ -44,6 +46,7 @@ public class AdvancedSimplifierConfig extends Configuration {
     boolean restrictBackbone;
     boolean factorOut;
     boolean simplifyNegations;
+    boolean returnIntermediateResult;
     RatingFunction<?> ratingFunction;
     OptimizationConfig optimizationConfig;
 
@@ -53,6 +56,7 @@ public class AdvancedSimplifierConfig extends Configuration {
                 "restrictBackbone=" + this.restrictBackbone +
                 ", factorOut=" + this.factorOut +
                 ", simplifyNegations=" + this.simplifyNegations +
+                ", returnIntermediateResult=" + this.returnIntermediateResult +
                 ", ratingFunction=" + this.ratingFunction +
                 ", optimizationConfig=" + this.optimizationConfig +
                 '}';
@@ -67,6 +71,7 @@ public class AdvancedSimplifierConfig extends Configuration {
         this.restrictBackbone = builder.restrictBackbone;
         this.factorOut = builder.factorOut;
         this.simplifyNegations = builder.simplifyNegations;
+        this.returnIntermediateResult = builder.returnIntermediateResult;
         this.ratingFunction = builder.ratingFunction;
         this.optimizationConfig = builder.optimizationConfig;
     }
@@ -87,15 +92,17 @@ public class AdvancedSimplifierConfig extends Configuration {
         boolean restrictBackbone = true;
         boolean factorOut = true;
         boolean simplifyNegations = true;
-        private RatingFunction<?> ratingFunction = new DefaultRatingFunction();
-        private OptimizationConfig optimizationConfig = null;
+        boolean returnIntermediateResult = false;
+        private RatingFunction<?> ratingFunction = DefaultRatingFunction.get();
+        private OptimizationConfig optimizationConfig = OptimizationConfig.sat(null);
 
         private Builder() {
             // Initialize only via factory
         }
 
         /**
-         * Sets the flag for whether the formula should be restricted with the backbone. The default is 'true'.
+         * Sets the flag for whether the formula should be restricted with the
+         * backbone. The default is 'true'.
          * @param restrictBackbone flag for the restriction
          * @return the current builder
          */
@@ -105,7 +112,8 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the flag for whether the formula should be factorized. The default is 'true'.
+         * Sets the flag for whether the formula should be factorized. The
+         * default is 'true'.
          * @param factorOut flag for the factorisation
          * @return the current builder
          */
@@ -115,7 +123,8 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the flag for whether negations shall be simplified. The default is 'true'.
+         * Sets the flag for whether negations shall be simplified. The
+         * default is 'true'.
          * @param simplifyNegations flag
          * @return the current builder
          */
@@ -125,8 +134,11 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the rating function. The aim of the simplification is to minimize the formula with respect to this rating function,
-         * e.g. finding a formula with a minimal number of symbols when represented as string. The default is the {@code DefaultRatingFunction}.
+         * Sets the rating function. The aim of the simplification is to
+         * minimize the formula with respect to this rating function,
+         * e.g. finding a formula with a minimal number of symbols when
+         * represented as string. The default is the
+         * {@code DefaultRatingFunction}.
          * @param ratingFunction the desired rating function
          * @return the current builder
          */
@@ -136,19 +148,37 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the handler to control the computation. The default is 'no handler'.
+         * Sets the handler to control the computation. The default is
+         * 'no handler'.
          * @param handler the optimization handler
          * @return the current builder
          * @deprecated use the {@link #optimizationConfig}
          */
         @Deprecated
         public Builder handler(final OptimizationHandler handler) {
-            this.optimizationConfig = new OptimizationConfig(OptimizationConfig.OptimizationType.SAT_OPTIMIZATION, null, handler, null);
+            this.optimizationConfig = OptimizationConfig.sat(handler);
             return this;
         }
 
+        /**
+         * Sets the optimization config of the computation.  The default is a
+         * config with a SAT based optimization without a handler.
+         * @param config the optimization config
+         * @return the current builder
+         */
         public Builder optimizationConfig(final OptimizationConfig config) {
             this.optimizationConfig = config;
+            return this;
+        }
+
+        /**
+         * Sets whether the intermediate result should be returned in case of
+         * a handler abortion.  The default is 'false'.
+         * @param returnIntermediateResult the flag
+         * @return the current builder
+         */
+        public Builder returnIntermediateResult(final boolean returnIntermediateResult) {
+            this.returnIntermediateResult = returnIntermediateResult;
             return this;
         }
 
