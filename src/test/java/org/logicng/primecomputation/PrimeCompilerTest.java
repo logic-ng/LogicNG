@@ -29,8 +29,19 @@
 package org.logicng.primecomputation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.primecomputation.PrimeResult.CoverageType.IMPLICANTS_COMPLETE;
+import static org.logicng.primecomputation.PrimeResult.CoverageType.IMPLICATES_COMPLETE;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_INCWBO;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_LINEAR_SU;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_LINEAR_US;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_MSU3;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_OLL;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_WBO;
+import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.SAT_OPTIMIZATION;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
@@ -43,6 +54,7 @@ import org.logicng.handlers.TimeoutOptimizationHandler;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.readers.FormulaReader;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
+import org.logicng.solvers.maxsat.OptimizationConfig;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
@@ -53,72 +65,99 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 
 /**
  * Unit Tests for the class {@link PrimeCompiler}.
- * @version 2.1.0
+ * @version 2.6.0
  * @since 2.0.0
  */
 public class PrimeCompilerTest extends TestWithExampleFormulas {
 
-    @Test
-    public void testSimple() {
-        computeAndVerify(this.TRUE);
-        computeAndVerify(this.FALSE);
-        computeAndVerify(this.A);
-        computeAndVerify(this.NA);
-        computeAndVerify(this.AND1);
-        computeAndVerify(this.AND2);
-        computeAndVerify(this.AND3);
-        computeAndVerify(this.OR1);
-        computeAndVerify(this.OR2);
-        computeAndVerify(this.OR3);
-        computeAndVerify(this.NOT1);
-        computeAndVerify(this.NOT2);
-        computeAndVerify(this.IMP1);
-        computeAndVerify(this.IMP2);
-        computeAndVerify(this.IMP3);
-        computeAndVerify(this.IMP4);
-        computeAndVerify(this.EQ1);
-        computeAndVerify(this.EQ2);
-        computeAndVerify(this.EQ3);
-        computeAndVerify(this.EQ4);
-        computeAndVerify(this.PBC1);
-        computeAndVerify(this.PBC2);
-        computeAndVerify(this.PBC3);
-        computeAndVerify(this.PBC4);
-        computeAndVerify(this.PBC5);
+    public static Collection<Object[]> configs() {
+        final List<Object[]> configs = new ArrayList<>();
+        configs.add(new Object[]{new OptimizationConfig(SAT_OPTIMIZATION, null, null, null), "SAT"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_INCWBO, null, null, null), "INCWBO"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_SU, null, null, null), "LINEAR_SU"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_US, null, null, null), "LINEAR_US"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_MSU3, null, null, null), "MSU3"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_OLL, null, null, null), "OLL"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_WBO, null, null, null), "WBO"});
+        return configs;
     }
 
-    @Test
-    public void testCornerCases() {
+    public static Collection<Object[]> fastConfigs() {
+        final List<Object[]> configs = new ArrayList<>();
+        configs.add(new Object[]{new OptimizationConfig(SAT_OPTIMIZATION, null, null, null), "SAT"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_SU, null, null, null), "LINEAR_SU"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_LINEAR_US, null, null, null), "LINEAR_US"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_MSU3, null, null, null), "MSU3"});
+        configs.add(new Object[]{new OptimizationConfig(MAXSAT_OLL, null, null, null), "OLL"});
+        return configs;
+    }
+
+    @ParameterizedTest
+    @MethodSource("configs")
+    public void testSimple(final OptimizationConfig cfg) {
+        computeAndVerify(cfg, this.TRUE);
+        computeAndVerify(cfg, this.FALSE);
+        computeAndVerify(cfg, this.A);
+        computeAndVerify(cfg, this.NA);
+        computeAndVerify(cfg, this.AND1);
+        computeAndVerify(cfg, this.AND2);
+        computeAndVerify(cfg, this.AND3);
+        computeAndVerify(cfg, this.OR1);
+        computeAndVerify(cfg, this.OR2);
+        computeAndVerify(cfg, this.OR3);
+        computeAndVerify(cfg, this.NOT1);
+        computeAndVerify(cfg, this.NOT2);
+        computeAndVerify(cfg, this.IMP1);
+        computeAndVerify(cfg, this.IMP2);
+        computeAndVerify(cfg, this.IMP3);
+        computeAndVerify(cfg, this.IMP4);
+        computeAndVerify(cfg, this.EQ1);
+        computeAndVerify(cfg, this.EQ2);
+        computeAndVerify(cfg, this.EQ3);
+        computeAndVerify(cfg, this.EQ4);
+        computeAndVerify(cfg, this.PBC1);
+        computeAndVerify(cfg, this.PBC2);
+        computeAndVerify(cfg, this.PBC3);
+        computeAndVerify(cfg, this.PBC4);
+        computeAndVerify(cfg, this.PBC5);
+    }
+
+    @ParameterizedTest
+    @MethodSource("configs")
+    public void testCornerCases(final OptimizationConfig cfg) {
         final FormulaFactory f = new FormulaFactory();
         final FormulaCornerCases cornerCases = new FormulaCornerCases(f);
-        cornerCases.cornerCases().forEach(this::computeAndVerify);
+        cornerCases.cornerCases().forEach(it -> computeAndVerify(cfg, it));
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("configs")
     @RandomTag
-    public void testRandomized() {
+    public void testRandomized(final OptimizationConfig cfg) {
         for (int i = 0; i < 200; i++) {
             final FormulaFactory f = new FormulaFactory();
             final FormulaRandomizer randomizer = new FormulaRandomizer(f, FormulaRandomizerConfig.builder().numVars(10).weightPbc(2).seed(i * 42).build());
             final Formula formula = randomizer.formula(4);
-            computeAndVerify(formula);
+            computeAndVerify(cfg, formula);
         }
     }
 
-    @Test
-    public void testOriginalFormulas() throws IOException {
+    @ParameterizedTest
+    @MethodSource("fastConfigs")
+    public void testOriginalFormulas(final OptimizationConfig cfg) throws IOException {
         Files.lines(Paths.get("src/test/resources/formulas/simplify_formulas.txt"))
                 .filter(s -> !s.isEmpty())
                 .forEach(s -> {
                     final Formula formula = parse(this.f, s);
-                    final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+                    final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, IMPLICANTS_COMPLETE , cfg);
                     verify(resultImplicantsMin, formula);
-                    final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+                    final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, IMPLICATES_COMPLETE, cfg);
                     verify(resultImplicatesMin, formula);
                 });
     }
@@ -126,10 +165,10 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     @Test
     public void testTimeoutHandlerSmall() {
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
-                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE));
+                new Pair<>(PrimeCompiler.getWithMaximization(), IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMaximization(), IMPLICATES_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), IMPLICATES_COMPLETE));
         for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
             final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                     new TimeoutOptimizationHandler(5_000L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
@@ -146,10 +185,10 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     @Test
     public void testTimeoutHandlerLarge() throws IOException, ParserException {
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
-                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE));
+                new Pair<>(PrimeCompiler.getWithMaximization(), IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMaximization(), IMPLICATES_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), IMPLICATES_COMPLETE));
         for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
             final List<TimeoutOptimizationHandler> handlers = Arrays.asList(
                     new TimeoutOptimizationHandler(1L, TimeoutHandler.TimerType.SINGLE_TIMEOUT),
@@ -167,10 +206,10 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
     public void testCancellationPoints() throws IOException {
         final Formula formula = parse(this.f, Files.readAllLines(Paths.get("src/test/resources/formulas/simplify_formulas.txt")).get(0));
         final List<Pair<PrimeCompiler, PrimeResult.CoverageType>> compilers = Arrays.asList(
-                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMaximization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICANTS_COMPLETE),
-                new Pair<>(PrimeCompiler.getWithMinimization(), PrimeResult.CoverageType.IMPLICATES_COMPLETE));
+                new Pair<>(PrimeCompiler.getWithMaximization(), IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMaximization(), IMPLICATES_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), IMPLICANTS_COMPLETE),
+                new Pair<>(PrimeCompiler.getWithMinimization(), IMPLICATES_COMPLETE));
         for (final Pair<PrimeCompiler, PrimeResult.CoverageType> compiler : compilers) {
             for (int numOptimizationStarts = 1; numOptimizationStarts < 5; numOptimizationStarts++) {
                 for (int numSatHandlerStarts = 1; numSatHandlerStarts < 10; numSatHandlerStarts++) {
@@ -181,21 +220,21 @@ public class PrimeCompilerTest extends TestWithExampleFormulas {
         }
     }
 
-    private void computeAndVerify(final Formula formula) {
-        final PrimeResult resultImplicantsMax = PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+    private void computeAndVerify(final OptimizationConfig cfg, final Formula formula) {
+        final PrimeResult resultImplicantsMax = PrimeCompiler.getWithMaximization().compute(formula, IMPLICANTS_COMPLETE, cfg);
         verify(resultImplicantsMax, formula);
-        final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        final PrimeResult resultImplicantsMin = PrimeCompiler.getWithMinimization().compute(formula, IMPLICANTS_COMPLETE, cfg);
         verify(resultImplicantsMin, formula);
-        assertThat(resultImplicantsMax.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
-        assertThat(resultImplicantsMin.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICANTS_COMPLETE);
+        assertThat(resultImplicantsMax.getCoverageType()).isEqualTo(IMPLICANTS_COMPLETE);
+        assertThat(resultImplicantsMin.getCoverageType()).isEqualTo(IMPLICANTS_COMPLETE);
         assertThat(resultImplicantsMax.getPrimeImplicants()).containsExactlyInAnyOrderElementsOf(resultImplicantsMin.getPrimeImplicants());
 
-        final PrimeResult resultImplicatesMax = PrimeCompiler.getWithMaximization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+        final PrimeResult resultImplicatesMax = PrimeCompiler.getWithMaximization().compute(formula, IMPLICATES_COMPLETE, cfg);
         verify(resultImplicatesMax, formula);
-        final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+        final PrimeResult resultImplicatesMin = PrimeCompiler.getWithMinimization().compute(formula, IMPLICATES_COMPLETE, cfg);
         verify(resultImplicatesMin, formula);
-        assertThat(resultImplicatesMax.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICATES_COMPLETE);
-        assertThat(resultImplicatesMin.getCoverageType()).isEqualTo(PrimeResult.CoverageType.IMPLICATES_COMPLETE);
+        assertThat(resultImplicatesMax.getCoverageType()).isEqualTo(IMPLICATES_COMPLETE);
+        assertThat(resultImplicatesMin.getCoverageType()).isEqualTo(IMPLICATES_COMPLETE);
         assertThat(resultImplicatesMax.getPrimeImplicates()).containsExactlyInAnyOrderElementsOf(resultImplicatesMin.getPrimeImplicates());
     }
 

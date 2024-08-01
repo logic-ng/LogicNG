@@ -137,7 +137,7 @@ public final class SmusComputation {
             final FormulaFactory f,
             final OptimizationConfig config) {
         if (config.getOptimizationType() == SAT_OPTIMIZATION) {
-            return computeSmusSat(propositions, additionalConstraints, f, config.getOptimizationHandler());
+            return computeSmusSAT(propositions, additionalConstraints, f, config.getOptimizationHandler());
         } else {
             return computeSmusMaxSAT(propositions, additionalConstraints, f, config);
         }
@@ -193,7 +193,7 @@ public final class SmusComputation {
         return smus == null ? null : smus.stream().map(Proposition::formula).collect(Collectors.toList());
     }
 
-    private static <P extends Proposition> List<P> computeSmusSat(
+    private static <P extends Proposition> List<P> computeSmusSAT(
             final List<P> propositions,
             final List<Formula> additionalConstraints,
             final FormulaFactory f,
@@ -283,9 +283,6 @@ public final class SmusComputation {
             final Set<Variable> variables,
             final OptimizationConfig config,
             final FormulaFactory f) {
-        if (variables.isEmpty()) {
-            return new TreeSet<>(); // TODO workaround: MaxSAT assertion fails for corner case
-        }
         final MaxSATSolver maxSatSolver = config.genMaxSATSolver(f);
         constraints.forEach(maxSatSolver::addHardFormula);
         for (final Variable v : variables) {

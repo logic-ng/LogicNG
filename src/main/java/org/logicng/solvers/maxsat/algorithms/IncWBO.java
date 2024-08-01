@@ -404,7 +404,6 @@ public class IncWBO extends WBO {
     }
 
     protected int incComputeCostModel(final LNGBooleanVector currentModel) {
-        assert currentModel.size() != 0;
         int currentCost = 0;
         for (int i = 0; i < nSoft(); i++) {
             boolean unsatisfied = true;
@@ -413,7 +412,6 @@ public class IncWBO extends WBO {
                     unsatisfied = false;
                     continue;
                 }
-                assert var(this.softClauses.get(i).clause().get(j)) < currentModel.size();
                 if ((sign(this.softClauses.get(i).clause().get(j)) && !currentModel.get(var(this.softClauses.get(i).clause().get(j)))) ||
                         (!sign(this.softClauses.get(i).clause().get(j)) && currentModel.get(var(this.softClauses.get(i).clause().get(j))))) {
                     unsatisfied = false;

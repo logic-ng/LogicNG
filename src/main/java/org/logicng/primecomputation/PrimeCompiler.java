@@ -39,12 +39,14 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.OptimizationHandler;
+import org.logicng.handlers.SATHandler;
+import org.logicng.solvers.MaxSATSolver;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.functions.OptimizationFunction;
 import org.logicng.solvers.maxsat.OptimizationConfig;
 import org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType;
-import org.logicng.solvers.sat.MiniSatConfig;
+import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 import org.logicng.transformations.LiteralSubstitution;
 import org.logicng.util.FormulaHelper;
 import org.logicng.util.Pair;
@@ -71,24 +73,20 @@ import java.util.TreeSet;
  * {@link #getWithMaximization()} and another which searches for minimum models
  * {@link #getWithMaximization()}. From experience, the one with minimum models usually
  * outperforms the one with maximum models.
- * @version 2.1.0
+ * @version 2.6.0
  * @since 2.0.0
  */
 public final class PrimeCompiler {
 
     private static final String POS = "_POS";
     private static final String NEG = "_NEG";
-    private static final OptimizationConfig DEFAULT_CFG =
-            new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, null, null);
-    private static final PrimeCompiler INSTANCE_MIN = new PrimeCompiler(false, DEFAULT_CFG);
-    private static final PrimeCompiler INSTANCE_MAX = new PrimeCompiler(true, DEFAULT_CFG);
+    private static final PrimeCompiler INSTANCE_MIN = new PrimeCompiler(false);
+    private static final PrimeCompiler INSTANCE_MAX = new PrimeCompiler(true);
 
     private final boolean computeWithMaximization;
-    private final OptimizationConfig config;
 
-    private PrimeCompiler(final boolean computeWithMaximization, final OptimizationConfig config) {
+    private PrimeCompiler(final boolean computeWithMaximization) {
         this.computeWithMaximization = computeWithMaximization;
-        this.config = config;
     }
 
     /**
@@ -108,22 +106,6 @@ public final class PrimeCompiler {
     }
 
     /**
-     * Returns a compiler which uses minimum models to compute the primes.
-     * @return a compiler which uses minimum models to compute the primes
-     */
-    public static PrimeCompiler getWithMinimization(final OptimizationConfig config) {
-        return new PrimeCompiler(false, config);
-    }
-
-    /**
-     * Returns a compiler which uses maximum models to compute the primes.
-     * @return a compiler which uses maximum models to compute the primes
-     */
-    public static PrimeCompiler getWithMaximization(final OptimizationConfig config) {
-        return new PrimeCompiler(false, config);
-    }
-
-    /**
      * Computes prime implicants and prime implicates for a given formula.
      * The coverage type specifies if the implicants or the implicates will
      * be complete, the other one will still be a cover of the given formula.
@@ -132,7 +114,7 @@ public final class PrimeCompiler {
      * @return the prime result
      */
     public PrimeResult compute(final Formula formula, final PrimeResult.CoverageType type) {
-        return compute(formula, type, null);
+        return compute(formula, type, new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, null, null));
     }
 
     /**
@@ -149,12 +131,41 @@ public final class PrimeCompiler {
      * @param handler an optimization handler, can be {@code null}
      * @return the prime result or null if the computation was aborted by the handler
      */
-    public PrimeResult compute(final Formula formula, final PrimeResult.CoverageType type, final OptimizationHandler handler) {
-        start(handler);
+    public PrimeResult compute(
+            final Formula formula,
+            final PrimeResult.CoverageType type,
+            final OptimizationHandler handler) {
+        return compute(formula, type, new OptimizationConfig(OptimizationType.SAT_OPTIMIZATION, null, handler, null));
+    }
+
+    /**
+     * Computes prime implicants and prime implicates for a given formula.
+     * The coverage type specifies if the implicants or the implicates will
+     * be complete, the other one will still be a cover of the given formula.
+     * <p>
+     * The prime compiler can be called with an {@link OptimizationHandler}.
+     * The given handler instance will be used for every subsequent
+     * {@link org.logicng.solvers.functions.OptimizationFunction} call and
+     * the handler's SAT handler is used for every subsequent SAT call.
+     * @param formula the formula
+     * @param type    the coverage type
+     * @param cfg     the optimization configuration
+     * @return the prime result or null if the computation was aborted by the handler
+     */
+    public PrimeResult compute(
+            final Formula formula,
+            final PrimeResult.CoverageType type,
+            final OptimizationConfig cfg) {
+
         final boolean completeImplicants = type == PrimeResult.CoverageType.IMPLICANTS_COMPLETE;
         final Formula formulaForComputation = completeImplicants ? formula : formula.negate();
-        final Pair<List<SortedSet<Literal>>, List<SortedSet<Literal>>> result = computeGeneric(formulaForComputation, handler);
-        if (result == null || aborted(handler)) {
+        final Pair<List<SortedSet<Literal>>, List<SortedSet<Literal>>> result;
+        if (cfg.getOptimizationType() == OptimizationType.SAT_OPTIMIZATION) {
+            result = computeSAT(formulaForComputation, cfg.getOptimizationHandler());
+        } else {
+            result = computeMaxSAT(formulaForComputation, cfg);
+        }
+        if (result == null) {
             return null;
         }
         return new PrimeResult(
@@ -163,12 +174,15 @@ public final class PrimeCompiler {
                 type);
     }
 
-    private Pair<List<SortedSet<Literal>>, List<SortedSet<Literal>>> computeGeneric(final Formula formula, final OptimizationHandler handler) {
+    private Pair<List<SortedSet<Literal>>, List<SortedSet<Literal>>> computeSAT(
+            final Formula formula,
+            final OptimizationHandler handler) {
+        start(handler);
         final FormulaFactory f = formula.factory();
         final SubstitutionResult sub = createSubstitution(formula);
-        final SATSolver hSolver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final SATSolver hSolver = MiniSat.miniSat(f);
         hSolver.add(sub.constraintFormula);
-        final SATSolver fSolver = MiniSat.miniSat(f, MiniSatConfig.builder().cnfMethod(MiniSatConfig.CNFMethod.PG_ON_SOLVER).build());
+        final SATSolver fSolver = MiniSat.miniSat(f);
         fSolver.add(formula.negate());
         final NaivePrimeReduction primeReduction = new NaivePrimeReduction(formula);
         final List<SortedSet<Literal>> primeImplicants = new ArrayList<>();
@@ -212,6 +226,66 @@ public final class PrimeCompiler {
                 }
                 primeImplicates.add(primeImplicate);
                 hSolver.add(f.or(primeImplicate).transform(sub.substitution));
+            }
+        }
+    }
+
+    private Pair<List<SortedSet<Literal>>, List<SortedSet<Literal>>> computeMaxSAT(
+            final Formula formula,
+            final OptimizationConfig cfg) {
+        start(cfg.getMaxSATHandler());
+        final SATHandler handler = cfg.getMaxSATHandler() == null ? null : cfg.getMaxSATHandler().satHandler();
+        final FormulaFactory f = formula.factory();
+        final SubstitutionResult sub = createSubstitution(formula);
+        final List<Formula> hSolverConstraints = new ArrayList<>();
+        hSolverConstraints.add(sub.constraintFormula);
+        final SATSolver fSolver = MiniSat.miniSat(f);
+        fSolver.add(formula.negate());
+        final NaivePrimeReduction primeReduction = new NaivePrimeReduction(formula);
+        final List<SortedSet<Literal>> primeImplicants = new ArrayList<>();
+        final List<SortedSet<Literal>> primeImplicates = new ArrayList<>();
+        while (true) {
+            final MaxSATSolver hSolver = cfg.genMaxSATSolver(f);
+            hSolverConstraints.forEach(hSolver::addHardFormula);
+            sub.newVar2oldLit.keySet().forEach(it ->
+                    hSolver.addSoftFormula(f.literal(it.name(), this.computeWithMaximization), 1));
+            final MaxSAT.MaxSATResult result = hSolver.solve(cfg.getMaxSATHandler());
+            if (result == MaxSAT.MaxSATResult.UNDEF) {
+                return null;
+            }
+            final Assignment hModel = hSolver.model();
+            if (hModel == null) {
+                return new Pair<>(primeImplicants, primeImplicates);
+            }
+            final Assignment fModel = transformModel(hModel, sub.newVar2oldLit);
+            final Tristate fSat = fSolver.sat(handler, fModel.literals());
+            if (aborted(handler)) {
+                return null;
+            }
+            if (fSat == Tristate.FALSE) {
+                final SortedSet<Literal> primeImplicant = this.computeWithMaximization
+                        ? primeReduction.reduceImplicant(fModel.literals(), handler)
+                        : fModel.literals();
+                if (primeImplicant == null || aborted(handler)) {
+                    return null;
+                }
+                primeImplicants.add(primeImplicant);
+                final List<Literal> blockingClause = new ArrayList<>();
+                for (final Literal lit : primeImplicant) {
+                    blockingClause.add(((Literal) lit.transform(sub.substitution)).negate());
+                }
+                hSolverConstraints.add(f.or(blockingClause));
+            } else {
+                final SortedSet<Literal> implicate = new TreeSet<>();
+                for (final Literal lit : (this.computeWithMaximization ? fModel : fSolver.model(formula.variables())).literals()) {
+                    implicate.add(lit.negate());
+                }
+                final SortedSet<Literal> primeImplicate = primeReduction.reduceImplicate(implicate, handler);
+                if (primeImplicate == null || aborted(handler)) {
+                    return null;
+                }
+                primeImplicates.add(primeImplicate);
+                hSolverConstraints.add(f.or(primeImplicate).transform(sub.substitution));
             }
         }
     }

@@ -78,7 +78,6 @@ public class SmusComputationTest extends TestWithExampleFormulas {
         return configs;
     }
 
-
     @ParameterizedTest
     @MethodSource("configs")
     public void testFromPaper(final OptimizationConfig cfg) {
