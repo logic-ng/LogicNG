@@ -28,8 +28,6 @@
 
 package org.logicng.transformations.simplification;
 
-import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.SAT_OPTIMIZATION;
-
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.handlers.OptimizationHandler;

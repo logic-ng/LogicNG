@@ -32,6 +32,8 @@ import static org.logicng.handlers.Handler.aborted;
 import static org.logicng.handlers.Handler.start;
 import static org.logicng.handlers.OptimizationHandler.satHandler;
 import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.SAT_OPTIMIZATION;
+import static org.logicng.util.CollectionHelper.difference;
+import static org.logicng.util.CollectionHelper.nullSafe;
 
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
@@ -52,14 +54,13 @@ import org.logicng.solvers.maxsat.OptimizationConfig;
 import org.logicng.solvers.maxsat.algorithms.MaxSAT;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -100,7 +101,7 @@ public final class SmusComputation {
      * Computes the SMUS for the given list of propositions modulo some additional constraint.
      * <p>
      * The SMUS computation can be called with an {@link OptimizationHandler}. The given handler instance will be
-     * used for every subsequent * {@link org.logicng.solvers.functions.OptimizationFunction} call and the handler's
+     * used for every subsequent {@link org.logicng.solvers.functions.OptimizationFunction} call and the handler's
      * SAT handler is used for every subsequent SAT call.
      * @param <P>                   the subtype of the propositions
      * @param propositions          the propositions
@@ -200,13 +201,8 @@ public final class SmusComputation {
             final OptimizationHandler handler) {
         start(handler);
         final SATSolver growSolver = MiniSat.miniSat(f);
-        growSolver.add(additionalConstraints == null ? Collections.singletonList(f.verum()) : additionalConstraints);
-        final Map<Variable, P> propositionMapping = new TreeMap<>();
-        for (final P proposition : propositions) {
-            final Variable selector = f.variable(PROPOSITION_SELECTOR + propositionMapping.size());
-            propositionMapping.put(selector, proposition);
-            growSolver.add(f.equivalence(selector, proposition.formula()));
-        }
+        growSolver.add(nullSafe(additionalConstraints));
+        final Map<Variable, P> propositionMapping = createPropositionsMapping(propositions, growSolver::add, f);
         final boolean sat = growSolver.sat(satHandler(handler), propositionMapping.keySet()) == Tristate.TRUE;
         if (sat || aborted(handler)) {
             return null;
@@ -230,26 +226,15 @@ public final class SmusComputation {
 
     private static <P extends Proposition> List<P> computeSmusMaxSAT(
             final List<P> propositions,
-            final List<Formula> addConstraints,
+            final List<Formula> additionalConstraints,
             final FormulaFactory f,
             final OptimizationConfig config) {
         final MaxSATHandler handler = config.getMaxSATHandler();
         start(handler);
-        final Collection<? extends Formula> additionalConstraints = addConstraints == null
-                ? Collections.singletonList(f.verum())
-                : addConstraints;
-        final List<Formula> growSolverConstraints = new ArrayList<>(additionalConstraints);
-        final Map<Variable, P> propositionMapping = new TreeMap<>();
-        for (final P proposition : propositions) {
-            final Variable selector = f.variable(PROPOSITION_SELECTOR + propositionMapping.size());
-            propositionMapping.put(selector, proposition);
-            growSolverConstraints.add(f.equivalence(selector, proposition.formula()));
-        }
-        final SATSolver satSolver = MiniSat.miniSat(f);
-        satSolver.add(growSolverConstraints);
-        final SATHandler satHandler = handler == null ? null : handler.satHandler();
-        final boolean sat = satSolver.sat(satHandler, propositionMapping.keySet()) == Tristate.TRUE;
-        if (sat || aborted(satHandler)) {
+        final List<Formula> growSolverConstraints = new ArrayList<>(nullSafe(additionalConstraints));
+        final Map<Variable, P> propositionMapping = createPropositionsMapping(propositions, growSolverConstraints::add, f);
+        final boolean sat = sat(growSolverConstraints, propositionMapping.keySet(), handler, f);
+        if (sat || aborted(handler)) {
             return null;
         }
         final List<Formula> hSolverConstraints = new ArrayList<>();
@@ -267,6 +252,24 @@ public final class SmusComputation {
             }
             hSolverConstraints.add(f.or(c));
         }
+    }
+
+    private static <P extends Proposition> Map<Variable, P> createPropositionsMapping(
+            final List<P> propositions, final Consumer<Formula> consumer, final FormulaFactory f) {
+        final Map<Variable, P> propositionMapping = new TreeMap<>();
+        for (final P proposition : propositions) {
+            final Variable selector = f.variable(PROPOSITION_SELECTOR + propositionMapping.size());
+            propositionMapping.put(selector, proposition);
+            consumer.accept(f.equivalence(selector, proposition.formula()));
+        }
+        return propositionMapping;
+    }
+
+    private static boolean sat(final List<Formula> constraints, final Set<Variable> variables, final MaxSATHandler handler, final FormulaFactory f) {
+        final SATHandler satHandler = handler == null ? null : handler.satHandler();
+        final SATSolver satSolver = MiniSat.miniSat(f);
+        satSolver.add(constraints);
+        return satSolver.sat(satHandler, variables) == Tristate.TRUE;
     }
 
     private static SortedSet<Variable> minimumHs(
@@ -288,8 +291,9 @@ public final class SmusComputation {
         for (final Variable v : variables) {
             maxSatSolver.addSoftFormula(v.negate(), 1);
         }
-        final MaxSAT.MaxSATResult result = maxSatSolver.solve(config.getMaxSATHandler());
-        if (result == MaxSAT.MaxSATResult.UNDEF) {
+        final MaxSATHandler handler = config.getMaxSATHandler();
+        final MaxSAT.MaxSATResult result = maxSatSolver.solve(handler);
+        if (result == MaxSAT.MaxSATResult.UNDEF || aborted(handler)) {
             return null;
         }
         return new TreeSet<>(maxSatSolver.model().positiveVariables());
@@ -309,11 +313,8 @@ public final class SmusComputation {
         if (maxModel == null || aborted(handler)) {
             return null;
         } else {
-            final List<Variable> maximumSatisfiableSet = maxModel.positiveVariables();
             growSolver.loadState(solverState);
-            final SortedSet<Variable> minimumCorrectionSet = new TreeSet<>(variables);
-            maximumSatisfiableSet.forEach(minimumCorrectionSet::remove);
-            return minimumCorrectionSet;
+            return difference(variables, maxModel.positiveVariables(), TreeSet::new);
         }
     }
 
@@ -329,18 +330,16 @@ public final class SmusComputation {
         for (final Variable v : variables) {
             maxSatSolver.addSoftFormula(v, 1);
         }
-        final MaxSAT.MaxSATResult result = maxSatSolver.solve(config.getMaxSATHandler());
-        if (result == MaxSAT.MaxSATResult.UNDEF) {
+        final MaxSATHandler handler = config.getMaxSATHandler();
+        final MaxSAT.MaxSATResult result = maxSatSolver.solve(handler);
+        if (result == MaxSAT.MaxSATResult.UNDEF || aborted(handler)) {
             return null;
         }
         final Assignment maxModel = maxSatSolver.model();
         if (maxModel == null) {
             return null;
         } else {
-            final List<Variable> maximumSatisfiableSet = maxModel.positiveVariables();
-            final SortedSet<Variable> minimumCorrectionSet = new TreeSet<>(variables);
-            maximumSatisfiableSet.forEach(minimumCorrectionSet::remove);
-            return minimumCorrectionSet;
+            return difference(variables, maxModel.positiveVariables(), TreeSet::new);
         }
     }
 }

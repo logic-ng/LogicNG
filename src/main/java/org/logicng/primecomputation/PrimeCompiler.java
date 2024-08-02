@@ -250,7 +250,7 @@ public final class PrimeCompiler {
             sub.newVar2oldLit.keySet().forEach(it ->
                     hSolver.addSoftFormula(f.literal(it.name(), this.computeWithMaximization), 1));
             final MaxSAT.MaxSATResult result = hSolver.solve(cfg.getMaxSATHandler());
-            if (result == MaxSAT.MaxSATResult.UNDEF) {
+            if (result == MaxSAT.MaxSATResult.UNDEF || aborted(cfg.getMaxSATHandler())) {
                 return null;
             }
             final Assignment hModel = hSolver.model();

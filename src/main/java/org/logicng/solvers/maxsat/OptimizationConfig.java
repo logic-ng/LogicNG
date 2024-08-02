@@ -19,7 +19,6 @@ import java.util.Objects;
  * with the drawback of generating the solver again in each step.
  * <p>
  * These algorithms can be configured with this config object.
- *
  * @version 2.6.0
  * @since 2.6.0
  */
@@ -53,8 +52,8 @@ public class OptimizationConfig {
 
     /**
      * Generate a MaxSAT solver based configuration
-     * @param optType the optimization type (MaxSAT algorithm)
-     * @param maxConfig the optional MaxSAT solver configuration
+     * @param optType    the optimization type (MaxSAT algorithm)
+     * @param maxConfig  the optional MaxSAT solver configuration
      * @param maxHandler the optional MaxSAT solver handler
      * @return the configuration
      */
@@ -84,6 +83,14 @@ public class OptimizationConfig {
      */
     public OptimizationType getOptimizationType() {
         return this.optimizationType;
+    }
+
+    /**
+     * Returns the optional MaxSAT configuration
+     * @return the optional MaxSAT configuration
+     */
+    public MaxSATConfig getMaxSATConfig() {
+        return this.maxSATConfig;
     }
 
     /**
@@ -127,7 +134,7 @@ public class OptimizationConfig {
     }
 
     /**
-     * Starts the solver of this config's handler (if present)
+     * Starts this config's handler (if present)
      */
     public void startHandler() {
         if (this.optimizationHandler != null) {
