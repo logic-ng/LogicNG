@@ -135,16 +135,18 @@ public final class AdvancedSimplifier implements FormulaTransformation {
                 return config.returnIntermediateResult ? formula : null;
             }
             if (!backbone.isSat()) {
-               return f.falsum();
+                return f.falsum();
             }
             backboneLiterals.addAll(backbone.getCompleteBackbone());
             simplified = formula.restrict(new Assignment(backboneLiterals));
         }
-        final Formula simplifyMinDnf = computeMinDnf(f, simplified, config);
-        if (simplifyMinDnf == null) {
-            return config.returnIntermediateResult ? addLiterals(simplified, backboneLiterals) : null;
+        if (config.minimalDnfCover) {
+            final Formula simplifyMinDnf = computeMinDnf(f, simplified, config);
+            if (simplifyMinDnf == null) {
+                return config.returnIntermediateResult ? addLiterals(simplified, backboneLiterals) : null;
+            }
+            simplified = simplifyWithRating(simplified, simplifyMinDnf, config);
         }
-        simplified = simplifyWithRating(simplified, simplifyMinDnf, config);
         if (config.factorOut) {
             final Formula factoredOut = simplified.transform(new FactorOutSimplifier(config.ratingFunction));
             simplified = simplifyWithRating(simplified, factoredOut, config);
@@ -164,13 +166,13 @@ public final class AdvancedSimplifier implements FormulaTransformation {
 
     private Formula computeMinDnf(final FormulaFactory f, final Formula simplified, final AdvancedSimplifierConfig config) {
         final PrimeResult primeResult =
-               PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.optimizationConfig);
+                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.optimizationConfig);
         if (primeResult == null || config.optimizationConfig.aborted()) {
             return null;
         }
         final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
         final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
-               Collections.singletonList(simplified), f, config.optimizationConfig);
+                Collections.singletonList(simplified), f, config.optimizationConfig);
         if (minimizedPIs == null || config.optimizationConfig.aborted()) {
             return null;
         }

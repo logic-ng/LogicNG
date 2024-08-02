@@ -2,6 +2,12 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2024-08-02
+
+### Added
+
+- Added configuration flag `minimalDnfCover` in `AdvancedSimplifierConfig` to set whether the step for computing the minimal DNF cover should be performed. Default is `true`.
+
 ## [2.5.1] - 2024-07-31
 
 ### Changed

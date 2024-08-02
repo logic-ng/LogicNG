@@ -191,11 +191,13 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
         final FormulaFactory f = new FormulaFactory();
         final List<AdvancedSimplifierConfig> configs = Arrays.asList(
                 AdvancedSimplifierConfig.builder().build(),
-                AdvancedSimplifierConfig.builder().restrictBackbone(false).factorOut(false).simplifyNegations(false).build(),
+                AdvancedSimplifierConfig.builder().restrictBackbone(false).minimalDnfCover(false).factorOut(false).simplifyNegations(false).build(),
                 AdvancedSimplifierConfig.builder().factorOut(false).simplifyNegations(false).build(),
                 AdvancedSimplifierConfig.builder().restrictBackbone(false).simplifyNegations(false).build(),
+                AdvancedSimplifierConfig.builder().restrictBackbone(false).minimalDnfCover(false).build(),
                 AdvancedSimplifierConfig.builder().restrictBackbone(false).factorOut(false).build(),
                 AdvancedSimplifierConfig.builder().restrictBackbone(false).build(),
+                AdvancedSimplifierConfig.builder().minimalDnfCover(false).build(),
                 AdvancedSimplifierConfig.builder().factorOut(false).build(),
                 AdvancedSimplifierConfig.builder().simplifyNegations(false).build());
 
@@ -216,11 +218,11 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
     @Test
     public void testBackboneIntermediateResult() {
         final FormulaFactory f = new FormulaFactory();
-        Formula formula = parse(f, "(a & b) | (a & c)");
-        OptimizationHandler optHandler = mock(OptimizationHandler.class);
+        final Formula formula = parse(f, "(a & b) | (a & c)");
+        final OptimizationHandler optHandler = mock(OptimizationHandler.class);
         // abort simplification after successful backbone computation
         final AtomicInteger count = new AtomicInteger(0);
-        when(optHandler.aborted()).then(invocationOnMock ->  count.addAndGet(1) > 1);
+        when(optHandler.aborted()).then(invocationOnMock -> count.addAndGet(1) > 1);
         testHandler(optHandler, formula, true, true);
     }
 

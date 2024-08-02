@@ -42,6 +42,7 @@ import org.logicng.solvers.maxsat.OptimizationConfig;
 public class AdvancedSimplifierConfig extends Configuration {
 
     boolean restrictBackbone;
+    boolean minimalDnfCover;
     boolean factorOut;
     boolean simplifyNegations;
     boolean returnIntermediateResult;
@@ -52,6 +53,7 @@ public class AdvancedSimplifierConfig extends Configuration {
     public String toString() {
         return "AdvancedSimplifierConfig{" +
                 "restrictBackbone=" + this.restrictBackbone +
+                ", minimalDnfCover=" + this.minimalDnfCover +
                 ", factorOut=" + this.factorOut +
                 ", simplifyNegations=" + this.simplifyNegations +
                 ", returnIntermediateResult=" + this.returnIntermediateResult +
@@ -67,6 +69,7 @@ public class AdvancedSimplifierConfig extends Configuration {
     private AdvancedSimplifierConfig(final Builder builder) {
         super(ConfigurationType.ADVANCED_SIMPLIFIER);
         this.restrictBackbone = builder.restrictBackbone;
+        this.minimalDnfCover = builder.minimalDnfCover;
         this.factorOut = builder.factorOut;
         this.simplifyNegations = builder.simplifyNegations;
         this.returnIntermediateResult = builder.returnIntermediateResult;
@@ -88,6 +91,7 @@ public class AdvancedSimplifierConfig extends Configuration {
     public static class Builder {
 
         boolean restrictBackbone = true;
+        boolean minimalDnfCover = true;
         boolean factorOut = true;
         boolean simplifyNegations = true;
         boolean returnIntermediateResult = false;
@@ -106,6 +110,17 @@ public class AdvancedSimplifierConfig extends Configuration {
          */
         public Builder restrictBackbone(final boolean restrictBackbone) {
             this.restrictBackbone = restrictBackbone;
+            return this;
+        }
+
+        /**
+         * Sets the flag for whether a minimal DNF cover should be computed. The
+         * default is 'true'.
+         * @param minimalDnfCover flag for the minimal DNF cover computation
+         * @return the current builder
+         */
+        public Builder minimalDnfCover(final boolean minimalDnfCover) {
+            this.minimalDnfCover = minimalDnfCover;
             return this;
         }
 
