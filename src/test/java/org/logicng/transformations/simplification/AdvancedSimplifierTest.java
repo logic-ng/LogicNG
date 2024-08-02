@@ -35,6 +35,8 @@ import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAX
 import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_MSU3;
 import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_OLL;
 import static org.logicng.solvers.maxsat.OptimizationConfig.OptimizationType.MAXSAT_WBO;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Unit Tests for the class {@link AdvancedSimplifier}.
@@ -208,6 +211,17 @@ public class AdvancedSimplifierTest extends TestWithExampleFormulas {
                 }
             }
         }
+    }
+
+    @Test
+    public void testBackboneIntermediateResult() {
+        final FormulaFactory f = new FormulaFactory();
+        Formula formula = parse(f, "(a & b) | (a & c)");
+        OptimizationHandler optHandler = mock(OptimizationHandler.class);
+        // abort simplification after successful backbone computation
+        final AtomicInteger count = new AtomicInteger(0);
+        when(optHandler.aborted()).then(invocationOnMock ->  count.addAndGet(1) > 1);
+        testHandler(optHandler, formula, true, true);
     }
 
     private void computeAndVerify(final Formula formula, final AdvancedSimplifier simplifier) {

@@ -142,21 +142,24 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         }
         final Formula simplifyMinDnf = computeMinDnf(f, simplified, config);
         if (simplifyMinDnf == null) {
-            return config.returnIntermediateResult ? simplified : null;
+            return config.returnIntermediateResult ? addLiterals(simplified, backboneLiterals) : null;
         }
         simplified = simplifyWithRating(simplified, simplifyMinDnf, config);
         if (config.factorOut) {
             final Formula factoredOut = simplified.transform(new FactorOutSimplifier(config.ratingFunction));
             simplified = simplifyWithRating(simplified, factoredOut, config);
         }
-        if (config.restrictBackbone) {
-            simplified = f.and(f.and(backboneLiterals), simplified);
-        }
+        simplified = addLiterals(simplified, backboneLiterals);
         if (config.simplifyNegations) {
             final Formula negationSimplified = simplified.transform(NegationSimplifier.get());
             simplified = simplifyWithRating(simplified, negationSimplified, config);
         }
         return simplified;
+    }
+
+    private static Formula addLiterals(final Formula formula, final SortedSet<Literal> literals) {
+        final FormulaFactory f = formula.factory();
+        return f.and(f.and(literals), formula);
     }
 
     private Formula computeMinDnf(final FormulaFactory f, final Formula simplified, final AdvancedSimplifierConfig config) {
