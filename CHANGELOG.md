@@ -6,7 +6,15 @@ LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added configuration flag `minimalDnfCover` in `AdvancedSimplifierConfig` to set whether the step for computing the minimal DNF cover should be performed. Default is `true`.
+- New class `OptimizationConfig` used to configure optimization computations in various algorithms. It allows to configure the following aspects:
+  - the `optimizationType` (either SAT-based optimization or a MaxSAT algorithm)
+  - the `maxSATConfig` to further configure the MaxSAT algorithm
+  - the `optimizationHandler` to use
+  - the `maxSATHandler` to use
+- Added three new configuration options to `AdvancedSimplifierConfig`:
+  - `minimalDnfCover` determines whether the step for computing the minimal DNF cover should be performed. Default is `true`.
+  - `returnIntermediateResult` allows to return an intermediate result from the `AdvancedSimplifier` if the computation was aborted by a handler. Default is `false`.
+  - `optimizationConfig` can be used to configure the algorithms in the simplifier which perform optimizations, also the `OptimizationHandler handler` moved into this config
 
 ## [2.5.1] - 2024-07-31
 

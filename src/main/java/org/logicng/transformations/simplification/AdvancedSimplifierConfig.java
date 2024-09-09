@@ -90,11 +90,11 @@ public class AdvancedSimplifierConfig extends Configuration {
      */
     public static class Builder {
 
-        boolean restrictBackbone = true;
-        boolean minimalDnfCover = true;
-        boolean factorOut = true;
-        boolean simplifyNegations = true;
-        boolean returnIntermediateResult = false;
+        private boolean restrictBackbone = true;
+        private boolean minimalDnfCover = true;
+        private boolean factorOut = true;
+        private boolean simplifyNegations = true;
+        private boolean returnIntermediateResult = false;
         private RatingFunction<?> ratingFunction = DefaultRatingFunction.get();
         private OptimizationConfig optimizationConfig = OptimizationConfig.sat(null);
 
