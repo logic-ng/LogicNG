@@ -31,29 +31,34 @@ package org.logicng.transformations.simplification;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
 import org.logicng.handlers.OptimizationHandler;
+import org.logicng.solvers.maxsat.OptimizationConfig;
 
 /**
  * The configuration object for the {@link AdvancedSimplifier}.
- * @version 2.3.0
+ * @version 2.6.0
  * @since 2.3.0
  */
 
 public class AdvancedSimplifierConfig extends Configuration {
 
     boolean restrictBackbone;
+    boolean minimalDnfCover;
     boolean factorOut;
     boolean simplifyNegations;
+    boolean returnIntermediateResult;
     RatingFunction<?> ratingFunction;
-    OptimizationHandler handler;
+    OptimizationConfig optimizationConfig;
 
     @Override
     public String toString() {
         return "AdvancedSimplifierConfig{" +
                 "restrictBackbone=" + this.restrictBackbone +
+                ", minimalDnfCover=" + this.minimalDnfCover +
                 ", factorOut=" + this.factorOut +
                 ", simplifyNegations=" + this.simplifyNegations +
+                ", returnIntermediateResult=" + this.returnIntermediateResult +
                 ", ratingFunction=" + this.ratingFunction +
-                ", handler=" + this.handler +
+                ", optimizationConfig=" + this.optimizationConfig +
                 '}';
     }
 
@@ -64,10 +69,12 @@ public class AdvancedSimplifierConfig extends Configuration {
     private AdvancedSimplifierConfig(final Builder builder) {
         super(ConfigurationType.ADVANCED_SIMPLIFIER);
         this.restrictBackbone = builder.restrictBackbone;
+        this.minimalDnfCover = builder.minimalDnfCover;
         this.factorOut = builder.factorOut;
         this.simplifyNegations = builder.simplifyNegations;
+        this.returnIntermediateResult = builder.returnIntermediateResult;
         this.ratingFunction = builder.ratingFunction;
-        this.handler = builder.handler;
+        this.optimizationConfig = builder.optimizationConfig;
     }
 
     /**
@@ -83,18 +90,21 @@ public class AdvancedSimplifierConfig extends Configuration {
      */
     public static class Builder {
 
-        boolean restrictBackbone = true;
-        boolean factorOut = true;
-        boolean simplifyNegations = true;
-        private RatingFunction<?> ratingFunction = new DefaultRatingFunction();
-        private OptimizationHandler handler = null;
+        private boolean restrictBackbone = true;
+        private boolean minimalDnfCover = true;
+        private boolean factorOut = true;
+        private boolean simplifyNegations = true;
+        private boolean returnIntermediateResult = false;
+        private RatingFunction<?> ratingFunction = DefaultRatingFunction.get();
+        private OptimizationConfig optimizationConfig = OptimizationConfig.sat(null);
 
         private Builder() {
             // Initialize only via factory
         }
 
         /**
-         * Sets the flag for whether the formula should be restricted with the backbone. The default is 'true'.
+         * Sets the flag for whether the formula should be restricted with the
+         * backbone. The default is 'true'.
          * @param restrictBackbone flag for the restriction
          * @return the current builder
          */
@@ -104,7 +114,19 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the flag for whether the formula should be factorized. The default is 'true'.
+         * Sets the flag for whether a minimal DNF cover should be computed. The
+         * default is 'true'.
+         * @param minimalDnfCover flag for the minimal DNF cover computation
+         * @return the current builder
+         */
+        public Builder minimalDnfCover(final boolean minimalDnfCover) {
+            this.minimalDnfCover = minimalDnfCover;
+            return this;
+        }
+
+        /**
+         * Sets the flag for whether the formula should be factorized. The
+         * default is 'true'.
          * @param factorOut flag for the factorisation
          * @return the current builder
          */
@@ -114,7 +136,8 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the flag for whether negations shall be simplified. The default is 'true'.
+         * Sets the flag for whether negations shall be simplified. The
+         * default is 'true'.
          * @param simplifyNegations flag
          * @return the current builder
          */
@@ -124,8 +147,11 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the rating function. The aim of the simplification is to minimize the formula with respect to this rating function,
-         * e.g. finding a formula with a minimal number of symbols when represented as string. The default is the {@code DefaultRatingFunction}.
+         * Sets the rating function. The aim of the simplification is to
+         * minimize the formula with respect to this rating function,
+         * e.g. finding a formula with a minimal number of symbols when
+         * represented as string. The default is the
+         * {@code DefaultRatingFunction}.
          * @param ratingFunction the desired rating function
          * @return the current builder
          */
@@ -135,12 +161,37 @@ public class AdvancedSimplifierConfig extends Configuration {
         }
 
         /**
-         * Sets the handler to control the computation. The default is 'no handler'.
+         * Sets the handler to control the computation. The default is
+         * 'no handler'.
          * @param handler the optimization handler
          * @return the current builder
+         * @deprecated use the {@link #optimizationConfig}
          */
+        @Deprecated
         public Builder handler(final OptimizationHandler handler) {
-            this.handler = handler;
+            this.optimizationConfig = OptimizationConfig.sat(handler);
+            return this;
+        }
+
+        /**
+         * Sets the optimization config of the computation.  The default is a
+         * config with a SAT based optimization without a handler.
+         * @param config the optimization config
+         * @return the current builder
+         */
+        public Builder optimizationConfig(final OptimizationConfig config) {
+            this.optimizationConfig = config;
+            return this;
+        }
+
+        /**
+         * Sets whether the intermediate result should be returned in case of
+         * a handler abortion.  The default is 'false'.
+         * @param returnIntermediateResult the flag
+         * @return the current builder
+         */
+        public Builder returnIntermediateResult(final boolean returnIntermediateResult) {
+            this.returnIntermediateResult = returnIntermediateResult;
             return this;
         }
 

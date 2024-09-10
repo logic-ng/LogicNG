@@ -329,8 +329,6 @@ public abstract class MaxSAT {
      * @param currentModel the model found by the solver
      */
     public void saveModel(final LNGBooleanVector currentModel) {
-        assert this.nbInitialVariables != 0;
-        assert currentModel.size() != 0;
         this.model.clear();
         for (int i = 0; i < this.nbInitialVariables; i++) {
             this.model.push(currentModel.get(i));
@@ -346,7 +344,6 @@ public abstract class MaxSAT {
      * @return the cost of the given model
      */
     public int computeCostModel(final LNGBooleanVector currentModel, final int weight) {
-        assert currentModel.size() != 0;
         int currentCost = 0;
         for (int i = 0; i < nSoft(); i++) {
             boolean unsatisfied = true;
@@ -355,7 +352,6 @@ public abstract class MaxSAT {
                     unsatisfied = false;
                     continue;
                 }
-                assert var(this.softClauses.get(i).clause().get(j)) < currentModel.size();
                 if ((sign(this.softClauses.get(i).clause().get(j)) && !currentModel.get(var(this.softClauses.get(i).clause().get(j))))
                         || (!sign(this.softClauses.get(i).clause().get(j)) && currentModel.get(var(this.softClauses.get(i).clause().get(j))))) {
                     unsatisfied = false;
