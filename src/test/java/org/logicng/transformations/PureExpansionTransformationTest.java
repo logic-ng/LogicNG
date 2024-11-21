@@ -40,7 +40,6 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Not;
 import org.logicng.formulas.PBConstraint;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.modelcounting.ModelCounter;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
@@ -71,20 +70,20 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testNot() throws ParserException {
+    public void testNot() {
         assertThat(this.NOT1.transform(transformation)).isEqualTo(this.NOT1);
         assertThat(this.NOT2.transform(transformation)).isEqualTo(this.NOT2);
 
-        assertThat(this.f.parse("~a").transform(transformation)).isEqualTo(this.f.parse("~a"));
-        assertThat(this.f.parse("~(a => b)").transform(transformation)).isEqualTo(this.f.parse("~(a => b)"));
-        assertThat(this.f.parse("~(~(a | b) => ~(x | y))").transform(transformation)).isEqualTo(this.f.parse("~(~(a | b) => ~(x | y))"));
-        assertThat(this.f.parse("~(a <=> b)").transform(transformation)).isEqualTo(this.f.parse("~(a <=> b)"));
-        assertThat(this.f.parse("~(a & b & ~x & ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b & ~x & ~y)"));
-        assertThat(this.f.parse("~(a | b | (a + b <= 1) | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a | b | (~a | ~b) | ~y)"));
+        assertThat(parse(this.f, "~a").transform(transformation)).isEqualTo(parse(this.f, "~a"));
+        assertThat(parse(this.f, "~(a => b)").transform(transformation)).isEqualTo(parse(this.f, "~(a => b)"));
+        assertThat(parse(this.f, "~(~(a | b) => ~(x | y))").transform(transformation)).isEqualTo(parse(this.f, "~(~(a | b) => ~(x | y))"));
+        assertThat(parse(this.f, "~(a <=> b)").transform(transformation)).isEqualTo(parse(this.f, "~(a <=> b)"));
+        assertThat(parse(this.f, "~(a & b & ~x & ~y)").transform(transformation)).isEqualTo(parse(this.f, "~(a & b & ~x & ~y)"));
+        assertThat(parse(this.f, "~(a | b | (a + b <= 1) | ~y)").transform(transformation)).isEqualTo(parse(this.f, "~(a | b | (~a | ~b) | ~y)"));
     }
 
     @Test
-    public void testBinaryOperators() throws ParserException {
+    public void testBinaryOperators() {
         assertThat(this.IMP1.transform(transformation)).isEqualTo(this.IMP1);
         assertThat(this.IMP2.transform(transformation)).isEqualTo(this.IMP2);
         assertThat(this.IMP3.transform(transformation)).isEqualTo(this.IMP3);
@@ -94,11 +93,11 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
         assertThat(this.EQ3.transform(transformation)).isEqualTo(this.EQ3);
         assertThat(this.EQ4.transform(transformation)).isEqualTo(this.EQ4);
 
-        assertThat(this.f.parse("~(a => (a + b = 1))").transform(transformation)).isEqualTo(this.f.parse("~(a => (a | b) & (~a | ~b))"));
+        assertThat(parse(this.f, "~(a => (a + b = 1))").transform(transformation)).isEqualTo(parse(this.f, "~(a => (a | b) & (~a | ~b))"));
     }
 
     @Test
-    public void testNAryOperators() throws ParserException {
+    public void testNAryOperators() {
         assertThat(this.AND1.transform(transformation)).isEqualTo(this.AND1);
         assertThat(this.AND2.transform(transformation)).isEqualTo(this.AND2);
         assertThat(this.AND3.transform(transformation)).isEqualTo(this.AND3);
@@ -106,20 +105,20 @@ public class PureExpansionTransformationTest extends TestWithExampleFormulas {
         assertThat(this.OR2.transform(transformation)).isEqualTo(this.OR2);
         assertThat(this.OR3.transform(transformation)).isEqualTo(this.OR3);
 
-        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
-        assertThat(this.f.parse("~(a | b) & (a + b = 1) & ~(x & ~(z + x = 1))").transform(transformation))
-                .isEqualTo(this.f.parse("~(a | b) & ((a | b) & (~a | ~b)) & ~(x & ~((z | x) & (~z | ~x)))"));
-        assertThat(this.f.parse("a & b & (~x | ~y)").transform(transformation)).isEqualTo(this.f.parse("a & b & (~x | ~y)"));
-        assertThat(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)").transform(transformation)).isEqualTo(this.f.parse("~(a | b) & c & ~(x & ~y) & (w => z)"));
-        assertThat(this.f.parse("~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(this.f.parse("~(a & b) | c | ~(x | ~y)"));
-        assertThat(this.f.parse("a | b | (~x & ~y)").transform(transformation)).isEqualTo(this.f.parse("a | b | (~x & ~y)"));
+        assertThat(parse(this.f, "~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(parse(this.f, "~(a & b) | c | ~(x | ~y)"));
+        assertThat(parse(this.f, "~(a | b) & (a + b = 1) & ~(x & ~(z + x = 1))").transform(transformation))
+                .isEqualTo(parse(this.f, "~(a | b) & ((a | b) & (~a | ~b)) & ~(x & ~((z | x) & (~z | ~x)))"));
+        assertThat(parse(this.f, "a & b & (~x | ~y)").transform(transformation)).isEqualTo(parse(this.f, "a & b & (~x | ~y)"));
+        assertThat(parse(this.f, "~(a | b) & c & ~(x & ~y) & (w => z)").transform(transformation)).isEqualTo(parse(this.f, "~(a | b) & c & ~(x & ~y) & (w => z)"));
+        assertThat(parse(this.f, "~(a & b) | c | ~(x | ~y)").transform(transformation)).isEqualTo(parse(this.f, "~(a & b) | c | ~(x | ~y)"));
+        assertThat(parse(this.f, "a | b | (~x & ~y)").transform(transformation)).isEqualTo(parse(this.f, "a | b | (~x & ~y)"));
     }
 
     @Test
-    public void testPBCs() throws ParserException {
-        assertThat(this.f.parse("a + b <= 1").transform(transformation)).isEqualTo(this.f.parse("~a | ~b"));
-        assertThat(this.f.parse("a + b < 2").transform(transformation)).isEqualTo(this.f.parse("~a | ~b"));
-        assertThat(this.f.parse("a + b = 1").transform(transformation)).isEqualTo(this.f.parse("(a | b) & (~a | ~b)"));
+    public void testPBCs() {
+        assertThat(parse(this.f, "a + b <= 1").transform(transformation)).isEqualTo(parse(this.f, "~a | ~b"));
+        assertThat(parse(this.f, "a + b < 2").transform(transformation)).isEqualTo(parse(this.f, "~a | ~b"));
+        assertThat(parse(this.f, "a + b = 1").transform(transformation)).isEqualTo(parse(this.f, "(a | b) & (~a | ~b)"));
     }
 
     @Test

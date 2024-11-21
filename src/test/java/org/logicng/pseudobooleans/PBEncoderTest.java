@@ -28,6 +28,7 @@
 package org.logicng.pseudobooleans;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.LogicNGTest;
@@ -39,7 +40,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 
@@ -163,7 +163,7 @@ public class PBEncoderTest implements LogicNGTest {
     }
 
     @Test
-    public void testCCNormalized() throws ParserException {
+    public void testCCNormalized() {
         final List<Literal> lits = new ArrayList<>();
         lits.add(this.f.literal("m", true));
         lits.add(this.f.literal("n", true));
@@ -171,7 +171,7 @@ public class PBEncoderTest implements LogicNGTest {
         coeffs2.add(2);
         coeffs2.add(2);
         final PBConstraint normCC = (PBConstraint) this.f.pbc(CType.LE, 2, lits, coeffs2);
-        assertThat(this.encoders[0].encode(normCC)).containsExactly(this.f.parse("~m | ~n"));
+        assertThat(this.encoders[0].encode(normCC)).containsExactly(parse(this.f, "~m | ~n"));
     }
 
     @Test

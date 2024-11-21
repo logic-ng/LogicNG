@@ -234,6 +234,12 @@ public abstract class SATSolver {
     /**
      * Returns {@code Tristate.TRUE} if the current formula in the solver and a given literal are satisfiable,
      * {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+     * <p>
+     * Side effect: Solving with assumptions adds the assumption literals as known variables to the solver if not already known.
+     * This change lasts beyond the assumption solving call and can have unintended results for subsequent solver calls.
+     * For example, a subsequent model enumeration call will produce models containing the now known variables.
+     * A reliable workaround for this side effect is to save the state of the solver with {@link #saveState()}
+     * and load the state of the solver after the assumption call(s) with {@link #loadState(SolverState)}.
      * @param literal the assumed literal
      * @return the satisfiability of the formula in the solver
      */
@@ -246,6 +252,12 @@ public abstract class SATSolver {
      * are satisfiable, {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
      * The assumptions can be seen as an additional conjunction of literals.
      * Note: Use ordered collections to ensure determinism in the solving process and thus in the resulting model or conflict.
+     * <p>
+     * Side effect: Solving with assumptions adds the assumption literals as known variables to the solver if not already known.
+     * This change lasts beyond the assumption solving call and can have unintended results for subsequent solver calls.
+     * For example, a subsequent model enumeration call will produce models containing the now known variables.
+     * A reliable workaround for this side effect is to save the state of the solver with {@link #saveState()}
+     * and load the state of the solver after the assumption call(s) with {@link #loadState(SolverState)}.
      * @param assumptions a collection of literals
      * @return the satisfiability of the formula in the solver
      */
@@ -256,6 +268,12 @@ public abstract class SATSolver {
     /**
      * Returns {@code Tristate.TRUE} if the current formula in the solver and a given literal are satisfiable,
      * {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
+     * <p>
+     * Side effect: Solving with assumptions adds the assumption literals as known variables to the solver if not already known.
+     * This change lasts beyond the assumption solving call and can have unintended results for subsequent solver calls.
+     * For example, a subsequent model enumeration call will produce models containing the now known variables.
+     * A reliable workaround for this side effect is to save the state of the solver with {@link #saveState()}
+     * and load the state of the solver after the assumption call(s) with {@link #loadState(SolverState)}.
      * @param handler the SAT handler
      * @param literal the assumed literal
      * @return the satisfiability of the formula in the solver
@@ -267,6 +285,12 @@ public abstract class SATSolver {
      * are satisfiable, {@code Tristate.FALSE} if it is unsatisfiable, or {@code UNDEF} if the solving process was aborted.
      * The assumptions can be seen as an additional conjunction of literals.
      * Note: Use ordered collections to ensure determinism in the solving process and thus in the resulting model or conflict.
+     * <p>
+     * Side effect: Solving with assumptions adds the assumption literals as known variables to the solver if not already known.
+     * This change lasts beyond the assumption solving call and can have unintended results for subsequent solver calls.
+     * For example, a subsequent model enumeration call will produce models containing the now known variables.
+     * A reliable workaround for this side effect is to save the state of the solver with {@link #saveState()}
+     * and load the state of the solver after the assumption call(s) with {@link #loadState(SolverState)}.
      * @param handler     the SAT handler
      * @param assumptions a collection of literals
      * @return the satisfiability of the formula in the solver

@@ -63,7 +63,7 @@ public class UnsatCoreFunctionTest extends TestWithExampleFormulas {
                 .hasMessage("Cannot generate an unsat core before the formula was solved.");
         assertThatThrownBy(() -> {
             final SATSolver solver = MiniSat.miniCard(this.f, MiniSatConfig.builder().proofGeneration(true).build());
-            solver.add(this.f.parse("A & (A => B) & (B => ~A)"));
+            solver.add(parse(f, "A & (A => B) & (B => ~A)"));
             solver.sat();
             solver.execute(UnsatCoreFunction.get());
         }).isInstanceOf(IllegalStateException.class)

@@ -35,7 +35,6 @@ import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
@@ -51,43 +50,43 @@ public class NegationMinimizerTest extends TestWithExampleFormulas {
     private final NegationSimplifier minimizer = NegationSimplifier.get();
 
     @Test
-    public void testSimple() throws ParserException {
+    public void testSimple() {
         assertThat(this.f.falsum().transform(this.minimizer)).isEqualTo(this.f.falsum());
         assertThat(this.f.verum().transform(this.minimizer)).isEqualTo(this.f.verum());
         assertThat(this.A.transform(this.minimizer)).isEqualTo(this.A);
         assertThat(this.NA.transform(this.minimizer)).isEqualTo(this.NA);
 
-        assertThat(this.f.parse("A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("A&~B&~C&~D"));
-        assertThat(this.f.parse("~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("~(A|B|C|D)"));
+        assertThat(parse(this.f, "A&~B&~C&~D").transform(this.minimizer)).isEqualTo(parse(this.f, "A&~B&~C&~D"));
+        assertThat(parse(this.f, "~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(parse(this.f, "~(A|B|C|D)"));
 
-        assertThat(this.f.parse("A|~B|~C|~D").transform(this.minimizer)).isEqualTo(this.f.parse("A|~B|~C|~D"));
-        assertThat(this.f.parse("~A|~B|~C|~D").transform(this.minimizer)).isEqualTo(this.f.parse("~(A&B&C&D)"));
+        assertThat(parse(this.f, "A|~B|~C|~D").transform(this.minimizer)).isEqualTo(parse(this.f, "A|~B|~C|~D"));
+        assertThat(parse(this.f, "~A|~B|~C|~D").transform(this.minimizer)).isEqualTo(parse(this.f, "~(A&B&C&D)"));
 
-        assertThat(this.f.parse("~A|~B|~C|D|~E|~G").transform(this.minimizer)).isEqualTo(this.f.parse("D|~(A&B&C&E&G)"));
-        assertThat(this.f.parse("~A&~B&~C&D&~E&~G").transform(this.minimizer)).isEqualTo(this.f.parse("D&~(A|B|C|E|G)"));
+        assertThat(parse(this.f, "~A|~B|~C|D|~E|~G").transform(this.minimizer)).isEqualTo(parse(this.f, "D|~(A&B&C&E&G)"));
+        assertThat(parse(this.f, "~A&~B&~C&D&~E&~G").transform(this.minimizer)).isEqualTo(parse(this.f, "D&~(A|B|C|E|G)"));
 
-        assertThat(this.f.parse("~A|~B|~E&G|~H&~B&~C|~X").transform(this.minimizer)).isEqualTo(this.f.parse("~E&G|~(A&B&(H|B|C)&X)"));
-        assertThat(this.f.parse("~(A&B&~(~E&G)&(H|B|C)&X)").transform(this.minimizer)).isEqualTo(this.f.parse("~E&G|~(A&B&(H|B|C)&X)"));
+        assertThat(parse(this.f, "~A|~B|~E&G|~H&~B&~C|~X").transform(this.minimizer)).isEqualTo(parse(this.f, "~E&G|~(A&B&(H|B|C)&X)"));
+        assertThat(parse(this.f, "~(A&B&~(~E&G)&(H|B|C)&X)").transform(this.minimizer)).isEqualTo(parse(this.f, "~E&G|~(A&B&(H|B|C)&X)"));
 
-        assertThat(this.f.parse("~A|B|(~E&~G&~H&~K)").transform(this.minimizer)).isEqualTo(this.f.parse("~A|B|~(E|G|H|K)"));
+        assertThat(parse(this.f, "~A|B|(~E&~G&~H&~K)").transform(this.minimizer)).isEqualTo(parse(this.f, "~A|B|~(E|G|H|K)"));
 
-        assertThat(this.f.parse("~A|~B").transform(this.minimizer)).isEqualTo(this.f.parse("~A|~B"));
-        assertThat(this.f.parse("~A|~B|~C").transform(this.minimizer)).isEqualTo(this.f.parse("~A|~B|~C"));
-        assertThat(this.f.parse("~A|~B|~C|~D").transform(this.minimizer)).isEqualTo(this.f.parse("~(A&B&C&D)"));
+        assertThat(parse(this.f, "~A|~B").transform(this.minimizer)).isEqualTo(parse(this.f, "~A|~B"));
+        assertThat(parse(this.f, "~A|~B|~C").transform(this.minimizer)).isEqualTo(parse(this.f, "~A|~B|~C"));
+        assertThat(parse(this.f, "~A|~B|~C|~D").transform(this.minimizer)).isEqualTo(parse(this.f, "~(A&B&C&D)"));
 
-        assertThat(this.f.parse("X&(~A|~B)").transform(this.minimizer)).isEqualTo(this.f.parse("X&~(A&B)"));
-        assertThat(this.f.parse("X&(~A|~B|~C)").transform(this.minimizer)).isEqualTo(this.f.parse("X&~(A&B&C)"));
-        assertThat(this.f.parse("X&(~A|~B|~C|~D)").transform(this.minimizer)).isEqualTo(this.f.parse("X&~(A&B&C&D)"));
+        assertThat(parse(this.f, "X&(~A|~B)").transform(this.minimizer)).isEqualTo(parse(this.f, "X&~(A&B)"));
+        assertThat(parse(this.f, "X&(~A|~B|~C)").transform(this.minimizer)).isEqualTo(parse(this.f, "X&~(A&B&C)"));
+        assertThat(parse(this.f, "X&(~A|~B|~C|~D)").transform(this.minimizer)).isEqualTo(parse(this.f, "X&~(A&B&C&D)"));
 
-        assertThat(this.f.parse("~A&~B").transform(this.minimizer)).isEqualTo(this.f.parse("~A&~B"));
-        assertThat(this.f.parse("~A&~B&~C").transform(this.minimizer)).isEqualTo(this.f.parse("~A&~B&~C"));
-        assertThat(this.f.parse("~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("~(A|B|C|D)"));
+        assertThat(parse(this.f, "~A&~B").transform(this.minimizer)).isEqualTo(parse(this.f, "~A&~B"));
+        assertThat(parse(this.f, "~A&~B&~C").transform(this.minimizer)).isEqualTo(parse(this.f, "~A&~B&~C"));
+        assertThat(parse(this.f, "~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(parse(this.f, "~(A|B|C|D)"));
 
-        assertThat(this.f.parse("X|~A&~B").transform(this.minimizer)).isEqualTo(this.f.parse("X|~A&~B"));
-        assertThat(this.f.parse("X|~A&~B&~C").transform(this.minimizer)).isEqualTo(this.f.parse("X|~A&~B&~C"));
-        assertThat(this.f.parse("X|~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(this.f.parse("X|~(A|B|C|D)"));
+        assertThat(parse(this.f, "X|~A&~B").transform(this.minimizer)).isEqualTo(parse(this.f, "X|~A&~B"));
+        assertThat(parse(this.f, "X|~A&~B&~C").transform(this.minimizer)).isEqualTo(parse(this.f, "X|~A&~B&~C"));
+        assertThat(parse(this.f, "X|~A&~B&~C&~D").transform(this.minimizer)).isEqualTo(parse(this.f, "X|~(A|B|C|D)"));
 
-        assertThat(this.f.parse("A&(~B|~C|~D|~E|~G|X|Y|H)").transform(this.minimizer)).isEqualTo(this.f.parse("A&(~(B&C&D&E&G)|X|Y|H)"));
+        assertThat(parse(this.f, "A&(~B|~C|~D|~E|~G|X|Y|H)").transform(this.minimizer)).isEqualTo(parse(this.f, "A&(~(B&C&D&E&G)|X|Y|H)"));
     }
 
     @Test

@@ -89,6 +89,16 @@ public final class LNGIntVector {
     }
 
     /**
+     * Creates a vector with the given elements and capacity.
+     * @param elements the elements
+     * @param size     the capacity of the vector
+     */
+    public LNGIntVector(final int[] elements, final int size) {
+        this.elements = elements;
+        this.size = size;
+    }
+
+    /**
      * Returns whether the vector is empty or not.
      * @return {@code true} if the vector is empty, {@code false} otherwise
      */

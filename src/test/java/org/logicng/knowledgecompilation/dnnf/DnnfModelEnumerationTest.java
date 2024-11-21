@@ -15,6 +15,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.handlers.NumberOfModelsHandler;
 import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.knowledgecompilation.dnnf.datastructures.Dnnf;
 import org.logicng.knowledgecompilation.dnnf.functions.DnnfModelEnumerationFunction;
 import org.logicng.solvers.MiniSat;
@@ -38,7 +39,7 @@ public class DnnfModelEnumerationTest extends TestWithExampleFormulas {
 
     @Test
     public void testCornerCases() throws ParserException, IOException {
-        final Formula contradiction = this.f.parse("(A | B) & ~A & ~B");
+        final Formula contradiction = new PropositionalParser(f).parse("(A | B) & ~A & ~B");
         compareModels(this.f.verum(), Collections.emptyList(), 1);
         compareModels(this.A, Collections.emptyList(), 1);
         compareModels(this.AND1, Collections.emptyList(), 1);

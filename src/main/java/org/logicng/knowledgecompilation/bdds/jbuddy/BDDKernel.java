@@ -152,7 +152,7 @@ public class BDDKernel {
         this.var2idx = new TreeMap<>();
         this.idx2var = new TreeMap<>();
         this.reordering = new BDDReordering(this);
-        this.nodesize = prime.primeGTE(Math.max(nodeSize, 3));
+        this.nodesize = this.prime.primeGTE(Math.max(nodeSize, 3));
         this.nodes = new int[this.nodesize * 6];
         this.minfreenodes = 20;
         for (int n = 0; n < this.nodesize; n++) {
@@ -261,7 +261,16 @@ public class BDDKernel {
     /**
      * Returns the reordering object for this kernel.
      * @return the reordering object
+     * @deprecated the relevant methods of this object are now exposed directly
+     *         on this kernel:
+     *         <ul>
+     *             <li>Reordering during BDD construction: {@link #activateReorderDuringConstruction}</li>
+     *             <li>Instant reordering: {@link #reorder}</li>
+     *             <li>Add a variable block: {@link #addVariableBlock}</li>
+     *             <li>Add blocks for all variables: {@link #addAllVariablesAsBlock}</li>
+     *         </ul>
      */
+    @Deprecated
     public BDDReordering getReordering() {
         return this.reordering;
     }
@@ -317,6 +326,148 @@ public class BDDKernel {
      */
     public int[] getCurrentVarOrder() {
         return Arrays.copyOf(this.level2var, this.level2var.length - 1); // last var is always 0
+    }
+
+    /**
+     * Swaps the variables {@code v1} and {@code v2}. This affects all BDDs
+     * created by this kernel.
+     * @param v1 the first variable to swap
+     * @param v2 the second variable to swap
+     */
+    public void swapVariables(final int v1, final int v2) {
+        this.reordering.swapVariables(v1, v2);
+    }
+
+    /**
+     * Swaps the variables {@code v1} and {@code v2}. This affects all BDDs
+     * created by this kernel.
+     * @param v1 the first variable to swap
+     * @param v2 the second variable to swap
+     */
+    public void swapVariables(final Variable v1, final Variable v2) {
+        swapVariables(getIndexForVariable(v1), getIndexForVariable(v2));
+    }
+
+    /**
+     * Activates or deactivates the automatic reordering during the construction of a BDD.
+     * <p>
+     * Automatic reordering can be deactivated by passing {@link BDDReorderingMethod#BDD_REORDER_NONE}
+     * for the {@code method} parameter, otherwise the reordering is activated with the
+     * given method. The reordering is executed at most {@code num} times.
+     * @param method the method to be used for reordering
+     * @param num    the maximum number of reorders to be performed
+     */
+    public void activateReorderDuringConstruction(final BDDReorderingMethod method, final int num) {
+        this.reordering.activateReorderDuringConstruction(method, num);
+    }
+
+    /**
+     * Adds a variable block starting at variable {@code first} and ending in variable
+     * {@code last} (both inclusive).
+     * <p>
+     * <b>Variable blocks</b> are used in the {@link #reorder BDD reordering}
+     * or in the automatic reordering during the construction of the BDD (configured by
+     * {@link #activateReorderDuringConstruction}). Variable blocks can be nested, i.e. one block can
+     * contain an arbitrary number of ("child") blocks. Furthermore, a variable block can also
+     * be a single variable.
+     * <p>
+     * During reordering, the child blocks of a parent block can be reordered, but they are kept
+     * together. So no other block can be moved in between the child blocks. Furthermore,
+     * variables in a block which are not in a child block will be left untouched.
+     * <p>
+     * Example: Lets assume we have a BDD with the variable ordering {@code v1, v2, v3, v4, v5, v6, v7}.
+     * We create the following blocks:
+     * <ul>
+     *     <li>{@code A}  reaching from {@code v1} to {@code v5}</li>
+     *     <li>{@code B}  reaching from {@code v6} to {@code v7}</li>
+     *     <li>{@code A1} reaching from {@code v1} to {@code v2}</li>
+     *     <li>{@code A2} reaching from {@code v3} to {@code v3}</li>
+     *     <li>{@code A3} reaching from {@code v4} to {@code v5}</li>
+     * </ul>
+     * This means that the variables of {@code A} and {@code B} can never be mixed up in the order.
+     * So during reordering the variables {@code v6} and {@code v7} can either be moved to the
+     * front (before {@code A}) or remain at their position.
+     * Furthermore, for example {@code v1} and {@code v2} will always stay together and neither
+     * {@code v3} nor any other variable can be moved in between them. On the other hand, the blocks
+     * {@code A1}, {@code A2}, and {@code A3} can be swapped arbitrarily.
+     * <p>
+     * These are valid result of a reordering based on the above blocks:
+     * <ul>
+     *     <li>{@code v3, v1, v2, v4, v5, v6, v7}</li>
+     *     <li>{@code v6, v7, v4, v5, v3, v1, v2}</li>
+     *     <li>{@code v6, v7, v1, v2, v3, v4, v5}</li>
+     * </ul>
+     * These however would be <b>illegal</b>:
+     * <ul>
+     *     <li>{@code v2, v1, v3, v4, v5, v6, v7} (variables in a block which are not in a child block will not be reordered)</li>
+     *     <li>{@code v1, v3, v2, v4, v5, v6, v7} (variables of different block will not be mixed up)</li>
+     * </ul>
+     * <p>
+     * If a block is <b>fixed</b> (the example above assumed always blocks which are not fixed), its
+     * immediate child blocks will remain in their order. E.g. if block {@code A} was fixed, the blocks
+     * {@code A1}, {@code A2}, and {@code A3} would not be allowed to be swapped.
+     * Let's assume block {@code A} to be fixed and that we have two other unfixed blocks:
+     * <ul>
+     *     <li>{@code A11} reaching from {@code v1} to {@code v1}</li>
+     *     <li>{@code A12} reaching from {@code v2} to {@code v2}</li>
+     * </ul>
+     * These are examples for <b>legal</b> reorderings:
+     * <ul>
+     *     <li>{@code v2, v1, v3, v4, v5, v6, v7} (block {@code A} is fixed, but "grandchildren" are still allowed to be reordered</li>
+     *     <li>{@code v6, v7, v2, v1, v3, v4, v5}</li>
+     * </ul>
+     * These are examples for <b>illegal</b> reorderings:
+     * <ul>
+     *     <li>{@code v3, v2, v1, v4, v5, v6, v7} (block {@code A} is fixed, so it's child blocks must be be reordered</li>
+     *     <li>{@code v1, v2, v4, v5, v3, v6, v7}</li>
+     * </ul>
+     * <p>
+     * Each block (including all nested blocks) must be defined by a separate call to this method. The blocks
+     * may be added in an arbitrary order, so it is not required to add them top-down or bottom-up.
+     * However, the blocks <b>must not intersect</b>, except of one block containing the other. Furthermore,
+     * both the {@code first} and the {@code last} variable must be known by the kernel and the level {@code first}
+     * must be lower than the level of {@code last}.
+     * @param first the variable at which the block starts (inclusive)
+     * @param last  the variable at which the block ends (inclusive)
+     * @param fixed whether the block should be fixed or not
+     */
+    public void addVariableBlock(final int first, final int last, final boolean fixed) {
+        this.reordering.addVariableBlock(first, last, fixed);
+    }
+
+    /**
+     * Adds a variable block starting at variable {@code first} and ending in variable
+     * {@code last} (both inclusive).
+     * <p>
+     * See {@link #addVariableBlock(int, int, boolean)} for details.
+     * @param first the variable at which the block starts (inclusive)
+     * @param last  the variable at which the block ends (inclusive)
+     * @param fixed whether the block should be fixed or not
+     * @see #addVariableBlock(int, int, boolean)
+     */
+    public void addVariableBlock(final Variable first, final Variable last, final boolean fixed) {
+        addVariableBlock(getIndexForVariable(first), getIndexForVariable(last), fixed);
+    }
+
+    /**
+     * Adds a single variable block for all variables known by the kernel.
+     */
+    public void addAllVariablesAsBlock() {
+        this.reordering.addAllVariablesAsBlock();
+    }
+
+    /**
+     * Reorders the levels in the kernel using the given reordering method.
+     * Only blocks of variables will be reordered. See the documentation of
+     * {@link #addVariableBlock} to learn more about such variable blocks.
+     * Without the definition of any block, nothing will be reordered.
+     * <p>
+     * If the reordering should be performed without any restrictions,
+     * {@link #addAllVariablesAsBlock()} can be called before this method.
+     * @param method the method to be used for the reordering
+     */
+    public void reorder(final BDDReorderingMethod method) {
+        this.reordering.reorder(method);
     }
 
     protected int doWithPotentialReordering(final BddOperation operation) {
@@ -601,7 +752,7 @@ public class BDDKernel {
         if (this.nodesize > oldsize + this.maxnodeincrease) {
             this.nodesize = oldsize + this.maxnodeincrease;
         }
-        this.nodesize = prime.primeLTE(this.nodesize);
+        this.nodesize = this.prime.primeLTE(this.nodesize);
         final int[] newnodes = new int[this.nodesize * 6];
         System.arraycopy(this.nodes, 0, newnodes, 0, this.nodes.length);
         this.nodes = newnodes;
@@ -862,6 +1013,6 @@ public class BDDKernel {
     }
 
     public BDDPrime getPrime() {
-        return prime;
+        return this.prime;
     }
 }

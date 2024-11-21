@@ -484,7 +484,7 @@ public class BDDOperations {
         if (this.k.isZero(r)) {
             return f.constant(!followPathsToTrue);
         }
-        final Variable var = this.k.idx2var.get(this.k.level(r));
+        final Variable var = this.k.getVariableForIndex(this.k.level2var[this.k.level(r)]);
         final int low = this.k.low(r);
         final Formula lowFormula = isRelevant(low, followPathsToTrue)
                 ? f.and(var.negate(), toFormulaRec(low, followPathsToTrue))

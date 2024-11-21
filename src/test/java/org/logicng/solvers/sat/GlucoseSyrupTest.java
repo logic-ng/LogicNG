@@ -78,8 +78,6 @@ public class GlucoseSyrupTest {
                 "conflict      []%n" +
                 "assumptions   []%n" +
                 "#seen         4%n" +
-                "#stack        0%n" +
-                "#toclear      0%n" +
                 "claInc        1.0%n" +
                 "simpDBAssigns -1%n" +
                 "simpDBProps   0%n" +

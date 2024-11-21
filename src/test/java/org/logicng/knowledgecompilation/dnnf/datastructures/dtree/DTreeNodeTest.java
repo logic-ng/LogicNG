@@ -32,7 +32,6 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.TestWithExampleFormulas;
-import org.logicng.io.parsers.ParserException;
 
 /**
  * Unit tests for {@link DTreeNode}.
@@ -42,8 +41,8 @@ import org.logicng.io.parsers.ParserException;
 public class DTreeNodeTest extends TestWithExampleFormulas {
 
     @Test
-    public void testToString() throws ParserException {
-        final DTreeNode node = new DTreeNode(new DTreeLeaf(1, this.f.parse("a | b")), new DTreeLeaf(2, this.f.parse("c | d")));
+    public void testToString() {
+        final DTreeNode node = new DTreeNode(new DTreeLeaf(1, parse(this.f, "a | b")), new DTreeLeaf(2, parse(this.f, "c | d")));
         assertThat(node.toString()).isEqualTo("DTreeNode: [DTreeLeaf: 1, a | b, DTreeLeaf: 2, c | d]");
     }
 }

@@ -29,8 +29,10 @@
 package org.logicng.datastructures.ubtrees;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -41,17 +43,41 @@ import java.util.TreeSet;
  * A data structure for storing sets with efficient sub- and superset queries.
  * C.f. `A New Method to Index and Query Sets`, Hoffmann and Koehler, 1999
  * @param <T> the type of the elements (must be comparable)
- * @version 2.0.0
+ * @version 2.5.0
  * @since 1.5.0
  */
 public final class UBTree<T extends Comparable<T>> {
     private final SortedMap<T, UBNode<T>> rootNodes;
+    private SortedSet<T> rootSet;
 
     /**
      * Constructs an empty UBTree.
      */
     public UBTree() {
         this.rootNodes = new TreeMap<>();
+        this.rootSet = null;
+    }
+
+    /**
+     * Generates a subsumed UBTree from the given sets.
+     * @param sets the sets
+     * @param <E>  the type of the elements (must be comparable)
+     * @return the subsumed UBTree
+     */
+    public static <E extends Comparable<E>> UBTree<E> generateSubsumedUBTree(final Collection<? extends Collection<E>> sets) {
+        final SortedMap<Integer, List<SortedSet<E>>> sizes = new TreeMap<>();
+        for (final Collection<E> set : sets) {
+            sizes.computeIfAbsent(set.size(), k -> new ArrayList<>()).add(new TreeSet<>(set));
+        }
+        final UBTree<E> ubTree = new UBTree<>();
+        for (final Map.Entry<Integer, List<SortedSet<E>>> entry : sizes.entrySet()) {
+            for (final SortedSet<E> set : entry.getValue()) {
+                if (ubTree.firstSubset(set) == null) {
+                    ubTree.addSet(set);
+                }
+            }
+        }
+        return ubTree;
     }
 
     /**
@@ -69,7 +95,9 @@ public final class UBTree<T extends Comparable<T>> {
             }
             nodes = node.children();
         }
-        if (node != null) {
+        if (node == null) {
+            this.rootSet = set;
+        } else {
             node.setEndSet(set);
         }
     }
@@ -80,10 +108,15 @@ public final class UBTree<T extends Comparable<T>> {
      * @return the first subset which is found for the given set or {@code null} if there is none
      */
     public SortedSet<T> firstSubset(final SortedSet<T> set) {
-        if (this.rootNodes.isEmpty() || set == null || set.isEmpty()) {
+        final boolean emptyTree = this.rootSet == null && this.rootNodes.isEmpty();
+        if (emptyTree || set == null) {
             return null;
         }
-        return firstSubset(set, this.rootNodes);
+        if (this.rootSet == null) {
+            return set.isEmpty() ? null : firstSubset(set, this.rootNodes);
+        } else {
+            return this.rootSet;
+        }
     }
 
     /**
@@ -93,6 +126,9 @@ public final class UBTree<T extends Comparable<T>> {
      */
     public Set<SortedSet<T>> allSubsets(final SortedSet<T> set) {
         final Set<SortedSet<T>> subsets = new LinkedHashSet<>();
+        if (this.rootSet != null) {
+            subsets.add(this.rootSet);
+        }
         allSubsets(set, this.rootNodes, subsets);
         return subsets;
     }
@@ -103,6 +139,9 @@ public final class UBTree<T extends Comparable<T>> {
      * @return all supersets of the given set
      */
     public Set<SortedSet<T>> allSupersets(final SortedSet<T> set) {
+        if (set.isEmpty()) {
+            return allSets();
+        }
         final Set<SortedSet<T>> supersets = new LinkedHashSet<>();
         allSupersets(set, this.rootNodes, supersets);
         return supersets;
@@ -113,9 +152,11 @@ public final class UBTree<T extends Comparable<T>> {
      * @return all sets in this UBTree
      */
     public Set<SortedSet<T>> allSets() {
-        final List<UBNode<T>> allEndOfPathNodes = getAllEndOfPathNodes(this.rootNodes);
         final Set<SortedSet<T>> allSets = new LinkedHashSet<>();
-        for (final UBNode<T> endOfPathNode : allEndOfPathNodes) {
+        if (this.rootSet != null) {
+            allSets.add(this.rootSet);
+        }
+        for (final UBNode<T> endOfPathNode : getAllEndOfPathNodes(this.rootNodes)) {
             allSets.add(endOfPathNode.set());
         }
         return allSets;
@@ -127,6 +168,15 @@ public final class UBTree<T extends Comparable<T>> {
      */
     SortedMap<T, UBNode<T>> rootNodes() {
         return this.rootNodes;
+    }
+
+    /**
+     * Returns the set of the root. If the root is a terminal node, it holds an empty set.
+     * In this case this method returns this set, otherwise it returns {@code null}.
+     * @return the set of the root node if it is a terminal node, {@code null} otherwise
+     */
+    SortedSet<T> rootSet() {
+        return this.rootSet;
     }
 
     private SortedSet<T> firstSubset(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest) {
@@ -159,7 +209,7 @@ public final class UBTree<T extends Comparable<T>> {
     }
 
     private void allSupersets(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final Set<SortedSet<T>> supersets) {
-        final Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(set, forest, set.first());
+        final Set<UBNode<T>> nodes = getAllNodesContainingElementsLessThan(forest, set.first());
         for (final UBNode<T> node : nodes) {
             allSupersets(set, node.children(), supersets);
         }
@@ -193,7 +243,7 @@ public final class UBTree<T extends Comparable<T>> {
         return nodes;
     }
 
-    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedSet<T> set, final SortedMap<T, UBNode<T>> forest, final T element) {
+    private Set<UBNode<T>> getAllNodesContainingElementsLessThan(final SortedMap<T, UBNode<T>> forest, final T element) {
         final Set<UBNode<T>> nodes = new LinkedHashSet<>();
         for (final UBNode<T> node : forest.values()) {
             if (node != null && node.element().compareTo(element) < 0) {

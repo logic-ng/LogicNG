@@ -47,11 +47,11 @@ import java.util.Random;
  * <ul>
  *     <li>Swapping two variables in the kernel can be performed via {@link #swapVariables}</li>
  *     <li>Reordering all variables can be performed via {@link #reorder}</li>
- *     <li>Reordering during construction of the BDD can be configured via {@link #setReorderDuringConstruction}</li>
+ *     <li>Reordering during construction of the BDD can be configured via {@link #activateReorderDuringConstruction}</li>
  * </ul>
  * The last two operations only have an effect, if variable blocks were added. {@link #addVariableBlock(int, int, boolean) The docuentation}
  * gives more information on variable blocks.
- * To make all variables freely movable, {@link #addVariableBlockAll()} can be used.
+ * To make all variables freely movable, {@link #addAllVariablesAsBlock()} can be used.
  * @version 2.0.0
  * @since 2.0.0
  */
@@ -101,7 +101,7 @@ public class BDDReordering {
         this.reorderDisabled = false;
         this.varTree = null;
         clrVarBlocks();
-        setReorderDuringConstruction(BDDReorderingMethod.BDD_REORDER_NONE, 0);
+        activateReorderDuringConstruction(BDDReorderingMethod.BDD_REORDER_NONE, 0);
         this.usednumBefore = this.usednumAfter = 0;
         this.blockId = 0;
     }
@@ -165,7 +165,7 @@ public class BDDReordering {
      * Without the definition of any block, nothing will be reordered.
      * <p>
      * If the reordering should be performed without any restrictions,
-     * {@link #addVariableBlockAll()} can be called before this method.
+     * {@link #addAllVariablesAsBlock()} can be called before this method.
      * @param method the method to be used for the reordering
      */
     public void reorder(final BDDReorderingMethod method) {
@@ -201,8 +201,23 @@ public class BDDReordering {
      * given method. The reordering is executed at most {@code num} times.
      * @param method the method to be used for reordering
      * @param num    the maximum number of reorders to be performed
+     * @deprecated use {@link BDDKernel#activateReorderDuringConstruction} instead
      */
+    @Deprecated
     public void setReorderDuringConstruction(final BDDReorderingMethod method, final int num) {
+        activateReorderDuringConstruction(method, num);
+    }
+
+    /**
+     * Activates or deactivates the automatic reordering during the construction of a BDD.
+     * <p>
+     * Automatic reordering can be deactivated by passing {@link BDDReorderingMethod#BDD_REORDER_NONE}
+     * for the {@code method} parameter, otherwise the reordering is activated with the
+     * given method. The reordering is executed at most {@code num} times.
+     * @param method the method to be used for reordering
+     * @param num    the maximum number of reorders to be performed
+     */
+    protected void activateReorderDuringConstruction(final BDDReorderingMethod method, final int num) {
         this.reorderMethod = method;
         this.bddreorderTimes = num;
     }
@@ -213,7 +228,7 @@ public class BDDReordering {
      * <p>
      * <b>Variable blocks</b> are used in the {@link #reorder BDD reordering}
      * or in the automatic reordering during the construction of the BDD (configured by
-     * {@link #setReorderDuringConstruction}). Variable blocks can be nested, i.e. one block can
+     * {@link #activateReorderDuringConstruction}). Variable blocks can be nested, i.e. one block can
      * contain an arbitrary number of ("child") blocks. Furthermore, a variable block can also
      * be a single variable.
      * <p>
@@ -292,10 +307,19 @@ public class BDDReordering {
     /**
      * Adds a single variable block for all variables known by the kernel.
      */
-    public void addVariableBlockAll() {
+    public void addAllVariablesAsBlock() {
         for (int n = 0; n < this.k.varnum; n++) {
             addVariableBlock(n, n, false);
         }
+    }
+
+    /**
+     * Adds a single variable block for all variables known by the kernel.
+     * @deprecated use {@link #addAllVariablesAsBlock()} instead
+     */
+    @Deprecated
+    public void addVariableBlockAll() {
+        addAllVariablesAsBlock();
     }
 
     /**

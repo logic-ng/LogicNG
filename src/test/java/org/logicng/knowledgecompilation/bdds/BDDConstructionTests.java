@@ -29,13 +29,13 @@
 package org.logicng.knowledgecompilation.bdds;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Variable;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.knowledgecompilation.bdds.jbuddy.BDDKernel;
 
 import java.util.List;
@@ -56,12 +56,12 @@ public class BDDConstructionTests {
     BDD secondBdd;
 
     @BeforeEach
-    public void init() throws ParserException {
+    public void init() {
         this.f = new FormulaFactory();
         this.variables = this.f.variables("a", "b", "c", "d", "e", "f", "g");
         this.kernel = new BDDKernel(this.f, this.variables, 1000, 10000);
-        this.initFormula = this.f.parse("(a & b) => (c | d & ~e)");
-        this.secondFormula = this.f.parse("(g & f) <=> (c | ~a | ~d)");
+        this.initFormula = parse(this.f, "(a & b) => (c | d & ~e)");
+        this.secondFormula = parse(this.f, "(g & f) <=> (c | ~a | ~d)");
         this.initBdd = BDDFactory.build(this.initFormula, this.kernel);
         this.secondBdd = BDDFactory.build(this.secondFormula, this.kernel);
     }

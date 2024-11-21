@@ -28,10 +28,6 @@
 
 package org.logicng.transformations.simplification;
 
-import static org.logicng.handlers.Handler.aborted;
-import static org.logicng.handlers.Handler.start;
-import static org.logicng.handlers.OptimizationHandler.satHandler;
-
 import org.logicng.backbones.Backbone;
 import org.logicng.backbones.BackboneGeneration;
 import org.logicng.backbones.BackboneType;
@@ -45,6 +41,7 @@ import org.logicng.formulas.Literal;
 import org.logicng.handlers.OptimizationHandler;
 import org.logicng.primecomputation.PrimeCompiler;
 import org.logicng.primecomputation.PrimeResult;
+import org.logicng.solvers.maxsat.OptimizationConfig;
 import org.logicng.util.FormulaHelper;
 
 import java.util.ArrayList;
@@ -72,7 +69,7 @@ import java.util.stream.Collectors;
  * </ul>
  * The first and the last two steps can be configured using the {@link AdvancedSimplifierConfig}. Also, the handler and the rating
  * function can be configured. If no rating function is specified, the {@link DefaultRatingFunction} is chosen.
- * @version 2.3.0
+ * @version 2.6.0
  * @since 2.0.0
  */
 public final class AdvancedSimplifier implements FormulaTransformation {
@@ -126,15 +123,16 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         final AdvancedSimplifierConfig config = this.initConfig != null
                 ? this.initConfig
                 : (AdvancedSimplifierConfig) formula.factory().configurationFor(ConfigurationType.ADVANCED_SIMPLIFIER);
-        start(config.handler);
+        final OptimizationConfig cfg = config.optimizationConfig;
+        cfg.startHandler();
         final FormulaFactory f = formula.factory();
         Formula simplified = formula;
         final SortedSet<Literal> backboneLiterals = new TreeSet<>();
         if (config.restrictBackbone) {
             final Backbone backbone = BackboneGeneration
-                    .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, satHandler(config.handler));
-            if (backbone == null || aborted(config.handler)) {
-                return null;
+                    .compute(Collections.singletonList(formula), formula.variables(), BackboneType.POSITIVE_AND_NEGATIVE, cfg.satHandler());
+            if (backbone == null || cfg.aborted()) {
+                return config.returnIntermediateResult ? formula : null;
             }
             if (!backbone.isSat()) {
                 return f.falsum();
@@ -142,18 +140,18 @@ public final class AdvancedSimplifier implements FormulaTransformation {
             backboneLiterals.addAll(backbone.getCompleteBackbone());
             simplified = formula.restrict(new Assignment(backboneLiterals));
         }
-        final Formula simplifyMinDnf = computeMinDnf(f, simplified, config);
-        if (simplifyMinDnf == null) {
-            return null;
+        if (config.minimalDnfCover) {
+            final Formula simplifyMinDnf = computeMinDnf(f, simplified, config);
+            if (simplifyMinDnf == null) {
+                return config.returnIntermediateResult ? addLiterals(simplified, backboneLiterals) : null;
+            }
+            simplified = simplifyWithRating(simplified, simplifyMinDnf, config);
         }
-        simplified = simplifyWithRating(simplified, simplifyMinDnf, config);
         if (config.factorOut) {
             final Formula factoredOut = simplified.transform(new FactorOutSimplifier(config.ratingFunction));
             simplified = simplifyWithRating(simplified, factoredOut, config);
         }
-        if (config.restrictBackbone) {
-            simplified = f.and(f.and(backboneLiterals), simplified);
-        }
+        simplified = addLiterals(simplified, backboneLiterals);
         if (config.simplifyNegations) {
             final Formula negationSimplified = simplified.transform(NegationSimplifier.get());
             simplified = simplifyWithRating(simplified, negationSimplified, config);
@@ -161,20 +159,24 @@ public final class AdvancedSimplifier implements FormulaTransformation {
         return simplified;
     }
 
-    private Formula computeMinDnf(final FormulaFactory f, Formula simplified, final AdvancedSimplifierConfig config) {
+    private static Formula addLiterals(final Formula formula, final SortedSet<Literal> literals) {
+        final FormulaFactory f = formula.factory();
+        return f.and(f.and(literals), formula);
+    }
+
+    private Formula computeMinDnf(final FormulaFactory f, final Formula simplified, final AdvancedSimplifierConfig config) {
         final PrimeResult primeResult =
-                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.handler);
-        if (primeResult == null || aborted(config.handler)) {
+                PrimeCompiler.getWithMinimization().compute(simplified, PrimeResult.CoverageType.IMPLICANTS_COMPLETE, config.optimizationConfig);
+        if (primeResult == null || config.optimizationConfig.aborted()) {
             return null;
         }
         final List<SortedSet<Literal>> primeImplicants = primeResult.getPrimeImplicants();
         final List<Formula> minimizedPIs = SmusComputation.computeSmusForFormulas(negateAllLiterals(primeImplicants, f),
-                Collections.singletonList(simplified), f, config.handler);
-        if (minimizedPIs == null || aborted(config.handler)) {
+                Collections.singletonList(simplified), f, config.optimizationConfig);
+        if (minimizedPIs == null || config.optimizationConfig.aborted()) {
             return null;
         }
-        simplified = f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
-        return simplified;
+        return f.or(negateAllLiteralsInFormulas(minimizedPIs, f).stream().map(f::and).collect(Collectors.toList()));
     }
 
     private List<Formula> negateAllLiterals(final Collection<SortedSet<Literal>> literalSets, final FormulaFactory f) {

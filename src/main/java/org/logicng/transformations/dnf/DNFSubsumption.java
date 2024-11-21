@@ -28,23 +28,18 @@
 
 package org.logicng.transformations.dnf;
 
-import org.logicng.datastructures.ubtrees.UBTree;
 import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaTransformation;
-import org.logicng.formulas.Literal;
+import org.logicng.formulas.Or;
 import org.logicng.transformations.Subsumption;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
 
 /**
  * This transformation performs subsumption on a given DNF and returns a new DNF.
  * I.e. performs as many subsumptions as possible.  A subsumption in a DNF means,
  * that e.g. a minterm {@code A & B & C} is subsumed by another minterm {@code A & B}
  * and can therefore be deleted for an equivalent DNF.
- * @version 2.3.0
+ * @version 2.5.0
  * @since 1.5.0
  */
 public final class DNFSubsumption extends Subsumption implements FormulaTransformation {
@@ -76,11 +71,6 @@ public final class DNFSubsumption extends Subsumption implements FormulaTransfor
             return formula;
         }
         assert formula.type() == FType.OR;
-        final UBTree<Literal> ubTree = generateSubsumedUBTree(formula);
-        final List<Formula> minterms = new ArrayList<>();
-        for (final SortedSet<Literal> literals : ubTree.allSets()) {
-            minterms.add(formula.factory().and(literals));
-        }
-        return formula.factory().or(minterms);
+        return compute((Or) formula, false);
     }
 }

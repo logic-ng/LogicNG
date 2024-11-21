@@ -28,6 +28,8 @@
 
 package org.logicng.formulas;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
@@ -42,7 +44,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link Or}.
- * @version 2.3.0
+ * @version 2.5.0
  * @since 1.0
  */
 public class OrTest extends TestWithExampleFormulas {
@@ -71,6 +73,16 @@ public class OrTest extends TestWithExampleFormulas {
         assertThat(this.f.or(this.A, this.B, this.X, this.TRUE)).isEqualTo(this.TRUE);
         assertThat(this.f.or(this.f.or(this.A, this.B), this.f.or(this.X, this.Y))).isEqualTo(this.f.or(this.A, this.B, this.X, this.Y));
         assertThat(this.f.or(this.f.and(this.A, this.B), this.f.or(this.f.and(this.f.and(this.NA, this.NB)), this.f.and(this.f.or(this.NA, this.FALSE), this.NB)))).isEqualTo(this.OR3);
+        assertThat(this.f.dnf(emptyList())).isEqualTo(this.f.falsum());
+        assertThat(this.f.dnf(singletonList(this.f.falsum()))).isEqualTo(this.f.falsum());
+        assertThat(this.f.dnf(singletonList(this.f.verum()))).isEqualTo(this.f.verum());
+        assertThat(this.f.dnf(this.f.or(this.f.and(this.A, this.B), this.f.and(this.NA, this.NB)))).isEqualTo(this.OR3);
+        assertThat(this.f.clause()).isEqualTo(this.f.falsum());
+        assertThat(this.f.clause(this.A)).isEqualTo(this.A);
+        assertThat(this.f.clause(this.A, this.NB)).isEqualTo(this.f.or(this.A, this.NB));
+        assertThat(this.f.clause(emptyList())).isEqualTo(this.f.falsum());
+        assertThat(this.f.clause(singletonList(this.A))).isEqualTo(this.A);
+        assertThat(this.f.clause(Arrays.asList(this.A, this.NB))).isEqualTo(this.f.or(this.A, this.NB));
         assertThat(this.f.naryOperator(FType.OR, Arrays.asList(this.X, this.Y, this.X, this.Y, this.X))).isEqualTo(this.OR1);
     }
 
@@ -210,6 +222,10 @@ public class OrTest extends TestWithExampleFormulas {
         assertThat(this.OR1.isDNF()).isTrue();
         assertThat(this.OR2.isDNF()).isTrue();
         assertThat(this.OR3.isDNF()).isTrue();
+        assertThat(this.f.clause().isDNF()).isTrue();
+        assertThat(this.f.clause(this.A).isDNF()).isTrue();
+        assertThat(this.f.clause(this.A, this.NB).isDNF()).isTrue();
+        assertThat(this.f.dnf(this.f.or(this.f.and(this.A, this.B), this.f.and(this.NA, this.NB))).isDNF()).isTrue();
     }
 
     @Test
@@ -217,5 +233,12 @@ public class OrTest extends TestWithExampleFormulas {
         assertThat(this.OR1.isCNF()).isTrue();
         assertThat(this.OR2.isCNF()).isTrue();
         assertThat(this.OR3.isCNF()).isFalse();
+        assertThat(this.f.clause().isCNF()).isTrue();
+        assertThat(this.f.clause(this.A).isCNF()).isTrue();
+        assertThat(this.f.clause(this.A, this.NB).isCNF()).isTrue();
+        assertThat(this.f.dnf(this.A).isCNF()).isTrue();
+        assertThat(this.f.dnf(this.A, this.NB, this.C).isCNF()).isTrue();
+        assertThat(this.f.dnf(this.A, this.NB, this.f.and(this.A, this.C)).isCNF()).isFalse();
+        assertThat(this.f.dnf(this.f.or(this.f.and(this.A, this.B), this.f.and(this.NA, this.NB))).isCNF()).isFalse();
     }
 }

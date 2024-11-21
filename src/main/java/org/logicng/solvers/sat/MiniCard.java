@@ -392,14 +392,14 @@ public class MiniCard extends MiniSatStyleSolver {
     }
 
     @Override
-    protected boolean litRedundant(final int p, final int abstractLevels) {
-        this.analyzeStack.clear();
-        this.analyzeStack.push(p);
-        final int top = this.analyzeToClear.size();
-        while (this.analyzeStack.size() > 0) {
-            assert v(this.analyzeStack.back()).reason() != null;
-            final MSClause c = v(this.analyzeStack.back()).reason();
-            this.analyzeStack.pop();
+    protected boolean litRedundant(final int p, final int abstractLevels, final LNGIntVector analyzeToClear) {
+        final LNGIntVector analyzeStack = new LNGIntVector();
+        analyzeStack.push(p);
+        final int top = analyzeToClear.size();
+        while (analyzeStack.size() > 0) {
+            assert v(analyzeStack.back()).reason() != null;
+            final MSClause c = v(analyzeStack.back()).reason();
+            analyzeStack.pop();
             if (c.isAtMost()) {
                 for (int i = 0; i < c.size(); i++) {
                     if (value(c.get(i)) != Tristate.TRUE) {
@@ -409,13 +409,13 @@ public class MiniCard extends MiniSatStyleSolver {
                     if (!this.seen.get(var(q)) && v(q).level() > 0) {
                         if (v(q).reason() != null && (abstractLevel(var(q)) & abstractLevels) != 0) {
                             this.seen.set(var(q), true);
-                            this.analyzeStack.push(q);
-                            this.analyzeToClear.push(q);
+                            analyzeStack.push(q);
+                            analyzeToClear.push(q);
                         } else {
-                            for (int j = top; j < this.analyzeToClear.size(); j++) {
-                                this.seen.set(var(this.analyzeToClear.get(j)), false);
+                            for (int j = top; j < analyzeToClear.size(); j++) {
+                                this.seen.set(var(analyzeToClear.get(j)), false);
                             }
-                            this.analyzeToClear.removeElements(this.analyzeToClear.size() - top);
+                            analyzeToClear.removeElements(analyzeToClear.size() - top);
                             return false;
                         }
                     }
@@ -426,13 +426,13 @@ public class MiniCard extends MiniSatStyleSolver {
                     if (!this.seen.get(var(q)) && v(q).level() > 0) {
                         if (v(q).reason() != null && (abstractLevel(var(q)) & abstractLevels) != 0) {
                             this.seen.set(var(q), true);
-                            this.analyzeStack.push(q);
-                            this.analyzeToClear.push(q);
+                            analyzeStack.push(q);
+                            analyzeToClear.push(q);
                         } else {
-                            for (int j = top; j < this.analyzeToClear.size(); j++) {
-                                this.seen.set(var(this.analyzeToClear.get(j)), false);
+                            for (int j = top; j < analyzeToClear.size(); j++) {
+                                this.seen.set(var(analyzeToClear.get(j)), false);
                             }
-                            this.analyzeToClear.removeElements(this.analyzeToClear.size() - top);
+                            analyzeToClear.removeElements(analyzeToClear.size() - top);
                             return false;
                         }
                     }
@@ -808,14 +808,14 @@ public class MiniCard extends MiniSatStyleSolver {
     protected void simplifyClause(final LNGIntVector outLearnt) {
         int i;
         int j;
-        this.analyzeToClear = new LNGIntVector(outLearnt);
+        final LNGIntVector analyzeToClear = new LNGIntVector(outLearnt);
         if (this.ccminMode == MiniSatConfig.ClauseMinimization.DEEP) {
             int abstractLevel = 0;
             for (i = 1; i < outLearnt.size(); i++) {
                 abstractLevel |= abstractLevel(var(outLearnt.get(i)));
             }
             for (i = j = 1; i < outLearnt.size(); i++) {
-                if (v(outLearnt.get(i)).reason() == null || !litRedundant(outLearnt.get(i), abstractLevel)) {
+                if (v(outLearnt.get(i)).reason() == null || !litRedundant(outLearnt.get(i), abstractLevel, analyzeToClear)) {
                     outLearnt.set(j++, outLearnt.get(i));
                 }
             }
@@ -850,8 +850,8 @@ public class MiniCard extends MiniSatStyleSolver {
             outLearnt.set(1, p);
             this.analyzeBtLevel = v(p).level();
         }
-        for (int l = 0; l < this.analyzeToClear.size(); l++) {
-            this.seen.set(var(this.analyzeToClear.get(l)), false);
+        for (int l = 0; l < analyzeToClear.size(); l++) {
+            this.seen.set(var(analyzeToClear.get(l)), false);
         }
     }
 

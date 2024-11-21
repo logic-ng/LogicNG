@@ -78,7 +78,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     public void testExceptionalBehavior() {
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
             solver.addHardFormula(this.B);
@@ -86,7 +86,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
                 .hasMessage("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
             solver.addSoftFormula(this.B, 1);
@@ -94,20 +94,20 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
                 .hasMessage("The MaxSAT solver does currently not support an incremental interface.  Reset the solver.");
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, -1);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The weight of a formula must be > 0");
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.result();
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get a result as long as the formula is not solved.  Call 'solver' first.");
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.model();
         }).isInstanceOf(IllegalStateException.class)
@@ -118,7 +118,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     public void testExceptionalBehaviorForLinearUS() {
         assertThatThrownBy(() -> {
             final MaxSATSolver solver = MaxSATSolver.linearUS(this.f);
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 3);
             solver.solve();
         }).isInstanceOf(IllegalStateException.class)
@@ -128,7 +128,7 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
                     .incremental(MaxSATConfig.IncrementalStrategy.ITERATIVE)
                     .cardinality(CardinalityEncoding.MTOTALIZER)
                     .build());
-            solver.addHardFormula(this.f.parse("a | b"));
+            solver.addHardFormula(parse(this.f, "a | b"));
             solver.addSoftFormula(this.A, 1);
             solver.solve();
         }).isInstanceOf(IllegalStateException.class)
@@ -136,9 +136,9 @@ public class PureMaxSATTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testCornerCase() throws ParserException {
+    public void testCornerCase() {
         final MaxSATSolver solver = MaxSATSolver.incWBO(this.f);
-        solver.addHardFormula(this.f.parse("a | b"));
+        solver.addHardFormula(parse(this.f, "a | b"));
         solver.addHardFormula(this.f.verum());
         solver.addSoftFormula(this.A, 1);
         MaxSAT.MaxSATResult result = solver.solve();

@@ -108,7 +108,7 @@ public class DnnfCompiler {
      * Performs the compilation using the given DTree generator and the compilation handler.
      * @param generator the DTree generator
      * @param handler   the compilation handler
-     * @return the compiled DNNF
+     * @return the compiled DNNF or {@code null} if the compilation was aborted by the handler
      */
     public Formula compile(final DTreeGenerator generator, final DnnfCompilationHandler handler) {
         if (!this.cnf.holds(new SATPredicate(this.f))) {

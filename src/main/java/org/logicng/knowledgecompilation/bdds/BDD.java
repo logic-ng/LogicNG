@@ -439,22 +439,24 @@ public class BDD {
      * BDDs, the variables are swapped in <b>all</b> of these BDDs.
      * @param first  the first variable to swap
      * @param second the second variable to swap
+     * @deprecated dangerous API, will be removed in version 3.0, use {@link BDDKernel#swapVariables} instead
      */
+    @Deprecated
     public void swapVariables(final Variable first, final Variable second) {
-        final int firstVar = this.kernel.getIndexForVariable(first);
-        final int secondVar = this.kernel.getIndexForVariable(second);
-        if (firstVar < 0) {
-            throw new IllegalArgumentException("Unknown variable: " + first);
-        } else if (secondVar < 0) {
-            throw new IllegalArgumentException("Unknown variable: " + second);
-        }
-        this.kernel.getReordering().swapVariables(firstVar, secondVar);
+        this.kernel.swapVariables(first, second);
     }
 
     /**
      * Returns the reordering object for the BDD kernel.
      * @return the reordering object
+     * @deprecated the relevant methods should now be access via the {@link #underlyingKernel() kernel}:
+     *         <ul>
+     *             <li>Add a variable block: {@link BDDKernel#addVariableBlock}</li>
+     *             <li>Add blocks for all variables: {@link BDDKernel#addAllVariablesAsBlock}</li>
+     *             <li>Instant reordering: {@link BDDKernel#reorder}</li>
+     *         </ul>
      */
+    @Deprecated
     public BDDReordering getReordering() {
         return this.kernel.getReordering();
     }

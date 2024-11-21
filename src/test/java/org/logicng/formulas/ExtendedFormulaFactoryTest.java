@@ -31,6 +31,7 @@ package org.logicng.formulas;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.data.MapEntry.entry;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,6 @@ import org.logicng.LongRunningTag;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.cache.PredicateCacheEntry;
 import org.logicng.formulas.cache.TransformationCacheEntry;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.testutils.PigeonHoleGenerator;
 import org.logicng.transformations.cnf.CNFFactorization;
 import org.logicng.transformations.cnf.PlaistedGreenbaumTransformation;
@@ -133,7 +133,7 @@ public class ExtendedFormulaFactoryTest {
     }
 
     @Test
-    public void testLoad02() throws ParserException {
+    public void testLoad02() {
         final SoftAssertions softly = new SoftAssertions();
         final ExtendedFormulaFactory eff = new ExtendedFormulaFactory();
         final Variable a = eff.variable("A");
@@ -151,7 +151,7 @@ public class ExtendedFormulaFactoryTest {
         final Or or3 = (Or) eff.or(a, b, c);
         final Or or4 = (Or) eff.or(a, b, c, d);
         final Or or5 = (Or) eff.or(a, b, c, d, e);
-        eff.parse("A | B & C").transform(new PlaistedGreenbaumTransformation(0));
+        parse(eff, "A | B & C").transform(new PlaistedGreenbaumTransformation(0));
         softly.assertThat(eff.posLiterals).containsValue(b);
         softly.assertThat(eff.ands2).containsValue(and);
         softly.assertThat(eff.ands3).containsValue(and3);

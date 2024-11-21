@@ -30,11 +30,11 @@ package org.logicng.formulas;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.configurations.Configuration;
 import org.logicng.configurations.ConfigurationType;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
 import org.logicng.solvers.sat.GlucoseConfig;
@@ -170,12 +170,12 @@ public class FormulaFactoryTest {
     }
 
     @Test
-    public void testImportFormula() throws ParserException {
+    public void testImportFormula() {
         final FormulaFactory f = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory F").build());
         final FormulaFactory g = new FormulaFactory(FormulaFactoryConfig.builder().name("Factory G").build());
         final PropositionalParser pf = new PropositionalParser(f);
         final String formula = "x1 & x2 & ~x3 => (x4 | (x5 <=> ~x1))";
-        final Formula ff = pf.parse(formula);
+        final Formula ff = parse(f, formula);
         final Formula fg = g.importFormula(ff);
         assertThat(fg).isEqualTo(ff);
         assertThat(ff.factory()).isSameAs(f);

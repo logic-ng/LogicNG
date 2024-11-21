@@ -37,7 +37,6 @@ import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.satisfiability.SATPredicate;
 import org.logicng.predicates.satisfiability.TautologyPredicate;
 import org.logicng.solvers.MiniSat;
@@ -118,29 +117,29 @@ public class PlaistedGreenbaumTransformationSolverTest extends TestWithExampleFo
     }
 
     @Test
-    public void simple() throws ParserException {
-        computeAndVerify(this.f.parse("(X => (A & B)) | ~(A & B)"));
-        computeAndVerify(this.f.parse("~((A | (C & D)) & ((X & ~Z) | (H & E)))"));
+    public void simple() {
+        computeAndVerify(parse(this.f, "(X => (A & B)) | ~(A & B)"));
+        computeAndVerify(parse(this.f, "~((A | (C & D)) & ((X & ~Z) | (H & E)))"));
 
-        computeAndVerify(this.f.parse("A | (B | ~C) & (D | ~E)"));
-        computeAndVerify(this.f.parse("A | B & (C | D)"));
+        computeAndVerify(parse(this.f, "A | (B | ~C) & (D | ~E)"));
+        computeAndVerify(parse(this.f, "A | B & (C | D)"));
 
-        computeAndVerify(this.f.parse("~(A&B)|X"));
-        computeAndVerify(this.f.parse("~(~(A&B)|X)"));
+        computeAndVerify(parse(this.f, "~(A&B)|X"));
+        computeAndVerify(parse(this.f, "~(~(A&B)|X)"));
 
-        computeAndVerify(this.f.parse("~(~(A&B)|X)"));
-        computeAndVerify(this.f.parse("~(A&B=>X)"));
+        computeAndVerify(parse(this.f, "~(~(A&B)|X)"));
+        computeAndVerify(parse(this.f, "~(A&B=>X)"));
 
-        computeAndVerify(this.f.parse("A&B => X"));
-        computeAndVerify(this.f.parse("~(A&B=>X)"));
+        computeAndVerify(parse(this.f, "A&B => X"));
+        computeAndVerify(parse(this.f, "~(A&B=>X)"));
 
-        computeAndVerify(this.f.parse("A&B <=> X"));
-        computeAndVerify(this.f.parse("~(A&B<=>X)"));
+        computeAndVerify(parse(this.f, "A&B <=> X"));
+        computeAndVerify(parse(this.f, "~(A&B<=>X)"));
 
-        computeAndVerify(this.f.parse("~(A&B)"));
+        computeAndVerify(parse(this.f, "~(A&B)"));
 
-        computeAndVerify(this.f.parse("A & (B | A => (A <=> ~B))"));
-        computeAndVerify(this.f.parse("(A => ~A) <=> (B <=> (~A => B))"));
+        computeAndVerify(parse(this.f, "A & (B | A => (A <=> ~B))"));
+        computeAndVerify(parse(this.f, "(A => ~A) <=> (B <=> (~A => B))"));
     }
 
     private static void computeAndVerify(final Formula formula) {

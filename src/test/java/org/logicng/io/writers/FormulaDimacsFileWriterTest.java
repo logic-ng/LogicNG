@@ -90,7 +90,7 @@ public class FormulaDimacsFileWriterTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testDuplicateFormulaParts() throws ParserException, IOException {
+    public void testDuplicateFormulaParts() throws IOException, ParserException {
         final Formula f6 = this.encoder.encode(this.p.parse("(a & b) | (c & ~(a & b))"));
         testFiles("f6", f6);
         final Formula f7 = this.encoder.encode(this.p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))"));

@@ -45,8 +45,6 @@ import org.logicng.explanations.mus.MUSConfig;
 import org.logicng.formulas.cache.CacheEntry;
 import org.logicng.formulas.printer.FormulaStringRepresentation;
 import org.logicng.functions.SubNodeFunction;
-import org.logicng.io.parsers.ParserException;
-import org.logicng.io.parsers.PseudoBooleanParser;
 import org.logicng.pseudobooleans.PBConfig;
 import org.logicng.pseudobooleans.PBEncoder;
 import org.logicng.solvers.maxsat.algorithms.MaxSATConfig;
@@ -80,7 +78,7 @@ import java.util.Set;
  * <p>
  * A formula factory is NOT thread-safe.  If you generate formulas from more than one thread you either need to synchronize the formula factory
  * yourself or you use a formula factory for each single thread.
- * @version 2.4.0
+ * @version 2.5.0
  * @since 1.0
  */
 public class FormulaFactory {
@@ -103,7 +101,6 @@ public class FormulaFactory {
     private final SubNodeFunction subformulaFunction;
     private final PBEncoder pbEncoder;
     private final CNFEncoder cnfEncoder;
-    private final PseudoBooleanParser parser;
     Map<String, Variable> posLiterals;
     Map<String, Literal> negLiterals;
     Set<Variable> generatedVariables;
@@ -155,7 +152,6 @@ public class FormulaFactory {
             this.cnfPrefix = CNF_PREFIX;
         }
         this.pbEncoder = new PBEncoder(this);
-        this.parser = new PseudoBooleanParser(this);
     }
 
     /**
@@ -803,6 +799,84 @@ public class FormulaFactory {
     }
 
     /**
+     * Creates a new DNF from an array of terms (conjunctions of literals).
+     * <p>
+     * ATTENTION: it is assumed that the operands are really terms - this is not checked for performance reasons.
+     * Also, no reduction of operands is performed - this method should only be used if you are sure that the DNF is free
+     * of redundant terms.
+     * @param terms the array of terms
+     * @return a new DNF
+     */
+    public Formula dnf(final Formula... terms) {
+        final LinkedHashSet<Formula> ops = new LinkedHashSet<>(terms.length);
+        Collections.addAll(ops, terms);
+        return this.constructDNF(ops);
+    }
+
+    /**
+     * Creates a new DNF from a collection of terms (conjunctions of literals).
+     * <p>
+     * ATTENTION: it is assumed that the operands are really terms - this is not checked for performance reasons.
+     * Also, no reduction of operands is performed - this method should only be used if you are sure that the DNF is free
+     * of redundant terms.
+     * @param terms the collection of terms
+     * @return a new DNF
+     */
+    public Formula dnf(final Collection<? extends Formula> terms) {
+        final LinkedHashSet<? extends Formula> ops = new LinkedHashSet<>(terms);
+        return this.constructDNF(ops);
+    }
+
+    /**
+     * Creates a new DNF.
+     * @param termsIn the terms
+     * @return a new DNF
+     */
+    private Formula constructDNF(final LinkedHashSet<? extends Formula> termsIn) {
+        final LinkedHashSet<? extends Formula> terms = importOrPanic(termsIn);
+        if (terms.isEmpty()) {
+            return this.falsum();
+        }
+        if (terms.size() == 1) {
+            return terms.iterator().next();
+        }
+        Map<LinkedHashSet<? extends Formula>, Or> opOrMap = this.orsN;
+        switch (terms.size()) {
+            case 2:
+                opOrMap = this.ors2;
+                break;
+            case 3:
+                opOrMap = this.ors3;
+                break;
+            case 4:
+                opOrMap = this.ors4;
+                break;
+            default:
+                break;
+        }
+        Or tempOr = opOrMap.get(terms);
+        if (tempOr != null) {
+            return tempOr;
+        }
+        tempOr = new Or(terms, this);
+        setCnfCaches(tempOr, isCnf(termsIn));
+        opOrMap.put(terms, tempOr);
+        return tempOr;
+    }
+
+    private static boolean isCnf(final LinkedHashSet<? extends Formula> terms) {
+        if (terms.size() <= 1) {
+            return true;
+        }
+        for (final Formula term : terms) {
+            if (term.type() != LITERAL) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Creates a new clause from an array of literals.
      * <p>
      * ATTENTION:  No reduction of operands is performed - this method should only be used if you are sure that the clause
@@ -864,6 +938,70 @@ public class FormulaFactory {
         setCnfCaches(tempOr, true);
         opOrMap.put(literals, tempOr);
         return tempOr;
+    }
+
+    /**
+     * Creates a new term from an array of literals.
+     * <p>
+     * ATTENTION:  No reduction of operands is performed - this method should only be used if you are sure that the term
+     * is free of redundant or contradicting literals.
+     * @param literals the collection of literals
+     * @return a new term
+     */
+    public Formula term(final Literal... literals) {
+        final LinkedHashSet<Literal> ops = new LinkedHashSet<>(literals.length);
+        Collections.addAll(ops, literals);
+        return this.constructTerm(ops);
+    }
+
+    /**
+     * Creates a new term from a collection of literals.
+     * <p>
+     * ATTENTION:  No reduction of operands is performed - this method should only be used if you are sure that the term
+     * is free of contradicting literals.
+     * @param literals the collection of literals
+     * @return a new term
+     */
+    public Formula term(final Collection<? extends Literal> literals) {
+        final LinkedHashSet<Literal> ops = new LinkedHashSet<>(literals);
+        return this.constructTerm(ops);
+    }
+
+    /**
+     * Creates a new term.
+     * @param literalsIn the literals
+     * @return a new term
+     */
+    private Formula constructTerm(final LinkedHashSet<Literal> literalsIn) {
+        final LinkedHashSet<? extends Formula> literals = importOrPanic(literalsIn);
+        if (literals.isEmpty()) {
+            return this.verum();
+        }
+        if (literals.size() == 1) {
+            return literals.iterator().next();
+        }
+        Map<LinkedHashSet<? extends Formula>, And> opAndMap = this.andsN;
+        switch (literals.size()) {
+            case 2:
+                opAndMap = this.ands2;
+                break;
+            case 3:
+                opAndMap = this.ands3;
+                break;
+            case 4:
+                opAndMap = this.ands4;
+                break;
+            default:
+                break;
+        }
+        And tempAnd = opAndMap.get(literals);
+        if (tempAnd != null) {
+            return tempAnd;
+        }
+        tempAnd = new And(literals, this);
+        setCnfCaches(tempAnd, true);
+        opAndMap.put(literals, tempAnd);
+        return tempAnd;
     }
 
     private void setCnfCaches(final Formula formula, final boolean isCNF) {
@@ -1256,16 +1394,6 @@ public class FormulaFactory {
      */
     public long numberOfNodes(final Formula formula) {
         return formula.apply(this.subformulaFunction).size();
-    }
-
-    /**
-     * Parses a given string to a formula using a pseudo boolean parser.
-     * @param string a string representing the formula
-     * @return the formula
-     * @throws ParserException if the parser throws an exception
-     */
-    public Formula parse(final String string) throws ParserException {
-        return this.parser.parse(string);
     }
 
     /**

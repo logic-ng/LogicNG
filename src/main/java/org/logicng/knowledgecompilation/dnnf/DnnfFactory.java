@@ -30,6 +30,7 @@ package org.logicng.knowledgecompilation.dnnf;
 
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.Variable;
+import org.logicng.handlers.DnnfCompilationHandler;
 import org.logicng.knowledgecompilation.dnnf.datastructures.Dnnf;
 import org.logicng.knowledgecompilation.dnnf.datastructures.dtree.MinFillDTreeGenerator;
 import org.logicng.transformations.cnf.CNFSubsumption;
@@ -57,18 +58,28 @@ public class DnnfFactory {
     }
 
     /**
-     * Compiles the given formula to a DNNF instance.
+     * Compiles the given formula to a DNNF instance using the given handler.
      * @param formula the formula
-     * @return the compiled DNNF
+     * @param handler the DNNF handler
+     * @return the compiled DNNF or {@code null} if the computation was aborted by the handler
      */
-    public Dnnf compile(final Formula formula) {
+    public Dnnf compile(final Formula formula, final DnnfCompilationHandler handler) {
         final SortedSet<Variable> originalVariables = new TreeSet<>(formula.variables());
         final Formula cnf = formula.cnf();
         originalVariables.addAll(cnf.variables());
         final Formula simplifedFormula = simplifyFormula(cnf);
         final DnnfCompiler compiler = new DnnfCompiler(simplifedFormula);
-        final Formula dnnf = compiler.compile(new MinFillDTreeGenerator());
-        return new Dnnf(originalVariables, dnnf);
+        final Formula dnnf = compiler.compile(new MinFillDTreeGenerator(), handler);
+        return dnnf == null ? null : new Dnnf(originalVariables, dnnf);
+    }
+
+    /**
+     * Compiles the given formula to a DNNF instance.
+     * @param formula the formula
+     * @return the compiled DNNF
+     */
+    public Dnnf compile(final Formula formula) {
+        return compile(formula, null);
     }
 
     protected Formula simplifyFormula(final Formula formula) {

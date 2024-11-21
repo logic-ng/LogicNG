@@ -167,6 +167,66 @@ public final class MiniSatConfig extends Configuration {
         return this.auxiliaryVariablesInModels;
     }
 
+    public double getVarDecay() {
+        return this.varDecay;
+    }
+
+    public double getVarInc() {
+        return this.varInc;
+    }
+
+    public ClauseMinimization getClauseMin() {
+        return this.clauseMin;
+    }
+
+    public int getRestartFirst() {
+        return this.restartFirst;
+    }
+
+    public double getRestartInc() {
+        return this.restartInc;
+    }
+
+    public double getClauseDecay() {
+        return this.clauseDecay;
+    }
+
+    public boolean isRemoveSatisfied() {
+        return this.removeSatisfied;
+    }
+
+    public double getLearntsizeFactor() {
+        return this.learntsizeFactor;
+    }
+
+    public double getLearntsizeInc() {
+        return this.learntsizeInc;
+    }
+
+    public boolean isIncremental() {
+        return this.incremental;
+    }
+
+    public boolean isInitialPhase() {
+        return this.initialPhase;
+    }
+
+    public boolean isProofGeneration() {
+        return this.proofGeneration;
+    }
+
+    public boolean isBbInitialUBCheckForRotatableLiterals() {
+        return this.bbInitialUBCheckForRotatableLiterals;
+    }
+
+    public boolean isBbCheckForComplementModelLiterals() {
+        return this.bbCheckForComplementModelLiterals;
+    }
+
+    public boolean isBbCheckForRotatableLiterals() {
+        return this.bbCheckForRotatableLiterals;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MiniSatConfig{").append(System.lineSeparator());
@@ -346,7 +406,7 @@ public final class MiniSatConfig extends Configuration {
 
         /**
          * Sets the CNF method for converting formula which are not in CNF for the solver.  The default value
-         * is {@code FACTORY_CNF}.
+         * is {@code PG_ON_SOLVER}.
          * @param cnfMethod the CNF method
          * @return the builder
          */

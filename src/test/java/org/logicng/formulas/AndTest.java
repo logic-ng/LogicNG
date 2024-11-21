@@ -28,6 +28,8 @@
 
 package org.logicng.formulas;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -44,7 +46,7 @@ import java.util.TreeSet;
 
 /**
  * Unit Tests for the class {@link And}.
- * @version 2.3.0
+ * @version 2.5.0
  * @since 1.0
  */
 public class AndTest extends TestWithExampleFormulas {
@@ -74,7 +76,16 @@ public class AndTest extends TestWithExampleFormulas {
         assertThat(this.f.and(lits)).isEqualTo(this.AND1);
         assertThat(this.f.and(this.A, this.B, this.X, this.FALSE)).isEqualTo(this.FALSE);
         assertThat(this.f.and(this.f.and(this.A, this.B), this.f.and(this.X, this.Y))).isEqualTo(this.f.and(this.A, this.B, this.X, this.Y));
+        assertThat(this.f.cnf(emptyList())).isEqualTo(this.f.verum());
+        assertThat(this.f.cnf(singletonList(this.f.falsum()))).isEqualTo(this.f.falsum());
+        assertThat(this.f.cnf(singletonList(this.f.verum()))).isEqualTo(this.f.verum());
         assertThat(this.f.cnf(this.f.clause(this.X, this.Y), this.f.and(this.f.or(this.f.and(this.NX, this.NX), this.NY), this.f.or(this.f.and(this.NX, this.TRUE), this.NY)))).isEqualTo(this.AND3);
+        assertThat(this.f.term()).isEqualTo(this.f.verum());
+        assertThat(this.f.term(this.A)).isEqualTo(this.A);
+        assertThat(this.f.term(this.A, this.NB)).isEqualTo(this.f.and(this.A, this.NB));
+        assertThat(this.f.term(emptyList())).isEqualTo(this.f.verum());
+        assertThat(this.f.term(singletonList(this.A))).isEqualTo(this.A);
+        assertThat(this.f.term(Arrays.asList(this.A, this.NB))).isEqualTo(this.f.and(this.A, this.NB));
         assertThat(this.f.naryOperator(FType.AND, this.A, this.B, this.A, this.B, this.A)).isEqualTo(this.AND1);
         assertThat(this.f.naryOperator(FType.AND, Arrays.asList(this.A, this.B, this.A, this.B, this.A))).isEqualTo(this.AND1);
     }
@@ -223,6 +234,9 @@ public class AndTest extends TestWithExampleFormulas {
         assertThat(this.AND1.isDNF()).isTrue();
         assertThat(this.AND2.isDNF()).isTrue();
         assertThat(this.AND3.isDNF()).isFalse();
+        assertThat(this.f.term().isDNF()).isTrue();
+        assertThat(this.f.term(this.A).isDNF()).isTrue();
+        assertThat(this.f.term(this.A, this.NB).isDNF()).isTrue();
     }
 
     @Test
@@ -230,5 +244,8 @@ public class AndTest extends TestWithExampleFormulas {
         assertThat(this.AND1.isCNF()).isTrue();
         assertThat(this.AND2.isCNF()).isTrue();
         assertThat(this.AND3.isCNF()).isTrue();
+        assertThat(this.f.term().isCNF()).isTrue();
+        assertThat(this.f.term(this.A).isCNF()).isTrue();
+        assertThat(this.f.term(this.A, this.NB).isCNF()).isTrue();
     }
 }

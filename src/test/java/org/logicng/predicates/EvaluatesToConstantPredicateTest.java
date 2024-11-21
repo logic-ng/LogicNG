@@ -42,7 +42,6 @@ import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.PBConstraint;
 import org.logicng.formulas.Variable;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.util.FormulaCornerCases;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
@@ -123,166 +122,166 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testNotToFalse() throws ParserException {
-        assertThat(this.f.parse("~~a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~~a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~~a").holds(this.aNotBToFalse)).isFalse();
+    public void testNotToFalse() {
+        assertThat(parse(this.f, "~~a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~~a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~~a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~~~a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~~~a").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~~~a").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~~~a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~~~a").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~~~a").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~(a & b)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~(a & b)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~(a & b)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~(a & b)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~(a & b)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~(a & b)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~(~a & b)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~(~a & b)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~(~a & b)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~(~a & b)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~(~a & b)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~(~a & b)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~(a & ~b)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~(a & ~b)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~(a & ~b)").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~(a & ~b)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~(a & ~b)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~(a & ~b)").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~(~a & ~b)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~(~a & ~b)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~(~a & ~b)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~(~a & ~b)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~(~a & ~b)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~(~a & ~b)").holds(this.aNotBToFalse)).isFalse();
     }
 
     @Test
-    public void testAndToFalse() throws ParserException {
-        assertThat(this.f.parse("a & ~a").holds(this.emptyToFalse)).isTrue();
-        assertThat(this.f.parse("a & ~a").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("a & ~a").holds(this.aNotBToFalse)).isTrue();
+    public void testAndToFalse() {
+        assertThat(parse(this.f, "a & ~a").holds(this.emptyToFalse)).isTrue();
+        assertThat(parse(this.f, "a & ~a").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "a & ~a").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("a & b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "a & b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~a & b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a & b").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~a & b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a & b").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("a & ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & ~b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a & ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & ~b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~a & ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a & ~b").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~a & ~b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a & ~b").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & ~b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~a & ~b & c & ~d").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a & ~b & c & ~d").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~a & ~b & c & ~d").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & ~b & c & ~d").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a & ~b & c & ~d").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & ~b & c & ~d").holds(this.aNotBToFalse)).isTrue();
     }
 
     @Test
-    public void testOrToFalse() throws ParserException {
-        assertThat(this.f.parse("a | b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a | b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a | b").holds(this.aNotBToFalse)).isFalse();
+    public void testOrToFalse() {
+        assertThat(parse(this.f, "a | b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a | b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a | b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~a | b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a | b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a | b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a | b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("a | ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a | ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a | ~b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a | ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a | ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a | ~b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~a | ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a | ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a | ~b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | ~b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~a | ~b | c | ~d").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a | ~b | c | ~d").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a | ~b | c | ~d").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | ~b | c | ~d").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | ~b | c | ~d").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a | ~b | c | ~d").holds(this.aNotBToFalse)).isFalse();
     }
 
     @Test
-    public void testImplicationToFalse() throws ParserException {
-        assertThat(this.f.parse("a => a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a => a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a => a").holds(this.aNotBToFalse)).isFalse();
+    public void testImplicationToFalse() {
+        assertThat(parse(this.f, "a => a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a => a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a => a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("b => b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("b => b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("b => b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "b => b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "b => b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "b => b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a => b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a => b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a => b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "a => b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a => b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a => b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~a => b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a => b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a => b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~a => b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a => b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a => b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a => ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a => ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a => ~b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a => ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a => ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a => ~b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~a => ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a => ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a => ~b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~a => ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a => ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a => ~b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("b => a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("b => a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("b => a").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "b => a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "b => a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "b => a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~b => a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~b => a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~b => a").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~b => a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~b => a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~b => a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("b => ~a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("b => ~a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("b => ~a").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "b => ~a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "b => ~a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "b => ~a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~b => ~a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~b => ~a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~b => ~a").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~b => ~a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~b => ~a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~b => ~a").holds(this.aNotBToFalse)).isTrue();
     }
 
     @Test
-    public void testEquivalenceToFalse() throws ParserException {
-        assertThat(this.f.parse("a <=> a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a <=> a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a <=> a").holds(this.aNotBToFalse)).isFalse();
+    public void testEquivalenceToFalse() {
+        assertThat(parse(this.f, "a <=> a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("b <=> b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("b <=> b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("b <=> b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a <=> b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a <=> b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a <=> b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "a <=> b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~a <=> b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a <=> b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a <=> b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~a <=> b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a <=> b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a <=> b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a <=> ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a <=> ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a <=> ~b").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a <=> ~b").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~a <=> ~b").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a <=> ~b").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~a <=> ~b").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a <=> ~b").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a <=> ~b").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~a <=> ~b").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("b <=> a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("b <=> a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("b <=> a").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "b <=> a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> a").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~b <=> a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~b <=> a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~b <=> a").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "~b <=> a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~b <=> a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~b <=> a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("b <=> ~a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("b <=> ~a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("b <=> ~a").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> ~a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> ~a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "b <=> ~a").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("~b <=> ~a").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~b <=> ~a").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("~b <=> ~a").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~b <=> ~a").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~b <=> ~a").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "~b <=> ~a").holds(this.aNotBToFalse)).isTrue();
     }
 
     @Test
@@ -307,50 +306,50 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testMixedToFalse() throws ParserException {
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.aNotBToFalse)).isTrue();
+    public void testMixedToFalse() {
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~a & (a | ~b) & c & (a => b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b) & c & (a => b | e)").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & (a | ~b) & c & (a => b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b) & c & (a => b | e)").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("~a & ~(a | ~b) & c & (a => b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("~a & ~(a | ~b) & c & (a => b | e)").holds(this.aToFalse)).isTrue();
-        assertThat(this.f.parse("~a & ~(a | ~b) & c & (a => b | e)").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & ~(a | ~b) & c & (a => b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "~a & ~(a | ~b) & c & (a => b | e)").holds(this.aToFalse)).isTrue();
+        assertThat(parse(this.f, "~a & ~(a | ~b) & c & (a => b | e)").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => b | e)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => b | e)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => ~b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => ~b | e)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => ~b | e)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => ~b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => ~b | e)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => ~b | e)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (a => b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a => b | e)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a => b | e)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a => b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a => b | e)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a => b | e)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & c & (a <=> ~b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a <=> ~b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b | e)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b | e)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b | e)").holds(this.aNotBToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b | e)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b | e)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b | e)").holds(this.aNotBToFalse)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b)").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b)").holds(this.aNotBToFalse)).isTrue();
 
-        assertThat(this.f.parse("a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.emptyToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aToFalse)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aNotBToFalse)).isTrue();
+        assertThat(parse(this.f, "a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.emptyToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aToFalse)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aNotBToFalse)).isTrue();
     }
 
     @Test
@@ -384,166 +383,166 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testNotToTrue() throws ParserException {
-        assertThat(this.f.parse("~~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~~a").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("~~a").holds(this.aNotBToTrue)).isTrue();
+    public void testNotToTrue() {
+        assertThat(parse(this.f, "~~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~~a").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "~~a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~~~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~~~a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~~~a").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~~~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~~~a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~~~a").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~(a & b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~(a & b)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~(a & b)").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~(a & b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~(a & b)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~(a & b)").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~(~a & b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~(~a & b)").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("~(~a & b)").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~(~a & b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~(~a & b)").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "~(~a & b)").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~(a & ~b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~(a & ~b)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~(a & ~b)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~(a & ~b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~(a & ~b)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~(a & ~b)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~(~a & ~b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~(~a & ~b)").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("~(~a & ~b)").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~(~a & ~b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~(~a & ~b)").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "~(~a & ~b)").holds(this.aNotBToTrue)).isTrue();
     }
 
     @Test
-    public void testAndToTrue() throws ParserException {
-        assertThat(this.f.parse("a & ~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & ~a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & ~a").holds(this.aNotBToTrue)).isFalse();
+    public void testAndToTrue() {
+        assertThat(parse(this.f, "a & ~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & ~a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & ~a").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a & b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & ~b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & ~b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "a & ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & ~b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & ~b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~a & ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & ~b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & ~b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a & ~b & c & ~d").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & ~b & c & ~d").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & ~b & c & ~d").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~b & c & ~d").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~b & c & ~d").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~b & c & ~d").holds(this.aNotBToTrue)).isFalse();
     }
 
     @Test
-    public void testOrToTrue() throws ParserException {
-        assertThat(this.f.parse("a | b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a | b").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("a | b").holds(this.aNotBToTrue)).isTrue();
+    public void testOrToTrue() {
+        assertThat(parse(this.f, "a | b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a | b").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "a | b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~a | b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a | b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a | b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a | ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a | ~b").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("a | ~b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "a | ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a | ~b").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "a | ~b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~a | ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a | ~b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a | ~b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~a | ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | ~b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | ~b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~a | ~b | c | ~d").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a | ~b | c | ~d").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a | ~b | c | ~d").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~a | ~b | c | ~d").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | ~b | c | ~d").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a | ~b | c | ~d").holds(this.aNotBToTrue)).isTrue();
     }
 
     @Test
-    public void testImplicationToTrue() throws ParserException {
-        assertThat(this.f.parse("a => a").holds(this.emptyToTrue)).isTrue();
-        assertThat(this.f.parse("a => a").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("a => a").holds(this.aNotBToTrue)).isTrue();
+    public void testImplicationToTrue() {
+        assertThat(parse(this.f, "a => a").holds(this.emptyToTrue)).isTrue();
+        assertThat(parse(this.f, "a => a").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "a => a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("b => b").holds(this.emptyToTrue)).isTrue();
-        assertThat(this.f.parse("b => b").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("b => b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "b => b").holds(this.emptyToTrue)).isTrue();
+        assertThat(parse(this.f, "b => b").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "b => b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("a => b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a => b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a => b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a => b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a => b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a => b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a => b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a => b").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("~a => b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~a => b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a => b").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "~a => b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("a => ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a => ~b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a => ~b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "a => ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a => ~b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a => ~b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~a => ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a => ~b").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("~a => ~b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~a => ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a => ~b").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "~a => ~b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("b => a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("b => a").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("b => a").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "b => a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "b => a").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "b => a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~b => a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~b => a").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("~b => a").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~b => a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~b => a").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "~b => a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("b => ~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("b => ~a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("b => ~a").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "b => ~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "b => ~a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "b => ~a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~b => ~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~b => ~a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~b => ~a").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~b => ~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~b => ~a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~b => ~a").holds(this.aNotBToTrue)).isFalse();
     }
 
     @Test
-    public void testEquivalenceToTrue() throws ParserException {
-        assertThat(this.f.parse("a <=> a").holds(this.emptyToTrue)).isTrue();
-        assertThat(this.f.parse("a <=> a").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("a <=> a").holds(this.aNotBToTrue)).isTrue();
+    public void testEquivalenceToTrue() {
+        assertThat(parse(this.f, "a <=> a").holds(this.emptyToTrue)).isTrue();
+        assertThat(parse(this.f, "a <=> a").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "a <=> a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("b <=> b").holds(this.emptyToTrue)).isTrue();
-        assertThat(this.f.parse("b <=> b").holds(this.aToTrue)).isTrue();
-        assertThat(this.f.parse("b <=> b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "b <=> b").holds(this.emptyToTrue)).isTrue();
+        assertThat(parse(this.f, "b <=> b").holds(this.aToTrue)).isTrue();
+        assertThat(parse(this.f, "b <=> b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("a <=> b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a <=> b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a <=> b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a <=> b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a <=> b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a <=> b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a <=> b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a <=> b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a <=> b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~a <=> b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a <=> b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a <=> b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("a <=> ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a <=> ~b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a <=> ~b").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "a <=> ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a <=> ~b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a <=> ~b").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~a <=> ~b").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a <=> ~b").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a <=> ~b").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a <=> ~b").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a <=> ~b").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a <=> ~b").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("b <=> a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("b <=> a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("b <=> a").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "b <=> a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "b <=> a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "b <=> a").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~b <=> a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~b <=> a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~b <=> a").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "~b <=> a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~b <=> a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~b <=> a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("b <=> ~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("b <=> ~a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("b <=> ~a").holds(this.aNotBToTrue)).isTrue();
+        assertThat(parse(this.f, "b <=> ~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "b <=> ~a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "b <=> ~a").holds(this.aNotBToTrue)).isTrue();
 
-        assertThat(this.f.parse("~b <=> ~a").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~b <=> ~a").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~b <=> ~a").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~b <=> ~a").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~b <=> ~a").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~b <=> ~a").holds(this.aNotBToTrue)).isFalse();
     }
 
     @Test
@@ -568,58 +567,58 @@ public class EvaluatesToConstantPredicateTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testMixedToTrue() throws ParserException {
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.aNotBToTrue)).isFalse();
+    public void testMixedToTrue() {
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~b & (b | ~a)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~b & (b | ~a)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a & (a | ~b) & c & (a => b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b) & c & (a => b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b) & c & (a => b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b) & c & (a => b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("~a & ~(a | ~b) & c & (a => b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("~a & ~(a | ~b) & c & (a => b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("~a & ~(a | ~b) & c & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~(a | ~b) & c & (a => b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~(a | ~b) & c & (a => b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "~a & ~(a | ~b) & c & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => ~b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => ~b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a => ~b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => ~b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => ~b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a => ~b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (a => b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a => b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a => b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a => b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a => b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & c & (a <=> ~b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a <=> ~b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & c & (a <=> ~b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b | e)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b | e)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b | e)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b | e)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b | e)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b | e)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (a <=> b)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (a <=> b)").holds(this.aNotBToTrue)).isFalse();
 
-        assertThat(this.f.parse("a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.emptyToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aToTrue)).isFalse();
-        assertThat(this.f.parse("a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aNotBToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.emptyToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aToTrue)).isFalse();
+        assertThat(parse(this.f, "a & (a | ~b) & (3 * a + 2 * b > 4)").holds(this.aNotBToTrue)).isFalse();
     }
 
     @Test

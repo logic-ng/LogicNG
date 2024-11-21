@@ -391,11 +391,11 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
-    public void testRelaxationFormulas() throws ParserException {
+    public void testRelaxationFormulas() {
         for (final SATSolver s : this.solvers) {
-            s.add(this.f.parse("a & (b | c)"));
+            s.add(parse(this.f, "a & (b | c)"));
             assertSolverSat(s);
-            s.addWithRelaxation(this.f.variable("x"), this.f.parse("~a & ~b"));
+            s.addWithRelaxation(this.f.variable("x"), parse(this.f, "~a & ~b"));
             assertSolverSat(s);
             assertThat(s.model().positiveVariables()).contains(this.f.variable("x"));
             s.add(this.f.variable("x").negate());
@@ -875,7 +875,7 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     public void testUPZeroLiteralsForUndefState() {
         assertThatThrownBy(() -> {
             final SATSolver solver = MiniSat.miniSat(this.f);
-            solver.add(this.f.parse("a & b"));
+            solver.add(parse(this.f, "a & b"));
             solver.execute(UpZeroLiteralsFunction.get());
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot get unit propagated literals on level 0 as long as the formula is not solved.  Call 'sat' first.");
@@ -969,22 +969,22 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
-    public void testFormulaOnSolverWithContradiction() throws ParserException {
+    public void testFormulaOnSolverWithContradiction() {
         for (final SATSolver solver : this.solvers) {
             if (solver instanceof MiniSat) {
                 solver.add(this.f.variable("A"));
                 solver.add(this.f.variable("B"));
-                solver.add(this.f.parse("C & (~A | ~B)"));
+                solver.add(parse(this.f, "C & (~A | ~B)"));
                 assertThat(solver.execute(FormulaOnSolverFunction.get()))
                         .containsExactlyInAnyOrder(this.f.variable("A"), this.f.variable("B"), this.f.variable("C"), this.f.falsum());
                 solver.reset();
-                solver.add(this.f.parse("A <=> B"));
-                solver.add(this.f.parse("B <=> ~A"));
+                solver.add(parse(this.f, "A <=> B"));
+                solver.add(parse(this.f, "B <=> ~A"));
                 assertThat(solver.execute(FormulaOnSolverFunction.get()))
-                        .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"));
+                        .containsExactlyInAnyOrder(parse(this.f, "A | ~B"), parse(this.f, "~A | B"), parse(this.f, "~B | ~A"), parse(this.f, "B | A"));
                 solver.sat();
                 assertThat(solver.execute(FormulaOnSolverFunction.get()))
-                        .containsExactlyInAnyOrder(this.f.parse("A | ~B"), this.f.parse("~A | B"), this.f.parse("~B | ~A"), this.f.parse("B | A"),
+                        .containsExactlyInAnyOrder(parse(this.f, "A | ~B"), parse(this.f, "~A | B"), parse(this.f, "~B | ~A"), parse(this.f, "B | A"),
                                 this.f.variable("A"), this.f.variable("B"), this.f.falsum());
             }
         }
@@ -1105,9 +1105,9 @@ public class SATTest extends TestWithExampleFormulas implements LogicNGTest {
     }
 
     @Test
-    public void testModelEnumerationWithAdditionalVariables() throws ParserException {
+    public void testModelEnumerationWithAdditionalVariables() {
         final SATSolver solver = MiniSat.miniSat(this.f);
-        solver.add(this.f.parse("A | B | C | D | E"));
+        solver.add(parse(this.f, "A | B | C | D | E"));
         final List<Assignment> models = solver.execute(ModelEnumerationFunction.builder()
                 .variables(Arrays.asList(this.f.variable("A"), this.f.variable("B")))
                 .additionalVariables(Arrays.asList(this.f.variable("B"), this.f.variable("C"))).build());

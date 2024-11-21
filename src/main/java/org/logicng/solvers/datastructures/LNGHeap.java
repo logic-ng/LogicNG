@@ -70,6 +70,18 @@ public final class LNGHeap {
     }
 
     /**
+     * Constructs a new heap for a given solver and content.
+     * @param solver  the solver
+     * @param heap    the heap content
+     * @param indices the indices content
+     */
+    public LNGHeap(final MiniSatStyleSolver solver, final LNGIntVector heap, final LNGIntVector indices) {
+        this.s = solver;
+        this.heap = heap;
+        this.indices = indices;
+    }
+
+    /**
      * Returns the left position on the heap for a given position.
      * @param pos the position
      * @return the left position
@@ -250,6 +262,14 @@ public final class LNGHeap {
         }
         this.heap.set(p, y);
         this.indices.set(y, p);
+    }
+
+    public LNGIntVector getHeap() {
+        return this.heap;
+    }
+
+    public LNGIntVector getIndices() {
+        return this.indices;
     }
 
     @Override

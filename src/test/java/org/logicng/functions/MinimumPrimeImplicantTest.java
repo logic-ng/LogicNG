@@ -29,6 +29,7 @@
 package org.logicng.functions;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.cardinalityconstraints.CCConfig;
@@ -57,65 +58,65 @@ public class MinimumPrimeImplicantTest {
     }
 
     @Test
-    public void testSimpleCases() throws ParserException {
-        Formula formula = this.f.parse("a");
+    public void testSimpleCases() {
+        Formula formula = parse(this.f, "a");
         SortedSet<Literal> pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("a | b | c");
+        formula = parse(this.f, "a | b | c");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("a & b & (~a|~b)");
+        formula = parse(this.f, "a & b & (~a|~b)");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).isNull();
 
-        formula = this.f.parse("a & b & c");
+        formula = parse(this.f, "a & b & c");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(3);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("a | b | ~c => e & d & f");
+        formula = parse(this.f, "a | b | ~c => e & d & f");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(3);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("a | b | ~c <=> e & d & f");
+        formula = parse(this.f, "a | b | ~c <=> e & d & f");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(4);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("(a | b | ~c <=> e & d & f) | (a | b | ~c => e & d & f)");
+        formula = parse(this.f, "(a | b | ~c <=> e & d & f) | (a | b | ~c => e & d & f)");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(3);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("(a | b | ~c <=> e & d & f) | (a | b | ~c => e & d & f) | (a & b)");
+        formula = parse(this.f, "(a | b | ~c <=> e & d & f) | (a | b | ~c => e & d & f) | (a & b)");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(2);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("(a | b | ~c <=> e & d & f) | (a | b | ~c => e & d & f) | (a & b) | (f => g)");
+        formula = parse(this.f, "(a | b | ~c <=> e & d & f) | (a | b | ~c => e & d & f) | (a & b) | (f => g)");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
     }
 
     @Test
-    public void testSmallExamples() throws ParserException {
-        Formula formula = this.f.parse("(~(v17 | v18) | ~v1494 & (v17 | v18)) & ~v687 => v686");
+    public void testSmallExamples() {
+        Formula formula = parse(this.f, "(~(v17 | v18) | ~v1494 & (v17 | v18)) & ~v687 => v686");
         SortedSet<Literal> pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("(~(v17 | v18) | ~v1494 & (v17 | v18)) & v687 => ~v686");
+        formula = parse(this.f, "(~(v17 | v18) | ~v1494 & (v17 | v18)) & v687 => ~v686");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(1);
         isPrimeImplicant(formula, pi);
 
-        formula = this.f.parse("v173 + v174 + v451 + v258 + v317 + v259 + v452 + v453 + v175 + v176 + v177 + v178 + v179 + v180 + v181 + v182 + v183 + v102 + v103 + v104 + v105 = 1");
+        formula = parse(this.f, "v173 + v174 + v451 + v258 + v317 + v259 + v452 + v453 + v175 + v176 + v177 + v178 + v179 + v180 + v181 + v182 + v183 + v102 + v103 + v104 + v105 = 1");
         pi = formula.apply(MinimumPrimeImplicantFunction.get());
         assertThat(pi).hasSize(21);
         isPrimeImplicant(formula, pi);

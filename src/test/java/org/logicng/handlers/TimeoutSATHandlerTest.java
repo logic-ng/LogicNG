@@ -1,6 +1,7 @@
 package org.logicng.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.logicng.datastructures.Tristate;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.solvers.MiniSat;
 import org.logicng.solvers.SATSolver;
 import org.logicng.solvers.sat.GlucoseConfig;
@@ -55,9 +55,9 @@ class TimeoutSATHandlerTest {
     }
 
     @Test
-    public void testThatMethodsAreCalled() throws ParserException {
+    public void testThatMethodsAreCalled() {
         for (final SATSolver solver : this.solvers) {
-            solver.add(this.f.parse("(x => y) & (~x => y) & (y => z) & (z => ~y)"));
+            solver.add(parse(this.f, "(x => y) & (~x => y) & (y => z) & (z => ~y)"));
             final TimeoutSATHandler handler = Mockito.mock(TimeoutSATHandler.class);
 
             solver.sat(handler);
@@ -71,7 +71,7 @@ class TimeoutSATHandlerTest {
     @Test
     public void testThatDetectedConflictIsHandledProperly() {
         for (final SATSolver solver : this.solvers) {
-            solver.add(pg.generate(10));
+            solver.add(this.pg.generate(10));
             final TimeoutSATHandler handler = Mockito.mock(TimeoutSATHandler.class);
             final AtomicInteger count = new AtomicInteger(0);
             when(handler.detectedConflict()).then(invocationOnMock -> count.addAndGet(1) < 5);
@@ -89,7 +89,7 @@ class TimeoutSATHandlerTest {
     @Test
     public void testTimeoutHandlerSingleTimeout() {
         for (final SATSolver solver : this.solvers) {
-            solver.add(pg.generate(10));
+            solver.add(this.pg.generate(10));
             final TimeoutSATHandler handler = new TimeoutSATHandler(100L);
 
             final Tristate result = solver.sat(handler);
@@ -102,7 +102,7 @@ class TimeoutSATHandlerTest {
     @Test
     public void testTimeoutHandlerFixedEnd() {
         for (final SATSolver solver : this.solvers) {
-            solver.add(pg.generate(10));
+            solver.add(this.pg.generate(10));
             final TimeoutSATHandler handler = new TimeoutSATHandler(System.currentTimeMillis() + 100L, TimeoutHandler.TimerType.FIXED_END);
 
             final Tristate result = solver.sat(handler);

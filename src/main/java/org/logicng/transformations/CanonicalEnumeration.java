@@ -43,7 +43,7 @@ import java.util.SortedSet;
 
 /**
  * Superclass for canonical normal form enumeration (CNF or DNF) via enumeration of the falsifying/satisfying assignments.
- * @version 2.3.0
+ * @version 2.5.0
  * @since 2.3.0
  */
 public abstract class CanonicalEnumeration {
@@ -65,9 +65,9 @@ public abstract class CanonicalEnumeration {
         final List<Formula> ops = new ArrayList<>();
         for (final Assignment a : enumeration) {
             final SortedSet<Literal> literals = a.literals();
-            final Formula term = cnf ? f.or(FormulaHelper.negate(literals, ArrayList::new)) : f.and(a.literals());
+            final Formula term = cnf ? f.clause(FormulaHelper.negateLiterals(literals, ArrayList::new)) : f.term(a.literals());
             ops.add(term);
         }
-        return cnf ? f.and(ops) : f.or(ops);
+        return cnf ? f.cnf(ops) : f.dnf(ops);
     }
 }

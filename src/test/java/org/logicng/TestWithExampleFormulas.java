@@ -34,6 +34,8 @@ import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
+import org.logicng.io.parsers.ParserException;
+import org.logicng.io.parsers.PseudoBooleanParser;
 
 public abstract class TestWithExampleFormulas {
     protected final FormulaFactory f = new FormulaFactory();
@@ -89,4 +91,12 @@ public abstract class TestWithExampleFormulas {
     protected final Formula PBC3 = this.f.pbc(CType.GE, 2, this.literals, this.coefficients);
     protected final Formula PBC4 = this.f.pbc(CType.LT, 2, this.literals, this.coefficients);
     protected final Formula PBC5 = this.f.pbc(CType.LE, 2, this.literals, this.coefficients);
+
+    public static Formula parse(final FormulaFactory f, final String formula) {
+        try {
+            return new PseudoBooleanParser(f).parse(formula);
+        } catch (final ParserException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

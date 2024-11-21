@@ -28,26 +28,49 @@
 
 package org.logicng.datastructures.ubtrees;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
  * Unit tests for {@link UBTree}.
- * @version 2.0.0
+ * @version 2.5.0
  * @since 1.5.0
  */
 public class UBTreeTest {
+
+    @Test
+    public void testGenerateSubsumedUBTree() {
+        final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
+        final SortedSet<String> e013 = set("e0", "e1", "e3");
+        final SortedSet<String> e012 = set("e0", "e1", "e2");
+        final SortedSet<String> e23 = set("e2", "e3");
+        final SortedSet<String> empty = set();
+        assertThat(UBTree.generateSubsumedUBTree(emptyList()).allSets()).isEmpty();
+        assertThat(UBTree.generateSubsumedUBTree(singletonList(e0123)).allSets()).containsExactlyInAnyOrder(e0123);
+        assertThat(UBTree.generateSubsumedUBTree(asList(e0123, e013, e012, e23)).allSets()).containsExactlyInAnyOrder(e013, e012, e23);
+        assertThat(UBTree.generateSubsumedUBTree(asList(e0123, e013, e012, e23, empty)).allSets()).containsExactlyInAnyOrder(empty);
+    }
+
+    @Test
+    public void testEmtpyUBTree() {
+        final UBTree<String> tree = new UBTree<>();
+        assertThat(tree.rootNodes()).isEmpty();
+        assertThat(tree.rootSet()).isNull();
+    }
 
     @Test
     public void testEmptySet() {
         final UBTree<String> tree = new UBTree<>();
         tree.addSet(new TreeSet<>());
         assertThat(tree.rootNodes()).isEmpty();
+        assertThat(tree.rootSet()).isEmpty();
     }
 
     @Test
@@ -65,6 +88,7 @@ public class UBTreeTest {
         assertThat(tree.rootNodes().get("A").children().get("B").children().get("C").isEndOfPath()).isTrue();
         assertThat(tree.rootNodes().get("A").children().get("B").children().get("C").set()).isEqualTo(set("A", "B", "C"));
         assertThat(tree.rootNodes().get("A").children().get("B").children().get("C").children()).isEmpty();
+        assertThat(tree.rootSet()).isNull();
     }
 
     @Test
@@ -76,6 +100,7 @@ public class UBTreeTest {
         tree.addSet(set("e2", "e3"));
         assertThat(tree.rootNodes()).hasSize(2);
         assertThat(tree.rootNodes().keySet()).containsExactly("e0", "e2");
+        assertThat(tree.rootSet()).isNull();
 
         // root nodes
         final UBNode<String> e0 = tree.rootNodes().get("e0");
@@ -122,6 +147,7 @@ public class UBTreeTest {
         tree.addSet(e013);
         tree.addSet(e012);
         tree.addSet(e23);
+        assertThat(tree.firstSubset(set())).isNull();
         assertThat(tree.firstSubset(set("e0"))).isNull();
         assertThat(tree.firstSubset(set("e1"))).isNull();
         assertThat(tree.firstSubset(set("e2"))).isNull();
@@ -155,6 +181,52 @@ public class UBTreeTest {
     }
 
     @Test
+    public void testContainsSubsetWithEmtpySet() {
+        final UBTree<String> tree = new UBTree<>();
+        final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
+        final SortedSet<String> e013 = set("e0", "e1", "e3");
+        final SortedSet<String> e012 = set("e0", "e1", "e2");
+        final SortedSet<String> e23 = set("e2", "e3");
+        final SortedSet<String> empty = set();
+        tree.addSet(e0123);
+        tree.addSet(e013);
+        tree.addSet(e012);
+        tree.addSet(e23);
+        tree.addSet(empty);
+        assertThat(tree.firstSubset(set())).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e2"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e2"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e2"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e2", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e2"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e2", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e2", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e2", "e3"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e2", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e2", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e2", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e2", "e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e2", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e2", "e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e1", "e2", "e3", "e4"))).isEqualTo(empty);
+        assertThat(tree.firstSubset(set("e0", "e1", "e2", "e3", "e4"))).isEqualTo(empty);
+    }
+
+    @Test
     public void testAllSubsets() {
         final UBTree<String> tree = new UBTree<>();
         final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
@@ -165,6 +237,7 @@ public class UBTreeTest {
         tree.addSet(e013);
         tree.addSet(e012);
         tree.addSet(e23);
+        assertThat(tree.allSubsets(set())).isEmpty();
         assertThat(tree.allSubsets(set("e0"))).isEmpty();
         assertThat(tree.allSubsets(set("e1"))).isEmpty();
         assertThat(tree.allSubsets(set("e2"))).isEmpty();
@@ -198,6 +271,52 @@ public class UBTreeTest {
     }
 
     @Test
+    public void testAllSubsetsWithEmptySet() {
+        final UBTree<String> tree = new UBTree<>();
+        final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
+        final SortedSet<String> e013 = set("e0", "e1", "e3");
+        final SortedSet<String> e012 = set("e0", "e1", "e2");
+        final SortedSet<String> e23 = set("e2", "e3");
+        final SortedSet<String> empty = set();
+        tree.addSet(e0123);
+        tree.addSet(e013);
+        tree.addSet(e012);
+        tree.addSet(e23);
+        tree.addSet(empty);
+        assertThat(tree.allSubsets(set())).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e1"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e2"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e3"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0", "e1"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0", "e2"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0", "e3"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e1", "e2"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e1", "e3"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e2", "e3"))).containsExactlyInAnyOrder(empty, e23);
+        assertThat(tree.allSubsets(set("e0", "e1", "e2"))).containsExactlyInAnyOrder(empty, e012);
+        assertThat(tree.allSubsets(set("e0", "e1", "e3"))).containsExactlyInAnyOrder(empty, e013);
+        assertThat(tree.allSubsets(set("e0", "e2", "e3"))).containsExactlyInAnyOrder(empty, e23);
+        assertThat(tree.allSubsets(set("e1", "e2", "e3"))).containsExactlyInAnyOrder(empty, e23);
+        assertThat(tree.allSubsets(set("e0", "e1", "e2", "e3"))).containsExactlyInAnyOrder(empty, e0123, e013, e012, e23);
+        assertThat(tree.allSubsets(set("e0", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e1", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e2", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e3", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0", "e1", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0", "e2", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e0", "e3", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e1", "e2", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e1", "e3", "e4"))).containsExactlyInAnyOrder(empty);
+        assertThat(tree.allSubsets(set("e2", "e3", "e4"))).containsExactlyInAnyOrder(empty, e23);
+        assertThat(tree.allSubsets(set("e0", "e1", "e2", "e4"))).containsExactlyInAnyOrder(empty, e012);
+        assertThat(tree.allSubsets(set("e0", "e1", "e3", "e4"))).containsExactlyInAnyOrder(empty, e013);
+        assertThat(tree.allSubsets(set("e0", "e2", "e3", "e4"))).containsExactlyInAnyOrder(empty, e23);
+        assertThat(tree.allSubsets(set("e1", "e2", "e3", "e4"))).containsExactlyInAnyOrder(empty, e23);
+        assertThat(tree.allSubsets(set("e0", "e1", "e2", "e3", "e4"))).containsExactlyInAnyOrder(empty, e0123, e013, e012, e23);
+    }
+
+    @Test
     public void testAllSupersets() {
         final UBTree<String> tree = new UBTree<>();
         final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
@@ -208,6 +327,52 @@ public class UBTreeTest {
         tree.addSet(e013);
         tree.addSet(e012);
         tree.addSet(e23);
+        assertThat(tree.allSupersets(set())).containsExactlyInAnyOrder(e0123, e013, e012, e23);
+        assertThat(tree.allSupersets(set("e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0"))).containsExactlyInAnyOrder(e0123, e012, e013);
+        assertThat(tree.allSupersets(set("e1"))).containsExactlyInAnyOrder(e0123, e012, e013);
+        assertThat(tree.allSupersets(set("e2"))).containsExactlyInAnyOrder(e0123, e012, e23);
+        assertThat(tree.allSupersets(set("e3"))).containsExactlyInAnyOrder(e0123, e013, e23);
+        assertThat(tree.allSupersets(set("e0", "e1"))).containsExactlyInAnyOrder(e0123, e012, e013);
+        assertThat(tree.allSupersets(set("e0", "e2"))).containsExactlyInAnyOrder(e0123, e012);
+        assertThat(tree.allSupersets(set("e0", "e3"))).containsExactlyInAnyOrder(e0123, e013);
+        assertThat(tree.allSupersets(set("e1", "e2"))).containsExactlyInAnyOrder(e0123, e012);
+        assertThat(tree.allSupersets(set("e1", "e3"))).containsExactlyInAnyOrder(e0123, e013);
+        assertThat(tree.allSupersets(set("e2", "e3"))).containsExactlyInAnyOrder(e0123, e23);
+        assertThat(tree.allSupersets(set("e0", "e1", "e2"))).containsExactlyInAnyOrder(e0123, e012);
+        assertThat(tree.allSupersets(set("e0", "e2", "e3"))).containsExactlyInAnyOrder(e0123);
+        assertThat(tree.allSupersets(set("e0", "e1", "e2", "e3"))).containsExactlyInAnyOrder(e0123);
+        assertThat(tree.allSupersets(set("e0", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e1", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e2", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e1", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e2", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e1", "e2", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e1", "e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e2", "e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e1", "e2", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e1", "e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e2", "e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e1", "e2", "e3", "e4"))).isEmpty();
+        assertThat(tree.allSupersets(set("e0", "e1", "e2", "e3", "e4"))).isEmpty();
+    }
+
+    @Test
+    public void testAllSupersetsWithEmptySet() {
+        final UBTree<String> tree = new UBTree<>();
+        final SortedSet<String> e0123 = set("e0", "e1", "e2", "e3");
+        final SortedSet<String> e013 = set("e0", "e1", "e3");
+        final SortedSet<String> e012 = set("e0", "e1", "e2");
+        final SortedSet<String> e23 = set("e2", "e3");
+        final SortedSet<String> empty = set();
+        tree.addSet(e0123);
+        tree.addSet(e013);
+        tree.addSet(e012);
+        tree.addSet(e23);
+        tree.addSet(empty);
+        assertThat(tree.allSupersets(set())).containsExactlyInAnyOrder(e0123, e013, e012, e23, empty);
         assertThat(tree.allSupersets(set("e4"))).isEmpty();
         assertThat(tree.allSupersets(set("e0"))).containsExactlyInAnyOrder(e0123, e012, e013);
         assertThat(tree.allSupersets(set("e1"))).containsExactlyInAnyOrder(e0123, e012, e013);
@@ -246,6 +411,7 @@ public class UBTreeTest {
         final SortedSet<String> e013 = set("e0", "e1", "e3");
         final SortedSet<String> e012 = set("e0", "e1", "e2");
         final SortedSet<String> e23 = set("e2", "e3");
+        final SortedSet<String> empty = set();
         tree.addSet(e0123);
         assertThat(tree.allSets()).containsExactlyInAnyOrder(e0123);
         tree.addSet(e013);
@@ -254,9 +420,11 @@ public class UBTreeTest {
         assertThat(tree.allSets()).containsExactlyInAnyOrder(e0123, e013, e012);
         tree.addSet(e23);
         assertThat(tree.allSets()).containsExactlyInAnyOrder(e0123, e013, e012, e23);
+        tree.addSet(empty);
+        assertThat(tree.allSets()).containsExactlyInAnyOrder(e0123, e013, e012, e23, empty);
     }
 
-    private SortedSet<String> set(final String... elements) {
-        return new TreeSet<>(Arrays.asList(elements));
+    private static SortedSet<String> set(final String... elements) {
+        return new TreeSet<>(asList(elements));
     }
 }

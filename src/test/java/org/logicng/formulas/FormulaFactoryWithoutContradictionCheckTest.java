@@ -29,11 +29,11 @@
 package org.logicng.formulas;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.logicng.TestWithExampleFormulas.parse;
 
 import org.junit.jupiter.api.Test;
 import org.logicng.datastructures.Assignment;
 import org.logicng.datastructures.Tristate;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.predicates.NNFPredicate;
 import org.logicng.predicates.satisfiability.ContingencyPredicate;
 import org.logicng.predicates.satisfiability.ContradictionPredicate;
@@ -55,33 +55,33 @@ public class FormulaFactoryWithoutContradictionCheckTest {
     private final Formula contradiction = this.f.and(this.a, this.f.literal("A", false));
 
     @Test
-    public void testSimpleFormulas() throws ParserException {
-        assertThat(this.f.parse("$true").toString()).isEqualTo("$true");
-        assertThat(this.f.parse("$false").toString()).isEqualTo("$false");
-        assertThat(this.f.parse("A").toString()).isEqualTo("A");
-        assertThat(this.f.parse("~A").toString()).isEqualTo("~A");
-        assertThat(this.f.parse("A & A & B").toString()).isEqualTo("A & B");
-        assertThat(this.f.parse("A | A | B").toString()).isEqualTo("A | B");
-        assertThat(this.f.parse("A => A & B").toString()).isEqualTo("A => A & B");
-        assertThat(this.f.parse("A <=> A & B").toString()).isEqualTo("A <=> A & B");
+    public void testSimpleFormulas() {
+        assertThat(parse(this.f, "$true").toString()).isEqualTo("$true");
+        assertThat(parse(this.f, "$false").toString()).isEqualTo("$false");
+        assertThat(parse(this.f, "A").toString()).isEqualTo("A");
+        assertThat(parse(this.f, "~A").toString()).isEqualTo("~A");
+        assertThat(parse(this.f, "A & A & B").toString()).isEqualTo("A & B");
+        assertThat(parse(this.f, "A | A | B").toString()).isEqualTo("A | B");
+        assertThat(parse(this.f, "A => A & B").toString()).isEqualTo("A => A & B");
+        assertThat(parse(this.f, "A <=> A & B").toString()).isEqualTo("A <=> A & B");
     }
 
     @Test
-    public void testContradictions() throws ParserException {
-        assertThat(this.f.parse("A & ~A").toString()).isEqualTo("A & ~A");
-        assertThat(this.f.parse("~A & A").toString()).isEqualTo("A & ~A");
-        assertThat(this.f.parse("~A & A & A & ~A & A & A & ~A").toString()).isEqualTo("A & ~A");
-        assertThat(this.f.parse("(A | B) & ~(A | B)").toString()).isEqualTo("(A | B) & ~(A | B)");
-        assertThat(this.f.parse("(A | B) & ~(B | A)").toString()).isEqualTo("(A | B) & ~(A | B)");
+    public void testContradictions() {
+        assertThat(parse(this.f, "A & ~A").toString()).isEqualTo("A & ~A");
+        assertThat(parse(this.f, "~A & A").toString()).isEqualTo("A & ~A");
+        assertThat(parse(this.f, "~A & A & A & ~A & A & A & ~A").toString()).isEqualTo("A & ~A");
+        assertThat(parse(this.f, "(A | B) & ~(A | B)").toString()).isEqualTo("(A | B) & ~(A | B)");
+        assertThat(parse(this.f, "(A | B) & ~(B | A)").toString()).isEqualTo("(A | B) & ~(A | B)");
     }
 
     @Test
-    public void testTautologies() throws ParserException {
-        assertThat(this.f.parse("A | ~A").toString()).isEqualTo("A | ~A");
-        assertThat(this.f.parse("~A | A").toString()).isEqualTo("A | ~A");
-        assertThat(this.f.parse("~A | A | A | ~A | A | A | ~A").toString()).isEqualTo("A | ~A");
-        assertThat(this.f.parse("(A & B) | ~(A & B)").toString()).isEqualTo("A & B | ~(A & B)");
-        assertThat(this.f.parse("(A & B) | ~(B & A)").toString()).isEqualTo("A & B | ~(A & B)");
+    public void testTautologies() {
+        assertThat(parse(this.f, "A | ~A").toString()).isEqualTo("A | ~A");
+        assertThat(parse(this.f, "~A | A").toString()).isEqualTo("A | ~A");
+        assertThat(parse(this.f, "~A | A | A | ~A | A | A | ~A").toString()).isEqualTo("A | ~A");
+        assertThat(parse(this.f, "(A & B) | ~(A & B)").toString()).isEqualTo("A & B | ~(A & B)");
+        assertThat(parse(this.f, "(A & B) | ~(B & A)").toString()).isEqualTo("A & B | ~(A & B)");
     }
 
     @Test
@@ -159,15 +159,15 @@ public class FormulaFactoryWithoutContradictionCheckTest {
     }
 
     @Test
-    public void testSatSolverWithTautologies() throws ParserException {
+    public void testSatSolverWithTautologies() {
         final SATSolver solver = MiniSat.miniSat(this.f);
-        solver.add(this.f.parse("A"));
-        solver.add(this.f.parse("A => B"));
-        solver.add(this.f.parse("C | ~C"));
+        solver.add(parse(this.f, "A"));
+        solver.add(parse(this.f, "A => B"));
+        solver.add(parse(this.f, "C | ~C"));
         List<Assignment> models = solver.enumerateAllModels();
         assertThat(models).hasSize(2);
         models.forEach(m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false)));
-        solver.add(this.f.parse("D | ~D"));
+        solver.add(parse(this.f, "D | ~D"));
         models = solver.enumerateAllModels();
         assertThat(models).hasSize(4);
         models.forEach(m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false),
@@ -175,24 +175,24 @@ public class FormulaFactoryWithoutContradictionCheckTest {
     }
 
     @Test
-    public void testSatSolverWithContradictions() throws ParserException {
+    public void testSatSolverWithContradictions() {
         final SATSolver solver = MiniSat.miniSat(this.f);
-        solver.add(this.f.parse("A"));
-        solver.add(this.f.parse("A => B"));
-        solver.add(this.f.parse("C | ~C"));
+        solver.add(parse(this.f, "A"));
+        solver.add(parse(this.f, "A => B"));
+        solver.add(parse(this.f, "C | ~C"));
         final List<Assignment> models = solver.enumerateAllModels();
         assertThat(models).hasSize(2);
         models.forEach(m -> assertThat(m.literals()).containsAnyOf(this.f.literal("C", true), this.f.literal("C", false)));
-        solver.add(this.f.parse("D & ~D"));
+        solver.add(parse(this.f, "D & ~D"));
         assertThat(solver.sat()).isEqualTo(Tristate.FALSE);
     }
 
     @Test
-    public void testSubsumption() throws ParserException {
+    public void testSubsumption() {
         assertThat(this.tautology.substitute(this.a, this.notA)).isEqualTo(this.tautology);
         assertThat(this.contradiction.substitute(this.a, this.notA)).isEqualTo(this.contradiction);
-        assertThat(this.tautology.substitute(this.a, this.f.variable("B"))).isEqualTo(this.f.parse("B | ~B"));
-        assertThat(this.contradiction.substitute(this.a, this.f.variable("B"))).isEqualTo(this.f.parse("B & ~B"));
+        assertThat(this.tautology.substitute(this.a, this.f.variable("B"))).isEqualTo(parse(this.f, "B | ~B"));
+        assertThat(this.contradiction.substitute(this.a, this.f.variable("B"))).isEqualTo(parse(this.f, "B & ~B"));
     }
 
     @Test

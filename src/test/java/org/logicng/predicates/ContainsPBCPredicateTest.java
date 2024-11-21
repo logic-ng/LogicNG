@@ -35,7 +35,6 @@ import org.logicng.RandomTag;
 import org.logicng.TestWithExampleFormulas;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
-import org.logicng.io.parsers.ParserException;
 import org.logicng.util.FormulaRandomizer;
 import org.logicng.util.FormulaRandomizerConfig;
 
@@ -61,26 +60,26 @@ public class ContainsPBCPredicateTest extends TestWithExampleFormulas {
     }
 
     @Test
-    public void testNot() throws ParserException {
-        assertThat(this.f.parse("~a").holds(this.predicate)).isFalse();
-        assertThat(this.f.parse("~(a | b)").holds(this.predicate)).isFalse();
+    public void testNot() {
+        assertThat(parse(this.f, "~a").holds(this.predicate)).isFalse();
+        assertThat(parse(this.f, "~(a | b)").holds(this.predicate)).isFalse();
 
-        assertThat(this.f.parse("~(a | (a + b = 3))").holds(this.predicate)).isTrue();
-        assertThat(this.f.parse("~(a & ~(a + b = 3))").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "~(a | (a + b = 3))").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "~(a & ~(a + b = 3))").holds(this.predicate)).isTrue();
     }
 
     @Test
-    public void testMixed() throws ParserException {
-        assertThat(this.f.parse("a => b").holds(this.predicate)).isFalse();
-        assertThat(this.f.parse("a <=> b").holds(this.predicate)).isFalse();
-        assertThat(this.f.parse("a => (b | c & ~(e | d))").holds(this.predicate)).isFalse();
-        assertThat(this.f.parse("a <=> (b | c & ~(e | d))").holds(this.predicate)).isFalse();
+    public void testMixed() {
+        assertThat(parse(this.f, "a => b").holds(this.predicate)).isFalse();
+        assertThat(parse(this.f, "a <=> b").holds(this.predicate)).isFalse();
+        assertThat(parse(this.f, "a => (b | c & ~(e | d))").holds(this.predicate)).isFalse();
+        assertThat(parse(this.f, "a <=> (b | c & ~(e | d))").holds(this.predicate)).isFalse();
 
-        assertThat(this.f.parse("a => (3*a + ~b <= 4)").holds(this.predicate)).isTrue();
-        assertThat(this.f.parse("(3*a + ~b <= 4) <=> b").holds(this.predicate)).isTrue();
-        assertThat(this.f.parse("a => (b | c & (3*a + ~b <= 4) & ~(e | d))").holds(this.predicate)).isTrue();
-        assertThat(this.f.parse("a <=> (b | c & ~(e | (3*a + ~b <= 4) | d))").holds(this.predicate)).isTrue();
-        assertThat(this.f.parse("3*a + ~b <= 4").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "a => (3*a + ~b <= 4)").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "(3*a + ~b <= 4) <=> b").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "a => (b | c & (3*a + ~b <= 4) & ~(e | d))").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "a <=> (b | c & ~(e | (3*a + ~b <= 4) | d))").holds(this.predicate)).isTrue();
+        assertThat(parse(this.f, "3*a + ~b <= 4").holds(this.predicate)).isTrue();
     }
 
     @Test

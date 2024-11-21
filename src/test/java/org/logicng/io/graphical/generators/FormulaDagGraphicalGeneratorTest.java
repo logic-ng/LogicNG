@@ -100,7 +100,7 @@ public class FormulaDagGraphicalGeneratorTest {
     }
 
     @Test
-    public void testDuplicateFormulaParts() throws ParserException, IOException {
+    public void testDuplicateFormulaParts() throws IOException, ParserException {
         final Formula f6 = this.p.parse("(a & b) | (c & ~(a & b))");
         testFiles("f6", f6, FormulaDagGraphicalGenerator.builder().build());
         final Formula f7 = this.p.parse("(c & d) | (a & b) | ((c & d) <=> (a & b))");
@@ -108,7 +108,7 @@ public class FormulaDagGraphicalGeneratorTest {
     }
 
     @Test
-    public void testFixedStyle() throws ParserException, IOException {
+    public void testFixedStyle() throws IOException, ParserException {
         final Formula f8 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2");
         final FormulaDagGraphicalGenerator generator = FormulaDagGraphicalGenerator.builder()
                 .backgroundColor("#020202")
@@ -120,7 +120,7 @@ public class FormulaDagGraphicalGeneratorTest {
     }
 
     @Test
-    public void testDynamicStyle() throws ParserException, IOException {
+    public void testDynamicStyle() throws IOException, ParserException {
         final Formula f9 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
         final GraphicalNodeStyle style1 = GraphicalNodeStyle.rectangle(GRAY_DARK, GRAY_DARK, GRAY_LIGHT);
@@ -149,7 +149,7 @@ public class FormulaDagGraphicalGeneratorTest {
     }
 
     @Test
-    public void testEdgeMapper() throws ParserException, IOException {
+    public void testEdgeMapper() throws IOException, ParserException {
         final Formula f10 = this.p.parse("(A <=> B & (~A | C | X)) => a + b + c <= 2 & (~a | d => X & ~B)");
 
         final GraphicalEdgeStyle style1 = GraphicalEdgeStyle.dotted(GRAY_DARK);
