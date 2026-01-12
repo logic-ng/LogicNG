@@ -196,6 +196,9 @@ public final class BDDFactory {
                     res = formula instanceof And
                             ? kernel.addRef(construction.and(res, operand), handler)
                             : kernel.addRef(construction.or(res, operand), handler);
+                    if (res == BDDKernel.BDD_ABORT) {
+                        return BDDKernel.BDD_ABORT;
+                    }
                     kernel.delRef(previous);
                     kernel.delRef(operand);
                 }
