@@ -139,7 +139,6 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
 
             final Variable[] ordering = new Variable[this.numberOfVertices];
             final boolean[] processed = new boolean[this.numberOfVertices];
-            int treewidth = 0;
 
             for (int iteration = 0; iteration < this.numberOfVertices; iteration++) {
                 final LNGIntVector possiblyBestVertices = new LNGIntVector();
@@ -194,16 +193,6 @@ public class MinFillDTreeGenerator extends EliminatingOrderDTreeGenerator {
                             fillEdgeList.get(secondNeighbor).push(firstNeighbor);
                         }
                     }
-                }
-
-                int currentNumberOfEdges = 0;
-                for (int k = 0; k < this.numberOfVertices; k++) {
-                    if (k != bestVertex && !processed[k] && fillAdjMatrix[bestVertex][k]) {
-                        currentNumberOfEdges++;
-                    }
-                }
-                if (treewidth < currentNumberOfEdges) {
-                    treewidth = currentNumberOfEdges;
                 }
 
                 processed[bestVertex] = true;
