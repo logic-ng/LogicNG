@@ -121,7 +121,7 @@ public class DTreeNode extends DTree {
         this.solver = solver;
         this.left.initialize(solver);
         this.right.initialize(solver);
-        this.staticVarSet = this.left.staticVarSet();
+        this.staticVarSet = (BitSet) this.left.staticVarSet().clone();
         this.staticVarSet.or(this.right.staticVarSet());
         this.staticVariables = toArray(this.staticVarSet);
         this.staticSeparator = sortedIntersect(this.left.staticVarSetArray(), this.right.staticVarSetArray());
