@@ -172,7 +172,8 @@ public class Literal extends Formula implements Comparable<Literal> {
     public int hashCode() {
         final int result = this.hashCode;
         if (result == 0) {
-            this.hashCode = this.name.hashCode() ^ (this.phase ? 1 : 0);
+            int nameHash = this.name.hashCode();
+            this.hashCode = phase() ? nameHash : nameHash * nameHash;
         }
         return this.hashCode;
     }

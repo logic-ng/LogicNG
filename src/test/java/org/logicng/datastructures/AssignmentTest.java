@@ -148,8 +148,8 @@ public class AssignmentTest extends TestWithExampleFormulas {
         assertThat(ass.negativeVariables()).containsExactly(this.X);
         ass.addLiteral(this.NB);
         ass.addLiteral(this.Y);
-        assertThat(ass.positiveVariables()).containsExactly(this.A, this.Y);
-        assertThat(ass.negativeLiterals()).containsExactly(this.NB, this.NX);
+        assertThat(ass.positiveVariables()).containsExactlyInAnyOrder(this.A, this.Y);
+        assertThat(ass.negativeLiterals()).containsExactlyInAnyOrder(this.NB, this.NX);
         assertThat(ass.negativeVariables()).containsExactlyInAnyOrder(this.X, this.B);
         assertThat(ass.evaluateLit(this.Y)).isTrue();
         assertThat(ass.evaluateLit(this.B)).isFalse();
