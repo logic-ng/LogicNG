@@ -403,6 +403,16 @@ public class DRUPTest implements LogicNGTest {
         assertThat(solver.unsatCore().propositions()).contains(p1, p2, p4, p5, p6, p7, p8, p9, p10, p11);
     }
 
+    @Test
+    public void testPBConstraintEdgeCase() {
+        final FormulaFactory f = new FormulaFactory();
+        final StandardProposition proposition = new StandardProposition(parse(f, "a + a = 1"));
+        final MiniSat solver = MiniSat.miniSat(f, MiniSatConfig.builder().proofGeneration(true).build());
+        solver.add(proposition);
+        assertThat(solver.sat()).isEqualTo(Tristate.FALSE);
+        assertThat(solver.unsatCore().propositions()).containsExactly(proposition);
+    }
+
     /**
      * Checks that each formula of the core is part of the original problem and that the core is really unsat.
      * @param originalCore the original core

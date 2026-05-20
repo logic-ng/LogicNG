@@ -120,17 +120,19 @@ public class MiniSat2Solver extends MiniSatStyleSolver {
         int p;
         int i;
         int j;
+        ps.sort();
         if (this.config.proofGeneration) {
             final LNGIntVector vec = new LNGIntVector(ps.size());
             for (i = 0; i < ps.size(); i++) {
-                vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
+                if (i == 0 || ps.get(i) != ps.get(i - 1)) {
+                    vec.push((var(ps.get(i)) + 1) * (-2 * (sign(ps.get(i)) ? 1 : 0) + 1));
+                }
             }
             this.pgOriginalClauses.push(new ProofInformation(vec, proposition));
         }
         if (!this.ok) {
             return false;
         }
-        ps.sort();
 
         boolean flag = false;
         LNGIntVector oc = null;
