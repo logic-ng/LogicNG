@@ -76,14 +76,14 @@
     <version.jacoco>0.8.14</version.jacoco>
     <version.coveralls>4.3.0</version.coveralls>
     <version.surefire>3.5.5</version.surefire>
-    <version.nexus-staging>1.6.8</version.nexus-staging>
-    <version.maven-gpg>1.6</version.maven-gpg>
     <version.osgi-plugin>5.1.9</version.osgi-plugin>
     <version.maven-compiler>3.15.0</version.maven-compiler>
     <version.maven-source>3.4.0</version.maven-source>
     <version.maven-javadoc>3.12.0</version.maven-javadoc>
     <version.maven-jar>3.5.0</version.maven-jar>
     <version.build-helper-plugin>3.6.1</version.build-helper-plugin>
+    <version.maven-gpg>3.2.8</version.maven-gpg>
+    <version.central-publishing>0.10.0</version.central-publishing>
   </properties>
 
   <build>
@@ -340,14 +340,12 @@
         <plugins>
           <!-- Deploy to Maven Central -->
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${version.nexus-staging}</version>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${version.central-publishing}</version>
             <extensions>true</extensions>
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+              <publishingServerId>central</publishingServerId>
             </configuration>
           </plugin>
 
