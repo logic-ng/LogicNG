@@ -2,6 +2,16 @@
 
 LogicNG uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.1] - 2026-05-21
+
+### Changed
+
+- Several bug fixes:
+  - fixed an edge case in DRUP when adding special trivially false cardinality constraints
+  - adjusted the hash function of literals to prevent common collisions
+  - fixed a case where the cancelation of the BDD computation did not work 
+  - fixed a bug in the DTree initialization for the DNNF compiler
+
 ## [2.6.0] - 2024-09-10
 
 ### Added
